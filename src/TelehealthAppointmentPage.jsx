@@ -1,0 +1,343 @@
+import React, { useState } from 'react';
+
+const TelehealthAppointmentPage = () => {
+  const [selectedDoctor, setSelectedDoctor] = useState('Dr. Ahmet Yılmaz');
+  const [selectedDate, setSelectedDate] = useState('01/21/2025');
+  const [selectedTime, setSelectedTime] = useState('09:00');
+  const [patientInfo, setPatientInfo] = useState({
+    fullName: '',
+    phone: '',
+    email: '',
+    birthDate: '',
+    symptoms: ''
+  });
+  const [paymentMethod, setPaymentMethod] = useState('credit');
+
+  const doctors = [
+    {
+      name: 'Dr. Ahmet Yılmaz',
+      specialty: 'Kardiyoloji Uzmanı',
+      experience: '15 yıl tecrübe',
+      rating: 4.8,
+      reviews: 342,
+      price: 200
+    },
+    {
+      name: 'Dr. Elif Demir',
+      specialty: 'Dahiliye Uzmanı',
+      experience: '12 yıl tecrübe',
+      rating: 4.7,
+      reviews: 289,
+      price: 180
+    }
+  ];
+
+  const timeSlots = [
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
+  ];
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Randevu bilgileri:', {
+      doctor: selectedDoctor,
+      date: selectedDate,
+      time: selectedTime,
+      patient: patientInfo,
+      payment: paymentMethod
+    });
+    alert('Randevunuz başarıyla oluşturuldu!');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center mr-2">
+                  <span className="text-white font-bold text-sm">M</span>
+                </div>
+                <span className="text-xl font-bold text-gray-900">MediTravel</span>
+              </div>
+            </div>
+            
+            <nav className="hidden md:flex space-x-8">
+              <a href="#" className="text-gray-700 hover:text-gray-900">Ana Sayfa</a>
+              <a href="#" className="text-gray-700 hover:text-gray-900">Klinikler</a>
+              <a href="#" className="text-gray-700 hover:text-gray-900">Doktorlar</a>
+              <a href="#" className="text-gray-700 hover:text-gray-900">Sağlık Turizmi</a>
+              <a href="#" className="text-blue-600 font-medium">Telehealth</a>
+            </nav>
+
+            <div className="flex items-center space-x-4">
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                Giriş Yap
+              </button>
+              <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">
+                Üye Ol
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Breadcrumb */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <nav className="flex text-sm text-gray-500">
+            <a href="#" className="hover:text-gray-700">Ana Sayfa</a>
+            <span className="mx-2">›</span>
+            <a href="#" className="hover:text-gray-700">Anadolu Sağlık Merkezi</a>
+            <span className="mx-2">›</span>
+            <span className="text-gray-900">Telehealth Randevu</span>
+          </nav>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Telehealth Randevu Al</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Evinizin konforunda uzman doktorlarımızla online görüşme yapın. Güvenli ve 
+            GDPR uyumlu video görüşme teknolojisi.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Form */}
+          <div className="lg:col-span-2">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Hospital Info */}
+              <div className="bg-white rounded-lg shadow-sm border p-6">
+                <div className="flex items-center">
+                  <img 
+                    src="https://placehold.co/60x60" 
+                    alt="Anadolu Sağlık Merkezi" 
+                    className="w-15 h-15 rounded-full mr-4"
+                  />
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Anadolu Sağlık Merkezi</h3>
+                    <div className="flex items-center">
+                      <span className="text-gray-600">📍 İstanbul, Türkiye</span>
+                      <span className="ml-4 text-gray-600">⭐ 4.8 (342)</span>
+                    </div>
+                    <div className="mt-2">
+                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                        ₺200 Konsültasyon Ücreti
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Doctor Selection */}
+              <div className="bg-white rounded-lg shadow-sm border p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Randevu Bilgileri</h3>
+                
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Doktor Seçimi</label>
+                  <div className="space-y-3">
+                    {doctors.map((doctor) => (
+                      <div 
+                        key={doctor.name}
+                        className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                          selectedDoctor === doctor.name
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setSelectedDoctor(doctor.name)}
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="radio"
+                            name="doctor"
+                            value={doctor.name}
+                            checked={selectedDoctor === doctor.name}
+                            onChange={(e) => setSelectedDoctor(e.target.value)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                          />
+                          <img 
+                            src="https://placehold.co/50x50" 
+                            alt={doctor.name} 
+                            className="w-12 h-12 rounded-full mx-4"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-medium text-gray-900">{doctor.name}</h4>
+                              <span className="text-blue-600 font-semibold">₺{doctor.price}</span>
+                            </div>
+                            <p className="text-sm text-gray-600">{doctor.specialty} • {doctor.experience}</p>
+                            <div className="flex items-center mt-1">
+                              <div className="flex text-yellow-400 text-sm">
+                                {'★'.repeat(Math.floor(doctor.rating))}
+                              </div>
+                              <span className="text-sm text-gray-600 ml-1">
+                                ({doctor.rating}) {doctor.reviews} değerlendirme
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Date and Time Selection */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tarih Seçimi</label>
+                    <input
+                      type="date"
+                      value={selectedDate.split('/').reverse().join('-')}
+                      onChange={(e) => setSelectedDate(e.target.value.split('-').reverse().join('/'))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Saat Seçimi</label>
+                    <select
+                      value={selectedTime}
+                      onChange={(e) => setSelectedTime(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {timeSlots.map((time) => (
+                        <option key={time} value={time}>{time}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Patient Information */}
+              <div className="bg-white rounded-lg shadow-sm border p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Hasta Bilgileri</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Ad Soyad</label>
+                    <input
+                      type="text"
+                      placeholder="Adınız ve soyadınız"
+                      value={patientInfo.fullName}
+                      onChange={(e) => setPatientInfo({...patientInfo, fullName: e.target.value})}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Telefon</label>
+                    <input
+                      type="tel"
+                      placeholder="+90 555 123 4567"
+                      value={patientInfo.phone}
+                      onChange={(e) => setPatientInfo({...patientInfo, phone: e.target.value})}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">E-posta</label>
+                    <input
+                      type="email"
+                      placeholder="ornek@email.com"
+                      value={patientInfo.email}
+                      onChange={(e) => setPatientInfo({...patientInfo, email: e.target.value})}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Doğum Tarihi</label>
+                    <input
+                      type="date"
+                      value={patientInfo.birthDate}
+                      onChange={(e) => setPatientInfo({...patientInfo, birthDate: e.target.value})}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Şikayetleriniz ve Notlarınız</label>
+                  <textarea
+                    rows={4}
+                    placeholder="Lütfen şikayetlerinizi ve doktora iletmek istediğiniz notları yazınız..."
+                    value={patientInfo.symptoms}
+                    onChange={(e) => setPatientInfo({...patientInfo, symptoms: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Medical Document Upload */}
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tıbbi Belgeler (isteğe bağlı)</label>
+                  <input type="file" className="w-full" />
+                </div>
+              </div>
+
+              {/* Payment Method */}
+              <div className="bg-white rounded-lg shadow-sm border p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Ödeme Yöntemi</h3>
+                <div className="flex space-x-6">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="credit"
+                      checked={paymentMethod === 'credit'}
+                      onChange={() => setPaymentMethod('credit')}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <span className="ml-2">Kredi Kartı</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="transfer"
+                      checked={paymentMethod === 'transfer'}
+                      onChange={() => setPaymentMethod('transfer')}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <span className="ml-2">Banka Transferi</span>
+                  </label>
+                </div>
+              </div>
+
+              <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors">
+                Randevu Al
+              </button>
+            </form>
+          </div>
+
+          {/* Right Column - Info */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow-sm border p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Telehealth Nedir?</h3>
+              <p className="text-gray-600 text-sm">
+                Telehealth, uzaktan sağlık hizmeti sunan modern bir teknolojidir. Online doktor görüşmeleri ile zamandan ve mekandan bağımsız olarak sağlık hizmeti alabilirsiniz.
+              </p>
+            </div>
+            <div className="bg-white rounded-lg shadow-sm border p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Gizlilik ve Güvenlik</h3>
+              <p className="text-gray-600 text-sm">
+                Tüm görüşmeleriniz GDPR ve KVKK uyumlu, güvenli altyapı ile gerçekleştirilir. Kişisel verileriniz koruma altındadır.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TelehealthAppointmentPage; 
