@@ -7,16 +7,12 @@ const MediTravelHomepage = () => {
   const [showChat, setShowChat] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // İlk açılışta onboarding kontrolü
+  // Her seferinde onboarding göster
   useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
-    if (!hasSeenOnboarding) {
-      setShowOnboarding(true);
-    }
+    setShowOnboarding(true);
   }, []);
 
   const handleOnboardingComplete = () => {
-    localStorage.setItem('hasSeenOnboarding', 'true');
     setShowOnboarding(false);
   };
 
