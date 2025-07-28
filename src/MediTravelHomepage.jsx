@@ -1,9 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Video, MapPin, Star, Shield, Users, Calendar, Send, MessageCircle } from 'lucide-react';
+import OnboardingPage from './OnboardingPage';
 
 const MediTravelHomepage = () => {
   const [chatInput, setChatInput] = useState('');
   const [showChat, setShowChat] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // İlk açılışta onboarding kontrolü
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, []);
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('hasSeenOnboarding', 'true');
+    setShowOnboarding(false);
+  };
+
+  // Onboarding gösteriliyorsa onboarding sayfasını render et
+  if (showOnboarding) {
+    return <OnboardingPage onComplete={handleOnboardingComplete} />;
+  }
 
   const clinics = [
     {

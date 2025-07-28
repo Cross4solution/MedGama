@@ -1,312 +1,418 @@
 import React, { useState } from 'react';
 import {
-  Star,
   Heart,
+  Plus,
   MapPin,
-  Award,
+  Star,
   Users,
-  MessageCircle,
-  Calendar,
-  Video,
-  Phone,
-  Shield,
   Clock,
-  CheckCircle,
-  Camera,
-  User,
+  Shield,
+  Award,
+  Video,
+  MessageCircle,
+  Phone,
+  Mail,
+  Calendar,
+  Stethoscope,
+  Activity,
+  Brain,
+  Scissors,
   ChevronRight,
-  ThumbsUp,
-  Eye
+  CheckCircle
 } from 'lucide-react';
+
 const ClinicDetailPage = () => {
-  const [activeTab, setActiveTab] = useState('genel');
-  const [isFollowing, setIsFollowing] = useState(false);
-  const clinic = {
-    id: 1,
-    name: 'Anadolu Sağlık Merkezi',
-    location: 'İstanbul, Türkiye',
-    rating: 4.3,
-    reviewCount: 342,
-    isJCIAccredited: true,
-    mainImage: 'https://placehold.co/800x400',
-    stats: {
-      experience: '15+',
-      experienceText: 'Yıl Tecrübe',
-      doctors: '50+',
-      doctorsText: 'Uzman Doktor',
-      operations: '10K+',
-      operationsText: 'Başarılı Ameliyat',
-      availability: '24/7',
-      availabilityText: 'Acil Servis'
-    },
-    services: [
-      {
-        name: 'Kalp Cerrahisi',
-        description: 'Bypass, kapak replasmanı, anjioplasti',
-        icon: '❤️',
-        price: '€50K - €150K'
-      },
-      {
-        name: 'Onkoloji',
-        description: 'Kanser tedavisi, kemoterapi, radyoterapi',
-        icon: '🎗️',
-        price: '€30K - €200K'
-      },
-      {
-        name: 'Nöroloji',
-        description: 'Beyin cerrahisi, epilepsi tedavisi',
-        icon: '🧠',
-        price: '€200 - €500'
-      },
-      {
-        name: 'Plastik Cerrahi',
-        description: 'Estetik ve rekonstrüktif cerrahi',
-        icon: '✨',
-        price: '€200 - €500'
-      }
-    ],
-    priceRanges: {
-      consultation: '€200 - €500',
-      heartSurgery: '€50K - €150K',
-      oncologyTreatment: '€30K - €200K'
-    },
-    certifications: [
-      { name: 'JCI Akrediteli', icon: '🏆', color: 'text-blue-600' },
-      { name: 'ISO 9001', icon: '✅', color: 'text-green-600' },
-      { name: 'Sağlık Bakanlığı', icon: '🏥', color: 'text-purple-600' },
-      { name: 'Sağlık Turizmi', icon: '🌍', color: 'text-orange-600' }
-    ],
-    description: 'Anadolu Sağlık Merkezi, 15 yılı aşkın tecrübesi ile Türkiye\'nin önde gelen sağlık kurumlarından biridir. JCI akreditasyonuna sahip hastanemiz, uluslararası standartlarda sağlık hizmeti sunmaktadır.',
-    extendedDescription: '50\'den fazla uzman doktorumuz ve son teknoloji tıbbi ekipmanlarımız ile kalp cerrahisi, onkoloji, nöroloji ve plastik cerrahi alanlarında hizmet vermekteyiz.'
-  };
-  const medicalTourismPackage = {
-    title: 'Sağlık Turizmi Paketi',
-    subtitle: 'Tedavi + Konaklama + Transfer',
-    features: ['5 yıldız otel konaklaması', 'Havalimanı transferi', 'Tercüman hizmeti', 'Medikal koordinatör']
-  };
-  const reviews = [
-    {
-      id: 1,
-      type: 'professional',
-      author: 'Profesyonel Değerlendirme',
-      subtitle: 'MediTravel Uzman Ekip Tarafından',
-      content: '"Klinik, uluslararası standartlarda hizmet sunuyor. Doktor kadrosu ve teknolojik altyapı oldukça güçlü. Hasta memnuniyeti yüksek seviyede."',
-      rating: 4.8,
-      reviewCount: 342,
-      isProfessional: true
-    },
-    {
-      id: 2,
-      type: 'patient',
-      author: 'Ayşe K.',
-      specialty: 'Kalp Cerrahisi',
-      content: 'Doktorlar çok ilgili ve profesyonel. Ameliyat sürecim çok iyi yönetildi. Kesinlikle tavsiye ederim.',
-      rating: 5,
-      timeAgo: '2 hafta önce',
-      helpful: 12,
-      isVerified: true
-    },
-    {
-      id: 3,
-      type: 'patient',
-      author: 'Mehmet S.',
-      specialty: 'Onkoloji',
-      content: 'Tedavi sürecinde her adımda yanımda oldular. Personel çok ilgili ve hastaneye erişim kolay.',
-      rating: 4,
-      timeAgo: '1 ay önce',
-      helpful: 8,
-      isVerified: true
-    }
-  ];
+  const [activeTab, setActiveTab] = useState('genel-bakis');
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState(null);
+
   const tabs = [
-    { id: 'genel', label: 'Genel Bakış' },
+    { id: 'genel-bakis', label: 'Genel Bakış' },
     { id: 'hizmetler', label: 'Hizmetler' },
     { id: 'doktorlar', label: 'Doktorlar' },
     { id: 'degerlendirmeler', label: 'Değerlendirmeler' },
     { id: 'galeri', label: 'Galeri' },
     { id: 'konum', label: 'Konum' }
   ];
+
+  const services = [
+    {
+      name: 'Kalp Cerrahisi',
+      icon: <Activity className="w-5 h-5" />,
+      description: 'Bypass, kapak replasmanı, arytoplasti'
+    },
+    {
+      name: 'Onkoloji',
+      icon: <Stethoscope className="w-5 h-5" />,
+      description: 'Kanser tanısı, kemoterapi, radyoterapi'
+    },
+    {
+      name: 'Nöroloji',
+      icon: <Brain className="w-5 h-5" />,
+      description: 'Beyin cerrahisi, epilepsi tedavisi'
+    },
+    {
+      name: 'Plastik Cerrahi',
+      icon: <Scissors className="w-5 h-5" />,
+      description: 'Estetik ve rekonstrüktif cerrahi'
+    }
+  ];
+
+  const reviews = [
+    {
+      id: 1,
+      name: 'Ayşe K.',
+      rating: 5,
+      service: 'Kalp Cerrahisi',
+      date: '2 hafta önce',
+      comment: 'Doktorlar çok ilgili ve profesyonel. Ameliyat sürecini çok iyi yönettiler. Kesinlikle tavsiye ederim.',
+      helpful: 15,
+      verified: true
+    },
+    {
+      id: 2,
+      name: 'Mehmet S.',
+      rating: 4,
+      service: 'Onkoloji',
+      date: '1 ay önce',
+      comment: 'Tedavi süreci boyunca çok destek oldular. Modern cihazları ve deneyimli kadrosu var.',
+      helpful: 8,
+      verified: false
+    }
+  ];
+
+  const priceRanges = [
+    { service: 'Konsültasyon', range: '₺200 - ₺500' },
+    { service: 'Kalp Cerrahisi', range: '₺50K - ₺150K' },
+    { service: 'Onkoloji Tedavi', range: '₺30K - ₺200K' }
+  ];
+
   const renderStars = (rating) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`w-4 h-4 ${
-          i < Math.floor(rating)
-            ? 'text-yellow-400 fill-current'
-            : 'text-gray-300'
-        }`}
-      />
-    ));
+    return (
+      <div className="flex items-center gap-1">
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            className={`w-4 h-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+          />
+        ))}
+      </div>
+    );
   };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">M</span>
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-8">
+              <div className="flex items-center space-x-2">
+                <Heart className="w-8 h-8 text-green-500" />
+                <span className="text-xl font-bold text-gray-900">MediTravel</span>
               </div>
-              <span className="text-xl font-bold text-gray-800">MediTravel</span>
+              <nav className="hidden md:flex space-x-8">
+                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Ana Sayfa</a>
+                <a href="#" className="text-blue-600 font-medium">Klinikler</a>
+                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Doktorlar</a>
+                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Sağlık Turizmi</a>
+                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Telehealth</a>
+              </nav>
             </div>
-            <nav className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-gray-600 hover:text-gray-800">Ana Sayfa</a>
-              <a href="#" className="text-blue-600 font-medium">Klinikler</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Doktorlar</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Sağlık Turizmi</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Telehealth</a>
-            </nav>
-            <div className="flex items-center space-x-3">
-              <button className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50">Giriş Yap</button>
-              <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Üye Ol</button>
+            <div className="flex items-center space-x-4">
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Giriş Yap
+              </button>
+              <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                Üye Ol
+              </button>
             </div>
           </div>
         </div>
       </header>
+
       {/* Breadcrumb */}
-      <div className="bg-white border-b">
-        <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <a href="#" className="hover:text-blue-600">Ana Sayfa</a>
-            <ChevronRight className="w-4 h-4" />
-            <a href="#" className="hover:text-blue-600">Klinikler</a>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-800 font-medium">{clinic.name}</span>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <span>Ana Sayfa</span>
+          <ChevronRight className="w-4 h-4" />
+          <span>Klinikler</span>
+          <ChevronRight className="w-4 h-4" />
+          <span className="text-gray-900 font-medium">Anadolu Sağlık Merkezi</span>
         </div>
       </div>
-      {/* Main Image & Stats */}
-      <div className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-8">
-        <div className="md:col-span-2">
-          <img src={clinic.mainImage} alt={clinic.name} className="w-full h-72 object-cover rounded-xl mb-6" />
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">{clinic.name}</h1>
-          <div className="flex items-center space-x-2 mb-4">
-            <MapPin className="w-4 h-4 text-blue-600" />
-            <span className="text-gray-600">{clinic.location}</span>
-            <span className="mx-2">•</span>
-            {renderStars(clinic.rating)}
-            <span className="text-sm text-gray-500 ml-2">({clinic.reviewCount} değerlendirme)</span>
-            {clinic.isJCIAccredited && (
-              <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs flex items-center"><Award className="w-4 h-4 mr-1" /> JCI Akrediteli</span>
-            )}
-          </div>
-          <p className="text-gray-700 mb-4">{clinic.description}</p>
-          <p className="text-gray-600 mb-6">{clinic.extendedDescription}</p>
-          {/* Tabs */}
-          <div className="flex space-x-4 border-b mb-6">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                className={`py-2 px-4 font-medium ${activeTab === tab.id ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          {/* Tab Content */}
-          {activeTab === 'genel' && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Klinik Hakkında</h2>
-              <p className="text-gray-700 mb-4">{clinic.description}</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div className="bg-blue-50 rounded-lg p-4 text-center">
-                  <span className="block text-2xl font-bold text-blue-600">{clinic.stats.experience}</span>
-                  <span className="text-gray-600 text-sm">{clinic.stats.experienceText}</span>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Main Content */}
+          <div className="flex-1">
+            {/* Hero Section */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+              <div className="relative h-64 md:h-80">
+                <div className="w-full h-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="text-center">
+                    <Stethoscope className="w-20 h-20 text-blue-500 mx-auto mb-4" />
+                    <p className="text-lg text-gray-600">Modern Tıp Merkezi</p>
+                  </div>
                 </div>
-                <div className="bg-green-50 rounded-lg p-4 text-center">
-                  <span className="block text-2xl font-bold text-green-600">{clinic.stats.doctors}</span>
-                  <span className="text-gray-600 text-sm">{clinic.stats.doctorsText}</span>
+                <div className="absolute top-4 right-4 flex items-center bg-white rounded-full px-3 py-1 shadow-md">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                  <span className="font-semibold">4.8</span>
+                  <span className="text-gray-600 text-sm ml-1">(342)</span>
                 </div>
-                <div className="bg-purple-50 rounded-lg p-4 text-center">
-                  <span className="block text-2xl font-bold text-purple-600">{clinic.stats.operations}</span>
-                  <span className="text-gray-600 text-sm">{clinic.stats.operationsText}</span>
+              </div>
+ 
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Anadolu Sağlık Merkezi</h1>
+                    <div className="flex items-center text-gray-600 mb-2">
+                      <MapPin className="w-5 h-5 mr-2" />
+                      <span>İstanbul, Türkiye</span>
+                    </div>
+                    <div className="flex items-center text-green-600">
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      <span className="font-semibold">JCI Akreditli</span>
+                    </div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setIsFavorite(!isFavorite)}
+                      className={`p-3 rounded-full transition-colors ${
+                        isFavorite ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600'
+                      }`}
+                    >
+                      <Heart className={`w-6 h-6 ${isFavorite ? 'fill-current' : ''}`} />
+                    </button>
+                    <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+                      <Plus className="w-5 h-5" />
+                      <span>Takip Et</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="bg-orange-50 rounded-lg p-4 text-center">
-                  <span className="block text-2xl font-bold text-orange-600">{clinic.stats.availability}</span>
-                  <span className="text-gray-600 text-sm">{clinic.stats.availabilityText}</span>
+                {/* Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600 mb-1">15+</div>
+                    <div className="text-sm text-gray-600">Yıl Tecrübe</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600 mb-1">50+</div>
+                    <div className="text-sm text-gray-600">Uzman Doktor</div>
+                  </div>
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600 mb-1">10K+</div>
+                    <div className="text-sm text-gray-600">Başarılı Ameliyat</div>
+                  </div>
+                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                    <div className="text-2xl font-bold text-orange-600 mb-1">24/7</div>
+                    <div className="text-sm text-gray-600">Acil Servis</div>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
-          {activeTab === 'hizmetler' && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Hizmetler</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {clinic.services.map((service, idx) => (
-                  <div key={idx} className="bg-white border rounded-lg p-4 flex items-center space-x-4">
-                    <span className="text-2xl">{service.icon}</span>
+
+            {/* Tabs */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="border-b">
+                <nav className="flex overflow-x-auto">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                        activeTab === tab.id
+                          ? 'border-blue-600 text-blue-600'
+                          : 'border-transparent text-gray-600 hover:text-blue-600'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+              <div className="p-6">
+                {activeTab === 'genel-bakis' && (
+                  <div className="space-y-6">
                     <div>
-                      <h3 className="font-semibold text-gray-800">{service.name}</h3>
-                      <p className="text-gray-600 text-sm">{service.description}</p>
-                      <span className="text-blue-600 text-sm font-medium">{service.price}</span>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-4">Hakkımızda</h3>
+                      <p className="text-gray-600 leading-relaxed mb-4">
+                        Anadolu Sağlık Merkezi, 15 yıllık tecrübesi ile Türkiye'nin önde gelen sağlık kurumlarından
+                        biridir. JCI akreditasyonuna sahip hastanemiz, uluslararası standartlarda sağlık hizmeti
+                        sunmaktadır.
+                      </p>
+                      <p className="text-gray-600 leading-relaxed">
+                        50'den fazla uzman doktorumuz ve son teknoloji tıbbi ekipmanlarımız ile kalp cerrahisi, onkoloji,
+                        nöroloji ve plastik cerrahi alanlarında hizmet vermekteyiz.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
+                        <CheckCircle className="w-6 h-6 text-blue-600" />
+                        <span className="text-sm font-medium text-gray-700">JCI Akreditli</span>
+                      </div>
+                      <div className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg">
+                        <Shield className="w-6 h-6 text-green-600" />
+                        <span className="text-sm font-medium text-gray-700">ISO 9001</span>
+                      </div>
+                      <div className="flex items-center space-x-3 p-4 bg-purple-50 rounded-lg">
+                        <Award className="w-6 h-6 text-purple-600" />
+                        <span className="text-sm font-medium text-gray-700">Sağlık Bakanlığı</span>
+                      </div>
+                      <div className="flex items-center space-x-3 p-4 bg-orange-50 rounded-lg">
+                        <Users className="w-6 h-6 text-orange-600" />
+                        <span className="text-sm font-medium text-gray-700">Sağlık Turizmi</span>
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-          {activeTab === 'degerlendirmeler' && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Değerlendirmeler</h2>
-              <div className="space-y-4">
-                {reviews.map((review) => (
-                  <div key={review.id} className="bg-white border rounded-lg p-4">
-                    <div className="flex items-center space-x-2 mb-2">
-                      {review.isProfessional ? (
-                        <Award className="w-5 h-5 text-blue-600" />
-                      ) : (
-                        <User className="w-5 h-5 text-gray-600" />
-                      )}
-                      <span className="font-semibold text-gray-800">{review.author}</span>
-                      {review.isVerified && (
-                        <CheckCircle className="w-4 h-4 text-green-600 ml-1" />
-                      )}
-                      <span className="text-xs text-gray-500">{review.specialty}</span>
-                      <span className="text-xs text-gray-400">{review.timeAgo}</span>
-                    </div>
-                    <div className="flex items-center mb-2">
-                      {renderStars(review.rating)}
-                      <span className="text-xs text-gray-500 ml-2">{review.rating}</span>
-                    </div>
-                    <p className="text-gray-700 mb-2">{review.content}</p>
-                    {review.isProfessional && (
-                      <span className="text-xs text-blue-600">{review.subtitle}</span>
-                    )}
-                    <div className="flex items-center space-x-4 mt-2">
-                      <ThumbsUp className="w-4 h-4 text-blue-600" />
-                      <span className="text-xs text-gray-500">{review.helpful || 0} Faydalı</span>
+                )}
+
+                {activeTab === 'hizmetler' && (
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold text-gray-900">Hizmetlerimiz</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {services.map((service, index) => (
+                        <div key={index} className="p-6 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
+                              {service.icon}
+                            </div>
+                            <h4 className="font-semibold text-gray-900">{service.name}</h4>
+                          </div>
+                          <p className="text-gray-600 text-sm">{service.description}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
+                )}
+
+                {activeTab === 'degerlendirmeler' && (
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-xl font-semibold text-gray-900">Hasta Değerlendirmeleri</h3>
+                      <div className="flex items-center space-x-2">
+                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                        <span className="font-semibold">4.8</span>
+                        <span className="text-gray-600">(342 değerlendirme)</span>
+                      </div>
+                    </div>
+                    <div className="bg-purple-50 rounded-lg p-4 mb-6">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <Award className="w-5 h-5 text-purple-600" />
+                        <span className="font-semibold text-purple-900">Profesyonel Değerlendirme</span>
+                      </div>
+                      <p className="text-purple-700 text-sm">
+                        MediTravel Uzman Ekibi Tarafından: "Klinik, uluslararası standartlarda hizmet sunuyor. Doktor kadrosu ve teknoloji altyapısı oldukça güçlü. Hasta memnuniyeti yüksek seviyede."
+                      </p>
+                    </div>
+                    <div className="space-y-4">
+                      {reviews.map((review) => (
+                        <div key={review.id} className="border border-gray-200 rounded-lg p-6">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span className="font-semibold text-blue-600">{review.name[0]}</span>
+                              </div>
+                              <div>
+                                <div className="flex items-center space-x-2">
+                                  <span className="font-semibold">{review.name}</span>
+                                  {review.verified && (
+                                    <CheckCircle className="w-4 h-4 text-green-500" />
+                                  )}
+                                </div>
+                                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                  <span>{review.service}</span>
+                                  <span>•</span>
+                                  <span>{review.date}</span>
+                                </div>
+                              </div>
+                            </div>
+                            {renderStars(review.rating)}
+                          </div>
+                          <p className="text-gray-700 mb-3">{review.comment}</p>
+                          <div className="flex items-center justify-between text-sm">
+                            <button className="text-blue-600 hover:text-blue-700">
+                              👍 Faydalı ({review.helpful})
+                            </button>
+                            <span className="text-gray-500">Doğrulanmış Hasta</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
-        </div>
-        {/* Sağ Panel: Paket ve Sertifikalar */}
-        <div className="space-y-6">
-          {/* Sağlık Turizmi Paketi */}
-          <div className="bg-blue-50 rounded-xl p-6">
-            <h3 className="font-semibold text-gray-800 mb-2">{medicalTourismPackage.title}</h3>
-            <p className="text-sm text-gray-600 mb-2">{medicalTourismPackage.subtitle}</p>
-            <ul className="list-disc list-inside text-gray-700 text-sm mb-4">
-              {medicalTourismPackage.features.map((f, i) => (
-                <li key={i}>{f}</li>
-              ))}
-            </ul>
-            <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Paket Detayı</button>
           </div>
-          {/* Sertifikalar */}
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="font-semibold text-gray-800 mb-4">Sertifikalar</h3>
-            <div className="flex flex-wrap gap-3">
-              {clinic.certifications.map((cert, i) => (
-                <span key={i} className={`flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium border ${cert.color} border-gray-200 bg-gray-50`}>
-                  <span>{cert.icon}</span>
-                  <span>{cert.name}</span>
-                </span>
-              ))}
+
+          {/* Sidebar */}
+          <div className="lg:w-80 space-y-6">
+            {/* Contact Actions */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">İletişim</h3>
+              <div className="space-y-3">
+                <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+                  <Video className="w-5 h-5" />
+                  <span>Telehealth Randevu</span>
+                </button>
+                <button className="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
+                  <MessageCircle className="w-5 h-5" />
+                  <span>Randevu Al</span>
+                </button>
+                <button className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2">
+                  <MessageCircle className="w-5 h-5" />
+                  <span>Mesaj Gönder</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Health Tourism Package */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Sağlık Turizmi Paketi</h3>
+              <div className="space-y-3 mb-4">
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <span>Tedavi + Konaklama + Transfer</span>
+                </div>
+              </div>
+              <button className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2">
+                <Calendar className="w-5 h-5" />
+                <span>Paket Oluştur</span>
+              </button>
+            </div>
+
+            {/* Price Range */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Fiyat Aralığı</h3>
+              <div className="space-y-3">
+                {priceRanges.map((item, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">{item.service}</span>
+                    <span className="font-semibold text-gray-900">{item.range}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mt-3">
+                *Fiyatlar değişiklik gösterebilir. Kesin fiyat için randevu alın.
+              </p>
+            </div>
+
+            {/* Quick Contact */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
+              <h3 className="font-semibold mb-4">Hızlı İletişim</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <Phone className="w-5 h-5" />
+                  <span>+90 212 555 0123</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-5 h-5" />
+                  <span>info@anadolusaglik.com</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Clock className="w-5 h-5" />
+                  <span>24/7 Açık</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -314,4 +420,5 @@ const ClinicDetailPage = () => {
     </div>
   );
 };
+
 export default ClinicDetailPage; 
