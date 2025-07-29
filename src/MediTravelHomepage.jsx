@@ -1,25 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Video, MapPin, Star, Shield, Users, Calendar, Send, MessageCircle } from 'lucide-react';
-import OnboardingPage from './OnboardingPage';
 
 const MediTravelHomepage = () => {
   const [chatInput, setChatInput] = useState('');
   const [showChat, setShowChat] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
-
-  // Her seferinde onboarding göster
-  useEffect(() => {
-    setShowOnboarding(true);
-  }, []);
-
-  const handleOnboardingComplete = () => {
-    setShowOnboarding(false);
-  };
-
-  // Onboarding gösteriliyorsa onboarding sayfasını render et
-  if (showOnboarding) {
-    return <OnboardingPage onComplete={handleOnboardingComplete} />;
-  }
 
   const clinics = [
     {
