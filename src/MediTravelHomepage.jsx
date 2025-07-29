@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Search, Video, MapPin, Star, Shield, Users, Calendar, Send, MessageCircle } from 'lucide-react';
+import ChatDemo from './ChatDemo';
 
 const MediTravelHomepage = () => {
   const [chatInput, setChatInput] = useState('');
-  const [showChat, setShowChat] = useState(false);
 
   const clinics = [
     {
@@ -162,7 +162,7 @@ const MediTravelHomepage = () => {
                 />
                 
                 <button
-                  onClick={() => setShowChat(true)}
+                  onClick={() => console.log('AI Asistanı başlatıldı')}
                   className="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2"
                 >
                   <Send className="w-4 h-4" />
@@ -224,44 +224,7 @@ const MediTravelHomepage = () => {
           <div className="bg-white rounded-2xl p-8 shadow-xl">
             <div className="grid md:grid-cols-2 gap-8">
               {/* Chat Demo */}
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0"></div>
-                  <div className="bg-gray-100 p-3 rounded-lg flex-1">
-                    <p className="text-sm text-gray-700">Nefes alırken ciğerlerim acıyor, neden olabilir?</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                    <MessageCircle className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="bg-blue-50 p-3 rounded-lg flex-1">
-                    <p className="text-sm text-gray-700 mb-2">Bu durumu daha iyi anlamak için birkaç sorum var:</p>
-                    <ol className="text-sm text-gray-700 list-decimal list-inside space-y-1">
-                      <li>Her zaman mı, yoksa derin nefes aldığım da mı ağrıyor?</li>
-                      <li>Batma şeklinde mi yanma şeklinde mi?</li>
-                      <li>Ne kadar süredir devam ediyor?</li>
-                    </ol>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0"></div>
-                  <div className="bg-gray-100 p-3 rounded-lg flex-1">
-                    <p className="text-sm text-gray-700">Derin nefes aldığımda batma şeklinde, 3 gündür devam ediyor.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                    <MessageCircle className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="bg-blue-50 p-3 rounded-lg flex-1">
-                    <p className="text-sm text-gray-700">Bu semptomlar akciğer zarı iltihapı veya kas gerginliği ile ilişkili olabilir. Hangi şehirde tedavi olmak istersiniz? Size uygun göğüs hastalıkları uzmanlarını listeliyorum.</p>
-                  </div>
-                </div>
-              </div>
+              <ChatDemo />
               
               {/* AI Features */}
               <div>
