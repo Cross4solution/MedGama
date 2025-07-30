@@ -1,9 +1,128 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useRef, useMemo } from 'react';
 import { Search, Video, MapPin, Star, Shield, Users, Calendar, Send, MessageCircle } from 'lucide-react';
 import ChatDemo from './ChatDemo';
 
 const MediTravelHomepage = () => {
   const [chatInput, setChatInput] = useState('');
+  const [visibleDemoMessages, setVisibleDemoMessages] = useState([]);
+  const [currentTypingMessage, setCurrentTypingMessage] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [showTypingIndicator, setShowTypingIndicator] = useState(false);
+  const scrollContainerRef = useRef(null);
+  const intervalRef = useRef(null);
+  const timeoutRef = useRef(null);
+
+  const demoChatMessages = useMemo(() => [
+    {
+      id: 1,
+      sender: 'user',
+      text: 'Göğsümde ağrı var',
+      avatar: null
+    },
+    {
+      id: 2,
+      sender: 'ai',
+      text: 'Ne kadar süredir devam ediyor?',
+      avatar: <MessageCircle className="w-3 h-3 text-white" />
+    },
+    {
+      id: 3,
+      sender: 'user',
+      text: '3 gündür sürekli',
+      avatar: null
+    },
+    {
+      id: 4,
+      sender: 'ai',
+      text: 'Size uygun doktorları buluyorum...',
+      avatar: <MessageCircle className="w-3 h-3 text-white" />
+    }
+  ], []);
+
+  const scrollToBottom = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [visibleDemoMessages, currentTypingMessage]);
+
+  useEffect(() => {
+    let messageIndex = 0;
+    let charIndex = 0;
+    let currentText = '';
+
+    const startDemoChat = () => {
+      const processMessage = () => {
+        if (messageIndex >= demoChatMessages.length) {
+          // Demo bitti, başa dön
+          timeoutRef.current = setTimeout(() => {
+            setVisibleDemoMessages([]);
+            setCurrentTypingMessage(null);
+            setIsTyping(false);
+            setShowTypingIndicator(false);
+            messageIndex = 0;
+            charIndex = 0;
+            currentText = '';
+            startDemoChat();
+          }, 4000);
+          return;
+        }
+
+        const message = demoChatMessages[messageIndex];
+
+        if (message.sender === 'user') {
+          // User mesajı - direkt göster
+          setVisibleDemoMessages(prev => [...prev, { ...message, fullText: message.text }]);
+          messageIndex++;
+          timeoutRef.current = setTimeout(processMessage, 1500);
+        } else {
+          // AI mesajı - typing efekti
+          setShowTypingIndicator(true);
+          setCurrentTypingMessage({ ...message, currentText: '' });
+
+          timeoutRef.current = setTimeout(() => {
+            setShowTypingIndicator(false);
+            setIsTyping(true);
+            charIndex = 0;
+            currentText = '';
+
+            intervalRef.current = setInterval(() => {
+              if (charIndex < message.text.length) {
+                currentText += message.text[charIndex];
+                setCurrentTypingMessage({ ...message, currentText });
+                charIndex++;
+              } else {
+                clearInterval(intervalRef.current);
+                setIsTyping(false);
+                setVisibleDemoMessages(prev => [...prev, { ...message, fullText: message.text }]);
+                setCurrentTypingMessage(null);
+                messageIndex++;
+                timeoutRef.current = setTimeout(processMessage, 1000);
+              }
+            }, 50);
+          }, 800);
+        }
+      };
+
+      // İlk mesajı başlat
+      timeoutRef.current = setTimeout(processMessage, 1000);
+    };
+
+    startDemoChat();
+
+    // Cleanup function
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [demoChatMessages]);
 
   const clinics = [
     {
@@ -154,16 +273,61 @@ const MediTravelHomepage = () => {
                   <h3 className="font-semibold text-gray-800">AI Doktor Asistanı ile Konuşun</h3>
                 </div>
                 
-                <textarea
-                  placeholder="Şikayetinizi veya ihtiyacınızı yazın... Örn: İstanbul'da göğüs estetiği ameliyatı olmak istiyorum"
-                  className="w-full h-20 p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                />
+                {/* Kısa diyalog demo */}
+                <div ref={scrollContainerRef} className="h-24 overflow-y-auto space-y-2 mb-4 pr-2 scrollbar-hide">
+                  {/* Tamamlanmış mesajlar */}
+                  {visibleDemoMessages.map((message) => (
+                    <div key={message.id} className="flex items-start space-x-2">
+                      {message.sender === 'user' ? (
+                        <>
+                          <div className="w-6 h-6 rounded-full bg-gray-200 flex-shrink-0"></div>
+                          <div className="bg-gray-100 p-2 rounded-lg flex-1">
+                            <p className="text-xs text-gray-700">{message.fullText}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                            {message.avatar}
+                          </div>
+                          <div className="bg-blue-50 p-2 rounded-lg flex-1">
+                            <p className="text-xs text-gray-700">{message.fullText}</p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Şu anki typing mesajı */}
+                  {currentTypingMessage && (
+                    <div className="flex items-start space-x-2">
+                      <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                        {currentTypingMessage.avatar}
+                      </div>
+                      <div className="bg-blue-50 p-2 rounded-lg flex-1">
+                        {showTypingIndicator ? (
+                          <div className="flex items-center space-x-1">
+                            <div className="flex space-x-1">
+                              <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
+                              <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                              <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                            </div>
+                            <span className="text-xs text-gray-500 ml-1">Yazıyor...</span>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-gray-700">
+                            {currentTypingMessage.currentText}
+                            {isTyping && <span className="animate-pulse">|</span>}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 
                 <button
                   onClick={() => console.log('AI Asistanı başlatıldı')}
-                  className="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2"
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2"
                 >
                   <Send className="w-4 h-4" />
                   <span>AI Asistanı ile Başla</span>
