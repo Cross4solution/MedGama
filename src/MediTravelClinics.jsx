@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Heart, MessageCircle, Star, MapPin, Shield, Stethoscope, Award, Clock, 
 Users } from 'lucide-react';
+import Header from './Header';
 
 const MediTravelClinics = () => {
   const [selectedFilters, setSelectedFilters] = useState({
@@ -86,34 +87,7 @@ const MediTravelClinics = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-2">
-                <Heart className="w-8 h-8 text-green-500" />
-                <span className="text-xl font-bold text-gray-900">MediTravel</span>
-              </div>
-              <nav className="hidden md:flex space-x-8">
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Ana Sayfa</a>
-                <a href="#" className="text-blue-600 font-medium border-b-2 border-blue-600 pb-4">Klinikler</a>
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Doktorlar</a>
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Sağlık Turizmi</a>
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Telehealth</a>
-              </nav>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                Giriş Yap
-              </button>
-              <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                Üye Ol
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Title */}
@@ -153,7 +127,7 @@ const MediTravelClinics = () => {
               </select>
             </div>
             <div className="flex items-end">
-              <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+              <button className="w-full bg-blue-600 text-white py-1.5 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
                 <Search className="w-5 h-5" />
                 <span>Ara</span>
               </button>
@@ -295,7 +269,7 @@ const MediTravelClinics = () => {
                             <span className="text-sm">Mesaj</span>
                           </button>
                         </div>
-                        <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <button className="bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors">
                           Profili Gör
                         </button>
                       </div>
@@ -322,7 +296,7 @@ const MediTravelClinics = () => {
         <div className="mt-16 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-center text-white">
           <h2 className="text-2xl font-bold mb-4">Size En Uygun Kliniği Bulamadınız mı?</h2>
           <p className="text-blue-100 mb-6">Uzmanlarımız size en uygun sağlık hizmetini bulmak için yardımcı olmaya hazır.</p>
-          <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                      <button className="bg-white text-blue-600 px-6 py-1.5 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
             Uzman Desteği Al
           </button>
         </div>

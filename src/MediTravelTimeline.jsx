@@ -16,6 +16,7 @@ import {
   Bell,
   User
 } from 'lucide-react';
+import Header from './Header';
 const MediTravelTimeline = () => {
   const [selectedCountry, setSelectedCountry] = useState('Türkiye');
   const [selectedCategory, setSelectedCategory] = useState('Tüm Kategoriler');
@@ -101,37 +102,7 @@ const MediTravelTimeline = () => {
   };
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">M</span>
-              </div>
-              <span className="text-xl font-bold text-gray-800">MediTravel</span>
-            </div>
- 
-            <nav className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-blue-600 font-medium border-b-2 border-blue-600 pb-2">Timeline</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Klinikler</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Doktorlar</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Sağlık Turizmi</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Telehealth</a>
-            </nav>
- 
-            <div className="flex items-center space-x-3">
-              <button className="relative p-2 text-gray-600 hover:text-gray-800">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
-              </button>
-              <div className="w-8 h-8 rounded-full bg-gray-300 overflow-hidden">
-                <img src="https://placehold.co/32x32" alt="Profile" className="w-full h-full object-cover" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Left Sidebar - User Profile & Filters */}

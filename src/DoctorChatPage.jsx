@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Header from './Header';
 
 const DoctorChatPage = () => {
   const [message, setMessage] = useState('');
@@ -38,38 +39,7 @@ const DoctorChatPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center mr-2">
-                  <span className="text-white font-bold text-sm">M</span>
-                </div>
-                <span className="text-xl font-bold text-gray-900">MediTravel</span>
-              </div>
-            </div>
-            
-            <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-gray-700 hover:text-gray-900">Ana Sayfa</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Klinikler</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Doktorlar</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Sağlık Turizmi</a>
-              <a href="#" className="text-blue-600 font-medium">Telehealth</a>
-            </nav>
-
-            <div className="flex items-center space-x-4">
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                Giriş Yap
-              </button>
-              <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">
-                Üye Ol
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Breadcrumb */}
       <div className="bg-white border-b">

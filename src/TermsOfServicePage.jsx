@@ -1,33 +1,9 @@
 import React from 'react';
+import Header from './Header';
 const TermsOfServicePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center mr-2">
-                  <span className="text-white font-bold text-sm">M</span>
-                </div>
-                <span className="text-xl font-bold text-gray-900">MediTravel</span>
-              </div>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-gray-700 hover:text-gray-900">Ana Sayfa</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Klinikler</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Doktorlar</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Sağlık Turizmi</a>
-              <a href="#" className="text-gray-700 hover:text-gray-900">Telehealth</a>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Giriş Yap</button>
-              <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">Üye Ol</button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header Section */}
@@ -322,8 +298,8 @@ const TermsOfServicePage = () => {
             MediTravel platformunu kullanarak yukarıdaki tüm şart ve koşulları kabul etmiş sayılırsınız.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-teal-600 text-white px-8 py-3 rounded-lg hover:bg-teal-700 font-medium">Kabul Ediyorum</button>
-            <button className="bg-gray-600 text-white px-8 py-3 rounded-lg hover:bg-gray-700 font-medium">Geri Dön</button>
+            <button className="bg-teal-600 text-white px-6 py-1.5 rounded-lg hover:bg-teal-700 font-medium">Kabul Ediyorum</button>
+            <button className="bg-gray-600 text-white px-6 py-1.5 rounded-lg hover:bg-gray-700 font-medium">Geri Dön</button>
           </div>
         </div>
       </div>

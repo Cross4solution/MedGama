@@ -1,6 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense, useRef, useMemo } from 'react';
 import { Search, Video, MapPin, Star, Shield, Users, Calendar, Send, MessageCircle } from 'lucide-react';
 import ChatDemo from './ChatDemo';
+import Header from './Header';
 
 const MediTravelHomepage = () => {
   const [chatInput, setChatInput] = useState('');
@@ -11,6 +12,7 @@ const MediTravelHomepage = () => {
   const scrollContainerRef = useRef(null);
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
+  const clinicsContainerRef = useRef(null);
 
   const demoChatMessages = useMemo(() => [
     {
@@ -45,6 +47,24 @@ const MediTravelHomepage = () => {
     }
   };
 
+  // Clinics horizontal scroll functions
+  const scrollClinics = (direction) => {
+    if (clinicsContainerRef.current) {
+      const scrollAmount = 320; // card width + gap
+      const currentScroll = clinicsContainerRef.current.scrollLeft;
+      const newScroll = direction === 'left' 
+        ? currentScroll - scrollAmount 
+        : currentScroll + scrollAmount;
+      
+      clinicsContainerRef.current.scrollTo({
+        left: newScroll,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+
+
   useEffect(() => {
     scrollToBottom();
   }, [visibleDemoMessages, currentTypingMessage]);
@@ -75,7 +95,11 @@ const MediTravelHomepage = () => {
 
         if (message.sender === 'user') {
           // User mesajı - direkt göster
-          setVisibleDemoMessages(prev => [...prev, { ...message, fullText: message.text }]);
+          setVisibleDemoMessages(prev => [...prev, { 
+            ...message, 
+            fullText: message.text,
+            uniqueId: `${message.id}-${Date.now()}-${Math.random()}`
+          }]);
           messageIndex++;
           timeoutRef.current = setTimeout(processMessage, 1500);
         } else {
@@ -97,7 +121,11 @@ const MediTravelHomepage = () => {
               } else {
                 clearInterval(intervalRef.current);
                 setIsTyping(false);
-                setVisibleDemoMessages(prev => [...prev, { ...message, fullText: message.text }]);
+                setVisibleDemoMessages(prev => [...prev, { 
+                  ...message, 
+                  fullText: message.text,
+                  uniqueId: `${message.id}-${Date.now()}-${Math.random()}`
+                }]);
                 setCurrentTypingMessage(null);
                 messageIndex++;
                 timeoutRef.current = setTimeout(processMessage, 1000);
@@ -221,36 +249,7 @@ const MediTravelHomepage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">M</span>
-              </div>
-              <span className="text-xl font-bold text-gray-800">MediTravel</span>
-            </div>
-            
-            <nav className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-gray-600 hover:text-gray-800">Ana Sayfa</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Klinikler</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Doktorlar</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Sağlık Turizmi</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Telehealth</a>
-            </nav>
-            
-            <div className="flex items-center space-x-3">
-              <button className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50">
-                Giriş Yap
-              </button>
-              <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                Üye Ol
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="bg-white py-16">
@@ -277,7 +276,7 @@ const MediTravelHomepage = () => {
                 <div ref={scrollContainerRef} className="h-24 overflow-y-auto space-y-2 mb-4 pr-2 scrollbar-hide">
                   {/* Tamamlanmış mesajlar */}
                   {visibleDemoMessages.map((message) => (
-                    <div key={message.id} className="flex items-start space-x-2">
+                    <div key={message.uniqueId || message.id} className="flex items-start space-x-2">
                       {message.sender === 'user' ? (
                         <>
                           <div className="w-6 h-6 rounded-full bg-gray-200 flex-shrink-0"></div>
@@ -327,7 +326,7 @@ const MediTravelHomepage = () => {
                 
                 <button
                   onClick={() => console.log('AI Asistanı başlatıldı')}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2"
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2"
                 >
                   <Send className="w-4 h-4" />
                   <span>AI Asistanı ile Başla</span>
@@ -420,14 +419,62 @@ const MediTravelHomepage = () => {
             <p className="text-lg text-gray-600">En çok tercih edilen ve en yüksek puanlı klinikler</p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Horizontal Scrollable Container */}
+          <div className="relative group">
+            {/* Left Gradient Overlay */}
+            <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            {/* Right Gradient Overlay */}
+            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            {/* Scroll Buttons */}
+            <button 
+              onClick={() => scrollClinics('left')}
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-gray-50 z-20"
+            >
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            <button 
+              onClick={() => scrollClinics('right')}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-gray-50 z-20"
+            >
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            
+            {/* Scrollable Content */}
+            <div 
+              ref={clinicsContainerRef}
+              className="flex overflow-x-auto space-x-6 pb-4 scrollbar-hide scroll-smooth"
+              style={{
+                scrollBehavior: 'smooth',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
             {clinics.map((clinic) => (
-              <div key={clinic.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                <div 
+                  key={clinic.id} 
+                  className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 flex-shrink-0 w-80 transform hover:scale-105 hover:-translate-y-1 cursor-pointer"
+                >
+                  <div className="relative overflow-hidden">
                 <img 
                   src={clinic.image} 
                   alt={clinic.name}
-                  className="w-full h-48 object-cover"
-                />
+                      className="w-full h-48 object-cover transition-transform duration-300 hover:scale-110"
+                    />
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                      <div className="opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <button className="bg-white text-blue-600 px-3 py-1.5 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                          Detayları Gör
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold text-gray-800">{clinic.name}</h3>
@@ -439,13 +486,22 @@ const MediTravelHomepage = () => {
                   <p className="text-sm text-gray-600 mb-3">{clinic.location}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-500">{clinic.reviews}</span>
-                    <button className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
+                      <button className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors duration-200 transform hover:scale-105">
                       Profil Gör
                     </button>
                   </div>
                 </div>
               </div>
             ))}
+            </div>
+            
+            {/* Scroll Indicators */}
+            <div className="flex justify-center mt-6 space-x-2">
+              <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+              <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+              <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+              <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+            </div>
           </div>
         </div>
       </section>

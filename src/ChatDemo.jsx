@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { MessageCircle } from 'lucide-react';
 
 const ChatDemo = () => {
@@ -7,7 +7,7 @@ const ChatDemo = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [showTypingIndicator, setShowTypingIndicator] = useState(false);
 
-  const chatMessages = [
+  const chatMessages = useMemo(() => [
     {
       id: 1,
       sender: 'user',
@@ -32,14 +32,17 @@ const ChatDemo = () => {
       text: 'Bu semptomlar akciğer zarı iltihapı veya kas gerginliği ile ilişkili olabilir. Hangi şehirde tedavi olmak istersiniz? Size uygun göğüs hastalıkları uzmanlarını listeliyorum.',
       avatar: <MessageCircle className="w-4 h-4 text-white" />
     }
-  ];
+  ], []);
 
   useEffect(() => {
     let messageIndex = 0;
     let charIndex = 0;
     let currentText = '';
+    let isRunning = false;
 
     const startChat = () => {
+      if (isRunning) return;
+      isRunning = true;
       const processMessage = () => {
         if (messageIndex >= chatMessages.length) {
           // Chat bitti, başa dön
@@ -51,6 +54,7 @@ const ChatDemo = () => {
             messageIndex = 0;
             charIndex = 0;
             currentText = '';
+            isRunning = false;
             startChat();
           }, 3000);
           return;
@@ -60,7 +64,11 @@ const ChatDemo = () => {
 
         if (message.sender === 'user') {
           // User mesajı - direkt göster
-          setVisibleMessages(prev => [...prev, { ...message, fullText: message.text }]);
+          setVisibleMessages(prev => [...prev, { 
+            ...message, 
+            fullText: message.text,
+            uniqueId: `${message.id}-${Date.now()}-${Math.random()}`
+          }]);
           messageIndex++;
           setTimeout(processMessage, 2000);
         } else {
@@ -82,7 +90,11 @@ const ChatDemo = () => {
               } else {
                 clearInterval(typeInterval);
                 setIsTyping(false);
-                setVisibleMessages(prev => [...prev, { ...message, fullText: message.text }]);
+                setVisibleMessages(prev => [...prev, { 
+                  ...message, 
+                  fullText: message.text,
+                  uniqueId: `${message.id}-${Date.now()}-${Math.random()}`
+                }]);
                 setCurrentTypingMessage(null);
                 messageIndex++;
                 setTimeout(processMessage, 1000);
@@ -103,7 +115,7 @@ const ChatDemo = () => {
     <div className="space-y-4">
       {/* Tamamlanmış mesajlar */}
       {visibleMessages.map((message) => (
-        <div key={message.id} className="flex items-start space-x-3">
+        <div key={message.uniqueId || message.id} className="flex items-start space-x-3">
           {message.sender === 'user' ? (
             <>
               <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0"></div>

@@ -20,6 +20,7 @@ import {
   ChevronRight,
   CheckCircle
 } from 'lucide-react';
+import Header from './Header';
 
 const ClinicDetailPage = () => {
   const [activeTab, setActiveTab] = useState('genel-bakis');
@@ -102,34 +103,7 @@ const ClinicDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-2">
-                <Heart className="w-8 h-8 text-green-500" />
-                <span className="text-xl font-bold text-gray-900">MediTravel</span>
-              </div>
-              <nav className="hidden md:flex space-x-8">
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Ana Sayfa</a>
-                <a href="#" className="text-blue-600 font-medium">Klinikler</a>
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Doktorlar</a>
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Sağlık Turizmi</a>
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">Telehealth</a>
-              </nav>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                Giriş Yap
-              </button>
-              <button className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                Üye Ol
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -184,10 +158,10 @@ const ClinicDetailPage = () => {
                     >
                       <Heart className={`w-6 h-6 ${isFavorite ? 'fill-current' : ''}`} />
                     </button>
-                    <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
-                      <Plus className="w-5 h-5" />
-                      <span>Takip Et</span>
-                    </button>
+                                                              <button className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+                        <Plus className="w-4 h-4" />
+                        <span className="text-sm">Takip Et</span>
+                      </button>
                   </div>
                 </div>
                 {/* Stats */}
@@ -351,15 +325,15 @@ const ClinicDetailPage = () => {
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="font-semibold text-gray-900 mb-4">İletişim</h3>
               <div className="space-y-3">
-                <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+                                 <button className="w-full bg-blue-600 text-white py-1.5 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
                   <Video className="w-5 h-5" />
                   <span>Telehealth Randevu</span>
                 </button>
-                <button className="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
+                                 <button className="w-full bg-green-500 text-white py-1.5 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
                   <MessageCircle className="w-5 h-5" />
                   <span>Randevu Al</span>
                 </button>
-                <button className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2">
+                                 <button className="w-full bg-gray-100 text-gray-700 py-1.5 px-4 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2">
                   <MessageCircle className="w-5 h-5" />
                   <span>Mesaj Gönder</span>
                 </button>
@@ -374,7 +348,7 @@ const ClinicDetailPage = () => {
                   <span>Tedavi + Konaklama + Transfer</span>
                 </div>
               </div>
-              <button className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2">
+                             <button className="w-full bg-purple-600 text-white py-1.5 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2">
                 <Calendar className="w-5 h-5" />
                 <span>Paket Oluştur</span>
               </button>
