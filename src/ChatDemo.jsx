@@ -51,7 +51,10 @@ const ChatDemo = () => {
   // Yeni mesaj geldiğinde otomatik scroll
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [visibleMessages, currentTypingMessage]);
 
