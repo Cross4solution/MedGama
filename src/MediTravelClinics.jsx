@@ -89,15 +89,15 @@ const MediTravelClinics = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       <Header />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Page Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Klinikler</h1>
-          <p className="text-lg text-gray-600">Size en uygun sağlık hizmetini sunan klinikleri keşfedin</p>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Klinikler</h1>
+          <p className="text-base sm:text-lg text-gray-600">Size en uygun sağlık hizmetini sunan klinikleri keşfedin</p>
         </div>
 
         {/* Search Bar */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Konum</label>
@@ -135,9 +135,9 @@ const MediTravelClinics = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* Filters Sidebar */}
-          <div className="lg:w-64 space-y-6">
+          <div className="lg:w-52 space-y-6">
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Filtreler</h3>
  
@@ -200,7 +200,7 @@ const MediTravelClinics = () => {
               {clinics.map((clinic) => (
                 <div key={clinic.id} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
                   <div className="flex flex-col md:flex-row">
-                    <div className="md:w-80 h-64 md:h-auto relative">
+                    <div className="md:w-64 h-64 md:h-auto relative">
                       <div className="w-full h-full bg-gradient-to-br from-blue-100 to-green-100 flex items-center justify-center">
                         <div className="text-center">
                           <Stethoscope className="w-16 h-16 text-blue-500 mx-auto mb-2" />
@@ -289,16 +289,16 @@ const MediTravelClinics = () => {
                 <button className="px-3 py-2 text-gray-500 hover:text-gray-700">&gt;</button>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* CTA Section */}
-        <div className="mt-16 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-center text-white">
-          <h2 className="text-2xl font-bold mb-4">Size En Uygun Kliniği Bulamadınız mı?</h2>
-          <p className="text-blue-100 mb-6">Uzmanlarımız size en uygun sağlık hizmetini bulmak için yardımcı olmaya hazır.</p>
-                      <button className="bg-white text-blue-600 px-6 py-1.5 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-            Uzman Desteği Al
-          </button>
+            {/* CTA Section */}
+            <div className="mt-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 sm:p-8 text-center text-white">
+              <h2 className="text-2xl font-bold mb-4">Size En Uygun Kliniği Bulamadınız mı?</h2>
+              <p className="text-blue-100 mb-6">Uzmanlarımız size en uygun sağlık hizmetini bulmak için yardımcı olmaya hazır.</p>
+              <button className="bg-white text-blue-600 px-6 py-1.5 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                Uzman Desteği Al
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

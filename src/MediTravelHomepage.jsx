@@ -413,7 +413,7 @@ const MediTravelHomepage = () => {
 
       {/* Popular Clinics */}
       <section className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">Popüler Klinikler</h2>
             <p className="text-lg text-gray-600">En çok tercih edilen ve en yüksek puanlı klinikler</p>
@@ -449,7 +449,7 @@ const MediTravelHomepage = () => {
             {/* Scrollable Content */}
             <div 
               ref={clinicsContainerRef}
-              className="flex overflow-x-auto space-x-6 pb-4 scrollbar-hide scroll-smooth"
+              className="flex overflow-x-auto space-x-6 pb-4 scrollbar-hide scroll-smooth justify-center"
               style={{
                 scrollBehavior: 'smooth',
                 WebkitOverflowScrolling: 'touch'
@@ -458,13 +458,13 @@ const MediTravelHomepage = () => {
             {clinics.map((clinic) => (
                 <div 
                   key={clinic.id} 
-                  className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 flex-shrink-0 w-80 transform hover:scale-105 hover:-translate-y-1 cursor-pointer"
+                  className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 flex-shrink-0 w-80 transform hover:scale-102 hover:-translate-y-1 cursor-pointer"
                 >
                   <div className="relative overflow-hidden">
                 <img 
                   src={clinic.image} 
                   alt={clinic.name}
-                      className="w-full h-48 object-cover transition-transform duration-300 hover:scale-110"
+                      className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
                     />
                     {/* Hover Overlay */}
                     <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">

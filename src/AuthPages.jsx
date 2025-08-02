@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 const AuthPages = () => {
-  const [currentPage, setCurrentPage] = useState('login'); // 'login' or 'register'
+  const [currentPage, setCurrentPage] = useState('login'); // 'login', 'register', or 'forgot-password'
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -152,6 +152,7 @@ const AuthPages = () => {
           </label>
           <button
             type="button"
+            onClick={() => setCurrentPage('forgot-password')}
             className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium"
           >
             Şifremi unuttum
@@ -169,7 +170,7 @@ const AuthPages = () => {
             <div className="w-full border-t border-gray-300" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-4 text-gray-500">veya</span>
+            <span className="bg-transparent px-4 text-gray-500">veya</span>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-3 w-full max-w-sm">
@@ -206,123 +207,173 @@ const AuthPages = () => {
     </div>
   );
 
-  const RegisterForm = () => (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="text-center mb-4 sm:mb-8">
-        <div className="flex items-center justify-center space-x-2 mb-2 sm:mb-4">
-          <Heart className="w-8 h-8 sm:w-10 sm:h-10 text-green-500" />
-          <span className="text-xl sm:text-2xl font-bold text-gray-900">MediTravel</span>
+  const ForgotPasswordForm = () => (
+    <div className="w-full max-w-md mx-auto">
+      <div className="text-center mb-2 sm:mb-3">
+        <div className="flex items-center justify-center space-x-2 mb-1 sm:mb-2">
+          <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
+          <span className="text-lg sm:text-xl font-bold text-gray-900">MediTravel</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Hesap Oluşturun</h1>
-        <p className="text-sm sm:text-base text-gray-600 text-center">Sağlık yolculuğunuza başlamak için kayıt olun</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Şifre Sıfırlama</h1>
+        <p className="text-xs sm:text-sm text-gray-600">E-posta adresinizi girin, şifre sıfırlama bağlantısı gönderelim</p>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-6 flex flex-col items-center">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6 w-full max-w-2xl">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
-              Ad
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left ${
-                  errors.firstName ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="Adınız"
-              />
-            </div>
-            {errors.firstName && <p className="text-red-500 text-sm mt-1 text-center md:text-left">{errors.firstName}</p>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
-              Soyad
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left ${
-                  errors.lastName ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="Soyadınız"
-              />
-            </div>
-            {errors.lastName && <p className="text-red-500 text-sm mt-1 text-center md:text-left">{errors.lastName}</p>}
-          </div>
-        </div>
-        <div className="w-full max-w-2xl">
-          <label className="block text-sm font-medium text-gray-700 mb-2 text-center">
+      <form onSubmit={handleSubmit} className="space-y-1 sm:space-y-2 flex flex-col items-center">
+        <div className="w-full max-w-sm">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center">
             E-posta Adresi
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Mail className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center ${
+              className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center text-xs sm:text-sm ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="ornek@email.com"
             />
           </div>
-          {errors.email && <p className="text-red-500 text-sm mt-1 text-center">{errors.email}</p>}
+          {errors.email && <p className="text-red-500 text-xs mt-1 text-center">{errors.email}</p>}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+        <button
+          type="submit"
+          className="w-full max-w-sm bg-blue-600 text-white py-1.5 sm:py-2 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm"
+        >
+          Şifre Sıfırlama Bağlantısı Gönder
+        </button>
+        <p className="text-center text-xs text-gray-600">
+          Giriş sayfasına dönmek için{' '}
+          <button
+            type="button"
+            onClick={() => setCurrentPage('login')}
+            className="text-blue-600 hover:text-blue-700 font-semibold"
+          >
+            tıklayın
+          </button>
+        </p>
+      </form>
+    </div>
+  );
+
+  const RegisterForm = () => (
+    <div className="w-full max-w-2xl mx-auto">
+      <div className="text-center mb-2 sm:mb-3">
+        <div className="flex items-center justify-center space-x-2 mb-1 sm:mb-2">
+          <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
+          <span className="text-lg sm:text-xl font-bold text-gray-900">MediTravel</span>
+        </div>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Hesap Oluşturun</h1>
+        <p className="text-xs sm:text-sm text-gray-600">Sağlık yolculuğunuza başlamak için kayıt olun</p>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-1 sm:space-y-2 flex flex-col items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 w-full max-w-2xl">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
+              Ad
+            </label>
+            <div className="relative">
+              <User className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left text-xs sm:text-sm ${
+                  errors.firstName ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Adınız"
+              />
+            </div>
+            {errors.firstName && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.firstName}</p>}
+          </div>
+          <div>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
+              Soyad
+            </label>
+            <div className="relative">
+              <User className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left text-xs sm:text-sm ${
+                  errors.lastName ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Soyadınız"
+              />
+            </div>
+            {errors.lastName && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.lastName}</p>}
+          </div>
+        </div>
+        <div className="w-full max-w-2xl">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center">
+            E-posta Adresi
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center text-xs sm:text-sm ${
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="ornek@email.com"
+            />
+          </div>
+          {errors.email && <p className="text-red-500 text-xs mt-1 text-center">{errors.email}</p>}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 w-full max-w-2xl">
+          <div>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
               Telefon
             </label>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Phone className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
               <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left ${
+                className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left text-xs sm:text-sm ${
                   errors.phone ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="+90 555 123 45 67"
               />
             </div>
-            {errors.phone && <p className="text-red-500 text-sm mt-1 text-center md:text-left">{errors.phone}</p>}
+            {errors.phone && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.phone}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
               Doğum Tarihi
             </label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Calendar className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
               <input
                 type="date"
                 name="birthDate"
                 value={formData.birthDate}
                 onChange={handleInputChange}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left"
+                className="w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left text-xs sm:text-sm"
               />
             </div>
           </div>
         </div>
         <div className="w-full max-w-2xl">
-          <label className="block text-sm font-medium text-gray-700 mb-2 text-center">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center">
             Şehir
           </label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <MapPin className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
             <select
               name="city"
               value={formData.city}
               onChange={handleInputChange}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center"
+              className="w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center text-xs sm:text-sm"
             >
               <option value="">Şehir seçin</option>
               <option value="istanbul">İstanbul</option>
@@ -333,19 +384,19 @@ const AuthPages = () => {
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 w-full max-w-2xl">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
               Şifre
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Lock className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left ${
+                className={`w-full pl-6 sm:pl-8 pr-8 sm:pr-10 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left text-xs sm:text-sm ${
                   errors.password ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Şifrenizi girin"
@@ -353,25 +404,25 @@ const AuthPages = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" /> : <Eye className="w-3 h-3 sm:w-4 sm:h-4" />}
               </button>
             </div>
-            {errors.password && <p className="text-red-500 text-sm mt-1 text-center md:text-left">{errors.password}</p>}
+            {errors.password && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.password}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
               Şifre Tekrar
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Lock className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left ${
+                className={`w-full pl-6 sm:pl-8 pr-8 sm:pr-10 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center md:text-left text-xs sm:text-sm ${
                   errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Şifrenizi tekrar girin"
@@ -379,25 +430,25 @@ const AuthPages = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showConfirmPassword ? <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" /> : <Eye className="w-3 h-3 sm:w-4 sm:h-4" />}
               </button>
             </div>
-            {errors.confirmPassword && <p className="text-red-500 text-sm mt-1 text-center md:text-left">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.confirmPassword}</p>}
           </div>
         </div>
-        <div className="space-y-4 w-full max-w-2xl">
+        <div className="space-y-1 sm:space-y-2 w-full max-w-2xl">
           <div>
-            <label className="flex items-start space-x-3 justify-center md:justify-start">
+            <label className="flex items-start space-x-1 sm:space-x-2 justify-center md:justify-start">
               <input
                 type="checkbox"
                 name="acceptTerms"
                 checked={formData.acceptTerms}
                 onChange={handleInputChange}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-1"
+                className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
               />
-              <span className="text-sm text-gray-600 text-center md:text-left">
+              <span className="text-xs text-gray-600 text-center md:text-left leading-tight">
                 <span className="text-red-500">*</span>
                 {' '}
                 <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">Kullanım Şartları</a>
@@ -406,56 +457,56 @@ const AuthPages = () => {
                 'nı okudum ve kabul ediyorum.
               </span>
             </label>
-            {errors.acceptTerms && <p className="text-red-500 text-sm mt-1 text-center md:text-left">{errors.acceptTerms}</p>}
+            {errors.acceptTerms && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.acceptTerms}</p>}
           </div>
-          <label className="flex items-start space-x-3 justify-center md:justify-start">
+          <label className="flex items-start space-x-1 sm:space-x-2 justify-center md:justify-start">
             <input
               type="checkbox"
               name="receiveUpdates"
               checked={formData.receiveUpdates}
               onChange={handleInputChange}
-              className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 mt-1"
+              className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600 border-gray-300 rounded focus:ring-green-500 mt-0.5"
             />
-            <span className="text-sm text-gray-600 text-center md:text-left">
+            <span className="text-xs text-gray-600 text-center md:text-left leading-tight">
               Sağlık ipuçları, yeni hizmetler ve özel teklifler hakkında e-posta almak istiyorum.
             </span>
           </label>
         </div>
         <button
           type="submit"
-          className="w-full max-w-2xl bg-green-500 text-white py-1.5 px-4 rounded-lg hover:bg-green-600 focus:ring-4 focus:ring-green-200 transition-all duration-200 font-semibold"
+          className="w-full max-w-2xl bg-green-500 text-white py-1.5 sm:py-2 px-4 rounded-lg hover:bg-green-600 focus:ring-4 focus:ring-green-200 transition-all duration-200 font-semibold text-xs sm:text-sm"
         >
           Hesap Oluştur
         </button>
-        <div className="relative my-6 w-full max-w-2xl">
+        <div className="relative my-2 sm:my-3 w-full max-w-2xl">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300" />
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-4 text-gray-500">veya</span>
+          <div className="relative flex justify-center text-xs">
+            <span className="bg-transparent px-4 text-gray-500">veya</span>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-3 w-full max-w-2xl">
+        <div className="grid grid-cols-3 gap-1 sm:gap-2 w-full max-w-2xl">
           <button
             type="button"
-            className="flex items-center justify-center py-1.5 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center justify-center py-1 sm:py-1.5 px-2 sm:px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <Chrome className="w-5 h-5 text-red-500" />
+            <Chrome className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" />
           </button>
           <button
             type="button"
-            className="flex items-center justify-center py-1.5 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center justify-center py-1 sm:py-1.5 px-2 sm:px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <Facebook className="w-5 h-5 text-blue-600" />
+            <Facebook className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
           </button>
           <button
             type="button"
-            className="flex items-center justify-center py-1.5 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center justify-center py-1 sm:py-1.5 px-2 sm:px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <Smartphone className="w-5 h-5 text-gray-900" />
+            <Smartphone className="w-3 h-3 sm:w-4 sm:h-4 text-gray-900" />
           </button>
         </div>
-        <p className="text-center text-sm text-gray-600">
+        <p className="text-center text-xs text-gray-600">
           Zaten hesabınız var mı?{' '}
           <button
             type="button"
@@ -497,59 +548,53 @@ const AuthPages = () => {
       </div>
 
       {/* Form Container */}
-      <div className="relative z-10 flex w-full min-h-screen items-center justify-center p-2 sm:p-6">
-        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-8 sm:gap-12">
+      <div className="relative z-10 flex w-full h-screen items-center justify-center p-2 sm:p-6 overflow-hidden">
+        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-4 sm:gap-8">
           {/* Mobile Layout: Logo (top-left) + Form + Features (below form) */}
-          <div className="flex flex-col lg:hidden w-full max-w-md mx-auto">
+          <div className="flex flex-col lg:hidden w-full max-w-md mx-auto h-full justify-center">
             {/* Mobile Logo - Top Left */}
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+            <div className="flex items-center space-x-2 mb-1 sm:mb-2">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-xs">M</span>
               </div>
-              <span className="text-lg font-bold text-white">MediTravel</span>
+              <span className="text-sm sm:text-base font-bold text-white">MediTravel</span>
             </div>
             
             {/* Mobile Form */}
-            <div className="w-full bg-white/95 backdrop-blur-xl rounded-xl p-3 shadow-2xl border border-white/30 mb-4">
-              {currentPage === 'login' ? <LoginForm /> : <RegisterForm />}
+            <div className="w-full bg-white/95 backdrop-blur-xl rounded-xl p-1 sm:p-2 shadow-2xl border border-white/30 mb-1 sm:mb-2">
+              {currentPage === 'login' ? <LoginForm /> : currentPage === 'register' ? <RegisterForm /> : <ForgotPasswordForm />}
             </div>
             
             {/* Mobile Features - Below Form */}
             <div className="text-left">
               {/* Large Heart Icon */}
-              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-teal-100 to-teal-200 rounded-full flex items-center justify-center mb-3">
-                <Heart className="w-10 h-10 text-teal-600" />
+              <div className="w-12 h-12 mx-auto bg-gradient-to-br from-teal-100 to-teal-200 rounded-full flex items-center justify-center mb-1">
+                <Heart className="w-6 h-6 text-teal-600" />
               </div>
               
               {/* Title */}
-              <h2 className="text-xl font-bold text-white mb-2 text-center">
+              <h2 className="text-base font-bold text-white mb-1 text-center">
                 Sağlığınız Bizim Önceliğimiz
               </h2>
               
               {/* Description */}
-              <p className="text-xs text-teal-100 mb-4">
+              <p className="text-xs text-teal-100 mb-1 text-center">
                 Güvenilir sağlık hizmetleri, uzman doktorlar ve modern tedavi yöntemleri ile yanınızdayız.
               </p>
               
               {/* Features List */}
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 bg-teal-100 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-3 h-3 text-teal-600" />
+              <div className="space-y-1">
+                <div className="flex items-center space-x-1 justify-center">
+                  <div className="w-4 h-4 bg-teal-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-2.5 h-2.5 text-teal-600" />
                   </div>
                   <span className="text-xs text-teal-100">Uzman doktor kadrosu</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 bg-teal-100 rounded-full flex items-center justify-center">
-                    <Shield className="w-3 h-3 text-teal-600" />
+                <div className="flex items-center space-x-1 justify-center">
+                  <div className="w-4 h-4 bg-teal-100 rounded-full flex items-center justify-center">
+                    <Shield className="w-2.5 h-2.5 text-teal-600" />
                   </div>
                   <span className="text-xs text-teal-100">Güvenli ve hızlı hizmet</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 bg-teal-100 rounded-full flex items-center justify-center">
-                    <Heart className="w-3 h-3 text-teal-600" />
-                  </div>
-                  <span className="text-xs text-teal-100">24/7 destek hizmeti</span>
                 </div>
               </div>
             </div>
@@ -593,8 +638,8 @@ const AuthPages = () => {
             </div>
             {/* Right Side - Form */}
             <div className="flex-1 w-full">
-              <div className="w-full max-w-2xl xl:max-w-xl bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/30">
-                {currentPage === 'login' ? <LoginForm /> : <RegisterForm />}
+              <div className="w-full max-w-2xl xl:max-w-xl bg-white/95 backdrop-blur-xl rounded-3xl p-4 shadow-2xl border border-white/30">
+                {currentPage === 'login' ? <LoginForm /> : currentPage === 'register' ? <RegisterForm /> : <ForgotPasswordForm />}
               </div>
             </div>
           </div>
