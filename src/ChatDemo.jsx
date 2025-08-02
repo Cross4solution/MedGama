@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { MessageCircle } from 'lucide-react';
 
+// Scrollbar gizleme CSS'i
+const scrollbarHideStyles = `
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+`;
+
 const ChatDemo = () => {
   const [visibleMessages, setVisibleMessages] = useState([]);
   const [currentTypingMessage, setCurrentTypingMessage] = useState(null);
@@ -33,6 +44,16 @@ const ChatDemo = () => {
       avatar: <MessageCircle className="w-4 h-4 text-white" />
     }
   ], []);
+
+  // Otomatik scroll için ref
+  const chatContainerRef = React.useRef(null);
+
+  // Yeni mesaj geldiğinde otomatik scroll
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [visibleMessages, currentTypingMessage]);
 
   useEffect(() => {
     let messageIndex = 0;
@@ -112,7 +133,12 @@ const ChatDemo = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
+    <>
+      <style>{scrollbarHideStyles}</style>
+      <div 
+        ref={chatContainerRef} 
+        className="space-y-4 max-h-96 overflow-y-auto pr-2 scrollbar-hide"
+      >
       {/* Tamamlanmış mesajlar */}
       {visibleMessages.map((message) => (
         <div key={message.uniqueId || message.id} className="flex items-start space-x-3">
@@ -162,6 +188,7 @@ const ChatDemo = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

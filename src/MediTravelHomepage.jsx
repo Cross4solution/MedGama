@@ -384,13 +384,15 @@ const MediTravelHomepage = () => {
             <p className="text-lg text-blue-100">Yapay zeka destekli asistanımız size en uygun tedaviyi bulmanızda yardımcı olur</p>
           </div>
           
-          <div className="bg-white rounded-2xl p-8 shadow-xl">
-            <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-white rounded-2xl p-8 shadow-xl h-96">
+            <div className="grid md:grid-cols-2 gap-8 h-full">
               {/* Chat Demo */}
-              <ChatDemo />
+              <div className="h-full overflow-hidden">
+                <ChatDemo />
+              </div>
               
               {/* AI Features */}
-              <div>
+              <div className="h-full overflow-y-auto">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">AI Asistan Özellikleri</h3>
                 <div className="space-y-4">
                   {aiFeatures.map((feature, index) => (
