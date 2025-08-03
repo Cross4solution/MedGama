@@ -64,7 +64,8 @@ const DoctorChatPage = () => {
                <img 
                  src="/images/portrait-candid-male-doctor_720.jpg" 
                  alt="Dr. Mehmet Özkan" 
-                 className="w-full h-full object-cover object-top"
+                 className="w-full h-full object-cover"
+                 style={{ objectPosition: 'center 20%' }}
                />
              </div>
             <div>
@@ -94,7 +95,8 @@ const DoctorChatPage = () => {
                      <img 
                        src="/images/portrait-candid-male-doctor_720.jpg" 
                        alt="Dr. Mehmet Özkan" 
-                       className="w-full h-full object-cover object-top"
+                       className="w-full h-full object-cover"
+                       style={{ objectPosition: 'center 20%' }}
                      />
                    </div>
                   <div>
@@ -123,7 +125,8 @@ const DoctorChatPage = () => {
                            <img 
                              src="/images/portrait-candid-male-doctor_720.jpg" 
                              alt="Doctor" 
-                             className="w-full h-full object-cover object-top"
+                             className="w-full h-full object-cover"
+                             style={{ objectPosition: 'center 20%' }}
                            />
                          </div>
                       )}
@@ -192,7 +195,8 @@ const DoctorChatPage = () => {
                    <img 
                      src="/images/portrait-candid-male-doctor_720.jpg" 
                      alt="Dr. Mehmet Özkan" 
-                     className="w-full h-full object-cover object-top"
+                     className="w-full h-full object-cover"
+                     style={{ objectPosition: 'center 20%' }}
                    />
                  </div>
                 <h3 className="text-lg font-bold text-gray-900">Dr. Mehmet Özkan</h3>

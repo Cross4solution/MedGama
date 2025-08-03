@@ -138,29 +138,71 @@ const MediTravelTimeline = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Ülke</label>
-                  <select
-                    value={selectedCountry}
-                    onChange={(e) => setSelectedCountry(e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="Türkiye">Türkiye</option>
-                    <option value="Almanya">Almanya</option>
-                    <option value="ABD">ABD</option>
-                  </select>
+                  <div className="relative group">
+                    <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <select
+                      value={selectedCountry}
+                      onChange={(e) => setSelectedCountry(e.target.value)}
+                      className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400"
+                    >
+                      <option value="Türkiye" className="py-2">Türkiye</option>
+                      <option value="Almanya" className="py-2">Almanya</option>
+                      <option value="ABD" className="py-2">ABD</option>
+                      <option value="İngiltere" className="py-2">İngiltere</option>
+                      <option value="Fransa" className="py-2">Fransa</option>
+                      <option value="İtalya" className="py-2">İtalya</option>
+                    </select>
+                    {/* Custom dropdown arrow */}
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                      <svg 
+                        className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                    {/* Subtle shadow on focus */}
+                    <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none"></div>
+                  </div>
                 </div>
  
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="Tüm Kategoriler">Tüm Kategoriler</option>
-                    <option value="Kalp Cerrahisi">Kalp Cerrahisi</option>
-                    <option value="Estetik">Estetik</option>
-                    <option value="Diş Tedavisi">Diş Tedavisi</option>
-                  </select>
+                  <div className="relative group">
+                    <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400"
+                    >
+                      <option value="Tüm Kategoriler" className="py-2">Tüm Kategoriler</option>
+                      <option value="Kalp Cerrahisi" className="py-2">Kalp Cerrahisi</option>
+                      <option value="Estetik" className="py-2">Estetik</option>
+                      <option value="Diş Tedavisi" className="py-2">Diş Tedavisi</option>
+                      <option value="Ortopedi" className="py-2">Ortopedi</option>
+                      <option value="Onkoloji" className="py-2">Onkoloji</option>
+                      <option value="Göz Hastalıkları" className="py-2">Göz Hastalıkları</option>
+                    </select>
+                    {/* Custom dropdown arrow */}
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                      <svg 
+                        className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                    {/* Subtle shadow on focus */}
+                    <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none"></div>
+                  </div>
                 </div>
  
                 <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">

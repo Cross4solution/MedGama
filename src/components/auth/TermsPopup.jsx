@@ -1,8 +1,18 @@
 import React from 'react';
 
-const TermsPopup = ({ setShowTermsPopup }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
+const TermsPopup = ({ setShowTermsPopup }) => {
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      setShowTermsPopup(false);
+    }
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-900">Kullanım Şartları</h2>
         <button
@@ -63,6 +73,7 @@ const TermsPopup = ({ setShowTermsPopup }) => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default TermsPopup; 

@@ -1,8 +1,18 @@
 import React from 'react';
 
-const PrivacyPopup = ({ setShowPrivacyPopup }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
+const PrivacyPopup = ({ setShowPrivacyPopup }) => {
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      setShowPrivacyPopup(false);
+    }
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-900">Gizlilik Politikası</h2>
         <button
@@ -81,6 +91,7 @@ const PrivacyPopup = ({ setShowPrivacyPopup }) => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default PrivacyPopup; 

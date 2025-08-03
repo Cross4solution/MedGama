@@ -119,118 +119,142 @@ const RegisterForm = ({
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 w-full max-w-2xl">
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
             Şehir
           </label>
-          <div className="relative">
-            <MapPin className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+          <div className="relative group">
+            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
             <select
               name="city"
               value={formData.city}
               onChange={handleInputChange}
-              className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
-                errors.city ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full pl-10 pr-10 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-left text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400 ${
+                errors.city 
+                  ? 'border-red-300 focus:ring-red-100 focus:border-red-500' 
+                  : 'border-gray-200'
+              } ${formData.city ? 'text-gray-900' : 'text-gray-500'}`}
             >
-              <option value="">Şehir seçiniz</option>
-              <option value="Adana">Adana</option>
-              <option value="Adıyaman">Adıyaman</option>
-              <option value="Afyonkarahisar">Afyonkarahisar</option>
-              <option value="Ağrı">Ağrı</option>
-              <option value="Amasya">Amasya</option>
-              <option value="Ankara">Ankara</option>
-              <option value="Antalya">Antalya</option>
-              <option value="Artvin">Artvin</option>
-              <option value="Aydın">Aydın</option>
-              <option value="Balıkesir">Balıkesir</option>
-              <option value="Bilecik">Bilecik</option>
-              <option value="Bingöl">Bingöl</option>
-              <option value="Bitlis">Bitlis</option>
-              <option value="Bolu">Bolu</option>
-              <option value="Burdur">Burdur</option>
-              <option value="Bursa">Bursa</option>
-              <option value="Çanakkale">Çanakkale</option>
-              <option value="Çankırı">Çankırı</option>
-              <option value="Çorum">Çorum</option>
-              <option value="Denizli">Denizli</option>
-              <option value="Diyarbakır">Diyarbakır</option>
-              <option value="Edirne">Edirne</option>
-              <option value="Elazığ">Elazığ</option>
-              <option value="Erzincan">Erzincan</option>
-              <option value="Erzurum">Erzurum</option>
-              <option value="Eskişehir">Eskişehir</option>
-              <option value="Gaziantep">Gaziantep</option>
-              <option value="Giresun">Giresun</option>
-              <option value="Gümüşhane">Gümüşhane</option>
-              <option value="Hakkari">Hakkari</option>
-              <option value="Hatay">Hatay</option>
-              <option value="Isparta">Isparta</option>
-              <option value="Mersin">Mersin</option>
-              <option value="İstanbul">İstanbul</option>
-              <option value="İzmir">İzmir</option>
-              <option value="Kars">Kars</option>
-              <option value="Kastamonu">Kastamonu</option>
-              <option value="Kayseri">Kayseri</option>
-              <option value="Kırklareli">Kırklareli</option>
-              <option value="Kırşehir">Kırşehir</option>
-              <option value="Kocaeli">Kocaeli</option>
-              <option value="Konya">Konya</option>
-              <option value="Kütahya">Kütahya</option>
-              <option value="Malatya">Malatya</option>
-              <option value="Manisa">Manisa</option>
-              <option value="Kahramanmaraş">Kahramanmaraş</option>
-              <option value="Mardin">Mardin</option>
-              <option value="Muğla">Muğla</option>
-              <option value="Muş">Muş</option>
-              <option value="Nevşehir">Nevşehir</option>
-              <option value="Niğde">Niğde</option>
-              <option value="Ordu">Ordu</option>
-              <option value="Rize">Rize</option>
-              <option value="Sakarya">Sakarya</option>
-              <option value="Samsun">Samsun</option>
-              <option value="Siirt">Siirt</option>
-              <option value="Sinop">Sinop</option>
-              <option value="Sivas">Sivas</option>
-              <option value="Tekirdağ">Tekirdağ</option>
-              <option value="Tokat">Tokat</option>
-              <option value="Trabzon">Trabzon</option>
-              <option value="Tunceli">Tunceli</option>
-              <option value="Şanlıurfa">Şanlıurfa</option>
-              <option value="Uşak">Uşak</option>
-              <option value="Van">Van</option>
-              <option value="Yozgat">Yozgat</option>
-              <option value="Zonguldak">Zonguldak</option>
-              <option value="Aksaray">Aksaray</option>
-              <option value="Bayburt">Bayburt</option>
-              <option value="Karaman">Karaman</option>
-              <option value="Kırıkkale">Kırıkkale</option>
-              <option value="Batman">Batman</option>
-              <option value="Şırnak">Şırnak</option>
-              <option value="Bartın">Bartın</option>
-              <option value="Ardahan">Ardahan</option>
-              <option value="Iğdır">Iğdır</option>
-              <option value="Yalova">Yalova</option>
-              <option value="Karabük">Karabük</option>
-              <option value="Kilis">Kilis</option>
-              <option value="Osmaniye">Osmaniye</option>
-              <option value="Düzce">Düzce</option>
+              <option value="" className="text-gray-500">Şehir seçiniz</option>
+              <option value="Adana" className="py-2">Adana</option>
+              <option value="Adıyaman" className="py-2">Adıyaman</option>
+              <option value="Afyonkarahisar" className="py-2">Afyonkarahisar</option>
+              <option value="Ağrı" className="py-2">Ağrı</option>
+              <option value="Amasya" className="py-2">Amasya</option>
+              <option value="Ankara" className="py-2">Ankara</option>
+              <option value="Antalya" className="py-2">Antalya</option>
+              <option value="Artvin" className="py-2">Artvin</option>
+              <option value="Aydın" className="py-2">Aydın</option>
+              <option value="Balıkesir" className="py-2">Balıkesir</option>
+              <option value="Bilecik" className="py-2">Bilecik</option>
+              <option value="Bingöl" className="py-2">Bingöl</option>
+              <option value="Bitlis" className="py-2">Bitlis</option>
+              <option value="Bolu" className="py-2">Bolu</option>
+              <option value="Burdur" className="py-2">Burdur</option>
+              <option value="Bursa" className="py-2">Bursa</option>
+              <option value="Çanakkale" className="py-2">Çanakkale</option>
+              <option value="Çankırı" className="py-2">Çankırı</option>
+              <option value="Çorum" className="py-2">Çorum</option>
+              <option value="Denizli" className="py-2">Denizli</option>
+              <option value="Diyarbakır" className="py-2">Diyarbakır</option>
+              <option value="Edirne" className="py-2">Edirne</option>
+              <option value="Elazığ" className="py-2">Elazığ</option>
+              <option value="Erzincan" className="py-2">Erzincan</option>
+              <option value="Erzurum" className="py-2">Erzurum</option>
+              <option value="Eskişehir" className="py-2">Eskişehir</option>
+              <option value="Gaziantep" className="py-2">Gaziantep</option>
+              <option value="Giresun" className="py-2">Giresun</option>
+              <option value="Gümüşhane" className="py-2">Gümüşhane</option>
+              <option value="Hakkari" className="py-2">Hakkari</option>
+              <option value="Hatay" className="py-2">Hatay</option>
+              <option value="Isparta" className="py-2">Isparta</option>
+              <option value="Mersin" className="py-2">Mersin</option>
+              <option value="İstanbul" className="py-2">İstanbul</option>
+              <option value="İzmir" className="py-2">İzmir</option>
+              <option value="Kars" className="py-2">Kars</option>
+              <option value="Kastamonu" className="py-2">Kastamonu</option>
+              <option value="Kayseri" className="py-2">Kayseri</option>
+              <option value="Kırklareli" className="py-2">Kırklareli</option>
+              <option value="Kırşehir" className="py-2">Kırşehir</option>
+              <option value="Kocaeli" className="py-2">Kocaeli</option>
+              <option value="Konya" className="py-2">Konya</option>
+              <option value="Kütahya" className="py-2">Kütahya</option>
+              <option value="Malatya" className="py-2">Malatya</option>
+              <option value="Manisa" className="py-2">Manisa</option>
+              <option value="Kahramanmaraş" className="py-2">Kahramanmaraş</option>
+              <option value="Mardin" className="py-2">Mardin</option>
+              <option value="Muğla" className="py-2">Muğla</option>
+              <option value="Muş" className="py-2">Muş</option>
+              <option value="Nevşehir" className="py-2">Nevşehir</option>
+              <option value="Niğde" className="py-2">Niğde</option>
+              <option value="Ordu" className="py-2">Ordu</option>
+              <option value="Rize" className="py-2">Rize</option>
+              <option value="Sakarya" className="py-2">Sakarya</option>
+              <option value="Samsun" className="py-2">Samsun</option>
+              <option value="Siirt" className="py-2">Siirt</option>
+              <option value="Sinop" className="py-2">Sinop</option>
+              <option value="Sivas" className="py-2">Sivas</option>
+              <option value="Tekirdağ" className="py-2">Tekirdağ</option>
+              <option value="Tokat" className="py-2">Tokat</option>
+              <option value="Trabzon" className="py-2">Trabzon</option>
+              <option value="Tunceli" className="py-2">Tunceli</option>
+              <option value="Şanlıurfa" className="py-2">Şanlıurfa</option>
+              <option value="Uşak" className="py-2">Uşak</option>
+              <option value="Van" className="py-2">Van</option>
+              <option value="Yozgat" className="py-2">Yozgat</option>
+              <option value="Zonguldak" className="py-2">Zonguldak</option>
+              <option value="Aksaray" className="py-2">Aksaray</option>
+              <option value="Bayburt" className="py-2">Bayburt</option>
+              <option value="Karaman" className="py-2">Karaman</option>
+              <option value="Kırıkkale" className="py-2">Kırıkkale</option>
+              <option value="Batman" className="py-2">Batman</option>
+              <option value="Şırnak" className="py-2">Şırnak</option>
+              <option value="Bartın" className="py-2">Bartın</option>
+              <option value="Ardahan" className="py-2">Ardahan</option>
+              <option value="Iğdır" className="py-2">Iğdır</option>
+              <option value="Yalova" className="py-2">Yalova</option>
+              <option value="Karabük" className="py-2">Karabük</option>
+              <option value="Kilis" className="py-2">Kilis</option>
+              <option value="Osmaniye" className="py-2">Osmaniye</option>
+              <option value="Düzce" className="py-2">Düzce</option>
             </select>
+            {/* Custom dropdown arrow */}
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg 
+                className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+            {/* Subtle shadow on focus */}
+            <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none"></div>
           </div>
-          {errors.city && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.city}</p>}
+          {errors.city && (
+            <div className="flex items-center mt-2 text-red-500 text-xs">
+              <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              <span className="text-center md:text-left">{errors.city}</span>
+            </div>
+          )}
         </div>
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
             Doğum Tarihi
           </label>
-          <div className="relative">
-            <Calendar className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+          <div className="relative group">
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
             <input
               type="date"
               name="birthDate"
               value={formData.birthDate}
               onChange={handleInputChange}
-              className="w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm"
+              className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-sm font-medium bg-white hover:bg-gray-50 hover:border-gray-400"
             />
+            {/* Subtle shadow on focus */}
+            <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none"></div>
           </div>
         </div>
       </div>
@@ -288,52 +312,52 @@ const RegisterForm = ({
           {errors.confirmPassword && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.confirmPassword}</p>}
         </div>
       </div>
-      <div className="space-y-1 sm:space-y-2 w-full max-w-2xl">
-        <div>
-          <label className="flex items-start space-x-1 sm:space-x-2 justify-center md:justify-start">
-            <input
-              type="checkbox"
-              name="acceptTerms"
-              checked={formData.acceptTerms}
-              onChange={handleInputChange}
-              className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
-            />
-            <span className="text-xs text-gray-600 text-center md:text-left leading-tight">
-              <span className="text-red-500">*</span>
-              {' '}
-              <button
-                type="button"
-                onClick={() => setShowTermsPopup(true)}
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Kullanım Şartları
-              </button>
-              {' '}ve{' '}
-              <button
-                type="button"
-                onClick={() => setShowPrivacyPopup(true)}
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Gizlilik Politikası
-              </button>
-              'nı okudum ve kabul ediyorum.
-            </span>
-          </label>
-          {errors.acceptTerms && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.acceptTerms}</p>}
-        </div>
-        <label className="flex items-start space-x-1 sm:space-x-2 justify-center md:justify-start">
-          <input
-            type="checkbox"
-            name="receiveUpdates"
-            checked={formData.receiveUpdates}
-            onChange={handleInputChange}
-            className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600 border-gray-300 rounded focus:ring-green-500 mt-0.5"
-          />
-          <span className="text-xs text-gray-600 text-center md:text-left leading-tight">
-            Sağlık ipuçları, yeni hizmetler ve özel teklifler hakkında e-posta almak istiyorum.
-          </span>
-        </label>
-      </div>
+             <div className="space-y-2 sm:space-y-3 w-full max-w-2xl">
+         <div>
+           <label className="flex items-start space-x-2 sm:space-x-3 justify-center md:justify-start">
+             <input
+               type="checkbox"
+               name="acceptTerms"
+               checked={formData.acceptTerms}
+               onChange={handleInputChange}
+               className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
+             />
+             <span className="text-sm text-gray-600 text-center md:text-left leading-relaxed">
+               <span className="text-red-500">*</span>
+               {' '}
+               <button
+                 type="button"
+                 onClick={() => setShowTermsPopup(true)}
+                 className="text-blue-600 hover:text-blue-700 font-medium"
+               >
+                 Kullanım Şartları
+               </button>
+               {' '}ve{' '}
+               <button
+                 type="button"
+                 onClick={() => setShowPrivacyPopup(true)}
+                 className="text-blue-600 hover:text-blue-700 font-medium"
+               >
+                 Gizlilik Politikası
+               </button>
+               'nı okudum ve kabul ediyorum.
+             </span>
+           </label>
+           {errors.acceptTerms && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.acceptTerms}</p>}
+         </div>
+         <label className="flex items-start space-x-2 sm:space-x-3 justify-center md:justify-start">
+           <input
+             type="checkbox"
+             name="receiveUpdates"
+             checked={formData.receiveUpdates}
+             onChange={handleInputChange}
+             className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 mt-0.5"
+           />
+           <span className="text-sm text-gray-600 text-center md:text-left leading-relaxed">
+             Sağlık ipuçları, yeni hizmetler ve özel teklifler hakkında e-posta almak istiyorum.
+           </span>
+         </label>
+       </div>
       <button
         type="submit"
         className="w-full max-w-2xl bg-green-500 text-white py-1.5 sm:py-2 px-4 rounded-lg hover:bg-green-600 focus:ring-4 focus:ring-green-200 transition-all duration-200 font-semibold text-xs sm:text-sm"

@@ -10,6 +10,10 @@ const MediTravelHomepage = () => {
   const [currentTypingMessage, setCurrentTypingMessage] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [showTypingIndicator, setShowTypingIndicator] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
   const scrollContainerRef = useRef(null);
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -53,9 +57,35 @@ const MediTravelHomepage = () => {
     if (clinicsContainerRef.current) {
       const scrollAmount = 320; // card width + gap
       const currentScroll = clinicsContainerRef.current.scrollLeft;
-      const newScroll = direction === 'left' 
-        ? currentScroll - scrollAmount 
-        : currentScroll + scrollAmount;
+      
+      let newSlide;
+      let newScroll;
+      
+      if (direction === 'left') {
+        // Sola git
+        if (currentSlide === 0) {
+          // En başta ise sona git
+          newSlide = 6;
+          newScroll = 6 * scrollAmount;
+        } else {
+          // Normal sola git
+          newSlide = currentSlide - 1;
+          newScroll = currentScroll - scrollAmount;
+        }
+      } else {
+        // Sağa git
+        if (currentSlide === 6) {
+          // En sonda ise başa git
+          newSlide = 0;
+          newScroll = 0;
+        } else {
+          // Normal sağa git
+          newSlide = currentSlide + 1;
+          newScroll = currentScroll + scrollAmount;
+        }
+      }
+      
+      setCurrentSlide(newSlide);
       
       clinicsContainerRef.current.scrollTo({
         left: newScroll,
@@ -63,6 +93,53 @@ const MediTravelHomepage = () => {
       });
     }
   };
+
+  // Mouse drag handlers for clinics
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - clinicsContainerRef.current.offsetLeft);
+    setScrollLeft(clinicsContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - clinicsContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed
+    clinicsContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  // Scroll event listener for clinics
+  useEffect(() => {
+    const handleScroll = () => {
+      if (clinicsContainerRef.current) {
+        const scrollLeft = clinicsContainerRef.current.scrollLeft;
+        const cardWidth = 320; // card width + gap
+        const newSlide = Math.round(scrollLeft / cardWidth);
+        
+        // Döngüsel slide hesaplama
+        let adjustedSlide = newSlide;
+        if (newSlide < 0) adjustedSlide = 6;
+        if (newSlide > 6) adjustedSlide = 0;
+        
+        setCurrentSlide(adjustedSlide);
+      }
+    };
+
+    const container = clinicsContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
 
 
 
@@ -185,6 +262,30 @@ const MediTravelHomepage = () => {
       rating: 4.6,
       reviews: "295 Değerlendirme",
       image: "/images/petr-magera-huwm7malj18-unsplash_720.jpg"
+    },
+    {
+      id: 5,
+      name: "Liv Hastanesi",
+      location: "İstanbul • Kardiyoloji, Diş Hekimliği",
+      rating: 4.5,
+      reviews: "178 Değerlendirme",
+      image: "/images/gautam-arora-gufqybn_cvg-unsplash_720.jpg"
+    },
+    {
+      id: 6,
+      name: "Medical Park Hastanesi",
+      location: "Bursa • Göz Hastalıkları, Dermatoloji",
+      rating: 4.4,
+      reviews: "234 Değerlendirme",
+      image: "/images/caroline-lm-uqved8dypum-unsplash_720.jpg"
+    },
+    {
+      id: 7,
+      name: "Özel Florence Nightingale",
+      location: "İstanbul • Çocuk Hastalıkları, Psikiyatri",
+      rating: 4.7,
+      reviews: "156 Değerlendirme",
+      image: "/images/petr-magera-huwm7malj18-unsplash_720.jpg"
     }
   ];
 
@@ -295,17 +396,28 @@ const MediTravelHomepage = () => {
             <p className="text-lg text-blue-100">Yapay zeka destekli asistanımız size en uygun tedaviyi bulmanızda yardımcı olur</p>
           </div>
           
-          <div className="bg-white rounded-2xl p-8 shadow-xl h-[500px]">
-            <div className="grid md:grid-cols-2 gap-8 h-full">
+          <div className="bg-white rounded-2xl p-8 shadow-xl h-[500px] relative overflow-hidden">
+            <div className="grid md:grid-cols-2 h-full relative">
+              {/* Arka plan resmi - sol yarı için */}
+              <div 
+                className="absolute -left-8 -top-8 w-[calc(50%+4rem)] h-[calc(100%+4rem)] z-0"
+                style={{
+                  backgroundImage: `url('/images/pexels-diva-30920085_720.jpg')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              
               {/* Chat Demo */}
-              <div className="h-full overflow-hidden">
+              <div className="h-full overflow-hidden relative z-10 -m-8 p-8">
                 <ChatDemo />
               </div>
               
               {/* AI Features */}
-              <div className="h-full overflow-y-auto">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">AI Asistan Özellikleri</h3>
-                <div className="space-y-4">
+              <div className="h-full overflow-y-auto pl-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-4">AI Asistan Özellikleri</h3>
+                <div className="space-y-4 pl-4">
                   {aiFeatures.map((feature, index) => (
                     <div key={index} className="flex items-start space-x-3">
                       <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -362,11 +474,16 @@ const MediTravelHomepage = () => {
             {/* Scrollable Content */}
             <div 
               ref={clinicsContainerRef}
-              className="flex overflow-x-auto space-x-6 pb-4 scrollbar-hide scroll-smooth justify-center"
+              className="flex overflow-x-auto space-x-6 pb-4 scrollbar-hide scroll-smooth cursor-grab active:cursor-grabbing"
               style={{
                 scrollBehavior: 'smooth',
-                WebkitOverflowScrolling: 'touch'
+                WebkitOverflowScrolling: 'touch',
+                userSelect: 'none'
               }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseLeave}
             >
             {clinics.map((clinic) => (
                 <div 
@@ -410,10 +527,26 @@ const MediTravelHomepage = () => {
             
             {/* Scroll Indicators */}
             <div className="flex justify-center mt-6 space-x-2">
-              <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-              <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-              <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-              <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+              {[0, 1, 2, 3, 4, 5, 6].map((index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    if (clinicsContainerRef.current) {
+                      const scrollAmount = index * 320; // card width + gap
+                      clinicsContainerRef.current.scrollTo({
+                        left: scrollAmount,
+                        behavior: 'smooth'
+                      });
+                      setCurrentSlide(index);
+                    }
+                  }}
+                  className={`transition-all duration-300 hover:scale-125 ${
+                    currentSlide === index 
+                      ? 'w-8 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg animate-pulse border-2 border-blue-300' 
+                      : 'w-3 h-3 bg-gray-300 rounded-full hover:bg-gray-400'
+                  }`}
+                ></button>
+              ))}
             </div>
           </div>
         </div>

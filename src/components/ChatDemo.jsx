@@ -138,59 +138,69 @@ const ChatDemo = () => {
   return (
     <>
       <style>{scrollbarHideStyles}</style>
-      <div 
-        ref={chatContainerRef} 
-        className="space-y-4 max-h-96 overflow-y-auto pr-2 scrollbar-hide"
-      >
-      {/* Tamamlanmış mesajlar */}
-      {visibleMessages.map((message) => (
-        <div key={message.uniqueId || message.id} className="flex items-start space-x-3">
-          {message.sender === 'user' ? (
-            <>
-              <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0"></div>
-              <div className="bg-gray-100 p-3 rounded-lg flex-1">
-                <p className="text-sm text-gray-700">{message.fullText}</p>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                {message.avatar}
-              </div>
-              <div className="bg-blue-50 p-3 rounded-lg flex-1">
-                <p className="text-sm text-gray-700 whitespace-pre-line">{message.fullText}</p>
-              </div>
-            </>
-          )}
-        </div>
-      ))}
+      
+      {/* Ana container - arka plan resmi burada */}
+      <div className="relative w-full h-full rounded-lg overflow-hidden flex flex-col bg-transparent max-h-full">
 
-      {/* Şu anki typing mesajı */}
-      {currentTypingMessage && (
-        <div className="flex items-start space-x-3">
-          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-            {currentTypingMessage.avatar}
-          </div>
-          <div className="bg-blue-50 p-3 rounded-lg flex-1">
-            {showTypingIndicator ? (
-              <div className="flex items-center space-x-1">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                </div>
-                <span className="text-sm text-gray-500 ml-2">Yazıyor...</span>
+        
+        {/* Scroll container */}
+        <div 
+          ref={chatContainerRef} 
+          className="relative z-10 flex-1 overflow-y-auto pr-2 scrollbar-hide pb-6 min-h-0"
+        >
+          {/* Chat mesajları container */}
+          <div className="space-y-4">
+            {/* Tamamlanmış mesajlar */}
+            {visibleMessages.map((message) => (
+              <div key={message.uniqueId || message.id} className="flex items-start space-x-2">
+                {message.sender === 'user' ? (
+                  <>
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 flex-shrink-0 shadow-sm"></div>
+                    <div className="bg-white bg-opacity-80 p-4 rounded-2xl shadow-lg border border-gray-100 max-w-xs">
+                      <p className="text-sm text-gray-800 font-medium leading-relaxed">{message.fullText}</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                      {message.avatar}
+                    </div>
+                    <div className="bg-white bg-opacity-80 p-4 rounded-2xl shadow-lg border border-blue-100 max-w-xs">
+                      <p className="text-sm text-gray-800 font-medium leading-relaxed whitespace-pre-line">{message.fullText}</p>
+                    </div>
+                  </>
+                )}
               </div>
-            ) : (
-              <p className="text-sm text-gray-700 whitespace-pre-line">
-                {currentTypingMessage.currentText}
-                {isTyping && <span className="animate-pulse">|</span>}
-              </p>
+            ))}
+
+            {/* Şu anki typing mesajı */}
+            {currentTypingMessage && (
+              <div className="flex items-start space-x-2">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                  {currentTypingMessage.avatar}
+                </div>
+                <div className="bg-white bg-opacity-80 p-4 rounded-2xl shadow-lg border border-blue-100 max-w-xs">
+                  {showTypingIndicator ? (
+                    <div className="flex items-center space-x-1">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      </div>
+                      <span className="text-sm text-gray-600 ml-2 font-medium">Yazıyor...</span>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-800 font-medium leading-relaxed whitespace-pre-line">
+                      {currentTypingMessage.currentText}
+                      {isTyping && <span className="animate-pulse text-blue-500">|</span>}
+                    </p>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>
-      )}
-    </div>
+      </div>
     </>
   );
 };
