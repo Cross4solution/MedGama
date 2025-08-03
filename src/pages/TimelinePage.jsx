@@ -16,7 +16,7 @@ import {
   Bell,
   User
 } from 'lucide-react';
-import Header from './Header';
+import Header from '../components/Header';
 const MediTravelTimeline = () => {
   const [selectedCountry, setSelectedCountry] = useState('Türkiye');
   const [selectedCategory, setSelectedCategory] = useState('Tüm Kategoriler');
@@ -94,7 +94,7 @@ const MediTravelTimeline = () => {
   const userProfile = {
     name: 'Ayşe Yılmaz',
     role: 'Hasta',
-    avatar: 'https://placehold.co/80x80',
+    avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg',
     stats: {
       following: 12,
       appointments: 3
@@ -110,11 +110,14 @@ const MediTravelTimeline = () => {
             {/* User Profile Card */}
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <div className="text-center">
-                <img
-                  src={userProfile.avatar}
-                  alt={userProfile.name}
-                  className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
-                />
+                                 <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gray-100">
+                   <img
+                     src={userProfile.avatar}
+                     alt={userProfile.name}
+                     className="w-full h-full object-cover object-center scale-110"
+                     style={{ objectPosition: '25% 50%' }}
+                   />
+                 </div>
                 <h3 className="font-semibold text-gray-800">{userProfile.name}</h3>
                 <p className="text-sm text-gray-500 mb-4">{userProfile.role}</p>
  
@@ -185,7 +188,14 @@ const MediTravelTimeline = () => {
             {/* Share Box */}
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <div className="flex items-center space-x-3">
-                <img src="https://placehold.co/40x40" alt="User" className="w-10 h-10 rounded-full object-cover" />
+                                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+                   <img 
+                     src="/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg" 
+                     alt="User" 
+                     className="w-full h-full object-cover object-center scale-110" 
+                     style={{ objectPosition: '25% 50%' }}
+                   />
+                 </div>
                 <input
                   type="text"
                   placeholder="Doktora soru sor veya deneyimini paylaş..."

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, lazy, Suspense, useRef, useMemo } from 'react';
 import { Search, Video, MapPin, Star, Shield, Users, Calendar, Send, MessageCircle } from 'lucide-react';
-import ChatDemo from './ChatDemo';
-import Header from './Header';
+import ChatDemo from '../components/ChatDemo';
+import Header from '../components/Header';
+import HeroSection from '../components/HeroSection';
 
 const MediTravelHomepage = () => {
   const [chatInput, setChatInput] = useState('');
@@ -159,7 +160,7 @@ const MediTravelHomepage = () => {
       location: "İstanbul • Kalp Cerrahisi, Onkoloji",
       rating: 4.8,
       reviews: "342 Değerlendirme",
-      image: "https://placehold.co/300x200"
+      image: "/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg"
     },
     {
       id: 2,
@@ -167,7 +168,7 @@ const MediTravelHomepage = () => {
       location: "Ankara • Plastik Cerrahi, Estetik",
       rating: 4.9,
       reviews: "186 Değerlendirme",
-      image: "https://placehold.co/300x200"
+      image: "/images/gautam-arora-gufqybn_cvg-unsplash_720.jpg"
     },
     {
       id: 3,
@@ -175,7 +176,15 @@ const MediTravelHomepage = () => {
       location: "İzmir • Nöroloji, Ortopedi",
       rating: 4.7,
       reviews: "428 Değerlendirme",
-      image: "https://placehold.co/300x200"
+      image: "/images/caroline-lm-uqved8dypum-unsplash_720.jpg"
+    },
+    {
+      id: 4,
+      name: "Acıbadem Hastanesi",
+      location: "İstanbul • Genel Cerrahi, Kadın Doğum",
+      rating: 4.6,
+      reviews: "295 Değerlendirme",
+      image: "/images/petr-magera-huwm7malj18-unsplash_720.jpg"
     }
   ];
 
@@ -252,105 +261,7 @@ const MediTravelHomepage = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="bg-white py-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                Sağlığınız İçin <span className="text-blue-600">En İyi</span> Klinikleri Keşfedin
-              </h1>
-              <p className="text-lg text-gray-600 mb-8">
-                AI destekli platformumuz ile size en uygun sağlık hizmetini bulun. 
-                Telesağlık, sağlık turizmi ve doktor konsültasyonları tek platformda.
-              </p>
-              
-              <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                    <MessageCircle className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="font-semibold text-gray-800">AI Doktor Asistanı ile Konuşun</h3>
-                </div>
-                
-                {/* Kısa diyalog demo */}
-                <div ref={scrollContainerRef} className="h-24 overflow-y-auto space-y-2 mb-4 pr-2 scrollbar-hide">
-                  {/* Tamamlanmış mesajlar */}
-                  {visibleDemoMessages.map((message) => (
-                    <div key={message.uniqueId || message.id} className="flex items-start space-x-2">
-                      {message.sender === 'user' ? (
-                        <>
-                          <div className="w-6 h-6 rounded-full bg-gray-200 flex-shrink-0"></div>
-                          <div className="bg-gray-100 p-2 rounded-lg flex-1">
-                            <p className="text-xs text-gray-700">{message.fullText}</p>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                            {message.avatar}
-                          </div>
-                          <div className="bg-blue-50 p-2 rounded-lg flex-1">
-                            <p className="text-xs text-gray-700">{message.fullText}</p>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
-
-                  {/* Şu anki typing mesajı */}
-                  {currentTypingMessage && (
-                    <div className="flex items-start space-x-2">
-                      <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                        {currentTypingMessage.avatar}
-                      </div>
-                      <div className="bg-blue-50 p-2 rounded-lg flex-1">
-                        {showTypingIndicator ? (
-                          <div className="flex items-center space-x-1">
-                            <div className="flex space-x-1">
-                              <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
-                              <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                              <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                            </div>
-                            <span className="text-xs text-gray-500 ml-1">Yazıyor...</span>
-                          </div>
-                        ) : (
-                          <p className="text-xs text-gray-700">
-                            {currentTypingMessage.currentText}
-                            {isTyping && <span className="animate-pulse">|</span>}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <button
-                  onClick={() => console.log('AI Asistanı başlatıldı')}
-                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>AI Asistanı ile Başla</span>
-                </button>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <div className="bg-gray-100 rounded-2xl p-8 relative overflow-hidden">
-                <img 
-                  src="https://placehold.co/500x400" 
-                  alt="Doktor konsültasyonu" 
-                  className="w-full h-80 object-cover rounded-xl"
-                />
-                <div className="absolute bottom-4 right-4 bg-white p-3 rounded-lg shadow-lg flex items-center space-x-2">
-                  <Shield className="w-5 h-5 text-green-600" />
-                  <span className="text-sm font-medium">GDPR & HIPAA Uyumlu</span>
-                  <span className="text-xs text-gray-500">Güvenli Veri Koruması</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Platform Features */}
       <section className="py-16 bg-gray-50">

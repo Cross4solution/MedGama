@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Heart, MessageCircle, Star, MapPin, Shield, Stethoscope, Award, Clock, 
 Users } from 'lucide-react';
-import Header from './Header';
+import Header from '../components/Header';
 
 const MediTravelClinics = () => {
   const [selectedFilters, setSelectedFilters] = useState({

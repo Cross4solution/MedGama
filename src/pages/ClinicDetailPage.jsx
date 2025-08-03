@@ -20,7 +20,7 @@ import {
   ChevronRight,
   CheckCircle
 } from 'lucide-react';
-import Header from './Header';
+import Header from '../components/Header';
 
 const ClinicDetailPage = () => {
   const [activeTab, setActiveTab] = useState('genel-bakis');
@@ -123,12 +123,11 @@ const ClinicDetailPage = () => {
             {/* Hero Section */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
               <div className="relative h-64 md:h-80">
-                <div className="w-full h-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center">
-                  <div className="text-center">
-                    <Stethoscope className="w-20 h-20 text-blue-500 mx-auto mb-4" />
-                    <p className="text-lg text-gray-600">Modern Tıp Merkezi</p>
-                  </div>
-                </div>
+                <img 
+                  src="/images/petr-magera-huwm7malj18-unsplash_720.jpg"
+                  alt="Anadolu Sağlık Merkezi - Modern klinik ortamı"
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute top-4 right-4 flex items-center bg-white rounded-full px-3 py-1 shadow-md">
                   <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
                   <span className="font-semibold">4.8</span>

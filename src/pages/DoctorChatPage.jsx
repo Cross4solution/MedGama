@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Header from './Header';
+import Header from '../components/Header';
 
 const DoctorChatPage = () => {
   const [message, setMessage] = useState('');
@@ -60,11 +60,13 @@ const DoctorChatPage = () => {
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center">
-            <img 
-              src="https://placehold.co/50x50" 
-              alt="Dr. Mehmet Özkan" 
-              className="w-12 h-12 rounded-full mr-4"
-            />
+                         <div className="w-14 h-14 rounded-full mr-4 overflow-hidden bg-gray-100">
+               <img 
+                 src="/images/portrait-candid-male-doctor_720.jpg" 
+                 alt="Dr. Mehmet Özkan" 
+                 className="w-full h-full object-cover object-top"
+               />
+             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Dr. Mehmet Özkan</h1>
               <div className="flex items-center text-sm text-gray-600">
@@ -88,11 +90,13 @@ const DoctorChatPage = () => {
               {/* Chat Header */}
               <div className="flex items-center justify-between p-4 border-b bg-gray-50 rounded-t-lg">
                 <div className="flex items-center">
-                  <img 
-                    src="https://placehold.co/40x40" 
-                    alt="Dr. Mehmet Özkan" 
-                    className="w-10 h-10 rounded-full mr-3"
-                  />
+                                     <div className="w-12 h-12 rounded-full mr-3 overflow-hidden bg-gray-100">
+                     <img 
+                       src="/images/portrait-candid-male-doctor_720.jpg" 
+                       alt="Dr. Mehmet Özkan" 
+                       className="w-full h-full object-cover object-top"
+                     />
+                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">Dr. Mehmet Özkan</h3>
                     <p className="text-sm text-gray-500">Genellikle 2 saat içinde yanıtlar</p>
@@ -115,11 +119,13 @@ const DoctorChatPage = () => {
                   <div key={msg.id} className={`flex ${msg.sender === 'doctor' ? 'justify-end' : 'justify-start'}`}>
                     <div className="flex items-start max-w-xs lg:max-w-md">
                       {msg.sender === 'patient' && (
-                        <img 
-                          src="https://placehold.co/32x32" 
-                          alt="Doctor" 
-                          className="w-8 h-8 rounded-full mr-2 flex-shrink-0"
-                        />
+                                                 <div className="w-10 h-10 rounded-full mr-2 flex-shrink-0 overflow-hidden bg-gray-100">
+                           <img 
+                             src="/images/portrait-candid-male-doctor_720.jpg" 
+                             alt="Doctor" 
+                             className="w-full h-full object-cover object-top"
+                           />
+                         </div>
                       )}
                       <div className={`rounded-lg px-4 py-2 ${
                         msg.sender === 'doctor' 
@@ -182,11 +188,13 @@ const DoctorChatPage = () => {
             {/* Doctor Profile Card */}
             <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
               <div className="text-center">
-                <img 
-                  src="https://placehold.co/80x80" 
-                  alt="Dr. Mehmet Özkan" 
-                  className="w-20 h-20 rounded-full mx-auto mb-4"
-                />
+                                 <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gray-100">
+                   <img 
+                     src="/images/portrait-candid-male-doctor_720.jpg" 
+                     alt="Dr. Mehmet Özkan" 
+                     className="w-full h-full object-cover object-top"
+                   />
+                 </div>
                 <h3 className="text-lg font-bold text-gray-900">Dr. Mehmet Özkan</h3>
                 <p className="text-gray-600 text-sm">Kardiyoloji Uzmanı</p>
                 <div className="flex items-center justify-center mt-2">

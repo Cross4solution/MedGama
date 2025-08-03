@@ -1,5 +1,5 @@
 import React from 'react';
-import Header from './Header';
+import Header from '../components/Header';
 const TermsOfServicePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
