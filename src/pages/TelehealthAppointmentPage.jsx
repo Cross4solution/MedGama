@@ -308,7 +308,7 @@ const TelehealthAppointmentPage = () => {
                 </div>
               </div>
 
-              <button type="submit" className="w-full bg-blue-600 text-white py-1.5 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors">
+                              <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-xl font-semibold text-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md">
                 Randevu Al
               </button>
             </form>

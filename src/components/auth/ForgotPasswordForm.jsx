@@ -42,7 +42,7 @@ const ForgotPasswordForm = ({
       </div>
       <button
         type="submit"
-        className="w-full max-w-md bg-blue-600 text-white py-1.5 sm:py-2 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm"
+                  className="w-full max-w-md bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md"
       >
         Şifre Sıfırlama Bağlantısı Gönder
       </button>

@@ -191,7 +191,7 @@ const MediTravelClinics = () => {
               </div>
             </div>
             <div className="flex items-end">
-              <button className="w-full bg-blue-600 text-white py-1.5 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+                              <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md">
                 <Search className="w-5 h-5" />
                 <span>Ara</span>
               </button>
@@ -333,7 +333,7 @@ const MediTravelClinics = () => {
                             <span className="text-sm">Mesaj</span>
                           </button>
                         </div>
-                        <button className="bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors">
+                        <button className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md">
                           Profili Gör
                         </button>
                       </div>
@@ -347,7 +347,7 @@ const MediTravelClinics = () => {
             <div className="flex justify-center mt-8">
               <div className="flex items-center space-x-2">
                 <button className="px-3 py-2 text-gray-500 hover:text-gray-700">&lt;</button>
-                <button className="px-3 py-2 bg-blue-600 text-white rounded">1</button>
+                <button className="px-3 py-2 bg-blue-600 text-white rounded-xl shadow-sm">1</button>
                 <button className="px-3 py-2 text-gray-700 hover:text-gray-900">2</button>
                 <button className="px-3 py-2 text-gray-700 hover:text-gray-900">3</button>
                 <button className="px-3 py-2 text-gray-500 hover:text-gray-700">&gt;</button>

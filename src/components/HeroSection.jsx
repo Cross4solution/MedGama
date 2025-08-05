@@ -143,15 +143,36 @@ const HeroSection = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center space-x-2">
+                              <button className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all duration-200 font-semibold flex items-center justify-center space-x-2 shadow-sm hover:shadow-md">
                 <Send className="w-4 h-4" />
                 <span>AI Asistanı ile Başla</span>
               </button>
             </div>
             
             {/* Küçük Chat Demo */}
-            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-lg max-w-sm h-48 overflow-hidden">
-              <div className="space-y-3 overflow-y-auto h-full pr-2 scrollbar-hide">
+            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-lg max-w-sm h-48 overflow-hidden relative">
+              {/* Mobil için arka plan resmi */}
+              <div 
+                className="md:hidden absolute -left-2 -top-2 w-[calc(100%+1rem)] h-[calc(100%+1rem)] z-0 rounded-xl"
+                style={{
+                  backgroundImage: `url('/images/sleek-black-and-green-gradient-tech-background-with-metal-texture-and-soft-lines-photo.jpg')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              
+              {/* Masaüstü için arka plan resmi */}
+              <div 
+                className="hidden md:block absolute -left-2 -top-2 w-[calc(100%+1rem)] h-[calc(100%+1rem)] z-0 rounded-xl"
+                style={{
+                  backgroundImage: `url('/images/pexels-diva-30920085_720.jpg')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div className="space-y-3 overflow-y-auto h-full pr-2 scrollbar-hide relative z-10">
                 {/* Tamamlanmış mesajlar */}
                 {visibleMessages.map((message) => (
                   <div key={message.uniqueId || message.id} className="flex items-start space-x-2">

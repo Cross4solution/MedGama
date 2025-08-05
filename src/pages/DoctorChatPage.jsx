@@ -105,7 +105,7 @@ const DoctorChatPage = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 flex items-center">
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700 flex items-center shadow-sm hover:shadow-md transition-all duration-200">
                     <span className="mr-2">📹</span>
                     Video Görüşme
                   </button>
@@ -166,7 +166,7 @@ const DoctorChatPage = () => {
                   />
                   <button
                     onClick={handleSendMessage}
-                    className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700"
+                    className="bg-blue-600 text-white p-2 rounded-xl hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200"
                   >
                     📤
                   </button>
@@ -224,7 +224,7 @@ const DoctorChatPage = () => {
                 </div>
               </div>
 
-              <button className="w-full bg-blue-600 text-white py-2 rounded-lg mt-6 hover:bg-blue-700">
+                              <button className="w-full bg-blue-600 text-white py-2 rounded-xl mt-6 hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200">
                 Profili Görüntüle
               </button>
             </div>

@@ -139,8 +139,18 @@ const ChatDemo = () => {
     <>
       <style>{scrollbarHideStyles}</style>
       
-      {/* Ana container - arka plan resmi burada */}
+      {/* Ana container */}
       <div className="relative w-full h-full rounded-lg overflow-hidden flex flex-col bg-transparent max-h-full">
+        {/* Mobil için arka plan resmi - masaüstündeki gibi büyük taşma */}
+        <div 
+          className="md:hidden absolute -left-8 -top-8 w-[calc(100%+4rem)] h-[calc(100%+4rem)] z-0"
+          style={{
+            backgroundImage: `url('/images/sleek-black-and-green-gradient-tech-background-with-metal-texture-and-soft-lines-photo.jpg')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        ></div>
 
         
         {/* Scroll container */}
@@ -156,7 +166,7 @@ const ChatDemo = () => {
                 {message.sender === 'user' ? (
                   <>
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 flex-shrink-0 shadow-sm"></div>
-                    <div className="bg-white bg-opacity-80 p-4 rounded-2xl shadow-lg border border-gray-100 max-w-xs">
+                    <div className="bg-white bg-opacity-70 p-4 rounded-2xl shadow-lg border border-gray-100 max-w-xs backdrop-blur-sm">
                       <p className="text-sm text-gray-800 font-medium leading-relaxed">{message.fullText}</p>
                     </div>
                   </>
@@ -165,7 +175,7 @@ const ChatDemo = () => {
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-sm">
                       {message.avatar}
                     </div>
-                    <div className="bg-white bg-opacity-80 p-4 rounded-2xl shadow-lg border border-blue-100 max-w-xs">
+                    <div className="bg-white bg-opacity-70 p-4 rounded-2xl shadow-lg border border-blue-100 max-w-xs backdrop-blur-sm">
                       <p className="text-sm text-gray-800 font-medium leading-relaxed whitespace-pre-line">{message.fullText}</p>
                     </div>
                   </>
@@ -179,7 +189,7 @@ const ChatDemo = () => {
                 <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-sm">
                   {currentTypingMessage.avatar}
                 </div>
-                <div className="bg-white bg-opacity-80 p-4 rounded-2xl shadow-lg border border-blue-100 max-w-xs">
+                <div className="bg-white bg-opacity-70 p-4 rounded-2xl shadow-lg border border-blue-100 max-w-xs backdrop-blur-sm">
                   {showTypingIndicator ? (
                     <div className="flex items-center space-x-1">
                       <div className="flex space-x-1">

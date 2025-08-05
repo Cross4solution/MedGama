@@ -396,11 +396,11 @@ const MediTravelHomepage = () => {
             <p className="text-lg text-blue-100">Yapay zeka destekli asistanımız size en uygun tedaviyi bulmanızda yardımcı olur</p>
           </div>
           
-          <div className="bg-white rounded-2xl p-8 shadow-xl h-[500px] relative overflow-hidden">
-            <div className="grid md:grid-cols-2 h-full relative">
-              {/* Arka plan resmi - sol yarı için */}
+          <div className="bg-white rounded-2xl p-4 sm:p-8 shadow-xl h-[600px] sm:h-[500px] relative overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 h-full relative">
+              {/* Arka plan resmi - mobilde gizli, desktop'ta sol yarı için */}
               <div 
-                className="absolute -left-8 -top-8 w-[calc(50%+4rem)] h-[calc(100%+4rem)] z-0"
+                className="hidden md:block absolute -left-8 -top-8 w-[calc(50%+4rem)] h-[calc(100%+4rem)] z-0"
                 style={{
                   backgroundImage: `url('/images/pexels-diva-30920085_720.jpg')`,
                   backgroundSize: 'cover',
@@ -410,20 +410,20 @@ const MediTravelHomepage = () => {
               ></div>
               
               {/* Chat Demo */}
-              <div className="h-full overflow-hidden relative z-10 -m-8 p-8">
+              <div className="h-full overflow-hidden relative z-10 -m-4 sm:-m-8 p-4 sm:p-8">
                 <ChatDemo />
               </div>
               
-              {/* AI Features */}
-              <div className="h-full overflow-y-auto pl-8">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 pl-4">AI Asistan Özellikleri</h3>
-                <div className="space-y-4 pl-4">
+              {/* AI Features - mobilde tam genişlik, desktop'ta sağ yarı */}
+              <div className="h-full overflow-y-auto md:pl-8 mt-4 md:mt-0">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 md:pl-4 text-center md:text-left">AI Asistan Özellikleri</h3>
+                <div className="space-y-4 md:pl-4">
                   {aiFeatures.map((feature, index) => (
-                    <div key={index} className="flex items-start space-x-3">
+                    <div key={index} className="flex items-start space-x-3 justify-center md:justify-start">
                       <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
                         {feature.icon}
                       </div>
-                      <div>
+                      <div className="text-center md:text-left">
                         <h4 className="font-medium text-gray-800">{feature.title}</h4>
                         <p className="text-sm text-gray-600">{feature.description}</p>
                       </div>
@@ -516,7 +516,7 @@ const MediTravelHomepage = () => {
                   <p className="text-sm text-gray-600 mb-3">{clinic.location}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-500">{clinic.reviews}</span>
-                      <button className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors duration-200 transform hover:scale-105">
+                      <button className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md">
                       Profil Gör
                     </button>
                   </div>

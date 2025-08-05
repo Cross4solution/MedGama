@@ -157,7 +157,7 @@ const ClinicDetailPage = () => {
                     >
                       <Heart className={`w-6 h-6 ${isFavorite ? 'fill-current' : ''}`} />
                     </button>
-                                                              <button className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+                                                              <button className="bg-blue-600 text-white px-3 py-1.5 rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md">
                         <Plus className="w-4 h-4" />
                         <span className="text-sm">Takip Et</span>
                       </button>
@@ -324,11 +324,11 @@ const ClinicDetailPage = () => {
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="font-semibold text-gray-900 mb-4">İletişim</h3>
               <div className="space-y-3">
-                                 <button className="w-full bg-blue-600 text-white py-1.5 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+                                 <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md">
                   <Video className="w-5 h-5" />
                   <span>Telehealth Randevu</span>
                 </button>
-                                 <button className="w-full bg-green-500 text-white py-1.5 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
+                                 <button className="w-full bg-green-500 text-white py-2 px-4 rounded-xl hover:bg-green-600 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md">
                   <MessageCircle className="w-5 h-5" />
                   <span>Randevu Al</span>
                 </button>

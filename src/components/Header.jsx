@@ -54,15 +54,9 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-4">
             <Link 
               to="/" 
-              className="px-4 py-2 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 transition-colors font-medium text-base"
+              className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl hover:from-blue-600 hover:to-green-600 transition-all duration-200 font-medium text-base shadow-sm hover:shadow-md"
             >
-              Giriş Yap
-            </Link>
-            <Link 
-              to="/" 
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors font-medium text-base"
-            >
-              Üye Ol
+              Giriş Yap / Kayıt
             </Link>
           </div>
 
@@ -137,20 +131,13 @@ const Header = () => {
               </nav>
 
               {/* Mobile Action Buttons */}
-              <div className="pt-4 space-y-3 border-t border-gray-200">
+              <div className="pt-4 border-t border-gray-200">
                 <Link 
                   to="/" 
                   onClick={closeMenu}
-                  className="block w-full text-center px-4 py-3 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-50 transition-colors font-medium text-base"
+                  className="block w-full text-center px-4 py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl hover:from-blue-600 hover:to-green-600 transition-all duration-200 font-medium text-base shadow-sm"
                 >
-                  Giriş Yap
-                </Link>
-                <Link 
-                  to="/" 
-                  onClick={closeMenu}
-                  className="block w-full text-center px-4 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors font-medium text-base"
-                >
-                  Üye Ol
+                  Giriş Yap / Kayıt
                 </Link>
               </div>
             </div>

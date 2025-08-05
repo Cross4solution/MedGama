@@ -205,7 +205,7 @@ const MediTravelTimeline = () => {
                   </div>
                 </div>
  
-                <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                <button className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200">
                   Filtrele
                 </button>
               </div>
@@ -219,7 +219,7 @@ const MediTravelTimeline = () => {
                 <h3 className="font-semibold text-gray-800">AI Asistanı</h3>
               </div>
               <p className="text-sm text-gray-600 mb-4">Sağlık sorularınız için AI asistanımızla konuşun</p>
-              <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2">
+                              <button className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md transition-all duration-200">
                 <MessageSquare className="w-4 h-4" />
                 <span>Sohbet Başlat</span>
               </button>
@@ -255,7 +255,7 @@ const MediTravelTimeline = () => {
                     <span>Dosya</span>
                   </button>
                 </div>
-                <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                <button className="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200">
                   Paylaş
                 </button>
               </div>
@@ -367,7 +367,7 @@ const MediTravelTimeline = () => {
                     </div>
  
                     {post.hasAppointmentButton && (
-                      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                      <button className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200">
                         Randevu Al
                       </button>
                     )}

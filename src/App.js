@@ -8,6 +8,7 @@ import TelehealthAppointmentPage from './pages/TelehealthAppointmentPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import ClinicsPage from './pages/ClinicsPage';
 import AuthPages from './pages/AuthPages';
+import CookieBanner from './components/CookieBanner';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/terms-of-service" element={<TermsOfServicePage />} />
           <Route path="/auth" element={<AuthPages />} />
         </Routes>
+        <CookieBanner />
       </div>
     </Router>
   );
