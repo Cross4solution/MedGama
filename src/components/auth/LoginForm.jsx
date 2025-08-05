@@ -19,19 +19,19 @@ const LoginForm = ({
   handleSubmit, 
   setCurrentPage 
 }) => (
-  <div className="w-full max-w-lg mx-auto">
-    <div className="text-center mb-4 sm:mb-8">
-      <div className="flex items-center justify-center space-x-2 mb-2 sm:mb-4">
+  <div className="w-full max-w-sm mx-auto">
+    <div className="mb-4 sm:mb-8">
+      <div className="flex items-center space-x-2 mb-2 sm:mb-4">
         <Heart className="w-8 h-8 sm:w-10 sm:h-10 text-green-500" />
         <span className="text-xl sm:text-2xl font-bold text-gray-900">MediTravel</span>
       </div>
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Tekrar Hoş Geldiniz</h1>
-      <p className="text-sm sm:text-base text-gray-600">Hesabınıza giriş yapın ve sağlık yolculuğunuza devam edin</p>
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 text-center">Tekrar Hoş Geldiniz</h1>
+      <p className="text-sm sm:text-base text-gray-600 text-center">Hesabınıza giriş yapın ve sağlık yolculuğunuza devam edin</p>
     </div>
     <div className="space-y-3 sm:space-y-6 flex flex-col items-center">
-      <div className="w-full max-w-md">
+      <div className="w-full">
         <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-          E-posta Adresi
+          E-posta
         </label>
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
@@ -48,7 +48,7 @@ const LoginForm = ({
         </div>
         {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1 text-center">{errors.email}</p>}
       </div>
-      <div className="w-full max-w-md">
+      <div className="w-full">
         <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
           Şifre
         </label>
@@ -74,7 +74,7 @@ const LoginForm = ({
         </div>
         {errors.password && <p className="text-red-500 text-xs sm:text-sm mt-1 text-center">{errors.password}</p>}
       </div>
-      <div className="flex items-center justify-between w-full max-w-md">
+      <div className="flex items-center justify-between w-full">
         <label className="flex items-center space-x-2">
           <input
             type="checkbox"
@@ -93,16 +93,16 @@ const LoginForm = ({
       <button
         type="button"
         onClick={handleSubmit}
-                  className="w-full max-w-md bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-sm sm:text-base shadow-sm hover:shadow-md"
+                  className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-sm sm:text-base shadow-sm hover:shadow-md"
       >
         Giriş Yap
       </button>
-      <div className="relative my-6 w-full max-w-md">
+      <div className="relative my-6 w-full">
         <div className="relative flex justify-center text-sm">
           <span className="text-gray-500">veya</span>
         </div>
       </div>
-      <div className="w-full max-w-md">
+      <div className="w-full">
         <button
           type="button"
           className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 shadow-sm"

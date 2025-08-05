@@ -141,10 +141,10 @@ const ChatDemo = () => {
       
       {/* Ana container */}
       <div className="relative w-full h-full rounded-lg overflow-hidden flex flex-col bg-transparent max-h-full">
-        {/* Scroll container */}
+        {/* Scroll container - sadece chat mesajları için */}
         <div 
           ref={chatContainerRef} 
-          className="relative z-10 flex-1 overflow-y-auto pr-2 scrollbar-hide pb-6 min-h-0"
+          className="relative z-10 flex-1 overflow-y-auto pr-2 scrollbar-hide pb-6 min-h-0 max-h-[45%]"
         >
           {/* Chat mesajları container */}
           <div className="space-y-4">

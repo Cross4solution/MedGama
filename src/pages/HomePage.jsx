@@ -420,15 +420,15 @@ const MediTravelHomepage = () => {
                 }}
               ></div>
               
-              {/* Chat Demo */}
-              <div className="h-full overflow-hidden relative z-10 -m-4 sm:-m-8 p-4 sm:p-8">
+              {/* Chat Demo - Mobilde üst yarı, desktop'ta sol yarı */}
+              <div className="h-1/2 md:h-full overflow-hidden relative z-10 -m-4 sm:-m-8 p-4 sm:p-8">
                 <ChatDemo />
               </div>
               
-              {/* AI Features - mobilde tam genişlik, desktop'ta sağ yarı */}
-              <div className="h-full overflow-y-auto md:pl-8 mt-4 md:mt-0">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 md:pl-4 text-center md:text-left">AI Asistan Özellikleri</h3>
-                <div className="space-y-4 md:pl-4">
+              {/* AI Features - Mobilde alt yarı sabit, desktop'ta sağ yarı */}
+              <div className="h-1/2 md:h-full md:overflow-y-auto md:pl-8 mt-4 md:mt-0 relative flex flex-col md:justify-start">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2 md:mb-4 md:pl-4 text-center md:text-left">AI Asistan Özellikleri</h3>
+                <div className="space-y-2 md:space-y-4 md:pl-4">
                   {aiFeatures.map((feature, index) => (
                     <div key={index} className="flex items-start space-x-3 justify-center md:justify-start">
                       <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -436,7 +436,13 @@ const MediTravelHomepage = () => {
                       </div>
                       <div className="text-center md:text-left">
                         <h4 className="font-medium text-gray-800">{feature.title}</h4>
-                        <p className="text-sm text-gray-600">{feature.description}</p>
+                        <p className="text-sm text-gray-600 md:block hidden">{feature.description}</p>
+                        <p className="text-xs text-gray-600 md:hidden">
+                          {feature.title === "Akıllı Sorgulama" && "Semptomları analiz eder"}
+                          {feature.title === "Uzman Eşleştirme" && "En uygun doktoru bulur"}
+                          {feature.title === "Lokasyon Bazlı" && "İstediğiniz yerdeki seçenekler"}
+                          {feature.title === "Turizm Planı" && "Otomatik turizm programı"}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -566,8 +572,8 @@ const MediTravelHomepage = () => {
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-12">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="col-span-2 md:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">M</span>
@@ -597,7 +603,7 @@ const MediTravelHomepage = () => {
               </ul>
             </div>
             
-            <div>
+            <div className="col-span-2 md:col-span-1">
               <h4 className="font-semibold mb-4">Güvenlik</h4>
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#" className="hover:text-white">Gizlilik Politikası</a></li>

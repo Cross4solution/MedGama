@@ -109,20 +109,23 @@ const AuthPages = () => {
       </div>
 
       {/* Form Container */}
-      <div className="relative z-10 flex w-full h-screen items-center justify-center p-2 sm:p-6 overflow-hidden">
-        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-4 sm:gap-8">
+      <div className="relative z-10 flex w-full min-h-screen items-start justify-center p-2 sm:p-4 overflow-y-auto">
+        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-4">
           {/* Mobile Layout: Logo (top-left) + Form + Features (below form) */}
-          <div className="flex flex-col lg:hidden w-full max-w-md mx-auto h-full justify-center">
-            {/* Mobile Logo - Top Left */}
-            <div className="flex items-center space-x-2 mb-1 sm:mb-2">
-              <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xs">M</span>
+          <div className="flex flex-col lg:hidden w-full max-w-sm mx-auto py-2">
+            {/* Logo Container - Sola hizalı */}
+            <div className="flex justify-start w-full mb-2 pl-2">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 sm:w-5 sm:h-5 bg-green-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">M</span>
+                </div>
+                <span className="text-sm font-bold text-white">MediTravel</span>
               </div>
-              <span className="text-sm sm:text-base font-bold text-white">MediTravel</span>
             </div>
+
             
             {/* Mobile Form */}
-            <div className="w-full bg-white/95 backdrop-blur-xl rounded-xl p-1 sm:p-2 shadow-2xl border border-white/30 mb-1 sm:mb-2">
+            <div className="w-full bg-white/95 backdrop-blur-xl rounded-xl p-2 sm:p-3 shadow-2xl border border-white/30 mb-2">
               {currentPage === 'login' ? (
                 <LoginForm 
                   formData={formData}
@@ -158,39 +161,7 @@ const AuthPages = () => {
               )}
             </div>
             
-            {/* Mobile Features - Below Form */}
-            <div className="text-left">
-              {/* Large Heart Icon */}
-              <div className="w-12 h-12 mx-auto bg-gradient-to-br from-teal-100 to-teal-200 rounded-full flex items-center justify-center mb-1">
-                <Heart className="w-6 h-6 text-teal-600" />
-              </div>
-              
-              {/* Title */}
-              <h2 className="text-base font-bold text-white mb-1 text-center">
-                Sağlığınız Bizim Önceliğimiz
-              </h2>
-              
-              {/* Description */}
-              <p className="text-xs text-teal-100 mb-1 text-center">
-                Güvenilir sağlık hizmetleri, uzman doktorlar ve modern tedavi yöntemleri ile yanınızdayız.
-              </p>
-              
-              {/* Features List */}
-              <div className="space-y-1">
-                <div className="flex items-center space-x-1 justify-center">
-                  <div className="w-4 h-4 bg-teal-100 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-2.5 h-2.5 text-teal-600" />
-                  </div>
-                  <span className="text-xs text-teal-100">Uzman doktor kadrosu</span>
-                </div>
-                <div className="flex items-center space-x-1 justify-center">
-                  <div className="w-4 h-4 bg-teal-100 rounded-full flex items-center justify-center">
-                    <Shield className="w-2.5 h-2.5 text-teal-600" />
-                  </div>
-                  <span className="text-xs text-teal-100">Güvenli ve hızlı hizmet</span>
-                </div>
-              </div>
-            </div>
+
           </div>
           
           {/* Desktop Layout: Side by Side */}
@@ -234,7 +205,7 @@ const AuthPages = () => {
             
             {/* Right Side - Form */}
             <div className="flex-1 max-w-2xl">
-              <div className="w-full bg-white/95 backdrop-blur-xl rounded-xl p-6 shadow-2xl border border-white/30">
+              <div className="w-full bg-white/95 backdrop-blur-xl rounded-xl p-4 md:p-6 shadow-2xl border border-white/30">
                 {currentPage === 'login' ? (
                   <LoginForm 
                     formData={formData}

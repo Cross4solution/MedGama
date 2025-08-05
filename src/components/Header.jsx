@@ -54,7 +54,7 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-4">
             <Link 
               to="/" 
-              className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl hover:from-blue-600 hover:to-green-600 transition-all duration-200 font-medium text-base shadow-sm hover:shadow-md"
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium text-base shadow-sm hover:shadow-md"
             >
               Giriş Yap / Kayıt
             </Link>
@@ -135,7 +135,7 @@ const Header = () => {
                 <Link 
                   to="/" 
                   onClick={closeMenu}
-                  className="block w-full text-center px-4 py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl hover:from-blue-600 hover:to-green-600 transition-all duration-200 font-medium text-base shadow-sm"
+                  className="block w-full text-center px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium text-base shadow-sm"
                 >
                   Giriş Yap / Kayıt
                 </Link>

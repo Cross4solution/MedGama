@@ -23,7 +23,7 @@ const ForgotPasswordForm = ({
     <form onSubmit={handleSubmit} className="space-y-1 sm:space-y-2 flex flex-col items-center">
       <div className="w-full max-w-md">
         <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center">
-          E-posta Adresi
+          E-posta
         </label>
         <div className="relative">
           <Mail className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />

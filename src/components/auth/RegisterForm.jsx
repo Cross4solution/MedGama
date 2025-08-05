@@ -28,16 +28,16 @@ const RegisterForm = ({
   setShowPrivacyPopup
 }) => (
   <div className="w-full max-w-2xl mx-auto">
-    <div className="text-center mb-2 sm:mb-3">
-      <div className="flex items-center justify-center space-x-2 mb-1 sm:mb-2">
-        <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
-        <span className="text-lg sm:text-xl font-bold text-gray-900">MediTravel</span>
-      </div>
-      <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Hesap Oluşturun</h1>
-      <p className="text-xs sm:text-sm text-gray-600">Sağlık yolculuğunuza başlamak için kayıt olun</p>
-    </div>
-    <form onSubmit={handleSubmit} className="space-y-1 sm:space-y-2 flex flex-col items-center">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 w-full max-w-2xl">
+         <div className="mb-2 sm:mb-3 md:mb-2">
+       <div className="flex items-center space-x-2 mb-1 sm:mb-2">
+         <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
+         <span className="text-lg sm:text-xl font-bold text-gray-900">MediTravel</span>
+       </div>
+       <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 text-center">Hesap Oluşturun</h1>
+       <p className="text-xs sm:text-sm text-gray-600 text-center">Sağlık yolculuğunuza başlamak için kayıt olun</p>
+     </div>
+         <form onSubmit={handleSubmit} className="space-y-1 sm:space-y-2 md:space-y-1 flex flex-col items-center">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 md:gap-1 w-full max-w-2xl">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
             Ad
@@ -77,7 +77,7 @@ const RegisterForm = ({
           {errors.lastName && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.lastName}</p>}
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 w-full max-w-2xl">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 md:gap-1 w-full max-w-2xl">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
             E-posta Adresi
@@ -117,7 +117,7 @@ const RegisterForm = ({
           {errors.phone && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.phone}</p>}
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 w-full max-w-2xl">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 md:gap-1 w-full max-w-2xl">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
             Şehir
@@ -258,7 +258,7 @@ const RegisterForm = ({
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 w-full max-w-2xl">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 md:gap-1 w-full max-w-2xl">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
             Şifre
@@ -311,9 +311,10 @@ const RegisterForm = ({
           </div>
           {errors.confirmPassword && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.confirmPassword}</p>}
         </div>
-      </div>
-      
-      <div className="space-y-3 sm:space-y-4 w-full max-w-2xl mt-4 sm:mt-6">
+              </div>
+        
+       {/* Checkbox Section - Ayrı bölüm */}
+       <div className="space-y-3 sm:space-y-4 w-full max-w-2xl mt-20 sm:mt-24 pt-8 pb-4">
          <div>
            <label className="flex items-start space-x-2 sm:space-x-3 justify-center md:justify-start">
              <input
@@ -362,7 +363,7 @@ const RegisterForm = ({
       
       <button
         type="submit"
-        className="w-full max-w-2xl bg-green-500 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-green-600 focus:ring-4 focus:ring-green-200 transition-all duration-200 font-semibold text-xs sm:text-sm mt-4 sm:mt-6 shadow-sm hover:shadow-md"
+                 className="w-full max-w-2xl bg-green-500 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-green-600 focus:ring-4 focus:ring-green-200 transition-all duration-200 font-semibold text-xs sm:text-sm mt-3 sm:mt-4 md:mt-2 shadow-sm hover:shadow-md"
       >
         Hesap Oluştur
       </button>
