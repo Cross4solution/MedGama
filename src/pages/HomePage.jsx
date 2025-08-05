@@ -397,8 +397,19 @@ const MediTravelHomepage = () => {
           </div>
           
           <div className="bg-white rounded-2xl p-4 sm:p-8 shadow-xl h-[600px] sm:h-[500px] relative overflow-hidden">
+            {/* Mobil için arka plan resmi - tüm genişlik, yarı yükseklikten biraz az */}
+            <div 
+              className="md:hidden absolute -left-8 -top-8 w-[calc(100%+4rem)] h-[calc(45%+4rem)] z-0"
+              style={{
+                backgroundImage: `url('/images/sleek-black-and-green-gradient-tech-background-with-metal-texture-and-soft-lines-photo.jpg')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            ></div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 h-full relative">
-              {/* Arka plan resmi - mobilde gizli, desktop'ta sol yarı için */}
+              {/* Arka plan resmi - desktop'ta sol yarı için */}
               <div 
                 className="hidden md:block absolute -left-8 -top-8 w-[calc(50%+4rem)] h-[calc(100%+4rem)] z-0"
                 style={{

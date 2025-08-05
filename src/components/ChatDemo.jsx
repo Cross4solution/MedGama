@@ -141,18 +141,6 @@ const ChatDemo = () => {
       
       {/* Ana container */}
       <div className="relative w-full h-full rounded-lg overflow-hidden flex flex-col bg-transparent max-h-full">
-        {/* Mobil için arka plan resmi - masaüstündeki gibi büyük taşma */}
-        <div 
-          className="md:hidden absolute -left-8 -top-8 w-[calc(100%+4rem)] h-[calc(100%+4rem)] z-0"
-          style={{
-            backgroundImage: `url('/images/sleek-black-and-green-gradient-tech-background-with-metal-texture-and-soft-lines-photo.jpg')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-        ></div>
-
-        
         {/* Scroll container */}
         <div 
           ref={chatContainerRef} 
