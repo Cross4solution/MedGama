@@ -20,13 +20,13 @@ const LoginForm = ({
   setCurrentPage 
 }) => (
   <div className="w-full max-w-sm mx-auto">
-    <div className="mb-4 sm:mb-8">
-      <div className="flex items-center space-x-2 mb-2 sm:mb-4">
+    <div className="text-center mb-4 sm:mb-8">
+      <div className="flex items-center justify-center space-x-2 mb-2 sm:mb-4">
         <Heart className="w-8 h-8 sm:w-10 sm:h-10 text-green-500" />
         <span className="text-xl sm:text-2xl font-bold text-gray-900">MediTravel</span>
       </div>
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 text-center">Tekrar Hoş Geldiniz</h1>
-      <p className="text-sm sm:text-base text-gray-600 text-center">Hesabınıza giriş yapın ve sağlık yolculuğunuza devam edin</p>
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Tekrar Hoş Geldiniz</h1>
+      <p className="text-sm sm:text-base text-gray-600">Hesabınıza giriş yapın ve sağlık yolculuğunuza devam edin</p>
     </div>
     <div className="space-y-3 sm:space-y-6 flex flex-col items-center">
       <div className="w-full">

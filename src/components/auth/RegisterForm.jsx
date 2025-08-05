@@ -28,13 +28,13 @@ const RegisterForm = ({
   setShowPrivacyPopup
 }) => (
   <div className="w-full max-w-2xl mx-auto">
-         <div className="mb-2 sm:mb-3 md:mb-2">
-       <div className="flex items-center space-x-2 mb-1 sm:mb-2">
+         <div className="text-center mb-2 sm:mb-3 md:mb-2">
+       <div className="flex items-center justify-center space-x-2 mb-1 sm:mb-2">
          <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
          <span className="text-lg sm:text-xl font-bold text-gray-900">MediTravel</span>
        </div>
-       <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 text-center">Hesap Oluşturun</h1>
-       <p className="text-xs sm:text-sm text-gray-600 text-center">Sağlık yolculuğunuza başlamak için kayıt olun</p>
+       <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Hesap Oluşturun</h1>
+       <p className="text-xs sm:text-sm text-gray-600">Sağlık yolculuğunuza başlamak için kayıt olun</p>
      </div>
          <form onSubmit={handleSubmit} className="space-y-1 sm:space-y-2 md:space-y-1 flex flex-col items-center">
              <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 md:gap-1 w-full max-w-2xl">
