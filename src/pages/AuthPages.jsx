@@ -78,7 +78,7 @@ const AuthPages = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Tasarım amaçlı - direkt ana sayfaya yönlendir
-    window.location.href = '/home';
+    window.location.href = '/patient-home';
   };
 
   return (

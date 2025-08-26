@@ -1,5 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense, useRef, useMemo } from 'react';
 import { Search, Video, MapPin, Star, Shield, Users, Calendar, Send, MessageCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import ChatDemo from '../components/ChatDemo';
 import Header from '../components/Header';
 import HeroSection from '../components/HeroSection';
@@ -357,6 +358,35 @@ const MediTravelHomepage = () => {
     }
   ];
 
+  // Navigation helper
+  const navigate = useNavigate();
+
+  // Simple clinic search state
+  const [q, setQ] = useState('');
+
+  const navigateToClinics = (params = {}) => {
+    const usp = new URLSearchParams(params);
+    const qs = usp.toString();
+    navigate(`/clinics${qs ? `?${qs}` : ''}`);
+  };
+
+  // Custom search cascading selects (mock data)
+  const countries = ['Türkiye', 'Almanya', 'İngiltere'];
+  const citiesByCountry = {
+    Türkiye: ['İstanbul', 'Ankara', 'İzmir'],
+    Almanya: ['Berlin', 'Münih'],
+    İngiltere: ['Londra', 'Manchester']
+  };
+  const branches = ['Kardiyoloji', 'Ortopedi', 'Nöroloji', 'Diş', 'Plastik Cerrahi'];
+  const [country, setCountry] = useState('');
+  const [city, setCity] = useState('');
+  const [branch, setBranch] = useState('');
+
+  useEffect(() => {
+    // reset city if country changes
+    setCity('');
+  }, [country]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -384,6 +414,88 @@ const MediTravelHomepage = () => {
                 <p className="text-gray-600">{feature.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Clinic Search (simple) */}
+      <section className="py-12 bg-white">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Klinik Ara</h2>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                type="text"
+                placeholder="Klinik, doktor veya tedavi ara..."
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <button
+              onClick={() => navigateToClinics({ q })}
+              className="px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+            >
+              Ara
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Custom Search (country -> city -> branch) */}
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Özel Arama</h2>
+          <div className="grid md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Ülke</label>
+              <select
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-3 py-2"
+              >
+                <option value="">Seçiniz</option>
+                {countries.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Şehir</label>
+              <select
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                disabled={!country}
+                className="w-full border border-gray-200 rounded-xl px-3 py-2 disabled:bg-gray-100"
+              >
+                <option value="">Seçiniz</option>
+                {(citiesByCountry[country] || []).map((ct) => (
+                  <option key={ct} value={ct}>{ct}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Branş</label>
+              <select
+                value={branch}
+                onChange={(e) => setBranch(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-3 py-2"
+              >
+                <option value="">Seçiniz</option>
+                {branches.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={() => navigateToClinics({ country, city, branch })}
+                className="w-full px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+              >
+                Sonuçları Göster
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -447,6 +559,29 @@ const MediTravelHomepage = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Timeline Preview */}
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-1">
+              <h2 className="text-3xl font-bold text-gray-800 mb-3">Timeline Önizlemesi</h2>
+              <p className="text-gray-600 mb-6">Kişisel sağlık yolculuğunuzun öne çıkan adımlarını burada görün. Tam sayfayı görmek için tıklayın.</p>
+              <button
+                onClick={() => navigate('/timeline')}
+                className="px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+              >
+                Tüm Timeline'ı Gör
+              </button>
+            </div>
+            <div className="flex-1 w-full">
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 h-64 flex items-center justify-center">
+                <span className="text-gray-500">Timeline kart/akış önizleme alanı</span>
               </div>
             </div>
           </div>
