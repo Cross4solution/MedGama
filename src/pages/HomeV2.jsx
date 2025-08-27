@@ -1,20 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import CitySelector from '../components/CitySelector';
-import DatePicker from '../components/DatePicker';
 import Header from '../components/Header';
+import TimelinePreview from '../components/TimelinePreview';
 
 export default function HomeV2() {
-  // Hızlı arama state
-  const [quickQuery, setQuickQuery] = useState('');
+  // Hızlı arama alanları
+  const [quickCountry, setQuickCountry] = useState('');
   const [quickCity, setQuickCity] = useState('');
-  const [quickDate, setQuickDate] = useState(new Date());
+  const [quickBranch, setQuickBranch] = useState('');
+  const [quickName, setQuickName] = useState('');
 
-  // Detaylı arama state
-  const [country, setCountry] = useState('Türkiye'); // basit placeholder
-  const [city, setCity] = useState('');
-  const [department, setDepartment] = useState('');
-  const [date, setDate] = useState(new Date());
-  const [price, setPrice] = useState([1000, 10000]);
+  // Detaylı arama alanları
+  const [advCountry, setAdvCountry] = useState('');
+  const [advCity, setAdvCity] = useState('');
+  const [advBranch, setAdvBranch] = useState('');
+  const [advName, setAdvName] = useState('');
 
   // Login dropdown state + outside click close
   const [loginOpen, setLoginOpen] = useState(false);
@@ -48,12 +47,22 @@ export default function HomeV2() {
   const onQuickSearch = () => {
     // Not: Şimdilik sadece console. Sonraki sprintte /search rotasına yönlendiririz.
     // eslint-disable-next-line no-console
-    console.log('Quick search:', { quickQuery, quickCity, quickDate });
+    console.log('Quick search:', {
+      country: quickCountry,
+      city: quickCity,
+      branch: quickBranch,
+      name: quickName,
+    });
   };
 
   const onAdvancedSearch = () => {
     // eslint-disable-next-line no-console
-    console.log('Advanced search:', { country, city, department, date, price });
+    console.log('Advanced search:', {
+      country: advCountry,
+      city: advCity,
+      branch: advBranch,
+      name: advName,
+    });
   };
 
   return (
@@ -97,74 +106,36 @@ export default function HomeV2() {
         </div>
       </section>
 
-      {/* Clinic Search (tek satır) */}
+      {/* Hızlı Arama (çoklu textbox) */}
       <section id="search" className="py-10 bg-gray-50 border-y">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Hızlı Arama</h2>
-          <div className="grid md:grid-cols-4 gap-3">
-            <input
-              value={quickQuery}
-              onChange={(e) => setQuickQuery(e.target.value)}
-              placeholder="Klinik/Doktor adı"
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
-            />
-            <CitySelector value={quickCity} onChange={setQuickCity} />
-            <DatePicker value={quickDate} onChange={setQuickDate} />
+          <div className="grid md:grid-cols-5 gap-3">
+            <input value={quickCountry} onChange={(e)=>setQuickCountry(e.target.value)} placeholder="Ülke" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={quickCity} onChange={(e)=>setQuickCity(e.target.value)} placeholder="Şehir" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={quickBranch} onChange={(e)=>setQuickBranch(e.target.value)} placeholder="Branş" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={quickName} onChange={(e)=>setQuickName(e.target.value)} placeholder="Klinik/Doktor adı" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
             <button onClick={onQuickSearch} className="bg-teal-600 text-white rounded-lg text-sm px-4 py-2 hover:bg-teal-700">Ara</button>
           </div>
         </div>
       </section>
 
-      {/* Custom Search (detaylı) */}
+      {/* Detaylı Arama (çoklu textbox) */}
       <section className="py-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Detaylı Arama</h2>
           <div className="grid md:grid-cols-5 gap-3">
-            {/* Ülke (basit select) */}
-            <select value={country} onChange={(e) => setCountry(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white">
-              <option>Türkiye</option>
-              <option>Almanya</option>
-              <option>İngiltere</option>
-            </select>
-            {/* Şehir */}
-            <CitySelector value={city} onChange={setCity} />
-            {/* Branş */}
-            <select value={department} onChange={(e) => setDepartment(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white">
-              <option value="">Branş seçiniz</option>
-              {departments.map((d) => (
-                <option key={d} value={d}>{d}</option>
-              ))}
-            </select>
-            {/* Tarih */}
-            <DatePicker value={date} onChange={setDate} />
-            {/* Fiyat Aralığı (basit segment) */}
-            <div className="flex items-center gap-2">
-              <input type="number" value={price[0]} onChange={(e) => setPrice([Number(e.target.value), price[1]])} className="w-24 border rounded px-2 py-1 text-sm" />
-              <span className="text-gray-500">-</span>
-              <input type="number" value={price[1]} onChange={(e) => setPrice([price[0], Number(e.target.value)])} className="w-24 border rounded px-2 py-1 text-sm" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <button onClick={onAdvancedSearch} className="bg-gray-900 text-white rounded-lg text-sm px-4 py-2 hover:bg-black">Filtreli Ara</button>
+            <input value={advCountry} onChange={(e)=>setAdvCountry(e.target.value)} placeholder="Ülke" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={advCity} onChange={(e)=>setAdvCity(e.target.value)} placeholder="Şehir" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={advBranch} onChange={(e)=>setAdvBranch(e.target.value)} placeholder="Branş" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={advName} onChange={(e)=>setAdvName(e.target.value)} placeholder="Klinik/Doktor adı" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <button onClick={onAdvancedSearch} className="bg-gray-900 text-white rounded-lg text-sm px-4 py-2 hover:bg-black">Ara</button>
           </div>
         </div>
       </section>
 
       {/* Timeline Önizleme */}
-      <section className="py-12 bg-gray-50 border-y">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Timeline Önizlemesi</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="p-4 rounded-xl border bg-white hover:shadow-md transition">
-                <div className="h-24 rounded-lg bg-gray-100 mb-3" />
-                <div className="h-3 bg-gray-200 rounded w-3/4 mb-2" />
-                <div className="h-3 bg-gray-200 rounded w-1/2" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <TimelinePreview columns={3} />
 
       {/* Popüler Klinikler */}
       <section id="popular" className="py-12">

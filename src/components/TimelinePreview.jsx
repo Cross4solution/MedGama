@@ -1,0 +1,205 @@
+import React from 'react';
+import { Star, MessageCircle, Heart, Clock, User } from 'lucide-react';
+import { posts as sharedPosts, professionalReview as sharedPro } from './timelineData';
+
+// TimelinePreview: Şık hover efektli timeline kartları önizlemesi
+// Kullanım: <TimelinePreview items={demoItems} columns={3} />
+// props:
+// - items: [{ id, title, subtitle, image }] şeklinde liste. Boşsa placeholder üretilir.
+// - columns: grid kolon sayısı (md breakpoint)
+export default function TimelinePreview({ items = [], columns = 3 }) {
+  // Shared posts -> preview item format
+  const mappedFromPosts = sharedPosts.slice(0, 4).map((p, i) => {
+    if (p.type === 'clinic_update') {
+      return {
+        id: `post-${p.id}`,
+        type: 'clinic_update',
+        tag: 'Klinik Güncelleme',
+        title: `${p.clinic?.name || 'Klinik'}${p.clinic?.specialty ? ' • ' + p.clinic.specialty : ''}`,
+        subtitle: p.content,
+        image: p.image || null,
+        timestamp: p.timestamp,
+        engagement: p.engagement,
+        badge: p.clinic?.specialty,
+      };
+    }
+    if (p.type === 'patient_review') {
+      return {
+        id: `post-${p.id}`,
+        type: 'patient_review',
+        tag: 'Hasta Yorumu',
+        title: `${p.patient?.name || 'Hasta'} • ${(p.rating || 0).toFixed(1)}`,
+        subtitle: p.content,
+        image: null,
+        timestamp: p.timestamp,
+        rating: p.rating,
+        engagement: p.engagement,
+      };
+    }
+    return {
+      id: `post-${p.id}`,
+      type: p.type || 'update',
+      tag: 'Güncelleme',
+      title: p.clinic?.name || 'Güncelleme',
+      subtitle: p.content,
+      image: p.image || null,
+      timestamp: p.timestamp,
+      engagement: p.engagement,
+    };
+  });
+
+  // Shared professional review -> preview item
+  const mappedPro = sharedPro
+    ? [
+        {
+          id: sharedPro.id,
+          type: 'pro_review',
+          tag: 'PRO İnceleme',
+          title: `${sharedPro.clinic} • PRO Review`,
+          subtitle: sharedPro.content,
+          image: sharedPro.images?.[0] || 'https://placehold.co/600x300',
+          timestamp: sharedPro.timestamp,
+          scores: sharedPro.scores,
+          engagement: sharedPro.engagement,
+        },
+      ]
+    : [];
+
+  const defaults = [...mappedFromPosts, ...mappedPro].slice(0, 6);
+  const data = items.length ? items : defaults;
+
+  const colClass = {
+    2: 'md:grid-cols-2',
+    3: 'md:grid-cols-3',
+    4: 'md:grid-cols-4',
+  }[columns] || 'md:grid-cols-3';
+
+  return (
+    <section className="py-14 bg-gradient-to-b from-gray-50 to-white border-y">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-900">Timeline Önizlemesi</h2>
+          <a href="/timeline" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">Tümünü Gör</a>
+        </div>
+
+        <div className={`grid ${colClass} gap-5`} role="list">
+          {data.map((item, idx) => (
+            <article
+              key={item.id ?? idx}
+              role="listitem"
+              tabIndex={0}
+              aria-label={`${item.title || 'Timeline kartı'}: ${item.subtitle || ''}`}
+              className="group relative rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl focus:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 transition-transform duration-300 overflow-hidden hover:-translate-y-0.5 hover:scale-[1.02]"
+            >
+              {/* Üst görsel / placeholder */}
+              <div className="relative h-36 overflow-hidden">
+                {item.image ? (
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                ) : (
+                  <div className="w-full h-full relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,#e6fffb,transparent_40%),radial-gradient(circle_at_80%_0%,#e0f2fe,transparent_35%)]" />
+                    {/* Shimmer */}
+                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
+                  </div>
+                )}
+                {/* Üst gradient overlay (hover'da biraz koyulaşır) */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/0 to-black/0 group-hover:from-black/10 transition-colors duration-300" />
+
+                {/* Köşe etiketi */}
+                <div className="absolute top-3 left-3">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+                    {item.tag || 'Güncelleme'}
+                  </span>
+                </div>
+
+                {/* Sağ üst rozet (varsa) */}
+                {item.badge && (
+                  <div className="absolute top-3 right-3">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                      {item.badge}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* İçerik */}
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 tracking-tight group-hover:text-gray-950">
+                  {item.title}
+                </h3>
+                <p className="mt-1 text-sm text-gray-600 opacity-80 translate-y-0.5 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                  {item.subtitle}
+                </p>
+
+                {/* Meta chips */}
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-600 opacity-80 transition-opacity duration-300 group-hover:opacity-100">
+                  {/* Rating (hasta yorumu) */}
+                  {item.type === 'patient_review' && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-3 h-3 ${i < (item.rating || 0) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
+                      ))}
+                    </span>
+                  )}
+                  {/* Scores (pro review) */}
+                  {item.type === 'pro_review' && (
+                    <span className="inline-flex items-center gap-2 px-2 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+                      <span>Teknoloji {item.scores?.technology}</span>
+                      <span>•</span>
+                      <span>Hijyen {item.scores?.cleanliness}</span>
+                    </span>
+                  )}
+                </div>
+
+                {/* Alt kısım */}
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-200 to-sky-200 flex items-center justify-center">
+                      {item.type === 'pro_review' ? (
+                        <User className="w-4 h-4 text-teal-700" />
+                      ) : (
+                        <Clock className="w-4 h-4 text-teal-700" />
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-500">{item.timestamp || 'Az önce'}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="hidden sm:flex items-center gap-1 text-gray-500">
+                      <Heart className="w-4 h-4" />
+                      <span className="text-xs">{item.engagement?.likes ?? 0}</span>
+                    </div>
+                    <div className="hidden sm:flex items-center gap-1 text-gray-500">
+                      <MessageCircle className="w-4 h-4" />
+                      <span className="text-xs">{item.engagement?.comments ?? 0}</span>
+                    </div>
+                    <a
+                      href="/timeline"
+                      className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:text-teal-800 hover:border-teal-300 hover:bg-teal-50 transition-colors"
+                      aria-label="Timeline detayları"
+                    >
+                      Detay
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Accent halo */}
+              <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-teal-200/70" />
+              <div className="pointer-events-none absolute -inset-1 rounded-3xl bg-gradient-to-r from-teal-100/0 via-sky-100/0 to-purple-100/0 opacity-0 group-hover:opacity-100 blur-xl transition duration-700" />
+            </article>
+          ))}
+        </div>
+
+        {/* Placeholder skeleton satırı (items tamamen boş ve image verilmemişse) */}
+        {!items.length && (
+          <div className="mt-6 text-xs text-gray-500">Örnek görünüm. Gerçek adımlar eklendiğinde otomatik güncellenecek.</div>
+        )}
+      </div>
+    </section>
+  );
+}

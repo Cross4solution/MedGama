@@ -1,22 +1,14 @@
 import React, { useState } from 'react';
-import CitySelector from '../components/CitySelector';
-import DatePicker from '../components/DatePicker';
 import TimelineFeed from '../components/TimelineFeed';
 import Header from '../components/Header';
+import TimelinePreview from '../components/TimelinePreview';
 
 export default function PatientHome() {
-  // Quick search
-  const [q, setQ] = useState('');
-  const [qCity, setQCity] = useState('');
-  const [qDate, setQDate] = useState(new Date());
-
-  // Advanced search
-  const [country, setCountry] = useState('Türkiye');
-  const [city, setCity] = useState('');
-  const [dept, setDept] = useState('');
-  const [date, setDate] = useState(new Date());
-
-  const depts = ['Diş', 'Plastik Cerrahi', 'Göz', 'Ortopedi', 'Dermatoloji', 'Kardiyoloji'];
+  // Hızlı Arama alanları
+  const [quickCountry, setQuickCountry] = useState('');
+  const [quickCity, setQuickCity] = useState('');
+  const [quickBranch, setQuickBranch] = useState('');
+  const [quickName, setQuickName] = useState(''); // klinik/doktor adı
 
   const popularClinics = [
     { id: 1, name: 'SmileCare Clinic', city: 'İzmir', dept: 'Diş', rating: 4.8, price: '₺8.000+' },
@@ -27,13 +19,29 @@ export default function PatientHome() {
   const onQuick = () => {
     // TODO: hook to clinics route with params
     // eslint-disable-next-line no-console
-    console.log('quick', { q, qCity, qDate });
+    console.log('quick', {
+      country: quickCountry,
+      city: quickCity,
+      branch: quickBranch,
+      name: quickName,
+    });
   };
+
+  // Detaylı Arama alanları
+  const [advCountry, setAdvCountry] = useState('');
+  const [advCity, setAdvCity] = useState('');
+  const [advBranch, setAdvBranch] = useState('');
+  const [advName, setAdvName] = useState('');
 
   const onAdvanced = () => {
     // TODO: hook to clinics route with params
     // eslint-disable-next-line no-console
-    console.log('advanced', { country, city, dept, date });
+    console.log('advanced', {
+      country: advCountry,
+      city: advCity,
+      branch: advBranch,
+      name: advName,
+    });
   };
 
   return (
@@ -61,14 +69,18 @@ export default function PatientHome() {
         </div>
       </section>
 
+      {/* Professional Timeline Cards Preview */}
+      <TimelinePreview columns={3} />
+
       {/* Clinic Search */}
       <section className="py-8 border-b">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Clinic Search</h2>
-          <div className="grid md:grid-cols-4 gap-3">
-            <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="Klinik/Doktor adı" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
-            <CitySelector value={qCity} onChange={setQCity} />
-            <DatePicker value={qDate} onChange={setQDate} />
+          <div className="grid md:grid-cols-5 gap-3">
+            <input value={quickCountry} onChange={(e)=>setQuickCountry(e.target.value)} placeholder="Ülke" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={quickCity} onChange={(e)=>setQuickCity(e.target.value)} placeholder="Şehir" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={quickBranch} onChange={(e)=>setQuickBranch(e.target.value)} placeholder="Branş" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={quickName} onChange={(e)=>setQuickName(e.target.value)} placeholder="Klinik/Doktor adı" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
             <button onClick={onQuick} className="bg-teal-600 text-white rounded-lg text-sm px-4 py-2 hover:bg-teal-700">Ara</button>
           </div>
         </div>
@@ -79,18 +91,11 @@ export default function PatientHome() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Custom Search</h2>
           <div className="grid md:grid-cols-5 gap-3">
-            <select value={country} onChange={(e)=>setCountry(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white">
-              <option>Türkiye</option>
-              <option>Almanya</option>
-              <option>İngiltere</option>
-            </select>
-            <CitySelector value={city} onChange={setCity} />
-            <select value={dept} onChange={(e)=>setDept(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white">
-              <option value="">Branş seçiniz</option>
-              {depts.map(d => (<option key={d} value={d}>{d}</option>))}
-            </select>
-            <DatePicker value={date} onChange={setDate} />
-            <button onClick={onAdvanced} className="bg-gray-900 text-white rounded-lg text-sm px-4 py-2 hover:bg-black">Filtreli Ara</button>
+            <input value={advCountry} onChange={(e)=>setAdvCountry(e.target.value)} placeholder="Ülke" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={advCity} onChange={(e)=>setAdvCity(e.target.value)} placeholder="Şehir" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={advBranch} onChange={(e)=>setAdvBranch(e.target.value)} placeholder="Branş" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <input value={advName} onChange={(e)=>setAdvName(e.target.value)} placeholder="Klinik/Doktor adı" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            <button onClick={onAdvanced} className="bg-gray-900 text-white rounded-lg text-sm px-4 py-2 hover:bg-black">Ara</button>
           </div>
         </div>
       </section>

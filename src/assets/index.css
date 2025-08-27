@@ -15,3 +15,21 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Shimmer animation for skeleton placeholders used in TimelinePreview */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Utility class for shimmer animation */
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-shimmer"] {
+    animation: none !important;
+  }
+}

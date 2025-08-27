@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import HomePage from './pages/HomePage';
 import HomeV2 from './pages/HomeV2';
 import PatientHome from './pages/PatientHome';
 import TimelinePage from './pages/TimelinePage';
@@ -16,7 +15,7 @@ function AppContent() {
   const location = useLocation();
   
   // Cookie banner'ın gösterileceği sayfalar
-  const showCookieBanner = ['/', '/home', '/home-v2', '/home-old', '/patient-home', '/clinics', '/timeline', '/clinic', '/doctor-chat', '/telehealth-appointment', '/terms-of-service', '/login', '/register'].includes(location.pathname);
+  const showCookieBanner = ['/', '/home', '/home-v2', '/patient-home', '/clinics', '/timeline', '/clinic', '/doctor-chat', '/telehealth-appointment', '/terms-of-service', '/login', '/register'].includes(location.pathname);
   
   return (
     <div>
@@ -24,7 +23,6 @@ function AppContent() {
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />
         <Route path="/home-v2" element={<HomeV2 />} />
-        <Route path="/home-old" element={<HomePage />} />
         <Route path="/patient-home" element={<PatientHome />} />
         <Route path="/clinics" element={<ClinicsPage />} />
         <Route path="/timeline" element={<TimelinePage />} />
