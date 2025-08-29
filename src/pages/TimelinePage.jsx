@@ -18,7 +18,9 @@ import {
 } from 'lucide-react';
 import Header from '../components/Header';
 import TimelineFeed from '../components/TimelineFeed';
+import { useAuth } from '../context/AuthContext';
 const MediTravelTimeline = () => {
+  const { user } = useAuth();
   const [selectedCountry, setSelectedCountry] = useState('Türkiye');
   const [selectedCategory, setSelectedCategory] = useState('Tüm Kategoriler');
   const [activeFilter, setActiveFilter] = useState('all');
@@ -104,7 +106,7 @@ const MediTravelTimeline = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className={`max-w-6xl mx-auto px-4 py-6 ${user ? 'lg:ml-[var(--sidebar-width)]' : ''}`}>
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Left Sidebar - User Profile & Filters */}
           <div className="lg:col-span-1 space-y-6">

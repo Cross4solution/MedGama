@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
   Heart,
   CheckCircle,
@@ -11,6 +13,8 @@ import TermsPopup from '../components/auth/TermsPopup';
 import PrivacyPopup from '../components/auth/PrivacyPopup';
 
 const AuthPages = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [currentPage, setCurrentPage] = useState('login'); // 'login', 'register', or 'forgot-password'
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -77,8 +81,9 @@ const AuthPages = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Tasarım amaçlı - direkt ana sayfaya yönlendir
-    window.location.href = '/patient-home';
+    // Demo: mock login ve patient-home'a yönlendir
+    login();
+    navigate('/patient-home#timeline');
   };
 
   return (

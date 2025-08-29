@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { toEnglishTimestamp } from '../utils/i18n';
 import { Star, MessageCircle, Heart, Clock, User } from 'lucide-react';
 import { posts as sharedPosts, professionalReview as sharedPro } from './timelineData';
+import Badge from './Badge';
 
 // TimelinePreview: Şık hover efektli timeline kartları önizlemesi
 // Kullanım: <TimelinePreview items={demoItems} columns={3} />
@@ -14,7 +17,7 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
       return {
         id: `post-${p.id}`,
         type: 'clinic_update',
-        tag: 'Klinik Güncelleme',
+        tag: 'Clinic Update',
         title: `${p.clinic?.name || 'Klinik'}${p.clinic?.specialty ? ' • ' + p.clinic.specialty : ''}`,
         subtitle: p.content,
         image: p.image || null,
@@ -27,7 +30,7 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
       return {
         id: `post-${p.id}`,
         type: 'patient_review',
-        tag: 'Hasta Yorumu',
+        tag: 'Patient Review',
         title: `${p.patient?.name || 'Hasta'} • ${(p.rating || 0).toFixed(1)}`,
         subtitle: p.content,
         image: null,
@@ -39,7 +42,7 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
     return {
       id: `post-${p.id}`,
       type: p.type || 'update',
-      tag: 'Güncelleme',
+      tag: 'Update',
       title: p.clinic?.name || 'Güncelleme',
       subtitle: p.content,
       image: p.image || null,
@@ -54,7 +57,7 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
         {
           id: sharedPro.id,
           type: 'pro_review',
-          tag: 'PRO İnceleme',
+          tag: 'PRO Review',
           title: `${sharedPro.clinic} • PRO Review`,
           subtitle: sharedPro.content,
           image: sharedPro.images?.[0] || 'https://placehold.co/600x300',
@@ -68,6 +71,8 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
   const defaults = [...mappedFromPosts, ...mappedPro].slice(0, 6);
   const data = items.length ? items : defaults;
 
+  
+
   const colClass = {
     2: 'md:grid-cols-2',
     3: 'md:grid-cols-3',
@@ -78,8 +83,8 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
     <section className="py-14 bg-gradient-to-b from-gray-50 to-white border-y">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Timeline Önizlemesi</h2>
-          <a href="/timeline" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">Tümünü Gör</a>
+          <h2 className="text-xl font-semibold text-gray-900">Timeline Preview</h2>
+          <Link to="/timeline" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">View all timeline items</Link>
         </div>
 
         <div className={`grid ${colClass} gap-5`} role="list">
@@ -88,7 +93,7 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
               key={item.id ?? idx}
               role="listitem"
               tabIndex={0}
-              aria-label={`${item.title || 'Timeline kartı'}: ${item.subtitle || ''}`}
+              aria-label={`${item.title || 'Timeline card'}: ${item.subtitle || ''}`}
               className="group relative rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl focus:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 transition-transform duration-300 overflow-hidden hover:-translate-y-0.5 hover:scale-[1.02]"
             >
               {/* Üst görsel / placeholder */}
@@ -111,18 +116,19 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
 
                 {/* Köşe etiketi */}
                 <div className="absolute top-3 left-3">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-                    {item.tag || 'Güncelleme'}
-                  </span>
+                  <Badge
+                    label={item.tag || 'Update'}
+                    variant="teal"
+                    size="sm"
+                    className=""
+                    icon={<span className="w-1.5 h-1.5 rounded-full bg-teal-500" />}
+                  />
                 </div>
 
                 {/* Sağ üst rozet (varsa) */}
                 {item.badge && (
                   <div className="absolute top-3 right-3">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                      {item.badge}
-                    </span>
+                    <Badge label={item.badge} variant="blue" size="sm" />
                   </div>
                 )}
               </div>
@@ -149,9 +155,9 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
                   {/* Scores (pro review) */}
                   {item.type === 'pro_review' && (
                     <span className="inline-flex items-center gap-2 px-2 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
-                      <span>Teknoloji {item.scores?.technology}</span>
+                      <span>Technology {item.scores?.technology}</span>
                       <span>•</span>
-                      <span>Hijyen {item.scores?.cleanliness}</span>
+                      <span>Cleanliness {item.scores?.cleanliness}</span>
                     </span>
                   )}
                 </div>
@@ -166,7 +172,7 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
                         <Clock className="w-4 h-4 text-teal-700" />
                       )}
                     </div>
-                    <span className="text-xs text-gray-500">{item.timestamp || 'Az önce'}</span>
+                    <span className="text-xs text-gray-500">{toEnglishTimestamp(item.timestamp) || 'Just now'}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="hidden sm:flex items-center gap-1 text-gray-500">
@@ -177,13 +183,13 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
                       <MessageCircle className="w-4 h-4" />
                       <span className="text-xs">{item.engagement?.comments ?? 0}</span>
                     </div>
-                    <a
-                      href="/timeline"
+                    <Link
+                      to="/timeline"
                       className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:text-teal-800 hover:border-teal-300 hover:bg-teal-50 transition-colors"
-                      aria-label="Timeline detayları"
+                      aria-label="Timeline details"
                     >
-                      Detay
-                    </a>
+                      Details
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -195,9 +201,9 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
           ))}
         </div>
 
-        {/* Placeholder skeleton satırı (items tamamen boş ve image verilmemişse) */}
+        {/* Placeholder skeleton row (when items are empty and no image provided) */}
         {!items.length && (
-          <div className="mt-6 text-xs text-gray-500">Örnek görünüm. Gerçek adımlar eklendiğinde otomatik güncellenecek.</div>
+          <div className="mt-6 text-xs text-gray-500">Sample preview. It will update automatically when real steps are added.</div>
         )}
       </div>
     </section>

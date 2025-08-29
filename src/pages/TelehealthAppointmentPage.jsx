@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
+import PatientLayout from '../components/PatientLayout';
 
 const TelehealthAppointmentPage = () => {
   const [selectedDoctor, setSelectedDoctor] = useState('Dr. Ahmet Yılmaz');
@@ -51,12 +51,10 @@ const TelehealthAppointmentPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-
+    <PatientLayout>
       {/* Breadcrumb */}
       <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3`}>
           <nav className="flex text-sm text-gray-500">
             <a href="#" className="hover:text-gray-700">Ana Sayfa</a>
             <span className="mx-2">›</span>
@@ -68,7 +66,7 @@ const TelehealthAppointmentPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Telehealth Randevu Al</h1>
@@ -331,8 +329,8 @@ const TelehealthAppointmentPage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PatientLayout>
   );
 };
 
-export default TelehealthAppointmentPage; 
+export default TelehealthAppointmentPage;

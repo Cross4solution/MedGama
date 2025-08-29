@@ -1,9 +1,9 @@
 import React from 'react';
-import Header from '../components/Header';
+import PatientLayout from '../components/PatientLayout';
+
 const TermsOfServicePage = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <PatientLayout>
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header Section */}
@@ -51,7 +51,7 @@ const TermsOfServicePage = () => {
                 <h3 className="text-lg font-semibold text-blue-900">Hasta Hizmetleri</h3>
               </div>
               <ul className="space-y-2 text-blue-800">
-                <li className="flex items-start"><span className="text-blue-600 mr-2">•</span>Klinik profil görüntüleme</li>
+                <li className="flex items-start"><span className="text-blue-600 mr-2">•</span>Klinik bilgilerine erişim</li>
                 <li className="flex items-start"><span className="text-blue-600 mr-2">•</span>AI destekli doktor önerisi</li>
                 <li className="flex items-start"><span className="text-blue-600 mr-2">•</span>Telehealth randevu sistemi</li>
                 <li className="flex items-start"><span className="text-blue-600 mr-2">•</span>Sağlık turizmi programları</li>
@@ -303,7 +303,8 @@ const TermsOfServicePage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PatientLayout>
   );
 };
-export default TermsOfServicePage; 
+
+export default TermsOfServicePage;

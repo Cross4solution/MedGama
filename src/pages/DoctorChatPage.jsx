@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
+import PatientLayout from '../components/PatientLayout';
 
 const DoctorChatPage = () => {
   const [message, setMessage] = useState('');
@@ -38,12 +38,10 @@ const DoctorChatPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-
+    <PatientLayout>
       {/* Breadcrumb */}
       <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3`}>
           <nav className="flex text-sm text-gray-500">
             <a href="#" className="hover:text-gray-700">Ana Sayfa</a>
             <span className="mx-2">›</span>
@@ -58,7 +56,7 @@ const DoctorChatPage = () => {
 
       {/* Doctor Info Header */}
       <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4`}>
           <div className="flex items-center">
                          <div className="w-14 h-14 rounded-full mr-4 overflow-hidden bg-gray-100">
                <img 
@@ -83,7 +81,7 @@ const DoctorChatPage = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6`}>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Chat Area */}
           <div className="lg:col-span-3">
@@ -264,7 +262,7 @@ const DoctorChatPage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PatientLayout>
   );
 };
 

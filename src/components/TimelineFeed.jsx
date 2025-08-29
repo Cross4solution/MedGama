@@ -1,6 +1,8 @@
 import React from 'react';
 import { Heart, MessageCircle, Share2, Image, Folder, Star, Clock, User } from 'lucide-react';
 import { posts as sharedPosts, professionalReview as sharedPro } from './timelineData';
+import { toEnglishTimestamp } from '../utils/i18n';
+import Badge from './Badge';
 
 // This component renders ONLY the main timeline content (share box + posts + professional review)
 // It is reused in both the full Timeline page and the PatientHome preview.
@@ -30,7 +32,7 @@ export default function TimelineFeed() {
           </div>
           <input
             type="text"
-            placeholder="Doktora soru sor veya deneyimini paylaş..."
+            placeholder="Ask a doctor or share your experience..."
             className="flex-1 p-3 bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -38,15 +40,15 @@ export default function TimelineFeed() {
           <div className="flex space-x-4">
             <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
               <Image className="w-5 h-5" />
-              <span>Görsel</span>
+              <span>Image</span>
             </button>
             <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
               <Folder className="w-5 h-5" />
-              <span>Dosya</span>
+              <span>File</span>
             </button>
           </div>
           <button className="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200">
-            Paylaş
+            Share
           </button>
         </div>
       </div>
@@ -63,17 +65,17 @@ export default function TimelineFeed() {
                   <div className="flex items-center space-x-2">
                     <h4 className="font-semibold text-gray-800">{post.clinic?.name || post.patient?.name}</h4>
                     {post.patient?.isPatient && (
-                      <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">Hasta</span>
+                      <Badge label="Patient" variant="green" size="sm" rounded="full" />
                     )}
                   </div>
                   <div className="flex items-center space-x-2 text-sm text-gray-500">
                     <Clock className="w-3 h-3" />
-                    <span>{post.timestamp}</span>
+                    <span>{toEnglishTimestamp(post.timestamp) || 'Just now'}</span>
                   </div>
                 </div>
               </div>
               {post.clinic?.specialty && (
-                <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm">{post.clinic.specialty}</span>
+                <Badge label={post.clinic.specialty} variant="blue" size="sm" rounded="full" />
               )}
             </div>
           </div>
@@ -115,12 +117,12 @@ export default function TimelineFeed() {
                 </button>
                 <button className="flex items-center space-x-2 text-gray-600 hover:text-green-500">
                   <Share2 className="w-5 h-5" />
-                  <span>Paylaş</span>
+                  <span>Share</span>
                 </button>
               </div>
               {post.hasAppointmentButton && (
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200">
-                  Randevu Al
+                  Book Appointment
                 </button>
               )}
             </div>
@@ -138,24 +140,23 @@ export default function TimelineFeed() {
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <h4 className="font-semibold text-gray-800">MediTravel Profesyonel Değerlendirme</h4>
+                  <h4 className="font-semibold text-gray-800">MediTravel Professional Review</h4>
                   <span className="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs font-medium">PRO Review</span>
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <span>Uzman Ekip</span>
+                  <span>Expert Team</span>
                   <span>•</span>
                   <Clock className="w-3 h-3" />
-                  <span>1 gün önce</span>
+                  <span>{toEnglishTimestamp(sharedPro.timestamp) || 'Just now'}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div className="p-6 pt-4">
-          <h3 className="font-semibold text-gray-800 mb-3">Ege Üniversitesi Tıp Fakültesi Profesyonel İnceleme</h3>
+          <h3 className="font-semibold text-gray-800 mb-3">Ege University Faculty of Medicine - Professional Review</h3>
           <p className="text-gray-700 mb-4">
-            Uzman ekibimiz Ege Üniversitesi Tıp Fakültesi'ni detaylı olarak inceledi. Akademik kadro, teknolojik altyapı ve hasta memnuniyeti açısından
-            değerlendirmemiz...
+            Our expert team conducted a detailed review of Ege University Faculty of Medicine. Evaluation covers academic staff, technological infrastructure and patient satisfaction...
           </p>
           <div className="grid grid-cols-3 gap-2 mb-4">
             {['https://placehold.co/150x100', 'https://placehold.co/150x100', 'https://placehold.co/150x100'].map((img, i) => (
@@ -164,15 +165,15 @@ export default function TimelineFeed() {
           </div>
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div className="text-center">
-              <p className="text-sm text-gray-600">Teknoloji</p>
+              <p className="text-sm text-gray-600">Technology</p>
               <p className="text-lg font-semibold text-purple-600">9.2/10</p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-600">Personel</p>
+              <p className="text-sm text-gray-600">Staff</p>
               <p className="text-lg font-semibold text-purple-600">9.2/10</p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-600">Genel</p>
+              <p className="text-sm text-gray-600">Overall</p>
               <p className="text-lg font-semibold text-purple-600">9.5/10</p>
             </div>
           </div>
@@ -189,7 +190,7 @@ export default function TimelineFeed() {
                 <span>24</span>
               </button>
             </div>
-            <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">Detayları Gör</button>
+            <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">View Details</button>
           </div>
         </div>
       </div>

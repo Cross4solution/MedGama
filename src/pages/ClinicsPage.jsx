@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Search, Heart, MessageCircle, Star, MapPin, Shield, Stethoscope, Award, Clock, 
 Users } from 'lucide-react';
-import Header from '../components/Header';
+import Badge from '../components/Badge';
+import SelectCombobox from '../components/SelectCombobox';
+import countryCities from '../data/countryCities';
+import PatientLayout from '../components/PatientLayout';
 
 const MediTravelClinics = () => {
   const [selectedFilters, setSelectedFilters] = useState({
@@ -12,6 +15,17 @@ const MediTravelClinics = () => {
  
   const [favorites, setFavorites] = useState(new Set());
   const [sortBy, setSortBy] = useState('highest-score');
+
+  // Search bar state
+  const [location, setLocation] = useState('');
+  const [specialty, setSpecialty] = useState('');
+  const [priceRange, setPriceRange] = useState('');
+
+  const locationOptions = countryCities.Turkey;
+  const specialtyOptions = [
+    'Kalp Cerrahisi','Onkoloji','Plastik Cerrahi','Ortopedi','Nöroloji','Göz Hastalıkları','Diş Hekimliği'
+  ];
+  const priceOptions = ['Ekonomik','Orta','Premium','Lüks'];
   
   const clinics = [
     {
@@ -71,6 +85,23 @@ const MediTravelClinics = () => {
     );
   };
 
+  // Map tag labels to English where needed
+  const mapTagLabel = (tag) => {
+    const map = {
+      'SGK Anlaşmalı': 'Public Insurance',
+      'SGK': 'Public Insurance'
+    };
+    return map[tag] || tag;
+  };
+
+  const getTagVariant = (tag) => {
+    if (tag === 'Pro Review' || tag === 'PRO Review') return 'purple';
+    if (tag === 'Telehealth') return 'blue';
+    if (tag === 'SGK Anlaşmalı' || tag === 'Public Insurance' || tag === 'SGK') return 'green';
+    // specialties and others
+    return 'gray';
+  };
+
   const getFeatureIcon = (feature) => {
     const icons = {
       "Telehealth": <Stethoscope className="w-4 h-4" />,
@@ -86,9 +117,7 @@ const MediTravelClinics = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <Header />
-
+    <PatientLayout>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Page Title */}
         <div className="text-center mb-6">
@@ -101,94 +130,41 @@ const MediTravelClinics = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Konum</label>
-              <div className="relative group">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
-                <select className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400">
-                  <option className="text-gray-500">Tüm Şehirler</option>
-                  <option className="py-2">İstanbul</option>
-                  <option className="py-2">Ankara</option>
-                  <option className="py-2">İzmir</option>
-                  <option className="py-2">Antalya</option>
-                  <option className="py-2">Bursa</option>
-                  <option className="py-2">Adana</option>
-                  <option className="py-2">Konya</option>
-                  <option className="py-2">Gaziantep</option>
-                  <option className="py-2">Mersin</option>
-                  <option className="py-2">Diyarbakır</option>
-                </select>
-                {/* Custom dropdown arrow */}
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <svg 
-                    className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-                {/* Subtle shadow on focus */}
-                <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none"></div>
-              </div>
+              <SelectCombobox
+                options={locationOptions}
+                value={location}
+                onChange={setLocation}
+                placeholder="Tüm Şehirler"
+                leftIcon={<MapPin className="w-4 h-4" />}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Uzmanlık</label>
-              <div className="relative group">
-                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <select className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400">
-                  <option className="text-gray-500">Tüm Alanlar</option>
-                  <option className="py-2">Kalp Cerrahisi</option>
-                  <option className="py-2">Onkoloji</option>
-                  <option className="py-2">Plastik Cerrahi</option>
-                  <option className="py-2">Ortopedi</option>
-                  <option className="py-2">Nöroloji</option>
-                  <option className="py-2">Göz Hastalıkları</option>
-                  <option className="py-2">Diş Hekimliği</option>
-                </select>
-                {/* Custom dropdown arrow */}
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <svg 
-                    className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <SelectCombobox
+                options={specialtyOptions}
+                value={specialty}
+                onChange={setSpecialty}
+                placeholder="Tüm Alanlar"
+                leftIcon={
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                </div>
-                {/* Subtle shadow on focus */}
-                <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none"></div>
-              </div>
+                }
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Fiyat Aralığı</label>
-              <div className="relative group">
-                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-                <select className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400">
-                  <option className="text-gray-500">Tüm Fiyatlar</option>
-                  <option className="py-2">Ekonomik</option>
-                  <option className="py-2">Orta</option>
-                  <option className="py-2">Premium</option>
-                  <option className="py-2">Lüks</option>
-                </select>
-                {/* Custom dropdown arrow */}
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <svg 
-                    className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <SelectCombobox
+                options={priceOptions}
+                value={priceRange}
+                onChange={setPriceRange}
+                placeholder="Tüm Fiyatlar"
+                leftIcon={
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
-                </div>
-                {/* Subtle shadow on focus */}
-                <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none"></div>
-              </div>
+                }
+              />
             </div>
             <div className="flex items-end">
                               <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md">
@@ -301,20 +277,13 @@ const MediTravelClinics = () => {
                       </div>
                       <div className="flex flex-wrap gap-2 mb-3">
                         {clinic.tags.map((tag, index) => (
-                          <span
+                          <Badge
                             key={index}
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              tag === 'Pro Review'
-                                ? 'bg-purple-100 text-purple-700'
-                                : tag === 'Telehealth'
-                                ? 'bg-blue-100 text-blue-700'
-                                : tag === 'SGK Anlaşmalı'
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-gray-100 text-gray-700'
-                            }`}
-                          >
-                            {tag}
-                          </span>
+                            label={mapTagLabel(tag)}
+                            variant={getTagVariant(tag)}
+                            size="sm"
+                            rounded="full"
+                          />
                         ))}
                       </div>
                       <p className="text-gray-600 text-sm mb-4">{clinic.description}</p>
@@ -365,7 +334,7 @@ const MediTravelClinics = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PatientLayout>
   );
 };
 

@@ -21,6 +21,8 @@ import {
   CheckCircle
 } from 'lucide-react';
 import Header from '../components/Header';
+import Badge from '../components/Badge';
+import { toEnglishTimestamp } from '../utils/i18n';
 
 const ClinicDetailPage = () => {
   const [activeTab, setActiveTab] = useState('genel-bakis');
@@ -143,9 +145,14 @@ const ClinicDetailPage = () => {
                       <MapPin className="w-5 h-5 mr-2" />
                       <span>İstanbul, Türkiye</span>
                     </div>
-                    <div className="flex items-center text-green-600">
-                      <CheckCircle className="w-5 h-5 mr-2" />
-                      <span className="font-semibold">JCI Akreditli</span>
+                    <div className="flex items-center">
+                      <Badge
+                        label="JCI Accredited"
+                        variant="green"
+                        size="sm"
+                        rounded="full"
+                        icon={<CheckCircle className="w-4 h-4" />}
+                      />
                     </div>
                   </div>
                   <div className="flex space-x-2">
@@ -271,8 +278,7 @@ const ClinicDetailPage = () => {
                     </div>
                     <div className="bg-purple-50 rounded-lg p-4 mb-6">
                       <div className="flex items-center space-x-3 mb-2">
-                        <Award className="w-5 h-5 text-purple-600" />
-                        <span className="font-semibold text-purple-900">Profesyonel Değerlendirme</span>
+                        <Badge label="PRO Review" variant="purple" size="sm" rounded="full" icon={<Award className="w-4 h-4" />} />
                       </div>
                       <p className="text-purple-700 text-sm">
                         MediTravel Uzman Ekibi Tarafından: "Klinik, uluslararası standartlarda hizmet sunuyor. Doktor kadrosu ve teknoloji altyapısı oldukça güçlü. Hasta memnuniyeti yüksek seviyede."
@@ -296,7 +302,7 @@ const ClinicDetailPage = () => {
                                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                                   <span>{review.service}</span>
                                   <span>•</span>
-                                  <span>{review.date}</span>
+                                  <span>{toEnglishTimestamp(review.date) || 'Just now'}</span>
                                 </div>
                               </div>
                             </div>
@@ -307,7 +313,7 @@ const ClinicDetailPage = () => {
                             <button className="text-blue-600 hover:text-blue-700">
                               👍 Faydalı ({review.helpful})
                             </button>
-                            <span className="text-gray-500">Doğrulanmış Hasta</span>
+                            <Badge label="Verified Patient" variant="green" size="sm" rounded="full" />
                           </div>
                         </div>
                       ))}
