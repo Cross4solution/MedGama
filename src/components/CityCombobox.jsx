@@ -39,7 +39,7 @@ export default function CityCombobox({
     <div className="relative" ref={ref}>
       <button
         type="button"
-        className={`w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs md:text-sm bg-white text-left ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+        className={`w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-base md:text-sm bg-white text-left ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
         onClick={() => !disabled && setOpen((o) => !o)}
         disabled={disabled}
         aria-disabled={disabled}
@@ -50,7 +50,7 @@ export default function CityCombobox({
         <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
           <div className="p-2">
             <input
-              className="w-full border border-gray-200 rounded px-2 py-1 text-xs md:text-sm"
+              className="w-full border border-gray-200 rounded px-2 py-1 text-base md:text-sm"
               placeholder="Search city"
               value={query}
               onChange={(e) => setQuery(e.target.value)}

@@ -33,3 +33,29 @@ code {
     animation: none !important;
   }
 }
+
+/* Reusable button styles - consistent responsive sizing */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md;
+  }
+
+  .btn-violet {
+    @apply bg-purple-600 text-white hover:bg-purple-700 shadow-sm hover:shadow-md;
+  }
+
+  /* Sizes */
+  .btn-sm {
+    @apply text-sm px-3 py-2;
+  }
+  .btn-md {
+    @apply text-sm md:text-base px-3 py-2 md:px-4 md:py-2.5;
+  }
+  .btn-lg {
+    @apply text-base md:text-lg px-4 py-2.5 md:px-5 md:py-3;
+  }
+}

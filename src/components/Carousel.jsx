@@ -88,15 +88,35 @@ export default function Carousel({ items = [], renderItem, slidesToShow = { base
       <div aria-hidden className="pointer-events-none hidden md:block absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white to-transparent" />
       <div aria-hidden className="pointer-events-none hidden md:block absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white to-transparent" />
 
-      {/* Arrows */}
-      <button type="button" aria-label="Previous" onClick={prev} disabled={current === 0}
-        className="absolute left-0 top-1/2 -translate-y-1/2 bg-white border rounded-full w-9 h-9 grid place-items-center shadow disabled:opacity-40">
-        <span className="rotate-180">➜</span>
-      </button>
-      <button type="button" aria-label="Next" onClick={next} disabled={current >= maxIndex}
-        className="absolute right-0 top-1/2 -translate-y-1/2 bg-white border rounded-full w-9 h-9 grid place-items-center shadow disabled:opacity-40">
-        <span>➜</span>
-      </button>
+      {/* Arrows: visible, inside container at bottom corners (no horizontal overflow) */}
+      {maxIndex > 0 && (
+        <>
+          <button
+            type="button"
+            aria-label="Previous"
+            onClick={prev}
+            disabled={current === 0}
+            className="absolute z-20 left-3 bottom-3 translate-y-0 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full w-10 h-10 grid place-items-center shadow hover:shadow-md hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <svg className="w-4 h-4 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+            <span className="sr-only">Previous</span>
+          </button>
+          <button
+            type="button"
+            aria-label="Next"
+            onClick={next}
+            disabled={current >= maxIndex}
+            className="absolute z-20 right-3 bottom-3 translate-y-0 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full w-10 h-10 grid place-items-center shadow hover:shadow-md hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <svg className="w-4 h-4 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+            <span className="sr-only">Next</span>
+          </button>
+        </>
+      )}
 
       {/* Dots */}
       <div className="mt-4 flex items-center justify-center gap-2">

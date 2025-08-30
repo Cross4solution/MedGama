@@ -79,9 +79,9 @@ export default function HomeV2() {
           </div>
           <Carousel
             items={popularClinics}
-            slidesToShow={{ base: 1, sm: 2, lg: 4 }}
+            slidesToShow={{ base: 1, sm: 2, lg: 3 }}
             renderItem={(c) => (
-              <div className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-80 flex flex-col">
+              <div className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-96 flex flex-col">
                 <div className="h-1/2 rounded-lg bg-gray-100 mb-3 overflow-hidden">
                   <img src={c.image} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
                 </div>

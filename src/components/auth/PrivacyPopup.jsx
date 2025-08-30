@@ -14,7 +14,7 @@ const PrivacyPopup = ({ setShowPrivacyPopup }) => {
     >
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Gizlilik Politikası</h2>
+        <h2 className="text-xl font-bold text-gray-900">Privacy Policy</h2>
         <button
           onClick={() => setShowPrivacyPopup(false)}
           className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -23,70 +23,70 @@ const PrivacyPopup = ({ setShowPrivacyPopup }) => {
         </button>
       </div>
       <div className="text-sm text-gray-700 space-y-4">
-        <p><strong>1. VERİ SORUMLUSU</strong></p>
-        <p>MediTravel Sağlık Teknolojileri A.Ş. ("Şirket"), 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında veri sorumlusu sıfatıyla kişisel verilerinizi işlemektedir.</p>
+        <p><strong>1. DATA CONTROLLER</strong></p>
+        <p>MediTravel Health Technologies Inc. ("Company") processes your personal data as a data controller under applicable data protection laws.</p>
         
-        <p><strong>2. TOPLANAN KİŞİSEL VERİLER</strong></p>
-        <p>2.1. Kimlik Bilgileri: Ad, soyad, doğum tarihi, cinsiyet</p>
-        <p>2.2. İletişim Bilgileri: E-posta adresi, telefon numarası, adres bilgileri</p>
-        <p>2.3. Sağlık Verileri: Sağlık geçmişi, randevu bilgileri, doktor notları</p>
-        <p>2.4. İşlem Güvenliği: IP adresi, tarayıcı bilgileri, çerez verileri</p>
-        <p>2.5. Platform Kullanım Verileri: Sayfa görüntüleme, arama geçmişi, tercihler</p>
+        <p><strong>2. PERSONAL DATA WE COLLECT</strong></p>
+        <p>2.1. Identity: First name, last name, date of birth, gender</p>
+        <p>2.2. Contact: Email address, phone number, address details</p>
+        <p>2.3. Health Data: Medical history, appointment info, doctor notes</p>
+        <p>2.4. Security: IP address, browser info, cookie data</p>
+        <p>2.5. Usage Data: Page views, search history, preferences</p>
         
-        <p><strong>3. KİŞİSEL VERİLERİN İŞLENME AMAÇLARI</strong></p>
-        <p>3.1. Hizmet Sunumu: Randevu yönetimi, doktor eşleştirme, sağlık hizmeti koordinasyonu</p>
-        <p>3.2. İletişim: Bilgilendirme, hatırlatma, destek hizmetleri</p>
-        <p>3.3. Güvenlik: Dolandırıcılık önleme, hesap güvenliği, yasal uyumluluk</p>
-        <p>3.4. Analiz: Hizmet kalitesi artırma, kullanıcı deneyimi iyileştirme</p>
-        <p>3.5. Yasal Yükümlülükler: Mevzuat gereği veri saklama ve raporlama</p>
+        <p><strong>3. PURPOSES OF PROCESSING</strong></p>
+        <p>3.1. Service Delivery: Appointment management, doctor matching, coordination</p>
+        <p>3.2. Communication: Notifications, reminders, support</p>
+        <p>3.3. Security: Fraud prevention, account security, legal compliance</p>
+        <p>3.4. Analytics: Improve service quality and user experience</p>
+        <p>3.5. Legal Obligations: Data retention and reporting as required by law</p>
         
-        <p><strong>4. KİŞİSEL VERİLERİN AKTARILMASI</strong></p>
-        <p>4.1. Hizmet Sağlayıcıları: Doktorlar, hastaneler, laboratuvarlar (onayınız dahilinde)</p>
-        <p>4.2. Teknoloji Ortakları: Bulut hizmet sağlayıcıları, analitik araçlar</p>
-        <p>4.3. Yasal Zorunluluklar: Mahkemeler, kamu kurumları, kolluk kuvvetleri</p>
-        <p>4.4. İş Ortakları: Sigorta şirketleri, ödeme sağlayıcıları (gerekli hallerde)</p>
+        <p><strong>4. DATA SHARING</strong></p>
+        <p>4.1. Service Providers: Doctors, hospitals, labs (with your consent)</p>
+        <p>4.2. Technology Partners: Cloud providers, analytics tools</p>
+        <p>4.3. Legal Requirements: Courts, public authorities, law enforcement</p>
+        <p>4.4. Business Partners: Insurers, payment providers (where necessary)</p>
         
-        <p><strong>5. VERİ GÜVENLİĞİ</strong></p>
-        <p>5.1. Teknik Önlemler: SSL şifreleme, güvenli sunucu altyapısı, düzenli güvenlik testleri</p>
-        <p>5.2. İdari Önlemler: Personel eğitimi, erişim kontrolü, veri sınıflandırması</p>
-        <p>5.3. Fiziksel Önlemler: Veri merkezi güvenliği, yedekleme sistemleri</p>
+        <p><strong>5. DATA SECURITY</strong></p>
+        <p>5.1. Technical: SSL encryption, secure servers, regular security tests</p>
+        <p>5.2. Administrative: Staff training, access control, data classification</p>
+        <p>5.3. Physical: Data center security, backups</p>
         
-        <p><strong>6. VERİ SAKLAMA SÜRELERİ</strong></p>
-        <p>6.1. Hesap Verileri: Hesap aktif olduğu sürece + 3 yıl</p>
-        <p>6.2. Sağlık Verileri: 10 yıl (sağlık mevzuatı gereği)</p>
-        <p>6.3. İşlem Kayıtları: 5 yıl (vergi mevzuatı gereği)</p>
-        <p>6.4. Çerez Verileri: Maksimum 2 yıl</p>
+        <p><strong>6. RETENTION PERIODS</strong></p>
+        <p>6.1. Account Data: While active + 3 years</p>
+        <p>6.2. Health Data: 10 years (as per health regulations)</p>
+        <p>6.3. Transaction Logs: 5 years (as per tax regulations)</p>
+        <p>6.4. Cookie Data: Up to 2 years</p>
         
-        <p><strong>7. KVKK KAPSAMINDAKİ HAKLARINIZ</strong></p>
-        <p>7.1. Bilgi Alma Hakkı: Hangi verilerinizin işlendiğini öğrenme</p>
-        <p>7.2. Erişim Hakkı: Verilerinize erişim talep etme</p>
-        <p>7.3. Düzeltme Hakkı: Yanlış verilerin düzeltilmesini isteme</p>
-        <p>7.4. Silme Hakkı: Verilerinizin silinmesini talep etme</p>
-        <p>7.5. İşlemeyi Kısıtlama Hakkı: Veri işlemeyi durdurma</p>
-        <p>7.6. Veri Taşınabilirliği: Verilerinizi başka sisteme aktarma</p>
-        <p>7.7. İtiraz Hakkı: Otomatik işleme karşı itiraz etme</p>
+        <p><strong>7. YOUR RIGHTS</strong></p>
+        <p>7.1. Right to Information</p>
+        <p>7.2. Right of Access</p>
+        <p>7.3. Right to Rectification</p>
+        <p>7.4. Right to Erasure</p>
+        <p>7.5. Right to Restrict Processing</p>
+        <p>7.6. Data Portability</p>
+        <p>7.7. Right to Object</p>
         
-        <p><strong>8. HAKLARINIZI KULLANMA</strong></p>
-        <p>8.1. Başvuru Yöntemi: E-posta (privacy@meditravel.com) veya yazılı başvuru</p>
-        <p>8.2. Yanıt Süresi: Maksimum 30 gün</p>
-        <p>8.3. Ücret: İlk başvuru ücretsiz, sonraki başvurular ücretli olabilir</p>
+        <p><strong>8. EXERCISING YOUR RIGHTS</strong></p>
+        <p>8.1. Method: Email (privacy@meditravel.com) or written request</p>
+        <p>8.2. Response Time: Up to 30 days</p>
+        <p>8.3. Fees: First request free; subsequent requests may be charged</p>
         
-        <p><strong>9. ÇEREZ POLİTİKASI</strong></p>
-        <p>9.1. Zorunlu Çerezler: Platform işlevselliği için gerekli</p>
-        <p>9.2. Analitik Çerezler: Kullanım istatistikleri için</p>
-        <p>9.3. Pazarlama Çerezleri: Kişiselleştirilmiş içerik için (onay gerekli)</p>
+        <p><strong>9. COOKIE POLICY</strong></p>
+        <p>9.1. Necessary Cookies: Required for core functionality</p>
+        <p>9.2. Analytics Cookies: For usage statistics</p>
+        <p>9.3. Marketing Cookies: For personalized content (consent required)</p>
         
-        <p><strong>10. İLETİŞİM</strong></p>
-        <p>Kişisel verilerinizle ilgili sorularınız için: privacy@meditravel.com</p>
-        <p>Adres: [Şirket Adresi]</p>
-        <p>Telefon: [Şirket Telefonu]</p>
+        <p><strong>10. CONTACT</strong></p>
+        <p>For questions regarding your personal data: privacy@meditravel.com</p>
+        <p>Address: [Company Address]</p>
+        <p>Phone: [Company Phone]</p>
       </div>
       <div className="mt-6 flex justify-end">
         <button
           onClick={() => setShowPrivacyPopup(false)}
                         className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
         >
-          Anladım
+          Got it
         </button>
       </div>
     </div>

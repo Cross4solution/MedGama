@@ -30,12 +30,12 @@ const ClinicDetailPage = () => {
   const [selectedPackage, setSelectedPackage] = useState(null);
 
   const tabs = [
-    { id: 'genel-bakis', label: 'Genel Bakış' },
-    { id: 'hizmetler', label: 'Hizmetler' },
-    { id: 'doktorlar', label: 'Doktorlar' },
-    { id: 'degerlendirmeler', label: 'Değerlendirmeler' },
-    { id: 'galeri', label: 'Galeri' },
-    { id: 'konum', label: 'Konum' }
+    { id: 'genel-bakis', label: 'Overview' },
+    { id: 'hizmetler', label: 'Services' },
+    { id: 'doktorlar', label: 'Doctors' },
+    { id: 'degerlendirmeler', label: 'Reviews' },
+    { id: 'galeri', label: 'Gallery' },
+    { id: 'konum', label: 'Location' }
   ];
 
   const services = [
@@ -110,11 +110,11 @@ const ClinicDetailPage = () => {
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center space-x-2 text-sm text-gray-600">
-          <span>Ana Sayfa</span>
+          <span>Home</span>
           <ChevronRight className="w-4 h-4" />
-          <span>Klinikler</span>
+          <span>Clinics</span>
           <ChevronRight className="w-4 h-4" />
-          <span className="text-gray-900 font-medium">Anadolu Sağlık Merkezi</span>
+          <span className="text-gray-900 font-medium">Anadolu Health Center</span>
         </div>
       </div>
 
@@ -127,7 +127,7 @@ const ClinicDetailPage = () => {
               <div className="relative h-64 md:h-80">
                 <img 
                   src="/images/petr-magera-huwm7malj18-unsplash_720.jpg"
-                  alt="Anadolu Sağlık Merkezi - Modern klinik ortamı"
+                  alt="Anadolu Health Center - Modern clinic environment"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-4 right-4 flex items-center bg-white rounded-full px-3 py-1 shadow-md">
@@ -140,10 +140,10 @@ const ClinicDetailPage = () => {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Anadolu Sağlık Merkezi</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Anadolu Health Center</h1>
                     <div className="flex items-center text-gray-600 mb-2">
                       <MapPin className="w-5 h-5 mr-2" />
-                      <span>İstanbul, Türkiye</span>
+                      <span>Istanbul, Turkey</span>
                     </div>
                     <div className="flex items-center">
                       <Badge
@@ -166,7 +166,7 @@ const ClinicDetailPage = () => {
                     </button>
                                                               <button className="bg-blue-600 text-white px-3 py-1.5 rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md">
                         <Plus className="w-4 h-4" />
-                        <span className="text-sm">Takip Et</span>
+                        <span className="text-sm">Follow</span>
                       </button>
                   </div>
                 </div>
@@ -174,19 +174,19 @@ const ClinicDetailPage = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600 mb-1">15+</div>
-                    <div className="text-sm text-gray-600">Yıl Tecrübe</div>
+                    <div className="text-sm text-gray-600">Years Experience</div>
                   </div>
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600 mb-1">50+</div>
-                    <div className="text-sm text-gray-600">Uzman Doktor</div>
+                    <div className="text-sm text-gray-600">Specialist Doctors</div>
                   </div>
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
                     <div className="text-2xl font-bold text-purple-600 mb-1">10K+</div>
-                    <div className="text-sm text-gray-600">Başarılı Ameliyat</div>
+                    <div className="text-sm text-gray-600">Successful Surgeries</div>
                   </div>
                   <div className="text-center p-4 bg-orange-50 rounded-lg">
                     <div className="text-2xl font-bold text-orange-600 mb-1">24/7</div>
-                    <div className="text-sm text-gray-600">Acil Servis</div>
+                    <div className="text-sm text-gray-600">Emergency Service</div>
                   </div>
                 </div>
               </div>
@@ -215,21 +215,20 @@ const ClinicDetailPage = () => {
                 {activeTab === 'genel-bakis' && (
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-4">Hakkımızda</h3>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-4">About Us</h3>
                       <p className="text-gray-600 leading-relaxed mb-4">
-                        Anadolu Sağlık Merkezi, 15 yıllık tecrübesi ile Türkiye'nin önde gelen sağlık kurumlarından
-                        biridir. JCI akreditasyonuna sahip hastanemiz, uluslararası standartlarda sağlık hizmeti
-                        sunmaktadır.
+                        Anadolu Health Center is one of Turkey's leading healthcare institutions with 15 years of experience.
+                        Our JCI-accredited hospital provides healthcare services at international standards.
                       </p>
                       <p className="text-gray-600 leading-relaxed">
-                        50'den fazla uzman doktorumuz ve son teknoloji tıbbi ekipmanlarımız ile kalp cerrahisi, onkoloji,
-                        nöroloji ve plastik cerrahi alanlarında hizmet vermekteyiz.
+                        With over 50 specialist doctors and state-of-the-art medical equipment, we offer services in
+                        cardiac surgery, oncology, neurology, and plastic surgery.
                       </p>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
                         <CheckCircle className="w-6 h-6 text-blue-600" />
-                        <span className="text-sm font-medium text-gray-700">JCI Akreditli</span>
+                        <span className="text-sm font-medium text-gray-700">JCI Accredited</span>
                       </div>
                       <div className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg">
                         <Shield className="w-6 h-6 text-green-600" />
@@ -237,11 +236,11 @@ const ClinicDetailPage = () => {
                       </div>
                       <div className="flex items-center space-x-3 p-4 bg-purple-50 rounded-lg">
                         <Award className="w-6 h-6 text-purple-600" />
-                        <span className="text-sm font-medium text-gray-700">Sağlık Bakanlığı</span>
+                        <span className="text-sm font-medium text-gray-700">Ministry of Health</span>
                       </div>
                       <div className="flex items-center space-x-3 p-4 bg-orange-50 rounded-lg">
                         <Users className="w-6 h-6 text-orange-600" />
-                        <span className="text-sm font-medium text-gray-700">Sağlık Turizmi</span>
+                        <span className="text-sm font-medium text-gray-700">Health Tourism</span>
                       </div>
                     </div>
                   </div>
@@ -249,7 +248,7 @@ const ClinicDetailPage = () => {
 
                 {activeTab === 'hizmetler' && (
                   <div className="space-y-6">
-                    <h3 className="text-xl font-semibold text-gray-900">Hizmetlerimiz</h3>
+                    <h3 className="text-xl font-semibold text-gray-900">Our Services</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {services.map((service, index) => (
                         <div key={index} className="p-6 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
@@ -269,11 +268,11 @@ const ClinicDetailPage = () => {
                 {activeTab === 'degerlendirmeler' && (
                   <div className="space-y-6">
                     <div className="flex justify-between items-center">
-                      <h3 className="text-xl font-semibold text-gray-900">Hasta Değerlendirmeleri</h3>
+                      <h3 className="text-xl font-semibold text-gray-900">Patient Reviews</h3>
                       <div className="flex items-center space-x-2">
                         <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                         <span className="font-semibold">4.8</span>
-                        <span className="text-gray-600">(342 değerlendirme)</span>
+                        <span className="text-gray-600">(342 reviews)</span>
                       </div>
                     </div>
                     <div className="bg-purple-50 rounded-lg p-4 mb-6">
@@ -281,7 +280,7 @@ const ClinicDetailPage = () => {
                         <Badge label="PRO Review" variant="purple" size="sm" rounded="full" icon={<Award className="w-4 h-4" />} />
                       </div>
                       <p className="text-purple-700 text-sm">
-                        MediTravel Uzman Ekibi Tarafından: "Klinik, uluslararası standartlarda hizmet sunuyor. Doktor kadrosu ve teknoloji altyapısı oldukça güçlü. Hasta memnuniyeti yüksek seviyede."
+                        By MediTravel Expert Team: "The clinic provides services at international standards. The medical staff and technological infrastructure are very strong. Patient satisfaction is at a high level."
                       </p>
                     </div>
                     <div className="space-y-4">
@@ -311,7 +310,7 @@ const ClinicDetailPage = () => {
                           <p className="text-gray-700 mb-3">{review.comment}</p>
                           <div className="flex items-center justify-between text-sm">
                             <button className="text-blue-600 hover:text-blue-700">
-                              👍 Faydalı ({review.helpful})
+                              👍 Helpful ({review.helpful})
                             </button>
                             <Badge label="Verified Patient" variant="green" size="sm" rounded="full" />
                           </div>
@@ -328,40 +327,40 @@ const ClinicDetailPage = () => {
           <div className="lg:w-80 space-y-6">
             {/* Contact Actions */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">İletişim</h3>
+              <h3 className="font-semibold text-gray-900 mb-4">Contact</h3>
               <div className="space-y-3">
-                                 <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md">
+                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md">
                   <Video className="w-5 h-5" />
-                  <span>Telehealth Randevu</span>
+                  <span>Telehealth Appointment</span>
                 </button>
-                                 <button className="w-full bg-green-500 text-white py-2 px-4 rounded-xl hover:bg-green-600 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md">
+                <button className="w-full bg-green-500 text-white py-2 px-4 rounded-xl hover:bg-green-600 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md">
                   <MessageCircle className="w-5 h-5" />
-                  <span>Randevu Al</span>
+                  <span>Book Appointment</span>
                 </button>
-                                 <button className="w-full bg-gray-100 text-gray-700 py-1.5 px-4 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2">
+                <button className="w-full bg-gray-100 text-gray-700 py-1.5 px-4 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2">
                   <MessageCircle className="w-5 h-5" />
-                  <span>Mesaj Gönder</span>
+                  <span>Send Message</span>
                 </button>
               </div>
             </div>
 
             {/* Health Tourism Package */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Sağlık Turizmi Paketi</h3>
+              <h3 className="font-semibold text-gray-900 mb-4">Health Tourism Package</h3>
               <div className="space-y-3 mb-4">
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <span>Tedavi + Konaklama + Transfer</span>
+                  <span>Treatment + Accommodation + Transfer</span>
                 </div>
               </div>
-                             <button className="w-full bg-purple-600 text-white py-1.5 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2">
+              <button className="w-full bg-purple-600 text-white py-1.5 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2">
                 <Calendar className="w-5 h-5" />
-                <span>Paket Oluştur</span>
+                <span>Create Package</span>
               </button>
             </div>
 
             {/* Price Range */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Fiyat Aralığı</h3>
+              <h3 className="font-semibold text-gray-900 mb-4">Price Range</h3>
               <div className="space-y-3">
                 {priceRanges.map((item, index) => (
                   <div key={index} className="flex justify-between items-center">
@@ -371,13 +370,13 @@ const ClinicDetailPage = () => {
                 ))}
               </div>
               <p className="text-xs text-gray-500 mt-3">
-                *Fiyatlar değişiklik gösterebilir. Kesin fiyat için randevu alın.
+                *Prices may vary. For exact pricing, please book an appointment.
               </p>
             </div>
 
             {/* Quick Contact */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
-              <h3 className="font-semibold mb-4">Hızlı İletişim</h3>
+              <h3 className="font-semibold mb-4">Quick Contact</h3>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <Phone className="w-5 h-5" />
@@ -389,7 +388,7 @@ const ClinicDetailPage = () => {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Clock className="w-5 h-5" />
-                  <span>24/7 Açık</span>
+                  <span>Open 24/7</span>
                 </div>
               </div>
             </div>

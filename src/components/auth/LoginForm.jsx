@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Heart,
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  Chrome,
-  Facebook,
-  Smartphone
-} from 'lucide-react';
+import { Heart, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 
 const LoginForm = ({ 
   formData, 

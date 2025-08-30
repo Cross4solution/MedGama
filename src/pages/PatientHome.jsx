@@ -83,9 +83,6 @@ export default function PatientHome() {
                           </div>
                         </div>
                         <p className="mt-1 text-sm text-gray-600">{c.city} • {c.dept}</p>
-                        {c.minPriceUSD && (
-                          <div className="mt-2 text-sm text-teal-700 font-medium">from {formatCurrency(c.minPriceUSD)}</div>
-                        )}
                         <div className="mt-auto pt-3 flex items-center justify-between text-sm">
                           <span className="text-gray-500">{c.reviews} Reviews</span>
                           <button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View Profile</button>

@@ -14,7 +14,7 @@ const CookieInfoPopup = ({ setShowCookieInfoPopup }) => {
     >
       <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Çerez Politikası</h2>
+          <h2 className="text-xl font-bold text-gray-900">Cookie Policy</h2>
           <button
             onClick={() => setShowCookieInfoPopup(false)}
             className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -23,47 +23,47 @@ const CookieInfoPopup = ({ setShowCookieInfoPopup }) => {
           </button>
         </div>
         <div className="text-sm text-gray-700 space-y-4">
-          <p><strong>Çerezler Nedir?</strong></p>
-          <p>Çerezler, web sitemizi ziyaret ettiğinizde tarayıcınıza gönderilen küçük metin dosyalarıdır. Bu dosyalar, deneyiminizi geliştirmek ve site performansını artırmak için kullanılır.</p>
+          <p><strong>What Are Cookies?</strong></p>
+          <p>Cookies are small text files sent to your browser when you visit our website. They are used to improve your experience and enhance site performance.</p>
           
-          <p><strong>Hangi Çerezleri Kullanıyoruz?</strong></p>
+          <p><strong>Which Cookies Do We Use?</strong></p>
           <div className="space-y-3">
             <div>
-              <p className="font-medium text-gray-800">Gerekli Çerezler</p>
-              <p>Bu çerezler sitenin temel işlevlerini yerine getirmek için gereklidir. Güvenlik, oturum yönetimi ve temel site işlevleri için kullanılır.</p>
+              <p className="font-medium text-gray-800">Necessary Cookies</p>
+              <p>Required for the site's core functions. Used for security, session management, and essential features.</p>
             </div>
             <div>
-              <p className="font-medium text-gray-800">Analitik Çerezler</p>
-              <p>Site trafiğini ve kullanıcı davranışlarını analiz etmek için kullanılır. Bu bilgiler, site performansını iyileştirmemize yardımcı olur.</p>
+              <p className="font-medium text-gray-800">Analytics Cookies</p>
+              <p>Used to analyze site traffic and user behavior. This information helps us improve site performance.</p>
             </div>
             <div>
-              <p className="font-medium text-gray-800">Fonksiyonel Çerezler</p>
-              <p>Tercihlerinizi hatırlamak ve kişiselleştirilmiş içerik sunmak için kullanılır.</p>
+              <p className="font-medium text-gray-800">Functional Cookies</p>
+              <p>Used to remember your preferences and provide personalized content.</p>
             </div>
             <div>
-              <p className="font-medium text-gray-800">Pazarlama Çerezleri</p>
-              <p>Size ilgili reklamlar göstermek ve pazarlama kampanyalarının etkinliğini ölçmek için kullanılır.</p>
+              <p className="font-medium text-gray-800">Marketing Cookies</p>
+              <p>Used to show relevant ads and measure the effectiveness of marketing campaigns.</p>
             </div>
           </div>
           
-          <p><strong>Çerez Yönetimi</strong></p>
-          <p>Tarayıcı ayarlarınızdan çerezleri yönetebilir, silebilir veya devre dışı bırakabilirsiniz. Ancak bazı çerezler devre dışı bırakıldığında sitenin düzgün çalışmayabileceğini unutmayın.</p>
+          <p><strong>Cookie Management</strong></p>
+          <p>You can manage, delete or disable cookies via your browser settings. Note that disabling some cookies may affect site functionality.</p>
           
-          <p><strong>Üçüncü Taraf Çerezler</strong></p>
-          <p>Google Analytics, Facebook Pixel gibi üçüncü taraf hizmetler de çerezler kullanabilir. Bu hizmetlerin gizlilik politikalarını incelemenizi öneririz.</p>
+          <p><strong>Third-Party Cookies</strong></p>
+          <p>Third-party services like Google Analytics and Facebook Pixel may also use cookies. We recommend reviewing their privacy policies.</p>
           
-          <p><strong>Güncellemeler</strong></p>
-          <p>Bu çerez politikası zaman zaman güncellenebilir. Önemli değişiklikler olduğunda sizi bilgilendireceğiz.</p>
+          <p><strong>Updates</strong></p>
+          <p>This cookie policy may be updated from time to time. We will inform you in case of significant changes.</p>
           
-          <p><strong>İletişim</strong></p>
-          <p>Çerez politikamız hakkında sorularınız için: <span className="text-blue-600">privacy@meditravel.com</span> adresinden bizimle iletişime geçebilirsiniz.</p>
+          <p><strong>Contact</strong></p>
+          <p>For questions about our cookie policy: you can contact us at <span className="text-blue-600">privacy@meditravel.com</span>.</p>
         </div>
         <div className="mt-6 flex justify-end">
           <button
             onClick={() => setShowCookieInfoPopup(false)}
             className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
           >
-            Anladım
+            Got it
           </button>
         </div>
       </div>

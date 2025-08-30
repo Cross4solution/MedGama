@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import countryCodes from '../data/countryCodes';
 
 export default function CountryCombobox({ options = [], value, onChange, placeholder = 'Select Country' }) {
   const [open, setOpen] = useState(false);
@@ -22,21 +23,34 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
   }, []);
 
   const selectedLabel = value || '';
+  const getFlagUrl = (name) => {
+    const code = countryCodes[name];
+    return code ? `https://flagcdn.com/24x18/${code}.png` : null;
+  };
 
   return (
     <div className="relative" ref={ref}>
       <button
         type="button"
-        className="w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs md:text-sm bg-white text-left"
+        className="w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-base md:text-sm bg-white text-left flex items-center gap-2"
         onClick={() => setOpen((o) => !o)}
       >
-        {selectedLabel || placeholder}
+        {selectedLabel ? (
+          <span className="inline-flex items-center gap-2">
+            {getFlagUrl(selectedLabel) && (
+              <img src={getFlagUrl(selectedLabel)} alt="" width={18} height={14} className="inline-block rounded-sm" loading="lazy" />
+            )}
+            <span>{selectedLabel}</span>
+          </span>
+        ) : (
+          placeholder
+        )}
       </button>
       {open && (
         <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
           <div className="p-2">
             <input
-              className="w-full border border-gray-200 rounded px-2 py-1 text-xs md:text-sm"
+              className="w-full border border-gray-200 rounded px-2 py-1 text-base md:text-sm"
               placeholder="Search country"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -48,10 +62,13 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
               <li key={opt}>
                 <button
                   type="button"
-                  className="w-full text-left px-3 py-2 hover:bg-gray-50"
+                  className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2"
                   onClick={() => { onChange && onChange(opt); setOpen(false); setQuery(''); }}
                 >
-                  {opt}
+                  {getFlagUrl(opt) && (
+                    <img src={getFlagUrl(opt)} alt="" width={18} height={14} className="inline-block rounded-sm" loading="lazy" />
+                  )}
+                  <span>{opt}</span>
                 </button>
               </li>
             ))}

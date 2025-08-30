@@ -51,7 +51,7 @@ export default function SelectCombobox({
       {/* Trigger button styled like the original select */}
       <button
         type="button"
-        className={`w-full ${leftIcon ? 'pl-10' : 'pl-3'} pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400 text-left`}
+        className={`w-full ${leftIcon ? 'pl-10' : 'pl-3'} pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-base md:text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400 text-left`}
         onClick={() => setOpen((o) => !o)}
       >
         {selectedLabel || placeholder}

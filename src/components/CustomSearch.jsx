@@ -60,8 +60,8 @@ export default function CustomSearch() {
   }, [country]);
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
-      <div className="grid md:grid-cols-4 gap-3">
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div className="grid md:grid-cols-4 gap-4">
         {/* 1. Country (combobox) */}
         <CountryCombobox
           options={countries}
@@ -82,7 +82,7 @@ export default function CustomSearch() {
 
         {/* 3. Specialty (autocomplete via datalist) */}
         <div>
-          <input list="specialties" value={specialty} onChange={(e)=>setSpecialty(e.target.value)} placeholder="Speciality" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+          <input list="specialties" value={specialty} onChange={(e)=>setSpecialty(e.target.value)} placeholder="Speciality" className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base md:text-sm md:py-2" />
           <datalist id="specialties">
             {specialties.map((s) => <option key={s} value={s} />)}
           </datalist>
@@ -90,14 +90,14 @@ export default function CustomSearch() {
 
         {/* 4. Symptom/Procedure (autocomplete via datalist) */}
         <div>
-          <input list="symptoms" value={symptom} onChange={(e)=>setSymptom(e.target.value)} placeholder="Symptom / Procedure" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+          <input list="symptoms" value={symptom} onChange={(e)=>setSymptom(e.target.value)} placeholder="Symptom / Procedure" className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base md:text-sm md:py-2" />
           <datalist id="symptoms">
             {symptoms.map((s) => <option key={s} value={s} />)}
           </datalist>
         </div>
       </div>
       <div className="flex">
-        <button type="submit" disabled={!canSearch} className="ml-auto bg-gray-900 text-white rounded-lg text-sm px-4 py-2 disabled:opacity-50">Search</button>
+        <button type="submit" disabled={!canSearch} className="ml-auto bg-gray-900 text-white rounded-lg text-base px-5 py-3 md:text-sm md:py-2 disabled:opacity-50">Search</button>
       </div>
     </form>
   );

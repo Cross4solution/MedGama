@@ -33,14 +33,14 @@ const RegisterForm = ({
          <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
          <span className="text-lg sm:text-xl font-bold text-gray-900">MediTravel</span>
        </div>
-       <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Hesap Oluşturun</h1>
-       <p className="text-xs sm:text-sm text-gray-600">Sağlık yolculuğunuza başlamak için kayıt olun</p>
+       <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Create an Account</h1>
+       <p className="text-xs sm:text-sm text-gray-600">Sign up to start your health journey</p>
      </div>
          <form onSubmit={handleSubmit} className="space-y-1 sm:space-y-2 md:space-y-1 flex flex-col items-center">
              <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 md:gap-1 w-full max-w-2xl">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
-            Ad
+            First Name
           </label>
           <div className="relative">
             <User className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
@@ -52,14 +52,14 @@ const RegisterForm = ({
               className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
                 errors.firstName ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Adınız"
+              placeholder="Your first name"
             />
           </div>
           {errors.firstName && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.firstName}</p>}
         </div>
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
-            Soyad
+            Last Name
           </label>
           <div className="relative">
             <User className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
@@ -71,7 +71,7 @@ const RegisterForm = ({
               className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
                 errors.lastName ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Soyadınız"
+              placeholder="Your last name"
             />
           </div>
           {errors.lastName && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.lastName}</p>}
@@ -80,7 +80,7 @@ const RegisterForm = ({
              <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 md:gap-1 w-full max-w-2xl">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
-            E-posta Adresi
+            Email Address
           </label>
           <div className="relative">
             <Mail className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
@@ -92,14 +92,14 @@ const RegisterForm = ({
               className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="ornek@email.com"
+              placeholder="name@example.com"
             />
           </div>
           {errors.email && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.email}</p>}
         </div>
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
-            Telefon
+            Phone
           </label>
           <div className="relative">
             <Phone className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
@@ -120,7 +120,7 @@ const RegisterForm = ({
              <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 md:gap-1 w-full max-w-2xl">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
-            Şehir
+            City
           </label>
           <div className="relative group">
             <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
@@ -134,7 +134,7 @@ const RegisterForm = ({
                   : 'border-gray-200'
               } ${formData.city ? 'text-gray-900' : 'text-gray-500'}`}
             >
-              <option value="" className="text-gray-500">Şehir seçiniz</option>
+              <option value="" className="text-gray-500">Select a city</option>
               <option value="Adana" className="py-2">Adana</option>
               <option value="Adıyaman" className="py-2">Adıyaman</option>
               <option value="Afyonkarahisar" className="py-2">Afyonkarahisar</option>
@@ -242,7 +242,7 @@ const RegisterForm = ({
         </div>
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
-            Doğum Tarihi
+            Date of Birth
           </label>
           <div className="relative group">
             <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
@@ -261,7 +261,7 @@ const RegisterForm = ({
              <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 md:gap-1 w-full max-w-2xl">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
-            Şifre
+            Password
           </label>
           <div className="relative">
             <Lock className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
@@ -273,7 +273,7 @@ const RegisterForm = ({
               className={`w-full pl-6 sm:pl-8 pr-8 sm:pr-10 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Şifrenizi girin"
+              placeholder="Enter your password"
             />
             <button
               type="button"
@@ -287,7 +287,7 @@ const RegisterForm = ({
         </div>
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
-            Şifre Tekrar
+            Confirm Password
           </label>
           <div className="relative">
             <Lock className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
@@ -299,7 +299,7 @@ const RegisterForm = ({
               className={`w-full pl-6 sm:pl-8 pr-8 sm:pr-10 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
                 errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Şifrenizi tekrar girin"
+              placeholder="Re-enter your password"
             />
             <button
               type="button"
@@ -327,22 +327,22 @@ const RegisterForm = ({
              <span className="text-sm text-gray-600 text-center md:text-left leading-relaxed">
                <span className="text-red-500">*</span>
                {' '}
+               I have read and agree to the{' '}
                <button
                  type="button"
                  onClick={() => setShowTermsPopup(true)}
                  className="text-blue-600 hover:text-blue-700 font-medium"
                >
-                 Kullanım Şartları
-               </button>
-               {' '}ve{' '}
+                 Terms of Use
+               </button>{' '}and{' '}
                <button
                  type="button"
                  onClick={() => setShowPrivacyPopup(true)}
                  className="text-blue-600 hover:text-blue-700 font-medium"
                >
-                 Gizlilik Politikası
+                 Privacy Policy
                </button>
-               'nı okudum ve kabul ediyorum.
+               .
              </span>
            </label>
            {errors.acceptTerms && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.acceptTerms}</p>}
@@ -356,8 +356,8 @@ const RegisterForm = ({
              className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 mt-0.5"
            />
            <span className="text-sm text-gray-600 text-center md:text-left leading-relaxed">
-             Sağlık ipuçları, yeni hizmetler ve özel teklifler hakkında e-posta almak istiyorum.
-           </span>
+            I would like to receive emails about health tips, new services, and special offers.
+          </span>
          </label>
        </div>
       
@@ -365,7 +365,7 @@ const RegisterForm = ({
         type="submit"
                  className="w-full max-w-2xl bg-green-500 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-green-600 focus:ring-4 focus:ring-green-200 transition-all duration-200 font-semibold text-xs sm:text-sm mt-3 sm:mt-4 md:mt-2 shadow-sm hover:shadow-md"
       >
-        Hesap Oluştur
+        Create Account
       </button>
       <div className="relative my-2 sm:my-3 w-full max-w-2xl">
         <div className="relative flex justify-center text-xs">
@@ -385,17 +385,17 @@ const RegisterForm = ({
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
           </div>
-          <span className="text-sm font-medium text-gray-700">Google ile Devam Et</span>
+          <span className="text-sm font-medium text-gray-700">Continue with Google</span>
         </button>
       </div>
       <p className="text-center text-xs text-gray-600">
-        Zaten hesabınız var mı?{' '}
+        Already have an account?{' '}
         <button
           type="button"
           onClick={() => setCurrentPage('login')}
           className="text-blue-600 hover:text-blue-700 font-semibold"
         >
-          Giriş yapın
+          Log in
         </button>
       </p>
     </form>

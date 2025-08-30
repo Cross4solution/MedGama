@@ -28,14 +28,14 @@ const CookieBanner = () => {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex-1">
             <p className="text-sm text-gray-600 leading-relaxed">
-              Web sitemizde deneyiminizi geliştirmek için çerezler kullanıyoruz. 
+              We use cookies to enhance your experience on our website.
               <span 
                 className="text-blue-600 hover:text-blue-700 cursor-pointer font-medium ml-1"
                 onClick={() => setShowCookieInfoPopup(true)}
               >
-                Daha fazla bilgi
+                Learn more
               </span>
-              'ye tıklayarak tüm çerezlerin kullanımını kabul etmiş olursunuz.
+              . By continuing, you consent to the use of cookies.
             </p>
           </div>
           
@@ -44,13 +44,13 @@ const CookieBanner = () => {
               onClick={handleDeny}
               className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium text-sm shadow-sm"
             >
-              Reddet
+              Decline
             </button>
             <button
               onClick={handleAccept}
               className="px-6 py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all duration-200 font-medium text-sm shadow-sm"
             >
-              Kabul Et
+              Accept
             </button>
           </div>
         </div>
