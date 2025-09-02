@@ -44,6 +44,7 @@ const ClinicDetailPage = () => {
       icon: <Activity className="w-5 h-5" />,
       description: 'Bypass, kapak replasmanı, arytoplasti'
     },
+    
     {
       name: 'Onkoloji',
       icon: <Stethoscope className="w-5 h-5" />,

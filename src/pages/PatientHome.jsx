@@ -6,7 +6,6 @@ import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import TimelineFeed from '../components/TimelineFeed';
 import Header from '../components/Header';
-import TimelinePreview from '../components/TimelinePreview';
 import CoreBoxes from '../components/CoreBoxes';
 import SearchSections from '../components/SearchSections';
 
@@ -42,15 +41,13 @@ export default function PatientHome() {
               <div className="max-w-6xl mx-auto px-4 sm:px-6">
                 <div className="rounded-xl border bg-white p-4">
                   {/* fixed height, inner scrollable area */}
-                  <div className="h-96 overflow-y-auto pr-2">
+                  <div className="h-[28rem] overflow-y-auto pr-2">
                     <TimelineFeed />
                   </div>
                 </div>
               </div>
             </section>
 
-            {/* Professional Timeline Cards Preview */}
-            <TimelinePreview columns={3} />
 
             {/* Core Boxes (patient quick access) */}
             <section className="py-8 border-b">

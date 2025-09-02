@@ -28,7 +28,7 @@ function AppContent() {
   const showCookieBanner = ['/', '/home', '/home-v2', '/patient-home', '/clinics', '/timeline', '/clinic', '/doctor-chat', '/telehealth-appointment', '/terms-of-service', '/login', '/register', '/about', '/for-patients', '/for-clinics', '/vasco-ai', '/contact'].includes(location.pathname);
   
   return (
-    <div>
+    <div className={user ? "lg:pl-72" : ""}>
       {/* Global patient sidebar (renders once for all pages) */}
       {user && <SidebarPatient />}
       <Routes>
