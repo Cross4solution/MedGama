@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import Carousel from '../components/Carousel';
 import Footer from '../components/Footer';
@@ -11,6 +11,9 @@ import SearchSections from '../components/SearchSections';
 
 export default function PatientHome() {
   const { user, formatCurrency } = useAuth();
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
   const popularClinics = [
     { id: 1, name: 'Memorial Hospital', city: 'Ankara', dept: 'Plastic Surgery, Aesthetics', rating: 4.9, reviews: 295, minPriceUSD: 2900, image: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
     { id: 2, name: 'Ege University Hospital', city: 'Izmir', dept: 'Neurology, Orthopedics', rating: 4.7, reviews: 428, minPriceUSD: 1800, image: '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg' },

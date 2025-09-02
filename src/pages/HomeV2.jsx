@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { Star } from 'lucide-react';
 import Header from '../components/Header';
 import TimelinePreview from '../components/TimelinePreview';
@@ -8,6 +10,7 @@ import Carousel from '../components/Carousel';
 import Footer from '../components/Footer';
 
 export default function HomeV2() {
+  const { user } = useAuth();
 
   // Login dropdown state + outside click close
   const [loginOpen, setLoginOpen] = useState(false);
@@ -37,6 +40,11 @@ export default function HomeV2() {
   ];
 
   // Eski çoklu arama kaldırıldı; GlobalSearch ve CustomSearch kullanılacak
+
+  // If logged in, do not show public landing; go to patient home
+  if (user) {
+    return <Navigate to="/patient-home" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-white">
