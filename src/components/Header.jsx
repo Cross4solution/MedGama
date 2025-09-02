@@ -42,9 +42,13 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to={user ? "/patient-home" : "/"} onClick={closeMenu} className="flex items-center space-x-3 cursor-pointer select-none">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isScrolled ? 'bg-green-500/40' : 'bg-green-500'}`}>
-              <span className={`font-bold text-sm ${isScrolled ? 'text-white/80' : 'text-white'}`}>M</span>
-            </div>
+            <img
+              src="/images/logo/crm-logo.jpg"
+              alt="MedGama Logo"
+              className="h-10 md:h-12 w-auto object-contain rounded"
+              loading="eager"
+              decoding="async"
+            />
             <span className={`text-xl font-bold ${isScrolled ? 'text-gray-900/80' : 'text-gray-900'}`}>MedGama</span>
           </Link>
 
