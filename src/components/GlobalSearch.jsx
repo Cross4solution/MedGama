@@ -55,7 +55,7 @@ export default function GlobalSearch() {
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         placeholder="Search clinics or doctors"
-        className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm"
+        className="w-full border border-gray-300 rounded-2xl px-5 py-4 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-200"
       />
       {open && results.length > 0 && (
         <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">

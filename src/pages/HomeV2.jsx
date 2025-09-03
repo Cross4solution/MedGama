@@ -7,7 +7,6 @@ import TimelinePreview from '../components/TimelinePreview';
 import SearchSections from '../components/SearchSections';
 import CoreBoxes from '../components/CoreBoxes';
 import Carousel from '../components/Carousel';
-import Footer from '../components/Footer';
 
 export default function HomeV2() {
   const { user } = useAuth();
@@ -113,7 +112,7 @@ export default function HomeV2() {
         </div>
       </section>
 
-      <Footer />
+      {/* Footer is rendered globally in App.js */}
     </div>
   );
 }

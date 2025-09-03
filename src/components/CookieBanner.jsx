@@ -48,7 +48,7 @@ const CookieBanner = () => {
             </button>
             <button
               onClick={handleAccept}
-              className="px-6 py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition-all duration-200 font-medium text-sm shadow-sm"
+              className="px-6 py-2.5 bg-[#1C6A83] text-white rounded-xl hover:brightness-95 transition-all duration-200 font-medium text-sm shadow-sm"
             >
               Accept
             </button>

@@ -15,27 +15,32 @@ export default function SidebarPatient() {
   const roleLabel = role === 'doctor' ? 'Doctor' : role === 'clinic' ? 'Clinic' : role === 'admin' ? 'Admin' : 'Patient';
 
   const patientItems = [
+    // Profile
     { to: '/patient-home', label: 'Overview', icon: Home },
-    { to: '/timeline', label: 'Feed', icon: Newspaper, badge: 5 },
+    // Notifications (aligned with doctor/clinic order)
+    { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
+    // Messages
     { to: '/doctor-chat', label: 'Messages', icon: MessageSquare, badge: 2 },
+    // Appointments
     { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
+    // Additional patient tabs
+    { to: '/timeline', label: 'Feed', icon: Newspaper, badge: 5 },
     { to: '/clinics', label: 'Clinics', icon: Building2 },
     { to: '/saved', label: 'Saved', icon: Bookmark },
     { to: '/terms-of-service', label: 'Settings', icon: Settings },
   ];
 
-  // Doctor-specific menu
+  // Doctor-specific menu (Profile → Notifications → Messages → Appointments → Telehealth)
   const doctorItems = [
-    { to: '/updates', label: 'Updates', icon: Newspaper },
     { to: '/patient-home', label: 'Profile', icon: Home },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
     { to: '/doctor-chat', label: 'Messages', icon: MessageSquare },
-    { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
+    { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
+    { to: '/telehealth', label: 'Telehealth', icon: CalendarClock },
   ];
 
-  // Clinic-specific menu
+  // Clinic-specific menu (Profile → Notifications → Home → Doctors & Departments → CRM)
   const clinicItems = [
-    { to: '/updates', label: 'Updates', icon: Newspaper },
     { to: '/patient-home', label: 'Profile', icon: Home },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
     { to: '/patient-home', label: 'Home', icon: Home },
@@ -113,7 +118,10 @@ export default function SidebarPatient() {
 
             {/* Footer actions */}
             <div className="p-3 border-t">
-              <button onClick={() => { logout(); navigate('/'); }} className={`w-full flex items-center justify-center gap-2 px-3 py-2 text-sm border rounded-xl hover:bg-gray-50`}>
+              <button
+                onClick={() => { logout(); navigate('/'); }}
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-xl bg-red-600 text-white hover:bg-red-700 shadow-sm"
+              >
                 <LogOut className="w-4 h-4" /> Logout
               </button>
             </div>
@@ -182,7 +190,7 @@ export default function SidebarPatient() {
               <div className="p-3 border-t">
                 <button
                   onClick={() => { setSidebarMobileOpen(false); logout(); navigate('/'); }}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm border rounded-xl hover:bg-gray-50"
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-xl bg-red-600 text-white hover:bg-red-700 shadow-sm"
                 >
                   <LogOut className="w-4 h-4" /> Logout
                 </button>

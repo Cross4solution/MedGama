@@ -20,8 +20,8 @@ export default function TelehealthAppointmentPage() {
   const doctors = useMemo(() => ([
     {
       name: 'Dr. Ahmet Yılmaz',
-      specialty: 'Kardiyoloji Uzmanı',
-      experience: '15 yıl tecrübe',
+      specialty: 'Cardiologist',
+      experience: '15 years experience',
       rating: 4.8,
       reviews: 342,
       priceUSD: 200,
@@ -29,8 +29,8 @@ export default function TelehealthAppointmentPage() {
     },
     {
       name: 'Dr. Elif Demir',
-      specialty: 'Dahiliye Uzmanı',
-      experience: '12 yıl tecrübe',
+      specialty: 'Internal Medicine Specialist',
+      experience: '12 years experience',
       rating: 4.7,
       reviews: 289,
       priceUSD: 180,
@@ -53,9 +53,9 @@ export default function TelehealthAppointmentPage() {
       payment: paymentMethod,
       country,
     };
-    // TODO: Backend entegrasyonu
-    // console.log('Randevu bilgileri:', payload);
-    alert('Randevunuz başarıyla oluşturuldu!');
+    // TODO: Backend integration
+    // console.log('Appointment payload:', payload);
+    alert('Your appointment has been created successfully!');
   };
 
   const doctorPrice = (name) => {
@@ -67,47 +67,47 @@ export default function TelehealthAppointmentPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Başlık */}
+        {/* Title */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Telehealth Randevu Al</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Book a Telehealth Appointment</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Evinizin konforunda uzman doktorlarımızla online görüşme yapın. Güvenli ve GDPR uyumlu video görüşme teknolojisi.
+            Consult with our expert physicians from the comfort of your home. Secure and GDPR-compliant video visit technology.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Sol Sütun - Form */}
+          {/* Left Column - Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Klinik/Ücret Bilgisi */}
+              {/* Clinic / Fee */}
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 <div className="flex items-center gap-4">
                   <img
                     src={doctors[0].image}
-                    alt="Klinik görseli"
+                    alt="Clinic image"
                     className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                   />
                   <div>
                     <h3 className="text-lg font-bold text-gray-900">Anadolu Sağlık Merkezi</h3>
                     <div className="flex items-center text-sm text-gray-600">
-                      <span>📍 İstanbul, Türkiye</span>
-                      <span className="ml-4">4.8 ⭐ (342)</span>
+                      <span>📍 Istanbul, Turkey</span>
+                      <span className="ml-4">4.8 ⭐ (342 reviews)</span>
                     </div>
                     <div className="mt-2">
                       <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {doctorPrice(selectedDoctor)} Konsültasyon Ücreti
+                        {doctorPrice(selectedDoctor)} Consultation Fee
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Doktor Seçimi */}
+              {/* Appointment Details */}
               <div className="bg-white rounded-lg shadow-sm border p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Randevu Bilgileri</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Appointment Details</h3>
 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Doktor Seçimi</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Doctor Selection</label>
                   <div className="space-y-3">
                     {doctors.map((doctor) => (
                       <div
@@ -135,7 +135,7 @@ export default function TelehealthAppointmentPage() {
                               <span className="text-blue-600 font-semibold">{formatCurrency(doctor.priceUSD)}</span>
                             </div>
                             <p className="text-sm text-gray-600 truncate">{doctor.specialty} • {doctor.experience}</p>
-                            <div className="text-sm text-gray-600 mt-1">Puan: {doctor.rating} ({doctor.reviews} değerlendirme)</div>
+                            <div className="text-sm text-gray-600 mt-1">Rating: {doctor.rating} ({doctor.reviews} reviews)</div>
                           </div>
                         </div>
                       </div>
@@ -143,10 +143,10 @@ export default function TelehealthAppointmentPage() {
                   </div>
                 </div>
 
-                {/* Tarih & Saat */}
+                {/* Date & Time */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Tarih Seçimi</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
                     <input
                       type="date"
                       value={selectedDate}
@@ -155,7 +155,7 @@ export default function TelehealthAppointmentPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Saat Seçimi</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
                     <select
                       value={selectedTime}
                       onChange={(e) => setSelectedTime(e.target.value)}
@@ -169,15 +169,15 @@ export default function TelehealthAppointmentPage() {
                 </div>
               </div>
 
-              {/* Hasta Bilgileri */}
+              {/* Patient Information */}
               <div className="bg-white rounded-lg shadow-sm border p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Hasta Bilgileri</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Patient Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Ad Soyad</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                     <input
                       type="text"
-                      placeholder="Adınız ve soyadınız"
+                      placeholder="Your full name"
                       value={patientInfo.fullName}
                       onChange={(e) => setPatientInfo({ ...patientInfo, fullName: e.target.value })}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -185,7 +185,7 @@ export default function TelehealthAppointmentPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Telefon</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                     <input
                       type="tel"
                       placeholder="+90 555 123 4567"
@@ -198,10 +198,10 @@ export default function TelehealthAppointmentPage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">E-posta</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                     <input
                       type="email"
-                      placeholder="ornek@email.com"
+                      placeholder="example@email.com"
                       value={patientInfo.email}
                       onChange={(e) => setPatientInfo({ ...patientInfo, email: e.target.value })}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -209,7 +209,7 @@ export default function TelehealthAppointmentPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Doğum Tarihi</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
                     <input
                       type="date"
                       value={patientInfo.birthDate}
@@ -220,10 +220,10 @@ export default function TelehealthAppointmentPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Şikayetleriniz ve Notlarınız</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Symptoms and Notes</label>
                   <textarea
                     rows={4}
-                    placeholder="Lütfen şikayetlerinizi ve doktora iletmek istediğiniz notları yazınız..."
+                    placeholder="Please describe your symptoms and any notes for the doctor..."
                     value={patientInfo.symptoms}
                     onChange={(e) => setPatientInfo({ ...patientInfo, symptoms: e.target.value })}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -231,14 +231,14 @@ export default function TelehealthAppointmentPage() {
                 </div>
               </div>
 
-              {/* Ödeme Yöntemi */}
+              {/* Payment Method */}
               <div className="bg-white rounded-lg shadow-sm border p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Ödeme Yöntemi</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {[
-                    { key: 'credit', label: 'Kredi Kartı' },
-                    { key: 'transfer', label: 'Havale/EFT' },
-                    { key: 'onarrival', label: 'Görüşme Öncesi' },
+                    { key: 'credit', label: 'Credit Card' },
+                    { key: 'transfer', label: 'Bank Transfer' },
+                    { key: 'onarrival', label: 'Before Session' },
                   ].map((opt) => (
                     <label key={opt.key} className={`flex items-center gap-2 border rounded-lg px-3 py-2 cursor-pointer ${paymentMethod === opt.key ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}>
                       <input
@@ -258,25 +258,25 @@ export default function TelehealthAppointmentPage() {
               {/* Submit */}
               <div className="flex justify-end">
                 <button type="submit" className="px-5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700">
-                  Randevuyu Oluştur
+                  Create Appointment
                 </button>
               </div>
             </form>
           </div>
 
-          {/* Sağ Sütun - Özet */}
+          {/* Right Column - Summary */}
           <aside className="space-y-4">
             <div className="bg-white rounded-lg shadow-sm border p-6">
-              <h3 className="text-base font-semibold text-gray-900 mb-3">Özet</h3>
+              <h3 className="text-base font-semibold text-gray-900 mb-3">Summary</h3>
               <ul className="text-sm text-gray-700 space-y-1">
-                <li><span className="text-gray-500">Doktor:</span> {selectedDoctor}</li>
-                <li><span className="text-gray-500">Tarih:</span> {selectedDate}</li>
-                <li><span className="text-gray-500">Saat:</span> {selectedTime}</li>
-                <li><span className="text-gray-500">Ücret:</span> {doctorPrice(selectedDoctor)}</li>
+                <li><span className="text-gray-500">Doctor:</span> {selectedDoctor}</li>
+                <li><span className="text-gray-500">Date:</span> {selectedDate}</li>
+                <li><span className="text-gray-500">Time:</span> {selectedTime}</li>
+                <li><span className="text-gray-500">Fee:</span> {doctorPrice(selectedDoctor)}</li>
               </ul>
             </div>
             <div className="bg-blue-50 border border-blue-100 text-blue-900 rounded-lg p-4 text-sm flex justify-center items-center">
-              Görüşme bağlantısı randevu saatinden önce e-posta adresinize gönderilecektir. Lütfen doğru iletişim bilgisi girdiğinizden emin olun.
+              The session link will be sent to your email before the appointment time. Please ensure your contact details are correct.
             </div>
           </aside>
         </div>

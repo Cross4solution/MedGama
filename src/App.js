@@ -8,6 +8,7 @@ import TimelinePage from './pages/TimelinePage';
 import ClinicDetailPage from './pages/ClinicDetailPage';
 import DoctorChatPage from './pages/DoctorChatPage';
 import TelehealthAppointmentPage from './pages/TelehealthAppointmentPage';
+import TelehealthPage from './pages/TelehealthPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import ClinicsPage from './pages/ClinicsPage';
 import AuthPages from './pages/AuthPages';
@@ -17,6 +18,7 @@ import ForClinicsPage from './pages/ForClinicsPage';
 import VascoAIPage from './pages/VascoAIPage';
 import ContactPage from './pages/ContactPage';
 import CookieBanner from './components/CookieBanner';
+import Footer from './components/Footer';
 import { AuthProvider } from './context/AuthContext';
 import DoctorLogin from './pages/DoctorLogin';
 import ClinicLogin from './pages/ClinicLogin';
@@ -29,7 +31,11 @@ function AppContent() {
   const { user } = useAuth();
   
   // Cookie banner'ın gösterileceği sayfalar
-  const showCookieBanner = ['/', '/home', '/home-v2', '/patient-home', '/clinics', '/timeline', '/clinic', '/doctor-chat', '/telehealth-appointment', '/terms-of-service', '/login', '/register', '/about', '/for-patients', '/for-clinics', '/vasco-ai', '/contact', '/updates', '/notifications'].includes(location.pathname);
+  const showCookieBanner = ['/', '/home', '/home-v2', '/patient-home', '/clinics', '/timeline', '/clinic', '/doctor-chat', '/telehealth-appointment', '/telehealth', '/terms-of-service', '/login', '/register', '/about', '/for-patients', '/for-clinics', '/vasco-ai', '/contact', '/updates', '/notifications'].includes(location.pathname);
+  
+  // Footer login sayfalarında gizlensin
+  const hideFooterOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];
+  const showFooter = !hideFooterOn.includes(location.pathname);
   
   return (
     <div className={user ? "lg:pl-72" : ""}>
@@ -44,6 +50,7 @@ function AppContent() {
         <Route path="/timeline" element={<TimelinePage />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/doctor-chat" element={<DoctorChatPage />} />
+        <Route path="/telehealth" element={<TelehealthPage />} />
         <Route path="/telehealth-appointment" element={<TelehealthAppointmentPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/auth" element={<AuthPages />} />
@@ -60,6 +67,7 @@ function AppContent() {
         <Route path="/updates" element={<Updates />} />
         <Route path="/notifications" element={<Notifications />} />
       </Routes>
+      {showFooter && <Footer />}
       {showCookieBanner && <CookieBanner />}
     </div>
   );

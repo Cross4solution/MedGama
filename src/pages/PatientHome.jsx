@@ -2,11 +2,9 @@ import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import Carousel from '../components/Carousel';
-import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import TimelineFeed from '../components/TimelineFeed';
 import Header from '../components/Header';
-import CoreBoxes from '../components/CoreBoxes';
 import SearchSections from '../components/SearchSections';
 
 export default function PatientHome() {
@@ -39,12 +37,12 @@ export default function PatientHome() {
               </div>
             </div>
 
-            {/* Timeline preview section with its own vertical scroll */}
+            {/* Timeline preview section with taller height */}
             <section id="timeline" className="py-6 bg-gray-50 border-b">
               <div className="max-w-6xl mx-auto px-4 sm:px-6">
                 <div className="rounded-xl border bg-white p-4">
-                  {/* fixed height, inner scrollable area */}
-                  <div className="h-[28rem] overflow-y-auto pr-2">
+                  {/* taller height, inner scrollable area */}
+                  <div className="h-[80vh] overflow-y-auto pr-2">
                     <TimelineFeed />
                   </div>
                 </div>
@@ -52,12 +50,6 @@ export default function PatientHome() {
             </section>
 
 
-            {/* Core Boxes (patient quick access) */}
-            <section className="py-8 border-b">
-              <div className="max-w-6xl mx-auto px-4 sm:px-6">
-                <CoreBoxes />
-              </div>
-            </section>
 
             {/* Unified Search sections (same as HomeV2) */}
             <SearchSections />
@@ -96,7 +88,7 @@ export default function PatientHome() {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* Footer is rendered globally in App.js */}
     </div>
   );
 }
