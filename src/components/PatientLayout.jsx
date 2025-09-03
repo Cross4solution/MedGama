@@ -1,6 +1,5 @@
 import React from 'react';
 import Header from './Header';
-import SidebarPatient from './SidebarPatient';
 import { useAuth } from '../context/AuthContext';
 
 /**
@@ -16,7 +15,6 @@ export default function PatientLayout({ children, className = '' }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      {user && <SidebarPatient />}
       <div className={`${user ? 'lg:ml-[var(--sidebar-width)]' : ''} ${className}`}>
         {children}
       </div>

@@ -18,6 +18,10 @@ import VascoAIPage from './pages/VascoAIPage';
 import ContactPage from './pages/ContactPage';
 import CookieBanner from './components/CookieBanner';
 import { AuthProvider } from './context/AuthContext';
+import DoctorLogin from './pages/DoctorLogin';
+import ClinicLogin from './pages/ClinicLogin';
+import Updates from './pages/Updates';
+import Notifications from './pages/Notifications';
 // (PatientLayout removed)
 
 function AppContent() {
@@ -25,7 +29,7 @@ function AppContent() {
   const { user } = useAuth();
   
   // Cookie banner'ın gösterileceği sayfalar
-  const showCookieBanner = ['/', '/home', '/home-v2', '/patient-home', '/clinics', '/timeline', '/clinic', '/doctor-chat', '/telehealth-appointment', '/terms-of-service', '/login', '/register', '/about', '/for-patients', '/for-clinics', '/vasco-ai', '/contact'].includes(location.pathname);
+  const showCookieBanner = ['/', '/home', '/home-v2', '/patient-home', '/clinics', '/timeline', '/clinic', '/doctor-chat', '/telehealth-appointment', '/terms-of-service', '/login', '/register', '/about', '/for-patients', '/for-clinics', '/vasco-ai', '/contact', '/updates', '/notifications'].includes(location.pathname);
   
   return (
     <div className={user ? "lg:pl-72" : ""}>
@@ -50,6 +54,11 @@ function AppContent() {
         <Route path="/for-clinics" element={<ForClinicsPage />} />
         <Route path="/vasco-ai" element={<VascoAIPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        {/* Role-specific logins */}
+        <Route path="/doctor-login" element={<DoctorLogin />} />
+        <Route path="/clinic-login" element={<ClinicLogin />} />
+        <Route path="/updates" element={<Updates />} />
+        <Route path="/notifications" element={<Notifications />} />
       </Routes>
       {showCookieBanner && <CookieBanner />}
     </div>

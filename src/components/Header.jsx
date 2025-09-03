@@ -89,8 +89,8 @@ const Header = () => {
                   {loginOpen && (
                     <div role="menu" className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
                       <Link to="/login" onClick={()=>setLoginOpen(false)} role="menuitem" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Patient Login</Link>
-                      <a href="https://crmtaslak.netlify.app/login" target="_blank" rel="noreferrer" role="menuitem" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Clinic Entrance</a>
-                      <a href="https://crmtaslak.netlify.app/login" target="_blank" rel="noreferrer" role="menuitem" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Doctor Login</a>
+                      <Link to="/doctor-login" onClick={()=>setLoginOpen(false)} role="menuitem" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Doctor Login</Link>
+                      <Link to="/clinic-login" onClick={()=>setLoginOpen(false)} role="menuitem" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Clinic Login</Link>
                     </div>
                   )}
                 </div>

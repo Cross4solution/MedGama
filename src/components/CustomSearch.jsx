@@ -61,7 +61,7 @@ export default function CustomSearch() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid md:grid-cols-4 gap-4">
+      <div className="grid gap-4 md:grid-cols-[14rem,1fr,1fr,1fr]">
         {/* 1. Country (combobox) */}
         <CountryCombobox
           options={countries}
