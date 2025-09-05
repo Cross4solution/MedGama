@@ -67,13 +67,7 @@ export default function TelehealthAppointmentPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Title */}
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Book a Telehealth Appointment</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Consult with our expert physicians from the comfort of your home. Secure and GDPR-compliant video visit technology.
-          </p>
-        </div>
+        {/* Title removed as requested */}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Form */}

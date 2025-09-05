@@ -37,6 +37,7 @@ const countryCodes = {
   Portugal: 'pt',
   Romania: 'ro',
   Russia: 'ru',
+  'United States': 'us',
   'San Marino': 'sm',
   Serbia: 'rs',
   Slovakia: 'sk',

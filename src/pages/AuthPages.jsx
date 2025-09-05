@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   Heart,
@@ -14,6 +14,7 @@ import PrivacyPopup from '../components/auth/PrivacyPopup';
 
 const AuthPages = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   const [currentPage, setCurrentPage] = useState('login'); // 'login', 'register', or 'forgot-password'
   const [showPassword, setShowPassword] = useState(false);
@@ -34,6 +35,15 @@ const AuthPages = () => {
   });
   const [errors, setErrors] = useState({});
 
+  // Sync current page with route so /register opens Register form by default
+  useEffect(() => {
+    if (location.pathname === '/register') {
+      setCurrentPage('register');
+    } else if (location.pathname === '/login' || location.pathname === '/auth') {
+      setCurrentPage('login');
+    }
+  }, [location.pathname]);
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -50,28 +60,28 @@ const AuthPages = () => {
     const newErrors = {};
  
     if (!formData.email) {
-      newErrors.email = 'E-posta adresi gerekli';
+      newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Geçerli bir e-posta adresi girin';
+      newErrors.email = 'Please enter a valid email address';
     }
  
     if (!formData.password) {
-      newErrors.password = 'Şifre gerekli';
+      newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Şifre en az 6 karakter olmalı';
+      newErrors.password = 'Password must be at least 6 characters';
     }
  
     if (currentPage === 'register') {
-      if (!formData.firstName) newErrors.firstName = 'Ad gerekli';
-      if (!formData.lastName) newErrors.lastName = 'Soyad gerekli';
-      if (!formData.phone) newErrors.phone = 'Telefon numarası gerekli';
+      if (!formData.firstName) newErrors.firstName = 'First name is required';
+      if (!formData.lastName) newErrors.lastName = 'Last name is required';
+      if (!formData.phone) newErrors.phone = 'Phone number is required';
       if (!formData.confirmPassword) {
-        newErrors.confirmPassword = 'Şifre tekrarı gerekli';
+        newErrors.confirmPassword = 'Confirm password is required';
       } else if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = 'Şifreler eşleşmiyor';
+        newErrors.confirmPassword = 'Passwords do not match';
       }
       if (!formData.acceptTerms) {
-        newErrors.acceptTerms = 'Kullanım şartlarını kabul etmelisiniz';
+        newErrors.acceptTerms = 'You must accept the Terms of Use';
       }
     }
  
@@ -83,7 +93,7 @@ const AuthPages = () => {
     e.preventDefault();
     // Demo: mock login ve patient-home'a yönlendir
     login();
-    navigate('/patient-home#timeline');
+    navigate('/');
   };
 
   return (
@@ -114,23 +124,12 @@ const AuthPages = () => {
       </div>
 
       {/* Form Container */}
-      <div className="relative z-10 flex w-full min-h-screen items-start justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="relative z-10 flex w-full min-h-screen items-center justify-center p-3 sm:p-6 overflow-y-auto">
         <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-4">
-          {/* Mobile Layout: Logo (top-left) + Form + Features (below form) */}
-          <div className="flex flex-col lg:hidden w-full max-w-sm mx-auto py-2">
-            {/* Logo Container - Sola hizalı */}
-            <div className="flex justify-start w-full mb-2 pl-2">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 sm:w-5 sm:h-5 bg-green-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">M</span>
-                </div>
-                <span className="text-sm font-bold text-white">MediTravel</span>
-              </div>
-            </div>
-
-            
+          {/* Mobile Layout: Form + Info Texts */}
+          <div className="flex flex-col lg:hidden w-full max-w-md mx-auto py-3">
             {/* Mobile Form */}
-            <div className="w-full bg-white/95 backdrop-blur-xl rounded-xl p-2 sm:p-3 shadow-2xl border border-white/30 mb-2">
+            <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-3 sm:p-5 shadow-2xl border border-white/30 mb-4">
               {currentPage === 'login' ? (
                 <LoginForm 
                   formData={formData}
@@ -165,6 +164,16 @@ const AuthPages = () => {
                 />
               )}
             </div>
+            {/* Info texts under the form (mobile) */}
+            <div className="w-full px-3 mt-1">
+              <h2 className="text-base font-semibold text-white mb-1">Your Health is Our Priority</h2>
+              <p className="text-xs text-teal-100 mb-2">Trusted healthcare services with expert doctors and modern treatments.</p>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                <li className="text-teal-50">Expert medical team</li>
+                <li className="text-teal-50">Safe and fast service</li>
+                <li className="text-teal-50">24/7 patient support</li>
+              </ul>
+            </div>
             
 
           </div>
@@ -178,10 +187,10 @@ const AuthPages = () => {
                   <Heart className="w-16 h-16 text-teal-600" />
                 </div>
                 <h2 className="text-4xl font-bold text-white mb-4">
-                  Sağlığınız Bizim Önceliğimiz
+                  Your Health is Our Priority
                 </h2>
                 <p className="text-lg text-teal-100 mb-8">
-                  Güvenilir sağlık hizmetleri, uzman doktorlar ve modern tedavi yöntemleri ile yanınızdayız.
+                  We are here with trusted healthcare services, expert doctors, and modern treatment methods.
                 </p>
                 
                 {/* Features */}
@@ -190,27 +199,27 @@ const AuthPages = () => {
                     <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
                       <CheckCircle className="w-5 h-5 text-teal-600" />
                     </div>
-                    <span className="text-white">Uzman doktor kadrosu</span>
+                    <span className="text-white">Expert medical team</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
                       <Shield className="w-5 h-5 text-teal-600" />
                     </div>
-                    <span className="text-white">Güvenli ve hızlı hizmet</span>
+                    <span className="text-white">Safe and fast service</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
                       <Heart className="w-5 h-5 text-teal-600" />
                     </div>
-                    <span className="text-white">7/24 hasta desteği</span>
+                    <span className="text-white">24/7 patient support</span>
                   </div>
                 </div>
               </div>
             </div>
             
             {/* Right Side - Form */}
-            <div className="flex-1 max-w-2xl">
-              <div className="w-full bg-white/95 backdrop-blur-xl rounded-xl p-4 md:p-6 shadow-2xl border border-white/30">
+            <div className="flex-1 max-w-3xl">
+              <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-6 md:p-8 shadow-2xl border border-white/30">
                 {currentPage === 'login' ? (
                   <LoginForm 
                     formData={formData}

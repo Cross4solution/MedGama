@@ -10,9 +10,9 @@ import Badge from './Badge';
 // props:
 // - items: [{ id, title, subtitle, image }] şeklinde liste. Boşsa placeholder üretilir.
 // - columns: grid kolon sayısı (md breakpoint)
-export default function TimelinePreview({ items = [], columns = 3 }) {
+export default function TimelinePreview({ items = [], columns = 3, limit = 6, onViewAll }) {
   // Shared posts -> preview item format
-  const mappedFromPosts = sharedPosts.slice(0, 4).map((p, i) => {
+  const mappedFromPosts = sharedPosts.slice(0, limit ?? 6).map((p, i) => {
     if (p.type === 'clinic_update') {
       return {
         id: `post-${p.id}`,
@@ -68,7 +68,7 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
       ]
     : [];
 
-  const defaults = [...mappedFromPosts, ...mappedPro].slice(0, 6);
+  const defaults = [...mappedFromPosts, ...mappedPro].slice(0, limit ?? 6);
   const data = items.length ? items : defaults;
 
   
@@ -84,7 +84,17 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Timeline Preview</h2>
-          <Link to="/timeline" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">View all timeline items</Link>
+          {onViewAll ? (
+            <button
+              type="button"
+              onClick={onViewAll}
+              className="text-sm text-teal-700 hover:text-teal-800 hover:underline"
+            >
+              View all timeline items
+            </button>
+          ) : (
+            <Link to="/timeline#filters" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">View all timeline items</Link>
+          )}
         </div>
 
         <div className={`grid ${colClass} gap-5`} role="list">
@@ -183,13 +193,24 @@ export default function TimelinePreview({ items = [], columns = 3 }) {
                       <MessageCircle className="w-4 h-4" />
                       <span className="text-xs">{item.engagement?.comments ?? 0}</span>
                     </div>
-                    <Link
-                      to="/timeline"
-                      className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:text-teal-800 hover:border-teal-300 hover:bg-teal-50 transition-colors"
-                      aria-label="Timeline details"
-                    >
-                      Details
-                    </Link>
+                    {onViewAll ? (
+                      <button
+                        type="button"
+                        onClick={onViewAll}
+                        className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:text-teal-800 hover:border-teal-300 hover:bg-teal-50 transition-colors"
+                        aria-label="Timeline details"
+                      >
+                        Details
+                      </button>
+                    ) : (
+                      <Link
+                        to="/timeline#filters"
+                        className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:text-teal-800 hover:border-teal-300 hover:bg-teal-50 transition-colors"
+                        aria-label="Timeline details"
+                      >
+                        Details
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

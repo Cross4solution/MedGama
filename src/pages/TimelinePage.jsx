@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Heart,
   MessageCircle,
@@ -17,10 +17,21 @@ import {
   User
 } from 'lucide-react';
 import Header from '../components/Header';
+import { useLocation } from 'react-router-dom';
 import TimelineFeed from '../components/TimelineFeed';
 import { useAuth } from '../context/AuthContext';
 const MediTravelTimeline = () => {
   const { user } = useAuth();
+  const hasSidebar = !!(user && user.role !== 'patient');
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash === '#filters') {
+      const el = document.getElementById('filters');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [location.hash]);
   const [selectedCountry, setSelectedCountry] = useState('Türkiye');
   const [selectedCategory, setSelectedCategory] = useState('Tüm Kategoriler');
   const [activeFilter, setActiveFilter] = useState('all');
@@ -106,9 +117,10 @@ const MediTravelTimeline = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className={`max-w-6xl mx-auto px-4 py-6 ${user ? 'lg:ml-[var(--sidebar-width)]' : ''}`}>
+      <div className={`max-w-6xl mx-auto px-4 py-6 ${hasSidebar ? 'lg:ml-[var(--sidebar-width)]' : ''}`}>
         <div className="grid lg:grid-cols-4 gap-6">
-          {/* Left Sidebar - User Profile & Filters */}
+          {/* Left Sidebar - User Profile & Filters */
+          }
           <div className="lg:col-span-1 space-y-6">
             {/* User Profile Card */}
             <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -135,7 +147,7 @@ const MediTravelTimeline = () => {
               </div>
             </div>
             {/* Filters */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div id="filters" className="bg-white rounded-xl p-6 shadow-sm scroll-mt-24">
               <h3 className="font-semibold text-gray-800 mb-4">Filtreler</h3>
  
               <div className="space-y-4">

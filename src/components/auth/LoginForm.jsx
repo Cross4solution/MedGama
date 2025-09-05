@@ -10,19 +10,18 @@ const LoginForm = ({
   handleSubmit, 
   setCurrentPage 
 }) => (
-  <div className="w-full max-w-sm mx-auto">
+  <div className="w-full max-w-md mx-auto">
     <div className="text-center mb-4 sm:mb-8">
-      <div className="flex items-center justify-center space-x-2 mb-2 sm:mb-4">
-        <Heart className="w-8 h-8 sm:w-10 sm:h-10 text-green-500" />
-        <span className="text-xl sm:text-2xl font-bold text-gray-900">MediTravel</span>
+      <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-3">
+        <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-8 w-8 sm:h-10 sm:w-10 object-contain" />
+        <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">MedGama</span>
       </div>
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Tekrar Hoş Geldiniz</h1>
-      <p className="text-sm sm:text-base text-gray-600">Hesabınıza giriş yapın ve sağlık yolculuğunuza devam edin</p>
+      <p className="text-sm sm:text-base text-gray-600">Log in to your account and continue your health journey</p>
     </div>
     <div className="space-y-3 sm:space-y-6 flex flex-col items-center">
       <div className="w-full">
         <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-          E-posta
+          Email
         </label>
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
@@ -34,14 +33,14 @@ const LoginForm = ({
             className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm sm:text-base ${
               errors.email ? 'border-red-500' : 'border-gray-300'
             }`}
-            placeholder="ornek@email.com"
+            placeholder="name@example.com"
           />
         </div>
         {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1 text-center">{errors.email}</p>}
       </div>
       <div className="w-full">
         <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-          Şifre
+          Password
         </label>
         <div className="relative">
           <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
@@ -53,7 +52,7 @@ const LoginForm = ({
             className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm sm:text-base ${
               errors.password ? 'border-red-500' : 'border-gray-300'
             }`}
-            placeholder="Şifrenizi girin"
+            placeholder="Enter your password"
           />
           <button
             type="button"
@@ -71,14 +70,14 @@ const LoginForm = ({
             type="checkbox"
             className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
-          <span className="text-xs sm:text-sm text-gray-600">Beni hatırla</span>
+          <span className="text-xs sm:text-sm text-gray-600">Remember me</span>
         </label>
         <button
           type="button"
           onClick={() => setCurrentPage('forgot-password')}
           className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium"
         >
-          Şifremi unuttum
+          Forgot password
         </button>
       </div>
       <button
@@ -90,7 +89,7 @@ const LoginForm = ({
       </button>
       <div className="relative my-6 w-full">
         <div className="relative flex justify-center text-sm">
-          <span className="text-gray-500">veya</span>
+          <span className="text-gray-500">or</span>
         </div>
       </div>
       <div className="w-full">
@@ -106,17 +105,17 @@ const LoginForm = ({
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
           </div>
-          <span className="text-sm font-medium text-gray-700">Google ile Devam Et</span>
+          <span className="text-sm font-medium text-gray-700">Continue with Google</span>
         </button>
       </div>
       <p className="text-center text-sm text-gray-600">
-        Hesabınız yok mu?{' '}
+        Don't have an account?{' '}
         <button
           type="button"
           onClick={() => setCurrentPage('register')}
           className="text-blue-600 hover:text-blue-700 font-semibold"
         >
-          Kayıt olun
+          Sign up
         </button>
       </p>
     </div>

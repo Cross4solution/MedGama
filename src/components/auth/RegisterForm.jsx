@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Heart,
   Eye,
@@ -29,9 +29,9 @@ const RegisterForm = ({
 }) => (
   <div className="w-full max-w-2xl mx-auto">
          <div className="text-center mb-2 sm:mb-3 md:mb-2">
-       <div className="flex items-center justify-center space-x-2 mb-1 sm:mb-2">
-         <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
-         <span className="text-lg sm:text-xl font-bold text-gray-900">MediTravel</span>
+       <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+         <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 sm:h-9 sm:w-9 object-contain" />
+         <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedGama</span>
        </div>
        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Create an Account</h1>
        <p className="text-xs sm:text-sm text-gray-600">Sign up to start your health journey</p>
@@ -123,16 +123,14 @@ const RegisterForm = ({
             City
           </label>
           <div className="relative group">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
+            <MapPin className="pointer-events-none absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
             <select
               name="city"
               value={formData.city}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-10 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-left text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400 ${
-                errors.city 
-                  ? 'border-red-300 focus:ring-red-100 focus:border-red-500' 
-                  : 'border-gray-200'
-              } ${formData.city ? 'text-gray-900' : 'text-gray-500'}`}
+              className={`w-full pl-6 sm:pl-8 pr-8 sm:pr-10 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm appearance-none cursor-pointer bg-white ${
+                errors.city ? 'border-red-500' : 'border-gray-300'
+              } ${formData.city ? 'text-gray-900' : 'text-gray-400'}`}
             >
               <option value="" className="text-gray-500">Select a city</option>
               <option value="Adana" className="py-2">Adana</option>
@@ -218,9 +216,9 @@ const RegisterForm = ({
               <option value="Düzce" className="py-2">Düzce</option>
             </select>
             {/* Custom dropdown arrow */}
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+            <div className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
               <svg 
-                className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" 
+                className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -228,8 +226,6 @@ const RegisterForm = ({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </div>
-            {/* Subtle shadow on focus */}
-            <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none"></div>
           </div>
           {errors.city && (
             <div className="flex items-center mt-2 text-red-500 text-xs">
@@ -245,16 +241,14 @@ const RegisterForm = ({
             Date of Birth
           </label>
           <div className="relative group">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
+            <Calendar className="pointer-events-none absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
             <input
               type="date"
               name="birthDate"
               value={formData.birthDate}
               onChange={handleInputChange}
-              className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-sm font-medium bg-white hover:bg-gray-50 hover:border-gray-400"
+              className="w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm bg-white border-gray-300"
             />
-            {/* Subtle shadow on focus */}
-            <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none"></div>
           </div>
         </div>
       </div>
@@ -369,7 +363,7 @@ const RegisterForm = ({
       </button>
       <div className="relative my-2 sm:my-3 w-full max-w-2xl">
         <div className="relative flex justify-center text-xs">
-          <span className="text-gray-500">veya</span>
+          <span className="text-gray-500">or</span>
         </div>
       </div>
       <div className="w-full max-w-2xl">
@@ -402,4 +396,4 @@ const RegisterForm = ({
   </div>
 );
 
-export default RegisterForm; 
+export default RegisterForm;

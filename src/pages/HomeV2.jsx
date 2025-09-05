@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Star } from 'lucide-react';
 import Header from '../components/Header';
@@ -10,6 +9,8 @@ import Carousel from '../components/Carousel';
 
 export default function HomeV2() {
   const { user } = useAuth();
+  const [showAllTimeline, setShowAllTimeline] = useState(false);
+  const handleViewAll = () => setShowAllTimeline(true);
 
   // Login dropdown state + outside click close
   const [loginOpen, setLoginOpen] = useState(false);
@@ -40,33 +41,57 @@ export default function HomeV2() {
 
   // Eski çoklu arama kaldırıldı; GlobalSearch ve CustomSearch kullanılacak
 
-  // If logged in, do not show public landing; go to patient home
-  if (user) {
-    return <Navigate to="/patient-home" replace />;
-  }
+  // Logged-in users can also view the landing page (removed auto-redirect)
 
   return (
     <div className="min-h-screen bg-white">
       {/* Global Header */}
       <Header />
 
-      {/* Hero / Slogan */
-      }
-      <section className="bg-gradient-to-br from-teal-50 to-sky-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid grid-cols-1 gap-8 items-center">
-            <div>
-              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900">
-              #1 Health Portal in the World 
-              </h1>
-              <p className="mt-4 text-gray-600 md:text-lg">One-click, end-to-end care: discovery, availability, telehealth and secure communication.</p>
-              <div className="mt-6 flex gap-3">
-                <a href="#features" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm">Explore</a>
+      {showAllTimeline ? (
+        // Full-page timeline grid
+        <section className="bg-gradient-to-b from-gray-50 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">All timeline items</h2>
+              <button
+                type="button"
+                onClick={() => setShowAllTimeline(false)}
+                className="text-sm text-gray-600 hover:text-gray-800 hover:underline"
+              >
+                Back
+              </button>
+            </div>
+            <TimelinePreview columns={3} limit={20} />
+          </div>
+        </section>
+      ) : (
+        <>
+      {/* If patient logged in, show TimelinePreview instead of hero */}
+      {user && user.role === 'patient' ? (
+        <section className="bg-gradient-to-b from-gray-50 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <TimelinePreview columns={3} onViewAll={handleViewAll} />
+          </div>
+        </section>
+      ) : (
+        // Hero / Slogan for guests and non-patient roles
+        <section className="bg-gradient-to-br from-teal-50 to-sky-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="grid grid-cols-1 gap-8 items-center">
+              <div>
+                <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900">
+                #1 Health Portal in the World 
+                </h1>
+                <p className="mt-4 text-gray-600 md:text-lg">One-click, end-to-end care: discovery, availability, telehealth and secure communication.</p>
+                <div className="mt-6 flex gap-3">
+                  <a href="#features" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm">Explore</a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Unified Search sections via component */}
       <SearchSections />
@@ -74,8 +99,8 @@ export default function HomeV2() {
       {/* Core Boxes (6 items) */}
       <CoreBoxes />
 
-      {/* Timeline Önizleme */}
-      <TimelinePreview columns={3} />
+      {/* Timeline Önizleme: only for guests/non-patient to avoid duplicate */}
+      {(!user || user.role !== 'patient') && <TimelinePreview columns={3} onViewAll={handleViewAll} />}
 
       {/* Popular Clinics (carousel) */}
       <section id="popular" className="py-12">
@@ -113,6 +138,8 @@ export default function HomeV2() {
       </section>
 
       {/* Footer is rendered globally in App.js */}
+      </>
+      )}
     </div>
   );
 }

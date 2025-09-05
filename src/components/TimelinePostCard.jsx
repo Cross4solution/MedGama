@@ -4,8 +4,11 @@ import TimelineActionsRow from './TimelineActionsRow';
 import TimelineButton from './TimelineButton';
 import Badge from './Badge';
 import { toEnglishTimestamp } from '../utils/i18n';
+import { useAuth } from '../context/AuthContext';
 
 export default function TimelinePostCard({ post }) {
+  const { user } = useAuth();
+  const isPatient = user?.role === 'patient';
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
       {/* Post Header */}
@@ -52,21 +55,36 @@ export default function TimelinePostCard({ post }) {
         <TimelineActionsRow
           left={
             <>
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-red-500">
-                <Heart className="w-5 h-5" />
-                <span>{post.engagement.likes}</span>
-              </button>
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-500">
-                <MessageCircle className="w-5 h-5" />
-                <span>{post.engagement.comments}</span>
-              </button>
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-green-500">
-                <Share2 className="w-5 h-5" />
-                <span>Share</span>
-              </button>
+              {isPatient ? (
+                <>
+                  <button className="flex items-center space-x-2 text-gray-600 hover:text-red-500">
+                    <Heart className="w-5 h-5" />
+                    <span>{post.engagement.likes}</span>
+                  </button>
+                  <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-500">
+                    <MessageCircle className="w-5 h-5" />
+                    <span>{post.engagement.comments}</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center space-x-2 text-gray-500">
+                    <Heart className="w-5 h-5" />
+                    <span>{post.engagement.likes}</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-gray-500">
+                    <MessageCircle className="w-5 h-5" />
+                    <span>{post.engagement.comments}</span>
+                  </div>
+                  <button className="flex items-center space-x-2 text-gray-600 hover:text-green-500">
+                    <Share2 className="w-5 h-5" />
+                    <span>Share</span>
+                  </button>
+                </>
+              )}
             </>
           }
-          right={post.hasAppointmentButton ? (
+          right={!isPatient && post.hasAppointmentButton ? (
             <TimelineButton className="w-full sm:w-auto">Book Appointment</TimelineButton>
           ) : null}
         />

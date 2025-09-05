@@ -30,17 +30,18 @@ function AppContent() {
   const location = useLocation();
   const { user } = useAuth();
   
-  // Cookie banner'ın gösterileceği sayfalar
-  const showCookieBanner = ['/', '/home', '/home-v2', '/patient-home', '/clinics', '/timeline', '/clinic', '/doctor-chat', '/telehealth-appointment', '/telehealth', '/terms-of-service', '/login', '/register', '/about', '/for-patients', '/for-clinics', '/vasco-ai', '/contact', '/updates', '/notifications'].includes(location.pathname);
+  // Cookie banner: auth sayfalarında gösterme
+  const hideCookieOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];
+  const showCookieBanner = !hideCookieOn.includes(location.pathname);
   
-  // Footer login sayfalarında gizlensin
-  const hideFooterOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];
+  // Footer belirli sayfalarda gizlensin
+  const hideFooterOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/notifications'];
   const showFooter = !hideFooterOn.includes(location.pathname);
   
   return (
-    <div className={user ? "lg:pl-72" : ""}>
-      {/* Global patient sidebar (renders once for all pages) */}
-      {user && <SidebarPatient />}
+    <div className={user && user.role !== 'patient' ? "lg:pl-72" : ""}>
+      {/* Show sidebar only for non-patient roles */}
+      {user && user.role !== 'patient' && <SidebarPatient />}
       <Routes>
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />

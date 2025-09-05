@@ -8,6 +8,10 @@ export default function SelectCombobox({
   placeholder = 'Select',
   leftIcon = null,
   searchable = true,
+  dropUp = false,
+  triggerClassName = '',
+  menuClassName = '',
+  hideChevron = false,
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -51,24 +55,30 @@ export default function SelectCombobox({
       {/* Trigger button styled like the original select */}
       <button
         type="button"
-        className={`w-full ${leftIcon ? 'pl-10' : 'pl-3'} pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-base md:text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400 text-left`}
+        className={
+          triggerClassName && triggerClassName.length > 0
+            ? triggerClassName
+            : `w-full ${leftIcon ? 'pl-10' : 'pl-3'} pr-10 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-base md:text-sm font-medium appearance-none cursor-pointer bg-white hover:bg-gray-50 hover:border-gray-400 text-left`
+        }
         onClick={() => setOpen((o) => !o)}
       >
         {selectedLabel || placeholder}
       </button>
 
       {/* Right arrow */}
-      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-        <svg className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-        </svg>
-      </div>
+      {!hideChevron && (
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+          <svg className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      )}
 
       {/* Subtle shadow on focus/hover (visual only) */}
       <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none" />
 
       {open && (
-        <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg">
+        <div className={`absolute z-30 w-full bg-white border border-gray-200 rounded-xl shadow-lg ${dropUp ? 'bottom-full mb-1' : 'mt-1'} ${menuClassName}`}>
           {searchable && (
             <div className="p-2">
               <input

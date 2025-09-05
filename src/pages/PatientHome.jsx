@@ -31,16 +31,17 @@ export default function PatientHome() {
           <div>
             {/* Toolbar directly under header - left aligned */}
             <div className="bg-white border-b">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-10 flex items-center gap-3 text-sm">
-                <Link to="/timeline" className="px-3 py-1.5 rounded border border-gray-300 text-gray-800 hover:bg-gray-50">Timeline</Link>
-                <a href="#timeline" className="px-3 py-1.5 rounded border border-gray-200 text-gray-700 hover:bg-gray-50">Preview</a>
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-8 flex items-center gap-3 text-sm justify-end">
+                <Link to="/timeline" aria-label="Open timeline" className="inline-flex items-center">
+                  <img src="/images/timelinebutton.png" alt="Timeline" className="w-6 h-6 opacity-80 hover:opacity-100 transition" />
+                </Link>
               </div>
             </div>
 
             {/* Timeline preview section with taller height */}
-            <section id="timeline" className="py-6 bg-gray-50 border-b">
+            <section id="timeline" className="py-2">
               <div className="max-w-6xl mx-auto px-4 sm:px-6">
-                <div className="rounded-xl border bg-white p-4">
+                <div className="bg-white p-0 rounded-none border-0 shadow-none">
                   {/* taller height, inner scrollable area */}
                   <div className="h-[80vh] overflow-y-auto pr-2">
                     <TimelineFeed />

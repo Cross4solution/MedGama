@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Home, Newspaper, MessageSquare, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight } from 'lucide-react';
+import { Home, LayoutDashboard, Newspaper, MessageSquare, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight } from 'lucide-react';
 
 export default function SidebarPatient() {
   const { user, logout, sidebarMobileOpen, setSidebarMobileOpen } = useAuth();
@@ -15,8 +15,10 @@ export default function SidebarPatient() {
   const roleLabel = role === 'doctor' ? 'Doctor' : role === 'clinic' ? 'Clinic' : role === 'admin' ? 'Admin' : 'Patient';
 
   const patientItems = [
-    // Profile
-    { to: '/patient-home', label: 'Overview', icon: Home },
+    // Homepage (English) -> main landing page
+    { to: '/', label: 'Homepage', icon: Home },
+    // Profile Overview (second page)
+    { to: '/patient-home', label: 'Overview', icon: LayoutDashboard },
     // Notifications (aligned with doctor/clinic order)
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
     // Messages
@@ -86,7 +88,7 @@ export default function SidebarPatient() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className={`hidden lg:block fixed left-0 w-72 top-20 z-40 h-[calc(100vh-5rem)]`}>
+      <aside className={`hidden lg:block fixed left-0 w-64 top-20 z-40 h-[calc(100vh-5rem)]`}>
         <div className="h-full">
           <div className="h-full rounded-b-2xl border border-t-0 -mt-px bg-white shadow-sm flex flex-col">
             {/* Header / Profile */}
@@ -120,7 +122,7 @@ export default function SidebarPatient() {
             <div className="p-3 border-t">
               <button
                 onClick={() => { logout(); navigate('/'); }}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-xl bg-red-600 text-white hover:bg-red-700 shadow-sm"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-xl bg-rose-500 text-white hover:bg-rose-600 shadow-sm"
               >
                 <LogOut className="w-4 h-4" /> Logout
               </button>
@@ -139,7 +141,7 @@ export default function SidebarPatient() {
             aria-hidden="true"
           />
           {/* Panel: starts below header height (top-20) */}
-          <div className="fixed left-0 top-20 bottom-0 w-4/5 max-w-xs z-[60]">
+          <div className="fixed left-0 top-20 bottom-0 w-3/4 max-w-[16rem] z-[60]">
             <div className="h-full border-r bg-white shadow-xl flex flex-col rounded-tr-2xl">
               {/* Mobile Header */}
               <div className="p-3 border-b flex items-center gap-3">
@@ -190,7 +192,7 @@ export default function SidebarPatient() {
               <div className="p-3 border-t">
                 <button
                   onClick={() => { setSidebarMobileOpen(false); logout(); navigate('/'); }}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-xl bg-red-600 text-white hover:bg-red-700 shadow-sm"
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-xl bg-rose-500 text-white hover:bg-rose-600 shadow-sm"
                 >
                   <LogOut className="w-4 h-4" /> Logout
                 </button>

@@ -8,11 +8,44 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
 
   const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
 
+  // Alias eşleştirme: Türkçe veya yaygın kısaltmalar
+  const aliases = useMemo(() => ({
+    'United States': ['usa', 'u.s.a', 'us', 'america', 'amerika', 'abd', 'united states of america'],
+    Russia: ['russia', 'rusya', 'russian federation'],
+    Germany: ['almanya', 'germany', 'deutschland'],
+    Greece: ['yunanistan', 'greece'],
+    Spain: ['ispanya', 'spain', 'españa'],
+    Italy: ['italya', 'italia', 'italy'],
+    Turkey: ['türkiye', 'turkey', 'turkiye'],
+    'United Kingdom': ['uk', 'u.k', 'britain', 'england', 'united kingdom', 'ingiltere', 'britanya'],
+    Netherlands: ['hollanda', 'netherlands'],
+    Czechia: ['çekya', 'czechia', 'czech republic'],
+    'North Macedonia': ['makedonya', 'north macedonia'],
+    Serbia: ['sırbistan', 'serbia'],
+    Poland: ['polonya', 'poland'],
+    Sweden: ['isveç', 'sweden'],
+    Norway: ['norveç', 'norway'],
+    Finland: ['finlandiya', 'finland'],
+    Ukraine: ['ukrayna', 'ukraine'],
+    Belarus: ['beyaz rusya', 'belarus'],
+    Austria: ['avusturya', 'austria'],
+    Switzerland: ['isviçre', 'switzerland'],
+    Hungary: ['macaristan', 'hungary'],
+    Bulgaria: ['bulgaristan', 'bulgaria'],
+    Romania: ['romanya', 'romania'],
+    Greecee: ['yunanistan'],
+  }), []);
+
   const filtered = useMemo(() => {
     const q = normalize(query || '');
     if (!q) return options;
-    return options.filter((opt) => normalize(opt).includes(q));
-  }, [options, query]);
+    return options.filter((opt) => {
+      const nameMatch = normalize(opt).includes(q);
+      const aliasList = aliases[opt] || [];
+      const aliasMatch = aliasList.some((a) => normalize(a).includes(q));
+      return nameMatch || aliasMatch;
+    });
+  }, [options, query, aliases]);
 
   useEffect(() => {
     const onClick = (e) => {

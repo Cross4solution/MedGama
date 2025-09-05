@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import countryCities from '../data/countryCities';
 import CountryCombobox from './CountryCombobox';
 import CityCombobox from './CityCombobox';
+// SelectCombobox kaldırıldı; semptom ve uzmanlık text input + autocomplete olarak düzenlendi
 
 export default function CustomSearch() {
   const [country, setCountry] = useState('');
@@ -10,10 +11,15 @@ export default function CustomSearch() {
   const [symptom, setSymptom] = useState('');
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [loadingCities, setLoadingCities] = useState(false);
+  const [allWorldCities, setAllWorldCities] = useState(null);
 
-  const countries = useMemo(() => Object.keys(countryCities), []);
-  const specialties = ['Diş', 'Plastik Cerrahi', 'Göz', 'Ortopedi', 'Dermatoloji', 'Kardiyoloji'];
-  const symptoms = ['Diş ağrısı', 'Burun estetiği', 'Katarakt', 'Menisküs', 'Akne', 'Anjiyo'];
+  const countries = useMemo(() => {
+    const base = Object.keys(countryCities || {});
+    const extra = (allWorldCities && Array.isArray(allWorldCities)) ? Array.from(new Set(allWorldCities.map((c) => c.country))) : [];
+    return Array.from(new Set([...base, ...extra])).sort();
+  }, [allWorldCities]);
+  const specialties = ['Kulak Burun Boğaz', 'Kardiyoloji', 'Ortopedi', 'Dermatoloji', 'Göz Hastalıkları', 'Plastik Cerrahi', 'Diş Hekimliği', 'Nöroloji', 'Gastroenteroloji'];
+  const symptoms = ['Burun tıkanıklığı', 'Baş ağrısı', 'Bel ağrısı', 'Mide bulantısı', 'Diş ağrısı', 'Görme bulanıklığı', 'Akne', 'Varis', 'Çınlama'];
 
   const canSearch = useMemo(() => !!(country || city || specialty || symptom), [country, city, specialty, symptom]);
 
@@ -23,81 +29,214 @@ export default function CustomSearch() {
     console.log('Custom search:', { country, city, specialty, symptom });
   };
 
-  // Load cities dynamically for selected country (full list) with fallback to local map
+  // Dünya şehirleri datasını lazy-load et (tek sefer)
   React.useEffect(() => {
-    let aborted = false;
+    let cancelled = false;
     const load = async () => {
-      setCitiesOptions([]);
-      if (!country) return;
-      setLoadingCities(true);
       try {
-        // CountriesNow API: https://countriesnow.space/api/v0.1/countries/cities
-        const res = await fetch('https://countriesnow.space/api/v0.1/countries/cities', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ country }),
-        });
-        if (!aborted && res.ok) {
-          const data = await res.json();
-          if (data && data.data && Array.isArray(data.data) && data.data.length > 0) {
-            setCitiesOptions(data.data);
-          } else {
-            setCitiesOptions(countryCities[country] || []);
-          }
-        } else if (!aborted) {
-          setCitiesOptions(countryCities[country] || []);
-        }
-      } catch (err) {
-        if (!aborted) setCitiesOptions(countryCities[country] || []);
-      } finally {
-        if (!aborted) setLoadingCities(false);
+        const mod = await import('../data/worldCities.min.json');
+        if (!cancelled) setAllWorldCities(mod.default || mod);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('worldCities yüklenemedi, local countryCities ile devam');
       }
     };
-    // reset city on country change
-    setCity('');
     load();
-    return () => { aborted = true; };
-  }, [country]);
+    return () => { cancelled = true; };
+  }, []);
+
+  // Şehirleri yükle: varsa worldCities (population >= 50k), yoksa countryCities fallback
+  React.useEffect(() => {
+    setCitiesOptions([]);
+    setCity('');
+    if (!country) return;
+    setLoadingCities(true);
+    const next = () => setLoadingCities(false);
+    try {
+      if (allWorldCities && Array.isArray(allWorldCities)) {
+        const filtered = allWorldCities
+          .filter((c) => c.country === country && (c.population || 0) >= 50000)
+          .map((c) => c.city);
+        if (filtered.length > 0) {
+          setCitiesOptions(Array.from(new Set(filtered)).slice(0, 150));
+          next();
+          return;
+        }
+      }
+      // fallback
+      const fallback = countryCities[country] || [];
+      setCitiesOptions(fallback.slice(0, 150));
+    } finally {
+      next();
+    }
+  }, [country, allWorldCities]);
+
+  // Yardımcı: normalize (accent-insensitive) ve basit filtreleyici
+  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  const filterOptions = (list, q) => {
+    const n = normalize(q || '');
+    if (!n) return [];
+    return list.filter((x) => normalize(x).includes(n)).slice(0, 8);
+  };
+
+  // OR mantığı: biri doluyken diğeri disable
+  const disableSymptom = specialty.trim().length > 0;
+  const disableSpecialty = symptom.trim().length > 0;
+
+  // Debounce edilmiş arama sorguları ve klavye navigasyonu state'leri
+  const [symptomQuery, setSymptomQuery] = useState('');
+  const [specialtyQuery, setSpecialtyQuery] = useState('');
+  const [symptomActiveIndex, setSymptomActiveIndex] = useState(-1);
+  const [specialtyActiveIndex, setSpecialtyActiveIndex] = useState(-1);
+
+  React.useEffect(() => {
+    const t = setTimeout(() => setSymptomQuery(symptom), 250);
+    return () => clearTimeout(t);
+  }, [symptom]);
+  React.useEffect(() => {
+    const t = setTimeout(() => setSpecialtyQuery(specialty), 250);
+    return () => clearTimeout(t);
+  }, [specialty]);
+
+  const symptomMatches = useMemo(() => filterOptions(symptoms, symptomQuery), [symptoms, symptomQuery]);
+  const specialtyMatches = useMemo(() => filterOptions(specialties, specialtyQuery), [specialties, specialtyQuery]);
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-[14rem,1fr,1fr,1fr]">
-        {/* 1. Country (combobox) */}
-        <CountryCombobox
-          options={countries}
-          value={country}
-          onChange={(val) => { setCountry(val); setCity(''); }}
-          placeholder="Select Country"
-        />
-
-        {/* 2. City (dependent combobox) */}
-        <CityCombobox
-          options={country ? citiesOptions : []}
-          value={city}
-          onChange={setCity}
-          disabled={!country}
-          loading={loadingCities}
-          placeholder="Select City"
-        />
-
-        {/* 3. Specialty (autocomplete via datalist) */}
-        <div>
-          <input list="specialties" value={specialty} onChange={(e)=>setSpecialty(e.target.value)} placeholder="Speciality" className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base md:text-sm md:py-2" />
-          <datalist id="specialties">
-            {specialties.map((s) => <option key={s} value={s} />)}
-          </datalist>
+      <div className="grid gap-4 md:grid-cols-[10rem,10rem,1fr,auto,1fr]">
+        {/* 1. Country (küçük) */}
+        <div className="max-w-40">
+          <CountryCombobox
+            options={countries}
+            value={country}
+            onChange={(val) => { setCountry(val); setCity(''); }}
+            placeholder="Country"
+          />
         </div>
 
-        {/* 4. Symptom/Procedure (autocomplete via datalist) */}
-        <div>
-          <input list="symptoms" value={symptom} onChange={(e)=>setSymptom(e.target.value)} placeholder="Symptom / Procedure" className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base md:text-sm md:py-2" />
-          <datalist id="symptoms">
-            {symptoms.map((s) => <option key={s} value={s} />)}
-          </datalist>
+        {/* 2. City (dependent combobox) */}
+        <div className="max-w-40">
+          <CityCombobox
+            options={country ? citiesOptions : []}
+            value={city}
+            onChange={setCity}
+            disabled={!country}
+            loading={loadingCities}
+            placeholder="City"
+          />
+        </div>
+
+        {/* 3. Semptom (text + autocomplete) */}
+        <div className="relative">
+          <div className="flex items-center">
+            <input
+              type="text"
+              value={symptom}
+              onChange={(e) => { setSymptom(e.target.value); setSymptomActiveIndex(-1); }}
+              disabled={disableSymptom}
+              placeholder="Semptom yaz (örn. burun...)"
+              className={`w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-base md:text-sm ${disableSymptom ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+              onKeyDown={(e) => {
+                if (disableSymptom) return;
+                if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setSymptomActiveIndex((i) => Math.min(i + 1, Math.max(symptomMatches.length - 1, 0)));
+                } else if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setSymptomActiveIndex((i) => Math.max(i - 1, -1));
+                } else if (e.key === 'Enter') {
+                  if (symptomActiveIndex >= 0 && symptomActiveIndex < symptomMatches.length) {
+                    e.preventDefault();
+                    setSymptom(symptomMatches[symptomActiveIndex]);
+                    setSymptomActiveIndex(-1);
+                  }
+                } else if (e.key === 'Escape') {
+                  setSymptomActiveIndex(-1);
+                }
+              }}
+            />
+            {symptom && (
+              <button type="button" onClick={() => setSymptom('')} className="-ml-8 text-gray-400 hover:text-gray-600">✕</button>
+            )}
+          </div>
+          {/* Autocomplete dropdown */}
+          {symptom && !disableSymptom && (
+            <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow max-h-56 overflow-auto text-sm">
+              {symptomMatches.map((s, idx) => (
+                <li key={s}>
+                  <button type="button" className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${idx === symptomActiveIndex ? 'bg-gray-50' : ''}`} onClick={() => setSymptom(s)}>
+                    {s}
+                  </button>
+                </li>
+              ))}
+              {symptomMatches.length === 0 && (
+                <li className="px-3 py-2 text-xs text-gray-500">Öneri yok</li>
+              )}
+            </ul>
+          )}
+        </div>
+
+        {/* OR label */}
+        <div className="flex items-center justify-center text-gray-500">veya</div>
+
+        {/* 4. Speciality (text + autocomplete) */}
+        <div className="relative">
+          <div className="flex items-center">
+            <input
+              type="text"
+              value={specialty}
+              onChange={(e) => { setSpecialty(e.target.value); setSpecialtyActiveIndex(-1); }}
+              disabled={disableSpecialty}
+              placeholder="Uzmanlık yaz (örn. KBB...)"
+              className={`w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-base md:text-sm ${disableSpecialty ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+              onKeyDown={(e) => {
+                if (disableSpecialty) return;
+                if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setSpecialtyActiveIndex((i) => Math.min(i + 1, Math.max(specialtyMatches.length - 1, 0)));
+                } else if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setSpecialtyActiveIndex((i) => Math.max(i - 1, -1));
+                } else if (e.key === 'Enter') {
+                  if (specialtyActiveIndex >= 0 && specialtyActiveIndex < specialtyMatches.length) {
+                    e.preventDefault();
+                    setSpecialty(specialtyMatches[specialtyActiveIndex]);
+                    setSpecialtyActiveIndex(-1);
+                  }
+                } else if (e.key === 'Escape') {
+                  setSpecialtyActiveIndex(-1);
+                }
+              }}
+            />
+            {specialty && (
+              <button type="button" onClick={() => setSpecialty('')} className="-ml-8 text-gray-400 hover:text-gray-600">✕</button>
+            )}
+          </div>
+          {/* Autocomplete dropdown */}
+          {specialty && !disableSpecialty && (
+            <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow max-h-56 overflow-auto text-sm">
+              {specialtyMatches.map((s, idx) => (
+                <li key={s}>
+                  <button type="button" className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${idx === specialtyActiveIndex ? 'bg-gray-50' : ''}`} onClick={() => setSpecialty(s)}>
+                    {s}
+                  </button>
+                </li>
+              ))}
+              {specialtyMatches.length === 0 && (
+                <li className="px-3 py-2 text-xs text-gray-500">Öneri yok</li>
+              )}
+            </ul>
+          )}
         </div>
       </div>
       <div className="flex">
-        <button type="submit" disabled={!canSearch} className="ml-auto bg-gray-900 text-white rounded-lg text-base px-5 py-3 md:text-sm md:py-2 disabled:opacity-50">Search</button>
+        <button type="submit" disabled={!canSearch} className="ml-auto bg-gray-900 text-white rounded-lg text-base px-5 py-3 md:text-sm md:py-2 disabled:opacity-50 flex items-center gap-2">
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span>Search</span>
+        </button>
       </div>
     </form>
   );

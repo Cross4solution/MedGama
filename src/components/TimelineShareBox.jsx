@@ -1,25 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, Folder } from 'lucide-react';
 import TimelineActionsRow from './TimelineActionsRow';
 import TimelineButton from './TimelineButton';
+import { useAuth } from '../context/AuthContext';
+import PostCreateModal from './PostCreateModal';
 
 export default function TimelineShareBox() {
+  const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+
+  const avatar = '/images/portrait-candid-male-doctor_720.jpg';
+  const name = user?.name || 'Guest';
+
+  function handlePost(newPost) {
+    // TODO: integrate with timeline data store
+    // For now just log
+    // eslint-disable-next-line no-console
+    console.log('New post:', newPost);
+  }
+
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm">
       <div className="flex items-center space-x-3">
         <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
           <img
-            alt="User"
-            src="/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg"
-            className="w-full h-full object-cover object-center scale-110"
-            style={{ objectPosition: '25% 50%' }}
+            alt={name}
+            src={avatar}
+            className="w-full h-full object-cover object-center"
           />
         </div>
-        <input
-          placeholder="Ask a doctor or share your experience..."
-          className="flex-1 p-3 bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          type="text"
-        />
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex-1 text-left p-3 bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:bg-gray-100"
+        >
+          Ask a doctor or share your experience...
+        </button>
       </div>
 
       <TimelineActionsRow
@@ -36,8 +52,10 @@ export default function TimelineShareBox() {
             </button>
           </>
         }
-        right={<TimelineButton className="w-full sm:w-auto">Share</TimelineButton>}
+        right={<TimelineButton onClick={() => setOpen(true)} className="w-full sm:w-auto">Share</TimelineButton>}
       />
+
+      <PostCreateModal open={open} onClose={() => setOpen(false)} user={user} onPost={handlePost} />
     </div>
   );
 }
