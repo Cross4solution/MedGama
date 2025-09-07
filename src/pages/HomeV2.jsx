@@ -79,7 +79,7 @@ export default function HomeV2() {
       ) : (
         // Hero / Slogan for guests and non-patient roles
         <section className="bg-gradient-to-br from-teal-50 to-sky-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="grid grid-cols-1 gap-8 items-center">
               <div>
                 <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900">

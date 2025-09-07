@@ -98,10 +98,10 @@ export default function GlobalSearch() {
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-lg sm:max-w-xl md:max-w-2xl">
+    <div className="relative mx-auto w-full max-w-lg sm:max-w-xl md:max-w-2xl focus-within:ring-4 focus-within:ring-[#1C6A83]/15 rounded-full transition-shadow">
       {/* Search icon (prefix) */}
       <svg
-        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"
+        className="pointer-events-none absolute z-10 left-4 top-1/2 -translate-y-1/2 text-[#1C6A83] opacity-60 w-5 h-5"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -118,21 +118,21 @@ export default function GlobalSearch() {
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
-        placeholder={ph || 'Search clinics or doctors'}
-        className="w-full border border-gray-200 rounded-full pl-11 pr-11 py-3.5 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-200"
+        placeholder={ph || 'Clinics'}
+        className="w-full border border-gray-100 rounded-full pl-11 pr-11 py-4 text-base bg-white/95 backdrop-blur shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-[#1C6A83]/25 focus:border-transparent transition-all duration-200"
       />
       {query && (
         <button
           type="button"
           aria-label="Clear"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full w-7 h-7 flex items-center justify-center transition-colors"
           onClick={() => { setQuery(''); setActiveIndex(-1); setOpen(false); }}
         >
-          ×
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
       )}
       {open && results.length > 0 && (
-        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+        <div className="absolute z-20 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
           <ul role="listbox" className="max-h-64 overflow-auto">
             {results.map((r, idx) => (
               <li key={idx}>

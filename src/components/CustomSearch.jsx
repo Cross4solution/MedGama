@@ -34,8 +34,8 @@ export default function CustomSearch() {
     const extra = (allWorldCities && Array.isArray(allWorldCities)) ? Array.from(new Set(allWorldCities.map((c) => c.country))) : [];
     return Array.from(new Set([...base, ...extra])).sort();
   }, [allWorldCities]);
-  const specialties = ['Kulak Burun Boğaz', 'Kardiyoloji', 'Ortopedi', 'Dermatoloji', 'Göz Hastalıkları', 'Plastik Cerrahi', 'Diş Hekimliği', 'Nöroloji', 'Gastroenteroloji'];
-  const symptoms = ['Burun tıkanıklığı', 'Baş ağrısı', 'Bel ağrısı', 'Mide bulantısı', 'Diş ağrısı', 'Görme bulanıklığı', 'Akne', 'Varis', 'Çınlama'];
+  const specialties = ['ENT', 'Cardiology', 'Orthopedics', 'Dermatology', 'Ophthalmology', 'Plastic Surgery', 'Dentistry', 'Neurology', 'Gastroenterology'];
+  const symptoms = ['Nasal congestion', 'Headache', 'Low back pain', 'Nausea', 'Toothache', 'Blurred vision', 'Acne', 'Varicose veins', 'Tinnitus'];
 
   const canSearch = useMemo(() => !!(country || city || specialty || symptom), [country, city, specialty, symptom]);
 
@@ -145,14 +145,32 @@ export default function CustomSearch() {
   const [symptomActiveIndex, setSymptomActiveIndex] = useState(-1);
   const [specialtyActiveIndex, setSpecialtyActiveIndex] = useState(-1);
 
+  // Son token'ı çıkaran yardımcılar (comma-separated input desteği)
+  const getLastToken = React.useCallback((s) => {
+    if (!s) return '';
+    const parts = s.split(',');
+    return (parts[parts.length - 1] || '').trim();
+  }, []);
+  const replaceLastToken = React.useCallback((s, token, keepTrailingComma = true) => {
+    const parts = (s || '').split(',');
+    parts[parts.length - 1] = ` ${token}`; // boşlukla başlat, trim görüntüsünü korur
+    let out = parts.join(',').replace(/^\s+/, '');
+    if (keepTrailingComma) {
+      if (!out.trim().endsWith(',')) out = out.replace(/\s*$/, '') + ', ';
+    } else {
+      out = out.replace(/\s+$/, '');
+    }
+    return out;
+  }, []);
+
   React.useEffect(() => {
-    const t = setTimeout(() => setSymptomQuery(symptom), 250);
+    const t = setTimeout(() => setSymptomQuery(getLastToken(symptom)), 200);
     return () => clearTimeout(t);
-  }, [symptom]);
+  }, [symptom, getLastToken]);
   React.useEffect(() => {
-    const t = setTimeout(() => setSpecialtyQuery(specialty), 250);
+    const t = setTimeout(() => setSpecialtyQuery(getLastToken(specialty)), 200);
     return () => clearTimeout(t);
-  }, [specialty]);
+  }, [specialty, getLastToken]);
 
   const symptomMatches = useMemo(() => filterOptions(symptoms, symptomQuery), [symptoms, symptomQuery]);
   const specialtyMatches = useMemo(() => filterOptions(specialties, specialtyQuery), [specialties, specialtyQuery]);
@@ -190,10 +208,29 @@ export default function CustomSearch() {
               value={symptom}
               onChange={(e) => { setSymptom(e.target.value); setSymptomActiveIndex(-1); }}
               disabled={disableSymptom}
-              placeholder="Type a symptom (e.g. nose...)"
-              className={`w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-base md:text-sm ${disableSymptom ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+              placeholder="Type a symptom (e.g., nasal congestion)"
+              className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm ${disableSymptom ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
               onKeyDown={(e) => {
                 if (disableSymptom) return;
+                // Add comma-separated tokens with Enter or comma
+                if ((e.key === 'Enter' || e.key === ',') && symptom.trim().length > 0) {
+                  e.preventDefault();
+                  // Öneri seçiliyse onu uygula, değilse sadece virgül ekle
+                  if (symptomActiveIndex >= 0 && symptomActiveIndex < symptomMatches.length) {
+                    setSymptom((s) => replaceLastToken(s, symptomMatches[symptomActiveIndex], true));
+                  } else {
+                    setSymptom((s) => (s || '').replace(/\s*,?\s*$/, '') + ', ');
+                  }
+                  setSymptomActiveIndex(-1);
+                  return;
+                }
+                if (e.key === 'Tab') {
+                  if (symptomActiveIndex >= 0 && symptomActiveIndex < symptomMatches.length) {
+                    e.preventDefault();
+                    setSymptom((s) => replaceLastToken(s, symptomMatches[symptomActiveIndex], true));
+                    setSymptomActiveIndex(-1);
+                  }
+                }
                 if (e.key === 'ArrowDown') {
                   e.preventDefault();
                   setSymptomActiveIndex((i) => Math.min(i + 1, Math.max(symptomMatches.length - 1, 0)));
@@ -202,8 +239,7 @@ export default function CustomSearch() {
                   setSymptomActiveIndex((i) => Math.max(i - 1, -1));
                 } else if (e.key === 'Enter') {
                   if (symptomActiveIndex >= 0 && symptomActiveIndex < symptomMatches.length) {
-                    e.preventDefault();
-                    setSymptom(symptomMatches[symptomActiveIndex]);
+                    setSymptom((s) => replaceLastToken(s, symptomMatches[symptomActiveIndex], true));
                     setSymptomActiveIndex(-1);
                   }
                 } else if (e.key === 'Escape') {
@@ -220,20 +256,20 @@ export default function CustomSearch() {
             <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow max-h-56 overflow-auto text-sm">
               {symptomMatches.map((s, idx) => (
                 <li key={s}>
-                  <button type="button" className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${idx === symptomActiveIndex ? 'bg-gray-50' : ''}`} onClick={() => setSymptom(s)}>
+                  <button type="button" className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${idx === symptomActiveIndex ? 'bg-gray-50' : ''}`} onClick={() => setSymptom((prev) => replaceLastToken(prev, s, true))}>
                     {s}
                   </button>
                 </li>
               ))}
               {symptomMatches.length === 0 && (
-                <li className="px-3 py-2 text-xs text-gray-500">Öneri yok</li>
+                <li className="px-3 py-2 text-xs text-gray-500">No suggestions</li>
               )}
             </ul>
           )}
         </div>
 
         {/* OR label */}
-        <div className="flex items-center justify-center text-gray-500">veya</div>
+        <div className="flex items-center justify-center text-gray-500">or</div>
 
         {/* 4. Speciality (text + autocomplete) */}
         <div className="relative">
@@ -243,10 +279,28 @@ export default function CustomSearch() {
               value={specialty}
               onChange={(e) => { setSpecialty(e.target.value); setSpecialtyActiveIndex(-1); }}
               disabled={disableSpecialty}
-              placeholder="Type a specialty (e.g. ENT...)"
-              className={`w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-base md:text-sm ${disableSpecialty ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+              placeholder="Type a specialty (e.g., ENT)"
+              className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm ${disableSpecialty ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
               onKeyDown={(e) => {
                 if (disableSpecialty) return;
+                // Add comma-separated tokens with Enter or comma
+                if ((e.key === 'Enter' || e.key === ',') && specialty.trim().length > 0) {
+                  e.preventDefault();
+                  if (specialtyActiveIndex >= 0 && specialtyActiveIndex < specialtyMatches.length) {
+                    setSpecialty((s) => replaceLastToken(s, specialtyMatches[specialtyActiveIndex], true));
+                  } else {
+                    setSpecialty((s) => (s || '').replace(/\s*,?\s*$/, '') + ', ');
+                  }
+                  setSpecialtyActiveIndex(-1);
+                  return;
+                }
+                if (e.key === 'Tab') {
+                  if (specialtyActiveIndex >= 0 && specialtyActiveIndex < specialtyMatches.length) {
+                    e.preventDefault();
+                    setSpecialty((s) => replaceLastToken(s, specialtyMatches[specialtyActiveIndex], true));
+                    setSpecialtyActiveIndex(-1);
+                  }
+                }
                 if (e.key === 'ArrowDown') {
                   e.preventDefault();
                   setSpecialtyActiveIndex((i) => Math.min(i + 1, Math.max(specialtyMatches.length - 1, 0)));
@@ -255,8 +309,7 @@ export default function CustomSearch() {
                   setSpecialtyActiveIndex((i) => Math.max(i - 1, -1));
                 } else if (e.key === 'Enter') {
                   if (specialtyActiveIndex >= 0 && specialtyActiveIndex < specialtyMatches.length) {
-                    e.preventDefault();
-                    setSpecialty(specialtyMatches[specialtyActiveIndex]);
+                    setSpecialty((s) => replaceLastToken(s, specialtyMatches[specialtyActiveIndex], true));
                     setSpecialtyActiveIndex(-1);
                   }
                 } else if (e.key === 'Escape') {
@@ -269,17 +322,17 @@ export default function CustomSearch() {
             )}
           </div>
           {/* Autocomplete dropdown */}
-          {specialty && !disableSpecialty && (
+          {specialtyMatches.length > 0 && !disableSpecialty && specialty && (
             <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow max-h-56 overflow-auto text-sm">
               {specialtyMatches.map((s, idx) => (
                 <li key={s}>
-                  <button type="button" className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${idx === specialtyActiveIndex ? 'bg-gray-50' : ''}`} onClick={() => setSpecialty(s)}>
+                  <button type="button" className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${idx === specialtyActiveIndex ? 'bg-gray-50' : ''}`} onClick={() => setSpecialty((prev) => replaceLastToken(prev, s, true))}>
                     {s}
                   </button>
                 </li>
               ))}
               {specialtyMatches.length === 0 && (
-                <li className="px-3 py-2 text-xs text-gray-500">Öneri yok</li>
+                <li className="px-3 py-2 text-xs text-gray-500">No suggestions</li>
               )}
             </ul>
           )}

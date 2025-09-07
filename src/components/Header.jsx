@@ -1,14 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout } = useAuth();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false); // legacy (mobile menu removed)
   const [isScrolled, setIsScrolled] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const loginRef = useRef(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+  const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   // Removed profile dropdown (only avatar + username shown)
 
   const toggleMenu = () => {
@@ -23,6 +27,7 @@ const Header = () => {
   useEffect(() => {
     const onClickOutside = (e) => {
       if (loginRef.current && !loginRef.current.contains(e.target)) setLoginOpen(false);
+      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
     };
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
@@ -42,7 +47,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
           {/* Logo */}
-          <Link to="/" onClick={closeMenu} className="flex items-center space-x-3 cursor-pointer select-none">
+          <Link to="/home-v2" onClick={closeMenu} className="flex items-center space-x-3 cursor-pointer select-none">
             <img
               src="/images/logo/crm-logo.jpg"
               alt="MedGama Logo"
@@ -53,27 +58,19 @@ const Header = () => {
             <span className={`text-xl font-bold ${isScrolled ? 'text-gray-900/80' : 'text-gray-900'}`}>MedGama</span>
           </Link>
 
-          {/* Centered desktop navigation */}
-          <nav className="hidden md:flex items-center space-x-6 mx-auto">
-            <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors flex items-center gap-2">
-              <Home className="w-4 h-4" />
-              <span>Homepage</span>
+          {/* Logoya daha da yakın menü */}
+          <nav className="hidden md:flex items-center space-x-8 ml-auto mr-28">
+            <Link to="/home-v2" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
+              Homepage
             </Link>
-            <Link to="/about" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors flex items-center gap-2">
-              <Info className="w-4 h-4" />
-              <span>About MedGama</span>
+            <Link to="/clinics" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
+              Clinics
             </Link>
-            <Link to="/for-patients" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors flex items-center gap-2">
-              <HeartPulse className="w-4 h-4" />
-              <span>For Patients</span>
+            <Link to="/vasco-ai" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
+              Vasco AI
             </Link>
-            <Link to="/clinics" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              <span>For Clinics</span>
-            </Link>
-            <Link to="/vasco-ai" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors flex items-center gap-2">
-              <Cpu className="w-4 h-4" />
-              <span>Vasco AI</span>
+            <Link to="/about" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
+              About MedGama
             </Link>
           </nav>
 
@@ -113,21 +110,34 @@ const Header = () => {
                   <Link to="/register" className="text-sm bg-teal-600 text-white px-3 py-2 rounded-lg hover:bg-teal-700">Register</Link>
                 </>
               ) : (
-                <div className="flex items-center gap-2 px-2 py-1.5" title={user.name}>
-                  <img
-                    src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
-                    alt={user.name}
-                    className="w-8 h-8 rounded-full object-cover border"
-                  />
-                  <span className="text-sm text-gray-800 font-medium max-w-[160px] truncate">{user.name}</span>
-                  {user?.role === 'patient' && (
-                    <button
-                      onClick={logout}
-                      className="ml-1 text-xs px-2 py-1 rounded border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
-                      title="Logout"
-                    >
-                      Logout
-                    </button>
+                <div className="relative" ref={profileRef}>
+                  <button
+                    type="button"
+                    onClick={() => setProfileOpen((p)=>!p)}
+                    aria-haspopup="menu"
+                    aria-expanded={profileOpen}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200"
+                    title={user.name}
+                  >
+                    <img
+                      src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                      alt={user.name}
+                      className="w-8 h-8 rounded-full object-cover border"
+                    />
+                    <span className="text-sm text-gray-800 font-medium max-w-[160px] truncate">{user.name}</span>
+                    <svg className="w-4 h-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
+                  </button>
+                  {profileOpen && (
+                    <div role="menu" className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
+                      <Link to="/profile" onClick={()=>setProfileOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                        <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-3-3.87"/><path d="M4 21v-2a4 4 0 0 1 3-3.87"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>Profile</span>
+                      </Link>
+                      <button onClick={()=>{ setProfileOpen(false); setConfirmLogoutOpen(true); }} role="menuitem" className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50">
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        <span>Logout</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               )}
@@ -160,6 +170,20 @@ const Header = () => {
         </div>
       </div>
     </header>
+    {/* Logout confirm modal */}
+    {confirmLogoutOpen && (
+      <div className="fixed inset-0 z-[60] flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/40" onClick={()=>setConfirmLogoutOpen(false)} />
+        <div role="dialog" aria-modal="true" className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-sm w-[90%] p-5">
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">Çıkış yapılsın mı?</h3>
+          <p className="text-sm text-gray-600 mb-4">Hesabınızdan çıkış yapmak üzeresiniz. Emin misiniz?</p>
+          <div className="flex justify-end gap-2">
+            <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">İptal</button>
+            <button onClick={()=>{ setConfirmLogoutOpen(false); logout(); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">Evet, çıkış yap</button>
+          </div>
+        </div>
+      </div>
+    )}
     {/* Guest mobile menu (local) */}
     {!user && isMenuOpen && (
       <>
@@ -184,7 +208,7 @@ const Header = () => {
               <Link to="/register" onClick={closeMenu} className="col-span-2 text-center px-3 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700">Register</Link>
             </div>
             <div className="p-2">
-              <Link to="/" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
+              <Link to="/home-v2" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Home className="w-4 h-4" />
                 <span>Homepage</span>
               </Link>

@@ -13,6 +13,7 @@ import {
   Facebook,
   Smartphone
 } from 'lucide-react';
+import countriesEurope from '../../data/countriesEurope';
 
 const RegisterForm = ({ 
   formData, 
@@ -31,6 +32,31 @@ const RegisterForm = ({
   const [showPhoneCodes, setShowPhoneCodes] = useState(false);
   const phoneCodes = useMemo(() => ['+90','+1','+44','+49','+33','+39','+34','+7','+61','+971'], []);
   const phoneWrapRef = useRef(null);
+  // Local derived states for code and number (to prevent duplicate +code in input)
+  const parsePhone = (val = '') => {
+    const m = (val || '').match(/^(\+\d{1,3})\s*(.*)$/);
+    return m ? { code: m[1], number: m[2] } : { code: '+90', number: (val || '').replace(/^\+/, '') };
+  };
+  const { code: initCode, number: initNumber } = parsePhone(formData.phone);
+  const [phoneCode, setPhoneCode] = useState(initCode);
+  const [phoneNumber, setPhoneNumber] = useState(initNumber);
+
+  // Placeholder map by country code
+  const phonePlaceholder = (code = '+90') => {
+    const map = {
+      '+90': '+90 555 123 45 67',      // TR
+      '+1': '+1 555 123 4567',         // US/CA
+      '+44': '+44 7123 456789',        // UK mobile
+      '+49': '+49 1523 4567890',       // DE mobile
+      '+33': '+33 6 12 34 56 78',      // FR mobile
+      '+39': '+39 347 123 4567',       // IT mobile
+      '+34': '+34 612 34 56 78',       // ES mobile
+      '+7': '+7 912 345 67 89',        // RU mobile
+      '+61': '+61 4 1234 5678',        // AU mobile
+      '+971': '+971 50 123 4567',      // UAE mobile
+    };
+    return map[code] || `${code} 555 123 4567`;
+  };
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -122,20 +148,26 @@ const RegisterForm = ({
             <button
               type="button"
               onClick={() => setShowPhoneCodes((s)=>!s)}
-              className="absolute left-7 sm:left-9 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded px-1.5 py-0.5"
+              className="absolute left-7 sm:left-9 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded px-1.5 py-0.5 min-w-[44px] text-center"
               aria-label="Choose phone country code"
             >
-              {(formData.phone?.startsWith('+') ? formData.phone.split(' ')[0] : '+90')}
+              {phoneCode}
             </button>
             <input
               type="tel"
               name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
+              value={phoneNumber}
+              onChange={(e) => {
+                // Only allow digits and space, strip any leading '+' or country code typed by user
+                const raw = e.target.value || '';
+                const clean = raw.replace(/^[+]+/g, '').replace(/\s+/g, ' ').replace(/[^\d\s]/g, '');
+                setPhoneNumber(clean);
+                handleInputChange({ target: { name: 'phone', value: `${phoneCode} ${clean}`.trim() } });
+              }}
               className={`w-full pl-20 sm:pl-24 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
                 errors.phone ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="+90 555 123 45 67"
+              placeholder={phonePlaceholder(phoneCode)}
             />
             {showPhoneCodes && (
               <div className="absolute z-20 mt-1 left-7 sm:left-9 bg-white border border-gray-200 rounded-lg shadow-lg w-24 sm:w-28 max-h-44 overflow-auto">
@@ -145,11 +177,11 @@ const RegisterForm = ({
                     type="button"
                     onClick={()=> {
                       setShowPhoneCodes(false);
-                      // Replace/ensure phone starts with chosen code
-                      const number = (formData.phone || '').replace(/^\+\d{1,3}\s*/, '');
-                      handleInputChange({ target: { name: 'phone', value: `${c} ${number}`.trim() } });
+                      // Update only code; keep current number
+                      setPhoneCode(c);
+                      handleInputChange({ target: { name: 'phone', value: `${c} ${phoneNumber}`.trim() } });
                     }}
-                    className={`w-full text-left px-2 py-1.5 text-xs sm:text-sm hover:bg-gray-50 ${ (formData.phone||'').startsWith(c) ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+                    className={`w-full text-left px-2 py-1.5 text-xs sm:text-sm hover:bg-gray-50 ${ (formData.phone||'').startsWith(c) || phoneCode===c ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
                   >
                     {c}
                   </button>
@@ -163,100 +195,22 @@ const RegisterForm = ({
              <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 md:gap-1 w-full max-w-2xl">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
-            City
+            Country
           </label>
           <div className="relative group">
             <MapPin className="pointer-events-none absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
             <select
-              name="city"
-              value={formData.city}
+              name="country"
+              value={formData.country}
               onChange={handleInputChange}
               className={`w-full pl-6 sm:pl-8 pr-8 sm:pr-10 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm appearance-none cursor-pointer bg-white ${
-                errors.city ? 'border-red-500' : 'border-gray-300'
-              } ${formData.city ? 'text-gray-900' : 'text-gray-400'}`}
+                errors.country ? 'border-red-500' : 'border-gray-300'
+              } ${formData.country ? 'text-gray-900' : 'text-gray-400'}`}
             >
-              <option value="" className="text-gray-500">Select a city</option>
-              <option value="Adana" className="py-2">Adana</option>
-              <option value="Adıyaman" className="py-2">Adıyaman</option>
-              <option value="Afyonkarahisar" className="py-2">Afyonkarahisar</option>
-              <option value="Ağrı" className="py-2">Ağrı</option>
-              <option value="Amasya" className="py-2">Amasya</option>
-              <option value="Ankara" className="py-2">Ankara</option>
-              <option value="Antalya" className="py-2">Antalya</option>
-              <option value="Artvin" className="py-2">Artvin</option>
-              <option value="Aydın" className="py-2">Aydın</option>
-              <option value="Balıkesir" className="py-2">Balıkesir</option>
-              <option value="Bilecik" className="py-2">Bilecik</option>
-              <option value="Bingöl" className="py-2">Bingöl</option>
-              <option value="Bitlis" className="py-2">Bitlis</option>
-              <option value="Bolu" className="py-2">Bolu</option>
-              <option value="Burdur" className="py-2">Burdur</option>
-              <option value="Bursa" className="py-2">Bursa</option>
-              <option value="Çanakkale" className="py-2">Çanakkale</option>
-              <option value="Çankırı" className="py-2">Çankırı</option>
-              <option value="Çorum" className="py-2">Çorum</option>
-              <option value="Denizli" className="py-2">Denizli</option>
-              <option value="Diyarbakır" className="py-2">Diyarbakır</option>
-              <option value="Edirne" className="py-2">Edirne</option>
-              <option value="Elazığ" className="py-2">Elazığ</option>
-              <option value="Erzincan" className="py-2">Erzincan</option>
-              <option value="Erzurum" className="py-2">Erzurum</option>
-              <option value="Eskişehir" className="py-2">Eskişehir</option>
-              <option value="Gaziantep" className="py-2">Gaziantep</option>
-              <option value="Giresun" className="py-2">Giresun</option>
-              <option value="Gümüşhane" className="py-2">Gümüşhane</option>
-              <option value="Hakkari" className="py-2">Hakkari</option>
-              <option value="Hatay" className="py-2">Hatay</option>
-              <option value="Isparta" className="py-2">Isparta</option>
-              <option value="Mersin" className="py-2">Mersin</option>
-              <option value="İstanbul" className="py-2">İstanbul</option>
-              <option value="İzmir" className="py-2">İzmir</option>
-              <option value="Kars" className="py-2">Kars</option>
-              <option value="Kastamonu" className="py-2">Kastamonu</option>
-              <option value="Kayseri" className="py-2">Kayseri</option>
-              <option value="Kırklareli" className="py-2">Kırklareli</option>
-              <option value="Kırşehir" className="py-2">Kırşehir</option>
-              <option value="Kocaeli" className="py-2">Kocaeli</option>
-              <option value="Konya" className="py-2">Konya</option>
-              <option value="Kütahya" className="py-2">Kütahya</option>
-              <option value="Malatya" className="py-2">Malatya</option>
-              <option value="Manisa" className="py-2">Manisa</option>
-              <option value="Kahramanmaraş" className="py-2">Kahramanmaraş</option>
-              <option value="Mardin" className="py-2">Mardin</option>
-              <option value="Muğla" className="py-2">Muğla</option>
-              <option value="Muş" className="py-2">Muş</option>
-              <option value="Nevşehir" className="py-2">Nevşehir</option>
-              <option value="Niğde" className="py-2">Niğde</option>
-              <option value="Ordu" className="py-2">Ordu</option>
-              <option value="Rize" className="py-2">Rize</option>
-              <option value="Sakarya" className="py-2">Sakarya</option>
-              <option value="Samsun" className="py-2">Samsun</option>
-              <option value="Siirt" className="py-2">Siirt</option>
-              <option value="Sinop" className="py-2">Sinop</option>
-              <option value="Sivas" className="py-2">Sivas</option>
-              <option value="Tekirdağ" className="py-2">Tekirdağ</option>
-              <option value="Tokat" className="py-2">Tokat</option>
-              <option value="Trabzon" className="py-2">Trabzon</option>
-              <option value="Tunceli" className="py-2">Tunceli</option>
-              <option value="Şanlıurfa" className="py-2">Şanlıurfa</option>
-              <option value="Uşak" className="py-2">Uşak</option>
-              <option value="Van" className="py-2">Van</option>
-              <option value="Yozgat" className="py-2">Yozgat</option>
-              <option value="Zonguldak" className="py-2">Zonguldak</option>
-              <option value="Aksaray" className="py-2">Aksaray</option>
-              <option value="Bayburt" className="py-2">Bayburt</option>
-              <option value="Karaman" className="py-2">Karaman</option>
-              <option value="Kırıkkale" className="py-2">Kırıkkale</option>
-              <option value="Batman" className="py-2">Batman</option>
-              <option value="Şırnak" className="py-2">Şırnak</option>
-              <option value="Bartın" className="py-2">Bartın</option>
-              <option value="Ardahan" className="py-2">Ardahan</option>
-              <option value="Iğdır" className="py-2">Iğdır</option>
-              <option value="Yalova" className="py-2">Yalova</option>
-              <option value="Karabük" className="py-2">Karabük</option>
-              <option value="Kilis" className="py-2">Kilis</option>
-              <option value="Osmaniye" className="py-2">Osmaniye</option>
-              <option value="Düzce" className="py-2">Düzce</option>
+              <option value="" className="text-gray-500">Select a country</option>
+              {countriesEurope.map((c) => (
+                <option key={c} value={c} className="py-2">{c}</option>
+              ))}
             </select>
             {/* Custom dropdown arrow */}
             <div className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -270,12 +224,12 @@ const RegisterForm = ({
               </svg>
             </div>
           </div>
-          {errors.city && (
+          {errors.country && (
             <div className="flex items-center mt-2 text-red-500 text-xs">
               <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              <span className="text-center md:text-left">{errors.city}</span>
+              <span className="text-center md:text-left">{errors.country}</span>
             </div>
           )}
         </div>
@@ -317,7 +271,7 @@ const RegisterForm = ({
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {showPassword ? <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" /> : <Eye className="w-3 h-3 sm:w-4 sm:h-4" />}
+              {showPassword ? <Eye className="w-3 h-3 sm:w-4 sm:h-4" /> : <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" />}
             </button>
           </div>
           {errors.password && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.password}</p>}
@@ -343,7 +297,7 @@ const RegisterForm = ({
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {showConfirmPassword ? <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" /> : <Eye className="w-3 h-3 sm:w-4 sm:h-4" />}
+              {showConfirmPassword ? <Eye className="w-3 h-3 sm:w-4 sm:h-4" /> : <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" />}
             </button>
           </div>
           {errors.confirmPassword && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.confirmPassword}</p>}

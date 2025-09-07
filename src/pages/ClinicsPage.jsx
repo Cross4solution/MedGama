@@ -4,6 +4,8 @@ import { Search, Heart, MessageCircle, Star, MapPin, Shield, Stethoscope, Award,
 Users } from 'lucide-react';
 import Badge from '../components/Badge';
 import SelectCombobox from '../components/SelectCombobox';
+import CountryCombobox from '../components/CountryCombobox';
+import CityCombobox from '../components/CityCombobox';
 import countryCities from '../data/countryCities';
 import PatientLayout from '../components/PatientLayout';
 
@@ -14,16 +16,36 @@ const MediTravelClinics = () => {
     features: [],
     insurance: []
   });
+  // Apply'e basılınca kullanılacak, gerçek filtreler
+  const [appliedFilters, setAppliedFilters] = useState({
+    rating: [],
+    features: [],
+    insurance: []
+  });
+
+  const toggleFilter = (group, value) => {
+    setSelectedFilters((prev) => {
+      const list = new Set(prev[group] || []);
+      if (list.has(value)) list.delete(value); else list.add(value);
+      return { ...prev, [group]: Array.from(list) };
+    });
+  };
+
+  const handleApplyFilters = () => {
+    setAppliedFilters(selectedFilters);
+  };
  
   const [favorites, setFavorites] = useState(new Set());
   const [sortBy, setSortBy] = useState('highest-score');
 
   // Search bar state
-  const [location, setLocation] = useState('');
+  const [country, setCountry] = useState('');
+  const [city, setCity] = useState('');
   const [specialty, setSpecialty] = useState('');
   const [priceRange, setPriceRange] = useState('');
 
-  const locationOptions = countryCities.Turkey;
+  const countryOptions = Object.keys(countryCities || {});
+  const cityOptions = country ? (countryCities[country] || []) : [];
   const specialtyOptions = [
     'Kalp Cerrahisi','Onkoloji','Plastik Cerrahi','Ortopedi','Nöroloji','Göz Hastalıkları','Diş Hekimliği'
   ];
@@ -67,6 +89,46 @@ const MediTravelClinics = () => {
       type: "academic"
     }
   ];
+
+  // Uygulanan filtrelere göre sonuçları hesapla (client-side demo)
+  const filteredClinics = clinics.filter((c) => {
+    // Rating
+    if (appliedFilters.rating.includes('4.5+ Rating') && c.rating < 4.5) return false;
+    if (appliedFilters.rating.includes('4.0+ Rating') && c.rating < 4.0) return false;
+
+    // Features map (EN -> dataset)
+    const hasFeature = (label) => {
+      if (label === 'Telehealth') return c.features?.includes('Telehealth');
+      if (label === 'Health Tourism') return c.features?.includes('Sağlık Turizmi');
+      if (label === 'Professional Review') return c.features?.some((f)=> /pro\s*review/i.test(f));
+      return false;
+    };
+    for (const f of appliedFilters.features) {
+      if (!hasFeature(f)) return false;
+    }
+
+    // Insurance
+    const hasInsurance = (label) => {
+      if (label === 'SGK') {
+        const tags = c.tags || [];
+        const feats = c.features || [];
+        return tags.some((t)=> /sgk|public insurance|sgk anlaşmalı/i.test(t)) ||
+               feats.some((t)=> /sgk/i.test(t));
+      }
+      if (label === 'Private Insurance') {
+        const tags = c.tags || [];
+        const feats = c.features || [];
+        return tags.some((t)=> /private insurance/i.test(t)) ||
+               feats.some((t)=> /private/i.test(t));
+      }
+      return true;
+    };
+    for (const ins of appliedFilters.insurance) {
+      if (!hasInsurance(ins)) return false;
+    }
+
+    return true;
+  });
 
   const toggleFavorite = (clinicId) => {
     const newFavorites = new Set(favorites);
@@ -125,15 +187,26 @@ const MediTravelClinics = () => {
 
         {/* Search Bar */}
         <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-3">
+            {/* Country */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-              <SelectCombobox
-                options={locationOptions}
-                value={location}
-                onChange={setLocation}
+              <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+              <CountryCombobox
+                options={countryOptions}
+                value={country}
+                onChange={(val)=>{ setCountry(val); setCity(''); }}
+                placeholder="All Countries"
+              />
+            </div>
+            {/* City */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+              <CityCombobox
+                options={cityOptions}
+                value={city}
+                onChange={setCity}
+                disabled={!country}
                 placeholder="All Cities"
-                leftIcon={<MapPin className="w-4 h-4" />}
               />
             </div>
             <div>
@@ -143,6 +216,8 @@ const MediTravelClinics = () => {
                 value={specialty}
                 onChange={setSpecialty}
                 placeholder="All Specialties"
+                hideChevron
+                triggerClassName={`w-full ${true ? 'pl-10' : 'pl-3'} pr-3 py-2 border border-gray-300 rounded-lg text-base md:text-sm bg-white text-left`}
                 leftIcon={
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -157,6 +232,8 @@ const MediTravelClinics = () => {
                 value={priceRange}
                 onChange={setPriceRange}
                 placeholder="All Prices"
+                hideChevron
+                triggerClassName={`w-full ${true ? 'pl-10' : 'pl-3'} pr-3 py-2 border border-gray-300 rounded-lg text-base md:text-sm bg-white text-left`}
                 leftIcon={
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -164,9 +241,9 @@ const MediTravelClinics = () => {
                 }
               />
             </div>
-            <div className="flex items-end">
-              <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md">
-                <Search className="w-5 h-5" />
+            <div className="flex items-end justify-end md:justify-start">
+              <button className="bg-blue-600 text-white py-2 px-4 text-sm rounded-xl hover:bg-blue-700 transition-all duration-200 inline-flex items-center gap-2 shadow-sm hover:shadow-md min-w-[120px]">
+                <Search className="w-4 h-4" />
                 <span>Search</span>
               </button>
             </div>
@@ -177,41 +254,61 @@ const MediTravelClinics = () => {
           {/* Filters Sidebar */}
           <div className="lg:w-64 space-y-6">
             <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Filters</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Filters</h3>
 
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium text-gray-700 mb-3">Rating</h4>
+                  <h4 className="text-lg font-medium text-gray-800 mb-3">Rating</h4>
                   <div className="space-y-2">
                     {['4.5+ Rating', '4.0+ Rating'].map((rating) => (
                       <label key={rating} className="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                        <span className="text-sm text-gray-600">{rating}</span>
+                        <input
+                          type="checkbox"
+                          checked={selectedFilters.rating.includes(rating)}
+                          onChange={() => toggleFilter('rating', rating)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-base text-gray-700">{rating}</span>
                       </label>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-700 mb-3">Features</h4>
+                  <h4 className="text-lg font-medium text-gray-800 mb-3">Features</h4>
                   <div className="space-y-2">
                     {['Telehealth', 'Health Tourism', 'Professional Review'].map((feature) => (
                       <label key={feature} className="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                        <span className="text-sm text-gray-600">{feature}</span>
+                        <input
+                          type="checkbox"
+                          checked={selectedFilters.features.includes(feature)}
+                          onChange={() => toggleFilter('features', feature)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-base text-gray-700">{feature}</span>
                       </label>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-700 mb-3">Insurance</h4>
+                  <h4 className="text-lg font-medium text-gray-800 mb-3">Insurance</h4>
                   <div className="space-y-2">
                     {['SGK', 'Private Insurance'].map((insurance) => (
                       <label key={insurance} className="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                        <span className="text-sm text-gray-600">{insurance}</span>
+                        <input
+                          type="checkbox"
+                          checked={selectedFilters.insurance.includes(insurance)}
+                          onChange={() => toggleFilter('insurance', insurance)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-base text-gray-700">{insurance}</span>
                       </label>
                     ))}
                   </div>
+                </div>
+                <div className="pt-2 flex justify-end">
+                  <button onClick={handleApplyFilters} className="ml-auto bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base px-5 py-2">
+                    Apply
+                  </button>
                 </div>
               </div>
             </div>
@@ -235,7 +332,7 @@ const MediTravelClinics = () => {
 
             {/* Clinics List */}
             <div className="space-y-6">
-              {clinics.map((clinic) => (
+              {filteredClinics.map((clinic) => (
                 <div key={clinic.id} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-64 h-64 md:h-auto relative">

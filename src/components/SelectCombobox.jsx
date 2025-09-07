@@ -12,6 +12,8 @@ export default function SelectCombobox({
   triggerClassName = '',
   menuClassName = '',
   hideChevron = false,
+  lockBodyScroll = false,
+  wheelFactor = 1, // 1 = normal hız, <1 yavaş, >1 hızlı
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -37,8 +39,9 @@ export default function SelectCombobox({
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
-  // Lock body scroll while dropdown is open to prevent background scrolling
+  // Optional: Lock body scroll while dropdown is open
   useEffect(() => {
+    if (!lockBodyScroll) return;
     if (!open) return;
     const prevOverflow = document.body.style.overflow;
     const prevPaddingRight = document.body.style.paddingRight;
@@ -51,7 +54,7 @@ export default function SelectCombobox({
       document.body.style.overflow = prevOverflow;
       document.body.style.paddingRight = prevPaddingRight;
     };
-  }, [open]);
+  }, [open, lockBodyScroll]);
 
   const selectedLabel = useMemo(() => {
     if (!value) return '';
@@ -123,6 +126,7 @@ export default function SelectCombobox({
               </button>
             )}
             getKey={(opt) => opt.value}
+            wheelFactor={wheelFactor}
           />
         </div>
       )}
@@ -131,26 +135,26 @@ export default function SelectCombobox({
 }
 
 // Internal helper component to provide smooth and slower wheel scrolling
-function SlowScrollList({ className = '', items = [], renderItem, getKey }) {
+function SlowScrollList({ className = '', items = [], renderItem, getKey, wheelFactor = 1 }) {
   const listRef = React.useRef(null);
 
   React.useEffect(() => {
     const el = listRef.current;
     if (!el) return;
+    if (wheelFactor === 1) return; // Varsayılan tarayıcı davranışı, müdahale etme
     const onWheel = (e) => {
       if (e.cancelable) e.preventDefault();
-      const factor = 0.25; // 25% of default speed
-      el.scrollTop += e.deltaY * factor;
+      el.scrollTop += e.deltaY * wheelFactor;
     };
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
-  }, []);
+  }, [wheelFactor]);
 
   return (
     <ul
       ref={listRef}
       className={className}
-      style={{ scrollBehavior: 'smooth' }}
+      style={wheelFactor !== 1 ? { scrollBehavior: 'smooth' } : undefined}
     >
       {items.map((opt) => (
         <li key={getKey ? getKey(opt) : opt?.value ?? String(opt)}>

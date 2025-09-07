@@ -16,7 +16,7 @@ export default function SidebarPatient() {
 
   const patientItems = [
     // Homepage (English) -> main landing page
-    { to: '/', label: 'Homepage', icon: Home },
+    { to: '/home-v2', label: 'Homepage', icon: Home },
     // Profile Overview (second page)
     { to: '/patient-home', label: 'Overview', icon: LayoutDashboard },
     // Notifications (aligned with doctor/clinic order)
@@ -121,7 +121,7 @@ export default function SidebarPatient() {
             {/* Footer actions */}
             <div className="p-3 border-t">
               <button
-                onClick={() => { logout(); navigate('/'); }}
+                onClick={() => { logout(); navigate('/home-v2'); }}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-xl bg-rose-500 text-white hover:bg-rose-600 shadow-sm"
               >
                 <LogOut className="w-4 h-4" /> Logout
@@ -191,7 +191,7 @@ export default function SidebarPatient() {
               {/* Mobile Footer */}
               <div className="p-3 border-t">
                 <button
-                  onClick={() => { setSidebarMobileOpen(false); logout(); navigate('/'); }}
+                  onClick={() => { setSidebarMobileOpen(false); logout(); navigate('/home-v2'); }}
                   className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-xl bg-rose-500 text-white hover:bg-rose-600 shadow-sm"
                 >
                   <LogOut className="w-4 h-4" /> Logout

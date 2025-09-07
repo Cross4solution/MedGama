@@ -28,6 +28,14 @@ export default function TelehealthAppointmentPage() {
     return () => document.removeEventListener('click', onDocClick);
   }, []);
   const [paymentMethod, setPaymentMethod] = useState('credit');
+  // Phone code + number split to avoid duplicate country code typing
+  const parsePhone = (val = '') => {
+    const m = (val || '').match(/^(\+\d{1,3})\s*(.*)$/);
+    return m ? { code: m[1], number: m[2] } : { code: '+90', number: (val || '').replace(/^\+/, '') };
+  };
+  const { code: initCode, number: initNumber } = parsePhone(patientInfo.phone);
+  const [phoneCode, setPhoneCode] = useState(initCode);
+  const [phoneNumber, setPhoneNumber] = useState(initNumber);
 
   const doctors = useMemo(() => ([
     {
@@ -211,16 +219,21 @@ export default function TelehealthAppointmentPage() {
                       <button
                         type="button"
                         onClick={() => setShowPhoneCodes((s)=>!s)}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded px-1.5 py-0.5"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded px-1.5 py-0.5 min-w-[48px] text-center"
                         aria-label="Choose phone country code"
                       >
-                        {(patientInfo.phone?.startsWith('+') ? patientInfo.phone.split(' ')[0] : '+90')}
+                        {phoneCode}
                       </button>
                       <input
                         type="tel"
                         placeholder="+90 555 123 4567"
-                        value={patientInfo.phone}
-                        onChange={(e) => setPatientInfo({ ...patientInfo, phone: e.target.value })}
+                        value={phoneNumber}
+                        onChange={(e) => {
+                          const raw = e.target.value || '';
+                          const clean = raw.replace(/^[+]+/g, '').replace(/\s+/g, ' ').replace(/[^\d\s]/g, '');
+                          setPhoneNumber(clean);
+                          setPatientInfo({ ...patientInfo, phone: `${phoneCode} ${clean}`.trim() });
+                        }}
                         className="w-full border border-gray-300 rounded-lg pl-20 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                       />
@@ -232,10 +245,10 @@ export default function TelehealthAppointmentPage() {
                               type="button"
                               onClick={()=> {
                                 setShowPhoneCodes(false);
-                                const number = (patientInfo.phone || '').replace(/^\+\d{1,3}\s*/, '');
-                                setPatientInfo({ ...patientInfo, phone: `${c} ${number}`.trim() });
+                                setPhoneCode(c);
+                                setPatientInfo({ ...patientInfo, phone: `${c} ${phoneNumber}`.trim() });
                               }}
-                              className={`w-full text-left px-2 py-1.5 text-xs hover:bg-gray-50 ${ (patientInfo.phone||'').startsWith(c) ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+                              className={`w-full text-left px-2 py-1.5 text-xs hover:bg-gray-50 ${ patientInfo.phone?.startsWith(c) || phoneCode===c ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
                             >
                               {c}
                             </button>

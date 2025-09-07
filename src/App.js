@@ -25,17 +25,21 @@ import ClinicLogin from './pages/ClinicLogin';
 import Updates from './pages/Updates';
 import Notifications from './pages/Notifications';
 // (PatientLayout removed)
+import Profile from './pages/Profile';
 
 function AppContent() {
   const location = useLocation();
   const { user } = useAuth();
   const hasSidebar = user && user.role !== 'patient';
   
-  // Orta/Hızlı kaydırma: Sayfa üzerinde etkili; içi kaydırılabilir öğelere dokunmaz
+  // Opsiyonel tekerlek kaydırma override'ı: varsayılan olarak KAPALI
+  // Etkinleştirmek için konsolda: window.__SCROLL_OVERRIDE = true; window.__SCROLL_FACTOR = 2.0
   React.useEffect(() => {
-    // Varsayılan faktörü global'e yaz (konsoldan ayarlanabilir)
-    if (typeof window !== 'undefined' && typeof window.__SCROLL_FACTOR !== 'number') {
-      window.__SCROLL_FACTOR = 2.3; // varsayılan hız faktörü (biraz daha hızlı)
+    if (typeof window === 'undefined') return;
+    if (window.__SCROLL_OVERRIDE !== true) return; // default off
+
+    if (typeof window.__SCROLL_FACTOR !== 'number') {
+      window.__SCROLL_FACTOR = 2.0;
     }
 
     const isScrollable = (el) => {
@@ -53,15 +57,13 @@ function AppContent() {
         }
       }
       e.preventDefault();
-      // deltaMode: 0=pixel, 1=line, 2=page — normalize et
       const baseDelta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
       const factor = (typeof window !== 'undefined' && typeof window.__SCROLL_FACTOR === 'number')
         ? window.__SCROLL_FACTOR
-        : 2.3; // varsayılan faktör (biraz daha hızlı)
+        : 2.0;
       const scroller = document.scrollingElement || document.documentElement;
-      scroller.scrollBy({ top: baseDelta * factor, behavior: 'smooth' });
+      scroller.scrollBy({ top: baseDelta * factor, behavior: 'auto' }); // smooth yerine auto
 
-      // Debug: konsoldan aç/kapat => window.__SCROLL_DEBUG = true
       if (typeof window !== 'undefined' && window.__SCROLL_DEBUG) {
         console.info('[ScrollDebug] deltaMode:', e.deltaMode, 'baseDelta:', baseDelta, 'factor:', factor);
       }
@@ -107,6 +109,7 @@ function AppContent() {
         <Route path="/clinic-login" element={<ClinicLogin />} />
         <Route path="/updates" element={<Updates />} />
         <Route path="/notifications" element={<Notifications />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       {showFooter && <Footer />}
       {showCookieBanner && <CookieBanner />}

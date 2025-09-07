@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope } from 'lucide-react';
+import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff } from 'lucide-react';
 
 const DoctorLogin = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -121,9 +122,30 @@ const DoctorLogin = () => {
               </div>
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                <input id="password" name="password" type="password" value={formData.password} onChange={handleChange}
-                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                       placeholder="••••••••" required />
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    placeholder="••••••••"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? (
+                      <Eye className="w-5 h-5" />
+                    ) : (
+                      <EyeOff className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <label className="inline-flex items-center gap-2 text-gray-600">
