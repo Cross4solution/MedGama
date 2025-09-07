@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  /* Smooth page scrolling for anchor jumps and wheel/trackpad */
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -58,4 +63,41 @@ code {
   .btn-lg {
     @apply text-base md:text-lg px-4 py-2.5 md:px-5 md:py-3;
   }
+}
+
+/* Cross-browser normalization for date/select controls */
+/* Ensures consistent height/padding/typography across Chrome, Safari, Firefox, Edge */
+input[type="date"],
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2.75rem; /* h-11 (44px) */
+  padding-left: 0.75rem; /* px-3 */
+  padding-right: 2.5rem; /* pr-10, space for custom arrow */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem; /* leading-5 */
+}
+
+/* Hide default arrow in old Edge/IE (harmless elsewhere) */
+select::-ms-expand {
+  display: none;
+}
+
+/* Hide default calendar icon to allow custom left icon inside input */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0; /* visually hidden */
+  display: none; /* remove layout in Safari/WebKit */
+}
+
+/* Ensure placeholder text doesn't overlap the left icon for date inputs */
+.date-with-icon input[type="date"]::-webkit-input-placeholder { /* Chrome/Safari */
+  padding-left: 1.25rem; /* extra beyond input padding to clear icon */
+}
+.date-with-icon input[type="date"]::placeholder { /* Standard */
+  padding-left: 1.25rem;
+}
+
+/* Move the actual date text (and format mask) to the right in WebKit */
+.date-with-icon input[type="date"]::-webkit-datetime-edit {
+  padding-left: 1.25rem;
 }

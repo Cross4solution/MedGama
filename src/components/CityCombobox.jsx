@@ -28,6 +28,23 @@ export default function CityCombobox({
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
+  // Lock body scroll when dropdown is open to prevent page scrolling
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    const prevPaddingRight = document.body.style.paddingRight;
+    // Prevent layout shift by compensating for scrollbar width
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollBarWidth > 0) {
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+    }
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.paddingRight = prevPaddingRight;
+    };
+  }, [open]);
+
   useEffect(() => {
     // options değiştiğinde aramayı sıfırla
     setQuery('');
@@ -57,24 +74,50 @@ export default function CityCombobox({
               autoFocus
             />
           </div>
-          <ul className="max-h-64 overflow-y-auto text-sm">
-            {filtered.map((opt) => (
-              <li key={opt}>
-                <button
-                  type="button"
-                  className="w-full text-left px-3 py-2 hover:bg-gray-50"
-                  onClick={() => { onChange && onChange(opt); setOpen(false); setQuery(''); }}
-                >
-                  {opt}
-                </button>
-              </li>
-            ))}
-            {filtered.length === 0 && (
-              <li className="px-3 py-2 text-gray-500 text-xs">No results</li>
-            )}
-          </ul>
+          <SlowScrollList className="max-h-64 overflow-y-auto text-sm" items={filtered} onSelect={(opt) => { onChange && onChange(opt); setOpen(false); setQuery(''); }} />
         </div>
       )}
     </div>
+  );
+}
+
+// Internal helper component to provide smooth and slower wheel scrolling
+function SlowScrollList({ className = '', items = [], onSelect }) {
+  const listRef = useRef(null);
+
+  React.useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      // Slow down the wheel delta to reduce scroll speed
+      if (e.cancelable) e.preventDefault();
+      const factor = 0.25; // 25% of default speed
+      el.scrollTop += e.deltaY * factor;
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
+  return (
+    <ul
+      ref={listRef}
+      className={className}
+      style={{ scrollBehavior: 'smooth' }}
+    >
+      {items.map((opt) => (
+        <li key={opt}>
+          <button
+            type="button"
+            className="w-full text-left px-3 py-2 hover:bg-gray-50"
+            onClick={() => onSelect && onSelect(opt)}
+          >
+            {opt}
+          </button>
+        </li>
+      ))}
+      {items.length === 0 && (
+        <li className="px-3 py-2 text-gray-500 text-xs">No results</li>
+      )}
+    </ul>
   );
 }

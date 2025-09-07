@@ -29,19 +29,59 @@ import Notifications from './pages/Notifications';
 function AppContent() {
   const location = useLocation();
   const { user } = useAuth();
+  const hasSidebar = user && user.role !== 'patient';
+  
+  // Orta/Hızlı kaydırma: Sayfa üzerinde etkili; içi kaydırılabilir öğelere dokunmaz
+  React.useEffect(() => {
+    // Varsayılan faktörü global'e yaz (konsoldan ayarlanabilir)
+    if (typeof window !== 'undefined' && typeof window.__SCROLL_FACTOR !== 'number') {
+      window.__SCROLL_FACTOR = 2.3; // varsayılan hız faktörü (biraz daha hızlı)
+    }
+
+    const isScrollable = (el) => {
+      if (!el || el === document.documentElement || el === document.body) return false;
+      const style = window.getComputedStyle(el);
+      const canScroll = /(auto|scroll)/.test(style.overflowY);
+      return canScroll && el.scrollHeight > el.clientHeight;
+    };
+
+    const handler = (e) => {
+      const path = e.composedPath ? e.composedPath() : [];
+      for (const node of path) {
+        if (node instanceof HTMLElement && isScrollable(node)) {
+          return; // iç scroll'a dokunma
+        }
+      }
+      e.preventDefault();
+      // deltaMode: 0=pixel, 1=line, 2=page — normalize et
+      const baseDelta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+      const factor = (typeof window !== 'undefined' && typeof window.__SCROLL_FACTOR === 'number')
+        ? window.__SCROLL_FACTOR
+        : 2.3; // varsayılan faktör (biraz daha hızlı)
+      const scroller = document.scrollingElement || document.documentElement;
+      scroller.scrollBy({ top: baseDelta * factor, behavior: 'smooth' });
+
+      // Debug: konsoldan aç/kapat => window.__SCROLL_DEBUG = true
+      if (typeof window !== 'undefined' && window.__SCROLL_DEBUG) {
+        console.info('[ScrollDebug] deltaMode:', e.deltaMode, 'baseDelta:', baseDelta, 'factor:', factor);
+      }
+    };
+    window.addEventListener('wheel', handler, { passive: false });
+    return () => window.removeEventListener('wheel', handler);
+  }, []);
   
   // Cookie banner: auth sayfalarında gösterme
   const hideCookieOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];
   const showCookieBanner = !hideCookieOn.includes(location.pathname);
   
-  // Footer belirli sayfalarda gizlensin
-  const hideFooterOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/notifications'];
-  const showFooter = !hideFooterOn.includes(location.pathname);
+  // Footer sadece ana site sayfalarında görünsün
+  const footerOnlyOn = ['/', '/home', '/home-v2'];
+  const showFooter = footerOnlyOn.includes(location.pathname);
   
   return (
-    <div className={user && user.role !== 'patient' ? "lg:pl-72" : ""}>
+    <div className={hasSidebar ? "lg:pl-72" : ""}>
       {/* Show sidebar only for non-patient roles */}
-      {user && user.role !== 'patient' && <SidebarPatient />}
+      {hasSidebar && <SidebarPatient />}
       <Routes>
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />

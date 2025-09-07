@@ -37,6 +37,22 @@ export default function SelectCombobox({
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
+  // Lock body scroll while dropdown is open to prevent background scrolling
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    const prevPaddingRight = document.body.style.paddingRight;
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollBarWidth > 0) {
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+    }
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.paddingRight = prevPaddingRight;
+    };
+  }, [open]);
+
   const selectedLabel = useMemo(() => {
     if (!value) return '';
     const found = list.find((o) => o.value === value || o.label === value);
@@ -90,28 +106,60 @@ export default function SelectCombobox({
               />
             </div>
           )}
-          <ul className="max-h-64 overflow-y-auto text-sm py-1">
-            {filtered.map((opt) => (
-              <li key={opt.value}>
-                <button
-                  type="button"
-                  className="w-full text-left px-3 py-2 hover:bg-gray-50"
-                  onClick={() => {
-                    onChange && onChange(opt.value);
-                    setOpen(false);
-                    setQuery('');
-                  }}
-                >
-                  {opt.label}
-                </button>
-              </li>
-            ))}
-            {filtered.length === 0 && (
-              <li className="px-3 py-2 text-gray-500 text-xs">No results</li>
+          <SlowScrollList
+            className="max-h-64 overflow-y-auto text-sm py-1"
+            items={filtered}
+            renderItem={(opt) => (
+              <button
+                type="button"
+                className="w-full text-left px-3 py-2 hover:bg-gray-50"
+                onClick={() => {
+                  onChange && onChange(opt.value);
+                  setOpen(false);
+                  setQuery('');
+                }}
+              >
+                {opt.label}
+              </button>
             )}
-          </ul>
+            getKey={(opt) => opt.value}
+          />
         </div>
       )}
     </div>
+  );
+}
+
+// Internal helper component to provide smooth and slower wheel scrolling
+function SlowScrollList({ className = '', items = [], renderItem, getKey }) {
+  const listRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      if (e.cancelable) e.preventDefault();
+      const factor = 0.25; // 25% of default speed
+      el.scrollTop += e.deltaY * factor;
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
+  return (
+    <ul
+      ref={listRef}
+      className={className}
+      style={{ scrollBehavior: 'smooth' }}
+    >
+      {items.map((opt) => (
+        <li key={getKey ? getKey(opt) : opt?.value ?? String(opt)}>
+          {renderItem ? renderItem(opt) : null}
+        </li>
+      ))}
+      {items.length === 0 && (
+        <li className="px-3 py-2 text-gray-500 text-xs">No results</li>
+      )}
+    </ul>
   );
 }

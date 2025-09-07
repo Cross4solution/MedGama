@@ -27,6 +27,7 @@ const AuthPages = () => {
     confirmPassword: '',
     firstName: '',
     lastName: '',
+    phoneCode: '+90',
     phone: '',
     birthDate: '',
     city: '',
@@ -75,6 +76,13 @@ const AuthPages = () => {
       if (!formData.firstName) newErrors.firstName = 'First name is required';
       if (!formData.lastName) newErrors.lastName = 'Last name is required';
       if (!formData.phone) newErrors.phone = 'Phone number is required';
+      else {
+        // Ülke kodu içermeli, örn: +90 555 123 45 67
+        const startsWithCountry = /^\s*\+\d{1,3}[\s\d()-]*$/.test(formData.phone);
+        if (!startsWithCountry) {
+          newErrors.phone = 'Ülke kodunuzu giriniz (örn. +90 555 123 45 67)';
+        }
+      }
       if (!formData.confirmPassword) {
         newErrors.confirmPassword = 'Confirm password is required';
       } else if (formData.password !== formData.confirmPassword) {

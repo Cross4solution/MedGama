@@ -26,7 +26,22 @@ const RegisterForm = ({
   setCurrentPage,
   setShowTermsPopup,
   setShowPrivacyPopup
-}) => (
+}) => {
+  // Phone country code (in-input) dropdown state
+  const [showPhoneCodes, setShowPhoneCodes] = useState(false);
+  const phoneCodes = useMemo(() => ['+90','+1','+44','+49','+33','+39','+34','+7','+61','+971'], []);
+  const phoneWrapRef = useRef(null);
+
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (!phoneWrapRef.current) return;
+      if (!phoneWrapRef.current.contains(e.target)) setShowPhoneCodes(false);
+    };
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, []);
+
+  return (
   <div className="w-full max-w-2xl mx-auto">
          <div className="text-center mb-2 sm:mb-3 md:mb-2">
        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-2">
@@ -101,18 +116,46 @@ const RegisterForm = ({
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
             Phone
           </label>
-          <div className="relative">
+          <div className="relative" ref={phoneWrapRef}>
             <Phone className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
+            {/* Country code prefix inside input (no layout change) */}
+            <button
+              type="button"
+              onClick={() => setShowPhoneCodes((s)=>!s)}
+              className="absolute left-7 sm:left-9 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded px-1.5 py-0.5"
+              aria-label="Choose phone country code"
+            >
+              {(formData.phone?.startsWith('+') ? formData.phone.split(' ')[0] : '+90')}
+            </button>
             <input
               type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
+              className={`w-full pl-20 sm:pl-24 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
                 errors.phone ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="+90 555 123 45 67"
             />
+            {showPhoneCodes && (
+              <div className="absolute z-20 mt-1 left-7 sm:left-9 bg-white border border-gray-200 rounded-lg shadow-lg w-24 sm:w-28 max-h-44 overflow-auto">
+                {phoneCodes.map((c)=> (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={()=> {
+                      setShowPhoneCodes(false);
+                      // Replace/ensure phone starts with chosen code
+                      const number = (formData.phone || '').replace(/^\+\d{1,3}\s*/, '');
+                      handleInputChange({ target: { name: 'phone', value: `${c} ${number}`.trim() } });
+                    }}
+                    className={`w-full text-left px-2 py-1.5 text-xs sm:text-sm hover:bg-gray-50 ${ (formData.phone||'').startsWith(c) ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           {errors.phone && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.phone}</p>}
         </div>
@@ -240,14 +283,14 @@ const RegisterForm = ({
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
             Date of Birth
           </label>
-          <div className="relative group">
-            <Calendar className="pointer-events-none absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 z-10" />
+          <div className="relative date-with-icon">
+            <Calendar className="pointer-events-none absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
             <input
               type="date"
               name="birthDate"
               value={formData.birthDate}
               onChange={handleInputChange}
-              className="w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm bg-white border-gray-300"
+              className="w-full pl-12 sm:pl-14 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm bg-white border-gray-300"
             />
           </div>
         </div>
@@ -395,5 +438,7 @@ const RegisterForm = ({
     </form>
   </div>
 );
+
+};
 
 export default RegisterForm;

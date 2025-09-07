@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 
@@ -15,6 +15,18 @@ export default function TelehealthAppointmentPage() {
     birthDate: '',
     symptoms: ''
   });
+  // Phone country code dropdown (in-input prefix)
+  const [showPhoneCodes, setShowPhoneCodes] = useState(false);
+  const phoneCodes = useMemo(() => ['+90','+1','+44','+49','+33','+39','+34','+7','+61','+971'], []);
+  const phoneWrapRef = useRef(null);
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (!phoneWrapRef.current) return;
+      if (!phoneWrapRef.current.contains(e.target)) setShowPhoneCodes(false);
+    };
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, []);
   const [paymentMethod, setPaymentMethod] = useState('credit');
 
   const doctors = useMemo(() => ([
@@ -145,20 +157,34 @@ export default function TelehealthAppointmentPage() {
                       type="date"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full h-11 border border-gray-300 rounded-lg px-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
-                    <select
-                      value={selectedTime}
-                      onChange={(e) => setSelectedTime(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      {timeSlots.map((time) => (
-                        <option key={time} value={time}>{time}</option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={selectedTime}
+                        onChange={(e) => setSelectedTime(e.target.value)}
+                        className="w-full h-11 border border-gray-300 rounded-lg px-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                      >
+                        {timeSlots.map((time) => (
+                          <option key={time} value={time}>{time}</option>
+                        ))}
+                      </select>
+                      <svg
+                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -180,14 +206,43 @@ export default function TelehealthAppointmentPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                    <input
-                      type="tel"
-                      placeholder="+90 555 123 4567"
-                      value={patientInfo.phone}
-                      onChange={(e) => setPatientInfo({ ...patientInfo, phone: e.target.value })}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
+                    <div className="relative" ref={phoneWrapRef}>
+                      {/* Country code prefix inside input */}
+                      <button
+                        type="button"
+                        onClick={() => setShowPhoneCodes((s)=>!s)}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded px-1.5 py-0.5"
+                        aria-label="Choose phone country code"
+                      >
+                        {(patientInfo.phone?.startsWith('+') ? patientInfo.phone.split(' ')[0] : '+90')}
+                      </button>
+                      <input
+                        type="tel"
+                        placeholder="+90 555 123 4567"
+                        value={patientInfo.phone}
+                        onChange={(e) => setPatientInfo({ ...patientInfo, phone: e.target.value })}
+                        className="w-full border border-gray-300 rounded-lg pl-20 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                      {showPhoneCodes && (
+                        <div className="absolute z-20 mt-1 left-2 bg-white border border-gray-200 rounded-lg shadow-lg w-28 max-h-44 overflow-auto">
+                          {phoneCodes.map((c)=> (
+                            <button
+                              key={c}
+                              type="button"
+                              onClick={()=> {
+                                setShowPhoneCodes(false);
+                                const number = (patientInfo.phone || '').replace(/^\+\d{1,3}\s*/, '');
+                                setPatientInfo({ ...patientInfo, phone: `${c} ${number}`.trim() });
+                              }}
+                              className={`w-full text-left px-2 py-1.5 text-xs hover:bg-gray-50 ${ (patientInfo.phone||'').startsWith(c) ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+                            >
+                              {c}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

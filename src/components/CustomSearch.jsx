@@ -13,6 +13,22 @@ export default function CustomSearch() {
   const [loadingCities, setLoadingCities] = useState(false);
   const [allWorldCities, setAllWorldCities] = useState(null);
 
+  // Bazı ülkeler için API eş-isimleri (alias) – daha geniş kapsama yardımcı olur
+  const getCountryVariants = React.useCallback((name) => {
+    const aliases = {
+      'Czechia': ['Czech Republic'],
+      'United States': ['United States of America', 'USA', 'US'],
+      'United Kingdom': ['Great Britain', 'UK', 'GB', 'Britain'],
+      'Russia': ['Russian Federation'],
+      'Vatican City': ['Holy See'],
+      'South Korea': ['Republic of Korea'],
+      'North Macedonia': ['Macedonia'],
+      'Kosovo': ['Republic of Kosovo'],
+    };
+    const set = new Set([name, ...(aliases[name] || [])]);
+    return Array.from(set);
+  }, []);
+
   const countries = useMemo(() => {
     const base = Object.keys(countryCities || {});
     const extra = (allWorldCities && Array.isArray(allWorldCities)) ? Array.from(new Set(allWorldCities.map((c) => c.country))) : [];
@@ -45,7 +61,7 @@ export default function CustomSearch() {
     return () => { cancelled = true; };
   }, []);
 
-  // Şehirleri yükle: varsa worldCities (population >= 50k), yoksa countryCities fallback
+  // Şehirleri yükle: 1) Ücretsiz API (countriesnow) ile ülkenin TÜM şehirleri, 2) public ülke JSON, 3) worldCities (tamamı), 4) countryCities fallback
   React.useEffect(() => {
     setCitiesOptions([]);
     setCity('');
@@ -53,21 +69,61 @@ export default function CustomSearch() {
     setLoadingCities(true);
     const next = () => setLoadingCities(false);
     try {
-      if (allWorldCities && Array.isArray(allWorldCities)) {
-        const filtered = allWorldCities
-          .filter((c) => c.country === country && (c.population || 0) >= 50000)
-          .map((c) => c.city);
-        if (filtered.length > 0) {
-          setCitiesOptions(Array.from(new Set(filtered)).slice(0, 150));
-          next();
-          return;
+      (async () => {
+        // 0) CountriesNow API: https://countriesnow.space/api/v0.1/countries/cities
+        try {
+          const variants = getCountryVariants(country);
+          for (const candidate of variants) {
+            const res = await fetch('https://countriesnow.space/api/v0.1/countries/cities', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ country: candidate }),
+            });
+            if (res.ok) {
+              const json = await res.json();
+              const arr = Array.from(new Set((json?.data || []).filter(Boolean))).sort();
+              if (arr.length) {
+                setCitiesOptions(arr);
+                next();
+                return;
+              }
+            }
+          }
+        } catch (_) { /* ignore and fallback */ }
+
+        // 1) Public ülke bazlı JSON: /cities/<Country>.json (isteğe bağlı - varsa yüklenir)
+        try {
+          const res = await fetch(`/data/world-cities/${encodeURIComponent(country)}.json`, { cache: 'force-cache' });
+          if (res.ok) {
+            const data = await res.json();
+            const arr = Array.from(new Set((Array.isArray(data) ? data : []).map((x) => (typeof x === 'string' ? x : x.city)).filter(Boolean))).sort();
+            if (arr.length) {
+              setCitiesOptions(arr);
+              next();
+              return;
+            }
+          }
+        } catch (_) { /* ignore and fallback */ }
+
+        // 2) worldCities (tamamı)
+        if (allWorldCities && Array.isArray(allWorldCities)) {
+          const filtered = allWorldCities
+            .filter((c) => c.country === country)
+            .map((c) => c.city);
+          if (filtered.length > 0) {
+            setCitiesOptions(Array.from(new Set(filtered)).sort());
+            next();
+            return;
+          }
         }
-      }
-      // fallback
-      const fallback = countryCities[country] || [];
-      setCitiesOptions(fallback.slice(0, 150));
+
+        // 3) countryCities fallback
+        const fallback = countryCities[country] || [];
+        setCitiesOptions([...fallback].sort());
+        next();
+      })();
     } finally {
-      next();
+      // next() async blok içinde çağrılıyor
     }
   }, [country, allWorldCities]);
 
@@ -134,7 +190,7 @@ export default function CustomSearch() {
               value={symptom}
               onChange={(e) => { setSymptom(e.target.value); setSymptomActiveIndex(-1); }}
               disabled={disableSymptom}
-              placeholder="Semptom yaz (örn. burun...)"
+              placeholder="Type a symptom (e.g. nose...)"
               className={`w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-base md:text-sm ${disableSymptom ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
               onKeyDown={(e) => {
                 if (disableSymptom) return;
@@ -187,7 +243,7 @@ export default function CustomSearch() {
               value={specialty}
               onChange={(e) => { setSpecialty(e.target.value); setSpecialtyActiveIndex(-1); }}
               disabled={disableSpecialty}
-              placeholder="Uzmanlık yaz (örn. KBB...)"
+              placeholder="Type a specialty (e.g. ENT...)"
               className={`w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-base md:text-sm ${disableSpecialty ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
               onKeyDown={(e) => {
                 if (disableSpecialty) return;

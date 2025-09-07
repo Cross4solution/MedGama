@@ -1,26 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import CookieInfoPopup from './CookieInfoPopup';
 
+const STORAGE_KEY = 'cookie_consent_status'; // 'accepted' | 'declined'
+
 const CookieBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
   const [showCookieInfoPopup, setShowCookieInfoPopup] = useState(false);
 
   useEffect(() => {
-    // Show banner every time the site loads
-    setShowBanner(true);
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        setShowBanner(true);
+      }
+    } catch (e) {
+      // localStorage erişilemezse (örn. private mode), banner bir kez gösterilsin
+      setShowBanner(true);
+    }
   }, []);
 
+  const persist = (value) => {
+    try { localStorage.setItem(STORAGE_KEY, value); } catch (e) { /* ignore */ }
+  };
+
   const handleAccept = () => {
+    persist('accepted');
     setShowBanner(false);
   };
 
   const handleDeny = () => {
+    persist('declined');
     setShowBanner(false);
   };
 
-  if (!showBanner) {
-    return null;
-  }
+  if (!showBanner) return null;
 
   return (
     <>
@@ -38,7 +51,7 @@ const CookieBanner = () => {
               . By continuing, you consent to the use of cookies.
             </p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <button
               onClick={handleDeny}
@@ -60,6 +73,6 @@ const CookieBanner = () => {
       )}
     </>
   );
- };
+};
 
-export default CookieBanner; 
+export default CookieBanner;

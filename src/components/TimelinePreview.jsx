@@ -80,7 +80,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
   }[columns] || 'md:grid-cols-3';
 
   return (
-    <section className="py-14 bg-gradient-to-b from-gray-50 to-white border-y">
+    <section className="py-8 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Timeline Preview</h2>

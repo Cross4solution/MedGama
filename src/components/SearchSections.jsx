@@ -8,7 +8,7 @@ export default function SearchSections() {
       {/* Clinics Search (unified clinic/doctor autocomplete) */}
       <section id="clinics-search" className="py-10 bg-gray-50 border-y">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Clinics Search</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 text-center">Clinics Search</h2>
           <GlobalSearch />
         </div>
       </section>

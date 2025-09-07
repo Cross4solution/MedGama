@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import Header from '../components/Header';
 import TimelinePreview from '../components/TimelinePreview';
@@ -9,6 +10,7 @@ import Carousel from '../components/Carousel';
 
 export default function HomeV2() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [showAllTimeline, setShowAllTimeline] = useState(false);
   const handleViewAll = () => setShowAllTimeline(true);
 
@@ -113,7 +115,13 @@ export default function HomeV2() {
             items={popularClinics}
             slidesToShow={{ base: 1, sm: 2, lg: 3 }}
             renderItem={(c) => (
-              <div className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-96 flex flex-col">
+              <div
+                className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-96 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300"
+                onClick={() => navigate('/clinic')}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/clinic'); } }}
+              >
                 <div className="h-1/2 rounded-lg bg-gray-100 mb-3 overflow-hidden">
                   <img src={c.image} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
                 </div>
@@ -128,7 +136,7 @@ export default function HomeV2() {
                   <p className="mt-1 text-sm text-gray-600">{c.city} • {c.dept}</p>
                   <div className="mt-auto pt-3 flex items-center justify-between text-sm">
                     <span className="text-gray-500">{c.reviews} Reviews</span>
-                    <button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View Profile</button>
+                    <button type="button" onClick={(e) => { e.stopPropagation(); navigate('/clinic'); }} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View Profile</button>
                   </div>
                 </div>
               </div>
