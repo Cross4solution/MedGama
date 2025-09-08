@@ -12,7 +12,7 @@ export default function HomeV2() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [showAllTimeline, setShowAllTimeline] = useState(false);
-  const handleViewAll = () => setShowAllTimeline(true);
+  const handleViewAll = () => navigate('/explore');
 
   // Login dropdown state + outside click close
   const [loginOpen, setLoginOpen] = useState(false);
@@ -50,23 +50,8 @@ export default function HomeV2() {
       {/* Global Header */}
       <Header />
 
-      {showAllTimeline ? (
-        // Full-page timeline grid
-        <section className="bg-gradient-to-b from-gray-50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">All timeline items</h2>
-              <button
-                type="button"
-                onClick={() => setShowAllTimeline(false)}
-                className="text-sm text-gray-600 hover:text-gray-800 hover:underline"
-              >
-                Back
-              </button>
-            </div>
-            <TimelinePreview columns={3} limit={20} />
-          </div>
-        </section>
+      {false ? (
+        <></>
       ) : (
         <>
       {/* If patient logged in, show TimelinePreview instead of hero */}

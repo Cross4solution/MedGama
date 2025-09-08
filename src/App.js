@@ -26,6 +26,7 @@ import Updates from './pages/Updates';
 import Notifications from './pages/Notifications';
 // (PatientLayout removed)
 import Profile from './pages/Profile';
+import ExploreTimeline from './pages/ExploreTimeline';
 
 function AppContent() {
   const location = useLocation();
@@ -88,6 +89,7 @@ function AppContent() {
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />
         <Route path="/home-v2" element={<HomeV2 />} />
+        <Route path="/explore" element={<ExploreTimeline />} />
         <Route path="/patient-home" element={<PatientHome />} />
         <Route path="/clinics" element={<ClinicsPage />} />
         <Route path="/timeline" element={<TimelinePage />} />

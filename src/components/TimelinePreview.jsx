@@ -93,7 +93,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
               View all timeline items
             </button>
           ) : (
-            <Link to="/timeline#filters" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">View all timeline items</Link>
+            <Link to="/explore" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">View all timeline items</Link>
           )}
         </div>
 
@@ -204,7 +204,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
                       </button>
                     ) : (
                       <Link
-                        to="/timeline#filters"
+                        to="/explore"
                         className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:text-teal-800 hover:border-teal-300 hover:bg-teal-50 transition-colors"
                         aria-label="Timeline details"
                       >
