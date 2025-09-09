@@ -63,16 +63,23 @@ export default function HomeV2() {
         </section>
       ) : (
         // Hero / Slogan for guests and non-patient roles
-        <section className="bg-gradient-to-br from-teal-50 to-sky-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="grid grid-cols-1 gap-8 items-center">
-              <div>
-                <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900">
-                #1 Health Portal in the World 
-                </h1>
-                <p className="mt-4 text-gray-600 md:text-lg">One-click, end-to-end care: discovery, availability, telehealth and secure communication.</p>
-                <div className="mt-6 flex gap-3">
-                  <a href="#features" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm">Explore</a>
+        <section className="relative">
+          <div
+            className="relative bg-cover bg-center"
+            style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
+          >
+            {/* Overlay for readability */}
+            <div className="absolute inset-0 bg-black/20 md:bg-black/25" aria-hidden="true" />
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <div className="grid grid-cols-1 gap-8 items-center">
+                <div>
+                  <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow">
+                    #1 Health Portal in the World
+                  </h1>
+                  <p className="mt-4 text-gray-100 md:text-lg drop-shadow">One-click, end-to-end care: discovery, availability, telehealth and secure communication.</p>
+                  <div className="mt-6 flex gap-3">
+                    <a href="#features" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm shadow-lg">Explore</a>
+                  </div>
                 </div>
               </div>
             </div>

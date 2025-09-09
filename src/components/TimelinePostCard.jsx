@@ -10,7 +10,7 @@ export default function TimelinePostCard({ post }) {
   const { user } = useAuth();
   const isPatient = user?.role === 'patient';
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-gray-200 shadow-md overflow-hidden">
       {/* Post Header */}
       <div className="p-6 pb-0">
         <div className="flex items-center justify-between">
@@ -51,7 +51,7 @@ export default function TimelinePostCard({ post }) {
       {post.image && <img src={post.image} alt="Post content" className="w-full h-64 object-cover" />}
 
       {/* Post Actions */}
-      <div className="p-6 pt-4 border-top border-gray-100">
+      <div className="p-6 pt-4 border-t border-gray-100">
         <TimelineActionsRow
           left={
             <>

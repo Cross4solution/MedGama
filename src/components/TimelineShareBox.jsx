@@ -20,7 +20,7 @@ export default function TimelineShareBox() {
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm">
+    <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-md">
       <div className="flex items-center space-x-3">
         <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
           <img

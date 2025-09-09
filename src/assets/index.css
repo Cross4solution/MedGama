@@ -65,6 +65,26 @@ code {
   }
 }
 
+/* Sidebar açıkken: soldaki beyaz boşluğu kaldır (container'ları sola yapıştır) */
+@media (min-width: 1024px) {
+  body.has-sidebar .mx-auto {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
+  /* İçerideki container paddinglerini de temizle */
+  body.has-sidebar .mx-auto.px-4,
+  body.has-sidebar .mx-auto.sm\:px-6,
+  body.has-sidebar .mx-auto.lg\:px-8,
+  body.has-sidebar .max-w-6xl.px-4,
+  body.has-sidebar .max-w-6xl.sm\:px-6,
+  body.has-sidebar .max-w-6xl.lg\:px-8,
+  body.has-sidebar .max-w-7xl.px-4,
+  body.has-sidebar .max-w-7xl.sm\:px-6,
+  body.has-sidebar .max-w-7xl.lg\:px-8 {
+    padding-left: 0 !important;
+  }
+}
+
 /* Cross-browser normalization for date/select controls */
 /* Ensures consistent height/padding/typography across Chrome, Safari, Firefox, Edge */
 input[type="date"],

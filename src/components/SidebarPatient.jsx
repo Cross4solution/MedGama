@@ -88,7 +88,7 @@ export default function SidebarPatient() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className={`hidden lg:block fixed left-0 w-64 top-20 z-40 h-[calc(100vh-5rem)]`}>
+      <aside className={`hidden lg:block fixed left-0 w-52 top-20 z-40 h-[calc(100vh-5rem)]`}>
         <div className="h-full">
           <div className="h-full rounded-b-2xl border border-t-0 -mt-px bg-white shadow-sm flex flex-col">
             {/* Header / Profile */}
@@ -141,7 +141,7 @@ export default function SidebarPatient() {
             aria-hidden="true"
           />
           {/* Panel: starts below header height (top-20) */}
-          <div className="fixed left-0 top-20 bottom-0 w-3/4 max-w-[16rem] z-[60]">
+          <div className="fixed left-0 top-20 bottom-0 w-3/4 max-w-[13rem] z-[60]">
             <div className="h-full border-r bg-white shadow-xl flex flex-col rounded-tr-2xl">
               {/* Mobile Header */}
               <div className="p-3 border-b flex items-center gap-3">

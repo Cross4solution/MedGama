@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import CountryCombobox from '../components/CountryCombobox';
 import SelectCombobox from '../components/SelectCombobox';
 import { Heart, MessageCircle, Search, MapPin, ArrowDownWideNarrow, Share2, Bookmark } from 'lucide-react';
@@ -17,6 +18,8 @@ const SPECIALTIES = [
   'Pediatrics','Geriatrics','Infectious Diseases','Allergy & Immunology','Anesthesiology','Emergency Medicine',
   'Radiology','Interventional Radiology','Pathology','Physiotherapy','Nutrition & Dietetics','Speech Therapy'
 ];
+
+// Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
 function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you' }) {
   // Kaynak data
@@ -107,59 +110,101 @@ function SkeletonCard() {
 function Card({ item, disabledActions, view = 'grid', onOpen }) {
   const avatarUrl = item.avatar || '/images/portrait-candid-male-doctor_720.jpg';
   return (
-    <article className={`group rounded-2xl border border-gray-100 bg-white shadow-md hover:shadow-xl transition overflow-hidden`}>
-      {/* Büyük görsel */}
-      <div className={`relative h-60 overflow-hidden`}>
-        <img src={item.img} alt={item.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
-        <div className="absolute top-3 right-3">
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
-            {item.specialty}
-          </span>
-        </div>
-      </div>
-
-      {/* Başlık satırı (avatar + başlık + konum) */}
-      <div className="p-5">
-        <div className="flex items-center gap-3">
-          <img src={avatarUrl} alt={item.title} className="w-12 h-12 rounded-full object-cover border" />
-          <div className="min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900 truncate" title={item.title}>{item.title}</h3>
-            <p className="text-xs text-gray-600 flex items-center gap-1 mt-0.5">
-              <MapPin className="w-3.5 h-3.5 text-teal-600" /> {item.city}
-            </p>
+    <article
+      className={`group rounded-2xl border border-gray-100 bg-white shadow-md hover:shadow-xl transition overflow-hidden cursor-pointer`}
+      onClick={onOpen}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') onOpen(); }}
+   >
+      {/* Image section */}
+      {view === 'list' ? (
+        <div className="flex flex-col md:flex-row">
+          <div className="relative md:w-56 h-56 md:h-auto overflow-hidden">
+            <img src={item.img} alt={item.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/0 to-black/0" />
+            <div className="absolute top-3 right-3">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">{item.specialty}</span>
+            </div>
+          </div>
+          <div className="flex-1 p-5">
+            <div className="flex items-center gap-3">
+              <img src={avatarUrl} alt={item.title} className="w-10 h-10 rounded-full object-cover border" />
+              <div className="min-w-0">
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate" title={item.title}>{item.title}</h3>
+                <p className="text-xs text-gray-600 flex items-center gap-1 mt-0.5"><MapPin className="w-3.5 h-3.5 text-teal-600" /> {item.city}</p>
+              </div>
+            </div>
+            <p className="mt-3 text-[15px] leading-6 text-gray-800 line-clamp-3">{item.text}</p>
+            <div className="mt-4 flex items-center justify-between">
+              <div className="flex items-center gap-3 text-gray-500 text-xs">
+                <span className="inline-flex items-center gap-1" aria-label="likes"><Heart className="w-4 h-4" />{item.likes}</span>
+                <span className="inline-block w-1 h-1 rounded-full bg-gray-300" />
+                <span className="inline-flex items-center gap-1" aria-label="comments"><MessageCircle className="w-4 h-4" />{item.comments}</span>
+              </div>
+              <div className="flex items-center gap-1 bg-gray-50 rounded-full p-1 shadow-sm">
+                <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to like' : 'Like'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`} onClick={(e)=>e.stopPropagation()}>
+                  <Heart className="w-4 h-4" />
+                </button>
+                <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to comment' : 'Comment'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`} onClick={(e)=>e.stopPropagation()}>
+                  <MessageCircle className="w-4 h-4" />
+                </button>
+                <button type="button" aria-label="Share" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700" onClick={(e)=>e.stopPropagation()}>
+                  <Share2 className="w-4 h-4" />
+                </button>
+                <button type="button" aria-label="Save" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700" onClick={(e)=>e.stopPropagation()}>
+                  <Bookmark className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* İçerik metni daha görünür */}
-        <p className="mt-3 text-[15px] leading-6 text-gray-800 line-clamp-3">{item.text}</p>
-
-        {/* Aksiyon barı */}
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 text-gray-500 text-xs">
-            <span className="inline-flex items-center gap-1" aria-label="likes"><Heart className="w-4 h-4" />{item.likes}</span>
-            <span className="inline-block w-1 h-1 rounded-full bg-gray-300" />
-            <span className="inline-flex items-center gap-1" aria-label="comments"><MessageCircle className="w-4 h-4" />{item.comments}</span>
+      ) : (
+        <>
+          <div className={`relative h-60 overflow-hidden`}>
+            <img src={item.img} alt={item.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
+            <div className="absolute top-3 right-3">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                {item.specialty}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-1 bg-gray-50 rounded-full p-1 shadow-sm">
-            <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to like' : 'Like'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`}>
-              <Heart className="w-4 h-4" />
-            </button>
-            <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to comment' : 'Comment'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`}>
-              <MessageCircle className="w-4 h-4" />
-            </button>
-            <button type="button" aria-label="Share" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700">
-              <Share2 className="w-4 h-4" />
-            </button>
-            <button type="button" aria-label="Save" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700">
-              <Bookmark className="w-4 h-4" />
-            </button>
-            <button type="button" onClick={onOpen} className="ml-0.5 px-2.5 py-1.5 rounded-full text-xs text-gray-700 hover:bg-gray-100">
-              Read more
-            </button>
+          <div className="p-5">
+            <div className="flex items-center gap-3">
+              <img src={avatarUrl} alt={item.title} className="w-12 h-12 rounded-full object-cover border" />
+              <div className="min-w-0">
+                <h3 className="text-lg font-semibold text-gray-900 truncate" title={item.title}>{item.title}</h3>
+                <p className="text-xs text-gray-600 flex items-center gap-1 mt-0.5">
+                  <MapPin className="w-3.5 h-3.5 text-teal-600" /> {item.city}
+                </p>
+              </div>
+            </div>
+            <p className="mt-3 text-[15px] leading-6 text-gray-800 line-clamp-3">{item.text}</p>
+            <div className="mt-4 flex items-center justify-between">
+              <div className="flex items-center gap-3 text-gray-500 text-xs">
+                <span className="inline-flex items-center gap-1" aria-label="likes"><Heart className="w-4 h-4" />{item.likes}</span>
+                <span className="inline-block w-1 h-1 rounded-full bg-gray-300" />
+                <span className="inline-flex items-center gap-1" aria-label="comments"><MessageCircle className="w-4 h-4" />{item.comments}</span>
+              </div>
+              <div className="flex items-center gap-1 bg-gray-50 rounded-full p-1 shadow-sm">
+                <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to like' : 'Like'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`} onClick={(e)=>e.stopPropagation()}>
+                  <Heart className="w-4 h-4" />
+                </button>
+                <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to comment' : 'Comment'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`} onClick={(e)=>e.stopPropagation()}>
+                  <MessageCircle className="w-4 h-4" />
+                </button>
+                <button type="button" aria-label="Share" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700" onClick={(e)=>e.stopPropagation()}>
+                  <Share2 className="w-4 h-4" />
+                </button>
+                <button type="button" aria-label="Save" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700" onClick={(e)=>e.stopPropagation()}>
+                  <Bookmark className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </article>
   );
 }
@@ -167,6 +212,7 @@ function Card({ item, disabledActions, view = 'grid', onOpen }) {
 export default function ExploreTimeline() {
   const { user, country } = useAuth();
   const disabledActions = !user; // guest ise aksiyonlar kapalı
+  const navigate = useNavigate();
 
   const [query, setQuery] = useState('');
   const [specialty, setSpecialty] = useState('');
@@ -176,8 +222,9 @@ export default function ExploreTimeline() {
   const [tab, setTab] = useState('for-you'); // for-you | latest
   const [view, setView] = useState('grid'); // grid | list
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [activePost, setActivePost] = useState(null);
   const loadMoreRef = useRef(null);
+
+  // Removed: EN-only Procedure/Symptom state and helpers (panel dropped)
 
   const { items, hasMore, total } = useExploreFeed({
     mode: user ? 'user' : 'guest',
@@ -203,6 +250,7 @@ export default function ExploreTimeline() {
       () => setGeo({ error: true })
     );
   };
+  const [askedGeo, setAskedGeo] = useState(false);
 
   useEffect(() => {
     // Filtre değişince sayfayı başa al
@@ -215,6 +263,19 @@ export default function ExploreTimeline() {
     const entry = Object.entries(countryCodes).find(([, code]) => (code || '').toLowerCase() === String(country).toLowerCase());
     if (entry) setCountryName(entry[0]);
   }, [country, countryName]);
+
+  // Logged-in users: default to list view (LinkedIn-like)
+  useEffect(() => {
+    if (user) setView('list');
+  }, [user]);
+
+  // Ask for geolocation once on page load
+  useEffect(() => {
+    if (!askedGeo) {
+      setAskedGeo(true);
+      askGeo();
+    }
+  }, [askedGeo]);
 
   // Sonsuz kaydırma: IntersectionObserver
   useEffect(() => {
@@ -271,34 +332,10 @@ export default function ExploreTimeline() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-          {/* Feed */}
-          <section>
-            {/* Aktif filtre chipleri */}
-            <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-              {countryName && <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 border text-gray-700">Country: {countryName}<button onClick={()=>setCountryName('')} className="ml-1 text-gray-500 hover:text-gray-700">✕</button></span>}
-              {specialty && <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 border text-gray-700">Specialization: {specialty}<button onClick={()=>setSpecialty('')} className="ml-1 text-gray-500 hover:text-gray-700">✕</button></span>}
-              {query && <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 border text-gray-700">Search: “{query}”<button onClick={()=>setQuery('')} className="ml-1 text-gray-500 hover:text-gray-700">✕</button></span>}
-            </div>
-            <div className={`${view==='grid' ? 'grid md:grid-cols-2 gap-6' : 'space-y-4'}`}>
-              {items.map((it) => (
-                <Card key={it.id} item={it} disabledActions={disabledActions} view={view} onOpen={() => setActivePost(it)} />
-              ))}
-              {isLoadingMore && [1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}
-            </div>
-            <div className="flex items-center justify-between mt-6">
-              <p className="text-xs text-gray-500">Showing {items.length} of {total}</p>
-              {hasMore && (
-                <>
-                  <button onClick={() => setPage(p => p + 1)} className="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm">Load more</button>
-                  <span ref={loadMoreRef} className="sr-only">Observer</span>
-                </>
-              )}
-            </div>
-          </section>
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+          {/* Filters (LEFT) */}
+          <aside className="order-2 lg:order-1 space-y-4 lg:sticky lg:top-24 h-max">
 
-          {/* Filters */}
-          <aside className="space-y-4 lg:sticky lg:top-24 h-max">
             <div className="bg-white rounded-xl shadow-sm border p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Search</h3>
               <div className="relative">
@@ -318,7 +355,13 @@ export default function ExploreTimeline() {
               <CountryCombobox
                 options={countryOptions}
                 value={countryName}
-                onChange={setCountryName}
+                onChange={(val)=>{
+                  if (val === 'Andorra') {
+                    const ok = window.confirm('Are you there now? Press OK to set Turkey.');
+                    if (ok) return setCountryName('Turkey');
+                  }
+                  setCountryName(val);
+                }}
                 placeholder="All countries"
               />
             </div>
@@ -341,40 +384,34 @@ export default function ExploreTimeline() {
               </div>
             )}
           </aside>
+
+          {/* Feed (RIGHT) */}
+          <section className="order-1 lg:order-2">
+            {/* Aktif filtre chipleri */}
+            <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
+              {countryName && <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 border text-gray-700">Country: {countryName}<button onClick={()=>setCountryName('')} className="ml-1 text-gray-500 hover:text-gray-700">✕</button></span>}
+              {specialty && <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 border text-gray-700">Specialization: {specialty}<button onClick={()=>setSpecialty('')} className="ml-1 text-gray-500 hover:text-gray-700">✕</button></span>}
+              {query && <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 border text-gray-700">Search: “{query}”<button onClick={()=>setQuery('')} className="ml-1 text-gray-500 hover:text-gray-700">✕</button></span>}
+            </div>
+            <div className={`${view==='grid' ? 'grid md:grid-cols-2 gap-6' : 'space-y-4'}`}>
+              {items.map((it) => (
+                <Card key={it.id} item={it} disabledActions={disabledActions} view={view} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
+              ))}
+              {isLoadingMore && [1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}
+            </div>
+            <div className="flex items-center justify-between mt-6">
+              <p className="text-xs text-gray-500">Showing {items.length} of {total}</p>
+              {hasMore && (
+                <>
+                  <button onClick={() => setPage(p => p + 1)} className="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm">Load more</button>
+                  <span ref={loadMoreRef} className="sr-only">Observer</span>
+                </>
+              )}
+            </div>
+          </section>
         </div>
 
-        {/* Full content modal */}
-        {activePost && (
-          <div className="fixed inset-0 z-50">
-            <div className="absolute inset-0 bg-black/40" onClick={() => setActivePost(null)} />
-            <div role="dialog" aria-modal="true" className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden">
-                {/* Header */}
-                <div className="p-5 border-b flex items-center gap-3">
-                  <img src={activePost.avatar || '/images/portrait-candid-male-doctor_720.jpg'} alt={activePost.title} className="w-10 h-10 rounded-full object-cover border" />
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate" title={activePost.title}>{activePost.title}</h3>
-                    <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {activePost.city}</p>
-                  </div>
-                  <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">{activePost.specialty}</span>
-                  <button onClick={() => setActivePost(null)} aria-label="Close" className="ml-2 p-2 rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-50">✕</button>
-                </div>
-                {/* Body */}
-                <div className="max-h-[70vh] overflow-y-auto">
-                  {activePost.img && (
-                    <div className="h-64 bg-gray-50 overflow-hidden">
-                      <img src={activePost.img} alt={activePost.title} className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                  <div className="p-5">
-                    <p className="text-base leading-7 text-gray-800 whitespace-pre-wrap">{activePost.text}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Popup modal kaldırıldı; detaylar /post/:id sayfasında açılıyor */}
       </div>
     </div>
   );

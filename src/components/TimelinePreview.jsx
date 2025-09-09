@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toEnglishTimestamp } from '../utils/i18n';
 import { Star, MessageCircle, Heart, Clock, User } from 'lucide-react';
 import { posts as sharedPosts, professionalReview as sharedPro } from './timelineData';
@@ -11,6 +11,7 @@ import Badge from './Badge';
 // - items: [{ id, title, subtitle, image }] şeklinde liste. Boşsa placeholder üretilir.
 // - columns: grid kolon sayısı (md breakpoint)
 export default function TimelinePreview({ items = [], columns = 3, limit = 6, onViewAll }) {
+  const navigate = useNavigate();
   // Shared posts -> preview item format
   const mappedFromPosts = sharedPosts.slice(0, limit ?? 6).map((p, i) => {
     if (p.type === 'clinic_update') {
@@ -104,51 +105,36 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
               role="listitem"
               tabIndex={0}
               aria-label={`${item.title || 'Timeline card'}: ${item.subtitle || ''}`}
-              className="group relative rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl focus:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 transition-transform duration-300 overflow-hidden hover:-translate-y-0.5 hover:scale-[1.02]"
+              className="group relative rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl focus:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 transition-transform duration-300 overflow-hidden hover:-translate-y-0.5 hover:scale-[1.02] flex flex-col cursor-pointer"
+              onClick={() => navigate('/explore')}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/explore'); } }}
             >
-              {/* Üst görsel / placeholder */}
+              {/* Üst placeholder (her zaman gradient + shimmer) */}
               <div className="relative h-36 overflow-hidden">
-                {item.image ? (
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                  />
-                ) : (
-                  <div className="w-full h-full relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,#e6fffb,transparent_40%),radial-gradient(circle_at_80%_0%,#e0f2fe,transparent_35%)]" />
-                    {/* Shimmer */}
-                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
-                  </div>
-                )}
+                <div className="w-full h-full relative overflow-hidden">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,#e6fffb,transparent_40%),radial-gradient(circle_at_80%_0%,#e0f2fe,transparent_35%)]" />
+                  {/* Shimmer */}
+                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
+                </div>
                 {/* Üst gradient overlay (hover'da biraz koyulaşır) */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/0 to-black/0 group-hover:from-black/10 transition-colors duration-300" />
 
-                {/* Köşe etiketi */}
-                <div className="absolute top-3 left-3">
-                  <Badge
-                    label={item.tag || 'Update'}
-                    variant="teal"
-                    size="sm"
-                    className=""
-                    icon={<span className="w-1.5 h-1.5 rounded-full bg-teal-500" />}
-                  />
-                </div>
+                {/* Sol üst etiket kaldırıldı */}
 
-                {/* Sağ üst rozet (varsa) */}
+                {/* Sağ üst rozet (varsa) - örnek tasarımda yok ise gizli tutulabilir; şimdilik koruyoruz */}
                 {item.badge && (
                   <div className="absolute top-3 right-3">
-                    <Badge label={item.badge} variant="blue" size="sm" />
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">{item.badge}</span>
                   </div>
                 )}
               </div>
 
               {/* İçerik */}
-              <div className="p-4">
+              <div className="p-4 flex-1 flex flex-col">
                 <h3 className="font-semibold text-gray-900 tracking-tight group-hover:text-gray-950">
                   {item.title}
                 </h3>
-                <p className="mt-1 text-sm text-gray-600 opacity-80 translate-y-0.5 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                <p className="mt-1 text-sm text-gray-600 opacity-80 translate-y-0.5 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 line-clamp-3">
                   {item.subtitle}
                 </p>
 
@@ -173,15 +159,8 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
                 </div>
 
                 {/* Alt kısım */}
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-200 to-sky-200 flex items-center justify-center">
-                      {item.type === 'pro_review' ? (
-                        <User className="w-4 h-4 text-teal-700" />
-                      ) : (
-                        <Clock className="w-4 h-4 text-teal-700" />
-                      )}
-                    </div>
+                <div className="mt-auto pt-4 flex items-center justify-between">
+                  <div className="flex items-center">
                     <span className="text-xs text-gray-500">{toEnglishTimestamp(item.timestamp) || 'Just now'}</span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -193,24 +172,6 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
                       <MessageCircle className="w-4 h-4" />
                       <span className="text-xs">{item.engagement?.comments ?? 0}</span>
                     </div>
-                    {onViewAll ? (
-                      <button
-                        type="button"
-                        onClick={onViewAll}
-                        className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:text-teal-800 hover:border-teal-300 hover:bg-teal-50 transition-colors"
-                        aria-label="Timeline details"
-                      >
-                        Details
-                      </button>
-                    ) : (
-                      <Link
-                        to="/explore"
-                        className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:text-teal-800 hover:border-teal-300 hover:bg-teal-50 transition-colors"
-                        aria-label="Timeline details"
-                      >
-                        Details
-                      </Link>
-                    )}
                   </div>
                 </div>
               </div>

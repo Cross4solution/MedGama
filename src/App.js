@@ -27,6 +27,7 @@ import Notifications from './pages/Notifications';
 // (PatientLayout removed)
 import Profile from './pages/Profile';
 import ExploreTimeline from './pages/ExploreTimeline';
+import PostDetail from './pages/PostDetail';
 
 function AppContent() {
   const location = useLocation();
@@ -82,7 +83,7 @@ function AppContent() {
   const showFooter = footerOnlyOn.includes(location.pathname);
   
   return (
-    <div className={hasSidebar ? "lg:pl-72" : ""}>
+    <div className={hasSidebar ? "lg:pl-52" : ""}>
       {/* Show sidebar only for non-patient roles */}
       {hasSidebar && <SidebarPatient />}
       <Routes>
@@ -112,6 +113,7 @@ function AppContent() {
         <Route path="/updates" element={<Updates />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/post/:id" element={<PostDetail />} />
       </Routes>
       {showFooter && <Footer />}
       {showCookieBanner && <CookieBanner />}

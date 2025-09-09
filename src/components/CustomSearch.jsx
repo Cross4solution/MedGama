@@ -35,6 +35,8 @@ export default function CustomSearch() {
     return Array.from(new Set([...base, ...extra])).sort();
   }, [allWorldCities]);
   const specialties = ['ENT', 'Cardiology', 'Orthopedics', 'Dermatology', 'Ophthalmology', 'Plastic Surgery', 'Dentistry', 'Neurology', 'Gastroenterology'];
+  // Procedure list (EN) to surface alongside specialties in autocomplete
+  const procedures = ['Rhinoplasty', 'Hip Replacement', 'Hair Transplant', 'Knee Replacement', 'LASIK', 'Dental Implant', 'Root Canal', 'Cataract Surgery'];
   const symptoms = ['Nasal congestion', 'Headache', 'Low back pain', 'Nausea', 'Toothache', 'Blurred vision', 'Acne', 'Varicose veins', 'Tinnitus'];
 
   const canSearch = useMemo(() => !!(country || city || specialty || symptom), [country, city, specialty, symptom]);
@@ -162,6 +164,15 @@ export default function CustomSearch() {
     }
     return out;
   }, []);
+  // Token yardımcıları: listele ve sil
+  const listTokens = React.useCallback((s) => (s || '')
+    .split(',')
+    .map((x) => x.trim())
+    .filter((x) => x.length > 0), []);
+  const removeToken = React.useCallback((s, tokenToRemove) => {
+    const tokens = listTokens(s).filter((t) => t !== tokenToRemove);
+    return tokens.length ? tokens.join(', ') + ', ' : '';
+  }, [listTokens]);
 
   React.useEffect(() => {
     const t = setTimeout(() => setSymptomQuery(getLastToken(symptom)), 200);
@@ -172,12 +183,19 @@ export default function CustomSearch() {
     return () => clearTimeout(t);
   }, [specialty, getLastToken]);
 
-  const symptomMatches = useMemo(() => filterOptions(symptoms, symptomQuery), [symptoms, symptomQuery]);
-  const specialtyMatches = useMemo(() => filterOptions(specialties, specialtyQuery), [specialties, specialtyQuery]);
+  const symptomMatches = useMemo(() => {
+    const merged = [...symptoms, ...procedures];
+    return filterOptions(merged, symptomQuery);
+  }, [symptoms, procedures, symptomQuery]);
+  const specialtyMatches = useMemo(() => {
+    const merged = [...specialties, ...procedures];
+    return filterOptions(merged, specialtyQuery);
+  }, [specialties, procedures, specialtyQuery]);
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-[10rem,10rem,1fr,auto,1fr]">
+      <div className="bg-white/95 backdrop-blur border border-gray-100 rounded-xl p-3 md:p-3 shadow-[0_6px_20px_-5px_rgba(28,106,131,0.18),0_2px_6px_-2px_rgba(2,6,23,0.12)] hover:shadow-[0_10px_30px_-10px_rgba(28,106,131,0.22),0_4px_12px_-3px_rgba(2,6,23,0.16)] focus-within:shadow-[0_12px_36px_-12px_rgba(28,106,131,0.28),0_6px_16px_-4px_rgba(2,6,23,0.2)] transition-shadow">
+        <div className="grid gap-4 md:grid-cols-[10rem,10rem,1fr,auto,1fr,auto]">
         {/* 1. Country (küçük) */}
         <div className="max-w-40">
           <CountryCombobox
@@ -200,16 +218,32 @@ export default function CustomSearch() {
           />
         </div>
 
-        {/* 3. Semptom (text + autocomplete) */}
+        {/* 3. Semptom (text + autocomplete) - Chip'leri bar içinde göster */}
         <div className="relative">
-          <div className="flex items-center">
+          <div
+            className={`border border-gray-300 rounded-lg px-2 py-1 text-base md:text-sm flex items-center flex-wrap gap-2 ${disableSymptom ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+          >
+            {listTokens(symptom).map((tok) => (
+              <span key={tok} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-800 border border-teal-200">
+                {tok}
+                <button
+                  type="button"
+                  className="ml-0.5 text-teal-700 hover:text-teal-900"
+                  onClick={() => setSymptom((s) => removeToken(s, tok))}
+                  aria-label={`Remove ${tok}`}
+                  disabled={disableSymptom}
+                >
+                  ✕
+                </button>
+              </span>
+            ))}
             <input
               type="text"
-              value={symptom}
-              onChange={(e) => { setSymptom(e.target.value); setSymptomActiveIndex(-1); }}
+              value={getLastToken(symptom)}
+              onChange={(e) => { setSymptom((s) => replaceLastToken(s, e.target.value, false)); setSymptomActiveIndex(-1); }}
               disabled={disableSymptom}
-              placeholder="Type a symptom (e.g., nasal congestion)"
-              className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm ${disableSymptom ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+              placeholder={listTokens(symptom).length > 0 ? '' : "Symptom or Procedure (e.g., nasal congestion)"}
+              className={`flex-1 min-w-[8ch] border-0 outline-none px-1 py-1 text-base md:text-sm bg-transparent ${disableSymptom ? 'placeholder:text-gray-400' : ''}`}
               onKeyDown={(e) => {
                 if (disableSymptom) return;
                 // Add comma-separated tokens with Enter or comma
@@ -248,22 +282,26 @@ export default function CustomSearch() {
               }}
             />
             {symptom && (
-              <button type="button" onClick={() => setSymptom('')} className="-ml-8 text-gray-400 hover:text-gray-600">✕</button>
+              <button type="button" onClick={() => setSymptom('')} className="ml-auto text-gray-400 hover:text-gray-600" disabled={disableSymptom}>
+                ✕
+              </button>
             )}
           </div>
           {/* Autocomplete dropdown */}
-          {symptom && !disableSymptom && (
+          {symptom && !disableSymptom && symptomQuery.trim().length > 0 && symptomMatches.length > 0 && (
             <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow max-h-56 overflow-auto text-sm">
               {symptomMatches.map((s, idx) => (
                 <li key={s}>
-                  <button type="button" className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${idx === symptomActiveIndex ? 'bg-gray-50' : ''}`} onClick={() => setSymptom((prev) => replaceLastToken(prev, s, true))}>
+                  <button
+                    type="button"
+                    className={`w-full text-left px-3 py-2 rounded-md transition-colors ${idx === symptomActiveIndex ? 'bg-teal-50 text-teal-800' : 'hover:bg-teal-50 hover:text-teal-800'}`}
+                    onClick={() => setSymptom((prev) => replaceLastToken(prev, s, true))}
+                  >
                     {s}
+                    <span className="ml-2 text-xs text-gray-500">{procedures.includes(s) ? '(procedure)' : '(symptom)'}</span>
                   </button>
                 </li>
               ))}
-              {symptomMatches.length === 0 && (
-                <li className="px-3 py-2 text-xs text-gray-500">No suggestions</li>
-              )}
             </ul>
           )}
         </div>
@@ -271,16 +309,32 @@ export default function CustomSearch() {
         {/* OR label */}
         <div className="flex items-center justify-center text-gray-500">or</div>
 
-        {/* 4. Speciality (text + autocomplete) */}
+        {/* 4. Speciality (text + autocomplete) - Chip'leri bar içinde göster */}
         <div className="relative">
-          <div className="flex items-center">
+          <div
+            className={`border border-gray-300 rounded-lg px-2 py-1 text-base md:text-sm flex items-center flex-wrap gap-2 ${disableSpecialty ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+          >
+            {listTokens(specialty).map((tok) => (
+              <span key={tok} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-800 border border-teal-200">
+                {tok}
+                <button
+                  type="button"
+                  className="ml-0.5 text-teal-700 hover:text-teal-900"
+                  onClick={() => setSpecialty((s) => removeToken(s, tok))}
+                  aria-label={`Remove ${tok}`}
+                  disabled={disableSpecialty}
+                >
+                  ✕
+                </button>
+              </span>
+            ))}
             <input
               type="text"
-              value={specialty}
-              onChange={(e) => { setSpecialty(e.target.value); setSpecialtyActiveIndex(-1); }}
+              value={getLastToken(specialty)}
+              onChange={(e) => { setSpecialty((s) => replaceLastToken(s, e.target.value, false)); setSpecialtyActiveIndex(-1); }}
               disabled={disableSpecialty}
-              placeholder="Type a specialty (e.g., ENT)"
-              className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm ${disableSpecialty ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+              placeholder={listTokens(specialty).length > 0 ? '' : "Type a specialty (e.g., ENT)"}
+              className={`flex-1 min-w-[8ch] border-0 outline-none px-1 py-1 text-base md:text-sm bg-transparent ${disableSpecialty ? 'placeholder:text-gray-400' : ''}`}
               onKeyDown={(e) => {
                 if (disableSpecialty) return;
                 // Add comma-separated tokens with Enter or comma
@@ -318,35 +372,47 @@ export default function CustomSearch() {
               }}
             />
             {specialty && (
-              <button type="button" onClick={() => setSpecialty('')} className="-ml-8 text-gray-400 hover:text-gray-600">✕</button>
+              <button type="button" onClick={() => setSpecialty('')} className="ml-auto text-gray-400 hover:text-gray-600" disabled={disableSpecialty}>
+                ✕
+              </button>
             )}
           </div>
           {/* Autocomplete dropdown */}
-          {specialtyMatches.length > 0 && !disableSpecialty && specialty && (
+          {specialty && !disableSpecialty && specialtyQuery.trim().length > 0 && specialtyMatches.length > 0 && (
             <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow max-h-56 overflow-auto text-sm">
               {specialtyMatches.map((s, idx) => (
                 <li key={s}>
-                  <button type="button" className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${idx === specialtyActiveIndex ? 'bg-gray-50' : ''}`} onClick={() => setSpecialty((prev) => replaceLastToken(prev, s, true))}>
+                  <button
+                    type="button"
+                    className={`w-full text-left px-3 py-2 rounded-md transition-colors ${idx === specialtyActiveIndex ? 'bg-teal-50 text-teal-800' : 'hover:bg-teal-50 hover:text-teal-800'}`}
+                    onClick={() => setSpecialty((prev) => replaceLastToken(prev, s, true))}
+                  >
                     {s}
+                    <span className="ml-2 text-xs text-gray-500">{procedures.includes(s) ? '(procedure)' : '(specialty)'}</span>
                   </button>
                 </li>
               ))}
-              {specialtyMatches.length === 0 && (
-                <li className="px-3 py-2 text-xs text-gray-500">No suggestions</li>
-              )}
             </ul>
           )}
         </div>
+
+        {/* 5. Search button (inline, sağda) */}
+        <div className="flex md:block">
+          <button
+            type="submit"
+            disabled={!canSearch}
+            className="ml-auto md:ml-0 bg-gray-900 text-white rounded-lg text-base px-5 py-3 md:text-sm md:px-4 md:h-10 disabled:opacity-50 flex items-center gap-2 md:justify-center"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Search</span>
+          </button>
+        </div>
       </div>
-      <div className="flex">
-        <button type="submit" disabled={!canSearch} className="ml-auto bg-gray-900 text-white rounded-lg text-base px-5 py-3 md:text-sm md:py-2 disabled:opacity-50 flex items-center gap-2">
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <span>Search</span>
-        </button>
       </div>
+      
     </form>
   );
 }

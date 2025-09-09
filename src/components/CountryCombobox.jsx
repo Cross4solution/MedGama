@@ -65,7 +65,7 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
     <div className="relative" ref={ref}>
       <button
         type="button"
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left flex items-center gap-2"
+        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow"
         onClick={() => setOpen((o) => !o)}
       >
         {selectedLabel ? (

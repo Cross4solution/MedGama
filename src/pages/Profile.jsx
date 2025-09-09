@@ -58,7 +58,8 @@ export default function Profile() {
 
   const saveAccount = (e) => {
     e.preventDefault();
-    const updated = { ...user, name: name.trim() || user.name, avatar: avatar.trim() || undefined };
+    const limitedName = (name || '').slice(0, 30).trim();
+    const updated = { ...user, name: limitedName || user.name, avatar: avatar.trim() || undefined };
     const codeLower = countryCodes[countryName] || null;
     const codeUpper = codeLower ? codeLower.toUpperCase() : country;
     login(updated, codeUpper);
@@ -157,14 +158,16 @@ export default function Profile() {
 
               <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    maxLength={30}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
                     placeholder="Adınız"
                   />
+                  <p className="mt-1 text-xs text-gray-500">{Math.max(0, 30 - (name?.length || 0))} karakter kaldı</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
