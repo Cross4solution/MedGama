@@ -105,7 +105,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
               role="listitem"
               tabIndex={0}
               aria-label={`${item.title || 'Timeline card'}: ${item.subtitle || ''}`}
-              className="group relative rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl focus:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 transition-transform duration-300 overflow-hidden hover:-translate-y-0.5 hover:scale-[1.02] flex flex-col cursor-pointer"
+              className="group relative rounded-2xl border border-gray-100 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-lg focus:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 transition-transform duration-300 overflow-hidden hover:-translate-y-0.25 hover:scale-[1.01] flex flex-col cursor-pointer"
               onClick={() => navigate('/explore')}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/explore'); } }}
             >
@@ -117,7 +117,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
                   <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
                 </div>
                 {/* Üst gradient overlay (hover'da biraz koyulaşır) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/0 to-black/0 group-hover:from-black/10 transition-colors duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/0 to-black/0 group-hover:from-black/5 transition-colors duration-300" />
 
                 {/* Sol üst etiket kaldırıldı */}
 

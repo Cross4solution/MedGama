@@ -24,7 +24,7 @@ export default function GlobalSearch() {
   const normalize = (s) => s
     .toLowerCase()
     .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .trim();
 
   const results = useMemo(() => {
@@ -72,8 +72,6 @@ export default function GlobalSearch() {
   const onSelect = (name) => {
     setQuery(name); // autofill input with selected value
     setOpen(false);
-    // TODO: optionally navigate to results
-    // console.log('Clinics search select:', name);
   };
 
   const onKeyDown = (e) => {

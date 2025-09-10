@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout } = useAuth();
@@ -91,17 +91,17 @@ const Header = () => {
                       <svg className="w-4 h-4 ml-1 inline-block text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
                     </button>
                     {loginOpen && (
-                      <div role="menu" className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
-                        <Link to="/login" onClick={()=>setLoginOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                          <User className="w-4 h-4 text-gray-500" />
+                      <div role="menu" className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50 p-2 space-y-2">
+                        <Link to="/login" onClick={()=>setLoginOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-green-50 text-green-800 hover:bg-green-100">
+                          <User className="w-4 h-4 text-green-600" />
                           <span>Patient Login</span>
                         </Link>
-                        <Link to="/doctor-login" onClick={()=>setLoginOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                          <Stethoscope className="w-4 h-4 text-gray-500" />
+                        <Link to="/doctor-login" onClick={()=>setLoginOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-blue-50 text-blue-800 hover:bg-blue-100">
+                          <Stethoscope className="w-4 h-4 text-blue-600" />
                           <span>Doctor Login</span>
                         </Link>
-                        <Link to="/clinic-login" onClick={()=>setLoginOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                          <Hospital className="w-4 h-4 text-gray-500" />
+                        <Link to="/clinic-login" onClick={()=>setLoginOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-purple-50 text-purple-800 hover:bg-purple-100">
+                          <Hospital className="w-4 h-4 text-purple-600" />
                           <span>Clinic Login</span>
                         </Link>
                       </div>
@@ -290,4 +290,4 @@ const Header = () => {
   );
 };
 
-export default Header; 
+export default Header;

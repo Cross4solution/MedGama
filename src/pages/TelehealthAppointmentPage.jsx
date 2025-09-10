@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import Header from '../components/Header';
+import { Header } from '../components/layout';
 
 export default function TelehealthAppointmentPage() {
   const { formatCurrency, country } = useAuth();

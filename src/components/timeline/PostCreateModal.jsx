@@ -27,6 +27,7 @@ export default function PostCreateModal({ open, onClose, user, onPost }) {
 
   const avatar = '/images/portrait-candid-male-doctor_720.jpg';
   const displayName = user?.name || 'Guest';
+  const specialty = user?.specialty || user?.dept || 'Doctor';
 
   function handlePost() {
     const payload = { text, createdAt: new Date().toISOString(), author: user };
@@ -68,9 +69,9 @@ export default function PostCreateModal({ open, onClose, user, onPost }) {
               <img src={avatar} alt={displayName} className="w-10 h-10 rounded-full object-cover border" />
               <div>
                 <div className="text-sm font-medium text-gray-900">{displayName}</div>
-                <button className="inline-flex items-center gap-1 text-xs text-gray-600 border px-2 py-1 rounded-md hover:bg-gray-50">
-                  Friends <ChevronDown className="w-3.5 h-3.5" />
-                </button>
+                <span className="inline-flex items-center gap-1 text-xs text-teal-800 bg-teal-50 border border-teal-100 px-2 py-1 rounded-md">
+                  {specialty}
+                </span>
               </div>
             </div>
           </div>
@@ -88,24 +89,31 @@ export default function PostCreateModal({ open, onClose, user, onPost }) {
 
           {/* Add to your post */}
           <div className="px-4 sm:px-5 pt-2 pb-4">
-            <div className="rounded-xl border bg-white">
+            <div className="rounded-2xl border bg-white">
               <div className="px-4 py-3 text-sm text-gray-600 border-b">Add to your post</div>
-              <div className="flex items-center gap-3 px-3 py-2">
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-                  <Image className="w-5 h-5 text-emerald-600" /> Photo/video
-                </button>
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-                  <Users className="w-5 h-5 text-sky-600" /> Tag people
-                </button>
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-                  <Smile className="w-5 h-5 text-amber-500" /> Feeling/activity
-                </button>
-                <button className="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-                  <MapPin className="w-5 h-5 text-rose-500" /> Check in
-                </button>
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-                  <ImagePlay className="w-5 h-5 text-teal-600" /> GIF
-                </button>
+              <div className="p-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+                  <button className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add photo or video">
+                    <span className="w-6 h-6 grid place-items-center rounded bg-emerald-50"><Image className="w-4 h-4 text-emerald-600" /></span>
+                    <span className="text-sm">Photo/video</span>
+                  </button>
+                  <button className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Tag people">
+                    <span className="w-6 h-6 grid place-items-center rounded bg-sky-50"><Users className="w-4 h-4 text-sky-600" /></span>
+                    <span className="text-sm">Tag people</span>
+                  </button>
+                  <button className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add feeling or activity">
+                    <span className="w-6 h-6 grid place-items-center rounded bg-amber-50"><Smile className="w-4 h-4 text-amber-500" /></span>
+                    <span className="text-sm">Feeling/activity</span>
+                  </button>
+                  <button className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Check in">
+                    <span className="w-6 h-6 grid place-items-center rounded bg-rose-50"><MapPin className="w-4 h-4 text-rose-500" /></span>
+                    <span className="text-sm">Check in</span>
+                  </button>
+                  <button className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add GIF">
+                    <span className="w-6 h-6 grid place-items-center rounded bg-teal-50"><ImagePlay className="w-4 h-4 text-teal-600" /></span>
+                    <span className="text-sm">GIF</span>
+                  </button>
+                </div>
               </div>
             </div>
 

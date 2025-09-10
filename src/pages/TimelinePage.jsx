@@ -16,9 +16,9 @@ import {
   Bell,
   User
 } from 'lucide-react';
-import Header from '../components/Header';
+import { Header } from '../components/layout';
 import { useLocation } from 'react-router-dom';
-import TimelineFeed from '../components/TimelineFeed';
+import { TimelineFeed } from '../components/timeline';
 import { useAuth } from '../context/AuthContext';
 const MediTravelTimeline = () => {
   const { user } = useAuth();

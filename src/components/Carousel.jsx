@@ -6,12 +6,16 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 // - renderItem: (item, index) => ReactNode
 // - slidesToShow: { base: number, sm?: number, lg?: number }
 // - className?: string
-export default function Carousel({ items = [], renderItem, slidesToShow = { base: 1, sm: 2, lg: 4 }, className = '' }) {
+// - autoPlay?: boolean
+// - autoInterval?: number (ms)
+export default function Carousel({ items = [], renderItem, slidesToShow = { base: 1, sm: 2, lg: 4 }, className = '', autoPlay = false, autoInterval = 5000 }) {
   const [current, setCurrent] = useState(0); // page index
   const [visible, setVisible] = useState(slidesToShow.base || 1);
   const containerRef = useRef(null);
   const touchStartX = useRef(null);
   const touchDeltaX = useRef(0);
+  const autoTimer = useRef(null);
+  const hovered = useRef(false);
 
   // Responsive breakpoint handling
   useEffect(() => {
@@ -35,6 +39,18 @@ export default function Carousel({ items = [], renderItem, slidesToShow = { base
   const goTo = (idx) => setCurrent(Math.max(0, Math.min(idx, maxIndex)));
   const next = () => goTo(current + 1);
   const prev = () => goTo(current - 1);
+
+  // Autoplay
+  useEffect(() => {
+    if (!autoPlay || maxIndex === 0) return;
+    clearInterval(autoTimer.current);
+    autoTimer.current = setInterval(() => {
+      if (!hovered.current) {
+        setCurrent((c) => (c >= maxIndex ? 0 : c + 1));
+      }
+    }, Math.max(1500, autoInterval));
+    return () => clearInterval(autoTimer.current);
+  }, [autoPlay, autoInterval, maxIndex]);
 
   // Calculate transform: shift by 1-item width (100/visible)% per step
   const translatePct = current * (100 / Math.max(1, visible));
@@ -60,7 +76,7 @@ export default function Carousel({ items = [], renderItem, slidesToShow = { base
   };
 
   return (
-    <div className={`relative ${className}`} ref={containerRef}>
+    <div className={`relative ${className}`} ref={containerRef} onMouseEnter={() => { hovered.current = true; }} onMouseLeave={() => { hovered.current = false; }}>
       {/* Track */}
       <div
         className="overflow-hidden cursor-grab active:cursor-grabbing select-none"

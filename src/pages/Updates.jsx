@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import TimelineShareBox from '../components/TimelineShareBox';
-import TimelineFeed from '../components/TimelineFeed';
+import { TimelineShareBox, TimelineFeed } from '../components/timeline';
 import { useAuth } from '../context/AuthContext';
-import Header from '../components/Header';
+import { Header } from '../components/layout';
 
 export default function Updates() {
   const { user } = useAuth();

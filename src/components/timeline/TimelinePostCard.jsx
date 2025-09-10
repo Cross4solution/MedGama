@@ -2,9 +2,9 @@ import React from 'react';
 import { Heart, MessageCircle, Share2, Clock } from 'lucide-react';
 import TimelineActionsRow from './TimelineActionsRow';
 import TimelineButton from './TimelineButton';
-import Badge from './Badge';
-import { toEnglishTimestamp } from '../utils/i18n';
-import { useAuth } from '../context/AuthContext';
+import Badge from '../Badge';
+import { toEnglishTimestamp } from '../../utils/i18n';
+import { useAuth } from '../../context/AuthContext';
 
 export default function TimelinePostCard({ post }) {
   const { user } = useAuth();

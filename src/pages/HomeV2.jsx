@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
-import Header from '../components/Header';
+import { Header } from '../components/layout';
 import TimelinePreview from '../components/TimelinePreview';
-import SearchSections from '../components/SearchSections';
+import { SearchSections } from '../components/search';
 import CoreBoxes from '../components/CoreBoxes';
 import Carousel from '../components/Carousel';
 
@@ -64,12 +64,15 @@ export default function HomeV2() {
       ) : (
         // Hero / Slogan for guests and non-patient roles
         <section className="relative">
-          <div
-            className="relative bg-cover bg-center"
-            style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
-          >
-            {/* Overlay for readability */}
-            <div className="absolute inset-0 bg-black/20 md:bg-black/25" aria-hidden="true" />
+          <div className="relative">
+            {/* Blurred background layer */}
+            <div
+              className="absolute inset-0 bg-cover bg-center filter blur-[2px] scale-105"
+              style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
+              aria-hidden="true"
+            />
+            {/* Overlay for readability (slightly more faded) */}
+            <div className="absolute inset-0 bg-black/35 md:bg-black/40" aria-hidden="true" />
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="grid grid-cols-1 gap-8 items-center">
                 <div>
@@ -106,13 +109,15 @@ export default function HomeV2() {
           <Carousel
             items={popularClinics}
             slidesToShow={{ base: 1, sm: 2, lg: 3 }}
+            autoPlay
+            autoInterval={4000}
             renderItem={(c) => (
               <div
                 className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-96 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300"
-                onClick={() => navigate('/clinic')}
+                onClick={() => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate('/clinic'); }}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/clinic'); } }}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate('/clinic'); } }}
               >
                 <div className="h-1/2 rounded-lg bg-gray-100 mb-3 overflow-hidden">
                   <img src={c.image} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
@@ -128,7 +133,7 @@ export default function HomeV2() {
                   <p className="mt-1 text-sm text-gray-600">{c.city} • {c.dept}</p>
                   <div className="mt-auto pt-3 flex items-center justify-between text-sm">
                     <span className="text-gray-500">{c.reviews} Reviews</span>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); navigate('/clinic'); }} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View Profile</button>
+                    <button type="button" onClick={(e) => { e.stopPropagation(); try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate('/clinic'); }} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View</button>
                   </div>
                 </div>
               </div>

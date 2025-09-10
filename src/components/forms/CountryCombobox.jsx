@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import countryCodes from '../data/countryCodes';
+import countryCodes from '../../data/countryCodes';
 
-export default function CountryCombobox({ options = [], value, onChange, placeholder = 'Select Country' }) {
+export default function CountryCombobox({ options = [], value, onChange, placeholder = 'Select Country', triggerClassName = '' }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const ref = useRef(null);
 
-  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
   // Alias eşleştirme: Türkçe veya yaygın kısaltmalar
   const aliases = useMemo(() => ({
@@ -65,7 +65,11 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
     <div className="relative" ref={ref}>
       <button
         type="button"
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow"
+        className={
+          triggerClassName && triggerClassName.length > 0
+            ? triggerClassName
+            : 'w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow'
+        }
         onClick={() => setOpen((o) => !o)}
       >
         {selectedLabel ? (

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 html {
-  /* Smooth page scrolling for anchor jumps and wheel/trackpad */
+  /* Yumuşak sayfa kaydırma (wheel hissini daha kontrollü algılatır) */
   scroll-behavior: smooth;
 }
 

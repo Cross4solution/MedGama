@@ -22,7 +22,7 @@ export default function SelectCombobox({
   const toOption = (opt) => (typeof opt === 'string' ? { label: opt, value: opt } : opt);
   const list = useMemo(() => options.map(toOption), [options]);
 
-  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
   const filtered = useMemo(() => {
     if (!searchable) return list;

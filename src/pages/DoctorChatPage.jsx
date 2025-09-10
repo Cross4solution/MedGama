@@ -1,5 +1,9 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import PatientLayout from '../components/PatientLayout';
+import ThreadsSidebar from 'components/chat/ThreadsSidebar';
+import ChatHeader from 'components/chat/ChatHeader';
+import ChatMessageList from 'components/chat/ChatMessageList';
+import ChatInput from 'components/chat/ChatInput';
 
 const DoctorChatPage = () => {
   const [message, setMessage] = useState('');
@@ -58,24 +62,10 @@ const DoctorChatPage = () => {
 
   return (
     <PatientLayout>
-      {/* Breadcrumb */}
-      <div className="bg-white border-b">
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3`}>
-          <nav className="flex text-sm text-gray-500">
-            <a href="#" className="hover:text-gray-700">Home</a>
-            <span className="mx-2">›</span>
-            <a href="#" className="hover:text-gray-700">Clinics</a>
-            <span className="mx-2">›</span>
-            <a href="#" className="hover:text-gray-700">Anadolu Health Center</a>
-            <span className="mx-2">›</span>
-            <span className="text-gray-900">Message</span>
-          </nav>
-        </div>
-      </div>
 
       {/* Doctor Info Header */}
       <div className="bg-white border-b">
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4`}>
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3`}>
           <div className="flex items-center">
                          <div className="w-14 h-14 rounded-full mr-4 overflow-hidden bg-gray-100">
                <img 
@@ -103,195 +93,29 @@ const DoctorChatPage = () => {
       <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6`}>
         <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
           {/* Threads Sidebar */}
-          <aside className="hidden lg:block w-full lg:col-span-2 bg-white border rounded-lg overflow-hidden">
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Mesajlar</h2>
-                  <p className="text-sm text-gray-500">Hasta mesajlarını yönetin</p>
-                </div>
-                <button className="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
-                  <span className="text-base leading-none">＋</span>
-                  Yeni Mesaj
-                </button>
-              </div>
-              <div className="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 absolute left-3 top-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
-                <input type="text" placeholder="Mesajlarda ara..." className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-              </div>
-              <div className="mt-3 flex items-center gap-2 flex-wrap">
-                {['Tümü','WhatsApp','Facebook','Web Form','Chat'].map((t)=> (
-                  <button
-                    key={t}
-                    onClick={()=>setChannelFilter(t)}
-                    className={`px-2 py-1 border rounded-lg text-xs ${channelFilter===t ? 'bg-blue-50 border-blue-300 text-blue-600' : 'text-gray-700 hover:bg-gray-50'}`}
-                  >{t}</button>
-                ))}
-              </div>
-            </div>
-            <div className="overflow-y-auto max-h-[520px] divide-y">
-              {filteredThreads.map((t) => (
-                <div key={t.id} className={`p-4 hover:bg-gray-50 cursor-pointer ${activeThreadId===t.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`} onClick={()=>handleSelectThread(t.id)}>
-                  <div className="flex items-start gap-3">
-                    <div className="relative w-8 h-8 rounded-full mr-4 overflow-hidden bg-gray-100">
-                      <img src={t.avatar} alt="avatar" className="w-full h-full object-cover" loading="lazy" />
-                      <span className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 ${t.online ? 'bg-green-500' : 'bg-gray-400'} rounded-full border-2 border-white`}></span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <h4 className="font-medium text-gray-900 truncate text-sm lg:text-base">{t.name}</h4>
-                        <span className="text-xs text-gray-500">{t.when}</span>
-                      </div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="inline-flex items-center gap-1 rounded-full border bg-gray-100 border-gray-200 h-6 px-2 text-xs">{t.channel}</span>
-                        {t.tags.map(tag => (
-                          <span key={tag} className="text-xs px-2 py-0.5 rounded-full border bg-gray-50 text-gray-700">{tag}</span>
-                        ))}
-                      </div>
-                      <p className="text-xs lg:text-sm text-gray-600 truncate">{t.last}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </aside>
+          <ThreadsSidebar
+            threads={filteredThreads}
+            channelFilter={channelFilter}
+            onChannelChange={setChannelFilter}
+            activeThreadId={activeThreadId}
+            onSelectThread={handleSelectThread}
+          />
 
           {/* Chat Area */}
           <div className="lg:col-span-3">
             <div className="bg-white rounded-lg shadow-sm border h-[600px] flex flex-col">
               {/* Chat Header */}
-              <div className="flex items-center justify-between p-4 border-b bg-gray-50 rounded-t-lg">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full mr-3 overflow-hidden bg-gray-100">
-                    <img 
-                      src={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'} 
-                      alt={activeContact?.name || 'Contact'} 
-                      className="w-full h-full object-cover"
-                      style={{ objectPosition: 'center 20%' }}
-                      loading="lazy"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">{activeContact?.name || 'Contact'}</h3>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      {activeContact?.channel && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border bg-white text-gray-700">
-                          {activeContact.channel}
-                        </span>
-                      )}
-                      <span>{activeContact?.online ? 'Online' : 'Offline'}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {/* Video Call (primary) */}
-                  <button
-                    aria-label="Start video call"
-                    className="bg-blue-600 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-blue-700 shadow-sm hover:shadow-md transition-all"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
-                  </button>
-                  {/* Phone (secondary) */}
-                  <button
-                    aria-label="Call"
-                    className="rounded-full w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.89.37 1.76.73 2.57a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.51-1.25a2 2 0 0 1 2.11-.45c.81.36 1.68.61 2.57.73A2 2 0 0 1 22 16.92z"/></svg>
-                  </button>
-                </div>
-              </div>
+              <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} />
 
               {/* Messages */}
-              <div className="flex-1 p-4 overflow-y-auto space-y-4">
-                {messages.map((msg) => (
-                  <div key={msg.id} className={`flex ${msg.sender === 'doctor' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`flex items-start max-w-xs lg:max-w-md ${msg.sender === 'doctor' ? 'flex-row-reverse' : ''}`}>
-                      {msg.sender === 'patient' && (
-                        <div className="w-10 h-10 rounded-full mr-2 flex-shrink-0 overflow-hidden bg-gray-100">
-                          <img 
-                            src={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'} 
-                            alt={activeContact?.name || 'Contact'} 
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            style={{ objectPosition: 'center 20%' }}
-                          />
-                        </div>
-                      )}
-                      {msg.sender === 'doctor' && (
-                        <div className="w-10 h-10 rounded-full ml-2 flex-shrink-0 overflow-hidden bg-gray-100">
-                          <img
-                            src="/images/portrait-candid-male-doctor_720.jpg"
-                            alt="You"
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            style={{ objectPosition: 'center 20%' }}
-                          />
-                        </div>
-                      )}
-                      <div className={`rounded-lg px-4 py-2 ${
-                        msg.sender === 'doctor' 
-                          ? 'bg-blue-600 text-white' 
-                          : 'bg-gray-100 text-gray-900'
-                      }`}>
-                        <p className="text-sm whitespace-pre-line">{msg.text}</p>
-                        <p className={`text-[11px] mt-1 flex items-center gap-2 ${
-                          msg.sender === 'doctor' ? 'text-blue-100' : 'text-gray-500'
-                        }`}>
-                          <span>{msg.time}</span>
-                          {msg.sender === 'patient' && (
-                            <span className="inline-flex items-center gap-1">
-                              {msg.status === 'sent' && <span title="Sent">✓</span>}
-                              {msg.status === 'delivered' && <span title="Delivered">✓✓</span>}
-                              {msg.status === 'read' && <span title="Read" className="text-teal-500">✓✓</span>}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ChatMessageList
+                messages={messages}
+                leftAvatar={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                rightAvatar={'/images/portrait-candid-male-doctor_720.jpg'}
+              />
 
               {/* Message Input */}
-              <div className="p-4 border-t bg-white rounded-b-lg">
-                <div className="flex items-center space-x-2">
-                  <button aria-label="Attach file" className="text-gray-600 hover:text-gray-800 bg-gray-50 border border-gray-200 rounded-lg p-2 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05 12 20.5a6 6 0 0 1-8.49-8.49l10-10a4 4 0 0 1 5.66 5.66L7.05 20.79"/></svg>
-                  </button>
-                  <button aria-label="Insert image" className="text-gray-600 hover:text-gray-800 bg-gray-50 border border-gray-200 rounded-lg p-2 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5a2 2 0 0 0-3 0L9 17"/></svg>
-                  </button>
-                  <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Type your message..."
-                    className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    className="bg-blue-600 text-white p-2 rounded-xl border border-blue-700/20 hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200"
-                    aria-label="Send message"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9 22 2z"/></svg>
-                  </button>
-                </div>
-                <div className="flex items-center space-x-2 sm:space-x-3 mt-3">
-                  <button className="text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-sm px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    Request Appointment
-                  </button>
-                  <button className="text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-sm px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V7L14 2H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2z"/><path d="M14 2v6h6"/></svg>
-                    Share File
-                  </button>
-                  <button className="text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-sm px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
-                    Video Call
-                  </button>
-                </div>
-              </div>
+              <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} />
             </div>
           </div>
 

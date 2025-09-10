@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Image, Folder } from 'lucide-react';
 import TimelineActionsRow from './TimelineActionsRow';
 import TimelineButton from './TimelineButton';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import PostCreateModal from './PostCreateModal';
 
 export default function TimelineShareBox() {
@@ -14,7 +14,6 @@ export default function TimelineShareBox() {
 
   function handlePost(newPost) {
     // TODO: integrate with timeline data store
-    // For now just log
     // eslint-disable-next-line no-console
     console.log('New post:', newPost);
   }
@@ -52,7 +51,7 @@ export default function TimelineShareBox() {
             </button>
           </>
         }
-        right={<TimelineButton onClick={() => setOpen(true)} className="w-full sm:w-auto">Share</TimelineButton>}
+        right={<TimelineButton onClick={() => setOpen(true)} className="w-full sm:w-auto">Post</TimelineButton>}
       />
 
       <PostCreateModal open={open} onClose={() => setOpen(false)} user={user} onPost={handlePost} />

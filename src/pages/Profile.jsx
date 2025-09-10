@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import countriesEurope from '../data/countriesEurope';
+import CountryCombobox from '../components/forms/CountryCombobox';
 import countryCodes from '../data/countryCodes';
 import { User, Shield, Bell, Lock, Globe, Link as LinkIcon, ChevronRight, Eye, EyeOff } from 'lucide-react';
-import Header from '../components/Header';
+import { Header } from '../components/layout';
+import PatientNotify from '../components/notifications/PatientNotify';
 
 export default function Profile() {
   const { user, country, login } = useAuth();
@@ -19,6 +21,8 @@ export default function Profile() {
     return entry ? entry[0] : '';
   }, [country]);
   const [countryName, setCountryName] = useState(initialCountryName);
+  const fileInputRef = useRef(null);
+  const [avatarFileName, setAvatarFileName] = useState('');
 
   // Mock preferences (persist localStorage)
   const loadPrefs = () => {
@@ -31,7 +35,7 @@ export default function Profile() {
   const [oldPwd, setOldPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
   const [newPwd2, setNewPwd2] = useState('');
-  const [twoFA, setTwoFA] = useState(!!prefs.twoFA);
+  // 2FA kaldırıldı
   const [showOldPwd, setShowOldPwd] = useState(false);
   const [showNewPwd, setShowNewPwd] = useState(false);
   const [showNewPwd2, setShowNewPwd2] = useState(false);
@@ -51,7 +55,7 @@ export default function Profile() {
     return (
       <div className="max-w-6xl mx-auto px-4 py-10">
         <h1 className="text-xl font-semibold text-gray-900">Profile</h1>
-        <p className="mt-2 text-gray-600">Lütfen giriş yapın.</p>
+        <p className="mt-2 text-gray-600">Please sign in.</p>
       </div>
     );
   }
@@ -69,7 +73,7 @@ export default function Profile() {
     e.preventDefault();
     if (newPwd.length < 6) return alert('Yeni şifre en az 6 karakter olmalı.');
     if (newPwd !== newPwd2) return alert('Yeni şifreler eşleşmiyor.');
-    const next = { ...loadPrefs(), twoFA };
+    const next = { ...loadPrefs() };
     savePrefs(next);
     setOldPwd(''); setNewPwd(''); setNewPwd2('');
     alert('Güvenlik ayarları kaydedildi. (Demo)');
@@ -117,21 +121,21 @@ export default function Profile() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">Settings</h1>
-          <p className="text-sm text-gray-600">Hesabını, güvenliği ve tercihlerini yönet.</p>
+          <p className="text-sm text-gray-600">Manage your account, security and preferences.</p>
         </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[260px,1fr] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[260px,1fr] gap-8">
         {/* Left nav */}
         <aside className="space-y-2">
-          <NavItem id="account" icon={User} title="Account" desc="Profil, ülke ve görünüm" />
-          <NavItem id="security" icon={Shield} title="Security" desc="Şifre ve 2FA" />
-          <NavItem id="notifications" icon={Bell} title="Notifications" desc="E-posta ve push" />
-          <NavItem id="privacy" icon={Lock} title="Privacy" desc="Gizlilik ve veri" />
-          <NavItem id="connections" icon={LinkIcon} title="Connections" desc="Bağlı hesaplar" />
+          <NavItem id="account" icon={User} title="Account" desc="Profile, country and appearance" />
+          <NavItem id="security" icon={Shield} title="Security" desc="Password" />
+          <NavItem id="notifications" icon={Bell} title="Notifications" desc="Patient notifications" />
+          <NavItem id="privacy" icon={Lock} title="Privacy" desc="Privacy and data" />
+          <NavItem id="connections" icon={LinkIcon} title="Connections" desc="Linked accounts" />
         </aside>
 
         {/* Right content */}
-        <section className="space-y-6">
+        <section className="space-y-8">
           {active === 'account' && (
             <form onSubmit={saveAccount} className="space-y-6">
               <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -143,15 +147,32 @@ export default function Profile() {
                     className="w-16 h-16 rounded-full object-cover border"
                   />
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Avatar URL</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Profile photo</label>
                     <input
-                      type="url"
-                      value={avatar}
-                      onChange={(e) => setAvatar(e.target.value)}
-                      placeholder="https://..."
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files && e.target.files[0];
+                        if (!file) return;
+                        setAvatarFileName(file.name);
+                        const reader = new FileReader();
+                        reader.onload = (ev) => setAvatar(String(ev.target?.result || ''));
+                        reader.readAsDataURL(file);
+                      }}
+                      className="hidden"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Görseli URL ile güncelleyebilirsin. (Demo)</p>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-3 h-10 inline-flex items-center border border-gray-300 rounded-lg text-sm bg-white hover:bg-gray-50"
+                      >
+                        Choose file
+                      </button>
+                      <span className="text-sm text-gray-600 truncate max-w-[240px]">{avatarFileName || 'No file selected'}</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Choose an image file to set your profile picture. (Stored locally for demo)</p>
                   </div>
                 </div>
               </div>
@@ -164,22 +185,20 @@ export default function Profile() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     maxLength={30}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                    placeholder="Adınız"
+                    className="w-full border border-gray-300 rounded-lg px-3 text-sm h-10"
+                    placeholder="Your name"
                   />
-                  <p className="mt-1 text-xs text-gray-500">{Math.max(0, 30 - (name?.length || 0))} karakter kaldı</p>
+                  <p className="mt-1 text-xs text-gray-500">{Math.max(0, 30 - (name?.length || 0))} characters left</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                  <select
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+                  <CountryCombobox
+                    options={countriesEurope}
                     value={countryName}
-                    onChange={(e)=> setCountryName(e.target.value)}
-                  >
-                    {countriesEurope.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                    onChange={setCountryName}
+                    placeholder="Select Country"
+                    triggerClassName="w-full border border-gray-300 rounded-lg px-3 text-sm bg-white h-10 flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow"
+                  />
                 </div>
               </div>
 
@@ -253,14 +272,6 @@ export default function Profile() {
                   </div>
                 </div>
               </div>
-              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                <h2 className="text-base font-semibold text-gray-900 mb-4">Two‑Factor Authentication</h2>
-                <label className="inline-flex items-center gap-2">
-                  <input type="checkbox" checked={twoFA} onChange={(e)=>setTwoFA(e.target.checked)} className="rounded border-gray-300" />
-                  <span className="text-sm text-gray-700">Enable 2FA</span>
-                </label>
-                <p className="text-xs text-gray-500 mt-2">Demo: Gerçek SMS/Authenticator entegrasyonu yok.</p>
-              </div>
               <div className="flex justify-end">
                 <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save security</button>
               </div>
@@ -268,47 +279,18 @@ export default function Profile() {
           )}
 
           {active === 'notifications' && (
-            <form onSubmit={saveNotifications} className="space-y-6">
+            <div className="space-y-4">
               <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                <h2 className="text-base font-semibold text-gray-900 mb-4">Email</h2>
-                <label className="inline-flex items-center gap-2">
-                  <input type="checkbox" checked={emailNoti} onChange={(e)=>setEmailNoti(e.target.checked)} className="rounded border-gray-300" />
-                  <span className="text-sm text-gray-700">Receive email updates</span>
-                </label>
+                <h2 className="text-base font-semibold text-gray-900 mb-4">Patient Notifications</h2>
+                <PatientNotify />
               </div>
-              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                <h2 className="text-base font-semibold text-gray-900 mb-4">Push</h2>
-                <label className="inline-flex items-center gap-2">
-                  <input type="checkbox" checked={pushNoti} onChange={(e)=>setPushNoti(e.target.checked)} className="rounded border-gray-300" />
-                  <span className="text-sm text-gray-700">Receive push notifications</span>
-                </label>
-              </div>
-              <div className="flex justify-end">
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save notifications</button>
-              </div>
-            </form>
+            </div>
           )}
 
           {active === 'privacy' && (
-            <form onSubmit={savePrivacy} className="space-y-6">
-              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                <h2 className="text-base font-semibold text-gray-900 mb-4">Profile Visibility</h2>
-                <label className="inline-flex items-center gap-2">
-                  <input type="checkbox" checked={profilePublic} onChange={(e)=>setProfilePublic(e.target.checked)} className="rounded border-gray-300" />
-                  <span className="text-sm text-gray-700">Public profile</span>
-                </label>
-              </div>
-              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                <h2 className="text-base font-semibold text-gray-900 mb-4">Data Sharing</h2>
-                <label className="inline-flex items-center gap-2">
-                  <input type="checkbox" checked={dataShare} onChange={(e)=>setDataShare(e.target.checked)} className="rounded border-gray-300" />
-                  <span className="text-sm text-gray-700">Allow anonymized analytics</span>
-                </label>
-              </div>
-              <div className="flex justify-end">
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save privacy</button>
-              </div>
-            </form>
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <p className="text-sm text-gray-600">Privacy settings are not available at the moment.</p>
+            </div>
           )}
 
           {active === 'connections' && (
@@ -316,7 +298,7 @@ export default function Profile() {
               <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm flex items-center justify-between">
                 <div>
                   <h2 className="text-base font-semibold text-gray-900">Google</h2>
-                  <p className="text-sm text-gray-600">Hesabını Google ile bağla veya bağlantıyı kes.</p>
+                  <p className="text-sm text-gray-600">Link or unlink your account with Google.</p>
                 </div>
                 <button
                   type="button"
@@ -326,7 +308,7 @@ export default function Profile() {
                   {googleLinked ? 'Disconnect' : 'Connect'}
                 </button>
               </div>
-              <p className="text-xs text-gray-500">Demo: Gerçek OAuth akışı yok; sadece tercih kaydedilir.</p>
+              <p className="text-xs text-gray-500">Demo: No real OAuth flow; only a preference is stored.</p>
             </div>
           )}
         </section>

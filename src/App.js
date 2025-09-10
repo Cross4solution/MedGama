@@ -18,7 +18,7 @@ import ForClinicsPage from './pages/ForClinicsPage';
 import VascoAIPage from './pages/VascoAIPage';
 import ContactPage from './pages/ContactPage';
 import CookieBanner from './components/CookieBanner';
-import Footer from './components/Footer';
+import { Footer } from './components/layout';
 import { AuthProvider } from './context/AuthContext';
 import DoctorLogin from './pages/DoctorLogin';
 import ClinicLogin from './pages/ClinicLogin';
@@ -34,14 +34,18 @@ function AppContent() {
   const { user } = useAuth();
   const hasSidebar = user && user.role !== 'patient';
   
-  // Opsiyonel tekerlek kaydırma override'ı: varsayılan olarak KAPALI
-  // Etkinleştirmek için konsolda: window.__SCROLL_OVERRIDE = true; window.__SCROLL_FACTOR = 2.0
+  // Opsiyonel tekerlek kaydırma override'ı: varsayılan AÇIK (çok hafif yavaşlatılmış, inertiasız)
+  // Konsoldan kapatılabilir: window.__SCROLL_OVERRIDE = false
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (window.__SCROLL_OVERRIDE !== true) return; // default off
+    // Varsayılan: override açık (kullanıcı isterse kapatabilir)
+    if (typeof window['__SCROLL_OVERRIDE'] === 'undefined') {
+      window['__SCROLL_OVERRIDE'] = true;
+    }
+    if (window['__SCROLL_OVERRIDE'] !== true) return;
 
-    if (typeof window.__SCROLL_FACTOR !== 'number') {
-      window.__SCROLL_FACTOR = 2.0;
+    if (typeof window['__SCROLL_FACTOR'] !== 'number') {
+      window['__SCROLL_FACTOR'] = 0.98; // normalden azıcık yavaş
     }
 
     const isScrollable = (el) => {
@@ -51,6 +55,10 @@ function AppContent() {
       return canScroll && el.scrollHeight > el.clientHeight;
     };
 
+    const scroller = document.scrollingElement || document.documentElement;
+    let rafId = null;
+    // İnertiasız kullanım için rAF döngüsü kaldırıldı
+
     const handler = (e) => {
       const path = e.composedPath ? e.composedPath() : [];
       for (const node of path) {
@@ -59,20 +67,37 @@ function AppContent() {
         }
       }
       e.preventDefault();
-      const baseDelta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
-      const factor = (typeof window !== 'undefined' && typeof window.__SCROLL_FACTOR === 'number')
-        ? window.__SCROLL_FACTOR
-        : 2.0;
-      const scroller = document.scrollingElement || document.documentElement;
-      scroller.scrollBy({ top: baseDelta * factor, behavior: 'auto' }); // smooth yerine auto
+      // deltaMode: 0=pixel, 1=line, 2=page.
+      let baseDelta = e.deltaMode === 1 ? (e.deltaY * 16) : e.deltaY;
+      // Aşırı büyük delta’ları kıs: tek hamlede aşırı uçuşu engelle
+      const MAX_STEP = 100;
+      if (baseDelta > MAX_STEP) baseDelta = MAX_STEP;
+      if (baseDelta < -MAX_STEP) baseDelta = -MAX_STEP;
+      const factor = (typeof window !== 'undefined' && typeof window['__SCROLL_FACTOR'] === 'number')
+        ? window['__SCROLL_FACTOR']
+        : 0.95;
+      // İnertiasız: anında uygula, kullanıcı bırakınca durur
+      scroller.scrollBy({ top: baseDelta * factor, behavior: 'auto' });
 
-      if (typeof window !== 'undefined' && window.__SCROLL_DEBUG) {
+      if (typeof window !== 'undefined' && window['__SCROLL_DEBUG']) {
         console.info('[ScrollDebug] deltaMode:', e.deltaMode, 'baseDelta:', baseDelta, 'factor:', factor);
       }
     };
     window.addEventListener('wheel', handler, { passive: false });
-    return () => window.removeEventListener('wheel', handler);
+    return () => {
+      window.removeEventListener('wheel', handler);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
+  
+  // Route değişiminde sayfayı en üste al
+  React.useEffect(() => {
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
   
   // Cookie banner: auth sayfalarında gösterme
   const hideCookieOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];

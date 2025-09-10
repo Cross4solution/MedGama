@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import countryCities from '../data/countryCities';
-import CountryCombobox from './CountryCombobox';
-import CityCombobox from './CityCombobox';
-// SelectCombobox kaldırıldı; semptom ve uzmanlık text input + autocomplete olarak düzenlendi
+import countryCities from '../../data/countryCities';
+import CountryCombobox from '../forms/CountryCombobox.jsx';
+import CityCombobox from '../forms/CityCombobox.jsx';
 
 export default function CustomSearch() {
   const [country, setCountry] = useState('');
@@ -12,8 +11,8 @@ export default function CustomSearch() {
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [loadingCities, setLoadingCities] = useState(false);
   const [allWorldCities, setAllWorldCities] = useState(null);
+  const loadRef = React.useRef(0);
 
-  // Bazı ülkeler için API eş-isimleri (alias) – daha geniş kapsama yardımcı olur
   const getCountryVariants = React.useCallback((name) => {
     const aliases = {
       'Czechia': ['Czech Republic'],
@@ -35,7 +34,6 @@ export default function CustomSearch() {
     return Array.from(new Set([...base, ...extra])).sort();
   }, [allWorldCities]);
   const specialties = ['ENT', 'Cardiology', 'Orthopedics', 'Dermatology', 'Ophthalmology', 'Plastic Surgery', 'Dentistry', 'Neurology', 'Gastroenterology'];
-  // Procedure list (EN) to surface alongside specialties in autocomplete
   const procedures = ['Rhinoplasty', 'Hip Replacement', 'Hair Transplant', 'Knee Replacement', 'LASIK', 'Dental Implant', 'Root Canal', 'Cataract Surgery'];
   const symptoms = ['Nasal congestion', 'Headache', 'Low back pain', 'Nausea', 'Toothache', 'Blurred vision', 'Acne', 'Varicose veins', 'Tinnitus'];
 
@@ -47,15 +45,14 @@ export default function CustomSearch() {
     console.log('Custom search:', { country, city, specialty, symptom });
   };
 
-  // Dünya şehirleri datasını lazy-load et (tek sefer)
   React.useEffect(() => {
     let cancelled = false;
     const load = async () => {
       try {
-        const mod = await import('../data/worldCities.min.json');
+        // @ts-ignore: dynamic JSON import in JS file (no resolveJsonModule)
+        const mod = await import('../../data/worldCities.min.json');
         if (!cancelled) setAllWorldCities(mod.default || mod);
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.warn('worldCities yüklenemedi, local countryCities ile devam');
       }
     };
@@ -63,91 +60,96 @@ export default function CustomSearch() {
     return () => { cancelled = true; };
   }, []);
 
-  // Şehirleri yükle: 1) Ücretsiz API (countriesnow) ile ülkenin TÜM şehirleri, 2) public ülke JSON, 3) worldCities (tamamı), 4) countryCities fallback
   React.useEffect(() => {
     setCitiesOptions([]);
     setCity('');
     if (!country) return;
     setLoadingCities(true);
-    const next = () => setLoadingCities(false);
-    try {
-      (async () => {
-        // 0) CountriesNow API: https://countriesnow.space/api/v0.1/countries/cities
-        try {
-          const variants = getCountryVariants(country);
-          for (const candidate of variants) {
-            const res = await fetch('https://countriesnow.space/api/v0.1/countries/cities', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ country: candidate }),
-            });
-            if (res.ok) {
-              const json = await res.json();
-              const arr = Array.from(new Set((json?.data || []).filter(Boolean))).sort();
-              if (arr.length) {
-                setCitiesOptions(arr);
-                next();
-                return;
-              }
-            }
-          }
-        } catch (_) { /* ignore and fallback */ }
 
-        // 1) Public ülke bazlı JSON: /cities/<Country>.json (isteğe bağlı - varsa yüklenir)
-        try {
-          const res = await fetch(`/data/world-cities/${encodeURIComponent(country)}.json`, { cache: 'force-cache' });
-          if (res.ok) {
-            const data = await res.json();
-            const arr = Array.from(new Set((Array.isArray(data) ? data : []).map((x) => (typeof x === 'string' ? x : x.city)).filter(Boolean))).sort();
-            if (arr.length) {
-              setCitiesOptions(arr);
-              next();
-              return;
-            }
-          }
-        } catch (_) { /* ignore and fallback */ }
+    const runId = ++loadRef.current; // geç gelen yanıtları iptal etmek için sürümleme
+    const abortCtrl = new AbortController();
 
-        // 2) worldCities (tamamı)
-        if (allWorldCities && Array.isArray(allWorldCities)) {
-          const filtered = allWorldCities
-            .filter((c) => c.country === country)
-            .map((c) => c.city);
-          if (filtered.length > 0) {
-            setCitiesOptions(Array.from(new Set(filtered)).sort());
-            next();
-            return;
-          }
+    const withTimeout = (promise, ms = 800) => {
+      return new Promise((resolve, reject) => {
+        const t = setTimeout(() => reject(new Error('timeout')), ms);
+        promise.then((v) => { clearTimeout(t); resolve(v); }).catch((e) => { clearTimeout(t); reject(e); });
+      });
+    };
+
+    const applyIfFresh = (arr) => {
+      if (loadRef.current !== runId) return false;
+      if (Array.isArray(arr) && arr.length) {
+        setCitiesOptions(Array.from(new Set(arr.filter(Boolean))).sort());
+        setLoadingCities(false);
+        return true;
+      }
+      return false;
+    };
+
+    (async () => {
+      // 1) Uzak API: ülke isim varyantlarını paralel dene, kısa timeout ile
+      try {
+        const variants = getCountryVariants(country);
+        const requests = variants.map((candidate) => withTimeout(
+          fetch('https://countriesnow.space/api/v0.1/countries/cities', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ country: candidate }),
+            signal: abortCtrl.signal,
+          }).then(async (res) => {
+            if (!res.ok) throw new Error('bad response');
+            const json = await res.json();
+            return (json?.data || []).filter(Boolean);
+          })
+        , 900));
+
+        const settled = await Promise.allSettled(requests);
+        for (const s of settled) {
+          if (s.status === 'fulfilled' && applyIfFresh(s.value)) return;
         }
+      } catch (_) { /* ignore */ }
 
-        // 3) countryCities fallback
-        const fallback = countryCities[country] || [];
-        setCitiesOptions([...fallback].sort());
-        next();
-      })();
-    } finally {
-      // next() async blok içinde çağrılıyor
-    }
-  }, [country, allWorldCities]);
+      // 2) Public dosya: ülkeye özel JSON
+      try {
+        const res = await withTimeout(fetch(`/data/world-cities/${encodeURIComponent(country)}.json`, { cache: 'force-cache', signal: abortCtrl.signal }), 800);
+        if (res.ok) {
+          const data = await res.json();
+          const arr = (Array.isArray(data) ? data : []).map((x) => (typeof x === 'string' ? x : x.city));
+          if (applyIfFresh(arr)) return;
+        }
+      } catch (_) { /* ignore */ }
 
-  // Yardımcı: normalize (accent-insensitive) ve basit filtreleyici
-  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+      // 3) allWorldCities memory
+      if (allWorldCities && Array.isArray(allWorldCities)) {
+        const filtered = allWorldCities.filter((c) => c.country === country).map((c) => c.city);
+        if (applyIfFresh(filtered)) return;
+      }
+
+      // 4) Son çare: local dataset
+      const fallback = countryCities[country] || [];
+      applyIfFresh(fallback);
+    })();
+
+    return () => {
+      abortCtrl.abort();
+    };
+  }, [country, allWorldCities, getCountryVariants]);
+
+  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const filterOptions = (list, q) => {
     const n = normalize(q || '');
     if (!n) return [];
     return list.filter((x) => normalize(x).includes(n)).slice(0, 8);
   };
 
-  // OR mantığı: biri doluyken diğeri disable
   const disableSymptom = specialty.trim().length > 0;
   const disableSpecialty = symptom.trim().length > 0;
 
-  // Debounce edilmiş arama sorguları ve klavye navigasyonu state'leri
   const [symptomQuery, setSymptomQuery] = useState('');
   const [specialtyQuery, setSpecialtyQuery] = useState('');
   const [symptomActiveIndex, setSymptomActiveIndex] = useState(-1);
   const [specialtyActiveIndex, setSpecialtyActiveIndex] = useState(-1);
 
-  // Son token'ı çıkaran yardımcılar (comma-separated input desteği)
   const getLastToken = React.useCallback((s) => {
     if (!s) return '';
     const parts = s.split(',');
@@ -155,7 +157,7 @@ export default function CustomSearch() {
   }, []);
   const replaceLastToken = React.useCallback((s, token, keepTrailingComma = true) => {
     const parts = (s || '').split(',');
-    parts[parts.length - 1] = ` ${token}`; // boşlukla başlat, trim görüntüsünü korur
+    parts[parts.length - 1] = ` ${token}`;
     let out = parts.join(',').replace(/^\s+/, '');
     if (keepTrailingComma) {
       if (!out.trim().endsWith(',')) out = out.replace(/\s*$/, '') + ', ';
@@ -164,7 +166,6 @@ export default function CustomSearch() {
     }
     return out;
   }, []);
-  // Token yardımcıları: listele ve sil
   const listTokens = React.useCallback((s) => (s || '')
     .split(',')
     .map((x) => x.trim())
@@ -196,7 +197,7 @@ export default function CustomSearch() {
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="bg-white/95 backdrop-blur border border-gray-100 rounded-xl p-3 md:p-3 shadow-[0_6px_20px_-5px_rgba(28,106,131,0.18),0_2px_6px_-2px_rgba(2,6,23,0.12)] hover:shadow-[0_10px_30px_-10px_rgba(28,106,131,0.22),0_4px_12px_-3px_rgba(2,6,23,0.16)] focus-within:shadow-[0_12px_36px_-12px_rgba(28,106,131,0.28),0_6px_16px_-4px_rgba(2,6,23,0.2)] transition-shadow">
         <div className="grid gap-4 md:grid-cols-[10rem,10rem,1fr,auto,1fr,auto]">
-        {/* 1. Country (küçük) */}
+        {/* 1. Country */}
         <div className="max-w-40">
           <CountryCombobox
             options={countries}
@@ -206,7 +207,7 @@ export default function CustomSearch() {
           />
         </div>
 
-        {/* 2. City (dependent combobox) */}
+        {/* 2. City */}
         <div className="max-w-40">
           <CityCombobox
             options={country ? citiesOptions : []}
@@ -214,11 +215,12 @@ export default function CustomSearch() {
             onChange={setCity}
             disabled={!country}
             loading={loadingCities}
+            wheelFactor={0.6}
             placeholder="City"
           />
         </div>
 
-        {/* 3. Semptom (text + autocomplete) - Chip'leri bar içinde göster */}
+        {/* 3. Symptom */}
         <div className="relative">
           <div
             className={`border border-gray-300 rounded-lg px-2 py-1 text-base md:text-sm flex items-center flex-wrap gap-2 ${disableSymptom ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
@@ -246,10 +248,8 @@ export default function CustomSearch() {
               className={`flex-1 min-w-[8ch] border-0 outline-none px-1 py-1 text-base md:text-sm bg-transparent ${disableSymptom ? 'placeholder:text-gray-400' : ''}`}
               onKeyDown={(e) => {
                 if (disableSymptom) return;
-                // Add comma-separated tokens with Enter or comma
                 if ((e.key === 'Enter' || e.key === ',') && symptom.trim().length > 0) {
                   e.preventDefault();
-                  // Öneri seçiliyse onu uygula, değilse sadece virgül ekle
                   if (symptomActiveIndex >= 0 && symptomActiveIndex < symptomMatches.length) {
                     setSymptom((s) => replaceLastToken(s, symptomMatches[symptomActiveIndex], true));
                   } else {
@@ -287,7 +287,6 @@ export default function CustomSearch() {
               </button>
             )}
           </div>
-          {/* Autocomplete dropdown */}
           {symptom && !disableSymptom && symptomQuery.trim().length > 0 && symptomMatches.length > 0 && (
             <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow max-h-56 overflow-auto text-sm">
               {symptomMatches.map((s, idx) => (
@@ -306,10 +305,9 @@ export default function CustomSearch() {
           )}
         </div>
 
-        {/* OR label */}
         <div className="flex items-center justify-center text-gray-500">or</div>
 
-        {/* 4. Speciality (text + autocomplete) - Chip'leri bar içinde göster */}
+        {/* 4. Specialty */}
         <div className="relative">
           <div
             className={`border border-gray-300 rounded-lg px-2 py-1 text-base md:text-sm flex items-center flex-wrap gap-2 ${disableSpecialty ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
@@ -337,7 +335,6 @@ export default function CustomSearch() {
               className={`flex-1 min-w-[8ch] border-0 outline-none px-1 py-1 text-base md:text-sm bg-transparent ${disableSpecialty ? 'placeholder:text-gray-400' : ''}`}
               onKeyDown={(e) => {
                 if (disableSpecialty) return;
-                // Add comma-separated tokens with Enter or comma
                 if ((e.key === 'Enter' || e.key === ',') && specialty.trim().length > 0) {
                   e.preventDefault();
                   if (specialtyActiveIndex >= 0 && specialtyActiveIndex < specialtyMatches.length) {
@@ -377,7 +374,6 @@ export default function CustomSearch() {
               </button>
             )}
           </div>
-          {/* Autocomplete dropdown */}
           {specialty && !disableSpecialty && specialtyQuery.trim().length > 0 && specialtyMatches.length > 0 && (
             <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow max-h-56 overflow-auto text-sm">
               {specialtyMatches.map((s, idx) => (
@@ -396,7 +392,7 @@ export default function CustomSearch() {
           )}
         </div>
 
-        {/* 5. Search button (inline, sağda) */}
+        {/* 5. Search button */}
         <div className="flex md:block">
           <button
             type="submit"
@@ -411,8 +407,8 @@ export default function CustomSearch() {
           </button>
         </div>
       </div>
-      </div>
-      
+    </div>
+    
     </form>
   );
 }

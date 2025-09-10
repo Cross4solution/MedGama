@@ -14,7 +14,7 @@ export default function CityCombobox({
   const [query, setQuery] = useState('');
   const ref = useRef(null);
 
-  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
   const filtered = useMemo(() => {
     const q = normalize(query || '');

@@ -1,12 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Header from '../components/Header';
+import { Header } from '../components/layout';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import CountryCombobox from '../components/CountryCombobox';
-import SelectCombobox from '../components/SelectCombobox';
-import { Heart, MessageCircle, Search, MapPin, ArrowDownWideNarrow, Share2, Bookmark } from 'lucide-react';
 import countryCities from '../data/countryCities';
 import countryCodes from '../data/countryCodes';
+import TimelineFilterSidebar from 'components/timeline/TimelineFilterSidebar';
+import TimelineControls from 'components/timeline/TimelineControls';
+import ActiveFilterChips from 'components/timeline/ActiveFilterChips';
+import TimelineCard from 'components/timeline/TimelineCard';
+import SkeletonCard from 'components/timeline/SkeletonCard';
 
 // Basit mock feed üretici: guest için random, user için follow-first + location mix simülasyonu
 // Kapsamlı uzmanlık listesi (örnek, gerektiğinde daha da genişletilebilir)
@@ -92,122 +94,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
   return { items: paged, hasMore, total: filtered.length };
 }
 
-function SkeletonCard() {
-  return (
-    <div className="animate-pulse rounded-xl border bg-white shadow-sm overflow-hidden">
-      <div className="h-40 bg-gray-100" />
-      <div className="p-4 space-y-2">
-        <div className="h-4 bg-gray-100 rounded w-2/3" />
-        <div className="h-3 bg-gray-100 rounded w-full" />
-        <div className="h-3 bg-gray-100 rounded w-5/6" />
-        <div className="h-6 bg-gray-100 rounded w-1/3 mt-3" />
-        <div className="h-8 bg-gray-100 rounded w-1/2 ml-auto" />
-      </div>
-    </div>
-  );
-}
-
-function Card({ item, disabledActions, view = 'grid', onOpen }) {
-  const avatarUrl = item.avatar || '/images/portrait-candid-male-doctor_720.jpg';
-  return (
-    <article
-      className={`group rounded-2xl border border-gray-100 bg-white shadow-md hover:shadow-xl transition overflow-hidden cursor-pointer`}
-      onClick={onOpen}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter') onOpen(); }}
-   >
-      {/* Image section */}
-      {view === 'list' ? (
-        <div className="flex flex-col md:flex-row">
-          <div className="relative md:w-56 h-56 md:h-auto overflow-hidden">
-            <img src={item.img} alt={item.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/0 to-black/0" />
-            <div className="absolute top-3 right-3">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">{item.specialty}</span>
-            </div>
-          </div>
-          <div className="flex-1 p-5">
-            <div className="flex items-center gap-3">
-              <img src={avatarUrl} alt={item.title} className="w-10 h-10 rounded-full object-cover border" />
-              <div className="min-w-0">
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate" title={item.title}>{item.title}</h3>
-                <p className="text-xs text-gray-600 flex items-center gap-1 mt-0.5"><MapPin className="w-3.5 h-3.5 text-teal-600" /> {item.city}</p>
-              </div>
-            </div>
-            <p className="mt-3 text-[15px] leading-6 text-gray-800 line-clamp-3">{item.text}</p>
-            <div className="mt-4 flex items-center justify-between">
-              <div className="flex items-center gap-3 text-gray-500 text-xs">
-                <span className="inline-flex items-center gap-1" aria-label="likes"><Heart className="w-4 h-4" />{item.likes}</span>
-                <span className="inline-block w-1 h-1 rounded-full bg-gray-300" />
-                <span className="inline-flex items-center gap-1" aria-label="comments"><MessageCircle className="w-4 h-4" />{item.comments}</span>
-              </div>
-              <div className="flex items-center gap-1 bg-gray-50 rounded-full p-1 shadow-sm">
-                <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to like' : 'Like'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`} onClick={(e)=>e.stopPropagation()}>
-                  <Heart className="w-4 h-4" />
-                </button>
-                <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to comment' : 'Comment'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`} onClick={(e)=>e.stopPropagation()}>
-                  <MessageCircle className="w-4 h-4" />
-                </button>
-                <button type="button" aria-label="Share" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700" onClick={(e)=>e.stopPropagation()}>
-                  <Share2 className="w-4 h-4" />
-                </button>
-                <button type="button" aria-label="Save" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700" onClick={(e)=>e.stopPropagation()}>
-                  <Bookmark className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className={`relative h-60 overflow-hidden`}>
-            <img src={item.img} alt={item.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
-            <div className="absolute top-3 right-3">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                {item.specialty}
-              </span>
-            </div>
-          </div>
-          <div className="p-5">
-            <div className="flex items-center gap-3">
-              <img src={avatarUrl} alt={item.title} className="w-12 h-12 rounded-full object-cover border" />
-              <div className="min-w-0">
-                <h3 className="text-lg font-semibold text-gray-900 truncate" title={item.title}>{item.title}</h3>
-                <p className="text-xs text-gray-600 flex items-center gap-1 mt-0.5">
-                  <MapPin className="w-3.5 h-3.5 text-teal-600" /> {item.city}
-                </p>
-              </div>
-            </div>
-            <p className="mt-3 text-[15px] leading-6 text-gray-800 line-clamp-3">{item.text}</p>
-            <div className="mt-4 flex items-center justify-between">
-              <div className="flex items-center gap-3 text-gray-500 text-xs">
-                <span className="inline-flex items-center gap-1" aria-label="likes"><Heart className="w-4 h-4" />{item.likes}</span>
-                <span className="inline-block w-1 h-1 rounded-full bg-gray-300" />
-                <span className="inline-flex items-center gap-1" aria-label="comments"><MessageCircle className="w-4 h-4" />{item.comments}</span>
-              </div>
-              <div className="flex items-center gap-1 bg-gray-50 rounded-full p-1 shadow-sm">
-                <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to like' : 'Like'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`} onClick={(e)=>e.stopPropagation()}>
-                  <Heart className="w-4 h-4" />
-                </button>
-                <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to comment' : 'Comment'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`} onClick={(e)=>e.stopPropagation()}>
-                  <MessageCircle className="w-4 h-4" />
-                </button>
-                <button type="button" aria-label="Share" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700" onClick={(e)=>e.stopPropagation()}>
-                  <Share2 className="w-4 h-4" />
-                </button>
-                <button type="button" aria-label="Save" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700" onClick={(e)=>e.stopPropagation()}>
-                  <Bookmark className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-    </article>
-  );
-}
+// Card ve Skeleton bileşenleri ayrı dosyalara taşındı
 
 export default function ExploreTimeline() {
   const { user, country } = useAuth();
@@ -301,101 +188,51 @@ export default function ExploreTimeline() {
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Başlık + Sekmeler + Sıralama */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Explore Timeline</h1>
-              <p className="text-sm text-gray-600">{user ? 'Takip ettiklerin öncelikli, lokasyon önerileri karışık.' : 'Login olmadan rastgele içerikleri keşfet.'}</p>
-            </div>
-            <div className="hidden md:flex items-center gap-3">
-              <div className="relative">
-                <ArrowDownWideNarrow className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                <select value={sort} onChange={(e)=>setSort(e.target.value)} className="pl-9 pr-3 py-2 text-sm border rounded-lg bg-white">
-                  <option value="top">Top</option>
-                  <option value="recent">Recent</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-1 rounded-lg border border-gray-200 overflow-hidden">
-                <button onClick={()=>setView('list')} className={`px-2 py-1 text-sm ${view==='list' ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50'}`}>List</button>
-                <button onClick={()=>setView('grid')} className={`px-2 py-1 text-sm ${view==='grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50'}`}>Grid</button>
-              </div>
-              <button onClick={askGeo} className="text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50">Use my location</button>
-              {geo?.lat && <span className="text-xs text-gray-500">{geo.lat.toFixed(2)},{geo.lon.toFixed(2)}</span>}
-            </div>
-          </div>
-          {/* Sekmeler */}
-          <div className="mt-4 border-b">
-            <nav className="flex gap-2">
-              <button onClick={()=>setTab('for-you')} className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px ${tab==='for-you' ? 'border-teal-600 text-teal-700' : 'border-transparent text-gray-600 hover:text-gray-900'}`}>For You</button>
-              <button onClick={()=>setTab('latest')} className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px ${tab==='latest' ? 'border-teal-600 text-teal-700' : 'border-transparent text-gray-600 hover:text-gray-900'}`}>Latest</button>
-            </nav>
-          </div>
-        </div>
+        <TimelineControls
+          user={user}
+          sort={sort}
+          onSortChange={setSort}
+          view={view}
+          onViewChange={setView}
+          tab={tab}
+          onTabChange={setTab}
+          onUseLocation={askGeo}
+          geo={geo}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
           {/* Filters (LEFT) */}
-          <aside className="order-2 lg:order-1 space-y-4 lg:sticky lg:top-24 h-max">
-
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Search</h3>
-              <div className="relative">
-                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search in timeline..."
-                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Country</h3>
-              <CountryCombobox
-                options={countryOptions}
-                value={countryName}
-                onChange={(val)=>{
-                  if (val === 'Andorra') {
-                    const ok = window.confirm('Are you there now? Press OK to set Turkey.');
-                    if (ok) return setCountryName('Turkey');
-                  }
-                  setCountryName(val);
-                }}
-                placeholder="All countries"
-              />
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Specialization</h3>
-              <SelectCombobox
-                options={specialtyOptions}
-                value={specialty}
-                onChange={setSpecialty}
-                placeholder="All"
-                hideChevron
-                triggerClassName={`w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-left`}
-              />
-            </div>
-
-            {!user && (
-              <div className="bg-blue-50 border border-blue-100 text-blue-900 rounded-xl p-4 text-sm">
-                Login yaparsan like/comment/follow aktif olur ve takip ettiklerin öncelikli görünür.
-              </div>
-            )}
-          </aside>
+          <TimelineFilterSidebar
+            query={query}
+            onQueryChange={setQuery}
+            countryName={countryName}
+            onCountryChange={(val)=>{
+              if (val === 'Andorra') {
+                const ok = window.confirm('Are you there now? Press OK to set Turkey.');
+                if (ok) return setCountryName('Turkey');
+              }
+              setCountryName(val);
+            }}
+            specialty={specialty}
+            onSpecialtyChange={setSpecialty}
+            countryOptions={countryOptions}
+            specialtyOptions={specialtyOptions}
+            user={user}
+          />
 
           {/* Feed (RIGHT) */}
           <section className="order-1 lg:order-2">
             {/* Aktif filtre chipleri */}
-            <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-              {countryName && <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 border text-gray-700">Country: {countryName}<button onClick={()=>setCountryName('')} className="ml-1 text-gray-500 hover:text-gray-700">✕</button></span>}
-              {specialty && <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 border text-gray-700">Specialization: {specialty}<button onClick={()=>setSpecialty('')} className="ml-1 text-gray-500 hover:text-gray-700">✕</button></span>}
-              {query && <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 border text-gray-700">Search: “{query}”<button onClick={()=>setQuery('')} className="ml-1 text-gray-500 hover:text-gray-700">✕</button></span>}
-            </div>
+            <ActiveFilterChips
+              items={[
+                countryName && { label: `Country: ${countryName}`, onClear: () => setCountryName('') },
+                specialty && { label: `Specialization: ${specialty}`, onClear: () => setSpecialty('') },
+                query && { label: `Search: “${query}”`, onClear: () => setQuery('') },
+              ].filter(Boolean)}
+            />
             <div className={`${view==='grid' ? 'grid md:grid-cols-2 gap-6' : 'space-y-4'}`}>
               {items.map((it) => (
-                <Card key={it.id} item={it} disabledActions={disabledActions} view={view} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
+                <TimelineCard key={it.id} item={it} disabledActions={disabledActions} view={view} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
               ))}
               {isLoadingMore && [1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}
             </div>

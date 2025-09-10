@@ -2,7 +2,7 @@ import React from 'react';
 import TimelineShareBox from './TimelineShareBox';
 import TimelinePostCard from './TimelinePostCard';
 import TimelineProReviewCard from './TimelineProReviewCard';
-import { posts as sharedPosts, professionalReview as sharedPro } from './timelineData';
+import { posts as sharedPosts, professionalReview as sharedPro } from '../timelineData';
 
 // This component renders ONLY the main timeline content (share box + posts + professional review)
 // It is reused in both the full Timeline page and the PatientHome preview.

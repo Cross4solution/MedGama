@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
+import { Header } from '../components/layout';
 import { MapPin } from 'lucide-react';
 
 export default function PostDetail() {

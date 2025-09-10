@@ -3,9 +3,9 @@ import { Link, Navigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import Carousel from '../components/Carousel';
 import { useAuth } from '../context/AuthContext';
-import TimelineFeed from '../components/TimelineFeed';
-import Header from '../components/Header';
-import SearchSections from '../components/SearchSections';
+import { TimelineFeed } from '../components/timeline';
+import { Header } from '../components/layout';
+import { SearchSections } from '../components/search';
 
 export default function PatientHome() {
   const { user, formatCurrency } = useAuth();
@@ -62,6 +62,8 @@ export default function PatientHome() {
                 <Carousel
                   items={popularClinics}
                   slidesToShow={{ base: 1, sm: 2, lg: 3 }}
+                  autoPlay
+                  autoInterval={4000}
                   renderItem={(c) => (
                     <div className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-96 flex flex-col">
                       <div className="h-1/2 rounded-lg bg-gray-100 mb-3 overflow-hidden">
@@ -78,7 +80,7 @@ export default function PatientHome() {
                         <p className="mt-1 text-sm text-gray-600">{c.city} • {c.dept}</p>
                         <div className="mt-auto pt-3 flex items-center justify-between text-sm">
                           <span className="text-gray-500">{c.reviews} Reviews</span>
-                          <button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View Profile</button>
+                          <button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View</button>
                         </div>
                       </div>
                     </div>
