@@ -47,9 +47,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                 <img src={actorAvatar} alt={actorName} className="w-12 h-12 rounded-full object-cover border" />
               </Link>
               <div className="min-w-0">
-                {socialContext && (
-                  <div className="text-xs text-gray-600 mb-0.5 truncate">{socialContext}</div>
-                )}
+                {/* socialContext (e.g., liked by N) removed per design */}
                 <div className="flex items-center gap-1">
                   <Link to={actorLink} onClick={(e)=>e.stopPropagation()} className="text-[15px] md:text-base font-semibold text-gray-900 truncate hover:underline" title={actorName}>{actorName}</Link>
                 </div>
@@ -147,18 +145,77 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           {/* Comments Preview */}
           {showCommentsPreview && (
             <div className="px-3 pb-3 mt-2 border-t pt-3 bg-white/80">
-              <div className="mt-2 rounded-lg border bg-gray-50 p-3 text-sm text-gray-700 shadow-sm">
-                <div className="font-medium mb-1">Yorumlar</div>
-                <ul className="space-y-2">
-                  <li><span className="font-semibold">User A</span>: Çok faydalı bir paylaşım olmuş.</li>
-                  <li><span className="font-semibold">User B</span>: Teşekkürler!</li>
-                </ul>
+              {/* New comment input */}
+              <div className="flex items-start gap-2 mt-1">
+                <img src={actorAvatar} alt="Your avatar" className="w-8 h-8 rounded-full object-cover border" />
+                <input
+                  placeholder={disabledActions ? 'Sign in to comment…' : 'Write a comment…'}
+                  className={`flex-1 border rounded-full px-3 py-2 text-sm ${disabledActions ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : 'bg-white'}`}
+                  disabled={disabledActions}
+                />
+              </div>
+
+              {/* Threaded comments (mock) */}
+              <div className="mt-3 space-y-4">
+                {/* Parent comment */}
+                <div className="flex items-start gap-3">
+                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Ayça Karaman" className="w-9 h-9 rounded-full object-cover border" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-900">Ayça Karaman</span>
+                      <span className="text-[11px] text-gray-500">1 week</span>
+                    </div>
+                    <p className="text-[15px] text-gray-800 leading-6">Congrats! 🎉</p>
+                    <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                      <button type="button" className="inline-flex items-center gap-1 hover:text-gray-700"><ThumbsUp className="w-3.5 h-3.5" /> Like</button>
+                      <button type="button" className="hover:text-gray-700">Reply</button>
+                      <span>1 reply</span>
+                    </div>
+
+                    {/* Reply */}
+                    <div className="mt-3 pl-4 border-l">
+                      <div className="flex items-start gap-3">
+                        <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Cem Arslan" className="w-8 h-8 rounded-full object-cover border" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-900">Dr. Cem Arslan</span>
+                            <span className="text-[11px] text-gray-500">1 week</span>
+                          </div>
+                          <p className="text-[15px] text-blue-700 leading-6"><span className="font-semibold">Ayça Karaman</span> Thanks 🙏</p>
+                          <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                            <button type="button" className="inline-flex items-center gap-1 hover:text-gray-700"><ThumbsUp className="w-3.5 h-3.5" /> Like</button>
+                            <button type="button" className="hover:text-gray-700">Reply</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" className="p-1 rounded-full hover:bg-gray-100 text-gray-500"><MoreHorizontal className="w-4 h-4" /></button>
+                </div>
+
+                {/* Another parent comment */}
+                <div className="flex items-start gap-3">
+                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Efe Yılmaz" className="w-9 h-9 rounded-full object-cover border" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-900">Efe Yılmaz</span>
+                      <span className="text-[11px] text-gray-500">1 week</span>
+                    </div>
+                    <p className="text-[15px] text-gray-800 leading-6">Well done 👏</p>
+                    <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                      <button type="button" className="inline-flex items-center gap-1 hover:text-gray-700"><ThumbsUp className="w-3.5 h-3.5" /> Like</button>
+                      <button type="button" className="hover:text-gray-700">Reply</button>
+                      <span>1 reply</span>
+                    </div>
+                  </div>
+                  <button type="button" className="p-1 rounded-full hover:bg-gray-100 text-gray-500"><MoreHorizontal className="w-4 h-4" /></button>
+                </div>
               </div>
             </div>
           )}
 
           {/* Social counts */}
-          <div className="px-3 pt-2 text-sm text-gray-500 flex items-center justify-between">
+          <div className="px-3 pt-2 mt-2 text-sm text-gray-500 flex items-center justify-between">
             <div className="inline-flex items-center gap-1">
               <span className="inline-flex -space-x-1">
                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white ring-2 ring-white">
@@ -168,14 +225,10 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                   <Heart className="w-3 h-3" />
                 </span>
               </span>
-              <span className="ml-1">{item.likes}</span>
+              <span className="ml-2">{item.likes}</span>
             </div>
             <div>
-              <button
-                type="button"
-                className="text-gray-500 hover:underline"
-                onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
-              >
+              <button type="button" className="text-gray-500 hover:underline" onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}>
                 {item.comments} yorum
               </button>
             </div>

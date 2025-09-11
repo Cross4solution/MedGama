@@ -65,7 +65,7 @@ const DoctorChatPage = () => {
 
       {/* Doctor Info Header */}
       <div className="bg-white border-b">
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3`}>
+        <div className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2`}>
           <div className="flex items-center">
                          <div className="w-14 h-14 rounded-full mr-4 overflow-hidden bg-gray-100">
                <img 
@@ -90,8 +90,8 @@ const DoctorChatPage = () => {
         </div>
       </div>
 
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6`}>
-        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+      <div className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-3`}>
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-3">
           {/* Threads Sidebar */}
           <ThreadsSidebar
             threads={filteredThreads}

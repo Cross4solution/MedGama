@@ -251,8 +251,34 @@ const MediTravelTimeline = () => {
 
             {/* Explore-style LinkedIn cards */}
             {sharedPosts.map((p, idx) => {
-              const actorName = p.clinic?.name || p.patient?.name || 'Update';
-              const specialty = p.clinic?.specialty;
+              const isDoctor = p.type === 'doctor_update' && p.doctor;
+              const isPatient = p.type === 'patient_review' && p.patient;
+              const specialty = p.clinic?.specialty || p.doctor?.specialty;
+
+              const actor = isDoctor
+                ? {
+                    id: p.doctor.id || `tl-${p.id || idx}`,
+                    role: 'doctor',
+                    name: p.doctor.name,
+                    title: p.doctor.specialty || 'Doctor',
+                    avatarUrl: p.doctor.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+                  }
+                : isPatient
+                ? {
+                    id: `tl-${p.id || idx}`,
+                    role: 'patient',
+                    name: p.patient.name,
+                    title: 'Shared experience',
+                    avatarUrl: p.patient.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+                  }
+                : {
+                    id: `tl-${p.id || idx}`,
+                    role: 'clinic',
+                    name: p.clinic?.name || 'Update',
+                    title: specialty || 'Update',
+                    avatarUrl: p.clinic?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+                  };
+
               const item = {
                 id: `tl-${p.id || idx}`,
                 text: p.content,
@@ -261,17 +287,9 @@ const MediTravelTimeline = () => {
                 comments: p.engagement?.comments ?? 0,
                 city: '',
                 specialty,
-                actor: {
-                  id: `tl-${p.id || idx}`,
-                  role: p.type === 'patient_review' ? 'patient' : (p.type === 'clinic_update' ? 'clinic' : 'doctor'),
-                  name: actorName,
-                  title: specialty || (p.type === 'patient_review' ? 'Shared experience' : 'Update'),
-                  avatarUrl: '/images/portrait-candid-male-doctor_720.jpg',
-                },
+                actor,
               };
-              return (
-                <TimelineCard key={item.id} item={item} disabledActions={false} view={'list'} />
-              );
+              return <TimelineCard key={item.id} item={item} disabledActions={false} view={'list'} />;
             })}
           </div>
         </div>

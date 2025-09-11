@@ -63,16 +63,17 @@ export default function HomeV2() {
         </section>
       ) : (
         // Hero / Slogan for guests and non-patient roles
-        <section className="relative">
+        <section className="relative overflow-hidden">
           <div className="relative">
-            {/* Blurred background layer */}
+            {/* Background layer with a very light blur (no scale) */}
             <div
-              className="absolute inset-0 bg-cover bg-center filter blur-[2px] scale-105"
+              className="absolute inset-0 bg-cover bg-center filter blur-[1.5px]"
               style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
               aria-hidden="true"
             />
-            {/* Overlay for readability (slightly more faded) */}
-            <div className="absolute inset-0 bg-black/35 md:bg-black/40" aria-hidden="true" />
+            {/* Overlay for readability */}
+            <div className="absolute inset-0 bg-black/30 md:bg-black/35" aria-hidden="true" />
+            {/* Removed white bottom gradient as requested */}
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="grid grid-cols-1 gap-8 items-center">
                 <div>

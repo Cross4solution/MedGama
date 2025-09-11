@@ -95,24 +95,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
         <div className="bg-white p-0 rounded-none border-0 shadow-none">
           {/* Scrollable feed area */}
           <div className="h-[80vh] overflow-y-auto pr-2">
-            {/* Composer */}
             <div className="space-y-6">
-              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-md">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
-                    <img src="/images/portrait-candid-male-doctor_720.jpg" alt="Demo Doctor" className="w-full h-full object-cover object-center" />
-                  </div>
-                  <button type="button" className="flex-1 text-left p-3 bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:bg-gray-100">Ask a doctor or share your experience...</button>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
-                  <div className="flex items-center space-x-6">
-                    <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600"><ImageIcon className="w-5 h-5" /><span>Image</span></button>
-                    <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600"><Folder className="w-5 h-5" /><span>File</span></button>
-                  </div>
-                  <button type="button" onClick={() => navigate('/explore')} className="btn btn-primary btn-md w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Post</button>
-                </div>
-              </div>
-
               {/* Feed cards using TimelineCard (Explore style) */}
               {data.slice(0, 8).map((p, idx) => {
                 // Map preview item to TimelineCard expected shape
@@ -136,7 +119,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
                   },
                 };
                 return (
-                  <TimelineCard key={item.id} item={item} disabledActions={true} view={'list'} />
+                  <TimelineCard key={item.id} item={item} disabledActions={false} view={'list'} />
                 );
               })}
             </div>

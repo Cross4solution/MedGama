@@ -24,6 +24,52 @@ export const posts = [
     },
     hasAppointmentButton: true,
   },
+  // Doctor update examples (explicit doctor profiles for navigation)
+  {
+    id: 21,
+    type: 'doctor_update',
+    doctor: {
+      id: 'doc-101',
+      name: 'Dr. Cem Arslan',
+      avatar: '/images/portrait-candid-male-doctor_720.jpg',
+      specialty: 'Ortopedi',
+    },
+    timestamp: '3 saat önce',
+    content:
+      'Diz artroskopisi sonrası rehabilitasyonda yeni protokol ile hastalarımız spora daha hızlı dönüyor.',
+    image: '/images/doctor-explaining_720.jpg',
+    engagement: { likes: 54, comments: 8, shares: 3 },
+  },
+  {
+    id: 22,
+    type: 'doctor_update',
+    doctor: {
+      id: 'doc-102',
+      name: 'Op. Dr. Selin Kara',
+      avatar: '/images/portrait-candid-male-doctor_720.jpg',
+      specialty: 'Plastik Cerrahi',
+    },
+    timestamp: '7 saat önce',
+    content:
+      'Rinoplasti sonrasında nefes kalitesini artırmaya yönelik minimal invaziv yaklaşım uyguluyoruz.',
+    image: 'https://placehold.co/640x320',
+    engagement: { likes: 61, comments: 10, shares: 4 },
+  },
+  {
+    id: 23,
+    type: 'doctor_update',
+    doctor: {
+      id: 'doc-103',
+      name: 'Uzm. Dr. Bora Eren',
+      avatar: '/images/portrait-candid-male-doctor_720.jpg',
+      specialty: 'Kardiyoloji',
+    },
+    timestamp: '1 gün önce',
+    content:
+      'Yeni nesil stentlerle işlem sürelerini kısaltırken komplikasyon oranlarını düşürdük.',
+    image: 'https://placehold.co/600x300',
+    engagement: { likes: 77, comments: 12, shares: 5 },
+  },
   {
     id: 2,
     type: 'patient_review',

@@ -59,37 +59,83 @@ export default function PostDetail() {
           {/* Actions */}
           <div className="px-3 md:px-4 py-2 border-y grid grid-cols-4">
             <button type="button" className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
-              <ThumbsUp className="w-4 h-4" /> <span>Beğen</span>
+              <ThumbsUp className="w-4 h-4" /> <span>Like</span>
             </button>
             <button
               type="button"
               className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50"
               onClick={() => setShowComments(s => !s)}
             >
-              <MessageCircle className="w-4 h-4" /> <span>Yorum Yap</span>
+              <MessageCircle className="w-4 h-4" /> <span>Comment</span>
             </button>
             <button type="button" className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
-              <Repeat className="w-4 h-4" /> <span>Paylaş</span>
+              <Repeat className="w-4 h-4" /> <span>Share</span>
             </button>
             <button type="button" className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
-              <Send className="w-4 h-4" /> <span>Gönder</span>
+              <Send className="w-4 h-4" /> <span>Send</span>
             </button>
           </div>
 
-          {/* Comments (collapsible, minimal height like LinkedIn) */}
+          {/* Comments (collapsible, LinkedIn-like) */}
           {showComments && (
             <div className="p-4">
-              <div className="mb-3">
-                <input placeholder="Yorum yaz..." className="w-full border rounded-lg px-3 py-2 text-sm" />
+              {/* New comment input */}
+              <div className="flex items-start gap-2">
+                <img src={item.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg'} alt="Your avatar" className="w-8 h-8 rounded-full object-cover border" />
+                <input placeholder="Write a comment…" className="flex-1 border rounded-full px-3 py-2 text-sm" />
               </div>
-              <div className="space-y-3 text-sm">
-                <div className="border rounded-lg p-3 bg-gray-50">
-                  <div className="font-semibold text-gray-900">User A</div>
-                  <div className="text-gray-700 mt-1">Harika bir paylaşım, teşekkürler.</div>
+
+              {/* Threaded comments */}
+              <div className="mt-4 space-y-4 text-sm">
+                {/* Parent */}
+                <div className="flex items-start gap-3">
+                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Zehra Korkmaz" className="w-9 h-9 rounded-full object-cover border" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-900">Zehra Korkmaz</span>
+                      <span className="text-[11px] text-gray-500">1 week</span>
+                    </div>
+                    <p className="text-gray-800 mt-0.5">Very informative, thanks.</p>
+                    <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                      <button type="button" className="hover:text-gray-700">Like</button>
+                      <button type="button" className="hover:text-gray-700">Reply</button>
+                      <span>1 reply</span>
+                    </div>
+
+                    {/* Reply */}
+                    <div className="mt-3 pl-4 border-l">
+                      <div className="flex items-start gap-3">
+                        <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Bora Eren" className="w-8 h-8 rounded-full object-cover border" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-900">Dr. Bora Eren</span>
+                            <span className="text-[11px] text-gray-500">1 week</span>
+                          </div>
+                          <p className="text-gray-800 mt-0.5"><span className="font-semibold">Zehra Korkmaz</span> glad it helped 🙏</p>
+                          <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                            <button type="button" className="hover:text-gray-700">Like</button>
+                            <button type="button" className="hover:text-gray-700">Reply</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="border rounded-lg p-3 bg-gray-50">
-                  <div className="font-semibold text-gray-900">User B</div>
-                  <div className="text-gray-700 mt-1">Bilgilendirici oldu.</div>
+
+                {/* Another parent */}
+                <div className="flex items-start gap-3">
+                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Onur Demirtaş" className="w-9 h-9 rounded-full object-cover border" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-900">Onur Demirtaş</span>
+                      <span className="text-[11px] text-gray-500">5 days</span>
+                    </div>
+                    <p className="text-gray-800 mt-0.5">Great update 👏</p>
+                    <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                      <button type="button" className="hover:text-gray-700">Like</button>
+                      <button type="button" className="hover:text-gray-700">Reply</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

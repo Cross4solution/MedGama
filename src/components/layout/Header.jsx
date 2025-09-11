@@ -92,18 +92,33 @@ const Header = () => {
                     </button>
                     {loginOpen && (
                       <div role="menu" className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50 p-2 space-y-2">
-                        <Link to="/login" onClick={()=>setLoginOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-green-50 text-green-800 hover:bg-green-100">
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={()=>{ setLoginOpen(false); navigate('/login'); }}
+                          className="w-full inline-flex items-center gap-3 px-4 py-3 text-sm rounded-xl bg-green-50 text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 border border-green-200 shadow-sm"
+                        >
                           <User className="w-4 h-4 text-green-600" />
-                          <span>Patient Login</span>
-                        </Link>
-                        <Link to="/doctor-login" onClick={()=>setLoginOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-blue-50 text-blue-800 hover:bg-blue-100">
+                          <span className="font-medium">Patient Login</span>
+                        </button>
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={()=>{ setLoginOpen(false); navigate('/doctor-login'); }}
+                          className="w-full inline-flex items-center gap-3 px-4 py-3 text-sm rounded-xl bg-blue-50 text-blue-800 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 border border-blue-200 shadow-sm"
+                        >
                           <Stethoscope className="w-4 h-4 text-blue-600" />
-                          <span>Doctor Login</span>
-                        </Link>
-                        <Link to="/clinic-login" onClick={()=>setLoginOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-purple-50 text-purple-800 hover:bg-purple-100">
+                          <span className="font-medium">Doctor Login</span>
+                        </button>
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
+                          className="w-full inline-flex items-center gap-3 px-4 py-3 text-sm rounded-xl bg-purple-50 text-purple-800 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-200 border border-purple-200 shadow-sm"
+                        >
                           <Hospital className="w-4 h-4 text-purple-600" />
-                          <span>Clinic Login</span>
-                        </Link>
+                          <span className="font-medium">Clinic Login</span>
+                        </button>
                       </div>
                     )}
                   </div>
