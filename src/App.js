@@ -22,12 +22,13 @@ import { Footer } from './components/layout';
 import { AuthProvider } from './context/AuthContext';
 import DoctorLogin from './pages/DoctorLogin';
 import ClinicLogin from './pages/ClinicLogin';
-import Updates from './pages/Updates';
 import Notifications from './pages/Notifications';
 // (PatientLayout removed)
 import Profile from './pages/Profile';
 import ExploreTimeline from './pages/ExploreTimeline';
 import PostDetail from './pages/PostDetail';
+import DoctorProfilePage from './pages/DoctorProfile.jsx';
+import PatientProfilePage from './pages/PatientProfile.jsx';
 
 function AppContent() {
   const location = useLocation();
@@ -120,6 +121,7 @@ function AppContent() {
         <Route path="/clinics" element={<ClinicsPage />} />
         <Route path="/timeline" element={<TimelinePage />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
+        <Route path="/clinic/:id" element={<ClinicDetailPage />} />
         <Route path="/doctor-chat" element={<DoctorChatPage />} />
         <Route path="/telehealth" element={<TelehealthPage />} />
         <Route path="/telehealth-appointment" element={<TelehealthAppointmentPage />} />
@@ -135,9 +137,10 @@ function AppContent() {
         {/* Role-specific logins */}
         <Route path="/doctor-login" element={<DoctorLogin />} />
         <Route path="/clinic-login" element={<ClinicLogin />} />
-        <Route path="/updates" element={<Updates />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/doctor/:id" element={<DoctorProfilePage />} />
+        <Route path="/patient/:id" element={<PatientProfilePage />} />
         <Route path="/post/:id" element={<PostDetail />} />
       </Routes>
       {showFooter && <Footer />}

@@ -18,7 +18,9 @@ import {
 } from 'lucide-react';
 import { Header } from '../components/layout';
 import { useLocation } from 'react-router-dom';
-import { TimelineFeed } from '../components/timeline';
+import { TimelineShareBox } from '../components/timeline';
+import TimelineCard from 'components/timeline/TimelineCard';
+import { posts as sharedPosts } from 'components/timelineData';
 import { useAuth } from '../context/AuthContext';
 const MediTravelTimeline = () => {
   const { user } = useAuth();
@@ -241,8 +243,36 @@ const MediTravelTimeline = () => {
             </div>
           </div>
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-6">
-            <TimelineFeed />
+          <div className="lg:col-span-3 space-y-4">
+            {/* Composer */}
+            <div className="bg-white rounded-xl p-4 border shadow-sm">
+              <TimelineShareBox />
+            </div>
+
+            {/* Explore-style LinkedIn cards */}
+            {sharedPosts.map((p, idx) => {
+              const actorName = p.clinic?.name || p.patient?.name || 'Update';
+              const specialty = p.clinic?.specialty;
+              const item = {
+                id: `tl-${p.id || idx}`,
+                text: p.content,
+                media: p.image ? [{ url: p.image }] : [],
+                likes: p.engagement?.likes ?? 0,
+                comments: p.engagement?.comments ?? 0,
+                city: '',
+                specialty,
+                actor: {
+                  id: `tl-${p.id || idx}`,
+                  role: p.type === 'patient_review' ? 'patient' : (p.type === 'clinic_update' ? 'clinic' : 'doctor'),
+                  name: actorName,
+                  title: specialty || (p.type === 'patient_review' ? 'Shared experience' : 'Update'),
+                  avatarUrl: '/images/portrait-candid-male-doctor_720.jpg',
+                },
+              };
+              return (
+                <TimelineCard key={item.id} item={item} disabledActions={false} view={'list'} />
+              );
+            })}
           </div>
         </div>
       </div>

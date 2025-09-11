@@ -11,7 +11,7 @@ export default function SearchSections() {
   return (
     <>
       {/* Clinics Search (unified clinic/doctor autocomplete) */}
-      <section id="clinics-search" className={`pt-6 pb-10 border-y ${isPatient ? 'relative' : 'bg-gray-50'}`}>
+      <section id="clinics-search" className={`pt-6 pb-6 border-y ${isPatient ? 'relative' : 'bg-gray-50'}`}>
         {isPatient && (
           <>
             <div
@@ -29,9 +29,9 @@ export default function SearchSections() {
       </section>
 
       {/* Custom Search (Country → City → Speciality → Symptom/Procedure) */}
-      <section className="py-10">
+      <section className="py-6">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Custom Search</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">Custom Search</h2>
           <CustomSearch />
         </div>
       </section>

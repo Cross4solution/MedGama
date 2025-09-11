@@ -43,7 +43,7 @@ const Header = () => {
 
   return (
     <>
-    <header className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${isScrolled ? 'bg-white/20 backdrop-blur-lg supports-[backdrop-filter]:bg-white/10' : 'bg-white'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 border-b bg-white`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
           {/* Logo */}
@@ -55,7 +55,7 @@ const Header = () => {
               loading="eager"
               decoding="async"
             />
-            <span className={`text-xl font-bold ${isScrolled ? 'text-gray-900/80' : 'text-gray-900'}`}>MedGama</span>
+            <span className={`text-xl font-bold text-gray-900`}>MedGama</span>
           </Link>
 
           {/* Logoya daha da yakın menü */}

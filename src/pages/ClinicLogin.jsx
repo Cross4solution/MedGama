@@ -25,10 +25,10 @@ const ClinicLogin = () => {
       setLoading(false);
       return;
     }
-    // Demo auth: set role and redirect to updates feed
+    // Demo auth: set role and redirect to patient home
     login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' });
     setLoading(false);
-    navigate('/updates', { replace: true });
+    navigate('/patient-home', { replace: true });
   };
 
   const features = [
@@ -125,7 +125,7 @@ const ClinicLogin = () => {
             </button>
             <button
               type="button"
-              onClick={() => { login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }); navigate('/updates', { replace: true }); }}
+              onClick={() => { login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }); navigate('/patient-home', { replace: true }); }}
               className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200"
             >
               Demo Login (Clinic)

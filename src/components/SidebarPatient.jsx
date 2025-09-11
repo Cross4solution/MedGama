@@ -112,8 +112,8 @@ export default function SidebarPatient() {
             <div className="p-3 flex-1 overflow-y-auto">
               <div className="mb-2 px-2 text-[11px] uppercase tracking-wide text-gray-400">Menu</div>
               <nav className="space-y-1">
-                {items.map((it) => (
-                  <NavItem key={it.to} {...it} />
+                {items.map((it, idx) => (
+                  <NavItem key={`${it.to || it.href || it.label || 'item'}-${idx}`} {...it} />
                 ))}
               </nav>
             </div>

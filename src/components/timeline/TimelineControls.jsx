@@ -5,8 +5,6 @@ export default function TimelineControls({
   user,
   sort,
   onSortChange,
-  view,
-  onViewChange,
   // tab,
   // onTabChange,
   onUseLocation,
@@ -26,10 +24,6 @@ export default function TimelineControls({
               <option value="top">Top</option>
               <option value="recent">Recent</option>
             </select>
-          </div>
-          <div className="flex items-center gap-1 rounded-lg border border-gray-200 overflow-hidden">
-            <button onClick={()=>onViewChange?.('list')} className={`px-2 py-1 text-sm ${view==='list' ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50'}`}>List</button>
-            <button onClick={()=>onViewChange?.('grid')} className={`px-2 py-1 text-sm ${view==='grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50'}`}>Grid</button>
           </div>
           <button onClick={onUseLocation} className="text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50">Use my location</button>
           {geo?.lat && <span className="text-xs text-gray-500">{geo.lat.toFixed(2)},{geo.lon.toFixed(2)}</span>}

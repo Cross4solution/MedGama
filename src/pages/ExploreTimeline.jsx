@@ -34,20 +34,46 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
       const sp = specialties[i % specialties.length];
       const cl = clinics[i % clinics.length];
       const ct = cities[i % cities.length];
+      const isDoctor = i % 5 === 0; // her 5. içerik doktor paylaşımı
+      const isClinic = !isDoctor && (i % 3 === 0);
+      const longClinic = 'We recently introduced enhanced patient navigation, multidisciplinary boards, and improved discharge planning. Outcomes indicate shorter hospital stays and higher satisfaction. Our new minimally invasive protocols reduced recovery time while maintaining safety. Clinicians share best practices weekly to keep consistency across departments.';
+      const longReview = 'I am very satisfied with the overall process. The staff was kind and professional, and communication was clear at every step. The pre-op guidance eased my concerns and post-op follow-up was timely. Facilities were clean and modern, and cost transparency helped me plan confidently. I would recommend this clinic to friends and family.';
+      // build media list (1-4 images) for LinkedIn-like grid
+      const mediaPool = [
+        { url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
+        { url: '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg' },
+        { url: '/images/care-team-with-patient_720.jpg' },
+        { url: '/images/doctor-explaining_720.jpg' },
+      ];
+      const mediaCount = 1 + (i % 4); // 1..4
+      const media = mediaPool.slice(0, mediaCount);
+
       items.push({
         id: `it-${i+1}`,
-        type: i % 3 === 0 ? 'clinic_update' : 'patient_review',
-        title: i % 3 === 0 ? `${cl}` : `Patient Review` ,
-        subtitle: i % 3 === 0 ? sp : `${(4 + (i % 2)).toFixed(1)} ★`,
+        type: isDoctor ? 'doctor_update' : (isClinic ? 'clinic_update' : 'patient_review'),
+        title: isClinic ? `${cl}` : (isDoctor ? `Dr. ${['Ahmet','Ayşe','Mehmet','Elif','Can'][i%5]}` : `Patient Review`) ,
+        subtitle: isClinic || isDoctor ? sp : `${(4 + (i % 2)).toFixed(1)} ★`,
         city: ct,
         img: i % 2 === 0 ? '/images/petr-magera-huwm7malj18-unsplash_720.jpg' : '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg',
         text: i % 3 === 0
-          ? 'New minimally invasive techniques improved recovery times.'
-          : 'Very satisfied with the treatment. Staff was kind and professional.',
+          ? longClinic
+          : longReview,
         likes: 20 + (i % 100),
         comments: 2 + (i % 15),
         specialty: sp,
         countryCode: ct.split(', ')[1],
+        // LinkedIn-like additions
+        actor: {
+          id: isDoctor ? `doc-${(i%20)+1}` : (isClinic ? `clinic-${(i%20)+1}` : `pat-${(i%20)+1}`),
+          role: isDoctor ? 'doctor' : (isClinic ? 'clinic' : 'patient'),
+          name: isDoctor ? ("Dr. " + ['Ahmet','Ayşe','Mehmet','Elif','Can'][i%5]) : (isClinic ? cl : 'Patient'),
+          title: isDoctor ? sp : (isClinic ? sp : 'Shared experience'),
+          avatarUrl: '/images/portrait-candid-male-doctor_720.jpg',
+        },
+        socialContext: i % 5 === 0 ? 'MedGama bunu beğendi' : (i % 7 === 0 ? 'Bir bağlantın bunu beğendi' : ''),
+        timeAgo: (1 + (i % 6)) + ' gün',
+        visibility: 'public',
+        media,
       });
     }
     return items;
@@ -107,7 +133,6 @@ export default function ExploreTimeline() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState('top'); // top | recent
   const [tab, setTab] = useState('for-you'); // for-you | latest
-  const [view, setView] = useState('grid'); // grid | list
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loadMoreRef = useRef(null);
 
@@ -151,10 +176,7 @@ export default function ExploreTimeline() {
     if (entry) setCountryName(entry[0]);
   }, [country, countryName]);
 
-  // Logged-in users: default to list view (LinkedIn-like)
-  useEffect(() => {
-    if (user) setView('list');
-  }, [user]);
+  // Görünüm sabit: LinkedIn benzeri tek sütun liste
 
   // Ask for geolocation once on page load
   useEffect(() => {
@@ -192,15 +214,11 @@ export default function ExploreTimeline() {
           user={user}
           sort={sort}
           onSortChange={setSort}
-          view={view}
-          onViewChange={setView}
-          tab={tab}
-          onTabChange={setTab}
           onUseLocation={askGeo}
           geo={geo}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5">
           {/* Filters (LEFT) */}
           <TimelineFilterSidebar
             query={query}
@@ -222,28 +240,30 @@ export default function ExploreTimeline() {
 
           {/* Feed (RIGHT) */}
           <section className="order-1 lg:order-2">
-            {/* Aktif filtre chipleri */}
-            <ActiveFilterChips
-              items={[
-                countryName && { label: `Country: ${countryName}`, onClear: () => setCountryName('') },
-                specialty && { label: `Specialization: ${specialty}`, onClear: () => setSpecialty('') },
-                query && { label: `Search: “${query}”`, onClear: () => setQuery('') },
-              ].filter(Boolean)}
-            />
-            <div className={`${view==='grid' ? 'grid md:grid-cols-2 gap-6' : 'space-y-4'}`}>
-              {items.map((it) => (
-                <TimelineCard key={it.id} item={it} disabledActions={disabledActions} view={view} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
-              ))}
-              {isLoadingMore && [1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}
-            </div>
-            <div className="flex items-center justify-between mt-6">
-              <p className="text-xs text-gray-500">Showing {items.length} of {total}</p>
-              {hasMore && (
-                <>
-                  <button onClick={() => setPage(p => p + 1)} className="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm">Load more</button>
-                  <span ref={loadMoreRef} className="sr-only">Observer</span>
-                </>
-              )}
+            <div className="max-w-2xl mx-auto">
+              {/* Aktif filtre chipleri */}
+              <ActiveFilterChips
+                items={[
+                  countryName && { label: `Country: ${countryName}`, onClear: () => setCountryName('') },
+                  specialty && { label: `Specialization: ${specialty}`, onClear: () => setSpecialty('') },
+                  query && { label: `Search: “${query}”`, onClear: () => setQuery('') },
+                ].filter(Boolean)}
+              />
+              <div className={`space-y-3`}>
+                {items.map((it) => (
+                  <TimelineCard key={it.id} item={it} disabledActions={disabledActions} view={'list'} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
+                ))}
+                {isLoadingMore && [1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}
+              </div>
+              <div className="flex items-center justify-between mt-5">
+                <p className="text-xs text-gray-500">Showing {items.length} of {total}</p>
+                {hasMore && (
+                  <>
+                    <button onClick={() => setPage(p => p + 1)} className="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm">Load more</button>
+                    <span ref={loadMoreRef} className="sr-only">Observer</span>
+                  </>
+                )}
+              </div>
             </div>
           </section>
         </div>

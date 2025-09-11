@@ -79,7 +79,7 @@ export default function HomeV2() {
                   <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow">
                     #1 Health Portal in the World
                   </h1>
-                  <p className="mt-4 text-gray-100 md:text-lg drop-shadow">One-click, end-to-end care: discovery, availability, telehealth and secure communication.</p>
+                  <p className="mt-4 text-gray-100 md:text-lg drop-shadow">One-click, end-to-end care: discovery, availability, telehealth, health tourism and secure communication.</p>
                   <div className="mt-6 flex gap-3">
                     <a href="#features" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm shadow-lg">Explore</a>
                   </div>

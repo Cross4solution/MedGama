@@ -3,7 +3,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 export default function GlobalSearch() {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
-  const [ph, setPh] = useState('');
+  const [ph, setPh] = useState('Search clinics or doctors');
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const clinics = [
@@ -43,30 +43,9 @@ export default function GlobalSearch() {
       .slice(0, 8);
   }, [query]);
 
-  // Typing animation for placeholder (loops)
+  // Set static placeholder (no animation)
   useEffect(() => {
-    const text = 'Search clinics or doctors';
-    let i = 0;
-    let direction = 1; // 1: typing, -1: deleting (optional)
-    const typeDelay = 90;
-    const pauseDelay = 900;
-    let paused = false;
-    const timer = setInterval(() => {
-      if (paused) return;
-      i += direction;
-      if (i <= 0) {
-        i = 1;
-        direction = 1;
-      }
-      if (i >= text.length) {
-        setPh(text.slice(0, i));
-        paused = true;
-        setTimeout(() => { direction = -1; paused = false; }, pauseDelay);
-        return;
-      }
-      setPh(text.slice(0, i));
-    }, typeDelay);
-    return () => clearInterval(timer);
+    setPh('Search clinics or doctors');
   }, []);
 
   const onSelect = (name) => {
@@ -116,7 +95,7 @@ export default function GlobalSearch() {
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
-        placeholder={ph || 'Clinics'}
+        placeholder={ph}
         className="w-full border border-gray-100 rounded-full pl-11 pr-11 py-4 text-base bg-white/95 backdrop-blur shadow-[0_6px_20px_-5px_rgba(28,106,131,0.35),0_2px_6px_-2px_rgba(2,6,23,0.2)] hover:shadow-[0_10px_30px_-10px_rgba(28,106,131,0.45),0_4px_12px_-3px_rgba(2,6,23,0.25)] focus:shadow-[0_12px_36px_-12px_rgba(28,106,131,0.55),0_6px_16px_-4px_rgba(2,6,23,0.3)] focus:outline-none focus:ring-4 focus:ring-[#1C6A83]/25 focus:border-transparent transition-shadow duration-200"
       />
       {query && (
