@@ -241,8 +241,7 @@ const ClinicDetailPage = () => {
             {/* Price Range */}
             <PriceRangeList items={priceRanges} />
 
-            {/* Quick Contact */}
-            <QuickContactCard phone={"+90 212 555 0123"} email={"info@anadolusaglik.com"} hours={"Open 24/7"} />
+            {/* Quick Contact removed as requested */}
           </div>
         </div>
       </div>

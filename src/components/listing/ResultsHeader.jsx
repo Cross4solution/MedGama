@@ -15,7 +15,7 @@ export default function ResultsHeader({ count, sortBy, onSortChange, sortOptions
           ))}
         </select>
         <img
-          src="/images/icon/sort-svgrepo-com.svg"
+          src="/images/icon/sort-amount-down-svgrepo-com.svg"
           alt="Sort"
           className="w-5 h-5 opacity-80"
         />

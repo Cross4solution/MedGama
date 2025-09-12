@@ -20,7 +20,7 @@ import { Header } from '../components/layout';
 import { useLocation } from 'react-router-dom';
 import { TimelineShareBox } from '../components/timeline';
 import TimelineCard from 'components/timeline/TimelineCard';
-import { posts as sharedPosts } from 'components/timelineData';
+import { generateExploreStyleItems } from 'components/timeline/feedMock';
 import { useAuth } from '../context/AuthContext';
 const MediTravelTimeline = () => {
   const { user } = useAuth();
@@ -37,50 +37,8 @@ const MediTravelTimeline = () => {
   const [selectedCountry, setSelectedCountry] = useState('Türkiye');
   const [selectedCategory, setSelectedCategory] = useState('Tüm Kategoriler');
   const [activeFilter, setActiveFilter] = useState('all');
-  const posts = [
-    {
-      id: 1,
-      type: 'clinic_update',
-      clinic: {
-        name: 'Anadolu Sağlık Merkezi',
-        location: 'İstanbul',
-        avatar: 'https://placehold.co/40x40',
-        verified: true,
-        specialty: 'Kalp Cerrahisi'
-      },
-      timestamp: '2 saat önce',
-      content: '🔬 Yeni teknoloji ile minimal invaziv kalp ameliyatlarımızda başarı oranımız %98\'e ulaştı! Hastalarımızın iyileşme süreleri yarıya indi.',
-      hashtags: ['#KalpCerrahisi', '#MinimalInvaziv'],
-      image: 'https://placehold.co/600x300',
-      engagement: {
-        likes: 124,
-        comments: 18,
-        shares: 12
-      },
-      hasAppointmentButton: true
-    },
-    {
-      id: 2,
-      type: 'patient_review',
-      patient: {
-        name: 'Mehmet Kaya',
-        avatar: 'https://placehold.co/40x40',
-        isPatient: true
-      },
-      timestamp: '4 saat önce',
-      rating: 5,
-      content: 'Memorial Hastanesi\'nde estetik operasyonum çok başarılı geçti! Dr. Ahmet Yılmaz ve ekibine çok teşekkür ederim. Hem öncesi hem sonrası süreçte çok ilgili davrandılar. Kesinlikle tavsiye ederim! 🔬',
-      verificationBadge: {
-        text: 'Onaylanmış Değerlendirme',
-        description: 'Bu değerlendirme sistem üzerinden randevu alan gerçek bir hasta tarafından yapılmıştır.'
-      },
-      engagement: {
-        likes: 89,
-        comments: 12,
-        shares: 5
-      }
-    }
-  ];
+  // Explore ile aynı içerik yapısı
+  const exploreItems = generateExploreStyleItems(12);
   const professionalReview = {
     id: 'pro-review-1',
     reviewer: {
@@ -249,48 +207,10 @@ const MediTravelTimeline = () => {
               <TimelineShareBox />
             </div>
 
-            {/* Explore-style LinkedIn cards */}
-            {sharedPosts.map((p, idx) => {
-              const isDoctor = p.type === 'doctor_update' && p.doctor;
-              const isPatient = p.type === 'patient_review' && p.patient;
-              const specialty = p.clinic?.specialty || p.doctor?.specialty;
-
-              const actor = isDoctor
-                ? {
-                    id: p.doctor.id || `tl-${p.id || idx}`,
-                    role: 'doctor',
-                    name: p.doctor.name,
-                    title: p.doctor.specialty || 'Doctor',
-                    avatarUrl: p.doctor.avatar || '/images/portrait-candid-male-doctor_720.jpg',
-                  }
-                : isPatient
-                ? {
-                    id: `tl-${p.id || idx}`,
-                    role: 'patient',
-                    name: p.patient.name,
-                    title: 'Shared experience',
-                    avatarUrl: p.patient.avatar || '/images/portrait-candid-male-doctor_720.jpg',
-                  }
-                : {
-                    id: `tl-${p.id || idx}`,
-                    role: 'clinic',
-                    name: p.clinic?.name || 'Update',
-                    title: specialty || 'Update',
-                    avatarUrl: p.clinic?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
-                  };
-
-              const item = {
-                id: `tl-${p.id || idx}`,
-                text: p.content,
-                media: p.image ? [{ url: p.image }] : [],
-                likes: p.engagement?.likes ?? 0,
-                comments: p.engagement?.comments ?? 0,
-                city: '',
-                specialty,
-                actor,
-              };
-              return <TimelineCard key={item.id} item={item} disabledActions={false} view={'list'} />;
-            })}
+            {/* Explore-style LinkedIn cards (aynı veri yapısı) */}
+            {exploreItems.map((item) => (
+              <TimelineCard key={item.id} item={item} disabledActions={false} view={'list'} />
+            ))}
           </div>
         </div>
       </div>

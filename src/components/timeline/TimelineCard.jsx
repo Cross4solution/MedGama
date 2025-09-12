@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, Repeat } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp } from 'lucide-react';
 
-export default function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {} }) {
+export default function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
   const avatarUrl = item.avatar || '/images/portrait-candid-male-doctor_720.jpg';
   const [expanded, setExpanded] = useState(false);
   const [showCommentsPreview, setShowCommentsPreview] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(Number(item?.likes) || 0);
 
   const truncate = (text, max = 120) => {
     if (!text) return '';
@@ -34,6 +36,55 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
         : (item?.type === 'clinic_update' ? '/clinic' : '/profile');
   const titleLink = item?.specialty ? `/clinics?specialty=${encodeURIComponent(item.specialty)}` : actorLink;
 
+  // Compact mode helpers
+  const avatarSize = compact ? 'w-10 h-10' : 'w-12 h-12';
+  const nameText = compact ? 'text-sm md:text-[15px] leading-5' : 'text-[15px] md:text-base';
+  const singleImgMaxH = compact ? 'max-h-[360px]' : 'max-h-[520px]';
+  const grid2H = compact ? 'h-[180px]' : 'h-[240px]';
+  const grid3LeftH = compact ? 'h-[300px]' : 'h-[360px]';
+  const grid3SmallH = compact ? 'h-[148px]' : 'h-[178px]';
+  const grid4H = compact ? 'h-[180px]' : 'h-[220px]';
+  const headerPad = compact ? 'px-3 pt-2' : 'px-3 pt-3';
+  const headerGap = compact ? 'gap-2' : 'gap-3';
+
+  const handleLike = (e) => {
+    e?.stopPropagation?.();
+    if (disabledActions) return;
+    setLiked((prev) => {
+      const next = !prev;
+      setLikeCount((c) => c + (next ? 1 : -1));
+      return next;
+    });
+  };
+
+  const handleShareExternal = async (e) => {
+    e?.stopPropagation?.();
+    const url = (() => {
+      try {
+        const origin = typeof window !== 'undefined' && window.location ? window.location.origin : '';
+        return `${origin}/post/${encodeURIComponent(item?.id || '')}`;
+      } catch {
+        return `/post/${encodeURIComponent(item?.id || '')}`;
+      }
+    })();
+    const title = item?.actor?.name || 'Update';
+    const text = (item?.text || '').slice(0, 120);
+    if (navigator?.share) {
+      try {
+        await navigator.share({ title, text, url });
+        return;
+      } catch {
+        // fall through to copy
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      alert('Link panoya kopyalandı');
+    } catch {
+      window.open(url, '_blank');
+    }
+  };
+
   return (
     <article
       className={`group rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden`}
@@ -41,28 +92,30 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
       {view === 'list' ? (
         <div className="flex flex-col">
           {/* Header */}
-          <div className="flex items-start justify-between px-3 pt-3">
-            <div className="flex items-start gap-3 min-w-0">
+          <div className={`flex items-start justify-between ${headerPad}`}>
+            <div className={`flex items-start ${headerGap} min-w-0`}>
               <Link to={actorLink} onClick={(e)=>e.stopPropagation()}>
-                <img src={actorAvatar} alt={actorName} className="w-12 h-12 rounded-full object-cover border" />
+                <img src={actorAvatar} alt={actorName} className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
               </Link>
               <div className="min-w-0">
                 {/* socialContext (e.g., liked by N) removed per design */}
                 <div className="flex items-center gap-1">
-                  <Link to={actorLink} onClick={(e)=>e.stopPropagation()} className="text-[15px] md:text-base font-semibold text-gray-900 truncate hover:underline" title={actorName}>{actorName}</Link>
+                  <Link to={actorLink} onClick={(e)=>e.stopPropagation()} className={`${nameText} font-semibold text-gray-900 truncate hover:underline`} title={actorName}>{actorName}</Link>
                 </div>
-                <Link to={titleLink} onClick={(e)=>e.stopPropagation()} className="text-xs text-gray-500 truncate hover:underline">{actorTitle}</Link>
-                <div className="text-[11px] text-gray-400">{timeAgo} • {visibility === 'public' ? 'Public' : 'Connections'}</div>
+                <Link to={titleLink} onClick={(e)=>e.stopPropagation()} className={`truncate hover:underline ${compact ? 'text-[13px] leading-4 text-gray-600' : 'text-xs text-gray-500'}`}>{actorTitle}</Link>
+                <div className={`${compact ? 'leading-4' : ''} text-[11px] text-gray-400`}>{timeAgo} • {visibility === 'public' ? 'Public' : 'Connections'}</div>
               </div>
             </div>
-            <div className="flex items-center gap-1 text-gray-500">
-              <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Daha fazla" onClick={(e)=>e.stopPropagation()}>
-                <MoreHorizontal className="w-5 h-5" />
-              </button>
-              <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Gizle" onClick={(e)=>e.stopPropagation()}>
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            {!compact && (
+              <div className="flex items-center gap-1 text-gray-500">
+                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Daha fazla" onClick={(e)=>e.stopPropagation()}>
+                  <MoreHorizontal className="w-5 h-5" />
+                </button>
+                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Gizle" onClick={(e)=>e.stopPropagation()}>
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Text */}
@@ -96,7 +149,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               {media.length === 1 && (
                 <div className="relative">
                   <Link to={`/post/${encodeURIComponent(item.id)}`} state={{ item }} onClick={(e)=>e.stopPropagation()}>
-                    <img src={media[0].url} alt={media[0].alt || actorName} loading="lazy" className="w-full max-h-[520px] object-cover rounded-b-none" />
+                    <img src={media[0].url} alt={media[0].alt || actorName} loading="lazy" className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
                   </Link>
                 </div>
               )}
@@ -104,7 +157,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                 <div className="grid grid-cols-2 gap-1">
                   {media.slice(0,2).map((m, i) => (
                     <Link key={i} to={`/post/${encodeURIComponent(item.id)}`} state={{ item }} onClick={(e)=>e.stopPropagation()}>
-                      <img src={m.url} alt={m.alt || actorName} loading="lazy" className="w-full h-[240px] object-cover" />
+                      <img src={m.url} alt={m.alt || actorName} loading="lazy" className={`w-full ${grid2H} object-cover`} />
                     </Link>
                   ))}
                 </div>
@@ -112,12 +165,12 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               {media.length === 3 && (
                 <div className="grid grid-cols-2 gap-1">
                   <Link to={`/post/${encodeURIComponent(item.id)}`} state={{ item }} onClick={(e)=>e.stopPropagation()}>
-                    <img src={media[0].url} alt={media[0].alt || actorName} loading="lazy" className="w-full h-[360px] object-cover col-span-1" />
+                    <img src={media[0].url} alt={media[0].alt || actorName} loading="lazy" className={`w-full ${grid3LeftH} object-cover col-span-1`} />
                   </Link>
                   <div className="grid grid-rows-2 gap-1">
                     {media.slice(1,3).map((m, i) => (
                       <Link key={i} to={`/post/${encodeURIComponent(item.id)}`} state={{ item }} onClick={(e)=>e.stopPropagation()}>
-                        <img src={m.url} alt={m.alt || actorName} loading="lazy" className="w-full h-[178px] object-cover" />
+                        <img src={m.url} alt={m.alt || actorName} loading="lazy" className={`w-full ${grid3SmallH} object-cover`} />
                       </Link>
                     ))}
                   </div>
@@ -128,7 +181,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                   {media.slice(0,4).map((m, i) => (
                     <div key={i} className="relative">
                       <Link to={`/post/${encodeURIComponent(item.id)}`} state={{ item }} onClick={(e)=>e.stopPropagation()}>
-                        <img src={m.url} alt={m.alt || actorName} loading="lazy" className="w-full h-[220px] object-cover" />
+                        <img src={m.url} alt={m.alt || actorName} loading="lazy" className={`w-full ${grid4H} object-cover`} />
                       </Link>
                       {i === 3 && media.length > 4 && (
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -225,7 +278,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                   <Heart className="w-3 h-3" />
                 </span>
               </span>
-              <span className="ml-2">{item.likes}</span>
+              <span className="ml-2">{likeCount}</span>
             </div>
             <div>
               <button type="button" className="text-gray-500 hover:underline" onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}>
@@ -235,9 +288,14 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           </div>
 
           {/* Action bar */}
-          <div className="px-2 md:px-3 py-1.5 border-t mt-1 grid grid-cols-4">
-            <button type="button" disabled={disabledActions} className={`inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-50'}`} onClick={(e)=>e.stopPropagation()}>
-              <ThumbsUp className="w-4 h-4" /> <span>Like</span>
+          <div className="px-2 md:px-3 py-1.5 border-t mt-1 grid grid-cols-3">
+            <button
+              type="button"
+              disabled={disabledActions}
+              className={`inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm ${disabledActions ? 'text-gray-300 cursor-not-allowed' : (liked ? 'text-teal-700 bg-teal-50' : 'text-gray-600 hover:bg-gray-50')}`}
+              onClick={handleLike}
+            >
+              <ThumbsUp className="w-4 h-4" /> <span>{liked ? 'Liked' : 'Like'}</span>
             </button>
             <button
               type="button"
@@ -247,11 +305,8 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
             >
               <MessageCircle className="w-4 h-4" /> <span>Comment</span>
             </button>
-            <button type="button" className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50" onClick={(e)=>e.stopPropagation()}>
-              <Repeat className="w-4 h-4" /> <span>Share</span>
-            </button>
-            <button type="button" className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50" onClick={(e)=>e.stopPropagation()}>
-              <Send className="w-4 h-4" /> <span>Send</span>
+            <button type="button" className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50" onClick={handleShareExternal}>
+              <Send className="w-4 h-4" /> <span>Share</span>
             </button>
           </div>
         </div>
@@ -268,15 +323,15 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           </div>
           <div className="p-5">
             <div className="flex items-center gap-3">
-              <img src={avatarUrl} alt={item.title} className="w-12 h-12 rounded-full object-cover border" />
+              <img src={avatarUrl} alt={item.title} className={`${compact ? 'w-10 h-10' : 'w-12 h-12'} rounded-full object-cover border`} />
               <div className="min-w-0">
-                <h3 className="text-lg font-semibold text-gray-900 truncate" title={item.title}>{item.title}</h3>
+                <h3 className={`font-semibold text-gray-900 truncate ${compact ? 'text-base' : 'text-lg'}`} title={item.title}>{item.title}</h3>
                 <p className="text-xs text-gray-600 flex items-center gap-1 mt-0.5">
                   <MapPin className="w-3.5 h-3.5 text-teal-600" /> {item.city}
                 </p>
               </div>
             </div>
-            <p className="mt-3 text-[15px] leading-6 text-gray-800 line-clamp-3">{item.text}</p>
+            <p className={`mt-3 leading-6 text-gray-800 line-clamp-3 ${compact ? 'text-[14px]' : 'text-[15px]'}`}>{item.text}</p>
             <div className="mt-4 flex items-center justify-between">
               <div className="flex items-center gap-3 text-gray-500 text-xs">
                 <span className="inline-flex items-center gap-1" aria-label="likes"><Heart className="w-4 h-4" />{item.likes}</span>
