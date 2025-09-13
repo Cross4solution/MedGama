@@ -1,0 +1,48 @@
+// Shared list of medical specialties for Explore and Clinics pages
+// Keep names in English for consistency across pages.
+
+const SPECIALTIES = [
+  'Cardiology',
+  'Cardiac Surgery',
+  'Pediatric Cardiology',
+  'Oncology',
+  'Medical Oncology',
+  'Radiation Oncology',
+  'Hematology',
+  'Orthopedics',
+  'Sports Medicine',
+  'Rheumatology',
+  'Neurology',
+  'Neurosurgery',
+  'Psychiatry',
+  'Psychology',
+  'Dermatology',
+  'Endocrinology',
+  'Gastroenterology',
+  'General Surgery',
+  'Plastic Surgery',
+  'Reconstructive Surgery',
+  'OB/GYN',
+  'Urology',
+  'Nephrology',
+  'Pulmonology',
+  'Otolaryngology (ENT)',
+  'Ophthalmology',
+  'Dentistry',
+  'Oral and Maxillofacial Surgery',
+  'Pediatrics',
+  'Geriatrics',
+  'Infectious Diseases',
+  'Allergy & Immunology',
+  'Anesthesiology',
+  'Emergency Medicine',
+  'Radiology',
+  'Interventional Radiology',
+  'Pathology',
+  'Physiotherapy',
+  'Nutrition & Dietetics',
+  'Speech Therapy',
+  'Wellness'
+];
+
+export default SPECIALTIES;

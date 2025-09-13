@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 html {
-  /* Yumuşak sayfa kaydırma (wheel hissini daha kontrollü algılatır) */
-  scroll-behavior: smooth;
+  /* Not: smooth burada global wheel hissini olduğundan yavaş algılatabilir */
+  /* Uygulama JS tarafında kaydırmayı yönettiği için burada auto kalsın */
+  scroll-behavior: auto;
 }
 
 body {

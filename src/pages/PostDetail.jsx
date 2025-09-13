@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { MapPin, MessageCircle, ThumbsUp, Send, Repeat, X } from 'lucide-react';
+import ShareMenu from '../components/ShareMenu';
 
 export default function PostDetail() {
   const { state } = useLocation();
@@ -68,9 +69,9 @@ export default function PostDetail() {
             >
               <MessageCircle className="w-4 h-4" /> <span>Comment</span>
             </button>
-            <button type="button" className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
-              <Repeat className="w-4 h-4" /> <span>Share</span>
-            </button>
+            <div className="flex items-center justify-center">
+              <ShareMenu title="Share" url={typeof window !== 'undefined' ? window.location.href : ''} showNative={false} />
+            </div>
             <button type="button" className="inline-flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
               <Send className="w-4 h-4" /> <span>Send</span>
             </button>

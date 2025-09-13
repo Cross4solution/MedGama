@@ -29,11 +29,14 @@ export function toEnglishTimestamp(ts) {
   if (!ts) return '';
   const s = String(ts).trim().toLowerCase();
   if (s === 'az önce') return 'Just now';
-  const m = s.match(/(\d+)\s+(dakika|saat|gün|hafta|ay|yıl)\s+önce/);
+  // Normalize diacritics (gün->gun, yıl->yil, önce->once)
+  const ascii = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Accept both with and without 'once' word
+  const m = ascii.match(/(\d+)\s*(dakika|saat|gun|hafta|ay|yil)(?:\s+once)?/);
   if (m) {
     const n = parseInt(m[1], 10);
     const unit = m[2];
-    const unitMap = { 'dakika': 'minute', 'saat': 'hour', 'gün': 'day', 'hafta': 'week', 'ay': 'month', 'yıl': 'year' };
+    const unitMap = { 'dakika': 'minute', 'saat': 'hour', 'gun': 'day', 'hafta': 'week', 'ay': 'month', 'yil': 'year' };
     const enUnit = unitMap[unit] || 'unit';
     return `${n} ${enUnit}${n === 1 ? '' : 's'} ago`;
   }

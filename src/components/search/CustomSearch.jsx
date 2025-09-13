@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import countryCities from '../../data/countryCities';
+import { listCountries, loadPreferredAdminOrCities, getFlagCode } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox.jsx';
 import CityCombobox from '../forms/CityCombobox.jsx';
 
@@ -10,13 +10,13 @@ export default function CustomSearch() {
   const [symptom, setSymptom] = useState('');
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [loadingCities, setLoadingCities] = useState(false);
-  const [allWorldCities, setAllWorldCities] = useState(null);
+  const [adminType, setAdminType] = useState('city'); // 'state' | 'city'
   const loadRef = React.useRef(0);
 
   const getCountryVariants = React.useCallback((name) => {
     const aliases = {
       'Czechia': ['Czech Republic'],
-      'United States': ['United States of America', 'USA', 'US'],
+      'United States': ['United States of America', 'USA', 'US', 'U.S.'],
       'United Kingdom': ['Great Britain', 'UK', 'GB', 'Britain'],
       'Russia': ['Russian Federation'],
       'Vatican City': ['Holy See'],
@@ -28,11 +28,9 @@ export default function CustomSearch() {
     return Array.from(set);
   }, []);
 
-  const countries = useMemo(() => {
-    const base = Object.keys(countryCities || {});
-    const extra = (allWorldCities && Array.isArray(allWorldCities)) ? Array.from(new Set(allWorldCities.map((c) => c.country))) : [];
-    return Array.from(new Set([...base, ...extra])).sort();
-  }, [allWorldCities]);
+  // states/eyalet modu kaldırıldı; tüm ülkeler için şehir listesi gösterilir
+
+  const countries = useMemo(() => listCountries(['Europe', 'Asia', 'MiddleEast']), []);
   const specialties = ['ENT', 'Cardiology', 'Orthopedics', 'Dermatology', 'Ophthalmology', 'Plastic Surgery', 'Dentistry', 'Neurology', 'Gastroenterology'];
   const procedures = ['Rhinoplasty', 'Hip Replacement', 'Hair Transplant', 'Knee Replacement', 'LASIK', 'Dental Implant', 'Root Canal', 'Cataract Surgery'];
   const symptoms = ['Nasal congestion', 'Headache', 'Low back pain', 'Nausea', 'Toothache', 'Blurred vision', 'Acne', 'Varicose veins', 'Tinnitus'];
@@ -45,20 +43,9 @@ export default function CustomSearch() {
     console.log('Custom search:', { country, city, specialty, symptom });
   };
 
-  React.useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      try {
-        // @ts-ignore: dynamic JSON import in JS file (no resolveJsonModule)
-        const mod = await import('../../data/worldCities.min.json');
-        if (!cancelled) setAllWorldCities(mod.default || mod);
-      } catch (e) {
-        console.warn('worldCities yüklenemedi, local countryCities ile devam');
-      }
-    };
-    load();
-    return () => { cancelled = true; };
-  }, []);
+  // Dış API ile ülke listesi/flag kodu alma kaldırıldı; veriler utils/geo içinden geliyor.
+
+  // worldCities dinamik importu utils/geo altında yapılıyor; burada gerek yok.
 
   React.useEffect(() => {
     setCitiesOptions([]);
@@ -69,7 +56,7 @@ export default function CustomSearch() {
     const runId = ++loadRef.current; // geç gelen yanıtları iptal etmek için sürümleme
     const abortCtrl = new AbortController();
 
-    const withTimeout = (promise, ms = 800) => {
+    const withTimeout = (promise, ms = 3000) => {
       return new Promise((resolve, reject) => {
         const t = setTimeout(() => reject(new Error('timeout')), ms);
         promise.then((v) => { clearTimeout(t); resolve(v); }).catch((e) => { clearTimeout(t); reject(e); });
@@ -87,53 +74,19 @@ export default function CustomSearch() {
     };
 
     (async () => {
-      // 1) Uzak API: ülke isim varyantlarını paralel dene, kısa timeout ile
       try {
-        const variants = getCountryVariants(country);
-        const requests = variants.map((candidate) => withTimeout(
-          fetch('https://countriesnow.space/api/v0.1/countries/cities', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ country: candidate }),
-            signal: abortCtrl.signal,
-          }).then(async (res) => {
-            if (!res.ok) throw new Error('bad response');
-            const json = await res.json();
-            return (json?.data || []).filter(Boolean);
-          })
-        , 900));
-
-        const settled = await Promise.allSettled(requests);
-        for (const s of settled) {
-          if (s.status === 'fulfilled' && applyIfFresh(s.value)) return;
-        }
-      } catch (_) { /* ignore */ }
-
-      // 2) Public dosya: ülkeye özel JSON
-      try {
-        const res = await withTimeout(fetch(`/data/world-cities/${encodeURIComponent(country)}.json`, { cache: 'force-cache', signal: abortCtrl.signal }), 800);
-        if (res.ok) {
-          const data = await res.json();
-          const arr = (Array.isArray(data) ? data : []).map((x) => (typeof x === 'string' ? x : x.city));
-          if (applyIfFresh(arr)) return;
-        }
-      } catch (_) { /* ignore */ }
-
-      // 3) allWorldCities memory
-      if (allWorldCities && Array.isArray(allWorldCities)) {
-        const filtered = allWorldCities.filter((c) => c.country === country).map((c) => c.city);
-        if (applyIfFresh(filtered)) return;
+        const result = await loadPreferredAdminOrCities(country);
+        setAdminType(result?.type === 'state' ? 'state' : 'city');
+        applyIfFresh(Array.isArray(result?.list) ? result.list : []);
+      } catch {
+        setLoadingCities(false);
       }
-
-      // 4) Son çare: local dataset
-      const fallback = countryCities[country] || [];
-      applyIfFresh(fallback);
     })();
 
     return () => {
       abortCtrl.abort();
     };
-  }, [country, allWorldCities, getCountryVariants]);
+  }, [country]);
 
   const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const filterOptions = (list, q) => {
@@ -202,8 +155,12 @@ export default function CustomSearch() {
           <CountryCombobox
             options={countries}
             value={country}
-            onChange={(val) => { setCountry(val); setCity(''); }}
+            onChange={(val) => { setCountry((val || '').trim()); setCity(''); }}
             placeholder="Country"
+            getFlagUrl={(name) => {
+              const code = getFlagCode(name);
+              return code ? `https://flagcdn.com/24x18/${code}.png` : null;
+            }}
           />
         </div>
 
@@ -215,8 +172,8 @@ export default function CustomSearch() {
             onChange={setCity}
             disabled={!country}
             loading={loadingCities}
-            wheelFactor={0.6}
-            placeholder="City"
+            wheelFactor={1}
+            placeholder={adminType === 'state' ? 'State/Province' : 'City'}
           />
         </div>
 

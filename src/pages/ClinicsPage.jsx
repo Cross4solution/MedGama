@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import countryCities from '../data/countryCities';
+import SPECIALTIES from '../data/specialties';
 import PatientLayout from '../components/PatientLayout';
 import ClinicSearchBar from 'components/forms/ClinicSearchBar';
 import FiltersSidebar from 'components/filters/FiltersSidebar';
@@ -46,9 +47,7 @@ const MediTravelClinics = () => {
 
   const countryOptions = Object.keys(countryCities || {});
   const cityOptions = country ? (countryCities[country] || []) : [];
-  const specialtyOptions = [
-    'Kalp Cerrahisi','Onkoloji','Plastik Cerrahi','Ortopedi','Nöroloji','Göz Hastalıkları','Diş Hekimliği'
-  ];
+  const specialtyOptions = SPECIALTIES;
   const priceOptions = ['Ekonomik','Orta','Premium','Lüks'];
   
   const clinics = [

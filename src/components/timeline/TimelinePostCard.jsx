@@ -5,10 +5,12 @@ import TimelineButton from './TimelineButton';
 import Badge from '../Badge';
 import { toEnglishTimestamp } from '../../utils/i18n';
 import { useAuth } from '../../context/AuthContext';
+import ShareMenu from '../ShareMenu';
 
 export default function TimelinePostCard({ post }) {
   const { user } = useAuth();
   const isPatient = user?.role === 'patient';
+  const badgeVariant = (post?.badge?.color && ['teal','blue','purple','amber','green','red','gray'].includes(post.badge.color)) ? post.badge.color : 'blue';
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-md overflow-hidden">
       {/* Post Header */}
@@ -19,7 +21,7 @@ export default function TimelinePostCard({ post }) {
             <div>
               <div className="flex items-center space-x-2">
                 <h4 className="font-semibold text-gray-800">{post.clinic?.name || post.patient?.name}</h4>
-                {post.badge && <Badge text={post.badge.text} color={post.badge.color} />}
+                {post.badge && <Badge label={post.badge.text} variant={badgeVariant} />}
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <Clock className="w-3 h-3" />
@@ -57,29 +59,26 @@ export default function TimelinePostCard({ post }) {
             <>
               {isPatient ? (
                 <>
-                  <button className="flex items-center space-x-2 text-gray-600 hover:text-red-500">
+                  <button className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-700 hover:bg-gray-50 border border-gray-200 bg-white shadow-sm">
                     <Heart className="w-5 h-5" />
                     <span>{post.engagement.likes}</span>
                   </button>
-                  <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-500">
+                  <button className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-700 hover:bg-gray-50 border border-gray-200 bg-white shadow-sm">
                     <MessageCircle className="w-5 h-5" />
                     <span>{post.engagement.comments}</span>
                   </button>
                 </>
               ) : (
                 <>
-                  <div className="flex items-center space-x-2 text-gray-500">
+                  <div className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-700 hover:bg-gray-50 border border-gray-200 bg-white shadow-sm">
                     <Heart className="w-5 h-5" />
                     <span>{post.engagement.likes}</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-gray-500">
+                  <div className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-700 hover:bg-gray-50 border border-gray-200 bg-white shadow-sm">
                     <MessageCircle className="w-5 h-5" />
                     <span>{post.engagement.comments}</span>
                   </div>
-                  <button className="flex items-center space-x-2 text-gray-600 hover:text-green-500">
-                    <Share2 className="w-5 h-5" />
-                    <span>Share</span>
-                  </button>
+                  <ShareMenu title="Share" url={typeof window !== 'undefined' ? window.location.href : ''} showNative={false} />
                 </>
               )}
             </>

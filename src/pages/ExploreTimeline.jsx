@@ -9,17 +9,9 @@ import TimelineControls from 'components/timeline/TimelineControls';
 import ActiveFilterChips from 'components/timeline/ActiveFilterChips';
 import TimelineCard from 'components/timeline/TimelineCard';
 import SkeletonCard from 'components/timeline/SkeletonCard';
+import SPECIALTIES from '../data/specialties';
 
 // Basit mock feed üretici: guest için random, user için follow-first + location mix simülasyonu
-// Kapsamlı uzmanlık listesi (örnek, gerektiğinde daha da genişletilebilir)
-const SPECIALTIES = [
-  'Cardiology','Cardiac Surgery','Pediatric Cardiology','Oncology','Medical Oncology','Radiation Oncology','Hematology',
-  'Orthopedics','Sports Medicine','Rheumatology','Neurology','Neurosurgery','Psychiatry','Psychology','Dermatology',
-  'Endocrinology','Gastroenterology','General Surgery','Plastic Surgery','Reconstructive Surgery','OB/GYN','Urology',
-  'Nephrology','Pulmonology','Otolaryngology (ENT)','Ophthalmology','Dentistry','Oral and Maxillofacial Surgery',
-  'Pediatrics','Geriatrics','Infectious Diseases','Allergy & Immunology','Anesthesiology','Emergency Medicine',
-  'Radiology','Interventional Radiology','Pathology','Physiotherapy','Nutrition & Dietetics','Speech Therapy'
-];
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
@@ -218,7 +210,7 @@ export default function ExploreTimeline() {
           geo={geo}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
           {/* Filters (LEFT) */}
           <TimelineFilterSidebar
             query={query}

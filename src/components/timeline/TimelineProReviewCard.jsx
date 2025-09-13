@@ -1,5 +1,6 @@
 import React from 'react';
 import { Heart, MessageCircle, Share2, User } from 'lucide-react';
+import ShareMenu from '../ShareMenu';
 import TimelineButton from './TimelineButton';
 import TimelineActionsRow from './TimelineActionsRow';
 
@@ -59,10 +60,7 @@ export default function TimelineProReviewCard({ professionalReview }) {
                 <MessageCircle className="w-5 h-5" />
                 <span>{professionalReview.engagement?.comments ?? 24}</span>
               </button>
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-green-500">
-                <Share2 className="w-5 h-5" />
-                <span>Share</span>
-              </button>
+              <ShareMenu title="Share" showNative={false} />
             </>
           }
           right={<TimelineButton className="w-full sm:w-auto">View Details</TimelineButton>}

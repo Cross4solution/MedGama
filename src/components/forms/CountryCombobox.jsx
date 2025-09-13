@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import countryCodes from '../../data/countryCodes';
 
-export default function CountryCombobox({ options = [], value, onChange, placeholder = 'Select Country', triggerClassName = '' }) {
+export default function CountryCombobox({ options = [], value, onChange, placeholder = 'Select Country', triggerClassName = '', getFlagUrl }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const ref = useRef(null);
@@ -56,9 +56,20 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
   }, []);
 
   const selectedLabel = value || '';
-  const getFlagUrl = (name) => {
+  const defaultGetFlagUrl = (name) => {
     const code = countryCodes[name];
     return code ? `https://flagcdn.com/24x18/${code}.png` : null;
+  };
+  const resolveFlagUrl = (name) => {
+    if (typeof getFlagUrl === 'function') {
+      try {
+        const ext = getFlagUrl(name);
+        return ext || defaultGetFlagUrl(name);
+      } catch {
+        return defaultGetFlagUrl(name);
+      }
+    }
+    return defaultGetFlagUrl(name);
   };
 
   return (
@@ -74,8 +85,8 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
       >
         {selectedLabel ? (
           <span className="inline-flex items-center gap-2">
-            {getFlagUrl(selectedLabel) && (
-              <img src={getFlagUrl(selectedLabel)} alt="" width={18} height={14} className="inline-block rounded-sm" loading="lazy" />
+            {resolveFlagUrl(selectedLabel) && (
+              <img src={resolveFlagUrl(selectedLabel)} alt="" width={18} height={14} className="inline-block rounded-sm" loading="lazy" />
             )}
             <span>{selectedLabel}</span>
           </span>
@@ -102,8 +113,8 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
                   className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2"
                   onClick={() => { onChange && onChange(opt); setOpen(false); setQuery(''); }}
                 >
-                  {getFlagUrl(opt) && (
-                    <img src={getFlagUrl(opt)} alt="" width={18} height={14} className="inline-block rounded-sm" loading="lazy" />
+                  {resolveFlagUrl(opt) && (
+                    <img src={resolveFlagUrl(opt)} alt="" width={18} height={14} className="inline-block rounded-sm" loading="lazy" />
                   )}
                   <span>{opt}</span>
                 </button>

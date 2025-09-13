@@ -23,14 +23,14 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
     <section id="timeline" className="py-2">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-gray-900">MadStream</h2>
+          <h2 className="text-lg font-semibold text-gray-900">MedStream</h2>
           {onViewAll ? (
             <button
               type="button"
               onClick={onViewAll}
               className="text-sm text-teal-700 hover:text-teal-800 hover:underline"
             >
-              View all MadStream updates
+              View All MedStream Updates
             </button>
           ) : (
             <Link to="/explore" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">View all updates items</Link>
