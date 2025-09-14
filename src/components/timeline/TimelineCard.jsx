@@ -235,10 +235,10 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           <div className="px-3 pt-2 mt-2 text-sm text-gray-500 flex items-center justify-between">
             <div className="inline-flex items-center gap-1">
               <span className="inline-flex -space-x-1">
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#378fe9] text-white border-2 border-[#0a66c2]">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#378fe9] text-white">
                   <MessageCircle className="w-3 h-3" />
                 </span>
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#f35369] text-white border-2 border-[#c41e3a]">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#f35369] text-white">
                   <ThumbsUp className="w-3 h-3" />
                 </span>
               </span>

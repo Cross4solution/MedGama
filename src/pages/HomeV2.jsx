@@ -67,12 +67,10 @@ export default function HomeV2() {
           <div className="relative">
             {/* Background layer with a lighter blur (reduced for clarity) */}
             <div
-              className="absolute inset-0 bg-cover bg-center filter grayscale blur-[0.5px] md:blur-[1px]"
-              style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/patient-login-background.jpg)` }}
+              className="absolute inset-0 bg-cover bg-center filter blur-[0.5px] md:blur-[1px]"
+              style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
               aria-hidden="true"
             />
-            {/* Overlay for readability */}
-            <div className="absolute inset-0 bg-black/20 md:bg-black/25" aria-hidden="true" />
             {/* Removed white bottom gradient as requested */}
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="grid grid-cols-1 gap-8 items-center">
