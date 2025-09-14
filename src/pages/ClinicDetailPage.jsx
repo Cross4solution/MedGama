@@ -25,6 +25,7 @@ import QuickContactCard from 'components/clinic/QuickContactCard';
 const ClinicDetailPage = () => {
   const [activeTab, setActiveTab] = useState('genel-bakis');
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const tabs = [
     { id: 'genel-bakis', label: 'Overview' },
@@ -138,6 +139,8 @@ const ClinicDetailPage = () => {
               )}
               isFavorite={isFavorite}
               onToggleFavorite={() => setIsFavorite(!isFavorite)}
+              isFollowing={isFollowing}
+              onToggleFollow={() => setIsFollowing((v) => !v)}
               onFollow={() => {}}
             />
 

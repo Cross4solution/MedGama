@@ -67,8 +67,8 @@ export default function HomeV2() {
           <div className="relative">
             {/* Background layer with a lighter blur (reduced for clarity) */}
             <div
-              className="absolute inset-0 bg-cover bg-center filter blur-[0.5px] md:blur-[1px]"
-              style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
+              className="absolute inset-0 bg-cover bg-center filter grayscale blur-[0.5px] md:blur-[1px]"
+              style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/patient-login-background.jpg)` }}
               aria-hidden="true"
             />
             {/* Overlay for readability */}

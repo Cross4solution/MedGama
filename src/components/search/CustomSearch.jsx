@@ -148,7 +148,7 @@ export default function CustomSearch() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <div className="bg-white/95 backdrop-blur border border-gray-100 rounded-xl p-3 md:p-3 shadow-[0_6px_20px_-5px_rgba(28,106,131,0.18),0_2px_6px_-2px_rgba(2,6,23,0.12)] hover:shadow-[0_10px_30px_-10px_rgba(28,106,131,0.22),0_4px_12px_-3px_rgba(2,6,23,0.16)] focus-within:shadow-[0_12px_36px_-12px_rgba(28,106,131,0.28),0_6px_16px_-4px_rgba(2,6,23,0.2)] transition-shadow">
+      <div className="bg-white border border-gray-200 rounded-xl p-3 md:p-3">
         <div className="grid gap-4 md:grid-cols-[12rem,12rem,1.1fr,auto,1.1fr,auto]">
         {/* 1. Country */}
         <div className="max-w-48">
@@ -157,6 +157,7 @@ export default function CustomSearch() {
             value={country}
             onChange={(val) => { setCountry((val || '').trim()); setCity(''); }}
             placeholder="Country"
+            triggerClassName="w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left"
             getFlagUrl={(name) => {
               const code = getFlagCode(name);
               return code ? `https://flagcdn.com/24x18/${code}.png` : null;
@@ -174,6 +175,7 @@ export default function CustomSearch() {
             loading={loadingCities}
             wheelFactor={1}
             placeholder={adminType === 'state' ? 'State/Province' : 'City'}
+            triggerClassName="w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left"
           />
         </div>
 

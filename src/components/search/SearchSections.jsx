@@ -34,7 +34,7 @@ export default function SearchSections() {
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Custom Search</h2>
           <CustomSearch />
           {/* Title for course/feature boxes under custom search */}
-          <h2 className="mt-6 mb-1 text-xl md:text-2xl font-bold text-gray-900 text-left">
+          <h2 className="mt-8 mb-1 text-xl md:text-2xl font-bold text-gray-900 text-left">
             Discover Our World-First Services
           </h2>
         </div>

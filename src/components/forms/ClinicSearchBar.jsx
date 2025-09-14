@@ -16,6 +16,9 @@ export default function ClinicSearchBar({
   onSpecialtyChange,
   onPriceRangeChange,
   onSubmit,
+  // Yeni: bayrak URL çözümü ve şehir yükleme durumu
+  getFlagUrl,
+  citiesLoading,
 }) {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
@@ -28,6 +31,7 @@ export default function ClinicSearchBar({
             value={country}
             onChange={(val) => { onCountryChange?.(val); onCityChange?.(''); }}
             placeholder="All Countries"
+            getFlagUrl={getFlagUrl}
           />
         </div>
         {/* City */}
@@ -38,6 +42,7 @@ export default function ClinicSearchBar({
             value={city}
             onChange={onCityChange}
             disabled={!country}
+            loading={citiesLoading}
             placeholder="All Cities"
           />
         </div>

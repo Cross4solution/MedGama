@@ -10,6 +10,7 @@ import DoctorChatPage from './pages/DoctorChatPage';
 import TelehealthAppointmentPage from './pages/TelehealthAppointmentPage';
 import TelehealthPage from './pages/TelehealthPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import ClinicsPage from './pages/ClinicsPage';
 import AuthPages from './pages/AuthPages';
 import AboutPage from './pages/AboutPage';
@@ -137,6 +138,7 @@ function AppContent() {
         <Route path="/telehealth" element={<TelehealthPage />} />
         <Route path="/telehealth-appointment" element={<TelehealthAppointmentPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/auth" element={<AuthPages />} />
         <Route path="/login" element={<AuthPages />} />
         <Route path="/register" element={<AuthPages />} />

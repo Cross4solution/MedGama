@@ -38,7 +38,8 @@ export default function Footer() {
               <ul className="space-y-2">
                 <li><a href="#" className="hover:text-white/90">GDPR</a></li>
                 <li><a href="#" className="hover:text-white/90">HIPAA</a></li>
-                <li><a href="#" className="hover:text-white/90">Privacy Policy</a></li>
+                <li><a href="/terms-of-service" className="hover:text-white/90">Terms of Service</a></li>
+                <li><a href="/privacy-policy" className="hover:text-white/90">Privacy Policy</a></li>
               </ul>
             </div>
           </div>
@@ -72,7 +73,8 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><a href="#" className="hover:text-white/90">GDPR</a></li>
               <li><a href="#" className="hover:text-white/90">HIPAA</a></li>
-              <li><a href="#" className="hover:text-white/90">Privacy Policy</a></li>
+              <li><a href="/terms-of-service" className="hover:text-white/90">Terms of Service</a></li>
+              <li><a href="/privacy-policy" className="hover:text-white/90">Privacy Policy</a></li>
             </ul>
           </div>
         </div>

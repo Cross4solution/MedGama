@@ -30,15 +30,15 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
               onClick={onViewAll}
               className="text-sm text-teal-700 hover:text-teal-800 hover:underline"
             >
-              View All MedStream Updates
+              View All Updates
             </button>
           ) : (
             <Link to="/explore" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">View all updates items</Link>
           )}
         </div>
-        <div className="bg-white p-0 rounded-none border-0 shadow-none">
+        <div className="bg-white p-0 rounded-xl border border-gray-200 shadow-sm">
           {/* Scrollable feed area */}
-          <div className="h-[80vh] overflow-y-auto pr-2">
+          <div className="h-[86vh] overflow-y-auto pr-2">
             <div className="space-y-6">
               {data.slice(0, 8).map((item) => (
                 <div key={item.id} className="max-w-2xl mx-auto">

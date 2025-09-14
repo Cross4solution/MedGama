@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Star, Heart, Plus } from 'lucide-react';
+import { MapPin, Star, Heart, Plus, Minus } from 'lucide-react';
 
 export default function ClinicHero({
   image,
@@ -10,6 +10,10 @@ export default function ClinicHero({
   badgeNode,
   isFavorite,
   onToggleFavorite,
+  // Yeni: takip durumu ve toggler
+  isFollowing,
+  onToggleFollow,
+  // Geriye dönük uyumluluk: onFollow hala gelebilir
   onFollow,
 }) {
   return (
@@ -47,9 +51,24 @@ export default function ClinicHero({
             >
               <Heart className={`w-6 h-6 ${isFavorite ? 'fill-current' : ''}`} />
             </button>
-            <button onClick={onFollow} className="bg-blue-600 text-white px-3 py-1.5 rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md">
-              <Plus className="w-4 h-4" />
-              <span className="text-sm">Follow</span>
+            <button
+              onClick={onToggleFollow || onFollow}
+              className={`${isFollowing
+                ? 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-50'
+                : 'bg-blue-600 text-white hover:bg-blue-700'} px-3 py-1 rounded-xl transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md`}
+              aria-label={isFollowing ? 'Unfollow' : 'Follow'}
+            >
+              {isFollowing ? (
+                <>
+                  <Minus className="w-4 h-4" />
+                  <span className="text-sm">Unfollow</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4" />
+                  <span className="text-sm">Follow</span>
+                </>
+              )}
             </button>
           </div>
         </div>

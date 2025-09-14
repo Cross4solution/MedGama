@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import countryCities from '../data/countryCities';
+import { listCountries, loadPreferredAdminOrCities, getFlagCode } from '../utils/geo';
 import SPECIALTIES from '../data/specialties';
 import PatientLayout from '../components/PatientLayout';
 import ClinicSearchBar from 'components/forms/ClinicSearchBar';
@@ -44,12 +44,43 @@ const MediTravelClinics = () => {
   const [city, setCity] = useState('');
   const [specialty, setSpecialty] = useState('');
   const [priceRange, setPriceRange] = useState('');
+  const [citiesLoading, setCitiesLoading] = useState(false);
+  const [cityOptions, setCityOptions] = useState([]);
+  const [adminType, setAdminType] = useState('city');
+  const loadRef = React.useRef(0);
 
-  const countryOptions = Object.keys(countryCities || {});
-  const cityOptions = country ? (countryCities[country] || []) : [];
+  const countryOptions = React.useMemo(() => listCountries(['Europe','Asia','MiddleEast']), []);
   const specialtyOptions = SPECIALTIES;
   const priceOptions = ['Ekonomik','Orta','Premium','Lüks'];
-  
+
+  // Ülke değişince şehir/eyalet listesini asenkron yükle
+  React.useEffect(() => {
+    setCity('');
+    setCityOptions([]);
+    if (!country) return;
+    setCitiesLoading(true);
+    const runId = ++loadRef.current;
+    (async () => {
+      try {
+        const result = await loadPreferredAdminOrCities(country);
+        if (loadRef.current !== runId) return;
+        setAdminType(result?.type === 'state' ? 'state' : 'city');
+        const list = Array.isArray(result?.list) ? result.list : [];
+        setCityOptions(Array.from(new Set(list.filter(Boolean))).sort());
+      } finally {
+        if (loadRef.current === runId) setCitiesLoading(false);
+      }
+    })();
+  }, [country]);
+
+  // CountryCombobox için bayrak URL üretici
+  const getFlagUrl = React.useCallback((name) => {
+    try {
+      const code = getFlagCode(name);
+      return code ? `https://flagcdn.com/24x18/${code}.png` : null;
+    } catch { return null; }
+  }, []);
+
   const clinics = [
     {
       id: 1,
@@ -173,7 +204,7 @@ const MediTravelClinics = () => {
           specialty={specialty}
           priceRange={priceRange}
           countryOptions={countryOptions}
-          cityOptions={cityOptions}
+          cityOptions={country ? cityOptions : []}
           specialtyOptions={specialtyOptions}
           priceOptions={priceOptions}
           onCountryChange={(val) => { setCountry(val); setCity(''); }}
@@ -181,6 +212,8 @@ const MediTravelClinics = () => {
           onSpecialtyChange={setSpecialty}
           onPriceRangeChange={setPriceRange}
           onSubmit={() => { /* mevcut demo: filtreleme butonu UI */ }}
+          getFlagUrl={getFlagUrl}
+          citiesLoading={citiesLoading}
         />
 
         <div className="flex flex-col lg:flex-row gap-6">

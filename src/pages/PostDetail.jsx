@@ -98,7 +98,6 @@ export default function PostDetail() {
                     </div>
                     <p className="text-gray-800 mt-0.5">Very informative, thanks.</p>
                     <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                      <button type="button" className="hover:text-gray-700">Like</button>
                       <button type="button" className="hover:text-gray-700">Reply</button>
                       <span>1 reply</span>
                     </div>
@@ -114,7 +113,6 @@ export default function PostDetail() {
                           </div>
                           <p className="text-gray-800 mt-0.5"><span className="font-semibold">Zehra Korkmaz</span> glad it helped 🙏</p>
                           <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                            <button type="button" className="hover:text-gray-700">Like</button>
                             <button type="button" className="hover:text-gray-700">Reply</button>
                           </div>
                         </div>
@@ -133,7 +131,6 @@ export default function PostDetail() {
                     </div>
                     <p className="text-gray-800 mt-0.5">Great update 👏</p>
                     <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                      <button type="button" className="hover:text-gray-700">Like</button>
                       <button type="button" className="hover:text-gray-700">Reply</button>
                     </div>
                   </div>

@@ -232,7 +232,7 @@ export default function ExploreTimeline() {
 
           {/* Feed (RIGHT) */}
           <section className="order-1 lg:order-2">
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-[46rem] mx-auto">
               {/* Aktif filtre chipleri */}
               <ActiveFilterChips
                 items={[

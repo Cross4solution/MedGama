@@ -9,6 +9,7 @@ export default function CityCombobox({
   loading = false,
   wheelFactor = 1, // 1 = normal hız, <1 yavaş, >1 hızlı
   lockBodyScroll = false, // header kaymasını önlemek için varsayılan false
+  triggerClassName = '',
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -58,7 +59,11 @@ export default function CityCombobox({
     <div className="relative" ref={ref}>
       <button
         type="button"
-        className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+        className={
+          triggerClassName && triggerClassName.length > 0
+            ? `${triggerClassName} ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`.trim()
+            : `w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`
+        }
         onClick={() => !disabled && setOpen((o) => !o)}
         disabled={disabled}
         aria-disabled={disabled}

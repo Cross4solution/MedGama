@@ -24,7 +24,7 @@ export default function TimelinePostCard({ post }) {
                 {post.badge && <Badge label={post.badge.text} variant={badgeVariant} />}
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <Clock className="w-3 h-3" />
+                <Clock className="w-3 h-3 text-gray-500" />
                 <span>{toEnglishTimestamp(post.timestamp)}</span>
               </div>
             </div>
