@@ -186,8 +186,7 @@ const RegisterForm = ({
         </div>
       </div>
             {/* Step 1 Actions */}
-            <div className="w-full max-w-md flex flex-col items-center gap-2 mt-4">
-              <div className="text-[11px] sm:text-xs text-gray-500 mb-1">Step {step} / 2</div>
+            <div className="w-full max-w-md flex items-center justify-end mt-4">
               <button
                 type="button"
                 onClick={handleNext}
@@ -310,7 +309,7 @@ const RegisterForm = ({
         </div>
         </>
       )}
-      <p className="text-center text-xs text-gray-600">
+      <p className="text-center text-sm sm:text-base text-gray-600">
         Already have an account?{' '}
         <button
           type="button"
