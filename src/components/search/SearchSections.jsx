@@ -29,11 +29,11 @@ export default function SearchSections() {
 
       {/* Custom Search (Country → City → Speciality → Symptom/Procedure) */}
       <section className="pt-6 pb-3">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Custom Search</h2>
           <CustomSearch />
           {/* Title for course/feature boxes under custom search */}
-          <h2 className="mt-8 mb-1 text-lg md:text-xl font-bold text-gray-900 text-left">
+          <h2 className="mt-8 mb-1 text-base md:text-lg font-bold text-gray-900 text-left">
             Discover Our World-First Services
           </h2>
         </div>

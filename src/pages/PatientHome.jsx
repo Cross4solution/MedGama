@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { TimelineFeed } from '../components/timeline';
 import { Header } from '../components/layout';
 import { SearchSections } from '../components/search';
+import PostComposer from '../components/PostComposer';
 
 export default function PatientHome() {
   const { user, formatCurrency } = useAuth();
@@ -32,7 +33,7 @@ export default function PatientHome() {
             {/* Toolbar directly under header - left aligned */}
             <div className="bg-white border-b">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-8 flex items-center gap-3 text-sm justify-end">
-                <Link to="/timeline" aria-label="Open timeline" className="inline-flex items-center">
+                <Link to="/explore" aria-label="Open explore" className="inline-flex items-center">
                   <img src="/images/timelinebutton.png" alt="Timeline" className="w-6 h-6 opacity-80 hover:opacity-100 transition" />
                 </Link>
               </div>
@@ -44,6 +45,10 @@ export default function PatientHome() {
                 <div className="bg-white p-0 rounded-none border-0 shadow-none">
                   {/* taller height, inner scrollable area */}
                   <div className="h-[80vh] overflow-y-auto pr-2">
+                    {/* Composer tam kartların üstünde ve kart genişliğinde */}
+                    <div className="mb-4 max-w-2xl mx-auto">
+                      <PostComposer />
+                    </div>
                     <TimelineFeed />
                   </div>
                 </div>

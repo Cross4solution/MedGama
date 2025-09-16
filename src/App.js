@@ -4,7 +4,6 @@ import SidebarPatient from './components/SidebarPatient';
 import { useAuth } from './context/AuthContext';
 import HomeV2 from './pages/HomeV2';
 import PatientHome from './pages/PatientHome';
-import TimelinePage from './pages/TimelinePage';
 import ClinicDetailPage from './pages/ClinicDetailPage';
 import DoctorChatPage from './pages/DoctorChatPage';
 import TelehealthAppointmentPage from './pages/TelehealthAppointmentPage';
@@ -131,7 +130,6 @@ function AppContent() {
         <Route path="/explore" element={<ExploreTimeline />} />
         <Route path="/patient-home" element={<PatientHome />} />
         <Route path="/clinics" element={<ClinicsPage />} />
-        <Route path="/timeline" element={<TimelinePage />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />
         <Route path="/doctor-chat" element={<DoctorChatPage />} />

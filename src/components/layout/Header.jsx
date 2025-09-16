@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu } from 'lucide-react';
+import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
@@ -125,7 +125,19 @@ const Header = () => {
                   <Link to="/register" className="text-sm bg-teal-600 text-white px-3 py-2 rounded-lg hover:bg-teal-700">Register</Link>
                 </>
               ) : (
-                <div className="relative" ref={profileRef}>
+                <>
+                  {/* Patient messages shortcut */}
+                  {user?.role === 'patient' && (
+                    <button
+                      type="button"
+                      title="Messages"
+                      onClick={() => navigate('/doctor-chat')}
+                      className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-800"
+                    >
+                      <MessageSquare className="w-5 h-5" />
+                    </button>
+                  )}
+                  <div className="relative" ref={profileRef}>
                   <button
                     type="button"
                     onClick={() => setProfileOpen((p)=>!p)}
@@ -154,7 +166,8 @@ const Header = () => {
                       </button>
                     </div>
                   )}
-                </div>
+                  </div>
+                </>
               )}
             </div>
             {/* Mobile trigger */}

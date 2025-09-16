@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Home, LayoutDashboard, Newspaper, MessageSquare, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight } from 'lucide-react';
+import { Home, LayoutDashboard, Newspaper, MessageSquare, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight, Video, User, Monitor } from 'lucide-react';
 
 export default function SidebarPatient() {
   const { user, logout, sidebarMobileOpen, setSidebarMobileOpen } = useAuth();
@@ -26,7 +26,7 @@ export default function SidebarPatient() {
     // Appointments
     { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
     // Additional patient tabs
-    { to: '/timeline', label: 'Feed', icon: Newspaper, badge: 5 },
+    { to: '/explore', label: 'Explore', icon: Newspaper, badge: 5 },
     { to: '/clinics', label: 'Clinics', icon: Building2 },
     { to: '/saved', label: 'Saved', icon: Bookmark },
     { to: '/terms-of-service', label: 'Settings', icon: Settings },
@@ -34,18 +34,22 @@ export default function SidebarPatient() {
 
   // Doctor-specific menu (Profile → Notifications → Messages → Appointments → Telehealth)
   const doctorItems = [
-    { to: '/patient-home', label: 'Profile', icon: Home },
+    { to: '/profile', label: 'Profile', icon: User },
+    { to: '/patient-home', label: 'Medstream', icon: Video },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
+    { to: '/home-v2', label: 'Homepage', icon: Home },
     { to: '/doctor-chat', label: 'Messages', icon: MessageSquare },
     { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
-    { to: '/telehealth', label: 'Telehealth', icon: CalendarClock },
+    { to: '/telehealth', label: 'Telehealth', icon: Monitor },
   ];
 
   // Clinic-specific menu (Profile → Notifications → Home → Doctors & Departments → CRM)
   const clinicItems = [
-    { to: '/patient-home', label: 'Profile', icon: Home },
+    { to: '/clinic', label: 'Profile', icon: User },
+    { to: '/patient-home', label: 'Medstream', icon: Video },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
-    { to: '/patient-home', label: 'Home', icon: Home },
+    { to: '/home-v2', label: 'Homepage', icon: Home },
+    { to: '/doctor-chat', label: 'Messages', icon: MessageSquare },
     { to: '/clinics', label: 'Doctors & Departments', icon: Building2 },
     { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
   ];
@@ -101,7 +105,11 @@ export default function SidebarPatient() {
                   <div className="text-sm font-semibold text-gray-900 truncate">{user?.name}</div>
                   <div className="text-xs text-gray-500 truncate">{roleLabel}</div>
                 </div>
-                <button className="ml-auto relative text-gray-500 hover:text-gray-700" title="Notifications">
+                <button
+                  className="ml-auto relative text-gray-500 hover:text-gray-700"
+                  title="Notifications"
+                  onClick={() => navigate('/notifications')}
+                >
                   <Bell className="w-5 h-5" />
                   <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
                 </button>

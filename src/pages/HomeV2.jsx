@@ -75,10 +75,26 @@ export default function HomeV2() {
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="grid grid-cols-1 gap-8 items-center">
                 <div>
-                  <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.75)]" style={{ WebkitTextStroke: '0.4px rgba(0,0,0,0.35)' }}>
+                  <h1
+                    className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md antialiased"
+                    style={{
+                      WebkitTextStroke: '0',
+                      fontVariantLigatures: 'none',
+                      fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif'
+                    }}
+                  >
                     #1 Health Portal in the World
                   </h1>
-                  <p className="mt-4 text-white md:text-lg font-medium drop-shadow-[0_1.5px_2px_rgba(0,0,0,0.8)]" style={{ WebkitTextStroke: '0.3px rgba(0,0,0,0.35)' }}>One-click, end-to-end care: discovery, availability, telehealth, health tourism and secure communication.</p>
+                  <p
+                    className="mt-4 text-white md:text-lg font-medium drop-shadow-sm antialiased"
+                    style={{
+                      WebkitTextStroke: '0',
+                      fontVariantLigatures: 'none',
+                      fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif'
+                    }}
+                  >
+                    One-click, end-to-end care: discovery, availability, telehealth, health tourism and secure communication.
+                  </p>
                   <div className="mt-6 flex gap-3">
                     <a href="#features" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm shadow-lg">Explore</a>
                   </div>
