@@ -1,7 +1,16 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Home, LayoutDashboard, Newspaper, MessageSquare, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight, Video, User, Monitor } from 'lucide-react';
+import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight, Video, User, Monitor } from 'lucide-react';
+
+// Custom chat icon using public SVG (accepts className via props)
+const ChatRoundIcon = (props) => (
+  <img
+    src="/images/icon/chat-round-line-svgrepo-com.svg"
+    alt="Messages"
+    {...props}
+  />
+);
 
 export default function SidebarPatient() {
   const { user, logout, sidebarMobileOpen, setSidebarMobileOpen } = useAuth();
@@ -22,7 +31,7 @@ export default function SidebarPatient() {
     // Notifications (aligned with doctor/clinic order)
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
     // Messages
-    { to: '/doctor-chat', label: 'Messages', icon: MessageSquare, badge: 2 },
+    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon, badge: 2 },
     // Appointments
     { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
     // Additional patient tabs
@@ -38,7 +47,7 @@ export default function SidebarPatient() {
     { to: '/patient-home', label: 'Medstream', icon: Video },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
     { to: '/home-v2', label: 'Homepage', icon: Home },
-    { to: '/doctor-chat', label: 'Messages', icon: MessageSquare },
+    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
     { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
     { to: '/telehealth', label: 'Telehealth', icon: Monitor },
   ];
@@ -49,7 +58,7 @@ export default function SidebarPatient() {
     { to: '/patient-home', label: 'Medstream', icon: Video },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
     { to: '/home-v2', label: 'Homepage', icon: Home },
-    { to: '/doctor-chat', label: 'Messages', icon: MessageSquare },
+    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
     { to: '/clinics', label: 'Doctors & Departments', icon: Building2 },
     { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
   ];
