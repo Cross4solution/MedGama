@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Users, Smile, MapPin, ImagePlay, X, ChevronDown } from 'lucide-react';
+import { Image, Video, Smile, X } from 'lucide-react';
 
-export default function PostCreateModal({ open, onClose, user, onPost }) {
+export default function PostCreateModal({ open, onClose, user, onPost, initialAction, onResetInitialAction }) {
   const [text, setText] = useState('');
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [photos, setPhotos] = useState([]);
+  const [videos, setVideos] = useState([]);
   const dialogRef = useRef(null);
+  const photoRef = useRef(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     function onKey(e) {
@@ -20,8 +25,24 @@ export default function PostCreateModal({ open, onClose, user, onPost }) {
       setTimeout(() => dialogRef.current?.focus(), 0);
     } else {
       setText('');
+      setShowEmoji(false);
+      setPhotos([]);
+      setVideos([]);
     }
   }, [open]);
+
+  // initialAction ile dışarıdan tetikleme: photo | video | emoji
+  useEffect(() => {
+    if (!open || !initialAction) return;
+    if (initialAction === 'photo') {
+      photoRef.current?.click();
+    } else if (initialAction === 'video') {
+      videoRef.current?.click();
+    } else if (initialAction === 'emoji') {
+      setShowEmoji(true);
+    }
+    onResetInitialAction?.();
+  }, [open, initialAction, onResetInitialAction]);
 
   if (!open) return null;
 
@@ -92,28 +113,33 @@ export default function PostCreateModal({ open, onClose, user, onPost }) {
             <div className="rounded-2xl border bg-white">
               <div className="px-4 py-3 text-sm text-gray-600 border-b">Add to your post</div>
               <div className="p-3">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-                  <button className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add photo or video">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  {/* Hidden file inputs */}
+                  <input ref={photoRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=> setPhotos(Array.from(e.target.files||[]))} />
+                  <input ref={videoRef} type="file" accept="video/*" multiple className="hidden" onChange={(e)=> setVideos(Array.from(e.target.files||[]))} />
+
+                  <button onClick={()=>photoRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add photo">
                     <span className="w-6 h-6 grid place-items-center rounded bg-emerald-50"><Image className="w-4 h-4 text-emerald-600" /></span>
-                    <span className="text-sm">Photo/video</span>
+                    <span className="text-sm">Photo</span>
                   </button>
-                  <button className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Tag people">
-                    <span className="w-6 h-6 grid place-items-center rounded bg-sky-50"><Users className="w-4 h-4 text-sky-600" /></span>
-                    <span className="text-sm">Tag people</span>
+                  <button onClick={()=>videoRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add video">
+                    <span className="w-6 h-6 grid place-items-center rounded bg-sky-50"><Video className="w-4 h-4 text-sky-600" /></span>
+                    <span className="text-sm">Video</span>
                   </button>
-                  <button className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add feeling or activity">
+                  <button onClick={()=>setShowEmoji((v)=>!v)} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add emoji">
                     <span className="w-6 h-6 grid place-items-center rounded bg-amber-50"><Smile className="w-4 h-4 text-amber-500" /></span>
-                    <span className="text-sm">Feeling/activity</span>
-                  </button>
-                  <button className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Check in">
-                    <span className="w-6 h-6 grid place-items-center rounded bg-rose-50"><MapPin className="w-4 h-4 text-rose-500" /></span>
-                    <span className="text-sm">Check in</span>
-                  </button>
-                  <button className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add GIF">
-                    <span className="w-6 h-6 grid place-items-center rounded bg-teal-50"><ImagePlay className="w-4 h-4 text-teal-600" /></span>
-                    <span className="text-sm">GIF</span>
+                    <span className="text-sm">Emoji</span>
                   </button>
                 </div>
+                {showEmoji && (
+                  <div className="mt-2 border rounded-lg p-2 w-full">
+                    <div className="grid grid-cols-10 gap-1 text-xl select-none">
+                      {['😀','😂','😍','👍','👏','🎉','🙏','🔥','😎','🤔','😢','😮','❤️','💙','💯','✅','⭐','✨'].map((e,i)=> (
+                        <button key={i} type="button" className="hover:bg-gray-50 rounded" onClick={()=>{ setText(t=> (t ? t + ' ' : '') + e); setShowEmoji(false); }}>{e}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -126,6 +152,12 @@ export default function PostCreateModal({ open, onClose, user, onPost }) {
               >
                 Post
               </button>
+              {(photos.length>0 || videos.length>0) && (
+                <div className="mt-2 text-xs text-gray-500">
+                  {photos.length>0 && <span className="mr-3">{photos.length} photo selected</span>}
+                  {videos.length>0 && <span>{videos.length} video selected</span>}
+                </div>
+              )}
             </div>
           </div>
         </div>

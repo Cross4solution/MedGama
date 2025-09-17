@@ -59,23 +59,23 @@ export default function TimelinePostCard({ post }) {
             <>
               {isPatient ? (
                 <>
-                  <button className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-700 hover:bg-gray-50 border border-gray-200 bg-white shadow-sm">
-                    <Heart className="w-5 h-5" />
+                  <button className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm border border-gray-200 bg-gray-100 text-gray-900 font-bold transition-none hover:rounded-md">
+                    <Heart className="w-5 h-5" strokeWidth={2.5} />
                     <span>{post.engagement.likes}</span>
                   </button>
-                  <button className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-700 hover:bg-gray-50 border border-gray-200 bg-white shadow-sm">
-                    <MessageCircle className="w-5 h-5" />
+                  <button className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm border border-gray-200 bg-gray-100 text-gray-900 font-bold transition-none hover:rounded-md">
+                    <MessageCircle className="w-5 h-5" strokeWidth={2.5} />
                     <span>{post.engagement.comments}</span>
                   </button>
                 </>
               ) : (
                 <>
-                  <div className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-700 hover:bg-gray-50 border border-gray-200 bg-white shadow-sm">
-                    <Heart className="w-5 h-5" />
+                  <div className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm border border-gray-200 bg-gray-100 text-gray-900 font-bold transition-none hover:rounded-md">
+                    <Heart className="w-5 h-5" strokeWidth={2.5} />
                     <span>{post.engagement.likes}</span>
                   </div>
-                  <div className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-700 hover:bg-gray-50 border border-gray-200 bg-white shadow-sm">
-                    <MessageCircle className="w-5 h-5" />
+                  <div className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm border border-gray-200 bg-gray-100 text-gray-900 font-bold transition-none hover:rounded-md">
+                    <MessageCircle className="w-5 h-5" strokeWidth={2.5} />
                     <span>{post.engagement.comments}</span>
                   </div>
                   <ShareMenu title="Share" url={typeof window !== 'undefined' ? window.location.href : ''} showNative={false} />

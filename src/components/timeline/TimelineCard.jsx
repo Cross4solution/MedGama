@@ -13,6 +13,8 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
   const [likeCount, setLikeCount] = useState(Number(item?.likes) || 0);
   const [commentText, setCommentText] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
+  const [replyTo, setReplyTo] = useState(''); // hangi yorumun altında yanıt alanı açık
+  const [replyText, setReplyText] = useState('');
 
   const truncate = (text, max = 120) => {
     if (!text) return '';
@@ -303,7 +305,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     </div>
                     <p className="text-[15px] text-gray-800 leading-6">Congrats! 🎉</p>
                     <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                      <button type="button" className="hover:text-gray-700">Reply</button>
+                      <button type="button" className="hover:text-gray-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1' ? '' : 'c1'); setReplyText(prev => (prev && replyTo==='c1') ? prev : '@Ayça Karaman '); }}>Yanıtla</button>
                       <span>1 reply</span>
                     </div>
 
@@ -318,11 +320,30 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                           </div>
                           <p className="text-[15px] text-blue-700 leading-6"><span className="font-semibold">Ayça Karaman</span> Thanks 🙏</p>
                           <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                            <button type="button" className="hover:text-gray-700">Reply</button>
+                            <button type="button" className="hover:text-gray-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1r1' ? '' : 'c1r1'); setReplyText(prev => (prev && replyTo==='c1r1') ? prev : '@Dr. Cem Arslan '); }}>Yanıtla</button>
                             <span>1 reply</span>
                           </div>
                         </div>
                       </div>
+                      {replyTo === 'c1r1' && (
+                        <div className="mt-2">
+                          <div className="border rounded-xl p-1.5 flex items-center gap-2 max-w-[520px]">
+                            <button type="button" className="p-2 text-gray-600 hover:text-teal-700" onClick={(e)=>e.stopPropagation()} aria-label="Emoji">
+                              <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
+                            </button>
+                            <input
+                              autoFocus
+                              value={replyText}
+                              onChange={(e)=>setReplyText(e.target.value)}
+                              placeholder="Yanıtınızı yazın..."
+                              className="flex-1 outline-none px-2 py-1 text-[14px]"
+                            />
+                            <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); /* submit mock */ setReplyTo(''); setReplyText(''); }}>
+                              Yanıtla
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -337,9 +358,47 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     </div>
                     <p className="text-[15px] text-gray-800 leading-6">Well done 👏</p>
                     <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                      <button type="button" className="hover:text-gray-700">Reply</button>
+                      <button type="button" className="hover:text-gray-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c2' ? '' : 'c2'); setReplyText(prev => (prev && replyTo==='c2') ? prev : '@Efe Yılmaz '); }}>Yanıtla</button>
                       <span>1 reply</span>
                     </div>
+                    {replyTo === 'c1' && (
+                      <div className="mt-2">
+                        <div className="border rounded-xl p-1.5 flex items-center gap-2 max-w-[520px]">
+                          <button type="button" className="p-2 text-gray-600 hover:text-teal-700" onClick={(e)=>e.stopPropagation()} aria-label="Emoji">
+                            <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
+                          </button>
+                          <input
+                            autoFocus
+                            value={replyText}
+                            onChange={(e)=>setReplyText(e.target.value)}
+                            placeholder="Yanıtınızı yazın..."
+                            className="flex-1 outline-none px-2 py-1 text-[14px]"
+                          />
+                          <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>
+                            Yanıtla
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {replyTo === 'c2' && (
+                      <div className="mt-2">
+                        <div className="border rounded-xl p-1.5 flex items-center gap-2 max-w-[520px]">
+                          <button type="button" className="p-2 text-gray-600 hover:text-teal-700" onClick={(e)=>e.stopPropagation()} aria-label="Emoji">
+                            <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
+                          </button>
+                          <input
+                            autoFocus
+                            value={replyText}
+                            onChange={(e)=>setReplyText(e.target.value)}
+                            placeholder="Yanıtınızı yazın..."
+                            className="flex-1 outline-none px-2 py-1 text-[14px]"
+                          />
+                          <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>
+                            Yanıtla
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -352,21 +411,24 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           <div className="px-2 md:px-3 py-2 border-t mt-1 grid grid-cols-3 gap-2 justify-items-center">
             <button
               type="button"
-              disabled={disabledActions}
-              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm border shadow-sm ${disabledActions ? 'text-gray-300 border-gray-200 bg-white cursor-not-allowed' : (liked ? 'text-teal-700 border-teal-200 bg-teal-50' : 'text-gray-700 border-gray-200 bg-white hover:bg-gray-50')}`}
+              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-900 font-bold transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100`}
               onClick={handleLike}
             >
-              <ThumbsUp className="w-4 h-4" /> <span>{liked ? 'Liked' : 'Like'}</span>
+              <ThumbsUp className="w-5 h-5" strokeWidth={2.5} /> <span>{liked ? 'Beğenildi' : 'Beğen'}</span>
             </button>
             <button
               type="button"
-              disabled={disabledActions}
-              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm border shadow-sm ${disabledActions ? 'text-gray-300 border-gray-200 bg-white cursor-not-allowed' : 'text-gray-700 border-gray-200 bg-white hover:bg-gray-50'}`}
-              onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
+              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-900 font-bold transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100`}
+              onClick={(e)=>{ e.stopPropagation(); if (disabledActions) return; setShowCommentsPreview(v=>!v); }}
             >
-              <MessageCircle className="w-4 h-4" /> <span>Comment</span>
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M21 10a8 8 0 0 1-8 8c-1.1 0-2.2-.2-3.2-.6L4 19l1.6-3.8A8 8 0 1 1 21 10z" />
+                <path d="M8.5 10.5h7" />
+                <path d="M8.5 13h5" />
+              </svg>
+              <span>Yorum Yap</span>
             </button>
-            <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="min-w-[110px]" />
+            <ShareMenu title="Paylaş" url={shareUrl} showNative={false} buttonClassName="min-w-[110px]" />
           </div>
         </div>
       ) : (

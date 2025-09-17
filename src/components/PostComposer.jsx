@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
-import { Image as ImageIcon, Folder } from 'lucide-react';
+import { Image as ImageIcon, Video, Smile } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import PostCreateModal from './timeline/PostCreateModal';
 
 export default function PostComposer() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  const [initialAction, setInitialAction] = useState(''); // 'photo' | 'video' | 'emoji'
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [selectedPhotos, setSelectedPhotos] = useState([]);
+  const [selectedVideos, setSelectedVideos] = useState([]);
+  const photoRef = React.useRef(null);
+  const videoRef = React.useRef(null);
+  const emojiBtnRef = React.useRef(null);
+  const emojiPanelRef = React.useRef(null);
   const avatar = '/images/portrait-candid-male-doctor_720.jpg';
   const name = user?.name || 'Guest';
 
@@ -38,15 +46,32 @@ export default function PostComposer() {
 
         {/* Bottom: actions + post button */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
-          <div className="flex items-center space-x-6">
-            <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600" type="button" onClick={() => setOpen(true)}>
+          <div className="flex items-center space-x-6 relative">
+            {/* Hidden inputs for direct select */}
+            <input ref={photoRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=> setSelectedPhotos(Array.from(e.target.files||[]))} />
+            <input ref={videoRef} type="file" accept="video/*" multiple className="hidden" onChange={(e)=> setSelectedVideos(Array.from(e.target.files||[]))} />
+
+            <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600" type="button" onClick={() => { photoRef.current?.click(); }}>
               <ImageIcon className="w-5 h-5" aria-hidden="true" />
-              <span>Image</span>
+              <span>Photo</span>
             </button>
-            <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600" type="button" onClick={() => setOpen(true)}>
-              <Folder className="w-5 h-5" aria-hidden="true" />
-              <span>File</span>
+            <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600" type="button" onClick={() => { videoRef.current?.click(); }}>
+              <Video className="w-5 h-5" aria-hidden="true" />
+              <span>Video</span>
             </button>
+            <button ref={emojiBtnRef} className="flex items-center space-x-2 text-gray-600 hover:text-blue-600" type="button" onClick={() => { setShowEmoji(v=>!v); }}>
+              <Smile className="w-5 h-5" aria-hidden="true" />
+              <span>Emoji</span>
+            </button>
+            {showEmoji && (
+              <div ref={emojiPanelRef} className="absolute left-0 top-full mt-2 z-50 border rounded-xl bg-white shadow-lg ring-1 ring-black/5 p-2 w-[280px]">
+                <div className="grid grid-cols-10 gap-1 text-xl select-none">
+                  {['😀','😂','😍','👍','👏','🎉','🙏','🔥','😎','🤔','😢','😮','❤️','💙','💯','✅','⭐','✨'].map((e,i)=> (
+                    <button key={i} type="button" className="hover:bg-gray-50 rounded" onClick={() => { setShowEmoji(false); setInitialAction('emoji'); setOpen(true); }}>{e}</button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           <button
             type="button"
@@ -56,7 +81,20 @@ export default function PostComposer() {
             Post
           </button>
         </div>
-        <PostCreateModal open={open} onClose={() => setOpen(false)} user={user} onPost={handlePost} />
+        <PostCreateModal
+          open={open}
+          onClose={() => setOpen(false)}
+          user={user}
+          onPost={handlePost}
+          initialAction={initialAction}
+          onResetInitialAction={() => setInitialAction('')}
+        />
+        {(selectedPhotos.length>0 || selectedVideos.length>0) && (
+          <div className="mt-2 text-xs text-gray-500">
+            {selectedPhotos.length>0 && <span className="mr-3">{selectedPhotos.length} photo selected</span>}
+            {selectedVideos.length>0 && <span>{selectedVideos.length} video selected</span>}
+          </div>
+        )}
       </div>
     </div>
   );

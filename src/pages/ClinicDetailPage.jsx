@@ -119,17 +119,6 @@ const ClinicDetailPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       <Header />
 
-      {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
-          <span>Home</span>
-          <ChevronRight className="w-4 h-4" />
-          <span>Clinics</span>
-          <ChevronRight className="w-4 h-4" />
-          <span className="text-gray-900 font-medium">Anadolu Health Center</span>
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         {/* Edit toolbar: only for clinic role */}
         {isClinic && (

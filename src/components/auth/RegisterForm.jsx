@@ -155,7 +155,7 @@ const RegisterForm = ({
           {(errors.lastName || localErrors.lastName) && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.lastName || localErrors.lastName}</p>}
         </div>
       </div>
-             <div className="grid grid-cols-1 gap-1 sm:gap-2 w-full max-w-2xl">
+             <div className="grid grid-cols-1 gap-1 sm:gap-2 w-full max-w-2xl mb-6 sm:mb-8">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
             Email Address
@@ -186,11 +186,11 @@ const RegisterForm = ({
         </div>
       </div>
             {/* Step 1 Actions */}
-            <div className="w-full max-w-md flex items-center justify-end mt-4">
+            <div className="w-full max-w-md flex items-center justify-end mt-8 sm:mt-10">
               <button
                 type="button"
                 onClick={handleNext}
-                className="inline-flex items-center gap-2 bg-blue-600 text-white py-2.5 sm:py-3 px-6 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md"
+                className="inline-flex items-center gap-2 bg-blue-600 text-white py-2.5 sm:py-3 px-6 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md mt-4 sm:mt-6"
               >
                 Next
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

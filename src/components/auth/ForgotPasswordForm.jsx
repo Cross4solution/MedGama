@@ -18,7 +18,7 @@ const ForgotPasswordForm = ({
         <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedGama</span>
       </div>
       <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Password Reset</h1>
-      <p className="text-xs sm:text-sm text-gray-600">Enter your registered email and we'll send you a password reset link.</p>
+      <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-5">Enter your registered email and we'll send you a password reset link.</p>
     </div>
     <form onSubmit={handleSubmit} className="space-y-1.5 sm:space-y-3 flex flex-col items-center">
       <div className="w-full max-w-md">
@@ -40,7 +40,7 @@ const ForgotPasswordForm = ({
         </div>
         {errors.email && <p className="text-red-500 text-xs mt-1 text-center">{errors.email}</p>}
         {!errors.email && (
-          <p className="text-[11px] sm:text-xs text-gray-500 mt-1 text-center">We'll email you a link to reset your password.</p>
+          <p className="text-[11px] sm:text-xs text-gray-500 mt-3 mb-3 text-center">We'll email you a link to reset your password.</p>
         )}
       </div>
       <button
