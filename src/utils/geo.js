@@ -2,28 +2,171 @@
 // Sources: local data files under src/data and remote fallback APIs (encapsulated here)
 
 import countriesEurope from '../data/countriesEurope';
-// countryCities: { [countryName]: string[] }
 import countryCities from '../data/countryCities';
 import countryCodes from '../data/countryCodes';
 import adminDivisions from '../data/adminDivisions';
 import { Country as CSCCountry, State as CSCState, City as CSCCity } from 'country-state-city';
+// countryCities: { [countryName]: string[] }
+
+function sanitizeCityNames(country, list) {
+  if (!Array.isArray(list)) return list;
+  const n = (s) => String(s || '').toLowerCase();
+  // Country-specific filters
+  if (['United States', 'United States of America', 'USA'].some((v)=> getCountryVariants(country).includes(v))) {
+    const badWords = [' county', ' parish', ' census area', ' borough', ' township', ' village', ' town of'];
+    return list.filter((name) => {
+      const ln = n(name);
+      return !badWords.some((bw) => ln.includes(bw));
+    });
+  }
+  // Generic filters
+  const genericBad = [' ilçesi', ' district', ' province'];
+  return list.filter((name) => {
+    const ln = n(name);
+    return !genericBad.some((bw) => ln.includes(bw));
+  });
+}
+
+// Türkiye için kesin 81 il listesi (ilçe/semt yok)
+const PROVINCES_TURKEY = [
+  'Adana','Adıyaman','Afyonkarahisar','Ağrı','Aksaray','Amasya','Ankara','Antalya','Ardahan','Artvin',
+  'Aydın','Balıkesir','Bartın','Batman','Bayburt','Bilecik','Bingöl','Bitlis','Bolu','Burdur',
+  'Bursa','Çanakkale','Çankırı','Çorum','Denizli','Diyarbakır','Düzce','Edirne','Elazığ','Erzincan',
+  'Erzurum','Eskişehir','Gaziantep','Giresun','Gümüşhane','Hakkâri','Hatay','Iğdır','Isparta','İstanbul',
+  'İzmir','Kahramanmaraş','Karabük','Karaman','Kars','Kastamonu','Kayseri','Kırıkkale','Kırklareli','Kırşehir',
+  'Kilis','Kocaeli','Konya','Kütahya','Malatya','Manisa','Mardin','Mersin','Muğla','Muş',
+  'Nevşehir','Niğde','Ordu','Osmaniye','Rize','Sakarya','Samsun','Siirt','Sinop','Sivas',
+  'Şanlıurfa','Şırnak','Tekirdağ','Tokat','Trabzon','Tunceli','Uşak','Van','Yalova','Yozgat',
+  'Zonguldak',
+];
+
+export function listTurkeyProvinces() {
+  return PROVINCES_TURKEY.slice();
+}
+
+// Her ihtimale karşı: countryCities verisini de 81 ille sınırla (başka yerler doğrudan kullanırsa çatışma olmasın)
+try {
+  if (countryCities) {
+    countryCities['Turkey'] = PROVINCES_TURKEY;
+    countryCities['Türkiye'] = PROVINCES_TURKEY;
+    countryCities['Turkiye'] = PROVINCES_TURKEY;
+  }
+} catch {}
 
 // Cache versioning to invalidate older small city lists
-const CITY_CACHE_VERSION = 'v4';
+const CITY_CACHE_VERSION = 'v8';
 const MIN_CITY_THRESHOLD = 30;
 
-// Ülke bazlı şehir sayısı limiti (isteğe göre azaltma)
-const COUNTRY_CITY_LIMITS = {
-  Canada: 30,
-  Denmark: 30,
+// Ülke bazlı özel limitler (boş bırakıyoruz). Varsayılan: 100.
+const COUNTRY_CITY_LIMITS = {};
+
+const POPULAR_CITIES = {
+  'United States': [
+    'New York','Los Angeles','Chicago','Houston','Phoenix','Philadelphia','San Antonio','San Diego','Dallas','San Jose',
+    'Austin','Jacksonville','San Francisco','Columbus','Fort Worth','Indianapolis','Charlotte','Seattle','Denver','Washington',
+    'Boston','Detroit','Nashville','Portland','Memphis','Oklahoma City','Las Vegas','Louisville','Baltimore','Milwaukee',
+    'Albuquerque','Tucson','Fresno','Sacramento','Kansas City','Atlanta','Miami','Orlando','Tampa','Pittsburgh',
+    'Cleveland','Cincinnati','Raleigh','Salt Lake City','San Antonio','San Diego','St. Louis'
+  ],
+  Canada: [
+    'Toronto','Montreal','Vancouver','Calgary','Edmonton','Ottawa','Quebec City','Winnipeg','Hamilton','Kitchener',
+    'London','Halifax','Victoria','Saskatoon','Regina','St. John\'s','Windsor','Sherbrooke','Oshawa','Barrie'
+  ],
+  Denmark: [
+    'Copenhagen','Aarhus','Odense','Aalborg','Esbjerg','Randers','Kolding','Horsens','Vejle','Roskilde'
+  ],
 };
 
+// Bazı ülkeler için yalnızca popüler/büyük şehirleri döndür (küçük yerleşimler hariç)
+const COUNTRIES_POPULAR_ONLY = new Set([
+  'United States',
+  'United States of America',
+  'USA',
+  'US',
+  'U.S.',
+  'America',
+  'ABD',
+  'Amerika',
+]);
+
+function getPopularCitiesList(country) {
+  try {
+    const variants = getCountryVariants(country);
+    const key = Object.keys(POPULAR_CITIES).find((k) => variants.includes(k)) || country;
+    const list = POPULAR_CITIES[key] || [];
+    return Array.isArray(list) ? Array.from(new Set(list)) : [];
+  } catch { return []; }
+}
+
 function applyCityLimit(country, list) {
-  const lim = COUNTRY_CITY_LIMITS[country];
-  if (!lim || !Array.isArray(list)) return list;
-  if (list.length <= lim) return list;
-  const sorted = Array.from(new Set(list)).sort((a,b) => a.localeCompare(b));
-  return sorted.slice(0, lim);
+  const lim = (COUNTRY_CITY_LIMITS[country] ?? 100); // varsayılan 100
+  if (!Array.isArray(list)) return list;
+  const unique = Array.from(new Set(list));
+  const sorted = unique.sort((a,b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  if (sorted.length <= lim) return sorted;
+
+  // Distribute picks across alphabet buckets (A-Z, others) to avoid only 'A' cities
+  const buckets = new Map();
+  for (const name of sorted) {
+    const ch = String(name).trim().charAt(0).toUpperCase();
+    const key = /^[A-Z]$/.test(ch) ? ch : '#';
+    if (!buckets.has(key)) buckets.set(key, []);
+    buckets.get(key).push(name);
+  }
+  // Pre-seed with popular cities (if present in dataset)
+  const selected = [];
+  let popular = [];
+  try {
+    const variants = getCountryVariants(country);
+    const key = Object.keys(POPULAR_CITIES).find((k)=> variants.includes(k)) || country;
+    popular = POPULAR_CITIES[key] || [];
+  } catch {
+    popular = POPULAR_CITIES[country] || [];
+  }
+  for (const p of popular) {
+    const hit = sorted.find((n) => {
+      const nn = normalize(n);
+      const pp = normalize(p);
+      return nn === pp || nn.startsWith(pp) || nn.includes(pp);
+    });
+    if (hit) {
+      if (!selected.includes(hit)) selected.push(hit);
+    } else {
+      // Veri kaynaklarında yoksa bile popüler şehri enjekte et
+      if (!selected.includes(p)) selected.push(p);
+    }
+    if (selected.length >= lim) break;
+  }
+  // Remove preselected from buckets (avoid iterating Map entries directly for TS downlevel)
+  if (selected.length) {
+    const entryKeys = Array.from(buckets.keys());
+    for (const k of entryKeys) {
+      const arr = buckets.get(k) || [];
+      buckets.set(k, arr.filter((n) => !selected.includes(n)));
+    }
+  }
+  // Seed selection with 1 from each non-empty bucket (round 1)
+  const keys = Array.from(buckets.keys()).sort();
+  for (const k of keys) {
+    if (selected.length >= lim) break;
+    const arr = buckets.get(k);
+    if (arr && arr.length) selected.push(arr.shift());
+  }
+  // Round-robin fill until limit reached
+  let added = true;
+  while (selected.length < lim && added) {
+    added = false;
+    for (const k of keys) {
+      if (selected.length >= lim) break;
+      const arr = buckets.get(k);
+      if (arr && arr.length) {
+        selected.push(arr.shift());
+        added = true;
+      }
+    }
+  }
+  // Final alphabetical order
+  return Array.from(new Set(selected)).sort((a,b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).slice(0, lim);
 }
 
 // Minimal Asia and Middle East lists (can be expanded as needed)
@@ -40,11 +183,18 @@ export const countriesMiddleEast = [
   'Qatar', 'Saudi Arabia', 'Syria', 'Turkey', 'United Arab Emirates', 'Yemen'
 ];
 
-// Ülkelerden bazıları için (örn. United Kingdom) "eyalet" yerine doğrudan şehir listesi tercih edilir
+// Ülkelerden bazıları için kullanıcı deneyimi gereği doğrudan şehir listesi (eyalet aşaması olmadan)
 const COUNTRIES_FORCE_CITIES = new Set([
   'United Kingdom',
   'Canada',
   'Denmark',
+  'Turkey', 'Türkiye', 'Turkiye',
+  'United States', 'United States of America', 'USA',
+]);
+
+// Bazı ülkelerde CSC şehir listesi il/ilçe karışık gelebilir; bu ülkelerde eyalet/il isimlerini şehir olarak kullan
+const COUNTRIES_USE_STATES_AS_CITIES = new Set([
+  'Turkey', 'Türkiye', 'Turkiye',
 ]);
 
 // Ada ülkeleri (genişletilebilir). Kullanıcı isteğine göre hariç bırakılabilir.
@@ -190,6 +340,11 @@ function normalize(s) {
   return s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
+// Parantez içi ibareleri kırpmak için yardımcı (örn: "United States (US)")
+function stripParen(s) {
+  try { return s?.toString().replace(/\s*\([^)]*\)\s*/g, '').trim(); } catch { return s; }
+}
+
 function getCountryVariants(name) {
   const base = String(name || '');
   const n = normalize(base);
@@ -198,6 +353,7 @@ function getCountryVariants(name) {
   const aliases = {
     'United States': ['USA','U.S.A','US','America','United States of America','ABD','Amerika'],
     'United Kingdom': ['UK','U.K','Britain','England','Great Britain'],
+    'Turkey': ['Türkiye','Turkiye','Republic of Turkey'],
     'Côte d’Ivoire': ['Ivory Coast','Cote d Ivoire','Cote d\'Ivoire','Cote D Ivoire','Cote D\'Ivoire','Cote dIvoire','Cote DIvoire','Cote Divoire','Cote-d\'Ivoire','Côte d\'Ivoire','Cote Dlvoire','Cote Dlvoreie','Cote de Ivoire','Cote dIvore'],
   };
   Object.entries(aliases).forEach(([k, arr]) => {
@@ -225,12 +381,37 @@ export async function loadStatesOnly(country) {
 }
 
 export async function loadCitiesOnly(country) {
+  // ABD gibi ülkelerde yalnızca popüler/büyük şehirleri dön
+  try {
+    const raw = (country || '').trim();
+    const base = stripParen(raw);
+    if (COUNTRIES_POPULAR_ONLY.has(raw) || COUNTRIES_POPULAR_ONLY.has(base) || getCountryVariants(raw).some((v) => COUNTRIES_POPULAR_ONLY.has(v) || COUNTRIES_POPULAR_ONLY.has(stripParen(v)))) {
+      const popular = getPopularCitiesList(raw);
+      if (popular && popular.length) {
+        return applyCityLimit(raw, popular);
+      }
+    }
+  } catch {}
   // 1) CSC: ülke ISO -> şehir isimleri (gerekirse state bazında)
   try {
     const all = CSCCountry.getAllCountries() || [];
-    const found = all.find((c) => (c?.name === country))
-      || all.find((c) => getCountryVariants(country).includes(c?.name));
+    const raw = (country || '').trim();
+    const found = all.find((c) => (c?.name === raw))
+      || all.find((c) => getCountryVariants(raw).includes(c?.name));
     if (found && found.isoCode) {
+      // Özel: Bazı ülkelerde şehir olarak eyalet/il göster
+      if (COUNTRIES_USE_STATES_AS_CITIES.has(raw) || getCountryVariants(raw).some((v)=>COUNTRIES_USE_STATES_AS_CITIES.has(v))) {
+        const states = CSCState.getStatesOfCountry(found.isoCode) || [];
+        const stateNames = (states || []).map((s)=>s?.name).filter(Boolean);
+        if (stateNames.length) return applyCityLimit(raw, stateNames);
+        // CSC başarısızsa adminDivisions'a düş
+        const admin = adminDivisions[raw] || adminDivisions[getCountryVariants(raw).find((v)=>adminDivisions[v])];
+        if (Array.isArray(admin) && admin.length) return applyCityLimit(raw, admin);
+        // Son çare: Türkiye için sabit 81 il listesi
+        if (getCountryVariants(raw).some((v)=>['Turkey','Türkiye','Turkiye'].includes(v))) {
+          return PROVINCES_TURKEY;
+        }
+      }
       const states = CSCState.getStatesOfCountry(found.isoCode) || [];
       const out = new Set();
       if (states.length) {
@@ -243,17 +424,19 @@ export async function loadCitiesOnly(country) {
         cities.forEach((ct) => ct?.name && out.add(ct.name));
       }
       let arr = Array.from(out);
+      // Temizle: idari unvanlar vs.
+      arr = sanitizeCityNames(raw, arr);
       if (arr.length) {
         // Eğer CSC az sayıda döndürdüyse diğer kaynaklarla birleştir
         const FORCE_MERGE_COUNTRIES = new Set(['Canada','United States','India','China','Brazil','Russia']);
-        if (arr.length < 150 || FORCE_MERGE_COUNTRIES.has(country)) {
-          const quick = countryCities[country] || [];
+        if (arr.length < 150 || FORCE_MERGE_COUNTRIES.has(raw)) {
+          const quick = countryCities[raw] || [];
           try {
             // @ts-ignore - dynamic JSON import in JS file
             const mod = await import('../data/worldCities.min.json');
             const all = mod?.default || mod;
             if (Array.isArray(all)) {
-              const variants = getCountryVariants(country);
+              const variants = getCountryVariants(raw);
               const extra = new Set(arr);
               for (const v of variants) {
                 for (const rec of all) {
@@ -261,22 +444,25 @@ export async function loadCitiesOnly(country) {
                 }
               }
               arr = Array.from(extra);
+              arr = sanitizeCityNames(raw, arr);
             }
           } catch {}
           if (Array.isArray(quick) && quick.length) {
             const merged = new Set(arr);
             quick.forEach((c)=> merged.add(c));
             arr = Array.from(merged);
+            arr = sanitizeCityNames(raw, arr);
           }
         }
-        return applyCityLimit(country, arr);
+        return applyCityLimit(raw, arr);
       }
     }
   } catch {}
 
   // 2) countryCities quick list
-  const quick = countryCities[country] || [];
-  if (Array.isArray(quick) && quick.length) return applyCityLimit(country, quick);
+  const raw2 = (country || '').trim();
+  const quick = countryCities[raw2] || [];
+  if (Array.isArray(quick) && quick.length) return applyCityLimit(raw2, sanitizeCityNames(raw2, quick));
 
   // 3) worldCities filtered (dynamic import, TS uyarısını bastır)
   try {
@@ -284,7 +470,7 @@ export async function loadCitiesOnly(country) {
     const mod = await import('../data/worldCities.min.json');
     const all = mod?.default || mod;
     if (Array.isArray(all)) {
-      const variants = getCountryVariants(country);
+      const variants = getCountryVariants(raw2);
       const set = new Set();
       for (const v of variants) {
         for (const rec of all) {
@@ -292,17 +478,38 @@ export async function loadCitiesOnly(country) {
         }
       }
       const arr = Array.from(set);
-      if (arr.length) return applyCityLimit(country, arr);
+      if (arr.length) return applyCityLimit(raw2, sanitizeCityNames(raw2, arr));
     }
   } catch (_) { /* ignore */ }
 
   // 4) last resort
-  return applyCityLimit(country, quick);
+  return applyCityLimit(country, sanitizeCityNames(country, quick));
 }
 
 export async function loadPreferredAdminOrCities(country) {
   // Global tercih: şehirler. Şehirler yeterli değilse eyalet/il.
   // Özel durum: FORCE_CITIES → her zaman şehir.
+  // Türkiye özel kuralı: daima 81 il döndür
+  try {
+    const variants = getCountryVariants(country);
+    const n = (String(country||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+    const isTr = variants.some((v)=>['Turkey','Türkiye','Turkiye'].includes(v))
+      || n === 'turkey' || n === 'turkiye' || n === 'türkiye';
+    if (isTr) {
+      try { localStorage.setItem(`cities_${CITY_CACHE_VERSION}_${country}`, JSON.stringify({ data: PROVINCES_TURKEY, ts: Date.now() })); } catch {}
+      return { type: 'city', list: PROVINCES_TURKEY };
+    }
+  } catch {}
+  // ABD ve benzeri: yalnızca popüler/büyük şehirler (cache'e de bunu yaz)
+  try {
+    const base = stripParen(country);
+    if (COUNTRIES_POPULAR_ONLY.has(country) || COUNTRIES_POPULAR_ONLY.has(base) || getCountryVariants(country).some((v) => COUNTRIES_POPULAR_ONLY.has(v) || COUNTRIES_POPULAR_ONLY.has(stripParen(v)))) {
+      const popular = getPopularCitiesList(country);
+      const list = Array.isArray(popular) ? popular : [];
+      try { localStorage.setItem(`cities_${CITY_CACHE_VERSION}_${country}`, JSON.stringify({ data: list, ts: Date.now() })); } catch {}
+      return { type: 'city', list };
+    }
+  } catch {}
   if (COUNTRIES_FORCE_CITIES.has(country)) {
     try {
       const ck = `cities_${CITY_CACHE_VERSION}_${country}`;

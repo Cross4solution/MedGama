@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { listCountriesAll, loadPreferredAdminOrCities, getFlagCode } from '../../utils/geo';
+import { listCountriesAll, loadPreferredAdminOrCities, getFlagCode, listTurkeyProvinces } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox.jsx';
 import CityCombobox from '../forms/CityCombobox.jsx';
 
@@ -52,6 +52,29 @@ export default function CustomSearch() {
     setCity('');
     if (!country) return;
     setLoadingCities(true);
+
+    // Ülke değiştiğinde, o ülkeye ait TÜM eski şehir cache anahtarlarını temizle (versiyondan bağımsız)
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k) continue;
+        if (k.startsWith('cities_') && k.endsWith(`_${country}`)) keysToRemove.push(k);
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k));
+    } catch {}
+
+    // Türkiye özel: doğrudan 81 il listesi (ilçe/sokak yok)
+    try {
+      const n = String(country || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (['turkey','turkiye','türkiye'].includes(n)) {
+        setAdminType('city');
+        const sorted = listTurkeyProvinces().slice().sort((a,b)=>a.localeCompare(b, 'tr', { sensitivity: 'base' }));
+        setCitiesOptions(sorted);
+        setLoadingCities(false);
+        return;
+      }
+    } catch {}
 
     const runId = ++loadRef.current; // geç gelen yanıtları iptal etmek için sürümleme
     const abortCtrl = new AbortController();

@@ -208,6 +208,7 @@ export default function ExploreTimeline() {
           onSortChange={setSort}
           onUseLocation={askGeo}
           geo={geo}
+          showSort={true}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">

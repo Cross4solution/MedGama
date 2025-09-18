@@ -73,21 +73,24 @@ export default function Notifications() {
           {/* Left: Icon Sidebar */}
           <aside className="col-span-12 md:col-span-3">
             <div className="rounded-xl border bg-white shadow-sm p-2">
-              <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-visible">
+              <nav className="flex md:flex-col overflow-x-auto md:overflow-visible md:divide-y md:divide-gray-200">
                 {TABS.map((t)=>{
                   const Icon = t.icon;
                   const active = tab === t.id;
                   return (
-                    <button
+                    <div
                       key={t.id}
                       onClick={()=> setTab(t.id)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm whitespace-nowrap ${active ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-200'}`}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e)=>{ if(e.key==='Enter' || e.key===' ') setTab(t.id); }}
+                      className={`flex items-center gap-2 px-3 py-2 text-sm whitespace-nowrap cursor-pointer select-none ${active ? 'bg-teal-50 text-teal-700' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
                       title={t.label}
                     >
-                      <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-gray-600'}`} />
+                      <Icon className={`w-4 h-4 ${active ? 'text-teal-700' : 'text-gray-600'}`} />
                       <span className="hidden md:inline">{t.label}</span>
-                      <span className={`ml-auto text-xs ${active ? 'text-teal-100' : 'text-gray-500'}`}>{t.count}</span>
-                    </button>
+                      <span className={`ml-auto text-xs ${active ? 'text-teal-600' : 'text-gray-500'}`}>{t.count}</span>
+                    </div>
                   );
                 })}
               </nav>

@@ -59,6 +59,16 @@ const MediTravelClinics = () => {
     setCityOptions([]);
     if (!country) return;
     setCitiesLoading(true);
+    // Ülke değiştiğinde, o ülkeye ait TÜM eski şehir cache anahtarlarını temizle (versiyon fark etmeksizin)
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k) continue;
+        if (k.startsWith('cities_') && k.endsWith(`_${country}`)) keysToRemove.push(k);
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k));
+    } catch {}
     const runId = ++loadRef.current;
     (async () => {
       try {

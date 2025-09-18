@@ -411,24 +411,21 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           <div className="px-2 md:px-3 py-2 border-t mt-1 grid grid-cols-3 gap-2 justify-items-center">
             <button
               type="button"
-              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-900 font-bold transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100`}
+              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white transition-colors hover:rounded-md hover:border-gray-200 ${liked ? 'text-blue-600 hover:bg-blue-50' : 'text-gray-800 font-medium hover:bg-gray-100'}`}
               onClick={handleLike}
             >
-              <ThumbsUp className="w-5 h-5" strokeWidth={2.5} /> <span>{liked ? 'Beğenildi' : 'Beğen'}</span>
+              <ThumbsUp className="w-5 h-5" strokeWidth={2.5} fill={liked ? 'currentColor' : 'none'} />
+              <span>Beğen</span>
             </button>
             <button
               type="button"
-              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-900 font-bold transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100`}
+              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-800 font-medium transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100`}
               onClick={(e)=>{ e.stopPropagation(); if (disabledActions) return; setShowCommentsPreview(v=>!v); }}
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M21 10a8 8 0 0 1-8 8c-1.1 0-2.2-.2-3.2-.6L4 19l1.6-3.8A8 8 0 1 1 21 10z" />
-                <path d="M8.5 10.5h7" />
-                <path d="M8.5 13h5" />
-              </svg>
+              <img src="/images/icon/comment-alt-lines-svgrepo-com.svg" alt="Yorum" className="w-5 h-5" />
               <span>Yorum Yap</span>
             </button>
-            <ShareMenu title="Paylaş" url={shareUrl} showNative={false} buttonClassName="min-w-[110px]" />
+            <ShareMenu title="Paylaş" url={shareUrl} showNative={false} buttonClassName="min-w-[110px] text-gray-800 font-medium" />
           </div>
         </div>
       ) : (
