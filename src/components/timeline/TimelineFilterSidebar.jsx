@@ -1,5 +1,6 @@
 import React from 'react';
 import { CountryCombobox, SelectCombobox } from 'components/forms';
+import { getFlagCode } from '../../utils/geo';
 import { Search } from 'lucide-react';
 
 export default function TimelineFilterSidebar({
@@ -36,6 +37,12 @@ export default function TimelineFilterSidebar({
           value={countryName}
           onChange={onCountryChange}
           placeholder="All countries"
+          getFlagUrl={(name) => {
+            try {
+              const code = getFlagCode(name);
+              return code ? `https://flagcdn.com/24x18/${code}.png` : null;
+            } catch { return null; }
+          }}
         />
       </div>
 

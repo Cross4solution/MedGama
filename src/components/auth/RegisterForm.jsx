@@ -14,8 +14,9 @@ import {
   Smartphone
 } from 'lucide-react';
 import PhoneNumberInput from '../forms/PhoneNumberInput';
-import countriesEurope from '../../data/countriesEurope';
+import { listCountriesAll, getFlagCode } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox';
+// getFlagCode imported above with listCountriesAll
 
 /**
  * @typedef {Object} RegisterFormData
@@ -65,6 +66,8 @@ const RegisterForm = ({
   /** @type {any} */
   const fd = (formData || {});
   
+  // Global country options (island nations excluded per requirement)
+  const allCountries = useMemo(() => listCountriesAll({ excludeIslands: true, excludeNoCities: true }), []);
 
   // Phone logic moved to PhoneNumberInput
 
@@ -181,6 +184,7 @@ const RegisterForm = ({
             value={fd.phone ?? ''}
             countryName={fd.country ?? ''}
             onChange={(val) => handleInputChange({ target: { name: 'phone', value: val } })}
+            allowedCountryNames={allCountries}
           />
           {errors.phone && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.phone}</p>}
         </div>
@@ -209,7 +213,7 @@ const RegisterForm = ({
             <div className="relative">
               <MapPin className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-20" />
               <CountryCombobox
-                  options={countriesEurope}
+                  options={allCountries}
                   value={fd.country ?? ''}
                   onChange={(val) => {
                     // Update selected country; PhoneNumberInput will sync code via countryName prop
@@ -217,6 +221,12 @@ const RegisterForm = ({
                   }}
                   placeholder="Select a country"
                   triggerClassName="w-full h-11 border border-gray-300 rounded-none pl-10 pr-3 text-sm bg-white text-left flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-shadow"
+                  getFlagUrl={(name) => {
+                    try {
+                      const code = getFlagCode(name);
+                      return code ? `https://flagcdn.com/24x18/${code}.png` : null;
+                    } catch { return null; }
+                  }}
                 />
             </div>
             {errors.country && (

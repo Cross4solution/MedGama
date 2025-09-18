@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { listCountries, loadPreferredAdminOrCities, getFlagCode } from '../../utils/geo';
+import { listCountriesAll, loadPreferredAdminOrCities, getFlagCode } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox.jsx';
 import CityCombobox from '../forms/CityCombobox.jsx';
 
@@ -30,7 +30,7 @@ export default function CustomSearch() {
 
   // states/eyalet modu kaldırıldı; tüm ülkeler için şehir listesi gösterilir
 
-  const countries = useMemo(() => listCountries(['Europe', 'Asia', 'MiddleEast']), []);
+  const countries = useMemo(() => listCountriesAll({ excludeIslands: true, excludeNoCities: true }), []);
   const specialties = ['ENT', 'Cardiology', 'Orthopedics', 'Dermatology', 'Ophthalmology', 'Plastic Surgery', 'Dentistry', 'Neurology', 'Gastroenterology'];
   const procedures = ['Rhinoplasty', 'Hip Replacement', 'Hair Transplant', 'Knee Replacement', 'LASIK', 'Dental Implant', 'Root Canal', 'Cataract Surgery'];
   const symptoms = ['Nasal congestion', 'Headache', 'Low back pain', 'Nausea', 'Toothache', 'Blurred vision', 'Acne', 'Varicose veins', 'Tinnitus'];

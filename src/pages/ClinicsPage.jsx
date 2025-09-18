@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { listCountries, loadPreferredAdminOrCities, getFlagCode } from '../utils/geo';
+import { listCountriesAll, loadPreferredAdminOrCities, getFlagCode } from '../utils/geo';
 import SPECIALTIES from '../data/specialties';
 import PatientLayout from '../components/PatientLayout';
 import ClinicSearchBar from 'components/forms/ClinicSearchBar';
@@ -49,7 +49,7 @@ const MediTravelClinics = () => {
   const [adminType, setAdminType] = useState('city');
   const loadRef = React.useRef(0);
 
-  const countryOptions = React.useMemo(() => listCountries(['Europe','Asia','MiddleEast']), []);
+  const countryOptions = React.useMemo(() => listCountriesAll({ excludeIslands: true, excludeNoCities: true }), []);
   const specialtyOptions = SPECIALTIES;
   const priceOptions = ['Ekonomik','Orta','Premium','Lüks'];
 

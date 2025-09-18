@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
+import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
 import { User, Shield, Bell, Lock, Globe, Link as LinkIcon, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { Header } from '../components/layout';
@@ -198,6 +199,12 @@ export default function Profile() {
                     onChange={setCountryName}
                     placeholder="Select Country"
                     triggerClassName="w-full border border-gray-300 rounded-lg px-3 text-sm bg-white h-10 flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow"
+                    getFlagUrl={(name) => {
+                      try {
+                        const code = getFlagCode(name);
+                        return code ? `https://flagcdn.com/24x18/${code}.png` : null;
+                      } catch { return null; }
+                    }}
                   />
                 </div>
               </div>

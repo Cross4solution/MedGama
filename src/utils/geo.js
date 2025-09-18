@@ -8,6 +8,24 @@ import countryCodes from '../data/countryCodes';
 import adminDivisions from '../data/adminDivisions';
 import { Country as CSCCountry, State as CSCState, City as CSCCity } from 'country-state-city';
 
+// Cache versioning to invalidate older small city lists
+const CITY_CACHE_VERSION = 'v4';
+const MIN_CITY_THRESHOLD = 30;
+
+// Ülke bazlı şehir sayısı limiti (isteğe göre azaltma)
+const COUNTRY_CITY_LIMITS = {
+  Canada: 30,
+  Denmark: 30,
+};
+
+function applyCityLimit(country, list) {
+  const lim = COUNTRY_CITY_LIMITS[country];
+  if (!lim || !Array.isArray(list)) return list;
+  if (list.length <= lim) return list;
+  const sorted = Array.from(new Set(list)).sort((a,b) => a.localeCompare(b));
+  return sorted.slice(0, lim);
+}
+
 // Minimal Asia and Middle East lists (can be expanded as needed)
 export const countriesAsia = [
   'Afghanistan', 'Armenia', 'Azerbaijan', 'Bahrain', 'Bangladesh', 'Bhutan', 'Brunei', 'Cambodia', 'China',
@@ -24,7 +42,55 @@ export const countriesMiddleEast = [
 
 // Ülkelerden bazıları için (örn. United Kingdom) "eyalet" yerine doğrudan şehir listesi tercih edilir
 const COUNTRIES_FORCE_CITIES = new Set([
-  'United Kingdom'
+  'United Kingdom',
+  'Canada',
+  'Denmark',
+]);
+
+// Ada ülkeleri (genişletilebilir). Kullanıcı isteğine göre hariç bırakılabilir.
+const ISLAND_COUNTRIES = new Set([
+  // Europe
+  'Iceland','Ireland','United Kingdom','Malta','Cyprus','Isle of Man','Jersey','Guernsey','Faroe Islands','Greenland','Åland Islands','Aland Islands',
+  // Asia
+  'Bahrain','Singapore','Japan','Indonesia','Philippines','Sri Lanka','Taiwan','Maldives','Timor-Leste',
+  // Africa & Indian Ocean
+  'Madagascar','Seychelles','Mauritius','Comoros','Cape Verde','Cabo Verde','Mayotte','Réunion','Reunion',
+  // Oceania (tümü ada ya da adalar devleti)
+  'Australia','New Zealand','Fiji','Papua New Guinea','Samoa','Tonga','Kiribati','Micronesia','Marshall Islands','Solomon Islands','Vanuatu','Palau','Nauru','Tuvalu','Cook Islands','Niue','Tokelau','Wallis and Futuna','New Caledonia','French Polynesia',
+  // Americas / Caribbean
+  'Antigua and Barbuda','Bahamas','Barbados','Cuba','Dominica','Dominican Republic','Grenada','Haiti','Jamaica','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Trinidad and Tobago','Aruba','Curaçao','Curacao','Bonaire','Cayman Islands','Bermuda','Turks and Caicos Islands','British Virgin Islands','U.S. Virgin Islands','Puerto Rico','Montserrat','Anguilla','Guadeloupe','Martinique','Saint Barthélemy','Saint Martin','Saint Martin (French part)','Sint Maarten (Dutch part)'
+]);
+
+// Ada/adanın yanı sıra ada bölgeleri/özel idari bölgeler (ülke listesinde görülebilenler)
+const ISLAND_TERRITORIES = new Set([
+  'Hong Kong','Hong Kong SAR China','Macao','Macao SAR China','Macau','Guam','American Samoa','Northern Mariana Islands','Saint Pierre and Miquelon',
+  'British Indian Ocean Territory',
+]);
+
+// Ada/ada benzeri isimleri yakalamak için sezgisel filtre
+function isLikelyIsland(name = '') {
+  const n = String(name);
+  if (ISLAND_COUNTRIES.has(n) || ISLAND_TERRITORIES.has(n)) return true;
+  const islandishKeywords = [
+    ' Island', ' Islands', 'Isle', 'Âland', 'Åland', 'Cayman', 'Bermuda', 'Greenland',
+    'Faroe', 'Falkland', 'Guadeloupe', 'Martinique', 'Réunion', 'Reunion', 'Mayotte',
+    'New Caledonia', 'French Polynesia', 'Wallis and Futuna', 'Curacao', 'Curaçao',
+    'Aruba', 'Guam', 'Puerto Rico', 'American Samoa', 'Northern Mariana', 'Tokelau',
+    'Niue', 'Cook Islands', 'Montserrat', 'Anguilla', 'Antilles', 'Bonaire',
+    'Turks and Caicos', 'Saint Pierre and Miquelon'
+  ];
+  return islandishKeywords.some((kw) => n.includes(kw));
+}
+
+// Şehir listesi bulunmayan/simge mikro-ülkeler veya araştırma bölgeleri
+const NO_CITY_COUNTRIES = new Set([
+  'Antarctica',
+  'Heard Island and McDonald Islands',
+  'Bouvet Island',
+  'French Southern Territories',
+  'South Georgia and the South Sandwich Islands',
+  'Svalbard and Jan Mayen',
+  'Vatican City','Vatican City State','Holy See',
 ]);
 
 export function listCountries(regions = ['Europe', 'Asia', 'MiddleEast']) {
@@ -50,16 +116,71 @@ export function listCountries(regions = ['Europe', 'Asia', 'MiddleEast']) {
   return Array.from(out).sort();
 }
 
+// Tüm dünyadaki ülkeleri döndürür. CSC erişimi varsa tamamını, yoksa mevcut statik listelerin birleşimini kullanır.
+export function listCountriesAll(options = {}) {
+  const { excludeIslands = false, excludeNoCities = false } = options;
+  try {
+    const all = CSCCountry.getAllCountries() || [];
+    let names = Array.from(new Set(all.map((c) => c?.name).filter(Boolean)));
+    if (excludeIslands) names = names.filter((n) => !isLikelyIsland(n));
+    if (excludeNoCities) names = names.filter((n) => !NO_CITY_COUNTRIES.has(n));
+    return names.sort();
+  } catch {
+    // Fallback: Avrupa + Asya + Orta Doğu + "United States" birleşimi
+    const merged = new Set([
+      ...countriesEurope,
+      ...countriesAsia,
+      ...countriesMiddleEast,
+      'United States',
+    ]);
+    let out = Array.from(merged);
+    if (excludeIslands) out = out.filter((n) => !isLikelyIsland(n));
+    if (excludeNoCities) out = out.filter((n) => !NO_CITY_COUNTRIES.has(n));
+    return out.sort();
+  }
+}
+
 export function getFlagCode(countryName) {
-  // countryCodes: { name -> iso2 lower }
+  // Önce CSC üzerinden ISO2 çözümlemeye çalış (tüm dünya kapsaması için en sağlam yol)
   if (!countryName) return null;
   const stripParen = (s) => s?.toString().replace(/\s*\([^)]*\)\s*/g, '').trim();
-  const direct = countryCodes[countryName] || countryCodes[countryName?.toLowerCase()] || countryCodes[stripParen(countryName)] || countryCodes[stripParen(countryName)?.toLowerCase()];
+  try {
+    const all = CSCCountry.getAllCountries() || [];
+    const variants = [countryName, ...getCountryVariants(countryName)].map(stripParen);
+    for (const v of variants) {
+      const hit = all.find((c) => c?.name === v);
+      if (hit?.isoCode) return String(hit.isoCode).toLowerCase();
+    }
+  } catch {}
+
+  // Fallback: yerel map
+  const direct = countryCodes[countryName]
+    || countryCodes[countryName?.toLowerCase()]
+    || countryCodes[stripParen(countryName)]
+    || countryCodes[stripParen(countryName)?.toLowerCase()];
   if (direct) return direct;
+  // Özel: Côte d’Ivoire / Ivory Coast için geniş algılama
+  try {
+    const nRaw = normalize(countryName || '');
+    const n = nRaw.replace(/[-_]+/g, ' ');
+    if (n.includes('ivory') || n.includes('cote d ivoire') || n.includes('cote dvoire') || n.includes('cote divoire')) {
+      return 'ci';
+    }
+    // Özel: Saint Martin (French part) ve Sint Maarten (Dutch part)
+    if (n.includes('saint martin') && n.includes('french')) {
+      return 'mf';
+    }
+    if (n.includes('sint maarten') || (n.includes('saint martin') && n.includes('dutch'))) {
+      return 'sx';
+    }
+  } catch {}
   const variants = getCountryVariants(countryName);
   for (let i = 0; i < variants.length; i++) {
     const v = variants[i];
-    const code = countryCodes[v] || countryCodes[v?.toLowerCase()] || countryCodes[stripParen(v)] || countryCodes[stripParen(v)?.toLowerCase()];
+    const code = countryCodes[v]
+      || countryCodes[v?.toLowerCase()]
+      || countryCodes[stripParen(v)]
+      || countryCodes[stripParen(v)?.toLowerCase()];
     if (code) return code;
   }
   return null;
@@ -70,17 +191,20 @@ function normalize(s) {
 }
 
 function getCountryVariants(name) {
+  const base = String(name || '');
+  const n = normalize(base);
+  const out = new Set([base]);
+  // Basit eşanlamlılar
   const aliases = {
-    'Czechia': ['Czech Republic'],
-    'United Kingdom': ['Great Britain', 'UK', 'GB', 'Britain', 'England'],
-    'United States': ['United States of America', 'USA', 'US', 'U.S.'],
-    'Russia': ['Russian Federation'],
-    'South Korea': ['Republic of Korea'],
-    'Türkiye': ['Turkey'],
-    'Ivory Coast': ["Côte d'Ivoire"],
+    'United States': ['USA','U.S.A','US','America','United States of America','ABD','Amerika'],
+    'United Kingdom': ['UK','U.K','Britain','England','Great Britain'],
+    'Côte d’Ivoire': ['Ivory Coast','Cote d Ivoire','Cote d\'Ivoire','Cote D Ivoire','Cote D\'Ivoire','Cote dIvoire','Cote DIvoire','Cote Divoire','Cote-d\'Ivoire','Côte d\'Ivoire','Cote Dlvoire','Cote Dlvoreie','Cote de Ivoire','Cote dIvore'],
   };
-  const set = new Set([name, ...(aliases[name] || [])]);
-  return Array.from(set);
+  Object.entries(aliases).forEach(([k, arr]) => {
+    if (normalize(k) === n) arr.forEach((a)=>out.add(a));
+    if (arr.some((a)=> normalize(a) === n)) out.add(k);
+  });
+  return Array.from(out);
 }
 
 export async function loadStatesOnly(country) {
@@ -118,14 +242,41 @@ export async function loadCitiesOnly(country) {
         const cities = CSCCity.getCitiesOfCountry(found.isoCode) || [];
         cities.forEach((ct) => ct?.name && out.add(ct.name));
       }
-      const arr = Array.from(out);
-      if (arr.length) return arr;
+      let arr = Array.from(out);
+      if (arr.length) {
+        // Eğer CSC az sayıda döndürdüyse diğer kaynaklarla birleştir
+        const FORCE_MERGE_COUNTRIES = new Set(['Canada','United States','India','China','Brazil','Russia']);
+        if (arr.length < 150 || FORCE_MERGE_COUNTRIES.has(country)) {
+          const quick = countryCities[country] || [];
+          try {
+            // @ts-ignore - dynamic JSON import in JS file
+            const mod = await import('../data/worldCities.min.json');
+            const all = mod?.default || mod;
+            if (Array.isArray(all)) {
+              const variants = getCountryVariants(country);
+              const extra = new Set(arr);
+              for (const v of variants) {
+                for (const rec of all) {
+                  if (rec?.country === v && rec?.city) extra.add(rec.city);
+                }
+              }
+              arr = Array.from(extra);
+            }
+          } catch {}
+          if (Array.isArray(quick) && quick.length) {
+            const merged = new Set(arr);
+            quick.forEach((c)=> merged.add(c));
+            arr = Array.from(merged);
+          }
+        }
+        return applyCityLimit(country, arr);
+      }
     }
   } catch {}
 
   // 2) countryCities quick list
   const quick = countryCities[country] || [];
-  if (Array.isArray(quick) && quick.length) return quick;
+  if (Array.isArray(quick) && quick.length) return applyCityLimit(country, quick);
 
   // 3) worldCities filtered (dynamic import, TS uyarısını bastır)
   try {
@@ -141,39 +292,63 @@ export async function loadCitiesOnly(country) {
         }
       }
       const arr = Array.from(set);
-      if (arr.length) return arr;
+      if (arr.length) return applyCityLimit(country, arr);
     }
   } catch (_) { /* ignore */ }
 
   // 4) last resort
-  return quick;
+  return applyCityLimit(country, quick);
 }
 
 export async function loadPreferredAdminOrCities(country) {
-  // Prefer administrative divisions (states/provinces) if available, else cities
-  // Cache per country for 30 days using states_{country} or cities_{country}
-  // Özel durum: FORCE_CITIES
+  // Global tercih: şehirler. Şehirler yeterli değilse eyalet/il.
+  // Özel durum: FORCE_CITIES → her zaman şehir.
   if (COUNTRIES_FORCE_CITIES.has(country)) {
-    // v2 cache anahtarı ile eski küçük listeleri atla
     try {
-      const ck = `cities_v2_${country}`;
+      const ck = `cities_${CITY_CACHE_VERSION}_${country}`;
       const raw = localStorage.getItem(ck);
       if (raw) {
         const cached = JSON.parse(raw);
         const TTL = 30 * 24 * 60 * 60 * 1000;
         const fresh = cached?.ts && (Date.now() - cached.ts < TTL);
-        const okSize = Array.isArray(cached?.data) && cached.data.length >= 20;
-        if (fresh && okSize) return { type: 'city', list: cached.data };
+        const okSize = Array.isArray(cached?.data) && cached.data.length >= MIN_CITY_THRESHOLD;
+        const lim = COUNTRY_CITY_LIMITS[country];
+        const exceedsLimit = lim && Array.isArray(cached?.data) && cached.data.length > lim;
+        if (fresh && okSize && !exceedsLimit) return { type: 'city', list: applyCityLimit(country, cached.data) };
       }
     } catch {}
     const cities = await loadCitiesOnly(country);
     const list = Array.isArray(cities) ? cities : [];
-    try { localStorage.setItem(`cities_v2_${country}`, JSON.stringify({ data: list, ts: Date.now() })); } catch {}
+    try { localStorage.setItem(`cities_${CITY_CACHE_VERSION}_${country}`, JSON.stringify({ data: list, ts: Date.now() })); } catch {}
     return { type: 'city', list };
   }
 
+  // 1) Önce şehir cache'ini dene
   try {
-    // Try states cache first (v2)
+    const cKey = `cities_${CITY_CACHE_VERSION}_${country}`;
+    const cRaw = localStorage.getItem(cKey);
+    if (cRaw) {
+      const cached = JSON.parse(cRaw);
+      const TTL = 7 * 24 * 60 * 60 * 1000;
+      const fresh = cached?.ts && (Date.now() - cached.ts < TTL);
+      const okSize = Array.isArray(cached?.data) && cached.data.length >= MIN_CITY_THRESHOLD;
+      const lim = COUNTRY_CITY_LIMITS[country];
+      const exceedsLimit = lim && Array.isArray(cached?.data) && cached.data.length > lim;
+      if (fresh && okSize && !exceedsLimit) return { type: 'city', list: cached.data };
+    }
+  } catch {}
+
+  // 2) Şehirleri yükle, yeterliyse dön ve cache'le
+  {
+    const cities = await loadCitiesOnly(country);
+    if (Array.isArray(cities) && cities.length >= MIN_CITY_THRESHOLD) {
+      try { localStorage.setItem(`cities_${CITY_CACHE_VERSION}_${country}`, JSON.stringify({ data: cities, ts: Date.now() })); } catch {}
+      return { type: 'city', list: cities };
+    }
+  }
+
+  // 3) Eyalet/il cache
+  try {
     const sKey = `states_v2_${country}`;
     const sRaw = localStorage.getItem(sKey);
     if (sRaw) {
@@ -187,26 +362,15 @@ export async function loadPreferredAdminOrCities(country) {
     }
   } catch {}
 
+  // 4) Eyalet/il yükle; yoksa son kez şehirleri dön (az da olsa)
   const states = await loadStatesOnly(country);
-  if (states.length) {
+  if (Array.isArray(states) && states.length) {
     try { localStorage.setItem(`states_v2_${country}`, JSON.stringify({ data: states, ts: Date.now() })); } catch {}
     return { type: 'state', list: states };
   }
 
-  try {
-    const cKey = `cities_v2_${country}`;
-    const cRaw = localStorage.getItem(cKey);
-    if (cRaw) {
-      const cached = JSON.parse(cRaw);
-      const TTL = 7 * 24 * 60 * 60 * 1000;
-      const fresh = cached?.ts && (Date.now() - cached.ts < TTL);
-      const okSize = Array.isArray(cached?.data) && cached.data.length >= 20;
-      if (fresh && okSize) return { type: 'city', list: cached.data };
-    }
-  } catch {}
-
-  const cities = await loadCitiesOnly(country);
-  const list = Array.isArray(cities) ? cities : [];
-  try { localStorage.setItem(`cities_v2_${country}`, JSON.stringify({ data: list, ts: Date.now() })); } catch {}
+  const citiesFallback = await loadCitiesOnly(country);
+  const list = Array.isArray(citiesFallback) ? citiesFallback : [];
+  try { localStorage.setItem(`cities_${CITY_CACHE_VERSION}_${country}`, JSON.stringify({ data: list, ts: Date.now() })); } catch {}
   return { type: 'city', list };
 }

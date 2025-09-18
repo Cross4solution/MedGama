@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Phone as PhoneIcon } from 'lucide-react';
 import countryCodes from '../../data/countryCodes';
+import countryDialCodes from '../../data/countryDialCodes';
+import { getFlagCode } from '../../utils/geo';
 
-export default function PhoneNumberInput({ value = '', onChange, countryName }) {
+export default function PhoneNumberInput({ value = '', onChange, countryName, allowedCountryNames = null }) {
   const phoneWrapRef = useRef(null);
   const [showPhoneCodes, setShowPhoneCodes] = useState(false);
   const [phoneCodeQuery, setPhoneCodeQuery] = useState('');
@@ -18,13 +20,10 @@ export default function PhoneNumberInput({ value = '', onChange, countryName }) 
   const displayPhone = `${phoneCode} ${phoneNumber || ''}`.trim();
 
   // Available codes (extendable)
-  const phoneCodes = useMemo(() => [
-    '+90','+1','+44','+49','+43','+33','+39','+34','+31','+48','+30','+351','+41','+7','+61','+971',
-    '+46','+47','+45','+420','+421','+36','+40','+380','+373','+359','+32','+353','+372','+371','+370',
-    '+81','+82','+86','+62','+60','+65','+66','+84','+63','+64',
-    '+52','+55','+54','+56','+57','+58','+51',
-    '+20','+212','+216','+213','+234','+27','+966','+92'
-  ], []);
+  const phoneCodes = useMemo(() => {
+    const all = Object.values(countryDialCodes || {});
+    return Array.from(new Set(all)).sort((a,b) => Number(a.replace('+','')) - Number(b.replace('+','')));
+  }, []);
 
   // Helpers
   const isoFor = (name) => {
@@ -45,64 +44,28 @@ export default function PhoneNumberInput({ value = '', onChange, countryName }) 
   };
   const getFlagUrlByIso = (iso) => iso ? `https://flagcdn.com/24x18/${iso}.png` : null;
 
-  const phoneMeta = useMemo(() => ({
-    '+90': { name: 'Turkey', iso: countryCodes['Turkey'], placeholder: '+90 555 555 55 55' },
-    '+1': { name: 'United States', iso: countryCodes['United States'], placeholder: '+1 555 123 4567' },
-    '+44': { name: 'United Kingdom', iso: countryCodes['United Kingdom'], placeholder: '+44 7123 456789' },
-    '+49': { name: 'Germany', iso: countryCodes['Germany'], placeholder: '+49 1523 4567890' },
-    '+43': { name: 'Austria', iso: countryCodes['Austria'], placeholder: '+43 660 123 4567' },
-    '+33': { name: 'France', iso: countryCodes['France'], placeholder: '+33 6 12 34 56 78' },
-    '+39': { name: 'Italy', iso: countryCodes['Italy'], placeholder: '+39 347 123 4567' },
-    '+34': { name: 'Spain', iso: countryCodes['Spain'], placeholder: '+34 612 34 56 78' },
-    '+31': { name: 'Netherlands', iso: countryCodes['Netherlands'], placeholder: '+31 6 12 34 56 78' },
-    '+48': { name: 'Poland', iso: countryCodes['Poland'], placeholder: '+48 512 345 678' },
-    '+30': { name: 'Greece', iso: countryCodes['Greece'], placeholder: '+30 691 234 5678' },
-    '+351': { name: 'Portugal', iso: countryCodes['Portugal'], placeholder: '+351 912 345 678' },
-    '+41': { name: 'Switzerland', iso: countryCodes['Switzerland'], placeholder: '+41 79 123 45 67' },
-    '+7': { name: 'Russia', iso: countryCodes['Russia'], placeholder: '+7 912 345 67 89' },
-    '+61': { name: 'Australia', iso: 'au', placeholder: '+61 4 1234 5678' },
-    '+971': { name: 'United Arab Emirates', iso: 'ae', placeholder: '+971 50 123 4567' },
-    '+46': { name: 'Sweden', iso: countryCodes['Sweden'], placeholder: '+46 70 123 45 67' },
-    '+47': { name: 'Norway', iso: countryCodes['Norway'], placeholder: '+47 412 34 567' },
-    '+45': { name: 'Denmark', iso: countryCodes['Denmark'], placeholder: '+45 12 34 56 78' },
-    '+420': { name: 'Czech Republic', iso: countryCodes['Czech Republic'], placeholder: '+420 601 123 456' },
-    '+421': { name: 'Slovakia', iso: countryCodes['Slovakia'], placeholder: '+421 901 234 567' },
-    '+36': { name: 'Hungary', iso: countryCodes['Hungary'], placeholder: '+36 20 123 4567' },
-    '+40': { name: 'Romania', iso: countryCodes['Romania'], placeholder: '+40 712 345 678' },
-    '+380': { name: 'Ukraine', iso: countryCodes['Ukraine'], placeholder: '+380 67 123 4567' },
-    '+373': { name: 'Moldova', iso: countryCodes['Moldova'], placeholder: '+373 621 23 456' },
-    '+359': { name: 'Bulgaria', iso: countryCodes['Bulgaria'], placeholder: '+359 87 123 4567' },
-    '+32': { name: 'Belgium', iso: countryCodes['Belgium'], placeholder: '+32 470 12 34 56' },
-    '+353': { name: 'Ireland', iso: countryCodes['Ireland'], placeholder: '+353 85 123 4567' },
-    '+372': { name: 'Estonia', iso: countryCodes['Estonia'], placeholder: '+372 5123 456' },
-    '+371': { name: 'Latvia', iso: countryCodes['Latvia'], placeholder: '+371 21 234 567' },
-    '+370': { name: 'Lithuania', iso: countryCodes['Lithuania'], placeholder: '+370 612 34 567' },
-    '+81': { name: 'Japan', iso: countryCodes['Japan'], placeholder: '+81 90 1234 5678' },
-    '+82': { name: 'South Korea', iso: countryCodes['South Korea'], placeholder: '+82 10 1234 5678' },
-    '+86': { name: 'China', iso: countryCodes['China'], placeholder: '+86 131 2345 6789' },
-    '+62': { name: 'Indonesia', iso: countryCodes['Indonesia'], placeholder: '+62 812 1234 5678' },
-    '+60': { name: 'Malaysia', iso: countryCodes['Malaysia'], placeholder: '+60 12 345 6789' },
-    '+65': { name: 'Singapore', iso: countryCodes['Singapore'], placeholder: '+65 8123 4567' },
-    '+66': { name: 'Thailand', iso: countryCodes['Thailand'], placeholder: '+66 81 234 5678' },
-    '+84': { name: 'Vietnam', iso: countryCodes['Vietnam'], placeholder: '+84 91 234 56 78' },
-    '+63': { name: 'Philippines', iso: countryCodes['Philippines'], placeholder: '+63 912 345 6789' },
-    '+64': { name: 'New Zealand', iso: 'nz', placeholder: '+64 21 123 4567' },
-    '+52': { name: 'Mexico', iso: 'mx', placeholder: '+52 55 1234 5678' },
-    '+55': { name: 'Brazil', iso: 'br', placeholder: '+55 11 91234 5678' },
-    '+54': { name: 'Argentina', iso: 'ar', placeholder: '+54 9 11 1234 5678' },
-    '+56': { name: 'Chile', iso: 'cl', placeholder: '+56 9 1234 5678' },
-    '+57': { name: 'Colombia', iso: 'co', placeholder: '+57 300 123 4567' },
-    '+58': { name: 'Venezuela', iso: 've', placeholder: '+58 412 123 4567' },
-    '+51': { name: 'Peru', iso: 'pe', placeholder: '+51 912 345 678' },
-    '+20': { name: 'Egypt', iso: 'eg', placeholder: '+20 10 123 45678' },
-    '+212': { name: 'Morocco', iso: 'ma', placeholder: '+212 6 12 34 56 78' },
-    '+216': { name: 'Tunisia', iso: 'tn', placeholder: '+216 21 234 567' },
-    '+213': { name: 'Algeria', iso: 'dz', placeholder: '+213 551 23 45 67' },
-    '+234': { name: 'Nigeria', iso: 'ng', placeholder: '+234 803 123 4567' },
-    '+27': { name: 'South Africa', iso: 'za', placeholder: '+27 82 123 4567' },
-    '+966': { name: 'Saudi Arabia', iso: 'sa', placeholder: '+966 50 123 4567' },
-    '+92': { name: 'Pakistan', iso: 'pk', placeholder: '+92 300 1234567' },
-  }), []);
+  const phoneMeta = useMemo(() => {
+    // Build code -> representative country meta
+    const codeToNames = new Map();
+    Object.entries(countryDialCodes || {}).forEach(([name, code]) => {
+      const arr = codeToNames.get(code) || [];
+      arr.push(name);
+      codeToNames.set(code, arr);
+    });
+    const obj = {};
+    for (const code of phoneCodes) {
+      const candidates = codeToNames.get(code) || [];
+      // pick representative name: if allowedCountryNames provided, prefer one from it
+      let rep = candidates[0] || '';
+      if (Array.isArray(allowedCountryNames) && allowedCountryNames.length > 0) {
+        const found = candidates.find((n) => allowedCountryNames.includes(n));
+        if (found) rep = found;
+      }
+      const iso = getFlagCode(rep) || countryCodes[rep] || null;
+      obj[code] = { name: rep, iso, placeholder: `${code} 555 123 4567` };
+    }
+    return obj;
+  }, [phoneCodes, allowedCountryNames]);
 
   const phoneMaxDigits = useMemo(() => ({
     '+90': 10,'+1': 10,'+44': 10,'+49': 11,'+43': 11,'+33': 9,'+39': 10,'+34': 9,'+31': 9,'+48': 9,'+30': 10,
@@ -157,11 +120,9 @@ export default function PhoneNumberInput({ value = '', onChange, countryName }) 
   // If a countryName is provided from parent, sync the code accordingly
   useEffect(() => {
     if (!countryName) return;
-    const entry = Object.entries(phoneMeta).find(([code, meta]) => meta.name === countryName);
-    if (entry) {
-      const [code] = entry;
+    const code = countryDialCodes[countryName] || null;
+    if (code) {
       setPhoneCode(code);
-      // also update parent value with new code
       const rawDigits = (displayPhone || '').replace(/^\+\d{1,3}\s*/, '').replace(/\D+/g, '');
       const limit = phoneMaxDigits[code] || 14;
       const digits = rawDigits.slice(0, limit);
@@ -254,6 +215,10 @@ export default function PhoneNumberInput({ value = '', onChange, countryName }) 
           </div>
           {(phoneCodes.filter((c)=> {
             const meta = phoneMeta[c] || {}; const q = phoneCodeQuery.trim().toLowerCase();
+            // If allowedCountryNames provided, include code if ANY of its countries are allowed
+            if (Array.isArray(allowedCountryNames) && allowedCountryNames.length > 0) {
+              if (!allowedCountryNames.includes(meta.name)) return false;
+            }
             if (!q) return true; return (meta.name||'').toLowerCase().includes(q) || c.includes(q);
           })).map((c)=> {
             const meta = phoneMeta[c] || {};
