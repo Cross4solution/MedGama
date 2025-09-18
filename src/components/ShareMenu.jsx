@@ -69,7 +69,7 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
         ref={btnRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-900 font-bold transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100 ${buttonClassName}`.trim()}
+        className={`inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-800 font-medium transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100 ${buttonClassName}`.trim()}
         aria-haspopup="menu"
         aria-expanded={open}
       >
