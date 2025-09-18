@@ -54,7 +54,7 @@ try {
 } catch {}
 
 // Cache versioning to invalidate older small city lists
-const CITY_CACHE_VERSION = 'v8';
+const CITY_CACHE_VERSION = 'v9';
 const MIN_CITY_THRESHOLD = 30;
 
 // Ülke bazlı özel limitler (boş bırakıyoruz). Varsayılan: 100.
@@ -75,6 +75,14 @@ const POPULAR_CITIES = {
   Denmark: [
     'Copenhagen','Aarhus','Odense','Aalborg','Esbjerg','Randers','Kolding','Horsens','Vejle','Roskilde'
   ],
+  // Italy – show only major/popular cities
+  Italy: [
+    'Rome','Milano','Milan','Napoli','Naples','Torino','Turin','Palermo','Genova','Genoa','Bologna','Firenze','Florence','Bari','Catania','Venezia','Venice','Verona','Messina','Padova','Padua','Trieste','Taranto','Brescia','Prato','Reggio Calabria','Parma','Modena','Reggio Emilia','Perugia','Livorno','Ravenna','Cagliari','Foggia','Rimini','Salerno','Ferrara','Sassari','Siracusa','Syracuse','Pescara','Monza','Latina','Bergamo','Forlì','Forli','Trento','Vicenza','Terni','Novara','Bolzano','Bozen','Piacenza','Ancona','Arezzo','Andria','Udine','Cesena','La Spezia','Lecce','Pesaro','Alessandria','Barletta','Catanzaro','Pistoia','Brindisi','Pisa','Torre del Greco','Como','Lucca','Pozzuoli','Treviso','Busto Arsizio','Varese'
+  ],
+  // Italian name variant
+  Italia: [
+    'Roma','Milano','Napoli','Torino','Palermo','Genova','Bologna','Firenze','Bari','Catania','Venezia','Verona','Messina','Padova','Trieste','Taranto','Brescia','Prato','Reggio Calabria','Parma','Modena','Reggio Emilia','Perugia','Livorno','Ravenna','Cagliari','Foggia','Rimini','Salerno','Ferrara','Sassari','Siracusa','Pescara','Monza','Latina','Bergamo','Forlì','Trento','Vicenza','Terni','Novara','Bolzano','Piacenza','Ancona','Arezzo','Andria','Udine','Cesena','La Spezia','Lecce','Pesaro','Alessandria','Barletta','Catanzaro','Pistoia','Brindisi','Pisa','Torre del Greco','Como','Lucca','Pozzuoli','Treviso','Busto Arsizio','Varese'
+  ],
 };
 
 // Bazı ülkeler için yalnızca popüler/büyük şehirleri döndür (küçük yerleşimler hariç)
@@ -87,6 +95,8 @@ const COUNTRIES_POPULAR_ONLY = new Set([
   'America',
   'ABD',
   'Amerika',
+  // Italy
+  'Italy','Italia',
 ]);
 
 function getPopularCitiesList(country) {
