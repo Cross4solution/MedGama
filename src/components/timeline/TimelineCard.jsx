@@ -421,7 +421,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               ) : (
                 <ThumbsUp className="w-5 h-5" strokeWidth={2.5} fill="none" />
               )}
-              <span className="text-gray-800 font-medium">Beğen</span>
+              <span className={`${liked ? 'text-blue-600' : 'text-gray-800'} font-medium`}>Beğen</span>
             </button>
             <button
               type="button"
@@ -429,7 +429,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               onClick={(e)=>{ e.stopPropagation(); if (disabledActions) return; setShowCommentsPreview(v=>!v); }}
             >
               <img src="/images/icon/comment-alt-lines-svgrepo-com.svg" alt="Yorum" className="w-5 h-5" />
-              <span>Yorum Yap</span>
+              <span className="whitespace-nowrap">Yorum Yap</span>
             </button>
             <ShareMenu title="Paylaş" url={shareUrl} showNative={false} buttonClassName="min-w-[110px] text-gray-800 font-medium" />
           </div>

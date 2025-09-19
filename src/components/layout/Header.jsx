@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, MessageSquare } from 'lucide-react';
+import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, MessageSquare, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
@@ -171,6 +171,17 @@ const Header = () => {
               )}
             </div>
             {/* Mobile trigger */}
+            {/* Mobile: patient shortcuts */}
+            {user?.role === 'patient' && (
+              <button
+                type="button"
+                title="Messages"
+                onClick={() => navigate('/doctor-chat')}
+                className="md:hidden p-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-800"
+              >
+                <MessageSquare className="w-5 h-5" />
+              </button>
+            )}
             {user ? (
               <button
                 onClick={toggleMenu}
@@ -240,21 +251,17 @@ const Header = () => {
                 <Home className="w-4 h-4" />
                 <span>Homepage</span>
               </Link>
-              <Link to="/about" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
-                <Info className="w-4 h-4" />
-                <span>About MedGama</span>
-              </Link>
-              <Link to="/for-patients" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
-                <HeartPulse className="w-4 h-4" />
-                <span>For Patients</span>
-              </Link>
               <Link to="/clinics" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Building2 className="w-4 h-4" />
-                <span>For Clinics</span>
+                <span>Clinics</span>
               </Link>
               <Link to="/vasco-ai" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Cpu className="w-4 h-4" />
                 <span>Vasco AI</span>
+              </Link>
+              <Link to="/about" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
+                <Info className="w-4 h-4" />
+                <span>About MedGama</span>
               </Link>
               {/* Contact removed */}
             </div>
@@ -269,46 +276,64 @@ const Header = () => {
         <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px] md:hidden" onClick={closeMenu} />
         {/* Panel */}
         <div className="fixed top-20 left-0 right-0 z-50 mx-4 max-w-md md:hidden overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ring-1 ring-black/5">
-          <div className="p-4 flex items-center gap-3 border-b border-gray-100">
-            <img src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'} alt={user.name} className="w-10 h-10 rounded-full object-cover border" />
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
-              <p className="text-xs text-gray-500 truncate">{(user.role || 'user').toString().charAt(0).toUpperCase() + (user.role || 'user').toString().slice(1)}</p>
-            </div>
-          </div>
-          <nav className="divide-y divide-gray-100">
-            <div className="p-2">
-              <Link to="/" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
-                <Home className="w-4 h-4" />
-                <span>Homepage</span>
-              </Link>
-              <Link to="/about" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
-                <Info className="w-4 h-4" />
-                <span>About MedGama</span>
-              </Link>
-              <Link to="/for-patients" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
-                <HeartPulse className="w-4 h-4" />
-                <span>For Patients</span>
-              </Link>
-              <Link to="/clinics" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
-                <Building2 className="w-4 h-4" />
-                <span>For Clinics</span>
-              </Link>
-              <Link to="/vasco-ai" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
-                <Cpu className="w-4 h-4" />
-                <span>Vasco AI</span>
-              </Link>
-              {/* Contact removed */}
-            </div>
-            <div className="p-2">
-              <button
-                onClick={() => { closeMenu(); logout(); }}
-                className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"
-              >
-                Logout
-              </button>
-            </div>
-          </nav>
+          {(() => {
+            const role = (user?.role || 'patient');
+            const patientItems = [
+              { to: '/profile', label: 'Profile', icon: User },
+            ];
+            const doctorItems = [
+              { to: '/profile', label: 'Profile', icon: User },
+              { to: '/patient-home', label: 'Medstream', icon: Video },
+              { to: '/notifications', label: 'Notifications', icon: Bell },
+              { to: '/home-v2', label: 'Homepage', icon: Home },
+              { to: '/doctor-chat', label: 'Messages', icon: MessageSquare },
+              { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
+              { to: '/telehealth', label: 'Telehealth', icon: Monitor },
+            ];
+            const clinicItems = [
+              { to: '/clinic', label: 'Profile', icon: User },
+              { to: '/patient-home', label: 'Medstream', icon: Video },
+              { to: '/notifications', label: 'Notifications', icon: Bell },
+              { to: '/home-v2', label: 'Homepage', icon: Home },
+              { to: '/doctor-chat', label: 'Messages', icon: MessageSquare },
+              { to: '/clinics', label: 'Doctors & Departments', icon: Building2 },
+              { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
+            ];
+            const items = role === 'clinic' ? clinicItems : (role === 'doctor' ? doctorItems : patientItems);
+            return (
+              <nav className="divide-y divide-gray-100">
+                <div className="p-4 flex items-center gap-3 border-b border-gray-100">
+                  <img src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'} alt={user.name} className="w-10 h-10 rounded-full object-cover border" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
+                    <p className="text-xs text-gray-500 truncate">{String(role).charAt(0).toUpperCase() + String(role).slice(1)}</p>
+                  </div>
+                </div>
+                <div className="p-2">
+                  {items.map((it, idx) => (
+                    it.external ? (
+                      <a key={`ext-${idx}`} href={it.href} target="_blank" rel="noopener noreferrer" onClick={closeMenu} className="flex items-center justify-between px-3 py-2 rounded-xl text-sm border transition border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-200">
+                        <span className="flex items-center gap-2"><it.icon className="w-4 h-4 text-gray-500" />{it.label}</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
+                      </a>
+                    ) : (
+                      <Link key={`int-${idx}`} to={it.to} onClick={closeMenu} className="flex items-center justify-between px-3 py-2 rounded-xl text-sm border transition border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-200">
+                        <span className="flex items-center gap-2"><it.icon className="w-4 h-4 text-gray-500" />{it.label}</span>
+                      </Link>
+                    )
+                  ))}
+                </div>
+                <div className="p-2">
+                  <button
+                    onClick={() => { closeMenu(); logout(); }}
+                    className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </nav>
+            );
+          })()}
         </div>
       </>
     )}

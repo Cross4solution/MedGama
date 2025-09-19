@@ -172,7 +172,7 @@ export default function CustomSearch() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="bg-white border border-gray-200 rounded-xl p-3 md:p-3">
-        <div className="grid gap-4 md:grid-cols-[12rem,12rem,1.1fr,auto,1.1fr,auto]">
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-[12rem,12rem,1.1fr,auto,1.1fr,auto]">
         {/* 1. Country */}
         <div className="max-w-48">
           <CountryCombobox
@@ -203,7 +203,7 @@ export default function CustomSearch() {
         </div>
 
         {/* 3. Symptom */}
-        <div className="relative">
+        <div className="relative col-span-2 md:col-span-1">
           <div
             className={`border border-gray-300 rounded-lg px-2 py-1 text-base md:text-sm flex items-center flex-wrap gap-2 ${disableSymptom ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
           >
@@ -287,10 +287,10 @@ export default function CustomSearch() {
           )}
         </div>
 
-        <div className="flex items-center justify-center text-gray-500">or</div>
+        <div className="flex items-center justify-center text-gray-500 col-span-2 md:col-span-1">or</div>
 
         {/* 4. Specialty */}
-        <div className="relative">
+        <div className="relative col-span-2 md:col-span-1">
           <div
             className={`border border-gray-300 rounded-lg px-2 py-1 text-base md:text-sm flex items-center flex-wrap gap-2 ${disableSpecialty ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
           >
@@ -375,7 +375,7 @@ export default function CustomSearch() {
         </div>
 
         {/* 5. Search button */}
-        <div className="flex md:block">
+        <div className="flex md:block col-span-2 md:col-span-1">
           <button
             type="submit"
             disabled={!canSearch}

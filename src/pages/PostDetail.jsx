@@ -74,7 +74,7 @@ export default function PostDetail() {
                 <path d="M8.5 10.5h7" />
                 <path d="M8.5 13h5" />
               </svg>
-              <span>Yorum Yap</span>
+              <span className="whitespace-nowrap">Yorum Yap</span>
             </button>
             <div className="flex items-center justify-center">
               <ShareMenu title="Paylaş" url={typeof window !== 'undefined' ? window.location.href : ''} showNative={false} />

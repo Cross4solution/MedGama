@@ -8,6 +8,7 @@ import ChatInput from 'components/chat/ChatInput';
 const DoctorChatPage = () => {
   const [message, setMessage] = useState('');
   const [channelFilter, setChannelFilter] = useState('Tümü');
+  const [mobileChatOpen, setMobileChatOpen] = useState(false); // mobile: list -> chat
   // Thread list (mock)
   const threads = useMemo(() => ([
     { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Cuma günü benim için daha uygun olur...', when: '15 dk', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA ≤5 dk', 'Acil'] },
@@ -58,6 +59,8 @@ const DoctorChatPage = () => {
     if (id === activeThreadId) return;
     setActiveThreadId(id);
     setMessages(getInitialMessages(id));
+    // Mobile: open chat view
+    setMobileChatOpen(true);
   };
 
   return (
@@ -91,7 +94,66 @@ const DoctorChatPage = () => {
       </div>
 
       <div className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-3`}>
-        <div className="grid grid-cols-1 lg:grid-cols-6 gap-3">
+        {/* Mobile: Threads list or Chat view */}
+        <div className="lg:hidden">
+          {!mobileChatOpen ? (
+            <div>
+              <div className="mb-2">
+                <label className="block text-xs text-gray-500 mb-1">Kanal</label>
+                <select
+                  value={channelFilter}
+                  onChange={(e)=>setChannelFilter(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-sm bg-white"
+                >
+                  {['Tümü','WhatsApp','Facebook','Web Form','Chat'].map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="bg-white border rounded-lg overflow-hidden divide-y">
+                {filteredThreads.map((t)=> (
+                  <button
+                    key={t.id}
+                    className="w-full text-left p-3 hover:bg-gray-50"
+                    onClick={()=>handleSelectThread(t.id)}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="relative w-11 h-11 rounded-full overflow-hidden bg-gray-100">
+                        <img src={t.avatar} alt={t.name} className="w-full h-full object-cover" loading="lazy" />
+                        <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 ${t.online ? 'bg-green-500' : 'bg-gray-400'} rounded-full border-2 border-white`}></span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold text-gray-900 truncate">{t.name}</h4>
+                          <span className="text-[11px] text-gray-500">{t.when}</span>
+                        </div>
+                        <p className="text-xs text-gray-600 truncate">{t.last}</p>
+                        <div className="mt-1 flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1 rounded-full border bg-gray-100 border-gray-200 h-5 px-2 text-[11px]">{t.channel}</span>
+                          {t.tags?.slice(0,2).map(tag => (
+                            <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50 text-gray-700">{tag}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm border h-[calc(100vh-13rem)] flex flex-col">
+              <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} />
+              <ChatMessageList
+                messages={messages}
+                leftAvatar={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                rightAvatar={'/images/portrait-candid-male-doctor_720.jpg'}
+              />
+              <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} />
+            </div>
+          )}
+        </div>
+        {/* Desktop layout */}
+        <div className="hidden lg:grid grid-cols-1 lg:grid-cols-6 gap-3">
           {/* Threads Sidebar */}
           <ThreadsSidebar
             threads={filteredThreads}
@@ -197,8 +259,10 @@ const DoctorChatPage = () => {
           </div>
         </div>
       </div>
+      
     </PatientLayout>
   );
-};
+}
+;
 
-export default DoctorChatPage; 
+export default DoctorChatPage;
