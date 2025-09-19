@@ -167,7 +167,7 @@ const DoctorChatPage = () => {
           <div className="lg:col-span-3">
             <div className="bg-white rounded-lg shadow-sm border h-[600px] flex flex-col">
               {/* Chat Header */}
-              <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} />
+              <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} />
 
               {/* Messages */}
               <ChatMessageList
