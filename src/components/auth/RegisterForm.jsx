@@ -220,7 +220,7 @@ const RegisterForm = ({
                     handleInputChange({ target: { name: 'country', value: val } });
                   }}
                   placeholder="Select a country"
-                  triggerClassName="w-full h-11 border border-gray-300 rounded-none pl-10 pr-3 text-sm bg-white text-left flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-shadow"
+                  triggerClassName="w-full h-11 border border-gray-300 rounded-xl pl-10 pr-3 text-sm bg-white text-left flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-shadow"
                   getFlagUrl={(name) => {
                     try {
                       const code = getFlagCode(name);

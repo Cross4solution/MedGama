@@ -6,9 +6,12 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
   const [showEmoji, setShowEmoji] = useState(false);
   const [photos, setPhotos] = useState([]);
   const [videos, setVideos] = useState([]);
+  const [photoUrls, setPhotoUrls] = useState([]);
+  const [videoUrls, setVideoUrls] = useState([]);
   const dialogRef = useRef(null);
   const photoRef = useRef(null);
   const videoRef = useRef(null);
+  const [viewer, setViewer] = useState(null); // { type: 'photo'|'video', url: string }
 
   useEffect(() => {
     function onKey(e) {
@@ -28,6 +31,14 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
       setShowEmoji(false);
       setPhotos([]);
       setVideos([]);
+      // Cleanup URLs when modal closes
+      try {
+        photoUrls.forEach(u => URL.revokeObjectURL(u));
+        videoUrls.forEach(u => URL.revokeObjectURL(u));
+      } catch {}
+      setPhotoUrls([]);
+      setVideoUrls([]);
+      setViewer(null);
     }
   }, [open]);
 
@@ -43,6 +54,33 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
     }
     onResetInitialAction?.();
   }, [open, initialAction, onResetInitialAction]);
+
+  // Build preview URLs when selected files change
+  useEffect(() => {
+    try {
+      // cleanup previous
+      photoUrls.forEach(u => URL.revokeObjectURL(u));
+    } catch {}
+    const next = (photos || []).map(f => URL.createObjectURL(f));
+    setPhotoUrls(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photos]);
+
+  useEffect(() => {
+    try {
+      videoUrls.forEach(u => URL.revokeObjectURL(u));
+    } catch {}
+    const next = (videos || []).map(f => URL.createObjectURL(f));
+    setVideoUrls(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videos]);
+
+  const removePhotoAt = (idx) => {
+    setPhotos(arr => arr.filter((_, i) => i !== idx));
+  };
+  const removeVideoAt = (idx) => {
+    setVideos(arr => arr.filter((_, i) => i !== idx));
+  };
 
   if (!open) return null;
 
@@ -156,6 +194,49 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                 <div className="mt-2 text-xs text-gray-500">
                   {photos.length>0 && <span className="mr-3">{photos.length} photo selected</span>}
                   {videos.length>0 && <span>{videos.length} video selected</span>}
+                </div>
+              )}
+              {(photoUrls.length>0 || videoUrls.length>0) && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {photoUrls.map((src, i) => (
+                    <div key={`p${i}`} className="relative w-20 h-20 rounded-lg overflow-hidden border">
+                      <button type="button" onClick={() => setViewer({ type: 'photo', url: src })} className="absolute inset-0">
+                        <img src={src} alt={`photo-${i+1}`} className="w-full h-full object-cover" />
+                      </button>
+                      <button type="button" aria-label="Remove photo" onClick={() => removePhotoAt(i)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                  {videoUrls.map((src, i) => (
+                    <div key={`v${i}`} className="relative w-24 h-20 rounded-lg overflow-hidden border bg-black/5">
+                      <button type="button" onClick={() => setViewer({ type: 'video', url: src })} className="absolute inset-0">
+                        <video src={src} className="w-full h-full object-cover" muted playsInline />
+                      </button>
+                      <button type="button" aria-label="Remove video" onClick={() => removeVideoAt(i)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {viewer && (
+                <div className="fixed inset-0 z-[110]">
+                  <div className="absolute inset-0 bg-black/60" onClick={() => setViewer(null)} />
+                  <div className="absolute inset-0 flex items-center justify-center p-4">
+                    <div className="relative max-w-3xl w-full">
+                      <button type="button" onClick={() => setViewer(null)} className="absolute -top-3 -right-3 bg-white/90 border border-gray-200 rounded-full p-2 shadow" aria-label="Close preview">
+                        <X className="w-4 h-4" />
+                      </button>
+                      <div className="bg-black rounded-lg overflow-hidden">
+                        {viewer.type === 'photo' ? (
+                          <img src={viewer.url} alt="preview" className="w-full h-auto max-h-[80vh] object-contain" />
+                        ) : (
+                          <video src={viewer.url} className="w-full h-auto max-h-[80vh]" controls autoPlay />
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

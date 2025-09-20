@@ -34,7 +34,7 @@ export default function CoreBoxes({ items = CORE_ITEMS }) {
             const Icon = ICONS[i % ICONS.length];
             const theme = PALETTE[i % PALETTE.length];
             return (
-              <div key={i} className="group relative pt-[100%] sm:pt-0 rounded-2xl border bg-white shadow-sm hover:shadow-md transition focus-within:ring-2 focus-within:ring-teal-300 overflow-hidden">
+              <div key={i} className="group relative pt-[100%] sm:pt-0 rounded-2xl border bg-white shadow-sm overflow-hidden">
                 <div className="absolute inset-0 p-3 sm:static sm:p-5 flex flex-col">
                   <div className={`w-10 h-10 rounded-lg ${theme.bg} mb-3 flex items-center justify-center`}>
                     <Icon className={`w-5 h-5 ${theme.fg}`} aria-hidden="true" />

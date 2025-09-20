@@ -73,7 +73,7 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <Share2 className="w-5 h-5" strokeWidth={2.5} aria-hidden="true" />
+        <Share2 className="w-5 h-5 text-gray-600" strokeWidth={2.0} aria-hidden="true" />
         <span>{title}</span>
       </button>
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Image as ImageIcon, Video, Smile } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import FabricEditor from './editor/FabricEditor';
 import PostCreateModal from './timeline/PostCreateModal';
 
 export default function PostComposer() {
@@ -11,12 +12,18 @@ export default function PostComposer() {
   const [selectedPhotos, setSelectedPhotos] = useState([]);
   const [selectedVideos, setSelectedVideos] = useState([]);
   const [photoPreviews, setPhotoPreviews] = useState([]);
+  const [videoPreviews, setVideoPreviews] = useState([]);
+  const [viewer, setViewer] = useState(null); // { type: 'photo'|'video', url: string }
   const photoRef = React.useRef(null);
   const videoRef = React.useRef(null);
   const emojiBtnRef = React.useRef(null);
   const emojiPanelRef = React.useRef(null);
   const avatar = '/images/portrait-candid-male-doctor_720.jpg';
   const name = user?.name || 'Guest';
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editorImageUrl, setEditorImageUrl] = useState('');
+  const [editorIndex, setEditorIndex] = useState(-1);
+  const [editorSize, setEditorSize] = useState({ w: 820, h: 480 });
 
   // Seçilen fotoğraflar için küçük önizlemeler (memory leak olmaması için URL.revokeObjectURL uygulanır)
   useEffect(() => {
@@ -27,11 +34,73 @@ export default function PostComposer() {
     };
   }, [selectedPhotos]);
 
+  // Fullscreen modal için FabricEditor boyutlarını viewport'a göre ayarla (scrollsuz sığsın)
+  useEffect(() => {
+    if (!editorOpen) return;
+    const computeSize = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const outerPadding = 24; // modal iç padding
+      const headerHeight = 56; // üst bar yüksekliği
+      const toolbarApprox = 120; // FabricEditor sol toolbar genişlik + boşluklar
+      const w = Math.max(500, Math.floor(vw - (outerPadding * 2) - toolbarApprox));
+      const h = Math.max(360, Math.floor(vh - (outerPadding * 2) - headerHeight));
+      setEditorSize({ w, h });
+    };
+    computeSize();
+    window.addEventListener('resize', computeSize);
+    return () => window.removeEventListener('resize', computeSize);
+  }, [editorOpen]);
+
+  // Seçilen videolar için küçük önizlemeler
+  useEffect(() => {
+    const urls = (selectedVideos || []).map((file) => ({ url: URL.createObjectURL(file), name: file.name }));
+    setVideoPreviews(urls);
+    return () => {
+      urls.forEach((u) => { try { URL.revokeObjectURL(u.url); } catch {} });
+    };
+  }, [selectedVideos]);
+
+  const removePhotoAt = (idx) => {
+    setSelectedPhotos(arr => arr.filter((_, i) => i !== idx));
+  };
+  const removeVideoAt = (idx) => {
+    setSelectedVideos(arr => arr.filter((_, i) => i !== idx));
+  };
+
   function handlePost(newPost) {
     // TODO: integrate with timeline data store (same as TimelineShareBox)
     // eslint-disable-next-line no-console
     console.log('New post from PatientHome:', newPost);
   }
+
+  const dataURLtoFile = async (dataUrl, fileName = 'edited.png') => {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    return new File([blob], fileName, { type: blob.type || 'image/png' });
+  };
+
+  const openEditorForPhoto = (idx) => {
+    const p = photoPreviews[idx];
+    if (!p) return;
+    setEditorIndex(idx);
+    setEditorImageUrl(p.url);
+    setEditorOpen(true);
+  };
+
+  const handleEditorExport = async (dataUrl) => {
+    try {
+      // replace preview url
+      setPhotoPreviews(prev => prev.map((p, i) => i === editorIndex ? { ...p, url: dataUrl } : p));
+      // also replace File in selectedPhotos
+      const file = await dataURLtoFile(dataUrl, selectedPhotos[editorIndex]?.name || 'edited.png');
+      setSelectedPhotos(prev => prev.map((f, i) => i === editorIndex ? file : f));
+    } finally {
+      setEditorOpen(false);
+      setEditorIndex(-1);
+      setEditorImageUrl('');
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl p-4 border shadow-sm">
@@ -105,23 +174,87 @@ export default function PostComposer() {
               {selectedPhotos.length>0 && <span className="mr-3">{selectedPhotos.length} photo selected</span>}
               {selectedVideos.length>0 && <span>{selectedVideos.length} video selected</span>}
             </div>
-            {photoPreviews.length > 0 && (
-              <div className="mt-2 grid grid-cols-6 sm:grid-cols-8 gap-2">
-                {photoPreviews.slice(0,8).map((p, idx) => (
-                  <div key={idx} className="relative w-16 h-16 rounded-md overflow-hidden border bg-gray-50">
-                    <img src={p.url} alt={p.name || `photo-${idx+1}`} className="w-full h-full object-cover" />
+            {(photoPreviews.length > 0 || videoPreviews.length > 0) && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {photoPreviews.map((p, idx) => (
+                  <div key={`p${idx}`} className="relative w-20 h-20 rounded-lg overflow-hidden border bg-gray-50">
+                    <button type="button" onClick={() => setViewer({ type: 'photo', url: p.url })} className="absolute inset-0">
+                      <img src={p.url} alt={p.name || `photo-${idx+1}`} className="w-full h-full object-cover" />
+                    </button>
+                    <div className="absolute left-1.5 bottom-1.5 flex gap-1">
+                      <button type="button" onClick={() => openEditorForPhoto(idx)} className="px-1.5 py-0.5 text-[10px] rounded bg-white/90 border border-gray-200 text-gray-700 shadow">Düzenle</button>
+                    </div>
+                    <button type="button" aria-label="Remove photo" onClick={() => removePhotoAt(idx)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
                   </div>
                 ))}
-                {photoPreviews.length > 8 && (
-                  <div className="w-16 h-16 rounded-md border bg-gray-100 flex items-center justify-center text-xs text-gray-600">
-                    +{photoPreviews.length - 8}
+                {videoPreviews.map((v, idx) => (
+                  <div key={`v${idx}`} className="relative w-24 h-20 rounded-lg overflow-hidden border bg-black/5">
+                    <button type="button" onClick={() => setViewer({ type: 'video', url: v.url })} className="absolute inset-0">
+                      <video src={v.url} className="w-full h-full object-cover" muted playsInline />
+                    </button>
+                    <button type="button" aria-label="Remove video" onClick={() => removeVideoAt(idx)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
                   </div>
-                )}
+                ))}
               </div>
             )}
           </div>
         )}
       </div>
+      {viewer && (
+        <div className="fixed inset-0 z-[90]">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setViewer(null)} />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="relative max-w-3xl w-full">
+              <button type="button" onClick={() => setViewer(null)} className="absolute -top-3 -right-3 bg-white/90 border border-gray-200 rounded-full p-2 shadow" aria-label="Close preview">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
+              <div className="bg-black rounded-lg overflow-hidden">
+                {viewer.type === 'photo' ? (
+                  <img src={viewer.url} alt="preview" className="w-full h-auto max-h-[80vh] object-contain" />
+                ) : (
+                  <video src={viewer.url} className="w-full h-auto max-h-[80vh]" controls autoPlay />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {editorOpen && (
+        <div className="fixed inset-0 z-[95]">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setEditorOpen(false)} />
+          {/* Centered modal container */}
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="relative w-full max-w-5xl bg-white rounded-xl shadow-xl overflow-hidden">
+              {/* Header bar with close */}
+              <div className="h-12 flex items-center justify-between px-4 border-b">
+                <div className="font-semibold text-gray-900">Photo Editor</div>
+                <button
+                  type="button"
+                  onClick={() => setEditorOpen(false)}
+                  aria-label="Close editor"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+              {/* Content: fixed moderate size, no scroll */}
+              <div className="p-3">
+                <FabricEditor
+                  imageUrl={editorImageUrl}
+                  width={980}
+                  height={520}
+                  onClose={() => setEditorOpen(false)}
+                  onExport={handleEditorExport}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

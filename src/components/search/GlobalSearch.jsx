@@ -121,8 +121,18 @@ export default function GlobalSearch() {
                   onClick={() => onSelect(r.name)}
                   className={`w-full text-left px-4 py-3 text-sm flex items-center justify-between ${activeIndex===idx ? 'bg-gray-50' : 'hover:bg-gray-50'}`}
                 >
-                  <span>{r.name}</span>
-                  <span className="text-xs text-gray-500">{r.type === 'Klinik' ? 'Clinic' : r.type === 'Doktor' ? 'Doctor' : r.type}</span>
+                  <span className="flex items-center gap-2">
+                    <span>{r.name}</span>
+                  </span>
+                  <span className="flex items-center gap-1 text-xs text-gray-500">
+                    <img
+                      src={r.type === 'Klinik' ? '/images/icon/medical-clinic-svgrepo-com.svg' : '/images/icon/doctor-man-profile-svgrepo-com.svg'}
+                      alt={r.type}
+                      className="w-3.5 h-3.5 opacity-80"
+                      loading="lazy"
+                    />
+                    {r.type === 'Klinik' ? 'Clinic' : r.type === 'Doktor' ? 'Doctor' : r.type}
+                  </span>
                 </button>
               </li>
             ))}
