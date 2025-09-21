@@ -84,14 +84,18 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
     '+971': /^5/, '+31': /^6/, '+48': /^[5-9]/, '+30': /^6/, '+351': /^9/, '+41': /^7/, '+7': /^[3489]/,
   }), []);
 
-  // Close on outside click
+  // Close on outside click (but NOT when clicking inside the portal dropdown)
   useEffect(() => {
-    const onDocClick = (e) => {
-      if (!phoneWrapRef.current) return;
-      if (!phoneWrapRef.current.contains(e.target)) setShowPhoneCodes(false);
+    const onDocMouseDown = (e) => {
+      const wrap = phoneWrapRef.current;
+      const drop = dropdownRef.current;
+      if (!wrap) return;
+      const insideWrap = wrap.contains(e.target);
+      const insideDrop = drop ? drop.contains(e.target) : false;
+      if (!insideWrap && !insideDrop) setShowPhoneCodes(false);
     };
-    document.addEventListener('click', onDocClick);
-    return () => document.removeEventListener('click', onDocClick);
+    document.addEventListener('mousedown', onDocMouseDown);
+    return () => document.removeEventListener('mousedown', onDocMouseDown);
   }, []);
 
   // Note: Previously, body scroll was locked while dropdown was open, which
@@ -235,6 +239,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
           style={{ left: dropdownPos.left, top: dropdownPos.top, width: dropdownPos.width, maxHeight: 320 }}
           onWheel={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
         >
           <div className="sticky top-0 bg-white pb-2 mb-2 z-10 border-b border-gray-200">
             <input
