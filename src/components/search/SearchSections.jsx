@@ -15,7 +15,7 @@ export default function SearchSections() {
         {isPatient && (
           <>
             <div
-              className="absolute inset-0 bg-cover bg-center filter blur-[0.5px] md:blur-[1px]"
+              className="absolute inset-0 bg-cover bg-center filter blur-[2px] md:blur-[3px]"
               style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
               aria-hidden="true"
             />

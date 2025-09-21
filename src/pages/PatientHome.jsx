@@ -1,18 +1,15 @@
 import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { Star } from 'lucide-react';
-import Carousel from '../components/Carousel';
+// Carousel removed for custom two-row scroller
 import { useAuth } from '../context/AuthContext';
 import { TimelineFeed } from '../components/timeline';
 import { Header } from '../components/layout';
 import { SearchSections } from '../components/search';
 import PostComposer from '../components/PostComposer';
+import PopularClinicsShowcase from '../components/PopularClinicsShowcase';
 
 export default function PatientHome() {
-  const { user, formatCurrency } = useAuth();
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
+  const { user } = useAuth();
   const popularClinics = [
     { id: 1, name: 'Memorial Hospital', city: 'Ankara', dept: 'Plastic Surgery, Aesthetics', rating: 4.9, reviews: 295, minPriceUSD: 2900, image: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
     { id: 2, name: 'Ege University Hospital', city: 'Izmir', dept: 'Neurology, Orthopedics', rating: 4.7, reviews: 428, minPriceUSD: 1800, image: '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg' },
@@ -21,7 +18,13 @@ export default function PatientHome() {
     { id: 5, name: 'SmileCare Clinic', city: 'Izmir', dept: 'Dentistry', rating: 4.8, reviews: 189, minPriceUSD: 1500, image: '/images/portrait-candid-male-doctor_720.jpg' },
     { id: 6, name: 'Vision Center', city: 'Ankara', dept: 'Ophthalmology', rating: 4.6, reviews: 221, minPriceUSD: 2200, image: '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg' },
     { id: 7, name: 'AestheticPlus', city: 'Istanbul', dept: 'Plastic Surgery', rating: 4.7, reviews: 264, minPriceUSD: 2800, image: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
+    { id: 8, name: 'MedPark Clinic', city: 'Antalya', dept: 'Dermatology, Aesthetics', rating: 4.6, reviews: 198, minPriceUSD: 1700, image: '/images/caroline-lm-uqved8dypum-unsplash_720.jpg' },
   ];
+
+  // Hooks yok; artık güvenle erken dönebiliriz
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -60,39 +63,12 @@ export default function PatientHome() {
             {/* Unified Search sections (same as HomeV2) */}
             <SearchSections />
 
-            {/* Popular Clinics - Carousel */}
-            <section className="py-10">
-              <div className="max-w-6xl mx-auto px-4 sm:px-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Popular Clinics</h2>
-                <Carousel
-                  items={popularClinics}
-                  slidesToShow={{ base: 1, sm: 2, lg: 3 }}
-                  autoPlay
-                  autoInterval={4000}
-                  renderItem={(c) => (
-                    <div className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-96 flex flex-col">
-                      <div className="h-1/2 rounded-lg bg-gray-100 mb-3 overflow-hidden">
-                        <img src={c.image} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
-                      </div>
-                      <div className="flex-1 flex flex-col">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-gray-900">{c.name}</h3>
-                          <div className="flex items-center text-amber-600">
-                            <Star className="w-4 h-4 mr-1 fill-amber-500 text-amber-500" />
-                            <span className="font-medium text-gray-900">{c.rating}</span>
-                          </div>
-                        </div>
-                        <p className="mt-1 text-sm text-gray-600">{c.city} • {c.dept}</p>
-                        <div className="mt-auto pt-3 flex items-center justify-between text-sm">
-                          <span className="text-gray-500">{c.reviews} Reviews</span>
-                          <button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View</button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                />
-              </div>
-            </section>
+            {/* Popular Clinics reusable showcase */}
+            <PopularClinicsShowcase
+              items={popularClinics}
+              onCardClick={() => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} window.location.assign('/clinic'); }}
+              onViewClick={() => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} window.location.assign('/clinic'); }}
+            />
           </div>
         </div>
       </div>
