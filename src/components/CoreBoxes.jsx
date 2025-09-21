@@ -1,16 +1,32 @@
 import React from 'react';
 import { Stethoscope, Activity, MessageSquare, Video, Plane, Brain } from 'lucide-react';
 
-// Core features (8 items)
+// Core features (6 items)
 const CORE_ITEMS = [
-  { title: 'Top Clinics in Your Area', desc: 'Discover highly rated clinics near you with transparent details.' },
-  { title: 'Popular Treatments', desc: 'Browse trending procedures and compare options easily.' },
-  { title: 'Trusted Reviews', desc: 'Real patient feedback with verified, quality-controlled reviews.' },
-  { title: 'Telehealth Consultation', desc: 'Secure online consultations and second opinions.' },
-  { title: 'Medical Tourism Programs', desc: 'End-to-end travel plans: flights, hotel, transfer included.' },
-  { title: 'AI Symptom Checker', desc: 'Explain symptoms and get guided, structured next steps.' },
-  { title: 'Insurance & Financing', desc: 'Flexible payment plans and insurance compatibility guidance.' },
-  { title: '24/7 Patient Support', desc: 'Always-on assistance for scheduling and follow-ups.' },
+  {
+    title: 'Clinic Profiles and Professional Reviews',
+    desc: 'Professional Reviews provide expert opinions on clinics/hospitals and their facilities with relevant photos, videos, and other materials to help you make informed decisions about your treatment.'
+  },
+  {
+    title: 'Medstream™',
+    desc: 'With Medstream, follow your favorite clinics, receive their latest updates, and engage with their posts. Get personalized updates from clinics in your preferred region and medical specialization.'
+  },
+  {
+    title: 'Vasco AI',
+    desc: 'World-first artificial intelligence that provides preliminary symptom analysis or processes direct treatment requests, then matches you with the most qualified doctors in your chosen location for your specific medical needs.'
+  },
+  {
+    title: 'One-Click Medical Tourism Program',
+    desc: 'Arrange your complete medical journey with one click - flights, accommodation, transport, and treatment - with transparent total pricing.'
+  },
+  {
+    title: 'Telehealth and Messaging with Real-Time Translation',
+    desc: 'Communicate with your doctor or patients instantly online in your native language. No more language barriers through real-time translation technology.'
+  },
+  {
+    title: 'Integrated CRM',
+    desc: 'Complete clinic/hospital management system with specialized access levels for different staff roles, seamlessly integrating your medical tourism and regular operations.'
+  },
 ];
 
 export default function CoreBoxes({ items = CORE_ITEMS }) {
@@ -27,20 +43,20 @@ export default function CoreBoxes({ items = CORE_ITEMS }) {
   ];
 
   return (
-    <section id="features" className="pt-6 pb-10">
+    <section id="features" className="pt-4 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {items.slice(0, 8).map((f, i) => {
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+          {items.slice(0, 6).map((f, i) => {
             const Icon = ICONS[i % ICONS.length];
             const theme = PALETTE[i % PALETTE.length];
             return (
-              <div key={i} className="group relative pt-[100%] sm:pt-0 rounded-2xl border bg-white shadow-sm overflow-hidden">
-                <div className="absolute inset-0 p-3 sm:static sm:p-5 flex flex-col">
-                  <div className={`w-10 h-10 rounded-lg ${theme.bg} mb-3 flex items-center justify-center`}>
-                    <Icon className={`w-5 h-5 ${theme.fg}`} aria-hidden="true" />
+              <div key={i} className="group relative pt-[90%] sm:pt-0 rounded-2xl border bg-white shadow-sm overflow-hidden">
+                <div className="absolute inset-0 p-2.5 sm:static sm:p-4 flex flex-col">
+                  <div className={`w-9 h-9 rounded-lg ${theme.bg} mb-2.5 flex items-center justify-center`}>
+                    <Icon className={`w-4 h-4 ${theme.fg}`} aria-hidden="true" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{f.title}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-1">{f.desc}</p>
+                  <h3 className="font-semibold text-gray-900 text-[13px] sm:text-sm leading-5">{f.title}</h3>
+                  <p className="text-[11px] sm:text-[13px] text-gray-600 mt-1 leading-5">{f.desc}</p>
                 </div>
               </div>
             );

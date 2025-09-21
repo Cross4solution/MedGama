@@ -114,8 +114,51 @@ export default function HomeV2() {
       {/* Timeline Önizleme: only for guests/non-patient to avoid duplicate */}
       {(!user || user.role !== 'patient') && <TimelinePreview columns={3} onViewAll={handleViewAll} />}
 
+      {/* Duplicated Popular Clinics section placed above */}
+      <section id="popular-dup" className="py-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Popular Clinics</h2>
+            <a href="#" className="text-sm text-teal-700 hover:underline">View All</a>
+          </div>
+          <Carousel
+            items={popularClinics}
+            slidesToShow={{ base: 1, sm: 2, lg: 3 }}
+            autoPlay
+            autoInterval={4000}
+            renderItem={(c) => (
+              <div
+                className="relative rounded-2xl border bg-white p-4 hover:shadow-md transition h-96 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300"
+                onClick={() => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate('/clinic'); }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate('/clinic'); } }}
+              >
+                <div className="h-1/2 rounded-lg bg-gray-100 mb-3 overflow-hidden">
+                  <img src={c.image} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
+                </div>
+                <div className="flex-1 flex flex-col">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900">{c.name}</h3>
+                    <div className="flex items-center text-amber-600">
+                      <Star className="w-4 h-4 mr-1 fill-amber-500 text-amber-500" />
+                      <span className="font-medium text-gray-900">{c.rating}</span>
+                    </div>
+                  </div>
+                  <p className="mt-1 text-sm text-gray-600">{c.city} • {c.dept}</p>
+                  <div className="mt-auto pt-3 flex items-center justify-between text-sm">
+                    <span className="text-gray-500">{c.reviews} Reviews</span>
+                    <button type="button" onClick={(e) => { e.stopPropagation(); try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate('/clinic'); }} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          />
+        </div>
+      </section>
+
       {/* Popular Clinics (carousel) */}
-      <section id="popular" className="py-12">
+      <section id="popular" className="py-6">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Popular Clinics</h2>

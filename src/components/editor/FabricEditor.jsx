@@ -57,11 +57,13 @@ export default function FabricEditor({ imageUrl = '', width = 880, height = 500,
   const imageLoadedRef = useRef(''); // track last loaded imageUrl to avoid duplicate add
   const [canUndoState, setCanUndoState] = useState(false);
   const [canRedoState, setCanRedoState] = useState(false);
+  const [historyInfo, setHistoryInfo] = useState({ index: 0, length: 0 });
 
   const syncHistoryState = () => {
     const h = historyRef.current;
     setCanUndoState(h.index > 0);
     setCanRedoState(h.index < h.stack.length - 1);
+    setHistoryInfo({ index: Math.max(0, h.index), length: h.stack.length });
   };
 
   // initialize fabric canvas
@@ -644,12 +646,12 @@ export default function FabricEditor({ imageUrl = '', width = 880, height = 500,
             {activeTab === 'history' && (
               <>
                 <div className="w-10 text-center text-[10px] text-gray-500" title="History durumu">
-                  {`${historyRef.current.index + 1}/${historyRef.current.stack.length}`}
+                  {`${historyInfo.index + 1}/${historyInfo.length}`}
                 </div>
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg border hover:bg-gray-50 disabled:opacity-40" onClick={(e)=>{ e.preventDefault(); undo(); }} disabled={!canUndo} title="Geri Al">
+                <button type="button" className="w-10 h-10 flex items-center justify-center rounded-lg border hover:bg-gray-50 disabled:opacity-40" onClick={(e)=>{ e.preventDefault(); undo(); }} disabled={!canUndo} title="Geri Al">
                   <UndoIcon className="w-5 h-5 text-gray-700" />
                 </button>
-                <button className="w-10 h-10 flex items-center justify-center rounded-lg border hover:bg-gray-50 disabled:opacity-40" onClick={(e)=>{ e.preventDefault(); redo(); }} disabled={!canRedo} title="İleri Al">
+                <button type="button" className="w-10 h-10 flex items-center justify-center rounded-lg border hover:bg-gray-50 disabled:opacity-40" onClick={(e)=>{ e.preventDefault(); redo(); }} disabled={!canRedo} title="İleri Al">
                   <RedoIcon className="w-5 h-5 text-gray-700" />
                 </button>
                 <button className="w-10 h-10 flex items-center justify-center rounded-lg border hover:bg-rose-50" onClick={removeSelected} title="Seçileni Sil">

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Phone as PhoneIcon } from 'lucide-react';
 import countryCodes from '../../data/countryCodes';
 import countryDialCodes from '../../data/countryDialCodes';
@@ -8,6 +9,9 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
   const phoneWrapRef = useRef(null);
   const [showPhoneCodes, setShowPhoneCodes] = useState(false);
   const [phoneCodeQuery, setPhoneCodeQuery] = useState('');
+  const [dropdownPos, setDropdownPos] = useState({ left: 0, top: 0, width: 320 });
+  const dropdownRef = useRef(null);
+  const [dropdownHeight, setDropdownHeight] = useState(320); // default to max-h-80 (320px)
 
   // Parse incoming value
   const parsePhone = (val = '') => {
@@ -90,23 +94,48 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
     return () => document.removeEventListener('click', onDocClick);
   }, []);
 
-  // Lock body scroll while dropdown open
+  // Note: Previously, body scroll was locked while dropdown was open, which
+  // could cause layout shift on some pages. We avoid altering body styles to
+  // keep the page from "jumping" when the dropdown opens.
+  // (Wheel/touch events are still stopped on the dropdown container below.)
+
+  // Compute absolute (fixed) position for the dropdown and keep it in viewport
   useEffect(() => {
     if (!showPhoneCodes) return;
-    const body = document.body;
-    const prevOverflow = body.style.overflow;
-    const prevPaddingRight = body.style.paddingRight;
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    body.style.overflow = 'hidden';
-    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
-    const prevent = (e) => e.preventDefault();
-    window.addEventListener('touchmove', prevent, { passive: false });
-    return () => {
-      body.style.overflow = prevOverflow;
-      body.style.paddingRight = prevPaddingRight;
-      window.removeEventListener('touchmove', prevent);
+    const update = () => {
+      const el = phoneWrapRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      // Align to flag button (left: ~36px from wrapper)
+      const left = Math.max(8, rect.left + 36);
+      // Open UPWARDS: place the dropdown right above the input
+      const desiredHeight = Math.min(dropdownHeight || 320, 320);
+      const top = Math.max(8, rect.top - desiredHeight - 6);
+      // width: prefer 320 but keep within viewport
+      const desired = 320;
+      const width = Math.min(desired, window.innerWidth - left - 8);
+      setDropdownPos({ left, top, width });
     };
-  }, [showPhoneCodes]);
+    update();
+    window.addEventListener('resize', update);
+    window.addEventListener('scroll', update, true);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', update, true);
+    };
+  }, [showPhoneCodes, dropdownHeight]);
+
+  // Measure dropdown height after it renders to position accurately above input
+  useEffect(() => {
+    if (!showPhoneCodes) return;
+    const raf = requestAnimationFrame(() => {
+      if (dropdownRef.current) {
+        const h = Math.min(320, dropdownRef.current.scrollHeight);
+        if (h && Math.abs(h - dropdownHeight) > 2) setDropdownHeight(h);
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [showPhoneCodes, phoneCodeQuery]);
 
   // Re-format when code changes
   useEffect(() => {
@@ -199,9 +228,11 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
         className={`w-full h-11 pl-24 pr-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm border-gray-300`}
         placeholder={phonePlaceholder(phoneCode)}
       />
-      {showPhoneCodes && (
+      {showPhoneCodes && createPortal(
         <div
-          className="absolute z-20 mt-1 left-9 bg-white border border-gray-300 rounded-xl shadow-xl w-72 sm:w-80 max-h-80 overflow-auto overscroll-contain p-2 divide-y divide-gray-100"
+          ref={dropdownRef}
+          className="fixed z-[1000] bg-white border border-gray-300 rounded-xl shadow-xl max-h-80 overflow-auto overscroll-contain p-2 divide-y divide-gray-100"
+          style={{ left: dropdownPos.left, top: dropdownPos.top, width: dropdownPos.width, maxHeight: 320 }}
           onWheel={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
         >
@@ -245,7 +276,8 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
               </button>
             );
           })}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

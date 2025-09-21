@@ -305,7 +305,7 @@ const RegisterForm = ({
           </label>
         </div>
 
-        <div className="w-full max-w-md flex items-center justify-between gap-2 mt-2">
+        <div className="w-full max-w-md flex items-center justify-between gap-2 mt-2 mb-12 sm:mb-16">
           <button onClick={handleBack} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
             Back
@@ -317,9 +317,11 @@ const RegisterForm = ({
             Create Account
           </button>
         </div>
+        {/* Spacer to force visible gap before the login link */}
+        <div aria-hidden className="h-10 sm:h-14" />
         </>
       )}
-      <p className="text-center text-sm sm:text-base text-gray-600">
+      <p className="mt-0 text-center text-sm sm:text-base text-gray-600">
         Already have an account?{' '}
         <button
           type="button"

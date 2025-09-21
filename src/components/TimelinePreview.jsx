@@ -38,7 +38,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
         </div>
         <div className="bg-white p-0 rounded-xl border border-gray-200 shadow-sm">
           {/* Scrollable feed area */}
-          <div className="h-[86vh] overflow-y-auto pr-2">
+          <div className="h-[86vh] overflow-y-auto pr-2 pt-2">
             <div className="space-y-6">
               {data.slice(0, 8).map((item) => (
                 <div key={item.id} className="max-w-2xl mx-auto">
