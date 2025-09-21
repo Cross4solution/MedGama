@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import { toEnglishTimestamp } from '../../utils/i18n';
+import Modal from '../common/Modal';
 
 export default function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
   const avatarUrl = item.avatar || '/images/portrait-candid-male-doctor_720.jpg';
@@ -15,6 +16,36 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
   const [showEmoji, setShowEmoji] = useState(false);
   const [replyTo, setReplyTo] = useState(''); // hangi yorumun altında yanıt alanı açık
   const [replyText, setReplyText] = useState('');
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportDesc, setReportDesc] = useState('');
+  const moreMenuRef = useRef(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastText, setToastText] = useState('');
+  const toastTimerRef = useRef(null);
+
+  // Dışarı tıklayınca "Daha fazla" menüsünü kapat
+  useEffect(() => {
+    if (!showMoreMenu) return;
+    const onDocClick = (e) => {
+      if (!moreMenuRef.current) return;
+      if (!moreMenuRef.current.contains(e.target)) {
+        setShowMoreMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [showMoreMenu]);
+
+  const showSuccessToast = (text) => {
+    setToastText(text);
+    setShowToast(true);
+    if (toastTimerRef.current) {
+      window.clearTimeout(toastTimerRef.current);
+    }
+    toastTimerRef.current = window.setTimeout(() => setShowToast(false), 3000);
+  };
 
   const truncate = (text, max = 120) => {
     if (!text) return '';
@@ -122,14 +153,26 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               </div>
             </div>
             {!compact && (
-              <div className="flex items-center gap-2 text-gray-500">
+              <div ref={moreMenuRef} className="flex items-center gap-2 text-gray-500 relative">
                 <span className="text-[11px] text-gray-400 mr-1">{timeLabel}</span>
-                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Daha fazla" onClick={(e)=>e.stopPropagation()}>
+                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Daha fazla" onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>
                   <MoreHorizontal className="w-5 h-5" />
                 </button>
                 <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Gizle" onClick={(e)=>e.stopPropagation()}>
                   <X className="w-5 h-5" />
                 </button>
+                {showMoreMenu && (
+                  <div className="absolute right-0 top-8 z-20 w-44 bg-white border rounded-lg shadow-md py-1 text-sm" onClick={(e)=>e.stopPropagation()}>
+                    <button
+                      type="button"
+                      className="w-full px-3 py-2 hover:bg-red-50 text-red-600 inline-flex items-center gap-2"
+                      onClick={() => { setShowReportModal(true); setShowMoreMenu(false); }}
+                    >
+                      <AlertTriangle className="w-4 h-4" />
+                      <span className="font-medium">Report</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -433,6 +476,77 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
             </button>
             <ShareMenu title="Paylaş" url={shareUrl} showNative={false} buttonClassName="min-w-[110px] text-gray-600 font-medium" />
           </div>
+          {/* Report Modal */}
+          <Modal
+            open={showReportModal}
+            onClose={() => { setShowReportModal(false); }}
+            title={
+              <div className="flex items-center gap-2">
+                <span>Report gönder</span>
+              </div>
+            }
+            footer={
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  className="px-3 py-1.5 rounded-md border text-sm text-gray-700 hover:bg-gray-50"
+                  onClick={() => setShowReportModal(false)}
+                >
+                  İptal
+                </button>
+                <button
+                  type="button"
+                  className="px-3 py-1.5 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                  disabled={!reportReason}
+                  onClick={() => {
+                    // submit mock
+                    showSuccessToast('Rapor gönderildi');
+                    setShowReportModal(false);
+                    setReportReason('');
+                    setReportDesc('');
+                  }}
+                >
+                  Gönder
+                </button>
+              </div>
+            }
+          >
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Sebep</label>
+                <select
+                  value={reportReason}
+                  onChange={(e)=>setReportReason(e.target.value)}
+                  className="w-full border rounded-md px-2 py-2 text-sm"
+                >
+                  <option value="">Seçiniz…</option>
+                  <option value="spam">Spam</option>
+                  <option value="misleading">Yanıltıcı bilgi</option>
+                  <option value="inappropriate">Uygunsuz içerik</option>
+                  <option value="other">Diğer</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Açıklama (opsiyonel)</label>
+                <textarea
+                  rows={4}
+                  value={reportDesc}
+                  onChange={(e)=>setReportDesc(e.target.value)}
+                  placeholder="Kısaca açıklayınız…"
+                  className="w-full border rounded-md px-2 py-2 text-sm resize-y"
+                />
+              </div>
+            </div>
+          </Modal>
+          {/* Toast */}
+          {showToast && (
+            <div className="fixed bottom-4 right-4 z-[110]">
+              <div className="flex items-center gap-2 rounded-lg bg-gray-900/95 backdrop-blur text-white shadow-xl px-3.5 py-2.5 text-sm border border-white/10">
+                <CheckCircle className="w-4 h-4 text-green-400" />
+                <span>{toastText}</span>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <>
