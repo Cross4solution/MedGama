@@ -39,36 +39,48 @@ const ClinicLogin = () => {
 
   return (
     <div className="min-h-screen w-full flex relative">
-      {/* Right gradient info */}
+      {/* Right gradient info - standardized like DoctorLogin */}
       <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute top-1/2 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 left-1/2 w-80 h-80 bg-white/10 rounded-full -translate-x-1/2 translate-y-1/2"></div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="w-full h-full" style={{
+            backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+            backgroundSize: '40px 40px'
+          }} />
         </div>
-        <div className="relative z-10 flex flex-col justify-center p-12 text-white">
-          <div className="mb-10">
-            <h2 className="text-4xl font-bold mb-4">Clinic Portal</h2>
-            <p className="text-xl text-indigo-100">Operate your clinic workflows and teams efficiently.</p>
-          </div>
-          <div className="space-y-4 mb-10">
-            {features.map((f, i) => (
-              <div key={i} className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                  <f.icon className="w-5 h-5" />
-                </div>
-                <span className="text-indigo-100">{f.text}</span>
-              </div>
-            ))}
-          </div>
-          <div className="flex space-x-4">
-            <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2">
-              <Shield className="w-4 h-4" />
-              <span className="text-sm font-medium">HIPAA Compliant</span>
+        <div className="relative z-10 flex flex-1 items-center justify-center px-10 py-6">
+          <div className="max-w-lg text-white">
+            <div className="w-28 h-28 bg-white/15 rounded-full flex items-center justify-center mb-4">
+              <Building2 className="w-16 h-16" />
             </div>
-            <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2">
-              <Lock className="w-4 h-4" />
-              <span className="text-sm font-medium">256-bit Encryption</span>
+            <h2 className="text-4xl font-bold mb-3">Welcome to the Clinic Portal</h2>
+            <p className="text-base text-indigo-100 mb-6">Operate your clinic workflows and coordinate teams efficiently from a single platform.</p>
+            <div className="space-y-3">
+              {features.map((f, i) => (
+                <div key={i} className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <f.icon className="w-5 h-5" />
+                  </div>
+                  <span className="text-white/90">{f.text}</span>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-3 gap-4 mt-6">
+              {[{value:'120+',label:'Active Clinics'},{value:'10K+',label:'Appointments/Month'},{value:'99%',label:'Uptime'}].map((s, i) => (
+                <div key={i} className="text-center">
+                  <div className="text-3xl font-bold">{s.value}</div>
+                  <div className="text-indigo-100 text-sm">{s.label}</div>
+                </div>
+              ))}
+            </div>
+            <div className="flex space-x-4 mt-6">
+              <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-white">
+                <Shield className="w-4 h-4" />
+                <span className="text-sm font-medium">SSL Secure</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-white">
+                <Lock className="w-4 h-4" />
+                <span className="text-sm font-medium">KVKK (GDPR) Compliant</span>
+              </div>
             </div>
           </div>
         </div>

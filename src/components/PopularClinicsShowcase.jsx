@@ -3,11 +3,11 @@ import { Star } from 'lucide-react';
 
 export default function PopularClinicsShowcase({
   items = [],
-  title = 'Popular Clinics',
-  midTitle = 'Best Clinics',
+  title = 'Popular Treatments',
+  midTitle = 'Popular Clinics',
   viewAllHref = '#',
-  onCardClick = () => {},
-  onViewClick = () => {},
+  onCardClick = (_c) => {},
+  onViewClick = (_c) => {},
 }) {
   const scrollRef = useRef(null);
   const columns = useMemo(() => {
@@ -73,7 +73,7 @@ export default function PopularClinicsShowcase({
             {/* First row */}
             <div className="flex gap-4 px-0">
               {columns.map((col, i) => (
-                <div key={`r1-${i}`} className="min-w-[85%] sm:min-w-[60%] lg:min-w-[33%] snap-start [scroll-snap-stop:always]">
+                <div key={`r1-${i}`} className="min-w-[80%] sm:min-w-[55%] lg:min-w-[30%] snap-start [scroll-snap-stop:always]">
                   <div className="flex flex-col gap-4">
                     {col[0] && (
                       <div
@@ -81,9 +81,9 @@ export default function PopularClinicsShowcase({
                         tabIndex={0}
                         onClick={() => handleCardClick(col[0])}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(col[0]); } }}
-                        className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-80 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300"
+                        className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-72 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300"
                       >
-                        <div className="h-40 rounded-lg bg-gray-100 mb-3 overflow-hidden">
+                        <div className="h-36 rounded-lg bg-gray-100 mb-3 overflow-hidden">
                           <img src={col[0].image} alt={col[0].name} className="w-full h-full object-cover" loading="lazy" />
                         </div>
                         <div className="flex-1 flex flex-col">
@@ -108,14 +108,14 @@ export default function PopularClinicsShowcase({
             </div>
 
             {/* Inter-row subheading */}
-            <div className="px-0 mt-2 mb-2">
+            <div className="px-0 mt-3 mb-2 md:ml-6">
               <h3 className="text-base font-semibold text-gray-900">{midTitle}</h3>
             </div>
 
             {/* Second row */}
             <div className="flex gap-4 px-0">
               {columns.map((col, i) => (
-                <div key={`r2-${i}`} className="min-w-[85%] sm:min-w-[60%] lg:min-w-[33%] snap-start [scroll-snap-stop:always]">
+                <div key={`r2-${i}`} className="min-w-[80%] sm:min-w-[55%] lg:min-w-[30%] snap-start [scroll-snap-stop:always]">
                   <div className="flex flex-col gap-4">
                     {col[1] && (
                       <div
@@ -123,9 +123,9 @@ export default function PopularClinicsShowcase({
                         tabIndex={0}
                         onClick={() => handleCardClick(col[1])}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(col[1]); } }}
-                        className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-80 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300"
+                        className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-72 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300"
                       >
-                        <div className="h-40 rounded-lg bg-gray-100 mb-3 overflow-hidden">
+                        <div className="h-36 rounded-lg bg-gray-100 mb-3 overflow-hidden">
                           <img src={col[1].image} alt={col[1].name} className="w-full h-full object-cover" loading="lazy" />
                         </div>
                         <div className="flex-1 flex flex-col">

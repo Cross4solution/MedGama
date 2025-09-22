@@ -1,31 +1,71 @@
 import React from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { MapPin, MessageCircle, ThumbsUp, Send, Repeat, X } from 'lucide-react';
+import { MapPin, MessageCircle, Heart, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import ShareMenu from '../components/ShareMenu';
+import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
+import { useAuth } from '../context/AuthContext';
 
 export default function PostDetail() {
   const { state } = useLocation();
   const { id } = useParams();
   const navigate = useNavigate();
-  const [showComments, setShowComments] = React.useState(false);
+  const [showComments, setShowComments] = React.useState(true);
   const [replyTo, setReplyTo] = React.useState('');
   const [replyText, setReplyText] = React.useState('');
+  const { user } = useAuth();
+  const isPatient = user?.role === 'patient';
 
   // ExploreTimeline/TimelineCard üzerinden gelen state öncelikli
   const item = state?.item;
 
-  if (!item) {
-    return (
+  // Image gallery state
+  const mediaList = Array.isArray(item?.media) && item.media.length > 0 ? item.media : (item?.img ? [{ url: item.img }] : []);
+  const [imgIndex, setImgIndex] = React.useState(0);
+  // Action bar local state (match TimelineCard)
+  const [liked, setLiked] = React.useState(false);
+  const [likeCount, setLikeCount] = React.useState(Number(item?.engagement?.likes) || Number(item?.likes) || 0);
+
+  const handleLike = (e) => {
+    e?.stopPropagation?.();
+    setLiked((prev) => {
+      const next = !prev;
+      setLikeCount((c) => c + (next ? 1 : -1));
+      return next;
+    });
+  };
+
+  const goPrev = () => setImgIndex((i) => (i - 1 + mediaList.length) % mediaList.length);
+  const goNext = () => setImgIndex((i) => (i + 1) % mediaList.length);
+
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight') goNext();
+      if (e.key === 'Escape') navigate(-1);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Share URL (same approach as TimelineCard)
+  const shareUrl = (() => {
+    try {
+      const origin = typeof window !== 'undefined' && window.location ? window.location.origin : '';
+      return `${origin}/post/${encodeURIComponent(item?.id || '')}`;
+    } catch {
+      return `/post/${encodeURIComponent(item?.id || '')}`;
+    }
+  })();
+
+  return (
+    !item ? (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-3xl mx-auto px-4 py-16 text-center text-gray-600">
           <button onClick={() => navigate(-1)} className="mb-6 inline-flex items-center text-sm text-gray-600 hover:text-gray-900">← Geri</button>
           <div className="rounded-2xl border bg-white p-8">Post bulunamadı. Lütfen Explore Timeline üzerinden bir karta tıklayın.</div>
         </div>
       </div>
-    );
-  }
-
-  return (
+    ) : (
     <div className="fixed inset-0 bg-black/80 z-[90]">
       <div className="absolute inset-0 grid grid-cols-1 lg:grid-cols-[minmax(260px,1fr)_minmax(360px,560px)]">
         {/* Left: Image viewer */}
@@ -37,7 +77,27 @@ export default function PostDetail() {
           >
             <X className="w-6 h-6" />
           </button>
-          <img src={item.media?.[0]?.url || item.img} alt={item.title} className="max-h-[85vh] w-auto object-contain" />
+          {mediaList.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={goPrev}
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center"
+                aria-label="Önceki görsel"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                type="button"
+                onClick={goNext}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center"
+                aria-label="Sonraki görsel"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
+          <img src={mediaList[imgIndex]?.url} alt={item.title} className="max-h-[85vh] w-auto object-contain" />
         </div>
 
         {/* Right: Content panel */}
@@ -59,32 +119,33 @@ export default function PostDetail() {
             <p className="text-[15px] leading-7 text-gray-800 whitespace-pre-wrap">{item.text}</p>
           </div>
 
-          {/* Actions */}
-          <div className="px-3 md:px-4 py-2 border-y grid grid-cols-4">
-            <button type="button" className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-900 font-bold transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100">
-              <ThumbsUp className="w-5 h-5" strokeWidth={2.5} /> <span>Beğen</span>
+          {/* Action bar (birebir TimelineCard ile aynı yapı) */}
+          <div className="px-2 md:px-3 py-2 border-t mt-1 grid grid-cols-3 gap-2 justify-items-center">
+            <button
+              type="button"
+              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white ${liked ? 'text-blue-600' : 'text-gray-700'} font-medium transition-colors hover:rounded-md hover:border-gray-200 ${liked ? 'hover:bg-blue-50' : 'hover:bg-gray-100'}`}
+              onClick={handleLike}
+            >
+              <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${liked ? 'bg-blue-100 ring-1 ring-blue-500' : ''}`}>
+                {/* ThumbsUp ikonunun aynı görünümünü korumak için */}
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={liked ? 2.8 : 1.9}>
+                  <path d="M14 9V5a3 3 0 0 0-3-3l-1 5H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8.28a2 2 0 0 0 1.95-1.5l1.38-5.5A2 2 0 0 0 14.68 8H14z" />
+                </svg>
+              </span>
+              <span className={`font-medium`}>Beğen</span>
             </button>
             <button
               type="button"
-              className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-900 font-bold transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100"
-              onClick={() => setShowComments(s => !s)}
+              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-800 font-medium transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100`}
+              onClick={() => setShowComments(v=>!v)}
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M21 10a8 8 0 0 1-8 8c-1.1 0-2.2-.2-3.2-.6L4 19l1.6-3.8A8 8 0 1 1 21 10z" />
-                <path d="M8.5 10.5h7" />
-                <path d="M8.5 13h5" />
-              </svg>
+              <img src="/images/icon/comment-alt-lines-svgrepo-com.svg" alt="Yorum" className="w-5 h-5" />
               <span className="whitespace-nowrap">Yorum Yap</span>
             </button>
-            <div className="flex items-center justify-center">
-              <ShareMenu title="Paylaş" url={typeof window !== 'undefined' ? window.location.href : ''} showNative={false} />
-            </div>
-            <button type="button" className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-900 font-bold transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100">
-              <Send className="w-5 h-5" strokeWidth={2.5} /> <span>Gönder</span>
-            </button>
+            <ShareMenu title="Paylaş" url={shareUrl} showNative={false} buttonClassName="min-w-[110px] text-gray-600 font-medium" />
           </div>
 
-          {/* Comments (collapsible, LinkedIn-like) */}
+          {/* Comments (default open) */}
           {showComments && (
             <div className="p-4">
               {/* New comment input */}
@@ -186,5 +247,6 @@ export default function PostDetail() {
         </div>
       </div>
     </div>
+    )
   );
 }

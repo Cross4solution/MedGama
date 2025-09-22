@@ -74,6 +74,11 @@ export default function HomeV2() {
               style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
               aria-hidden="true"
             />
+            {/* Subtle dark overlay on top of the background image */}
+            <div
+              className="pointer-events-none absolute inset-0 bg-black/35 md:bg-black/40"
+              aria-hidden="true"
+            />
             {/* Removed white bottom gradient as requested */}
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="grid grid-cols-1 gap-8 items-center">

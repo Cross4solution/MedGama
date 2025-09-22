@@ -174,7 +174,7 @@ const AuthPages = () => {
             </div>
             {/* Info texts under the form (mobile) */}
             <div className="w-full px-3 mt-1">
-              <h2 className="text-base font-semibold text-white mb-1">Your Health is Our Priority</h2>
+              <h2 className="text-base font-semibold text-white mb-1">Welcome to Medigama</h2>
               <p className="text-xs text-teal-100 mb-2">Trusted healthcare services with expert doctors and modern treatments.</p>
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li className="text-teal-50">Expert medical team</li>
@@ -190,36 +190,50 @@ const AuthPages = () => {
           <div className="hidden lg:flex w-full max-w-6xl items-center justify-center gap-12">
             {/* Left Side - Illustration/Info */}
             <div className="flex-1 max-w-lg text-left">
-              <div className="mb-8">
-                <div className="w-32 h-32 bg-gradient-to-br from-teal-100 to-teal-200 rounded-full flex items-center justify-center mb-6">
-                  <Heart className="w-16 h-16 text-teal-600" />
+              <div className="mb-8 text-white">
+                <div className="w-28 h-28 bg-white/15 rounded-full flex items-center justify-center mb-6">
+                  <Heart className="w-16 h-16" />
                 </div>
-                <h2 className="text-4xl font-bold text-white mb-4">
-                  Your Health is Our Priority
-                </h2>
-                <p className="text-lg text-teal-100 mb-8">
-                  We are here with trusted healthcare services, expert doctors, and modern treatment methods.
-                </p>
-                
+                <h2 className="text-4xl font-bold mb-3">Welcome to Medigama</h2>
+                <p className="text-lg text-teal-100 mb-8">Discover trusted healthcare services, expert doctors and modern treatment methods in one place.</p>
+
                 {/* Features */}
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-teal-600" />
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5" />
                     </div>
-                    <span className="text-white">Expert medical team</span>
+                    <span className="text-white/90">Expert medical team</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-                      <Shield className="w-5 h-5 text-teal-600" />
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <Shield className="w-5 h-5" />
                     </div>
-                    <span className="text-white">Safe and fast service</span>
+                    <span className="text-white/90">Secure and fast service</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-                      <Heart className="w-5 h-5 text-teal-600" />
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <Heart className="w-5 h-5" />
                     </div>
-                    <span className="text-white">24/7 patient support</span>
+                    <span className="text-white/90">24/7 patient support</span>
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-4 mt-6">
+                  {[{value:'500+',label:'Clinics'},{value:'50K+',label:'Patients'},{value:'98%',label:'Satisfaction'}].map((s, i) => (
+                    <div key={i} className="text-center">
+                      <div className="text-3xl font-bold">{s.value}</div>
+                      <div className="text-teal-100 text-sm">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Badges */}
+                <div className="flex space-x-4 mt-6">
+                  <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-white">
+                    <Shield className="w-4 h-4" />
+                    <span className="text-sm font-medium">SSL Secure</span>
                   </div>
                 </div>
               </div>
