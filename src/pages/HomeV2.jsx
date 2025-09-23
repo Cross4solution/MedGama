@@ -42,6 +42,18 @@ export default function HomeV2() {
     { id: 8, name: 'MedPark Clinic', city: 'Antalya', dept: 'Dermatology, Aesthetics', rating: 4.6, reviews: 198, image: '/images/caroline-lm-uqved8dypum-unsplash_720.jpg' },
   ];
 
+  // Test için listeyi ~20 elemana genişlet (temel listeyi döndürerek)
+  const popularClinics20 = (() => {
+    const base = popularClinics;
+    const out = [];
+    const target = 20;
+    for (let i = 0; i < target; i++) {
+      const b = base[i % base.length];
+      out.push({ ...b, id: i + 1 });
+    }
+    return out;
+  })();
+
   // Popular vitrini artık reusable component ile render ediliyor
 
   // Eski çoklu arama kaldırıldı; GlobalSearch ve CustomSearch kullanılacak
@@ -124,7 +136,7 @@ export default function HomeV2() {
 
       {/* Popular Clinics reusable showcase */}
       <PopularClinicsShowcase
-        items={popularClinics}
+        items={popularClinics20}
         onCardClick={(c) => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate('/clinic'); }}
         onViewClick={(c) => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate('/clinic'); }}
       />

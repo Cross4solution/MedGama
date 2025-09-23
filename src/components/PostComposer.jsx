@@ -119,7 +119,7 @@ export default function PostComposer() {
             onClick={() => setOpen(true)}
             className="flex-1 text-left p-3 bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:bg-gray-100"
           >
-            Ask a doctor or share your experience...
+            Make a Post...
           </button>
         </div>
 

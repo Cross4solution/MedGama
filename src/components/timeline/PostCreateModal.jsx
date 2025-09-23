@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, Video, Smile, X } from 'lucide-react';
 
-export default function PostCreateModal({ open, onClose, user, onPost, initialAction, onResetInitialAction }) {
+export default function PostCreateModal({ open, onClose, user, onPost, initialAction = undefined, onResetInitialAction = undefined }) {
   const [text, setText] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
   const [photos, setPhotos] = useState([]);

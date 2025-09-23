@@ -89,7 +89,7 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
             {showNative && (
               <button onClick={handleNativeShare} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
                 <Send className="w-4 h-4" />
-                <span>Paylaş (Sistem)</span>
+                <span>Share (System)</span>
               </button>
             )}
             <a href={tw} target="_blank" rel="noreferrer" className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
@@ -106,11 +106,11 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
             </a>
             <a href={mail} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
               <Mail className="w-4 h-4" />
-              <span>E‑posta</span>
+              <span>Email</span>
             </a>
             <button onClick={handleCopy} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
               <LinkIcon className="w-4 h-4" />
-              <span>Linki Kopyala</span>
+              <span>Copy Link</span>
             </button>
           </div>
         </div>,

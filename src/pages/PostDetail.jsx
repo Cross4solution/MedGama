@@ -132,17 +132,17 @@ export default function PostDetail() {
                   <path d="M14 9V5a3 3 0 0 0-3-3l-1 5H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8.28a2 2 0 0 0 1.95-1.5l1.38-5.5A2 2 0 0 0 14.68 8H14z" />
                 </svg>
               </span>
-              <span className={`font-medium`}>Beğen</span>
+              <span className={`font-medium`}>Like</span>
             </button>
             <button
               type="button"
               className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-800 font-medium transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100`}
-              onClick={() => setShowComments(v=>!v)}
+              onClick={(e) => { e?.stopPropagation?.(); /* inert on PostDetail */ }}
             >
               <img src="/images/icon/comment-alt-lines-svgrepo-com.svg" alt="Yorum" className="w-5 h-5" />
-              <span className="whitespace-nowrap">Yorum Yap</span>
+              <span className="whitespace-nowrap">Comments</span>
             </button>
-            <ShareMenu title="Paylaş" url={shareUrl} showNative={false} buttonClassName="min-w-[110px] text-gray-600 font-medium" />
+            <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="min-w-[110px] text-gray-600 font-medium" />
           </div>
 
           {/* Comments (default open) */}
@@ -166,7 +166,7 @@ export default function PostDetail() {
                     </div>
                     <p className="text-gray-800 mt-0.5">Very informative, thanks.</p>
                     <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                      <button type="button" className="hover:text-gray-700" onClick={() => { setReplyTo(p => p === 'pd_c1' ? '' : 'pd_c1'); setReplyText(prev => (prev && replyTo==='pd_c1') ? prev : '@Zehra Korkmaz '); }}>Yanıtla</button>
+                      <button type="button" className="hover:text-gray-700" onClick={() => { setReplyTo(p => p === 'pd_c1' ? '' : 'pd_c1'); setReplyText(prev => (prev && replyTo==='pd_c1') ? prev : '@Zehra Korkmaz '); }}>Reply</button>
                       <span>1 reply</span>
                     </div>
                     {replyTo === 'pd_c1' && (
@@ -183,7 +183,7 @@ export default function PostDetail() {
                             className="flex-1 outline-none px-2 py-1 text-[14px]"
                           />
                           <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={()=>{ setReplyTo(''); setReplyText(''); }}>
-                            Yanıtla
+                            Reply
                           </button>
                         </div>
                       </div>
@@ -218,7 +218,7 @@ export default function PostDetail() {
                     </div>
                     <p className="text-gray-800 mt-0.5">Great update 👏</p>
                     <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                      <button type="button" className="hover:text-gray-700" onClick={() => { setReplyTo(p => p === 'pd_c2' ? '' : 'pd_c2'); setReplyText(prev => (prev && replyTo==='pd_c2') ? prev : '@Onur Demirtaş '); }}>Yanıtla</button>
+                      <button type="button" className="hover:text-gray-700" onClick={() => { setReplyTo(p => p === 'pd_c2' ? '' : 'pd_c2'); setReplyText(prev => (prev && replyTo==='pd_c2') ? prev : '@Onur Demirtaş '); }}>Reply</button>
                     </div>
                     {replyTo === 'pd_c2' && (
                       <div className="mt-2">
@@ -234,7 +234,7 @@ export default function PostDetail() {
                             className="flex-1 outline-none px-2 py-1 text-[14px]"
                           />
                           <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={()=>{ setReplyTo(''); setReplyText(''); }}>
-                            Yanıtla
+                            Reply
                           </button>
                         </div>
                       </div>

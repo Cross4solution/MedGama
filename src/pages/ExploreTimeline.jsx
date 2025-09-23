@@ -145,16 +145,28 @@ export default function ExploreTimeline() {
   const countryOptions = Object.keys(countryCities || {});
   const specialtyOptions = SPECIALTIES;
 
-  // Konum izni (opsiyonel)
+  // Konum izni (opsiyonel) - tek seferlik izin akışı ve localStorage ile kalıcılık
   const [geo, setGeo] = useState(null);
+  const GEO_KEY = 'explore_geo_consent'; // 'granted' | 'denied'
+  const GEO_POS_KEY = 'explore_geo_pos'; // JSON: { lat, lon }
+
   const askGeo = () => {
-    if (!navigator.geolocation) return;
+    if (!navigator?.geolocation) return;
     navigator.geolocation.getCurrentPosition(
-      (pos) => setGeo({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-      () => setGeo({ error: true })
+      (pos) => {
+        const g = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+        setGeo(g);
+        try {
+          localStorage.setItem(GEO_KEY, 'granted');
+          localStorage.setItem(GEO_POS_KEY, JSON.stringify(g));
+        } catch {}
+      },
+      () => {
+        setGeo({ error: true });
+        try { localStorage.setItem(GEO_KEY, 'denied'); } catch {}
+      }
     );
   };
-  const [askedGeo, setAskedGeo] = useState(false);
 
   useEffect(() => {
     // Filtre değişince sayfayı başa al
@@ -170,13 +182,29 @@ export default function ExploreTimeline() {
 
   // Görünüm sabit: LinkedIn benzeri tek sütun liste
 
-  // Ask for geolocation once on page load
+  // Sayfa yüklenince: daha önceki kararı oku; yalnızca kararsızsa sor
   useEffect(() => {
-    if (!askedGeo) {
-      setAskedGeo(true);
+    try {
+      const consent = localStorage.getItem(GEO_KEY);
+      if (consent === 'granted') {
+        const raw = localStorage.getItem(GEO_POS_KEY);
+        if (raw) {
+          try { setGeo(JSON.parse(raw)); } catch { askGeo(); }
+        } else {
+          // izin verilmiş ama konum yoksa sessizce yeniden almayı dene (tarayıcı tekrar sormaz)
+          askGeo();
+        }
+      } else if (consent === 'denied') {
+        // kullanıcı reddetmiş, otomatik tekrar sorma
+      } else {
+        // hiç karar yoksa bir kez sor
+        askGeo();
+      }
+    } catch {
+      // storage erişimi yoksa varsayılan davranış: bir kez sor
       askGeo();
     }
-  }, [askedGeo]);
+  }, []);
 
   // Sonsuz kaydırma: IntersectionObserver
   useEffect(() => {
@@ -198,7 +226,7 @@ export default function ExploreTimeline() {
   }, [hasMore, items.length]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#f4f2ee' }}>
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Başlık + Sekmeler + Sıralama */}

@@ -5,15 +5,15 @@ import { Stethoscope, Activity, MessageSquare, Video, Plane, Brain } from 'lucid
 const CORE_ITEMS = [
   {
     title: 'Clinic Profiles and Professional Reviews',
-    desc: 'Professional Reviews provide expert opinions on clinics/hospitals and their facilities with relevant photos, videos, and other materials to help you make informed decisions about your treatment.'
+    desc: 'Professional Reviews provide expert opinions on clinics/hospitals and their facilities with photos, videos, and materials to help you make the best decision about your treatment.'
   },
   {
     title: 'Medstream™',
-    desc: 'With Medstream, follow your favorite clinics, receive their latest updates, and engage with their posts. Get personalized updates from clinics in your preferred region and medical specialization.'
+    desc: 'With Medstream, follow your favorite clinics, receive their latest updates, and engage with posts. Get personalized updates from clinics in your preferred region and specialization.'
   },
   {
     title: 'Vasco AI',
-    desc: 'World-first artificial intelligence that provides preliminary symptom analysis or processes direct treatment requests, then matches you with the most qualified doctors in your chosen location for your specific medical needs.'
+    desc: 'World-first artificial intelligence that provides symptom analysis and processes treatment requests, matching you with qualified doctors in your chosen location for your medical needs.'
   },
   {
     title: 'One-Click Medical Tourism Program',
@@ -55,8 +55,18 @@ export default function CoreBoxes({ items = CORE_ITEMS }) {
                   <div className={`w-9 h-9 rounded-lg ${theme.bg} mb-2.5 flex items-center justify-center`}>
                     <Icon className={`w-4 h-4 ${theme.fg}`} aria-hidden="true" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-[13px] sm:text-sm leading-5">{f.title}</h3>
-                  <p className="text-[11px] sm:text-[13px] text-gray-600 mt-1 leading-5">{f.desc}</p>
+                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base leading-5 sm:leading-6">{f.title}</h3>
+                  <p
+                    className="text-[13px] sm:text-[15px] text-gray-600 mt-1 leading-5 sm:leading-6"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {f.desc}
+                  </p>
                 </div>
               </div>
             );

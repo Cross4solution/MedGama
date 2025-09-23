@@ -9,16 +9,17 @@ export default function PopularClinicsShowcase({
   onCardClick = (_c) => {},
   onViewClick = (_c) => {},
 }) {
-  const scrollRef = useRef(null);
+  const scrollRefTop = useRef(null);
+  const scrollRefBottom = useRef(null);
   const columns = useMemo(() => {
-    const arr = items.slice(0, 8); // 4 kolon x 2 kart = 8 kart
+    const arr = items; // tüm gönderilen öğeleri kullan
     const cols = [];
     for (let i = 0; i < arr.length; i += 2) cols.push(arr.slice(i, i + 2));
     return cols;
   }, [items]);
 
-  const scrollByAmount = (dir = 1) => {
-    const el = scrollRef.current;
+  const scrollByAmount = (ref, dir = 1) => {
+    const el = ref?.current;
     if (!el) return;
     // Bir sütun kadar kaydır (gap-4 = 16px)
     const firstCol = el.querySelector('.snap-start');
@@ -38,26 +39,27 @@ export default function PopularClinicsShowcase({
   return (
     <section className="py-6">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        {/* Top: Popular Treatments */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
           <a href={viewAllHref} className="text-sm text-teal-700 hover:underline">View All</a>
         </div>
-        <div className="relative">
-          {/* Left Arrow (bir tık dışarı) */}
+        <div className="relative mb-8">
+          {/* Left Arrow */}
           <button
             type="button"
             aria-label="Previous"
-            onClick={() => scrollByAmount(-1)}
+            onClick={() => scrollByAmount(scrollRefTop, -1)}
             className="hidden md:flex absolute -left-8 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow ring-1 ring-gray-200 hover:bg-white"
           >
             <span className="sr-only">Prev</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
           </button>
-          {/* Right Arrow (bir tık dışarı) */}
+          {/* Right Arrow */}
           <button
             type="button"
             aria-label="Next"
-            onClick={() => scrollByAmount(1)}
+            onClick={() => scrollByAmount(scrollRefTop, 1)}
             className="hidden md:flex absolute -right-8 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow ring-1 ring-gray-200 hover:bg-white"
           >
             <span className="sr-only">Next</span>
@@ -66,14 +68,13 @@ export default function PopularClinicsShowcase({
 
           {/* Scrollable area */}
           <div
-            ref={scrollRef}
+            ref={scrollRefTop}
             className="overflow-x-auto overflow-y-hidden scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] snap-x snap-mandatory"
             style={{ scrollbarWidth: 'none' }}
           >
-            {/* First row */}
             <div className="flex gap-4 px-0">
               {columns.map((col, i) => (
-                <div key={`r1-${i}`} className="min-w-[80%] sm:min-w-[55%] lg:min-w-[30%] snap-start [scroll-snap-stop:always]">
+                <div key={`top-${i}`} className="min-w-[85%] sm:min-w-[55%] lg:min-w-[calc((100%_-_32px)/3)] snap-start [scroll-snap-stop:always] flex-none">
                   <div className="flex flex-col gap-4">
                     {col[0] && (
                       <div
@@ -106,16 +107,45 @@ export default function PopularClinicsShowcase({
                 </div>
               ))}
             </div>
+          </div>
+        </div>
 
-            {/* Inter-row subheading */}
-            <div className="px-0 mt-3 mb-2 md:ml-6">
-              <h3 className="text-base font-semibold text-gray-900">{midTitle}</h3>
-            </div>
+        {/* Bottom: Popular Clinics */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">{midTitle}</h2>
+          <a href={viewAllHref} className="text-sm text-teal-700 hover:underline">View All</a>
+        </div>
+        <div className="relative">
+          {/* Left Arrow */}
+          <button
+            type="button"
+            aria-label="Previous"
+            onClick={() => scrollByAmount(scrollRefBottom, -1)}
+            className="hidden md:flex absolute -left-8 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow ring-1 ring-gray-200 hover:bg-white"
+          >
+            <span className="sr-only">Prev</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          {/* Right Arrow */}
+          <button
+            type="button"
+            aria-label="Next"
+            onClick={() => scrollByAmount(scrollRefBottom, 1)}
+            className="hidden md:flex absolute -right-8 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow ring-1 ring-gray-200 hover:bg-white"
+          >
+            <span className="sr-only">Next</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
 
-            {/* Second row */}
+          {/* Scrollable area */}
+          <div
+            ref={scrollRefBottom}
+            className="overflow-x-auto overflow-y-hidden scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] snap-x snap-mandatory"
+            style={{ scrollbarWidth: 'none' }}
+          >
             <div className="flex gap-4 px-0">
               {columns.map((col, i) => (
-                <div key={`r2-${i}`} className="min-w-[80%] sm:min-w-[55%] lg:min-w-[30%] snap-start [scroll-snap-stop:always]">
+                <div key={`bot-${i}`} className="min-w-[85%] sm:min-w-[55%] lg:min-w-[calc((100%_-_32px)/3)] snap-start [scroll-snap-stop:always] flex-none">
                   <div className="flex flex-col gap-4">
                     {col[1] && (
                       <div

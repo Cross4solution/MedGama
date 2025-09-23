@@ -9,8 +9,6 @@ import {
   CalendarClock,
   Bell,
   Info,
-  Check,
-  Trash2,
 } from 'lucide-react';
 
 const TYPE_META = {
@@ -50,9 +48,6 @@ export default function Notifications() {
   const filtered = tab === 'all' ? items : items.filter(i => i.type === tab);
 
   const markAllAsRead = () => setItems(prev => prev.map(i => ({ ...i, read: true })));
-  const clearAll = () => setItems([]);
-  const toggleRead = (id) => setItems(prev => prev.map(i => i.id === id ? ({ ...i, read: !i.read }) : i));
-  const removeOne = (id) => setItems(prev => prev.filter(i => i.id !== id));
 
   return (
     <div>
@@ -65,7 +60,6 @@ export default function Notifications() {
           </h1>
           <div className="flex items-center gap-2">
             <button onClick={markAllAsRead} className="px-3 py-1.5 rounded-lg text-sm border bg-white text-gray-700 border-gray-200 hover:bg-gray-50">Mark all as read</button>
-            <button onClick={clearAll} className="px-3 py-1.5 rounded-lg text-sm border bg-white text-gray-700 border-gray-200 hover:bg-gray-50">Clear all</button>
           </div>
         </div>
 
@@ -128,22 +122,7 @@ export default function Notifications() {
                             </div>
                           )}
                         </div>
-                        <div className="flex items-center gap-1">
-                          <button
-                            title={n.read ? 'Mark as unread' : 'Mark as read'}
-                            onClick={() => toggleRead(n.id)}
-                            className={`p-2 rounded-lg border text-xs ${n.read ? 'text-gray-700 hover:bg-gray-50' : 'text-teal-700 hover:bg-teal-50'} border-gray-200`}
-                          >
-                            <Check className="w-4 h-4" />
-                          </button>
-                          <button
-                            title="Remove"
-                            onClick={() => removeOne(n.id)}
-                            className="p-2 rounded-lg border text-xs text-rose-600 hover:bg-rose-50 border-gray-200"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                        {/* item actions removed by request */}
                       </div>
                     );
                   })}

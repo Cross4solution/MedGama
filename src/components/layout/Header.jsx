@@ -119,6 +119,20 @@ const Header = () => {
                           <Hospital className="w-4 h-4 text-purple-600" />
                           <span className="font-medium">Clinic Login</span>
                         </button>
+                        {/* CRM Login (external) */}
+                        <a
+                          role="menuitem"
+                          href={(process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login')}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full inline-flex items-center justify-between px-4 py-3 text-sm rounded-xl bg-gray-900 text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300 border border-gray-900 shadow-sm"
+                        >
+                          <span className="inline-flex items-center gap-3">
+                            <LayoutDashboard className="w-4 h-4 text-white" />
+                            <span className="font-medium">CRM Login</span>
+                          </span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-gray-200" />
+                        </a>
                       </div>
                     )}
                   </div>
