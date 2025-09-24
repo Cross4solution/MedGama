@@ -472,9 +472,12 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white ${liked ? 'text-blue-600' : 'text-gray-700'} font-medium transition-colors hover:rounded-md hover:border-gray-200 ${liked ? 'hover:bg-blue-50' : 'hover:bg-gray-100'}`}
               onClick={handleLike}
             >
-              <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${liked ? 'bg-blue-100 ring-1 ring-blue-500' : ''}`}>
+              <span className={`relative inline-flex items-center justify-center w-6 h-6`}>
                 {liked ? (
-                  <ThumbsUp className="w-4 h-4" strokeWidth={2.8} stroke="#2563eb" fill="#ffffff" />
+                  <>
+                    <ThumbsUp className="absolute w-6 h-6" strokeWidth={5.2} stroke="#2563eb" fill="#2563eb" />
+                    <ThumbsUp className="relative w-6 h-6" strokeWidth={3.6} stroke="#ffffff" fill="#2563eb" />
+                  </>
                 ) : (
                   <ThumbsUp className="w-4 h-4 text-gray-600" strokeWidth={1.9} fill="none" />
                 )}
