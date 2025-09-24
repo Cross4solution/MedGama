@@ -29,6 +29,8 @@ import ExploreTimeline from './pages/ExploreTimeline';
 import PostDetail from './pages/PostDetail';
 import DoctorProfilePage from './pages/DoctorProfile.jsx';
 import PatientProfilePage from './pages/PatientProfile.jsx';
+import ClinicProfileEdit from './pages/ClinicProfileEdit.jsx';
+import DoctorsDepartments from './pages/DoctorsDepartments.jsx';
 import scrollConfig from './config/scroll';
 
 function AppContent() {
@@ -130,8 +132,10 @@ function AppContent() {
         <Route path="/explore" element={<ExploreTimeline />} />
         <Route path="/patient-home" element={<PatientHome />} />
         <Route path="/clinics" element={<ClinicsPage />} />
+        <Route path="/doctors-departments" element={<DoctorsDepartments />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />
+        <Route path="/clinic-edit" element={<ClinicProfileEdit />} />
         <Route path="/doctor-chat" element={<DoctorChatPage />} />
         <Route path="/telehealth" element={<TelehealthPage />} />
         <Route path="/telehealth-appointment" element={<TelehealthAppointmentPage />} />

@@ -22,7 +22,14 @@ export default function TimelineFeed() {
 
       {/* Posts rendered with Explore-style TimelineCard data (compact + centered) */}
       {posts.map((item) => (
-        <div key={item.id} className="max-w-2xl mx-auto">
+        <div
+          key={item.id}
+          id={`post-${item.id}`}
+          className="max-w-2xl mx-auto"
+          onClick={() => {
+            try { sessionStorage.setItem('lastPostId', String(item.id)); } catch {}
+          }}
+        >
           <TimelineCard item={item} disabledActions={false} view={'list'} compact={true} />
         </div>
       ))}

@@ -26,7 +26,7 @@ export default function Notifications() {
   const [items, setItems] = useState([
     { id: 'n1', type: 'mention', title: 'You were mentioned', body: 'Dr. Ahmet mentioned you in a discussion.', time: '2m', read: false, href: '/explore' },
     { id: 'n2', type: 'message', title: 'New message', body: 'Clinic Support: "Hello, how can we help?"', time: '10m', read: false, href: '/doctor-chat' },
-    { id: 'n3', type: 'comment', title: 'New comment', body: 'A user commented on your post.', time: '1h', read: false, href: '/explore' },
+    { id: 'n3', type: 'comment', title: 'New comment', body: 'Bir kullanıcı gönderinize yorum yaptı.', comment: 'Tedaviden sonra ağrılarım ciddi şekilde azaldı, teşekkür ederim. İlgili tavrınız ve hızlı dönüşünüz için ayrıca minnettarım.', time: '1h', read: false, href: '/explore' },
     { id: 'n4', type: 'like', title: 'New like', body: 'Your update received 12 new likes.', time: '3h', read: true, href: '/explore' },
     { id: 'n5', type: 'follow', title: 'New follower', body: 'Ayşe started following you.', time: 'yesterday', read: true, href: '/doctor/doc-3' },
     { id: 'n6', type: 'appointment', title: 'Appointment reminder', body: 'Telehealth appointment at 14:30 tomorrow.', time: '2d', read: true, href: '/telehealth-appointment' },
@@ -116,6 +116,12 @@ export default function Notifications() {
                             </div>
                             <div className="text-xs text-gray-500 flex-shrink-0">{n.time}</div>
                           </div>
+                          {n.type === 'comment' && n.comment && (
+                            <div className="mt-2">
+                              <div className="text-xs text-gray-600">Yapılan yorum:</div>
+                              <blockquote className="mt-1 border rounded-lg bg-gray-50 text-gray-700 text-sm p-3">“{n.comment}”</blockquote>
+                            </div>
+                          )}
                           {n.href && (
                             <div className="mt-2">
                               <a href={n.href} className="text-xs text-teal-700 hover:underline">View</a>

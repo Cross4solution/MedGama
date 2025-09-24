@@ -24,8 +24,6 @@ export default function SidebarPatient() {
   const roleLabel = role === 'doctor' ? 'Doctor' : role === 'clinic' ? 'Clinic' : role === 'admin' ? 'Admin' : 'Patient';
 
   const patientItems = [
-    // Homepage (English) -> main landing page
-    { to: '/home-v2', label: 'Homepage', icon: Home },
     // Profile Overview (second page)
     { to: '/patient-home', label: 'Overview', icon: LayoutDashboard },
     // Notifications (aligned with doctor/clinic order)
@@ -46,7 +44,6 @@ export default function SidebarPatient() {
     { to: '/profile', label: 'Profile', icon: User },
     { to: '/patient-home', label: 'Medstream', icon: Video },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
-    { to: '/home-v2', label: 'Homepage', icon: Home },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
     { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
     { to: '/telehealth', label: 'Telehealth', icon: Monitor },
@@ -54,12 +51,11 @@ export default function SidebarPatient() {
 
   // Clinic-specific menu (Profile → Notifications → Home → Doctors & Departments → CRM)
   const clinicItems = [
-    { to: '/clinic', label: 'Profile', icon: User },
+    { to: '/clinic-edit', label: 'Profile', icon: User },
     { to: '/patient-home', label: 'Medstream', icon: Video },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
-    { to: '/home-v2', label: 'Homepage', icon: Home },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
-    { to: '/clinics', label: 'Doctors & Departments', icon: Building2 },
+    { to: '/doctors-departments', label: 'Doctors & Departments', icon: Building2 },
     { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
   ];
 

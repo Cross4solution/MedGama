@@ -222,8 +222,6 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
           const codeRe = new RegExp('^' + String(phoneCode || '').replace('+','\\+') + '\\s*');
           const cleanAfterCode = raw.replace(codeRe, '');
           const clean = cleanAfterCode.replace(/\D+/g, '');
-          const rule = phoneStartRules[phoneCode];
-          if (clean.length === 1 && rule && !rule.test(clean[0])) return;
           const digits = clean.slice(0, limit);
           const formatted = formatPhone(phoneCode, digits);
           setPhoneNumber(formatted);

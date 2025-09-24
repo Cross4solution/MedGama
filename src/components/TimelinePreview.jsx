@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toEnglishTimestamp } from '../utils/i18n';
 import { Star, MessageCircle, Heart, Clock, Image as ImageIcon, Folder, Share2 } from 'lucide-react';
@@ -16,8 +16,44 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
   // Explore-style ortak veri: doğrudan TimelineCard ile uyumlu
   const defaults = useMemo(() => generateExploreStyleItems(limit ?? 6), [limit]);
   const data = items.length ? items : defaults;
+  const scrollRef = useRef(null);
 
-  
+  // Restore scroll to last clicked post if exists, else keep position
+  useEffect(() => {
+    const key = 'timelinePreviewScroll';
+    const lastKey = 'lastPostId';
+    const el = scrollRef.current;
+    if (!el) return;
+    const lastId = sessionStorage.getItem(lastKey);
+    const tryScrollToPost = () => {
+      if (!lastId) return false;
+      const node = el.querySelector(`#post-${CSS.escape(lastId)}`);
+      if (node) {
+        const top = node.offsetTop - el.clientHeight / 3;
+        el.scrollTop = top > 0 ? top : 0;
+        sessionStorage.removeItem(lastKey);
+        return true;
+      }
+      return false;
+    };
+    let done = tryScrollToPost();
+    if (!done) {
+      requestAnimationFrame(() => {
+        done = tryScrollToPost();
+        if (!done) setTimeout(() => { tryScrollToPost(); }, 120);
+      });
+    }
+    const saved = Number(sessionStorage.getItem(key) || 0);
+    if (!done && !isNaN(saved) && saved > 0) {
+      requestAnimationFrame(() => { el.scrollTop = saved; });
+    }
+    const onScroll = () => sessionStorage.setItem(key, String(el.scrollTop));
+    el.addEventListener('scroll', onScroll);
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      sessionStorage.setItem(key, String(el.scrollTop || 0));
+    };
+  }, []);
 
   return (
     <section id="timeline" className="py-2">
@@ -38,10 +74,15 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
         </div>
         <div className="bg-white p-0 rounded-xl border border-gray-200 shadow-sm">
           {/* Scrollable feed area */}
-          <div className="h-[86vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#f4f2ee' }}>
+          <div ref={scrollRef} className="h-[86vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#f4f2ee' }}>
             <div className="space-y-6">
               {data.slice(0, 8).map((item) => (
-                <div key={item.id} className="max-w-2xl mx-auto">
+                <div
+                  key={item.id}
+                  id={`post-${item.id}`}
+                  className="max-w-2xl mx-auto"
+                  onClick={() => { try { sessionStorage.setItem('lastPostId', String(item.id)); } catch {} }}
+                >
                   <TimelineCard item={item} disabledActions={false} view={'list'} compact={true} />
                 </div>
               ))}

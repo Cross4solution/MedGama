@@ -83,6 +83,15 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
     }
   })();
 
+  const goToPost = (e) => {
+    e?.stopPropagation?.();
+    try {
+      sessionStorage.setItem('lastPostId', String(item.id));
+      sessionStorage.setItem('returnScroll', String(window.scrollY || 0));
+    } catch {}
+    navigate(`/post/${encodeURIComponent(item.id)}`, { state: { item, prevScroll: (typeof window !== 'undefined' ? window.scrollY : 0) } });
+  };
+
   // Compact mode helpers
   const avatarSize = compact ? 'w-10 h-10' : 'w-12 h-12';
   const nameText = compact ? 'text-sm md:text-[15px] leading-5' : 'text-[15px] md:text-base';
@@ -209,7 +218,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                 <div className="relative">
                   <button
                     type="button"
-                    onClick={(e)=>{ e.stopPropagation(); try { sessionStorage.setItem('returnScroll', String(window.scrollY || 0)); } catch {} navigate(`/post/${encodeURIComponent(item.id)}`, { state: { item, prevScroll: (typeof window !== 'undefined' ? window.scrollY : 0) } }); }}
+                    onClick={goToPost}
                     className="block w-full text-left"
                   >
                     <img src={media[0].url} alt={media[0].alt || actorName} loading="lazy" className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
@@ -222,7 +231,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     <button
                       key={i}
                       type="button"
-                      onClick={(e)=>{ e.stopPropagation(); try { sessionStorage.setItem('returnScroll', String(window.scrollY || 0)); } catch {} navigate(`/post/${encodeURIComponent(item.id)}`, { state: { item, prevScroll: (typeof window !== 'undefined' ? window.scrollY : 0) } }); }}
+                      onClick={goToPost}
                       className="block w-full text-left"
                     >
                       <img src={m.url} alt={m.alt || actorName} loading="lazy" className={`w-full ${grid2H} object-cover`} />
@@ -234,7 +243,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={(e)=>{ e.stopPropagation(); try { sessionStorage.setItem('returnScroll', String(window.scrollY || 0)); } catch {} navigate(`/post/${encodeURIComponent(item.id)}`, { state: { item, prevScroll: (typeof window !== 'undefined' ? window.scrollY : 0) } }); }}
+                    onClick={goToPost}
                     className="block w-full text-left"
                   >
                     <img src={media[0].url} alt={media[0].alt || actorName} loading="lazy" className={`w-full ${grid3LeftH} object-cover col-span-1`} />
@@ -244,7 +253,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                       <button
                         key={i}
                         type="button"
-                        onClick={(e)=>{ e.stopPropagation(); try { sessionStorage.setItem('returnScroll', String(window.scrollY || 0)); } catch {} navigate(`/post/${encodeURIComponent(item.id)}`, { state: { item, prevScroll: (typeof window !== 'undefined' ? window.scrollY : 0) } }); }}
+                        onClick={goToPost}
                         className="block w-full text-left"
                       >
                         <img src={m.url} alt={m.alt || actorName} loading="lazy" className={`w-full ${grid3SmallH} object-cover`} />
@@ -259,7 +268,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     <div key={i} className="relative">
                       <button
                         type="button"
-                        onClick={(e)=>{ e.stopPropagation(); try { sessionStorage.setItem('returnScroll', String(window.scrollY || 0)); } catch {} navigate(`/post/${encodeURIComponent(item.id)}`, { state: { item, prevScroll: (typeof window !== 'undefined' ? window.scrollY : 0) } }); }}
+                        onClick={goToPost}
                         className="block w-full text-left"
                       >
                         <img src={m.url} alt={m.alt || actorName} loading="lazy" className={`w-full ${grid4H} object-cover`} />

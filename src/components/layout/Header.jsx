@@ -152,32 +152,46 @@ const Header = () => {
                     </button>
                   )}
                   <div className="relative" ref={profileRef}>
-                  <button
-                    type="button"
-                    onClick={() => setProfileOpen((p)=>!p)}
-                    aria-haspopup="menu"
-                    aria-expanded={profileOpen}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200"
-                    title={user.name}
-                  >
-                    <img
-                      src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
-                      alt={user.name}
-                      className="w-8 h-8 rounded-full object-cover border"
-                    />
-                    <span className="text-sm text-gray-800 font-medium max-w-[160px] truncate">{user.name}</span>
-                    <svg className="w-4 h-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
-                  </button>
-                  {profileOpen && (
-                    <div role="menu" className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
-                      <Link to="/profile" onClick={()=>setProfileOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                        <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-3-3.87"/><path d="M4 21v-2a4 4 0 0 1 3-3.87"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span>Profile</span>
-                      </Link>
-                      <button onClick={()=>{ setProfileOpen(false); setConfirmLogoutOpen(true); }} role="menuitem" className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50">
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                        <span>Logout</span>
+                  {user?.role === 'patient' ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setProfileOpen((p)=>!p)}
+                        aria-haspopup="menu"
+                        aria-expanded={profileOpen}
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200"
+                        title={user.name}
+                      >
+                        <img
+                          src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                          alt={user.name}
+                          className="w-8 h-8 rounded-full object-cover border"
+                        />
+                        <span className="text-sm text-gray-800 font-medium max-w-[160px] truncate">{user.name}</span>
+                        <svg className="w-4 h-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
                       </button>
+                      {profileOpen && (
+                        <div role="menu" className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
+                          <Link to="/profile" onClick={()=>setProfileOpen(false)} role="menuitem" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-3-3.87"/><path d="M4 21v-2a4 4 0 0 1 3-3.87"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span>Profile</span>
+                          </Link>
+                          <button onClick={()=>{ setProfileOpen(false); setConfirmLogoutOpen(true); }} role="menuitem" className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50">
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            <span>Logout</span>
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    // doctor/clinic: no dropdown, just static avatar + name
+                    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-transparent" title={user.name}>
+                      <img
+                        src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                        alt={user.name}
+                        className="w-8 h-8 rounded-full object-cover border"
+                      />
+                      <span className="text-sm text-gray-800 font-medium max-w-[160px] truncate">{user.name}</span>
                     </div>
                   )}
                   </div>
