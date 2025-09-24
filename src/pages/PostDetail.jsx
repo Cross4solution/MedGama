@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { MapPin, MessageCircle, Heart, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp } from 'lucide-react';
 import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
 import { useAuth } from '../context/AuthContext';
@@ -119,7 +119,7 @@ export default function PostDetail() {
             <p className="text-[15px] leading-7 text-gray-800 whitespace-pre-wrap">{item.text}</p>
           </div>
 
-          {/* Action bar (birebir TimelineCard ile aynı yapı) */}
+          {/* Action bar (TimelineCard ile aynı görünüm) */}
           <div className="px-2 md:px-3 py-2 border-t mt-1 grid grid-cols-3 gap-2 justify-items-center">
             <button
               type="button"
@@ -127,10 +127,11 @@ export default function PostDetail() {
               onClick={handleLike}
             >
               <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${liked ? 'bg-blue-100 ring-1 ring-blue-500' : ''}`}>
-                {/* ThumbsUp ikonunun aynı görünümünü korumak için */}
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={liked ? 2.8 : 1.9}>
-                  <path d="M14 9V5a3 3 0 0 0-3-3l-1 5H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8.28a2 2 0 0 0 1.95-1.5l1.38-5.5A2 2 0 0 0 14.68 8H14z" />
-                </svg>
+                {liked ? (
+                  <ThumbsUp className="w-4 h-4" strokeWidth={2.8} stroke="#2563eb" fill="#ffffff" />
+                ) : (
+                  <ThumbsUp className="w-4 h-4 text-gray-600" strokeWidth={1.9} fill="none" />
+                )}
               </span>
               <span className={`font-medium`}>Like</span>
             </button>

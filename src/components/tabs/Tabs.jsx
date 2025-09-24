@@ -2,16 +2,16 @@ import React from 'react';
 
 export default function Tabs({ tabs = [], active, onChange }) {
   return (
-    <div className="border-b">
-      <nav className="flex overflow-x-auto">
+    <div>
+      <nav className="flex overflow-x-auto gap-2">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => onChange?.(tab.id)}
-            className={`px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+            className={`px-4 py-2 text-sm font-medium whitespace-nowrap rounded-xl border transition-colors ${
               active === tab.id
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-600 hover:text-blue-600'
+                ? 'bg-green-600 text-white border-green-600'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:text-green-700 hover:border-green-500'
             }`}
           >
             {tab.label}
