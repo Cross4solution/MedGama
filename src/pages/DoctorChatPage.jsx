@@ -68,25 +68,23 @@ const DoctorChatPage = () => {
 
       {/* Doctor Info Header */}
       <div className="bg-white border-b">
-        <div className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2`}>
+        <div className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-1.5`}>
           <div className="flex items-center">
-                         <div className="w-14 h-14 rounded-full mr-4 overflow-hidden bg-gray-100">
-               <img 
-                 src="/images/portrait-candid-male-doctor_720.jpg" 
-                 alt="Dr. Mehmet Özkan" 
-                 className="w-full h-full object-cover"
-                 style={{ objectPosition: 'center 20%' }}
-               />
-             </div>
+            <div className="w-12 h-12 rounded-full mr-3 overflow-hidden bg-gray-100">
+              <img 
+                src="/images/portrait-candid-male-doctor_720.jpg" 
+                alt="Dr. Mehmet Özkan" 
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 20%' }}
+              />
+            </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Dr. Mehmet Özkan</h1>
-              <div className="flex items-center text-sm text-gray-600">
+              <h1 className="text-lg font-bold text-gray-900 leading-tight">Dr. Mehmet Özkan</h1>
+              <div className="flex items-center text-[13px] text-gray-600">
                 <span>Cardiologist</span>
                 <span className="mx-2">•</span>
                 <span>Anadolu Health Center</span>
-                <span className="ml-2 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
-                  Online
-                </span>
+                <span className="ml-2 bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full text-[11px]">Online</span>
               </div>
             </div>
           </div>
@@ -129,7 +127,6 @@ const DoctorChatPage = () => {
                         </div>
                         <p className="text-xs text-gray-600 truncate">{t.last}</p>
                         <div className="mt-1 flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full border bg-gray-100 border-gray-200 h-5 px-2 text-[11px]">{t.channel}</span>
                           {t.tags?.slice(0,2).map(tag => (
                             <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50 text-gray-700">{tag}</span>
                           ))}
@@ -141,7 +138,7 @@ const DoctorChatPage = () => {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border h-[calc(100vh-13rem)] flex flex-col">
+            <div className="bg-white rounded-lg shadow-sm border h-[calc(100vh-11rem)] flex flex-col">
               <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} />
               <ChatMessageList
                 messages={messages}
@@ -165,7 +162,7 @@ const DoctorChatPage = () => {
 
           {/* Chat Area (expanded) */}
           <div className="lg:col-span-4">
-            <div className="bg-white rounded-lg shadow-sm border h-[600px] flex flex-col">
+            <div className="bg-white rounded-lg shadow-sm border h-[calc(100vh-260px)] flex flex-col">
               {/* Chat Header */}
               <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} />
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { MapPin, MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp } from 'lucide-react';
+import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp } from 'lucide-react';
 import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
 import { useAuth } from '../context/AuthContext';
@@ -107,11 +107,15 @@ export default function PostDetail() {
             <img src={item.actor?.avatarUrl || item.avatar || '/images/portrait-candid-male-doctor_720.jpg'} alt={item.title} className="w-10 h-10 rounded-full object-cover border" />
             <div className="min-w-0">
               <h1 className="font-semibold text-gray-900 truncate" title={item.title}>{item.actor?.name || item.title}</h1>
-              <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {item.city}</p>
+              {item.specialty && (
+                <div className="mt-0.5">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">{item.specialty}</span>
+                </div>
+              )}
+              {item.city && (
+                <p className="text-xs text-gray-500">{item.city}</p>
+              )}
             </div>
-            {item.specialty && (
-              <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">{item.specialty}</span>
-            )}
           </div>
 
           {/* Text */}
