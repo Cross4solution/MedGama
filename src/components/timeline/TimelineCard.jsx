@@ -287,7 +287,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
 
           {/* Social counts (both aligned left, icon left + text right) */}
           <div className="px-3 pt-2 mt-2 text-sm text-gray-500 flex items-center">
-            <div className="inline-flex items-center gap-4">
+            <div className="inline-flex items-center gap-3">
               {/* Likes */}
               <div className="inline-flex items-center gap-2">
                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#378fe9] text-white">
@@ -296,7 +296,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                 <span>{likeCount}</span>
               </div>
               {/* Comments */}
-              <div className="inline-flex items-center gap-2">
+              <div className="inline-flex items-center gap-2 -ml-1">
                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#f35369] text-white">
                   <MessageCircle className="w-3 h-3" />
                 </span>
@@ -472,12 +472,9 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white ${liked ? 'text-blue-600' : 'text-gray-700'} font-medium transition-colors hover:rounded-md hover:border-gray-200 ${liked ? 'hover:bg-blue-50' : 'hover:bg-gray-100'}`}
               onClick={handleLike}
             >
-              <span className={`relative inline-flex items-center justify-center w-6 h-6`}>
+              <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${liked ? 'bg-blue-100 ring-1 ring-blue-500' : ''}`}>
                 {liked ? (
-                  <>
-                    <ThumbsUp className="absolute w-6 h-6" strokeWidth={5.2} stroke="#2563eb" fill="#2563eb" />
-                    <ThumbsUp className="relative w-6 h-6" strokeWidth={3.6} stroke="#ffffff" fill="#2563eb" />
-                  </>
+                  <ThumbsUp className="w-4 h-4" strokeWidth={2.8} stroke="#2563eb" fill="#ffffff" />
                 ) : (
                   <ThumbsUp className="w-4 h-4 text-gray-600" strokeWidth={1.9} fill="none" />
                 )}

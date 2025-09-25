@@ -69,12 +69,12 @@ export default function PopularClinicsShowcase({
           {/* Scrollable area */}
           <div
             ref={scrollRefTop}
-            className="overflow-x-auto overflow-y-hidden scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none' }}
+            className="overflow-x-auto overflow-y-hidden scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] snap-x snap-mandatory pr-2 -mr-2 [&::-webkit-scrollbar]:hidden"
+            style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             <div className="flex gap-4 px-0">
               {columns.map((col, i) => (
-                <div key={`top-${i}`} className="min-w-[85%] sm:min-w-[55%] lg:min-w-[calc((100%_-_32px)/3)] snap-start [scroll-snap-stop:always] flex-none">
+                <div key={`top-${i}`} className="flex-none shrink-0 basis-[85%] sm:basis-[55%] lg:basis-[calc((100%_-_32px)/3)] min-w-0 snap-start [scroll-snap-stop:always]">
                   <div className="flex flex-col gap-4">
                     {col[0] && (
                       <div
@@ -140,12 +140,12 @@ export default function PopularClinicsShowcase({
           {/* Scrollable area */}
           <div
             ref={scrollRefBottom}
-            className="overflow-x-auto overflow-y-hidden scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none' }}
+            className="overflow-x-auto overflow-y-hidden scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] snap-x snap-mandatory pr-2 -mr-2 [&::-webkit-scrollbar]:hidden"
+            style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             <div className="flex gap-4 px-0">
               {columns.map((col, i) => (
-                <div key={`bot-${i}`} className="min-w-[85%] sm:min-w-[55%] lg:min-w-[calc((100%_-_32px)/3)] snap-start [scroll-snap-stop:always] flex-none">
+                <div key={`bot-${i}`} className="flex-none shrink-0 basis-[85%] sm:basis-[55%] lg:basis-[calc((100%_-_32px)/3)] min-w-0 snap-start [scroll-snap-stop:always]">
                   <div className="flex flex-col gap-4">
                     {col[1] && (
                       <div

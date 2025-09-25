@@ -39,23 +39,24 @@ export default function SidebarPatient() {
     { to: '/terms-of-service', label: 'Settings', icon: Settings },
   ];
 
-  // Doctor-specific menu (Profile → Notifications → Messages → Appointments → Telehealth)
+  // Doctor-specific menu (Profile → Medstream → Notifications → Messages → Schedule → Telehealth → CRM)
   const doctorItems = [
     { to: '/profile', label: 'Profile', icon: User },
     { to: '/patient-home', label: 'Medstream', icon: Video },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
-    { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
+    { to: '/telehealth-appointment', label: 'Schedule', icon: CalendarClock },
     { to: '/telehealth', label: 'Telehealth', icon: Monitor },
+    { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
   ];
 
-  // Clinic-specific menu (Profile → Notifications → Home → Doctors & Departments → CRM)
+  // Clinic-specific menu (Profile → Medstream → Notifications → Messages → Departments and Doctors → CRM)
   const clinicItems = [
     { to: '/clinic-edit', label: 'Profile', icon: User },
     { to: '/patient-home', label: 'Medstream', icon: Video },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
-    { to: '/doctors-departments', label: 'Doctors & Departments', icon: Building2 },
+    { to: '/doctors-departments', label: 'Departments and Doctors', icon: Building2 },
     { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
   ];
 
