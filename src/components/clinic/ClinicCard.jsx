@@ -114,7 +114,7 @@ export default function ClinicCard({ clinic, isFavorite, onToggleFavorite, onVie
                 <span className="text-sm">Message</span>
               </button>
             </div>
-            <button onClick={() => onView?.(clinic)} className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md">
+            <button onClick={() => onView?.(clinic)} className="bg-[#1C6A83] text-white px-4 py-2 rounded-xl hover:bg-[#155a6f] transition-all duration-200 shadow-sm hover:shadow-md">
               View
             </button>
           </div>

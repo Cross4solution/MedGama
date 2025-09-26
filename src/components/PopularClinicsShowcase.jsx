@@ -98,7 +98,7 @@ export default function PopularClinicsShowcase({
                           <p className="mt-1 text-sm text-gray-600">{col[0].city} • {col[0].dept}</p>
                           <div className="mt-auto pt-3 flex items-center justify-between text-sm">
                             <span className="text-gray-500">{col[0].reviews} Reviews</span>
-                            <button type="button" onClick={(e) => handleViewClick(e, col[0])} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View</button>
+                            <button type="button" onClick={(e) => handleViewClick(e, col[0])} className="px-3 py-1.5 bg-[#1C6A83] text-white rounded-lg hover:bg-[#155a6f]">View</button>
                           </div>
                         </div>
                       </div>
@@ -169,7 +169,7 @@ export default function PopularClinicsShowcase({
                           <p className="mt-1 text-sm text-gray-600">{col[1].city} • {col[1].dept}</p>
                           <div className="mt-auto pt-3 flex items-center justify-between text-sm">
                             <span className="text-gray-500">{col[1].reviews} Reviews</span>
-                            <button type="button" onClick={(e) => handleViewClick(e, col[1])} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View</button>
+                            <button type="button" onClick={(e) => handleViewClick(e, col[1])} className="px-3 py-1.5 bg-[#1C6A83] text-white rounded-lg hover:bg-[#155a6f]">View</button>
                           </div>
                         </div>
                       </div>

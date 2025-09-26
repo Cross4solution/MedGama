@@ -226,7 +226,7 @@ export default function ExploreTimeline() {
   }, [hasMore, items.length]);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F0FDFA' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#e0f0e1' }}>
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Başlık + Sekmeler + Sıralama */}

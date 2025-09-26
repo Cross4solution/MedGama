@@ -81,7 +81,7 @@ export default function PatientHome() {
               <div className="max-w-6xl mx-auto px-4 sm:px-6">
                 <div className="bg-white p-0 rounded-none border-0 shadow-none">
                   {/* taller height, inner scrollable area */}
-                  <div ref={scrollRef} className="h-[80vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#F0FDFA' }}>
+                  <div ref={scrollRef} className="h-[80vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#e0f0e1' }}>
                     {/* Composer tam kartların üstünde ve kart genişliğinde */}
                     <div className="mb-4 max-w-2xl mx-auto">
                       <PostComposer />

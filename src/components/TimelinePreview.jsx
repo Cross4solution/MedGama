@@ -74,7 +74,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
         </div>
         <div className="bg-white p-0 rounded-xl border border-gray-200 shadow-sm">
           {/* Scrollable feed area */}
-          <div ref={scrollRef} className="h-[86vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#F0FDFA' }}>
+          <div ref={scrollRef} className="h-[86vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#e0f0e1' }}>
             <div className="space-y-6">
               {data.slice(0, 8).map((item) => (
                 <div
