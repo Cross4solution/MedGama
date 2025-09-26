@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import { Header } from '../components/layout';
 import { Save, Building2, MapPin, Globe, Info, Image as ImageIcon, Upload, Plus, X, DollarSign, Images, Package, Star, Stethoscope, Activity, Brain, Scissors, Link as LinkIcon } from 'lucide-react';
 
 export default function ClinicProfileEdit() {
@@ -82,10 +81,9 @@ export default function ClinicProfileEdit() {
 
   return (
     <div>
-      <Header />
       <div className="max-w-6xl mx-auto px-4 py-6">
         <h1 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-teal-700" /> Edit Clinic Profile
+          <Building2 className="w-5 h-5 text-[#1C6A83]" /> Edit Clinic Profile
         </h1>
 
         {/* Tabs */}
@@ -100,7 +98,7 @@ export default function ClinicProfileEdit() {
             { id: 'pricing', label: 'Pricing' },
             { id: 'packages', label: 'Packages' },
           ].map(t => (
-            <button key={t.id} onClick={()=>setTab(t.id)} type="button" className={`px-3 py-1.5 rounded-lg text-sm border ${tab===t.id ? 'bg-teal-50 text-teal-700 border-teal-200' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}>{t.label}</button>
+            <button key={t.id} onClick={()=>setTab(t.id)} type="button" className={`px-3 py-1.5 rounded-lg text-sm border ${tab===t.id ? 'bg-[#1C6A83] text-white border-[#1C6A83]' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}>{t.label}</button>
           ))}
         </div>
 
@@ -233,7 +231,7 @@ export default function ClinicProfileEdit() {
               <div className="space-y-3">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Doctors Intro Text</label>
                 <textarea value={doctorsText} onChange={(e)=> setDoctorsText(e.target.value)} rows={4} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Introductory text for the doctors section" />
-                <p className="text-sm text-gray-600">Manage your doctors and departments from the <a className="text-teal-700 underline" href="/doctors-departments">Doctors & Departments</a> page.</p>
+                <p className="text-sm text-gray-600">Manage your doctors and departments from the <a className="text-[#1C6A83] underline" href="/doctors-departments">Doctors & Departments</a> page.</p>
               </div>
             )}
 
@@ -313,7 +311,7 @@ export default function ClinicProfileEdit() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-base font-semibold text-gray-900">Health Tourism Packages</h2>
-                  <button type="button" onClick={addPackage} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Plus className="w-4 h-4"/> Create Package</button>
+                  <button type="button" onClick={addPackage} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><img src="/images/icon/archive-up-minimlistic-svgrepo-com.svg" alt="Archive" className="w-4 h-4"/> Create Package</button>
                 </div>
                 <div className="space-y-3">
                   {packages.map((p) => (
@@ -336,8 +334,8 @@ export default function ClinicProfileEdit() {
             )}
 
             <div className="flex justify-end">
-              <button type="submit" disabled={saving} className="inline-flex items-center gap-2 bg-teal-600 text-white px-5 py-2.5 rounded-xl hover:bg-teal-700 disabled:opacity-60">
-                <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Changes'}
+              <button type="submit" disabled={saving} className="inline-flex items-center gap-2 bg-[#1C6A83] text-white px-5 py-2.5 rounded-xl hover:bg-[#0F4A5C] disabled:opacity-60">
+                <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save'}
               </button>
             </div>
           </form>

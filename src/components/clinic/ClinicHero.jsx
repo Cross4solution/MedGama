@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Star, Heart, Plus, Minus } from 'lucide-react';
+import { MapPin, Star, Heart, Minus } from 'lucide-react';
 
 export default function ClinicHero({
   image,
@@ -17,7 +17,7 @@ export default function ClinicHero({
   onFollow,
 }) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 mt-6">
       <div className="relative h-64 md:h-80">
         <img 
           src={image}
@@ -32,41 +32,41 @@ export default function ClinicHero({
       </div>
 
       <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{name}</h1>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{name}</h1>
             <div className="flex items-center text-gray-600 mb-2">
-              <MapPin className="w-5 h-5 mr-2" />
-              <span>{location}</span>
+              <MapPin className="w-5 h-5 mr-2 flex-shrink-0" />
+              <span className="truncate">{location}</span>
             </div>
             {badgeNode && <div className="flex items-center">{badgeNode}</div>}
           </div>
-          <div className="flex space-x-2">
+          <div className="flex items-center justify-end sm:justify-start space-x-2 flex-shrink-0">
             <button
               onClick={onToggleFavorite}
-              className={`p-3 rounded-full transition-colors ${
+              className={`p-2 sm:p-3 rounded-full transition-colors ${
                 isFavorite ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600'
               }`}
               aria-label={isFavorite ? 'Unfavorite' : 'Favorite'}
             >
-              <Heart className={`w-6 h-6 ${isFavorite ? 'fill-current' : ''}`} />
+              <Heart className={`w-5 h-5 sm:w-6 sm:h-6 ${isFavorite ? 'fill-current' : ''}`} />
             </button>
             <button
               onClick={onToggleFollow || onFollow}
               className={`${isFollowing
                 ? 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-50'
-                : 'bg-blue-600 text-white hover:bg-blue-700'} px-3 py-1 rounded-xl transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md`}
+                : 'bg-blue-600 text-white hover:bg-blue-700'} px-3 py-2 sm:px-3 sm:py-1 rounded-xl transition-all duration-200 flex items-center space-x-1 sm:space-x-2 shadow-sm hover:shadow-md min-w-0`}
               aria-label={isFollowing ? 'Unfollow' : 'Follow'}
             >
               {isFollowing ? (
                 <>
-                  <Minus className="w-4 h-4" />
-                  <span className="text-sm">Unfollow</span>
+                  <Minus className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm whitespace-nowrap">Unfollow</span>
                 </>
               ) : (
                 <>
-                  <Plus className="w-4 h-4" />
-                  <span className="text-sm">Follow</span>
+                  <img src="/images/icon/plus-svgrepo-com.svg" alt="Plus" className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm whitespace-nowrap">Follow</span>
                 </>
               )}
             </button>

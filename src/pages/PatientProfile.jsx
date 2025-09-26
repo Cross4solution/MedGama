@@ -1,6 +1,5 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Header } from '../components/layout';
 import Modal from '../components/common/Modal';
 import { ThumbsUp } from 'lucide-react';
 
@@ -50,7 +49,6 @@ export default function PatientProfile() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="rounded-xl bg-white border shadow-sm p-4 flex items-center gap-4">
           <img src={actor.avatarUrl} alt={actor.name} className="w-20 h-20 rounded-full object-cover border" />

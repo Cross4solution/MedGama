@@ -30,7 +30,7 @@ export default function PostComposer() {
     const urls = (selectedPhotos || []).map((file) => ({ url: URL.createObjectURL(file), name: file.name }));
     setPhotoPreviews(urls);
     return () => {
-      urls.forEach((u) => { try { URL.revokeObjectURL(u.url); } catch {} });
+      urls.forEach((u) => { try { URL.revokeObjectURL(u.url); } catch {} }); 
     };
   }, [selectedPhotos]);
 
@@ -57,7 +57,7 @@ export default function PostComposer() {
     const urls = (selectedVideos || []).map((file) => ({ url: URL.createObjectURL(file), name: file.name }));
     setVideoPreviews(urls);
     return () => {
-      urls.forEach((u) => { try { URL.revokeObjectURL(u.url); } catch {} });
+      urls.forEach((u) => { try { URL.revokeObjectURL(u.url); } catch {} }); 
     };
   }, [selectedVideos]);
 
@@ -104,106 +104,107 @@ export default function PostComposer() {
 
   return (
     <div className="bg-white rounded-xl p-4 border shadow-sm">
-      <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-md">
-        {/* Top: Avatar + input-like button */}
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
-            <img
-              alt={name}
-              className="w-full h-full object-cover object-center"
-              src={avatar}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="flex-1 text-left p-3 bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:bg-gray-100"
-          >
-            Make a Post...
-          </button>
+      {/* Top: Avatar + input-like button */}
+      <div className="flex items-center space-x-3">
+        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+          <img
+            alt={name}
+            className="w-full h-full object-cover object-center"
+            src={avatar}
+          />
         </div>
-
-        {/* Bottom: actions + post button */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
-          <div className="flex items-center space-x-6 relative">
-            {/* Hidden inputs for direct select */}
-            <input ref={photoRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=> setSelectedPhotos(Array.from(e.target.files||[]))} />
-            <input ref={videoRef} type="file" accept="video/*" multiple className="hidden" onChange={(e)=> setSelectedVideos(Array.from(e.target.files||[]))} />
-
-            <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600" type="button" onClick={() => { photoRef.current?.click(); }}>
-              <ImageIcon className="w-5 h-5" aria-hidden="true" />
-              <span>Photo</span>
-            </button>
-            <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600" type="button" onClick={() => { videoRef.current?.click(); }}>
-              <Video className="w-5 h-5" aria-hidden="true" />
-              <span>Video</span>
-            </button>
-            <button ref={emojiBtnRef} className="flex items-center space-x-2 text-gray-600 hover:text-blue-600" type="button" onClick={() => { setShowEmoji(v=>!v); }}>
-              <Smile className="w-5 h-5" aria-hidden="true" />
-              <span>Emoji</span>
-            </button>
-            {showEmoji && (
-              <div ref={emojiPanelRef} className="absolute left-0 top-full mt-2 z-50 border rounded-xl bg-white shadow-lg ring-1 ring-black/5 p-2 w-[280px]">
-                <div className="grid grid-cols-10 gap-1 text-xl select-none">
-                  {['😀','😂','😍','👍','👏','🎉','🙏','🔥','😎','🤔','😢','😮','❤️','💙','💯','✅','⭐','✨'].map((e,i)=> (
-                    <button key={i} type="button" className="hover:bg-gray-50 rounded" onClick={() => { setShowEmoji(false); setInitialAction('emoji'); setOpen(true); }}>{e}</button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto"
-          >
-            Post
-          </button>
-        </div>
-        <PostCreateModal
-          open={open}
-          onClose={() => setOpen(false)}
-          user={user}
-          onPost={handlePost}
-          initialAction={initialAction}
-          onResetInitialAction={() => setInitialAction('')}
-        />
-        {(selectedPhotos.length>0 || selectedVideos.length>0) && (
-          <div className="mt-2">
-            <div className="text-xs text-gray-500">
-              {selectedPhotos.length>0 && <span className="mr-3">{selectedPhotos.length} photo selected</span>}
-              {selectedVideos.length>0 && <span>{selectedVideos.length} video selected</span>}
-            </div>
-            {(photoPreviews.length > 0 || videoPreviews.length > 0) && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {photoPreviews.map((p, idx) => (
-                  <div key={`p${idx}`} className="relative w-20 h-20 rounded-lg overflow-hidden border bg-gray-50">
-                    <button type="button" onClick={() => setViewer({ type: 'photo', url: p.url })} className="absolute inset-0">
-                      <img src={p.url} alt={p.name || `photo-${idx+1}`} className="w-full h-full object-cover" />
-                    </button>
-                    <div className="absolute left-1.5 bottom-1.5 flex gap-1">
-                      <button type="button" onClick={() => openEditorForPhoto(idx)} className="px-1.5 py-0.5 text-[10px] rounded bg-white/90 border border-gray-200 text-gray-700 shadow">Düzenle</button>
-                    </div>
-                    <button type="button" aria-label="Remove photo" onClick={() => removePhotoAt(idx)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    </button>
-                  </div>
-                ))}
-                {videoPreviews.map((v, idx) => (
-                  <div key={`v${idx}`} className="relative w-24 h-20 rounded-lg overflow-hidden border bg-black/5">
-                    <button type="button" onClick={() => setViewer({ type: 'video', url: v.url })} className="absolute inset-0">
-                      <video src={v.url} className="w-full h-full object-cover" muted playsInline />
-                    </button>
-                    <button type="button" aria-label="Remove video" onClick={() => removeVideoAt(idx)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex-1 text-left p-3 bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:bg-gray-100"
+        >
+          Make a Post...
+        </button>
       </div>
+
+      {/* Bottom: actions + post button */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
+        <div className="flex items-center space-x-4 sm:space-x-6 relative">
+          {/* Hidden inputs for direct select */}
+          <input ref={photoRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=> setSelectedPhotos(Array.from(e.target.files||[]))} />
+          <input ref={videoRef} type="file" accept="video/*" multiple className="hidden" onChange={(e)=> setSelectedVideos(Array.from(e.target.files||[]))} />
+
+          <button className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { photoRef.current?.click(); }}>
+            <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+            <span className="text-sm sm:text-base">Photo</span>
+          </button>
+          <button className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { videoRef.current?.click(); }}>
+            <Video className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+            <span className="text-sm sm:text-base">Video</span>
+          </button>
+          <button ref={emojiBtnRef} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { setShowEmoji(v=>!v); }}>
+            <Smile className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+            <span className="text-sm sm:text-base">Emoji</span>
+          </button>
+          {showEmoji && (
+            <div ref={emojiPanelRef} className="absolute left-0 top-full mt-2 z-50 border rounded-xl bg-white shadow-lg ring-1 ring-black/5 p-2 w-[280px] sm:w-[320px]">
+              <div className="grid grid-cols-8 sm:grid-cols-10 gap-1 text-lg sm:text-xl select-none">
+                {['😀','😂','😍','👍','👏','🎉','🙏','🔥','😎','🤔','😢','😮','❤️','💙','💯','✅','⭐','✨'].map((e,i)=> (
+                  <button key={i} type="button" className="hover:bg-gray-50 rounded" onClick={() => { setShowEmoji(false); setInitialAction('emoji'); setOpen(true); }}>{e}</button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base font-medium"
+        >
+          Post
+        </button>
+      </div>
+      
+      <PostCreateModal
+        open={open}
+        onClose={() => setOpen(false)}
+        user={user}
+        onPost={handlePost}
+        initialAction={initialAction}
+        onResetInitialAction={() => setInitialAction('')}
+      />
+      
+      {(selectedPhotos.length>0 || selectedVideos.length>0) && (
+        <div className="mt-2">
+          <div className="text-xs text-gray-500">
+            {selectedPhotos.length>0 && <span className="mr-3">{selectedPhotos.length} photo selected</span>}
+            {selectedVideos.length>0 && <span>{selectedVideos.length} video selected</span>}
+          </div>
+          {(photoPreviews.length > 0 || videoPreviews.length > 0) && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {photoPreviews.map((p, idx) => (
+                <div key={`p${idx}`} className="relative w-20 h-20 rounded-lg overflow-hidden border bg-gray-50">
+                  <button type="button" onClick={() => setViewer({ type: 'photo', url: p.url })} className="absolute inset-0">
+                    <img src={p.url} alt={p.name || `photo-${idx+1}`} className="w-full h-full object-cover" />
+                  </button>
+                  <div className="absolute left-1.5 bottom-1.5 flex gap-1">
+                    <button type="button" onClick={() => openEditorForPhoto(idx)} className="px-1.5 py-0.5 text-[10px] rounded bg-white/90 border border-gray-200 text-gray-700 shadow">Düzenle</button>
+                  </div>
+                  <button type="button" aria-label="Remove photo" onClick={() => removePhotoAt(idx)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                  </button>
+                </div>
+              ))}
+              {videoPreviews.map((v, idx) => (
+                <div key={`v${idx}`} className="relative w-24 h-20 rounded-lg overflow-hidden border bg-black/5">
+                  <button type="button" onClick={() => setViewer({ type: 'video', url: v.url })} className="absolute inset-0">
+                    <video src={v.url} className="w-full h-full object-cover" muted playsInline />
+                  </button>
+                  <button type="button" aria-label="Remove video" onClick={() => removeVideoAt(idx)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      
       {viewer && (
         <div className="fixed inset-0 z-[90]">
           <div className="absolute inset-0 bg-black/60" onClick={() => setViewer(null)} />
@@ -223,6 +224,7 @@ export default function PostComposer() {
           </div>
         </div>
       )}
+      
       {editorOpen && (
         <div className="fixed inset-0 z-[95]">
           <div className="absolute inset-0 bg-black/60" onClick={() => setEditorOpen(false)} />

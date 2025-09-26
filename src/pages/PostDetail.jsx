@@ -25,14 +25,14 @@ export default function PostDetail() {
   const [liked, setLiked] = React.useState(false);
   const [likeCount, setLikeCount] = React.useState(Number(item?.engagement?.likes) || Number(item?.likes) || 0);
 
-  const handleLike = (e) => {
+  const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
     setLiked((prev) => {
       const next = !prev;
       setLikeCount((c) => c + (next ? 1 : -1));
       return next;
     });
-  };
+  }, []);
 
   const goPrev = () => setImgIndex((i) => (i - 1 + mediaList.length) % mediaList.length);
   const goNext = () => setImgIndex((i) => (i + 1) % mediaList.length);
@@ -69,7 +69,7 @@ export default function PostDetail() {
     <div className="fixed inset-0 bg-black/80 z-[90]">
       <div className="absolute inset-0 grid grid-cols-1 lg:grid-cols-[minmax(260px,1fr)_minmax(360px,560px)]">
         {/* Left: Image viewer */}
-        <div className="relative flex items-center justify-center bg-black">
+        <div className="relative flex items-center justify-center bg-black min-h-[50vh] lg:min-h-[85vh]">
           <button
             onClick={() => navigate(-1)}
             className="absolute top-4 left-4 z-10 text-white/80 hover:text-white"
@@ -97,7 +97,26 @@ export default function PostDetail() {
               </button>
             </>
           )}
-          <img src={mediaList[imgIndex]?.url} alt={item.title} className="max-h-[85vh] w-auto object-contain" />
+          {mediaList.length > 0 ? (
+            <img 
+              src={mediaList[imgIndex]?.url} 
+              alt={item.title} 
+              className="max-h-[85vh] w-auto object-contain"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          {/* Broken image fallback - always visible when no media or image fails */}
+          <div className={`${mediaList.length === 0 ? 'flex' : 'hidden'} flex-col items-center justify-center text-white/60 text-center p-8`}>
+            <div className="w-16 h-16 mb-4 rounded-lg bg-white/10 flex items-center justify-center">
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-sm">Görsel yüklenemedi</p>
+          </div>
         </div>
 
         {/* Right: Content panel */}
@@ -152,7 +171,7 @@ export default function PostDetail() {
 
           {/* Comments (default open) */}
           {showComments && (
-            <div className="p-4">
+            <div className="p-4 relative min-h-0 transform-gpu">
               {/* New comment input */}
               <div className="flex items-start gap-2">
                 <img src={item.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg'} alt="Your avatar" className="w-8 h-8 rounded-full object-cover border" />

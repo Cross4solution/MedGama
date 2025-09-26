@@ -63,6 +63,7 @@ export default function CoreBoxes({ items = CORE_ITEMS }) {
                       WebkitLineClamp: 3,
                       WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
+                      textOverflow: 'ellipsis',
                     }}
                   >
                     {f.desc}

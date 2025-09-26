@@ -1,6 +1,5 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Header } from '../components/layout';
 import Modal from '../components/common/Modal';
 import TimelineCard from 'components/timeline/TimelineCard';
 import { Check, MapPin, Stethoscope, Users, Mail } from 'lucide-react';
@@ -61,7 +60,6 @@ export default function DoctorProfile() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Cover + Header */}
         <div className="rounded-xl border shadow-sm overflow-hidden bg-white">

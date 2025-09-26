@@ -12,7 +12,7 @@ import { translateSpecialty as translateSpecialtyHelper } from '../utils/i18n';
 // - rounded: 'md' | 'full' (default: 'md')
 
 const variantClasses = {
-  teal: 'bg-teal-50 text-teal-700 border-teal-200',
+  teal: 'bg-[#1C6A83] text-white border-[#1C6A83]',
   blue: 'bg-blue-50 text-blue-700 border-blue-200',
   purple: 'bg-purple-50 text-purple-700 border-purple-200',
   amber: 'bg-amber-50 text-amber-700 border-amber-200',

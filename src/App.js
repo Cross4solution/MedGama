@@ -18,7 +18,7 @@ import ForClinicsPage from './pages/ForClinicsPage';
 import VascoAIPage from './pages/VascoAIPage';
 import ContactPage from './pages/ContactPage';
 import CookieBanner from './components/CookieBanner';
-import { Footer } from './components/layout';
+import { Footer, Header } from './components/layout';
 import { AuthProvider } from './context/AuthContext';
 import DoctorLogin from './pages/DoctorLogin';
 import ClinicLogin from './pages/ClinicLogin';
@@ -117,15 +117,35 @@ function AppContent() {
   const hideCookieOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];
   const showCookieBanner = !hideCookieOn.includes(location.pathname);
   
+  // Header: auth sayfalarında gösterme
+  const hideHeaderOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];
+  const showHeader = !hideHeaderOn.includes(location.pathname);
+  
+  // Sayfa türüne göre padding ayarı
+  const pagesWithOwnContainer = [
+    '/profile', '/notifications', '/doctors-departments', 
+    '/patient-home', '/telehealth', '/telehealth-appointment',
+    '/clinic', '/explore', '/post', '/clinics'
+  ];
+  const hasOwnContainer = pagesWithOwnContainer.some(page => 
+    location.pathname.startsWith(page)
+  );
+  
   // Footer sadece ana site sayfalarında görünsün
   const footerOnlyOn = ['/', '/home', '/home-v2'];
   const showFooter = footerOnlyOn.includes(location.pathname);
   
   return (
     <div className={hasSidebar ? "lg:pl-52" : ""}>
+      {/* Global Header - auth sayfalarında gizle */}
+      {showHeader && <Header />}
+      
       {/* Show sidebar only for non-patient roles */}
       {hasSidebar && <SidebarPatient />}
-      <Routes>
+      
+      {/* Main content with proper spacing for header */}
+      <div className={showHeader ? (hasOwnContainer ? "pt-20" : "pt-16") : ""}>
+        <Routes>
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />
         <Route path="/home-v2" element={<HomeV2 />} />
@@ -157,7 +177,9 @@ function AppContent() {
         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
         <Route path="/patient/:id" element={<PatientProfilePage />} />
         <Route path="/post/:id" element={<PostDetail />} />
-      </Routes>
+        </Routes>
+      </div>
+      
       {showFooter && <Footer />}
       {showCookieBanner && <CookieBanner />}
     </div>

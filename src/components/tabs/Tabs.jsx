@@ -2,8 +2,8 @@ import React from 'react';
 
 export default function Tabs({ tabs = [], active, onChange }) {
   return (
-    <div>
-      <nav className="flex overflow-x-auto gap-2">
+    <div className="p-4 pb-6">
+      <nav className="flex overflow-x-auto gap-2 scrollbar-hide">
         {tabs.map((tab) => (
           <button
             key={tab.id}

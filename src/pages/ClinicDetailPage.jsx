@@ -17,7 +17,6 @@ import {
   Image as ImageIcon,
   MapPin
 } from 'lucide-react';
-import { Header } from '../components/layout';
 import Badge from '../components/Badge';
 import ClinicHero from 'components/clinic/ClinicHero';
 import Tabs from 'components/tabs/Tabs';
@@ -117,8 +116,6 @@ const ClinicDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <Header />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         {/* Edit toolbar: only for clinic role */}
         {isClinic && (
@@ -224,7 +221,7 @@ const ClinicDetailPage = () => {
             {/* Tabs */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <Tabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
-              <div className="p-6">
+              <div className="px-6 pb-6">
                 {activeTab === 'genel-bakis' && (
                   <div className="space-y-6">
                     <div>
@@ -420,7 +417,7 @@ const ClinicDetailPage = () => {
                 </div>
               </div>
               <button className="w-full bg-purple-600 text-white py-1.5 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2">
-                <Calendar className="w-5 h-5" />
+                <img src="/images/icon/archive-up-minimlistic-svgrepo-com.svg" alt="Archive" className="w-5 h-5" />
                 <span>Create Package</span>
               </button>
             </div>

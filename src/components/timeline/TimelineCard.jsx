@@ -103,7 +103,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
   const headerPad = compact ? 'px-3 pt-2.5' : 'px-3 pt-3';
   const headerGap = compact ? 'gap-2' : 'gap-3';
 
-  const handleLike = (e) => {
+  const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
     if (disabledActions) return;
     setLiked((prev) => {
@@ -111,7 +111,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
       setLikeCount((c) => c + (next ? 1 : -1));
       return next;
     });
-  };
+  }, [disabledActions]);
 
   const handleShareExternal = async (e) => {
     e?.stopPropagation?.();
@@ -313,7 +313,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
 
           {/* Comments Preview */}
           {showCommentsPreview && (
-            <div className="px-3 pb-3 mt-2 border-t pt-3 bg-white/80">
+            <div className="px-3 pb-3 mt-2 border-t pt-3 bg-white/80 relative min-h-0 transform-gpu">
               {/* New comment input */}
               <div className="flex items-start gap-2 mt-1">
                 <img src={actorAvatar} alt="Your avatar" className="w-8 h-8 rounded-full object-cover border" />
@@ -507,7 +507,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                   className="px-3 py-1.5 rounded-md border text-sm text-gray-700 hover:bg-gray-50"
                   onClick={() => setShowReportModal(false)}
                 >
-                  İptal
+                 Cancel
                 </button>
                 <button
                   type="button"

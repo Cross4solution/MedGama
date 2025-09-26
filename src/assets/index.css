@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Scrollbar gizleme sınıfı */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
 html {
   /* Not: smooth burada global wheel hissini olduğundan yavaş algılatabilir */
   /* Uygulama JS tarafında kaydırmayı yönettiği için burada auto kalsın */

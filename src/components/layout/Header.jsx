@@ -44,7 +44,7 @@ const Header = () => {
   return (
     <>
     <header className={`fixed top-0 left-0 right-0 z-50 border-b bg-white`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
           {/* Logo */}
           <Link to="/home-v2" onClick={closeMenu} className="flex items-center space-x-3 cursor-pointer select-none ml-9">
@@ -242,11 +242,11 @@ const Header = () => {
       <div className="fixed inset-0 z-[60] flex items-center justify-center">
         <div className="absolute inset-0 bg-black/40" onClick={()=>setConfirmLogoutOpen(false)} />
         <div role="dialog" aria-modal="true" className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-sm w-[90%] p-5">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">Çıkış yapılsın mı?</h3>
-          <p className="text-sm text-gray-600 mb-4">Hesabınızdan çıkış yapmak üzeresiniz. Emin misiniz?</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">Log out?</h3>
+          <p className="text-sm text-gray-600 mb-4">You are about to log out of your account. Are you sure?</p>
           <div className="flex justify-end gap-2">
-            <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">İptal</button>
-            <button onClick={()=>{ setConfirmLogoutOpen(false); logout(); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">Evet, çıkış yap</button>
+            <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
+            <button onClick={()=>{ setConfirmLogoutOpen(false); logout(); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">Yes, log out</button>
           </div>
         </div>
       </div>
@@ -365,8 +365,6 @@ const Header = () => {
         </div>
       </>
     )}
-    {/* Spacer to preserve layout height for fixed header (approx 5rem) */}
-    <div className="h-20"></div>
     </>
   );
 };

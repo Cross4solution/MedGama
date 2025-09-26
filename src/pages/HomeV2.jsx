@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 // Star icon no longer needed here; used inside the reusable component
-import { Header } from '../components/layout';
 import TimelinePreview from '../components/TimelinePreview';
 import { SearchSections } from '../components/search';
 import CoreBoxes from '../components/CoreBoxes';
@@ -62,9 +61,6 @@ export default function HomeV2() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Global Header */}
-      <Header />
-
       {false ? (
         <></>
       ) : (

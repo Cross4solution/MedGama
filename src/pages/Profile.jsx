@@ -5,7 +5,6 @@ import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
 import { User, Shield, Bell, Lock, Globe, Link as LinkIcon, ChevronRight, Eye, EyeOff } from 'lucide-react';
-import { Header } from '../components/layout';
 import PatientNotify from '../components/notifications/PatientNotify';
 
 export default function Profile() {
@@ -117,8 +116,7 @@ export default function Profile() {
   );
 
   return (
-    <>
-      <Header />
+    <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">Settings</h1>
@@ -210,7 +208,7 @@ export default function Profile() {
               </div>
 
               <div className="flex justify-end">
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save changes</button>
+                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save</button>
               </div>
             </form>
           )}
@@ -280,7 +278,7 @@ export default function Profile() {
                 </div>
               </div>
               <div className="flex justify-end">
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save security</button>
+                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save</button>
               </div>
             </form>
           )}
@@ -321,6 +319,6 @@ export default function Profile() {
         </section>
       </div>
     </div>
-    </>
+    </div>
   );
 }

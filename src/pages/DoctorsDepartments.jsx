@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Header } from '../components/layout';
-import { Plus, Search, Star, MessageSquare, MapPin, BadgeDollarSign, User, Building2, Filter, Pencil, Trash2, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, Star, MessageSquare, MapPin, BadgeDollarSign, User, Building2, Pencil, Trash2, X } from 'lucide-react';
 
 // Mock data (can be replaced with API)
 const INITIAL_DEPARTMENTS = [
@@ -33,8 +32,6 @@ const INITIAL_DEPARTMENTS = [
 
 export default function DoctorsDepartments() {
   const [departments, setDepartments] = useState(INITIAL_DEPARTMENTS);
-  const [q, setQ] = useState('');
-  const [sort, setSort] = useState('rating'); // rating | reviews | distance | priceAsc | priceDesc
 
   // Modals state
   const [deptModalOpen, setDeptModalOpen] = useState(false);
@@ -45,37 +42,6 @@ export default function DoctorsDepartments() {
   const [doctorDeptId, setDoctorDeptId] = useState(null);
   const [confirm, setConfirm] = useState({ open: false, onYes: null, title: '', desc: '' });
 
-  // Filter: by department name, doctor name or specialty
-  const filtered = useMemo(() => {
-    const query = q.trim().toLowerCase();
-    if (!query) return departments;
-    return departments
-      .map((d) => ({
-        ...d,
-        doctors: d.doctors.filter((doc) =>
-          d.name.toLowerCase().includes(query) ||
-          doc.name.toLowerCase().includes(query) ||
-          doc.specialty.toLowerCase().includes(query)
-        ),
-      }))
-      .filter((d) => d.name.toLowerCase().includes(query) || d.doctors.length > 0);
-  }, [q, departments]);
-
-  // Sorting
-  const sorted = useMemo(() => {
-    const clone = filtered.map((d) => ({ ...d, doctors: [...d.doctors] }));
-    const sortFn = {
-      rating: (a, b) => (b.rating - a.rating),
-      reviews: (a, b) => (b.reviewCount - a.reviewCount),
-      distance: (a, b) => (a.distanceKm - b.distanceKm),
-      priceAsc: (a, b) => (a.price - b.price),
-      priceDesc: (a, b) => (b.price - a.price),
-    };
-    return clone.map((d) => ({
-      ...d,
-      doctors: d.doctors.sort(sortFn[sort] || sortFn.rating)
-    }));
-  }, [filtered, sort]);
 
   const openCreateDept = () => { setDeptMode('create'); setDeptEditing({ name: '', info: '' }); setDeptModalOpen(true); };
   const openEditDept = (d) => { setDeptMode('edit'); setDeptEditing({ id: d.id, name: d.name, info: d.info||'' }); setDeptModalOpen(true); };
@@ -129,35 +95,17 @@ export default function DoctorsDepartments() {
   };
 
   return (
-    <div>
-      <Header />
+    <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2"><Building2 className="w-5 h-5 text-teal-700"/> Doctors & Departments</h1>
           <button onClick={openCreateDept} className="inline-flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-xl hover:bg-teal-700"><Plus className="w-4 h-4"/> New Department</button>
         </div>
 
-        {/* Search & Filters */}
-        <div className="rounded-2xl border bg-white shadow-sm p-3 md:p-4 mb-4 flex flex-col md:flex-row gap-3 md:items-center">
-          <div className="relative flex-1 min-w-[240px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"/>
-            <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="Search department, doctor or specialty" className="w-full h-11 pl-9 pr-3 border rounded-xl text-sm"/>
-          </div>
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-500"/>
-            <select value={sort} onChange={(e)=>setSort(e.target.value)} className="h-11 border rounded-xl text-sm px-3">
-              <option value="rating">Top rated</option>
-              <option value="reviews">Most reviewed</option>
-              <option value="distance">Nearest</option>
-              <option value="priceAsc">Price (asc)</option>
-              <option value="priceDesc">Price (desc)</option>
-            </select>
-          </div>
-        </div>
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sorted.map((dep) => (
+          {departments.map((dep) => (
             <div key={dep.id} className="rounded-2xl border bg-white shadow-sm p-4">
               <div className="flex items-center justify-between">
                 <div>

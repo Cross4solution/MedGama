@@ -1,5 +1,5 @@
 import React from 'react';
-import { Video, MessageCircle } from 'lucide-react';
+import { Video } from 'lucide-react';
 
 export default function ContactActions({ onTelehealth, onBook, onMessage }) {
   return (
@@ -11,11 +11,11 @@ export default function ContactActions({ onTelehealth, onBook, onMessage }) {
           <span>Telehealth Appointment</span>
         </button>
         <button onClick={onBook} className="w-full bg-green-500 text-white py-2 px-4 rounded-xl hover:bg-green-600 transition-all duration-200 flex items-center justify-start gap-2 text-left shadow-sm hover:shadow-md">
-          <MessageCircle className="w-5 h-5" />
+          <img src="/images/icon/calender-svgrepo-com.svg" alt="Calendar" className="w-5 h-5" />
           <span>Book Appointment</span>
         </button>
         <button onClick={onMessage} className="w-full bg-gray-100 text-gray-700 py-1.5 px-4 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-start gap-2 text-left">
-          <MessageCircle className="w-5 h-5" />
+          <img src="/images/icon/chat-round-line-svgrepo-com.svg" alt="Chat" className="w-5 h-5" />
           <span>Send Message</span>
         </button>
       </div>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Search, Plus, Video, Clock, Calendar, CheckCircle } from 'lucide-react';
-import { Header } from '../components/layout';
 
 const TelehealthPage = () => {
   const activeSessions = [
@@ -33,7 +32,6 @@ const TelehealthPage = () => {
 
       {/* Main Content */}
       <div className="flex-1">
-        <Header />
 
         <div className="px-8 py-6">
           <div className="mb-4">

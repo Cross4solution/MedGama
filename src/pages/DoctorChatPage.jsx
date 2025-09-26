@@ -1,5 +1,4 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import PatientLayout from '../components/PatientLayout';
 import ThreadsSidebar from 'components/chat/ThreadsSidebar';
 import ChatHeader from 'components/chat/ChatHeader';
 import ChatMessageList from 'components/chat/ChatMessageList';
@@ -9,14 +8,55 @@ const DoctorChatPage = () => {
   const [message, setMessage] = useState('');
   const [channelFilter, setChannelFilter] = useState('Tümü');
   const [mobileChatOpen, setMobileChatOpen] = useState(false); // mobile: list -> chat
-  // Thread list (mock)
-  const threads = useMemo(() => ([
-    { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Cuma günü benim için daha uygun olur...', when: '15 dk', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA ≤5 dk', 'Acil'] },
-    { id: 'ali', name: 'Ali Şen', channel: 'Facebook', online: false, last: 'Rica ederim, sağlıklı günler...', when: '2 saat', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15 dk', 'Ön Değerlendirme'] },
-    { id: 'selin', name: 'Selin Acar', channel: 'Web Form', online: true, last: 'Evet, görüntüledim. Yarın görüşebiliriz.', when: '1 gün', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA ≤15 dk', 'Ön Değerlendirme'] },
-    { id: 'ayse', name: 'Ayşe Demir', channel: 'Chat', online: false, last: 'Elbette, size uygun saat nedir?', when: '2 gün', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA ≤5 dk', 'Randevu'] },
-    { id: 'mehmet', name: 'Mehmet Özkan', channel: 'WhatsApp', online: false, last: 'Size yardımcı olmak için arayabilirim.', when: '3 gün', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15 dk', 'Bilgi'] },
-  ]), []);
+  // Thread list (mock) - daha fazla thread pagination test için
+  const threads = useMemo(() => {
+    const baseThreads = [
+      { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Cuma günü benim için daha uygun olur...', when: '15 dk', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA ≤5 dk', 'Acil'] },
+      { id: 'ali', name: 'Ali Şen', channel: 'Facebook', online: false, last: 'Rica ederim, sağlıklı günler...', when: '2 saat', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15 dk', 'Ön Değerlendirme'] },
+      { id: 'selin', name: 'Selin Acar', channel: 'Web Form', online: true, last: 'Evet, görüntüledim. Yarın görüşebiliriz.', when: '1 gün', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA ≤15 dk', 'Ön Değerlendirme'] },
+      { id: 'ayse', name: 'Ayşe Demir', channel: 'Chat', online: false, last: 'Elbette, size uygun saat nedir?', when: '2 gün', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA ≤5 dk', 'Randevu'] },
+      { id: 'mehmet', name: 'Mehmet Özkan', channel: 'WhatsApp', online: false, last: 'Size yardımcı olmak için arayabilirim.', when: '3 gün', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15 dk', 'Bilgi'] },
+    ];
+
+    // Daha fazla thread ekle (pagination test için)
+    const additionalThreads = [];
+    const names = ['Ahmet Yılmaz', 'Fatma Kaya', 'Mustafa Demir', 'Elif Özkan', 'Can Şahin', 'Zeynep Arslan', 'Burak Çelik', 'Seda Yıldız', 'Emre Korkmaz', 'Gülay Aydın', 'Hakan Yılmaz', 'Pınar Öztürk', 'Serkan Doğan', 'Merve Kılıç', 'Tolga Ateş', 'Deniz Yılmaz', 'Cem Özdemir', 'Sibel Kaya', 'Oğuz Demir', 'Nur Özkan'];
+    const channels = ['WhatsApp', 'Facebook', 'Web Form', 'Chat', 'Instagram'];
+    const lastMessages = [
+      'Merhaba, nasılsınız?',
+      'Randevu almak istiyorum',
+      'Sonuçlarım hazır mı?',
+      'Teşekkür ederim',
+      'Yarın uygun musunuz?',
+      'Acil durum var',
+      'Bilgi almak istiyorum',
+      'Kontrol randevusu',
+      'Reçete yenileme',
+      'Soru sormak istiyorum'
+    ];
+    const tags = [
+      ['SLA ≤5 dk', 'Acil'],
+      ['SLA >15 dk', 'Ön Değerlendirme'],
+      ['SLA ≤15 dk', 'Randevu'],
+      ['SLA ≤5 dk', 'Bilgi'],
+      ['SLA >15 dk', 'Kontrol']
+    ];
+
+    for (let i = 0; i < 20; i++) {
+      additionalThreads.push({
+        id: `thread_${i}`,
+        name: names[i],
+        channel: channels[i % channels.length],
+        online: Math.random() > 0.5,
+        last: lastMessages[i % lastMessages.length],
+        when: `${i + 1} gün`,
+        avatar: i % 2 === 0 ? '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg' : '/images/portrait-candid-male-doctor_720.jpg',
+        tags: tags[i % tags.length]
+      });
+    }
+
+    return [...baseThreads, ...additionalThreads];
+  }, []);
 
   // Per-thread sample messages
   const getInitialMessages = (id) => {
@@ -64,34 +104,35 @@ const DoctorChatPage = () => {
   };
 
   return (
-    <PatientLayout>
-
-      {/* Doctor Info Header */}
-      <div className="bg-white border-b">
-        <div className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-1.5`}>
-          <div className="flex items-center">
-            <div className="w-12 h-12 rounded-full mr-3 overflow-hidden bg-gray-100">
-              <img 
-                src="/images/portrait-candid-male-doctor_720.jpg" 
-                alt="Dr. Mehmet Özkan" 
-                className="w-full h-full object-cover"
-                style={{ objectPosition: 'center 20%' }}
-              />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900 leading-tight">Dr. Mehmet Özkan</h1>
-              <div className="flex items-center text-[13px] text-gray-600">
-                <span>Cardiologist</span>
-                <span className="mx-2">•</span>
-                <span>Anadolu Health Center</span>
-                <span className="ml-2 bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full text-[11px]">Online</span>
+    <div className="h-screen flex flex-col overflow-hidden bg-gray-50">
+      <div className="flex-1 overflow-hidden">
+        {/* Doctor Info Header */}
+        <div className="bg-white border-b flex-shrink-0">
+          <div className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-1`}>
+            <div className="flex items-center">
+              <div className="w-12 h-12 rounded-full mr-3 overflow-hidden bg-gray-100">
+                <img 
+                  src="/images/portrait-candid-male-doctor_720.jpg" 
+                  alt="Dr. Mehmet Özkan" 
+                  className="w-full h-full object-cover"
+                  style={{ objectPosition: 'center 20%' }}
+                />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-gray-900 leading-tight">Dr. Mehmet Özkan</h1>
+                <div className="flex items-center text-[13px] text-gray-600">
+                  <span>Cardiologist</span>
+                  <span className="mx-2">•</span>
+                  <span>Anadolu Health Center</span>
+                  <span className="ml-2 bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full text-[11px]">Online</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-3`}>
+        <div className="flex-1 overflow-hidden">
+          <div className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-2 h-full`}>
         {/* Mobile: Threads list or Chat view */}
         <div className="lg:hidden">
           {!mobileChatOpen ? (
@@ -149,40 +190,42 @@ const DoctorChatPage = () => {
             </div>
           )}
         </div>
-        {/* Desktop layout */}
-        <div className="hidden lg:grid grid-cols-1 lg:grid-cols-6 gap-3">
-          {/* Threads Sidebar */}
-          <ThreadsSidebar
-            threads={filteredThreads}
-            channelFilter={channelFilter}
-            onChannelChange={setChannelFilter}
-            activeThreadId={activeThreadId}
-            onSelectThread={handleSelectThread}
-          />
+            {/* Desktop layout */}
+            <div className="hidden lg:grid grid-cols-1 lg:grid-cols-6 gap-2 h-full">
+              {/* Threads Sidebar */}
+            <ThreadsSidebar
+              threads={filteredThreads}
+              channelFilter={channelFilter}
+              onChannelChange={setChannelFilter}
+              activeThreadId={activeThreadId}
+              onSelectThread={handleSelectThread}
+              threadsPerPage={5}
+            />
 
-          {/* Chat Area (expanded) */}
-          <div className="lg:col-span-4">
-            <div className="bg-white rounded-lg shadow-sm border h-[calc(100vh-260px)] flex flex-col">
-              {/* Chat Header */}
-              <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} />
+              {/* Chat Area (expanded) */}
+              <div className="lg:col-span-4">
+                <div className="bg-white rounded-lg shadow-sm border h-full flex flex-col">
+                  {/* Chat Header */}
+                  <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} />
 
-              {/* Messages */}
-              <ChatMessageList
-                messages={messages}
-                leftAvatar={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
-                rightAvatar={'/images/portrait-candid-male-doctor_720.jpg'}
-              />
+                  {/* Messages */}
+                  <ChatMessageList
+                    messages={messages}
+                    leftAvatar={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                    rightAvatar={'/images/portrait-candid-male-doctor_720.jpg'}
+                  />
 
-              {/* Message Input */}
-              <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} />
+                  {/* Message Input */}
+                  <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} />
+                </div>
+              </div>
+
+              {/* Right sidebar removed as requested */}
             </div>
           </div>
-
-          {/* Right sidebar removed as requested */}
         </div>
       </div>
-      
-    </PatientLayout>
+    </div>
   );
 }
 ;

@@ -3,7 +3,6 @@ import { Link, Navigate } from 'react-router-dom';
 // Carousel removed for custom two-row scroller
 import { useAuth } from '../context/AuthContext';
 import { TimelineFeed } from '../components/timeline';
-import { Header } from '../components/layout';
 import PostComposer from '../components/PostComposer';
 
 export default function PatientHome() {
@@ -69,7 +68,6 @@ export default function PatientHome() {
   return (
     <div className="min-h-screen bg-white">
       {/* Global Header */}
-      <Header />
       <div className="lg:ml-[var(--sidebar-width)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div>
@@ -83,7 +81,7 @@ export default function PatientHome() {
                   {/* taller height, inner scrollable area */}
                   <div ref={scrollRef} className="h-[80vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#e0f0e1' }}>
                     {/* Composer tam kartların üstünde ve kart genişliğinde */}
-                    <div className="mb-4 max-w-2xl mx-auto">
+                    <div className="mb-4 w-full sm:max-w-2xl mx-auto px-2 sm:px-0">
                       <PostComposer />
                     </div>
                     <TimelineFeed />

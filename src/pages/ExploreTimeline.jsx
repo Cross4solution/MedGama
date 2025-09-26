@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Header } from '../components/layout';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import countryCities from '../data/countryCities';
@@ -227,7 +226,6 @@ export default function ExploreTimeline() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#e0f0e1' }}>
-      <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Başlık + Sekmeler + Sıralama */}
         <TimelineControls

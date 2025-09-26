@@ -30,32 +30,69 @@ export default function TimelineFilterSidebar({
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">Country</h3>
-        <CountryCombobox
-          options={countryOptions}
-          value={countryName}
-          onChange={onCountryChange}
-          placeholder="All countries"
-          getFlagUrl={(name) => {
-            try {
-              const code = getFlagCode(name);
-              return code ? `https://flagcdn.com/24x18/${code}.png` : null;
-            } catch { return null; }
-          }}
-        />
+      {/* Mobile: Country and Specialization side by side */}
+      <div className="block md:hidden">
+        <div className="bg-white rounded-xl shadow-sm border p-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2 text-sm">Country</h3>
+              <CountryCombobox
+                options={countryOptions}
+                value={countryName}
+                onChange={onCountryChange}
+                placeholder="All countries"
+                getFlagUrl={(name) => {
+                  try {
+                    const code = getFlagCode(name);
+                    return code ? `https://flagcdn.com/24x18/${code}.png` : null;
+                  } catch { return null; }
+                }}
+              />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2 text-sm">Specialization</h3>
+              <SelectCombobox
+                options={specialtyOptions}
+                value={specialty}
+                onChange={onSpecialtyChange}
+                placeholder="All"
+                hideChevron
+                triggerClassName={`w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-left`}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">Specialization</h3>
-        <SelectCombobox
-          options={specialtyOptions}
-          value={specialty}
-          onChange={onSpecialtyChange}
-          placeholder="All"
-          hideChevron
-          triggerClassName={`w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-left`}
-        />
+      {/* Desktop: Separate sections */}
+      <div className="hidden md:block space-y-4">
+        <div className="bg-white rounded-xl shadow-sm border p-4">
+          <h3 className="font-semibold text-gray-900 mb-3">Country</h3>
+          <CountryCombobox
+            options={countryOptions}
+            value={countryName}
+            onChange={onCountryChange}
+            placeholder="All countries"
+            getFlagUrl={(name) => {
+              try {
+                const code = getFlagCode(name);
+                return code ? `https://flagcdn.com/24x18/${code}.png` : null;
+              } catch { return null; }
+            }}
+          />
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border p-4">
+          <h3 className="font-semibold text-gray-900 mb-3">Specialization</h3>
+          <SelectCombobox
+            options={specialtyOptions}
+            value={specialty}
+            onChange={onSpecialtyChange}
+            placeholder="All"
+            hideChevron
+            triggerClassName={`w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-left`}
+          />
+        </div>
       </div>
     </aside>
   );

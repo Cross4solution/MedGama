@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Header } from '../components/layout';
 import PhoneNumberInput from '../components/forms/PhoneNumberInput';
 import { listCountriesAll } from '../utils/geo';
 import { Calendar } from 'lucide-react';
@@ -75,7 +74,6 @@ export default function TelehealthAppointmentPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Title removed as requested */}
 
