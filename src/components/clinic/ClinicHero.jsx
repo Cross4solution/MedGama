@@ -65,7 +65,7 @@ export default function ClinicHero({
                 </>
               ) : (
                 <>
-                  <img src="/images/icon/plus-svgrepo-com.svg" alt="Plus" className="w-4 h-4 flex-shrink-0" />
+                  <img src="/images/icon/plus-svgrepo-com.svg" alt="Plus" className="w-4 h-4 flex-shrink-0 brightness-0 invert" />
                   <span className="text-sm whitespace-nowrap">Follow</span>
                 </>
               )}
