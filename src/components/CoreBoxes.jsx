@@ -45,27 +45,18 @@ export default function CoreBoxes({ items = CORE_ITEMS }) {
   return (
     <section id="features" className="pt-4 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
           {items.slice(0, 6).map((f, i) => {
             const Icon = ICONS[i % ICONS.length];
             const theme = PALETTE[i % PALETTE.length];
             return (
-              <div key={i} className="group relative pt-[90%] sm:pt-0 rounded-2xl border bg-white shadow-sm overflow-hidden">
-                <div className="absolute inset-0 p-2.5 sm:static sm:p-4 flex flex-col">
-                  <div className={`w-9 h-9 rounded-lg ${theme.bg} mb-2.5 flex items-center justify-center`}>
+              <div key={i} className="group rounded-2xl border bg-white shadow-sm overflow-hidden">
+                <div className="p-4 flex flex-col h-full">
+                  <div className={`w-9 h-9 rounded-lg ${theme.bg} mb-3 flex items-center justify-center flex-shrink-0`}>
                     <Icon className={`w-4 h-4 ${theme.fg}`} aria-hidden="true" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base leading-5 sm:leading-6">{f.title}</h3>
-                  <p
-                    className="text-[13px] sm:text-[15px] text-gray-600 mt-1 leading-5 sm:leading-6"
-                    style={{
-                      display: '-webkit-box',
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
+                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base leading-5 sm:leading-6 mb-2">{f.title}</h3>
+                  <p className="text-[13px] sm:text-[15px] text-gray-600 leading-5 sm:leading-6 flex-grow">
                     {f.desc}
                   </p>
                 </div>

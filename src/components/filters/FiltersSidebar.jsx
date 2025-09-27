@@ -7,7 +7,21 @@ export default function FiltersSidebar({ groups = [], onApply }) {
       <h3 className="text-xl font-semibold text-gray-900 mb-4">Filters</h3>
 
       <div className="space-y-4">
-        {groups.map((g) => (
+        {/* Rating ve Features yan yana */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {groups.slice(0, 2).map((g) => (
+            <FilterGroup
+              key={g.title}
+              title={g.title}
+              options={g.options}
+              selected={g.selected}
+              onToggle={(opt) => g.onToggle?.(opt)}
+            />
+          ))}
+        </div>
+        
+        {/* Insurance tek başına */}
+        {groups.slice(2).map((g) => (
           <FilterGroup
             key={g.title}
             title={g.title}

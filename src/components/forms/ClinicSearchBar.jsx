@@ -73,7 +73,7 @@ export default function ClinicSearchBar({
         </div>
         {/* Submit */}
         <div className="flex items-end justify-end md:justify-start">
-          <button onClick={onSubmit} className="bg-blue-600 text-white py-2 px-4 text-sm rounded-xl hover:bg-blue-700 transition-all duration-200 inline-flex items-center gap-2 shadow-sm hover:shadow-md min-w-[120px]">
+          <button onClick={onSubmit} className="bg-blue-600 text-white py-2 px-3 text-sm rounded-xl hover:bg-blue-700 transition-all duration-200 inline-flex items-center justify-center gap-2 shadow-sm hover:shadow-md min-w-[100px]">
             <Search className="w-4 h-4" />
             <span>Search</span>
           </button>

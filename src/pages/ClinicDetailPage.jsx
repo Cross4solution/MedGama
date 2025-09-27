@@ -34,7 +34,6 @@ const ClinicDetailPage = () => {
   const [activeTab, setActiveTab] = useState('genel-bakis');
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [editMode, setEditMode] = useState(false);
 
   // Editable fields (demo state). In a real app these would be fetched/saved via API.
   const [clinicName, setClinicName] = useState('Anadolu Health Center');
@@ -117,28 +116,6 @@ const ClinicDetailPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        {/* Edit toolbar: only for clinic role */}
-        {isClinic && (
-          <div className="mb-4 p-3 rounded-xl border bg-white shadow-sm flex items-center justify-between">
-            <div className="text-sm text-gray-700">You are logged in as <span className="font-semibold">Clinic</span>. Enable edit mode to update your page.</div>
-            <div className="flex items-center gap-2">
-              <button
-                className={`px-3 py-1.5 text-sm rounded-lg border ${editMode ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                onClick={() => setEditMode((v) => !v)}
-              >
-                {editMode ? 'Exit Edit Mode' : 'Enter Edit Mode'}
-              </button>
-              {editMode && (
-                <button
-                  className="px-3 py-1.5 text-sm rounded-lg border bg-white text-gray-700 hover:bg-gray-50"
-                  onClick={() => { /* placeholder: could open a modal for advanced settings */ }}
-                >
-                  Page Settings
-                </button>
-              )}
-            </div>
-          </div>
-        )}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1">
@@ -165,58 +142,6 @@ const ClinicDetailPage = () => {
               onFollow={() => {}}
             />
 
-            {/* Hero inline edit (only when clinic + edit mode) */}
-            {isClinic && editMode && (
-              <div className="mt-3 mb-4 p-4 border rounded-xl bg-white shadow-sm">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Hero Image URL</label>
-                    <input
-                      className="w-full border rounded-lg px-3 py-2 text-sm"
-                      value={heroImage}
-                      onChange={(e) => setHeroImage(e.target.value)}
-                    />
-                    <div className="mt-2 flex items-center gap-3">
-                      <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm text-gray-700 cursor-pointer hover:bg-gray-50">
-                        Upload Image
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files && e.target.files[0];
-                            if (file) {
-                              const url = URL.createObjectURL(file);
-                              setHeroImage(url);
-                            }
-                            e.target.value = '';
-                          }}
-                        />
-                      </label>
-                      <div className="w-20 h-12 rounded-lg overflow-hidden bg-gray-100">
-                        <img src={heroImage} alt="Hero preview" className="w-full h-full object-cover" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Clinic Name</label>
-                    <input
-                      className="w-full border rounded-lg px-3 py-2 text-sm"
-                      value={clinicName}
-                      onChange={(e) => setClinicName(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Location</label>
-                    <input
-                      className="w-full border rounded-lg px-3 py-2 text-sm"
-                      value={clinicLocation}
-                      onChange={(e) => setClinicLocation(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Tabs */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -226,52 +151,12 @@ const ClinicDetailPage = () => {
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-4">{aboutTitle}</h3>
-                      {!editMode && (
-                        <>
-                          <p className="text-gray-600 leading-relaxed mb-4" style={{ whiteSpace: 'pre-line' }}>
-                            {aboutP1}
-                          </p>
-                          <p className="text-gray-600 leading-relaxed" style={{ whiteSpace: 'pre-line' }}>
-                            {aboutP2}
-                          </p>
-                        </>
-                      )}
-                      {editMode && (
-                        <div className="space-y-3">
-                          <input
-                            type="text"
-                            className="w-full border rounded-lg px-3 py-2 text-sm"
-                            value={aboutTitle}
-                            onChange={(e) => setAboutTitle(e.target.value)}
-                          />
-                          <textarea
-                            rows={4}
-                            className="w-full border rounded-lg px-3 py-2 text-sm"
-                            value={aboutP1}
-                            onChange={(e) => setAboutP1(e.target.value)}
-                          />
-                          <textarea
-                            rows={4}
-                            className="w-full border rounded-lg px-3 py-2 text-sm"
-                            value={aboutP2}
-                            onChange={(e) => setAboutP2(e.target.value)}
-                          />
-                          <div className="flex gap-2">
-                            <button
-                              className="px-3 py-1.5 rounded-lg bg-teal-600 text-white text-sm"
-                              onClick={() => setEditMode(false)}
-                            >
-                              Save
-                            </button>
-                            <button
-                              className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-sm"
-                              onClick={() => setEditMode(false)}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      )}
+                      <p className="text-gray-600 leading-relaxed mb-4" style={{ whiteSpace: 'pre-line' }}>
+                        {aboutP1}
+                      </p>
+                      <p className="text-gray-600 leading-relaxed" style={{ whiteSpace: 'pre-line' }}>
+                        {aboutP2}
+                      </p>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
@@ -310,93 +195,25 @@ const ClinicDetailPage = () => {
                 {activeTab === 'galeri' && (
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-900">Gallery</h3>
-                    {!editMode && (
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {gallery.map((src, idx)=> (
-                          <div key={`g-${idx}`} className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                            <img src={src} alt={`Gallery ${idx+1}`} className="w-full h-full object-cover" />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {editMode && (
-                      <div className="space-y-3">
-                        {/* Add multiple images */}
-                        <div className="flex items-center gap-2">
-                          <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-teal-600 text-white text-sm cursor-pointer">
-                            <Plus className="w-4 h-4" /> Add Images
-                            <input
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              className="hidden"
-                              onChange={(e) => {
-                                const files = Array.from(e.target.files || []);
-                                if (files.length) {
-                                  const urls = files.map((f) => URL.createObjectURL(f));
-                                  setGallery((prev) => [...prev, ...urls]);
-                                }
-                                e.target.value = '';
-                              }}
-                            />
-                          </label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {gallery.map((src, idx)=> (
+                        <div key={`g-${idx}`} className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                          <img src={src} alt={`Gallery ${idx+1}`} className="w-full h-full object-cover" />
                         </div>
-
-                        {/* Existing images: preview + replace + delete */}
-                        {gallery.map((src, idx) => (
-                          <div key={`gi-${idx}`} className="flex items-center gap-3">
-                            <div className="w-20 h-12 rounded-lg overflow-hidden bg-gray-100">
-                              <img src={src} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
-                            </div>
-                            <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm text-gray-700 cursor-pointer hover:bg-gray-50">
-                              <ImageIcon className="w-4 h-4 text-gray-600" /> Replace
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) => {
-                                  const file = e.target.files && e.target.files[0];
-                                  if (file) {
-                                    const url = URL.createObjectURL(file);
-                                    setGallery((prev) => prev.map((it, i) => (i === idx ? url : it)));
-                                  }
-                                  e.target.value = '';
-                                }}
-                              />
-                            </label>
-                            <button
-                              className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100"
-                              onClick={() => setGallery((prev) => prev.filter((_, i) => i !== idx))}
-                              title="Remove"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                      ))}
+                    </div>
                   </div>
                 )}
 
                 {activeTab === 'konum' && (
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-900">Location</h3>
-                    {!editMode && (
-                      <div className="space-y-2">
-                        <div className="flex items-start gap-2 text-gray-700"><MapPin className="w-5 h-5 mt-0.5 text-teal-600" /> <span>{locationAddress}</span></div>
-                        <a href={locationMapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-teal-700 hover:underline">
-                          <LinkIcon className="w-4 h-4" /> View on Map
-                        </a>
-                      </div>
-                    )}
-                    {editMode && (
-                      <div className="space-y-2">
-                        <label className="text-xs text-gray-500">Address</label>
-                        <input className="w-full border rounded-lg px-3 py-2 text-sm" value={locationAddress} onChange={(e)=> setLocationAddress(e.target.value)} />
-                        <label className="text-xs text-gray-500">Map URL</label>
-                        <input className="w-full border rounded-lg px-3 py-2 text-sm" value={locationMapUrl} onChange={(e)=> setLocationMapUrl(e.target.value)} />
-                      </div>
-                    )}
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2 text-gray-700"><MapPin className="w-5 h-5 mt-0.5 text-teal-600" /> <span>{locationAddress}</span></div>
+                      <a href={locationMapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-teal-700 hover:underline">
+                        <LinkIcon className="w-4 h-4" /> View on Map
+                      </a>
+                    </div>
                   </div>
                 )}
               </div>
@@ -417,7 +234,7 @@ const ClinicDetailPage = () => {
                 </div>
               </div>
               <button className="w-full bg-purple-600 text-white py-1.5 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2">
-                <img src="/images/icon/archive-up-minimlistic-svgrepo-com.svg" alt="Archive" className="w-5 h-5" />
+                <img src="/images/icon/archive-up-minimlistic-svgrepo-com.svg" alt="Archive" className="w-5 h-5 brightness-0 invert" />
                 <span>Create Package</span>
               </button>
             </div>

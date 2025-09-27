@@ -72,9 +72,9 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
             <Link to="/explore" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">View all updates items</Link>
           )}
         </div>
-        <div className="bg-white p-0 rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white p-4 rounded-lg border-2 border-gray-300 shadow-lg">
           {/* Scrollable feed area */}
-          <div ref={scrollRef} className="h-[86vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#e0f0e1' }}>
+          <div ref={scrollRef} className="h-[86vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#E6F2F0' }}>
             <div className="space-y-6">
               {data.slice(0, 8).map((item) => (
                 <div

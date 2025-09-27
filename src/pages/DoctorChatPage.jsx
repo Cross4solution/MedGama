@@ -8,6 +8,8 @@ const DoctorChatPage = () => {
   const [message, setMessage] = useState('');
   const [channelFilter, setChannelFilter] = useState('Tümü');
   const [mobileChatOpen, setMobileChatOpen] = useState(false); // mobile: list -> chat
+  const [mobileCurrentPage, setMobileCurrentPage] = useState(1);
+  const threadsPerPage = 8;
   // Thread list (mock) - daha fazla thread pagination test için
   const threads = useMemo(() => {
     const baseThreads = [
@@ -82,6 +84,16 @@ const DoctorChatPage = () => {
     return threads.filter(t => (channelFilter === 'Tümü' ? true : t.channel === channelFilter));
   }, [threads, channelFilter]);
 
+  // Mobile pagination logic
+  const mobileTotalPages = Math.ceil(filteredThreads.length / threadsPerPage);
+  const mobileStartIndex = (mobileCurrentPage - 1) * threadsPerPage;
+  const mobileEndIndex = mobileStartIndex + threadsPerPage;
+  const mobilePaginatedThreads = filteredThreads.slice(mobileStartIndex, mobileEndIndex);
+
+  const handleMobilePageChange = (page) => {
+    setMobileCurrentPage(page);
+  };
+
   const handleSendMessage = () => {
     if (message.trim()) {
       const newMessage = {
@@ -103,9 +115,14 @@ const DoctorChatPage = () => {
     setMobileChatOpen(true);
   };
 
+  const handleChannelChange = (value) => {
+    setChannelFilter(value);
+    setMobileCurrentPage(1); // Reset pagination when filter changes
+  };
+
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-gray-50">
-      <div className="flex-1 overflow-hidden">
+    <div className="h-screen w-full flex flex-col bg-gray-50 overflow-hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Doctor Info Header */}
         <div className="bg-white border-b flex-shrink-0">
           <div className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-1`}>
@@ -132,16 +149,16 @@ const DoctorChatPage = () => {
         </div>
 
         <div className="flex-1 overflow-hidden">
-          <div className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-2 h-full`}>
+          <div className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-2 h-full overflow-hidden`}>
         {/* Mobile: Threads list or Chat view */}
-        <div className="lg:hidden">
+        <div className="lg:hidden h-full overflow-hidden">
           {!mobileChatOpen ? (
             <div>
               <div className="mb-2">
                 <label className="block text-xs text-gray-500 mb-1">Kanal</label>
                 <select
                   value={channelFilter}
-                  onChange={(e)=>setChannelFilter(e.target.value)}
+                  onChange={(e)=>handleChannelChange(e.target.value)}
                   className="w-full px-3 py-2 border rounded-lg text-sm bg-white"
                 >
                   {['Tümü','WhatsApp','Facebook','Web Form','Chat'].map(opt => (
@@ -150,7 +167,7 @@ const DoctorChatPage = () => {
                 </select>
               </div>
               <div className="bg-white border rounded-lg overflow-hidden divide-y">
-                {filteredThreads.map((t)=> (
+                {mobilePaginatedThreads.map((t)=> (
                   <button
                     key={t.id}
                     className="w-full text-left p-3 hover:bg-gray-50"
@@ -177,9 +194,44 @@ const DoctorChatPage = () => {
                   </button>
                 ))}
               </div>
+              
+              {/* Mobile Pagination */}
+              {mobileTotalPages > 1 && (
+                <div className="mt-4 flex justify-center">
+                  <div className="flex items-center space-x-1">
+                    <button
+                      disabled={mobileCurrentPage === 1}
+                      onClick={() => handleMobilePageChange(mobileCurrentPage - 1)}
+                      className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      ‹
+                    </button>
+                    {Array.from({ length: mobileTotalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => handleMobilePageChange(page)}
+                        className={`px-3 py-2 text-sm rounded ${
+                          page === mobileCurrentPage 
+                            ? 'bg-blue-600 text-white' 
+                            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                    <button
+                      disabled={mobileCurrentPage === mobileTotalPages}
+                      onClick={() => handleMobilePageChange(mobileCurrentPage + 1)}
+                      className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      ›
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border h-[calc(100vh-11rem)] flex flex-col">
+            <div className="bg-white rounded-lg shadow-sm border flex-1 flex flex-col overflow-hidden">
               <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} />
               <ChatMessageList
                 messages={messages}
@@ -191,19 +243,21 @@ const DoctorChatPage = () => {
           )}
         </div>
             {/* Desktop layout */}
-            <div className="hidden lg:grid grid-cols-1 lg:grid-cols-6 gap-2 h-full">
+            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-full ml-24">
               {/* Threads Sidebar */}
-            <ThreadsSidebar
-              threads={filteredThreads}
-              channelFilter={channelFilter}
-              onChannelChange={setChannelFilter}
-              activeThreadId={activeThreadId}
-              onSelectThread={handleSelectThread}
-              threadsPerPage={5}
-            />
+              <div className="w-80 flex-shrink-0">
+                <ThreadsSidebar
+                  threads={filteredThreads}
+                  channelFilter={channelFilter}
+                  onChannelChange={setChannelFilter}
+                  activeThreadId={activeThreadId}
+                  onSelectThread={handleSelectThread}
+                  threadsPerPage={5}
+                />
+              </div>
 
               {/* Chat Area (expanded) */}
-              <div className="lg:col-span-4">
+              <div className="flex-1">
                 <div className="bg-white rounded-lg shadow-sm border h-full flex flex-col">
                   {/* Chat Header */}
                   <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} />

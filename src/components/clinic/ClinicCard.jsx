@@ -51,9 +51,9 @@ function getTagVariant(tag) {
 
 export default function ClinicCard({ clinic, isFavorite, onToggleFavorite, onView }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+    <div className="bg-white rounded-xl border-2 border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-300 overflow-hidden">
       <div className="flex flex-col md:flex-row">
-        <div className="md:w-64 h-64 md:h-auto relative">
+        <div className="md:w-56 h-48 md:h-auto relative">
           <div className="w-full h-full bg-gradient-to-br from-blue-100 to-green-100 flex items-center justify-center">
             <div className="text-center">
               <Stethoscope className="w-16 h-16 text-blue-500 mx-auto mb-2" />
@@ -70,11 +70,11 @@ export default function ClinicCard({ clinic, isFavorite, onToggleFavorite, onVie
           </button>
         </div>
 
-        <div className="flex-1 p-6">
-          <div className="flex justify-between items-start mb-3">
+        <div className="flex-1 p-4">
+          <div className="flex justify-between items-start mb-2">
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-1">{clinic.name}</h3>
-              <div className="flex items-center text-gray-600 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">{clinic.name}</h3>
+              <div className="flex items-center text-gray-600 mb-1">
                 <MapPin className="w-4 h-4 mr-1" />
                 <span className="text-sm">{clinic.location}</span>
               </div>
@@ -84,7 +84,7 @@ export default function ClinicCard({ clinic, isFavorite, onToggleFavorite, onVie
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="flex flex-wrap gap-2 mb-2">
             {(clinic.tags || []).map((tag, index) => (
               <Badge
                 key={index}
@@ -96,9 +96,9 @@ export default function ClinicCard({ clinic, isFavorite, onToggleFavorite, onVie
             ))}
           </div>
 
-          <p className="text-gray-600 text-sm mb-4">{clinic.description}</p>
+          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{clinic.description}</p>
 
-          <div className="flex flex-wrap gap-4 mb-4">
+          <div className="flex flex-wrap gap-3 mb-3">
             {(clinic.features || []).map((feature, index) => (
               <FeaturePill key={index} label={feature} />
             ))}

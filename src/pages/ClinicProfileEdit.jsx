@@ -98,7 +98,7 @@ export default function ClinicProfileEdit() {
             { id: 'pricing', label: 'Pricing' },
             { id: 'packages', label: 'Packages' },
           ].map(t => (
-            <button key={t.id} onClick={()=>setTab(t.id)} type="button" className={`px-3 py-1.5 rounded-lg text-sm border ${tab===t.id ? 'bg-[#1C6A83] text-white border-[#1C6A83]' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}>{t.label}</button>
+            <button key={t.id} onClick={()=>setTab(t.id)} type="button" className={`px-3 py-1.5 text-sm border-b-2 transition-colors ${tab===t.id ? 'text-[#1C6A83] border-[#1C6A83]' : 'text-gray-700 border-transparent hover:text-[#1C6A83] hover:border-[#1C6A83]'}`}>{t.label}</button>
           ))}
         </div>
 
@@ -181,10 +181,6 @@ export default function ClinicProfileEdit() {
 
             {/* About */}
             <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">About Title</label>
-                <input value={form.aboutTitle} name="aboutTitle" onChange={onChange} className="w-full h-11 px-3 border rounded-xl text-sm" placeholder="About Us" />
-              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">About Paragraph 1</label>
                 <textarea value={form.aboutP1} name="aboutP1" onChange={onChange} rows={3} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Intro paragraph" />

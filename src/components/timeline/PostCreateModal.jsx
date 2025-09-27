@@ -13,6 +13,17 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
   const videoRef = useRef(null);
   const [viewer, setViewer] = useState(null); // { type: 'photo'|'video', url: string }
 
+  // Kategorilere ayrılmış emoji listesi
+  const emojiCategories = {
+    'Yüz İfadeleri': ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👹', '👺', '👻', '👽', '👾', '🤖'],
+    'El İşaretleri': ['👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎', '👊', '✊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦾', '🦿', '🦵', '🦶', '👂', '🦻', '👃', '🧠', '🦷', '🦴', '👀', '👁️', '👅', '👄'],
+    'Kalp ve Duygular': ['💘', '💝', '💖', '💗', '💓', '💞', '💕', '💟', '❣️', '💔', '❤️', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍', '💯', '💢', '💥', '💫', '💦', '💨', '🕳️', '💣', '💤', '💋', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾', '🙈', '🙉', '🙊'],
+    'Spor ve Oyunlar': ['🏆', '🥇', '🥈', '🥉', '🏅', '🎖️', '🏵️', '🎗️', '🎫', '🎟️', '🎪', '🤹', '🎭', '🩰', '🎨', '🎬', '🎤', '🎧', '🎼', '🎵', '🎶', '🎹', '🥁', '🎷', '🎺', '🎸', '🪕', '🎻', '🎲', '♠️', '♥️', '♦️', '♣️', '🃏', '🀄', '🎴', '🎯', '🎳', '🎮', '🕹️', '🎰', '🧩'],
+    'Kutlama ve Parti': ['🎉', '🎊', '🎈', '🎁', '🎂', '🍰', '🧁', '🍾', '🥂', '🍻', '🥳', '🎪', '🎭', '🎨', '🎬', '🎤', '🎧', '🎼', '🎵', '🎶', '🎹', '🥁', '🎷', '🎺', '🎸', '🪕', '🎻', '🎲', '♠️', '♥️', '♦️', '♣️', '🃏', '🀄', '🎴', '🎯', '🎳', '🎮', '🕹️', '🎰', '🧩']
+  };
+
+  const [selectedCategory, setSelectedCategory] = useState('Yüz İfadeleri');
+
   useEffect(() => {
     function onKey(e) {
       if (e.key === 'Escape') onClose?.();
@@ -142,7 +153,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
               onChange={(e) => setText(e.target.value)}
               rows={5}
               placeholder={`What's on your mind, ${displayName}?`}
-              className="w-full text-[17px] leading-7 placeholder:text-gray-400 text-gray-900 outline-none resize-y min-h-[140px]"
+              className="w-full text-[17px] leading-7 placeholder:text-gray-400 text-gray-900 outline-none resize-none min-h-[140px]"
             />
           </div>
 
@@ -170,11 +181,59 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                   </button>
                 </div>
                 {showEmoji && (
-                  <div className="mt-2 border rounded-lg p-2 w-full">
-                    <div className="grid grid-cols-10 gap-1 text-xl select-none">
-                      {['😀','😂','😍','👍','👏','🎉','🙏','🔥','😎','🤔','😢','😮','❤️','💙','💯','✅','⭐','✨'].map((e,i)=> (
-                        <button key={i} type="button" className="hover:bg-gray-50 rounded" onClick={()=>{ setText(t=> (t ? t + ' ' : '') + e); setShowEmoji(false); }}>{e}</button>
-                      ))}
+                  <div className="mt-3 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl shadow-lg w-full max-h-[300px] overflow-hidden">
+                    {/* Kategori Tabları - İkonlarla */}
+                    <div className="flex border-b border-gray-200 bg-white rounded-t-xl">
+                      {Object.entries(emojiCategories).map(([category, emojis]) => {
+                        const categoryIcons = {
+                          'Yüz İfadeleri': '😀',
+                          'El İşaretleri': '👋',
+                          'Kalp ve Duygular': '❤️',
+                          'Spor ve Oyunlar': '🏆',
+                          'Kutlama ve Parti': '🎉'
+                        };
+                        return (
+                          <button
+                            key={category}
+                            onClick={() => setSelectedCategory(category)}
+                            className={`flex-1 px-2 py-2 text-center transition-all duration-200 ${
+                              selectedCategory === category
+                                ? 'bg-blue-500 text-white border-b-2 border-blue-500'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
+                            }`}
+                            title={category}
+                          >
+                            <div className="text-lg">{categoryIcons[category]}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Emoji Grid */}
+                    <div className="p-3 max-h-[220px] overflow-y-auto">
+                      <div className="grid grid-cols-6 gap-1">
+                        {emojiCategories[selectedCategory]?.map((emoji, i) => (
+                          <button 
+                            key={i} 
+                            type="button" 
+                            className="hover:bg-blue-100 hover:scale-110 rounded-lg p-1 text-center transition-all duration-200 transform hover:shadow-md" 
+                            onClick={() => { 
+                              setText(t => (t ? t + ' ' : '') + emoji); 
+                              setShowEmoji(false); 
+                            }}
+                            title={emoji}
+                          >
+                            <span className="text-lg">{emoji}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Alt Bilgi */}
+                    <div className="px-3 py-1 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                      <p className="text-xs text-gray-500 text-center">
+                        {emojiCategories[selectedCategory]?.length} emoji
+                      </p>
                     </div>
                   </div>
                 )}

@@ -77,9 +77,9 @@ export default function PatientHome() {
             {/* Timeline preview section with taller height */}
             <section id="timeline" className="py-2">
               <div className="max-w-6xl mx-auto px-4 sm:px-6">
-                <div className="bg-white p-0 rounded-none border-0 shadow-none">
+                <div className="bg-white p-4 rounded-lg border-2 border-gray-300 shadow-lg">
                   {/* taller height, inner scrollable area */}
-                  <div ref={scrollRef} className="h-[80vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#e0f0e1' }}>
+                  <div ref={scrollRef} className="h-[80vh] overflow-y-auto pr-2 pt-2" style={{ backgroundColor: '#E6F2F0' }}>
                     {/* Composer tam kartların üstünde ve kart genişliğinde */}
                     <div className="mb-4 w-full sm:max-w-2xl mx-auto px-2 sm:px-0">
                       <PostComposer />

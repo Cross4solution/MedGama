@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, MessageSquare, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell } from 'lucide-react';
+import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
@@ -148,7 +148,7 @@ const Header = () => {
                       onClick={() => navigate('/doctor-chat')}
                       className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-800"
                     >
-                      <MessageSquare className="w-5 h-5" />
+                      <img src="/images/icon/chat-conversation-svgrepo-com.svg" alt="Messages" className="w-5 h-5" />
                     </button>
                   )}
                   <div className="relative" ref={profileRef}>
@@ -207,7 +207,7 @@ const Header = () => {
                 onClick={() => navigate('/doctor-chat')}
                 className="md:hidden p-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-800"
               >
-                <MessageSquare className="w-5 h-5" />
+                <img src="/images/icon/chat-conversation-svgrepo-com.svg" alt="Messages" className="w-5 h-5" />
               </button>
             )}
             {user ? (
@@ -246,7 +246,7 @@ const Header = () => {
           <p className="text-sm text-gray-600 mb-4">You are about to log out of your account. Are you sure?</p>
           <div className="flex justify-end gap-2">
             <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
-            <button onClick={()=>{ setConfirmLogoutOpen(false); logout(); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">Yes, log out</button>
+            <button onClick={()=>{ setConfirmLogoutOpen(false); logout(); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">log out</button>
           </div>
         </div>
       </div>
@@ -314,7 +314,7 @@ const Header = () => {
               { to: '/patient-home', label: 'Medstream', icon: Video },
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/home-v2', label: 'Homepage', icon: Home },
-              { to: '/doctor-chat', label: 'Messages', icon: MessageSquare },
+              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },
             ];
@@ -323,7 +323,7 @@ const Header = () => {
               { to: '/patient-home', label: 'Medstream', icon: Video },
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/home-v2', label: 'Homepage', icon: Home },
-              { to: '/doctor-chat', label: 'Messages', icon: MessageSquare },
+              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
               { to: '/clinics', label: 'Doctors & Departments', icon: Building2 },
               { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
             ];
@@ -341,12 +341,26 @@ const Header = () => {
                   {items.map((it, idx) => (
                     it.external ? (
                       <a key={`ext-${idx}`} href={it.href} target="_blank" rel="noopener noreferrer" onClick={closeMenu} className="flex items-center justify-between px-3 py-2 rounded-xl text-sm border transition border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-200">
-                        <span className="flex items-center gap-2"><it.icon className="w-4 h-4 text-gray-500" />{it.label}</span>
+                        <span className="flex items-center gap-2">
+                          {it.icon === 'chat-conversation' ? (
+                            <img src="/images/icon/chat-conversation-svgrepo-com.svg" alt={it.label} className="w-4 h-4" />
+                          ) : (
+                            <it.icon className="w-4 h-4 text-gray-500" />
+                          )}
+                          {it.label}
+                        </span>
                         <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
                       </a>
                     ) : (
                       <Link key={`int-${idx}`} to={it.to} onClick={closeMenu} className="flex items-center justify-between px-3 py-2 rounded-xl text-sm border transition border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-200">
-                        <span className="flex items-center gap-2"><it.icon className="w-4 h-4 text-gray-500" />{it.label}</span>
+                        <span className="flex items-center gap-2">
+                          {it.icon === 'chat-conversation' ? (
+                            <img src="/images/icon/chat-conversation-svgrepo-com.svg" alt={it.label} className="w-4 h-4" />
+                          ) : (
+                            <it.icon className="w-4 h-4 text-gray-500" />
+                          )}
+                          {it.label}
+                        </span>
                       </Link>
                     )
                   ))}

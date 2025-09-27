@@ -466,30 +466,30 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           
 
           {/* Action bar */}
-          <div className="px-2 md:px-3 py-2 border-t mt-1 grid grid-cols-3 gap-2 justify-items-center">
+          <div className="px-2 md:px-3 py-2 border-t mt-1 grid grid-cols-3 gap-1 md:gap-2 justify-items-center">
             <button
               type="button"
-              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white ${liked ? 'text-blue-600' : 'text-gray-700'} font-medium transition-colors hover:rounded-md hover:border-gray-200 ${liked ? 'hover:bg-blue-50' : 'hover:bg-gray-100'}`}
+              className={`w-full max-w-[100px] md:min-w-[110px] inline-flex items-center justify-center gap-1 md:gap-2 py-2 px-2 md:px-3 rounded-full text-xs md:text-sm border border-transparent bg-white ${liked ? 'text-blue-600' : 'text-gray-700'} font-medium`}
               onClick={handleLike}
             >
-              <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${liked ? 'bg-blue-100 ring-1 ring-blue-500' : ''}`}>
+              <span className={`inline-flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-full ${liked ? 'bg-blue-100 ring-1 ring-blue-500' : ''}`}>
                 {liked ? (
-                  <ThumbsUp className="w-4 h-4" strokeWidth={2.8} stroke="#2563eb" fill="#ffffff" />
+                  <ThumbsUp className="w-3 h-3 md:w-4 md:h-4" strokeWidth={2.8} stroke="#2563eb" fill="#ffffff" />
                 ) : (
-                  <ThumbsUp className="w-4 h-4 text-gray-600" strokeWidth={1.9} fill="none" />
+                  <ThumbsUp className="w-3 h-3 md:w-4 md:h-4 text-gray-600" strokeWidth={1.9} fill="none" />
                 )}
               </span>
               <span className={`font-medium`}>Like</span>
             </button>
             <button
               type="button"
-              className={`min-w-[110px] inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-800 font-medium transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100`}
+              className={`w-full max-w-[100px] md:min-w-[110px] inline-flex items-center justify-center gap-1 md:gap-2 py-2 px-2 md:px-3 rounded-full text-xs md:text-sm border border-transparent bg-white text-gray-800 font-medium`}
               onClick={(e)=>{ e.stopPropagation(); if (disabledActions) return; setShowCommentsPreview(v=>!v); }}
             >
-              <img src="/images/icon/comment-alt-lines-svgrepo-com.svg" alt="Yorum" className="w-5 h-5" />
+              <img src="/images/icon/comment-alt-lines-svgrepo-com.svg" alt="Yorum" className="w-4 h-4 md:w-5 md:h-5" />
               <span className="whitespace-nowrap">Comments</span>
             </button>
-            <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="min-w-[110px] text-gray-600 font-medium" />
+            <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full max-w-[100px] md:min-w-[110px] text-gray-600 font-medium text-xs md:text-sm" />
           </div>
           {/* Report Modal */}
           <Modal

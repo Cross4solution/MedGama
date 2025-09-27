@@ -20,9 +20,9 @@ export default function ThreadsSidebar({
     setCurrentPage(page);
   };
   return (
-    <aside className="hidden lg:block w-full lg:col-span-2 bg-white border rounded-lg overflow-hidden h-full flex flex-col">
+    <aside className="hidden lg:block w-full bg-white border rounded-lg overflow-hidden h-full flex flex-col">
       <div className="p-2 border-b">
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className="text-base font-semibold text-gray-900">Mesajlar</h2>
           </div>

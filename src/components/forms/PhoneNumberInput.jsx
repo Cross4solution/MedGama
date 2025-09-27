@@ -11,7 +11,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
   const [phoneCodeQuery, setPhoneCodeQuery] = useState('');
   const [dropdownPos, setDropdownPos] = useState({ left: 0, top: 0, width: 320 });
   const dropdownRef = useRef(null);
-  const [dropdownHeight, setDropdownHeight] = useState(320); // default to max-h-80 (320px)
+  const [dropdownHeight, setDropdownHeight] = useState(320);
 
   // Parse incoming value
   const parsePhone = (val = '') => {
@@ -21,35 +21,33 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
   const { code: initCode, number: initNumber } = parsePhone(value);
   const [phoneCode, setPhoneCode] = useState(initCode);
   const [phoneNumber, setPhoneNumber] = useState(initNumber);
-  const displayPhone = `${phoneCode} ${phoneNumber || ''}`.trim();
+  const displayPhone = phoneNumber ? `${phoneCode} ${phoneNumber}`.trim() : phoneCode;
 
-  // Available codes (extendable)
+  // Available codes
   const phoneCodes = useMemo(() => {
     const all = Object.values(countryDialCodes || {});
     return Array.from(new Set(all)).sort((a,b) => Number(a.replace('+','')) - Number(b.replace('+','')));
   }, []);
 
-  // Helpers
   const isoFor = (name) => {
     if (!name) return null;
     const direct = countryCodes[name];
     if (direct) return direct;
     const map = {
-      'Czech Republic': 'cz', 'New Zealand': 'nz', Mexico: 'mx', Brazil: 'br', Argentina: 'ar', Chile: 'cl',
-      Colombia: 'co', Venezuela: 've', Peru: 'pe', Morocco: 'ma', Tunisia: 'tn', Algeria: 'dz', Nigeria: 'ng',
-      'South Africa': 'za', Australia: 'au', Japan: 'jp', 'South Korea': 'kr', China: 'cn', Singapore: 'sg',
-      Malaysia: 'my', Indonesia: 'id', Thailand: 'th', Vietnam: 'vn', Philippines: 'ph', Russia: 'ru',
-      Ukraine: 'ua', Slovakia: 'sk', Denmark: 'dk', Sweden: 'se', Norway: 'no', Ireland: 'ie', Belgium: 'be',
-      Latvia: 'lv', Lithuania: 'lt', Estonia: 'ee', Switzerland: 'ch', Austria: 'at', Netherlands: 'nl', Poland: 'pl',
-      Greece: 'gr', Portugal: 'pt', France: 'fr', Italy: 'it', Spain: 'es', Turkey: 'tr', 'United Kingdom': 'gb',
-      'United States': 'us', Egypt: 'eg', 'Saudi Arabia': 'sa', Pakistan: 'pk', 'United Arab Emirates': 'ae',
+      'Czech Republic': 'cz','New Zealand': 'nz',Mexico: 'mx',Brazil: 'br',Argentina: 'ar',Chile: 'cl',
+      Colombia: 'co',Venezuela: 've',Peru: 'pe',Morocco: 'ma',Tunisia: 'tn',Algeria: 'dz',Nigeria: 'ng',
+      'South Africa': 'za',Australia: 'au',Japan: 'jp','South Korea': 'kr',China: 'cn',Singapore: 'sg',
+      Malaysia: 'my',Indonesia: 'id',Thailand: 'th',Vietnam: 'vn',Philippines: 'ph',Russia: 'ru',
+      Ukraine: 'ua',Slovakia: 'sk',Denmark: 'dk',Sweden: 'se',Norway: 'no',Ireland: 'ie',Belgium: 'be',
+      Latvia: 'lv',Lithuania: 'lt',Estonia: 'ee',Switzerland: 'ch',Austria: 'at',Netherlands: 'nl',Poland: 'pl',
+      Greece: 'gr',Portugal: 'pt',France: 'fr',Italy: 'it',Spain: 'es',Turkey: 'tr','United Kingdom': 'gb',
+      'United States': 'us',Egypt: 'eg','Saudi Arabia': 'sa',Pakistan: 'pk','United Arab Emirates': 'ae',
     };
     return map[name] || null;
   };
   const getFlagUrlByIso = (iso) => iso ? `https://flagcdn.com/24x18/${iso}.png` : null;
 
   const phoneMeta = useMemo(() => {
-    // Build code -> representative country meta
     const codeToNames = new Map();
     Object.entries(countryDialCodes || {}).forEach(([name, code]) => {
       const arr = codeToNames.get(code) || [];
@@ -59,7 +57,6 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
     const obj = {};
     for (const code of phoneCodes) {
       const candidates = codeToNames.get(code) || [];
-      // pick representative name: if allowedCountryNames provided, prefer one from it
       let rep = candidates[0] || '';
       if (Array.isArray(allowedCountryNames) && allowedCountryNames.length > 0) {
         const found = candidates.find((n) => allowedCountryNames.includes(n));
@@ -79,12 +76,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
     '+57': 10,'+58': 10,'+51': 9,'+20': 10,'+212': 10,'+216': 8,'+213': 9,'+234': 10,'+27': 9,'+966': 9,'+92': 10,
   }), []);
 
-  const phoneStartRules = useMemo(() => ({
-    '+90': /^5/, '+1': /^[2-9]/, '+44': /^7/, '+33': /^[67]/, '+34': /^[67]/, '+49': /^[1-9]/, '+61': /^4/,
-    '+971': /^5/, '+31': /^6/, '+48': /^[5-9]/, '+30': /^6/, '+351': /^9/, '+41': /^7/, '+7': /^[3489]/,
-  }), []);
-
-  // Close on outside click (but NOT when clicking inside the portal dropdown)
+  // Close on outside click
   useEffect(() => {
     const onDocMouseDown = (e) => {
       const wrap = phoneWrapRef.current;
@@ -98,24 +90,16 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
     return () => document.removeEventListener('mousedown', onDocMouseDown);
   }, []);
 
-  // Note: Previously, body scroll was locked while dropdown was open, which
-  // could cause layout shift on some pages. We avoid altering body styles to
-  // keep the page from "jumping" when the dropdown opens.
-  // (Wheel/touch events are still stopped on the dropdown container below.)
-
-  // Compute absolute (fixed) position for the dropdown and keep it in viewport
+  // Position dropdown
   useEffect(() => {
     if (!showPhoneCodes) return;
     const update = () => {
       const el = phoneWrapRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      // Align to flag button (left: ~36px from wrapper)
       const left = Math.max(8, rect.left + 36);
-      // Open UPWARDS: place the dropdown right above the input
       const desiredHeight = Math.min(dropdownHeight || 320, 320);
       const top = Math.max(8, rect.top - desiredHeight - 6);
-      // width: prefer 320 but keep within viewport
       const desired = 320;
       const width = Math.min(desired, window.innerWidth - left - 8);
       setDropdownPos({ left, top, width });
@@ -129,7 +113,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
     };
   }, [showPhoneCodes, dropdownHeight]);
 
-  // Measure dropdown height after it renders to position accurately above input
+  // Measure dropdown height
   useEffect(() => {
     if (!showPhoneCodes) return;
     const raf = requestAnimationFrame(() => {
@@ -143,14 +127,18 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
 
   // Re-format when code changes
   useEffect(() => {
+    if (!phoneCode) return; // boşsa hiç dokunma
     const codeRe = new RegExp('^' + String(phoneCode || '').replace('+','\\+') + '\\s*');
     const digitsRaw = (value || '').replace(codeRe, '').replace(/\D+/g, '');
     const limit = phoneMaxDigits[phoneCode] || 14;
     const digits = digitsRaw.slice(0, limit);
-    setPhoneNumber(formatPhone(phoneCode, digits));
+    const formatted = formatPhone(phoneCode, digits);
+    setPhoneNumber(formatted);
+    const finalValue = digits ? `${phoneCode} ${digits}`.trim() : phoneCode;
+    onChange && onChange(finalValue);
   }, [phoneCode]);
 
-  // If a countryName is provided from parent, sync the code accordingly
+  // Sync with countryName
   useEffect(() => {
     if (!countryName) return;
     const code = countryDialCodes[countryName] || null;
@@ -159,11 +147,11 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
       const rawDigits = (displayPhone || '').replace(/^\+\d{1,3}\s*/, '').replace(/\D+/g, '');
       const limit = phoneMaxDigits[code] || 14;
       const digits = rawDigits.slice(0, limit);
-      onChange && onChange(`${code} ${digits}`.trim());
+      const finalValue = digits ? `${code} ${digits}`.trim() : code;
+      onChange && onChange(finalValue);
     }
   }, [countryName]);
 
-  // helpers for grouping
   const formatByGroups = (d, groups) => {
     const parts = [];
     let idx = 0;
@@ -218,16 +206,61 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
         value={displayPhone}
         onChange={(e) => {
           const raw = e.target.value || '';
-          const limit = phoneMaxDigits[phoneCode] || 14;
-          const codeRe = new RegExp('^' + String(phoneCode || '').replace('+','\\+') + '\\s*');
-          const cleanAfterCode = raw.replace(codeRe, '');
-          const clean = cleanAfterCode.replace(/\D+/g, '');
-          const digits = clean.slice(0, limit);
-          const formatted = formatPhone(phoneCode, digits);
+
+          // tamamen boş
+          if (!raw.trim()) {
+            setPhoneCode('');
+            setPhoneNumber('');
+            onChange && onChange('');
+            return;
+          }
+
+          // sadece +
+          if (raw === '+') {
+            setPhoneCode('+');
+            setPhoneNumber('');
+            onChange && onChange('+');
+            return;
+          }
+
+          // + ile başlamıyorsa mevcut ülke koduna ekle
+          if (!raw.startsWith('+')) {
+            const clean = raw.replace(/\D+/g, '');
+            const limit = phoneMaxDigits[phoneCode] || 14;
+            const digits = clean.slice(0, limit);
+            const formatted = formatPhone(phoneCode, digits);
+            setPhoneNumber(formatted);
+            const finalValue = digits ? `${phoneCode} ${digits}`.trim() : phoneCode;
+            onChange && onChange(finalValue);
+            return;
+          }
+
+          // + ile başlıyorsa
+          const allDigits = raw.replace(/\D+/g, '');
+          if (allDigits.length === 0) {
+            setPhoneCode('+');
+            setPhoneNumber('');
+            onChange && onChange('+');
+            return;
+          }
+
+          let newCode = '+' + allDigits;
+          let phoneDigits = '';
+
+          if (allDigits.length > 3) {
+            newCode = '+' + allDigits.slice(0, 3);
+            phoneDigits = allDigits.slice(3);
+          }
+
+          setPhoneCode(newCode);
+          const limit = phoneMaxDigits[newCode] || 14;
+          const digits = phoneDigits.slice(0, limit);
+          const formatted = formatPhone(newCode, digits);
           setPhoneNumber(formatted);
-          onChange && onChange(`${phoneCode} ${digits}`.trim());
+          const finalValue = digits ? `${newCode} ${digits}`.trim() : newCode;
+          onChange && onChange(finalValue);
         }}
-        className={`w-full h-11 pl-24 pr-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm border-gray-300`}
+        className="w-full h-11 pl-24 pr-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm border-gray-300"
         placeholder={phonePlaceholder(phoneCode)}
       />
       {showPhoneCodes && createPortal(
@@ -249,7 +282,6 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
           </div>
           {(phoneCodes.filter((c)=> {
             const meta = phoneMeta[c] || {}; const q = phoneCodeQuery.trim().toLowerCase();
-            // If allowedCountryNames provided, include code if ANY of its countries are allowed
             if (Array.isArray(allowedCountryNames) && allowedCountryNames.length > 0) {
               if (!allowedCountryNames.includes(meta.name)) return false;
             }
@@ -269,7 +301,8 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
                   const digits = rawDigits.slice(0, limit);
                   const formatted = formatPhone(c, digits);
                   setPhoneNumber(formatted);
-                  onChange && onChange(`${c} ${digits}`.trim());
+                  const finalValue = digits ? `${c} ${digits}`.trim() : c;
+                  onChange && onChange(finalValue);
                 }}
                 className={`w-full text-left px-3 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-3 rounded-md ${ displayPhone.startsWith(c) ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
               >

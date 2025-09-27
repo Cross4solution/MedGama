@@ -103,6 +103,33 @@ export default function PopularClinicsShowcase({
                         </div>
                       </div>
                     )}
+                    {col[1] && (
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => handleCardClick(col[1])}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(col[1]); } }}
+                        className="rounded-2xl border bg-white p-4 hover:shadow-md transition h-72 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300"
+                      >
+                        <div className="h-36 rounded-lg bg-gray-100 mb-3 overflow-hidden">
+                          <img src={col[1].image} alt={col[1].name} className="w-full h-full object-cover" loading="lazy" />
+                        </div>
+                        <div className="flex-1 flex flex-col">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-gray-900">{col[1].name}</h3>
+                            <div className="flex items-center text-amber-600">
+                              <Star className="w-4 h-4 mr-1 fill-amber-500 text-amber-500" />
+                              <span className="font-medium text-gray-900">{col[1].rating}</span>
+                            </div>
+                          </div>
+                          <p className="mt-1 text-sm text-gray-600">{col[1].city} • {col[1].dept}</p>
+                          <div className="mt-auto pt-3 flex items-center justify-between text-sm">
+                            <span className="text-gray-500">{col[1].reviews} Reviews</span>
+                            <button type="button" onClick={(e) => handleViewClick(e, col[1])} className="px-3 py-1.5 bg-[#1C6A83] text-white rounded-lg hover:bg-[#155a6f]">View</button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

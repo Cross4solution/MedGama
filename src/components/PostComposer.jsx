@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Image as ImageIcon, Video, Smile } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import FabricEditor from './editor/FabricEditor';
 import PostCreateModal from './timeline/PostCreateModal';
 
 export default function PostComposer() {
@@ -20,13 +19,20 @@ export default function PostComposer() {
   const emojiPanelRef = React.useRef(null);
   const avatar = '/images/portrait-candid-male-doctor_720.jpg';
   const name = user?.name || 'Guest';
-  const [editorOpen, setEditorOpen] = useState(false);
-  const [editorImageUrl, setEditorImageUrl] = useState('');
-  const [editorIndex, setEditorIndex] = useState(-1);
-  const [editorSize, setEditorSize] = useState({ w: 820, h: 480 });
+
+  // Kategorilere ayrılmış emoji listesi
+  const emojiCategories = {
+    'Yüz İfadeleri': ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👹', '👺', '👻', '👽', '👾', '🤖'],
+    'El İşaretleri': ['👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎', '👊', '✊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦾', '🦿', '🦵', '🦶', '👂', '🦻', '👃', '🧠', '🦷', '🦴', '👀', '👁️', '👅', '👄'],
+    'Kalp ve Duygular': ['💘', '💝', '💖', '💗', '💓', '💞', '💕', '💟', '❣️', '💔', '❤️', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍', '💯', '💢', '💥', '💫', '💦', '💨', '🕳️', '💣', '💤', '💋', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾', '🙈', '🙉', '🙊'],
+    'Spor ve Oyunlar': ['🏆', '🥇', '🥈', '🥉', '🏅', '🎖️', '🏵️', '🎗️', '🎫', '🎟️', '🎪', '🤹', '🎭', '🩰', '🎨', '🎬', '🎤', '🎧', '🎼', '🎵', '🎶', '🎹', '🥁', '🎷', '🎺', '🎸', '🪕', '🎻', '🎲', '♠️', '♥️', '♦️', '♣️', '🃏', '🀄', '🎴', '🎯', '🎳', '🎮', '🕹️', '🎰', '🧩'],
+    'Kutlama ve Parti': ['🎉', '🎊', '🎈', '🎁', '🎂', '🍰', '🧁', '🍾', '🥂', '🍻', '🥳', '🎪', '🎭', '🎨', '🎬', '🎤', '🎧', '🎼', '🎵', '🎶', '🎹', '🥁', '🎷', '🎺', '🎸', '🪕', '🎻', '🎲', '♠️', '♥️', '♦️', '♣️', '🃏', '🀄', '🎴', '🎯', '🎳', '🎮', '🕹️', '🎰', '🧩']
+  };
+
+  const [selectedCategory, setSelectedCategory] = useState('Yüz İfadeleri');
 
   // Seçilen fotoğraflar için küçük önizlemeler (memory leak olmaması için URL.revokeObjectURL uygulanır)
-  useEffect(() => {
+  React.useEffect(() => {
     const urls = (selectedPhotos || []).map((file) => ({ url: URL.createObjectURL(file), name: file.name }));
     setPhotoPreviews(urls);
     return () => {
@@ -34,26 +40,8 @@ export default function PostComposer() {
     };
   }, [selectedPhotos]);
 
-  // Fullscreen modal için FabricEditor boyutlarını viewport'a göre ayarla (scrollsuz sığsın)
-  useEffect(() => {
-    if (!editorOpen) return;
-    const computeSize = () => {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const outerPadding = 24; // modal iç padding
-      const headerHeight = 56; // üst bar yüksekliği
-      const toolbarApprox = 120; // FabricEditor sol toolbar genişlik + boşluklar
-      const w = Math.max(500, Math.floor(vw - (outerPadding * 2) - toolbarApprox));
-      const h = Math.max(360, Math.floor(vh - (outerPadding * 2) - headerHeight));
-      setEditorSize({ w, h });
-    };
-    computeSize();
-    window.addEventListener('resize', computeSize);
-    return () => window.removeEventListener('resize', computeSize);
-  }, [editorOpen]);
-
   // Seçilen videolar için küçük önizlemeler
-  useEffect(() => {
+  React.useEffect(() => {
     const urls = (selectedVideos || []).map((file) => ({ url: URL.createObjectURL(file), name: file.name }));
     setVideoPreviews(urls);
     return () => {
@@ -74,37 +62,9 @@ export default function PostComposer() {
     console.log('New post from PatientHome:', newPost);
   }
 
-  const dataURLtoFile = async (dataUrl, fileName = 'edited.png') => {
-    const res = await fetch(dataUrl);
-    const blob = await res.blob();
-    return new File([blob], fileName, { type: blob.type || 'image/png' });
-  };
-
-  const openEditorForPhoto = (idx) => {
-    const p = photoPreviews[idx];
-    if (!p) return;
-    setEditorIndex(idx);
-    setEditorImageUrl(p.url);
-    setEditorOpen(true);
-  };
-
-  const handleEditorExport = async (dataUrl) => {
-    try {
-      // replace preview url
-      setPhotoPreviews(prev => prev.map((p, i) => i === editorIndex ? { ...p, url: dataUrl } : p));
-      // also replace File in selectedPhotos
-      const file = await dataURLtoFile(dataUrl, selectedPhotos[editorIndex]?.name || 'edited.png');
-      setSelectedPhotos(prev => prev.map((f, i) => i === editorIndex ? file : f));
-    } finally {
-      setEditorOpen(false);
-      setEditorIndex(-1);
-      setEditorImageUrl('');
-    }
-  };
-
   return (
     <div className="bg-white rounded-xl p-4 border shadow-sm">
-      {/* Top: Avatar + input-like button */}
+      {/* Top: Avatar + input-like button or textarea */}
       <div className="flex items-center space-x-3">
         <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
           <img
@@ -129,27 +89,76 @@ export default function PostComposer() {
           <input ref={photoRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=> setSelectedPhotos(Array.from(e.target.files||[]))} />
           <input ref={videoRef} type="file" accept="video/*" multiple className="hidden" onChange={(e)=> setSelectedVideos(Array.from(e.target.files||[]))} />
 
-          <button className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { photoRef.current?.click(); }}>
-            <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
-            <span className="text-sm sm:text-base">Photo</span>
-          </button>
-          <button className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { videoRef.current?.click(); }}>
-            <Video className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
-            <span className="text-sm sm:text-base">Video</span>
-          </button>
-          <button ref={emojiBtnRef} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { setShowEmoji(v=>!v); }}>
-            <Smile className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
-            <span className="text-sm sm:text-base">Emoji</span>
-          </button>
-          {showEmoji && (
-            <div ref={emojiPanelRef} className="absolute left-0 top-full mt-2 z-50 border rounded-xl bg-white shadow-lg ring-1 ring-black/5 p-2 w-[280px] sm:w-[320px]">
-              <div className="grid grid-cols-8 sm:grid-cols-10 gap-1 text-lg sm:text-xl select-none">
-                {['😀','😂','😍','👍','👏','🎉','🙏','🔥','😎','🤔','😢','😮','❤️','💙','💯','✅','⭐','✨'].map((e,i)=> (
-                  <button key={i} type="button" className="hover:bg-gray-50 rounded" onClick={() => { setShowEmoji(false); setInitialAction('emoji'); setOpen(true); }}>{e}</button>
-                ))}
-              </div>
-            </div>
-          )}
+           <button className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { setInitialAction('photo'); setOpen(true); }}>
+             <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+             <span className="text-sm sm:text-base">Photo</span>
+           </button>
+           <button className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { setInitialAction('video'); setOpen(true); }}>
+             <Video className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+             <span className="text-sm sm:text-base">Video</span>
+           </button>
+           <button ref={emojiBtnRef} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { setShowEmoji(v=>!v); }}>
+             <Smile className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+             <span className="text-sm sm:text-base">Emoji</span>
+           </button>
+           {showEmoji && (
+             <div ref={emojiPanelRef} className="absolute left-0 top-full mt-2 z-50 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl shadow-lg w-[400px] max-h-[300px] overflow-hidden">
+               {/* Kategori Tabları - İkonlarla */}
+               <div className="flex border-b border-gray-200 bg-white rounded-t-xl">
+                 {Object.entries(emojiCategories).map(([category, emojis]) => {
+                   const categoryIcons = {
+                     'Yüz İfadeleri': '😀',
+                     'El İşaretleri': '👋',
+                     'Kalp ve Duygular': '❤️',
+                     'Spor ve Oyunlar': '🏆',
+                     'Kutlama ve Parti': '🎉'
+                   };
+                   return (
+                     <button
+                       key={category}
+                       onClick={() => setSelectedCategory(category)}
+                       className={`flex-1 px-2 py-2 text-center transition-all duration-200 ${
+                         selectedCategory === category
+                           ? 'bg-blue-500 text-white border-b-2 border-blue-500'
+                           : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
+                       }`}
+                       title={category}
+                     >
+                       <div className="text-lg">{categoryIcons[category]}</div>
+                     </button>
+                   );
+                 })}
+               </div>
+               
+               {/* Emoji Grid */}
+               <div className="p-3 max-h-[220px] overflow-y-auto">
+                 <div className="grid grid-cols-6 gap-1">
+                   {emojiCategories[selectedCategory]?.map((emoji, i) => (
+                     <button
+                       key={i}
+                       type="button"
+                       className="hover:bg-blue-100 hover:scale-110 rounded-lg p-1 text-center transition-all duration-200 transform hover:shadow-md"
+                       onClick={() => { 
+                         setShowEmoji(false); 
+                         setInitialAction('emoji'); 
+                         setOpen(true); 
+                       }}
+                       title={emoji}
+                     >
+                       <span className="text-lg">{emoji}</span>
+                     </button>
+                   ))}
+                 </div>
+               </div>
+               
+               {/* Alt Bilgi */}
+               <div className="px-3 py-1 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+                 <p className="text-xs text-gray-500 text-center">
+                   {emojiCategories[selectedCategory]?.length} emoji
+                 </p>
+               </div>
+             </div>
+           )}
         </div>
         <button
           type="button"
@@ -168,95 +177,6 @@ export default function PostComposer() {
         initialAction={initialAction}
         onResetInitialAction={() => setInitialAction('')}
       />
-      
-      {(selectedPhotos.length>0 || selectedVideos.length>0) && (
-        <div className="mt-2">
-          <div className="text-xs text-gray-500">
-            {selectedPhotos.length>0 && <span className="mr-3">{selectedPhotos.length} photo selected</span>}
-            {selectedVideos.length>0 && <span>{selectedVideos.length} video selected</span>}
-          </div>
-          {(photoPreviews.length > 0 || videoPreviews.length > 0) && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {photoPreviews.map((p, idx) => (
-                <div key={`p${idx}`} className="relative w-20 h-20 rounded-lg overflow-hidden border bg-gray-50">
-                  <button type="button" onClick={() => setViewer({ type: 'photo', url: p.url })} className="absolute inset-0">
-                    <img src={p.url} alt={p.name || `photo-${idx+1}`} className="w-full h-full object-cover" />
-                  </button>
-                  <div className="absolute left-1.5 bottom-1.5 flex gap-1">
-                    <button type="button" onClick={() => openEditorForPhoto(idx)} className="px-1.5 py-0.5 text-[10px] rounded bg-white/90 border border-gray-200 text-gray-700 shadow">Düzenle</button>
-                  </div>
-                  <button type="button" aria-label="Remove photo" onClick={() => removePhotoAt(idx)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                  </button>
-                </div>
-              ))}
-              {videoPreviews.map((v, idx) => (
-                <div key={`v${idx}`} className="relative w-24 h-20 rounded-lg overflow-hidden border bg-black/5">
-                  <button type="button" onClick={() => setViewer({ type: 'video', url: v.url })} className="absolute inset-0">
-                    <video src={v.url} className="w-full h-full object-cover" muted playsInline />
-                  </button>
-                  <button type="button" aria-label="Remove video" onClick={() => removeVideoAt(idx)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-      
-      {viewer && (
-        <div className="fixed inset-0 z-[90]">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setViewer(null)} />
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="relative max-w-3xl w-full">
-              <button type="button" onClick={() => setViewer(null)} className="absolute -top-3 -right-3 bg-white/90 border border-gray-200 rounded-full p-2 shadow" aria-label="Close preview">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-              </button>
-              <div className="bg-black rounded-lg overflow-hidden">
-                {viewer.type === 'photo' ? (
-                  <img src={viewer.url} alt="preview" className="w-full h-auto max-h-[80vh] object-contain" />
-                ) : (
-                  <video src={viewer.url} className="w-full h-auto max-h-[80vh]" controls autoPlay />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {editorOpen && (
-        <div className="fixed inset-0 z-[95]">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setEditorOpen(false)} />
-          {/* Centered modal container */}
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="relative w-full max-w-5xl bg-white rounded-xl shadow-xl overflow-hidden">
-              {/* Header bar with close */}
-              <div className="h-12 flex items-center justify-between px-4 border-b">
-                <div className="font-semibold text-gray-900">Photo Editor</div>
-                <button
-                  type="button"
-                  onClick={() => setEditorOpen(false)}
-                  aria-label="Close editor"
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
-              </div>
-              {/* Content: fixed moderate size, no scroll */}
-              <div className="p-3">
-                <FabricEditor
-                  imageUrl={editorImageUrl}
-                  width={980}
-                  height={520}
-                  onClose={() => setEditorOpen(false)}
-                  onExport={handleEditorExport}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
