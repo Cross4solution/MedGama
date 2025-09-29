@@ -293,7 +293,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#378fe9] text-white">
                   <ThumbsUp className="w-3 h-3" />
                 </span>
-                <span>{likeCount}</span>
+                <span className="min-w-[2.5ch] md:min-w-0 text-center tabular-nums">{likeCount}</span>
               </div>
               {/* Comments */}
               <div className="inline-flex items-center gap-2 -ml-1">
@@ -305,7 +305,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                   className="text-gray-500 hover:underline"
                   onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
                 >
-                  {item.comments} comments
+                  <span className="inline-block align-middle min-w-[2.5ch] md:min-w-0 text-center tabular-nums">{item.comments}</span> comments
                 </button>
               </div>
             </div>
@@ -363,7 +363,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     </div>
                     <p className="text-[15px] text-gray-800 leading-6">Congrats! 🎉</p>
                     <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                      <button type="button" className="hover:text-gray-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1' ? '' : 'c1'); setReplyText(prev => (prev && replyTo==='c1') ? prev : '@Ayça Karaman '); }}>Reply</button>
+                      <button type="button" className="hover:text-gray-700 px-2 py-1 -mx-2 rounded-md active:bg-gray-100" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1' ? '' : 'c1'); setReplyText(prev => (prev && replyTo==='c1') ? prev : '@Ayça Karaman '); }}>Reply</button>
                       <span>1 reply</span>
                     </div>
 
@@ -421,7 +421,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     </div>
                     {replyTo === 'c1' && (
                       <div className="mt-2">
-                        <div className="border rounded-xl p-1.5 flex items-center gap-2 max-w-[520px]">
+                          <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full">
                           <button type="button" className="p-2 text-gray-600 hover:text-teal-700" onClick={(e)=>e.stopPropagation()} aria-label="Emoji">
                             <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
                           </button>
@@ -430,7 +430,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                             value={replyText}
                             onChange={(e)=>setReplyText(e.target.value)}
                             placeholder="Yanıtınızı yazın..."
-                            className="flex-1 outline-none px-2 py-1 text-[14px]"
+                              className="flex-1 outline-none px-2 py-2 text-[14px]"
                           />
                           <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>
                             Reply
@@ -440,7 +440,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     )}
                     {replyTo === 'c2' && (
                       <div className="mt-2">
-                        <div className="border rounded-xl p-1.5 flex items-center gap-2 max-w-[520px]">
+                        <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full">
                           <button type="button" className="p-2 text-gray-600 hover:text-teal-700" onClick={(e)=>e.stopPropagation()} aria-label="Emoji">
                             <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
                           </button>
@@ -449,7 +449,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                             value={replyText}
                             onChange={(e)=>setReplyText(e.target.value)}
                             placeholder="Yanıtınızı yazın..."
-                            className="flex-1 outline-none px-2 py-1 text-[14px]"
+                            className="flex-1 outline-none px-2 py-2 text-[14px]"
                           />
                           <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>
                             Reply
