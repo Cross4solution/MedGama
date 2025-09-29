@@ -385,7 +385,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                       </div>
                       {replyTo === 'c1r1' && (
                         <div className="mt-2">
-                          <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full">
+                          <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full min-w-0">
                             <button type="button" className="p-2 text-gray-600 hover:text-teal-700" onClick={(e)=>e.stopPropagation()} aria-label="Emoji">
                               <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
                             </button>
@@ -394,7 +394,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                               value={replyText}
                               onChange={(e)=>setReplyText(e.target.value)}
                               placeholder="Yanıtınızı yazın..."
-                              className="flex-1 outline-none px-2 py-2 text-[14px]"
+                              className="flex-1 min-w-0 outline-none px-2 py-2 text-[14px]"
                             />
                             <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); /* submit mock */ setReplyTo(''); setReplyText(''); }}>
                             Reply
@@ -421,7 +421,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     </div>
                     {replyTo === 'c1' && (
                       <div className="mt-2">
-                          <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full">
+                          <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full min-w-0">
                           <button type="button" className="p-2 text-gray-600 hover:text-teal-700" onClick={(e)=>e.stopPropagation()} aria-label="Emoji">
                             <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
                           </button>
@@ -430,7 +430,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                             value={replyText}
                             onChange={(e)=>setReplyText(e.target.value)}
                             placeholder="Yanıtınızı yazın..."
-                              className="flex-1 outline-none px-2 py-2 text-[14px]"
+                              className="flex-1 min-w-0 outline-none px-2 py-2 text-[14px]"
                           />
                           <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>
                             Reply
@@ -440,7 +440,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     )}
                     {replyTo === 'c2' && (
                       <div className="mt-2">
-                        <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full">
+                        <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full min-w-0">
                           <button type="button" className="p-2 text-gray-600 hover:text-teal-700" onClick={(e)=>e.stopPropagation()} aria-label="Emoji">
                             <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
                           </button>
@@ -449,7 +449,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                             value={replyText}
                             onChange={(e)=>setReplyText(e.target.value)}
                             placeholder="Yanıtınızı yazın..."
-                            className="flex-1 outline-none px-2 py-2 text-[14px]"
+                            className="flex-1 min-w-0 outline-none px-2 py-2 text-[14px]"
                           />
                           <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>
                             Reply
