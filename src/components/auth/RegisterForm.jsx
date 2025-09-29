@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Heart,
@@ -120,7 +120,7 @@ const RegisterForm = ({
            <>
             <div className="grid grid-cols-1 gap-1 sm:gap-2 w-full max-w-md">
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">
             First Name
           </label>
           <div className="relative">
@@ -139,7 +139,7 @@ const RegisterForm = ({
           {(errors.firstName || localErrors.firstName) && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.firstName || localErrors.firstName}</p>}
         </div>
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">
             Last Name
           </label>
           <div className="relative">
@@ -160,7 +160,7 @@ const RegisterForm = ({
       </div>
              <div className="grid grid-cols-1 gap-1 sm:gap-2 w-full max-w-2xl mb-6 sm:mb-8">
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">
             Email Address
           </label>
           <div className="relative">
@@ -179,7 +179,7 @@ const RegisterForm = ({
           {(errors.email || localErrors.email) && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.email || localErrors.email}</p>}
         </div>
         <div>
-          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center md:text-left">Phone</label>
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">Phone</label>
           <PhoneNumberInput
             value={fd.phone ?? ''}
             countryName={fd.country ?? ''}
@@ -207,7 +207,7 @@ const RegisterForm = ({
         <>
         <div className="grid grid-cols-1 gap-1 sm:gap-2 w-full max-w-md">
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left md:text-left">
               Country
             </label>
             <div className="relative">
@@ -239,7 +239,7 @@ const RegisterForm = ({
             )}
           </div>
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-center md:text-left">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left md:text-left">
               Date of Birth
             </label>
             <div

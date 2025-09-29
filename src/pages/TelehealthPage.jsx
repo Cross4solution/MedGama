@@ -33,20 +33,20 @@ const TelehealthPage = () => {
       {/* Main Content */}
       <div className="flex-1">
 
-        <div className="px-8 py-6">
-          <div className="mb-4">
+        <div className="px-4 py-3 sm:px-6 sm:py-4">
+          <div className="mb-2 sm:mb-4">
             <h1 className="text-2xl font-bold text-gray-900">Telehealth</h1>
             <p className="text-gray-600 mt-1">Online consultation and telemedicine management</p>
           </div>
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
             {stats.map((stat, index) => (
-              <div key={index} className="bg-white rounded-lg p-6 border border-gray-200">
-                <div className="flex items-center justify-between">
+              <div key={index} className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 aspect-square flex flex-col justify-between">
+                <div className="flex items-start sm:items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                    <p className={`text-sm mt-2 ${
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1 sm:mt-2">{stat.value}</p>
+                    <p className={`text-xs sm:text-sm mt-1 sm:mt-2 ${
                       stat.color === 'blue' ? 'text-blue-600' :
                       stat.color === 'green' ? 'text-green-600' :
                       stat.color === 'orange' ? 'text-orange-600' :
@@ -55,13 +55,13 @@ const TelehealthPage = () => {
                       {stat.subtitle}
                     </p>
                   </div>
-                  <div className={`p-3 rounded-lg ${
+                  <div className={`p-2 sm:p-3 rounded-lg ${
                     stat.color === 'blue' ? 'bg-blue-100' :
                     stat.color === 'green' ? 'bg-green-100' :
                     stat.color === 'orange' ? 'bg-orange-100' :
                     'bg-purple-100'
                   }`}>
-                    <stat.icon className={`w-6 h-6 ${
+                    <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${
                       stat.color === 'blue' ? 'text-blue-600' :
                       stat.color === 'green' ? 'text-green-600' :
                       stat.color === 'orange' ? 'text-orange-600' :
@@ -98,10 +98,10 @@ const TelehealthPage = () => {
                     <div className="flex items-center space-x-3">
                       <button className="flex items-center space-x-2 bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
                         <Video className="w-4 h-4" />
-                        <span>Join</span>
+                        <span>Accept</span>
                       </button>
                       <button className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                        <span>End</span>
+                        <span>Deny</span>
                       </button>
                     </div>
                   </div>

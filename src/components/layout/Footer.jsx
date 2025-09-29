@@ -79,9 +79,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-white/20 pt-4 flex items-center justify-between flex-col md:flex-row gap-3">
-          <div className="text-white/80">{new Date().getFullYear()} MedGama</div>
-          <div className="text-white/70">All rights reserved.</div>
+        <div className="mt-8 border-t border-white/20 pt-4 md:flex items-center justify-between gap-3">
+          {/* Desktop/tablet: two items */}
+          <div className="hidden md:block text-white/80">{new Date().getFullYear()} MedGama</div>
+          <div className="hidden md:block text-white/70">All rights reserved.</div>
+          {/* Mobile: single line, no wrap */}
+          <div className="md:hidden w-full text-center text-white/80 whitespace-nowrap">{new Date().getFullYear()} MedGama · All rights reserved.</div>
         </div>
       </div>
     </footer>

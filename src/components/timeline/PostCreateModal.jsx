@@ -164,8 +164,47 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
               <div className="p-3">
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   {/* Hidden file inputs */}
-                  <input ref={photoRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=> setPhotos(Array.from(e.target.files||[]))} />
-                  <input ref={videoRef} type="file" accept="video/*" multiple className="hidden" onChange={(e)=> setVideos(Array.from(e.target.files||[]))} />
+                  <input
+                    ref={photoRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e)=> {
+                      const newFiles = Array.from(e.target.files || []);
+                      setPhotos(prev => {
+                        const merged = [...prev];
+                        newFiles.forEach(f => {
+                          if (!merged.some(p => p.name === f.name && p.size === f.size)) {
+                            merged.push(f);
+                          }
+                        });
+                        return merged;
+                      });
+                      // aynı dosyayı tekrar seçebilmek için input'u sıfırla
+                      try { e.target.value = ''; } catch {}
+                    }}
+                  />
+                  <input
+                    ref={videoRef}
+                    type="file"
+                    accept="video/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e)=> {
+                      const newFiles = Array.from(e.target.files || []);
+                      setVideos(prev => {
+                        const merged = [...prev];
+                        newFiles.forEach(f => {
+                          if (!merged.some(p => p.name === f.name && p.size === f.size)) {
+                            merged.push(f);
+                          }
+                        });
+                        return merged;
+                      });
+                      try { e.target.value = ''; } catch {}
+                    }}
+                  />
 
                   <button onClick={()=>photoRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add photo">
                     <span className="w-6 h-6 grid place-items-center rounded bg-emerald-50"><Image className="w-4 h-4 text-emerald-600" /></span>

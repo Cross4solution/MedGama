@@ -26,10 +26,6 @@ export default function ThreadsSidebar({
           <div>
             <h2 className="text-base font-semibold text-gray-900">Mesajlar</h2>
           </div>
-          <button className="bg-blue-500 text-white px-2.5 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5">
-            <span className="text-base leading-none">＋</span>
-            Yeni Mesaj
-          </button>
         </div>
         <div className="relative">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>

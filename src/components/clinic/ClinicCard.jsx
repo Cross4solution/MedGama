@@ -104,16 +104,7 @@ export default function ClinicCard({ clinic, isFavorite, onToggleFavorite, onVie
             ))}
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex space-x-3">
-              <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 transition-colors">
-                {/* Message icon */}
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8-1.068 0-2.09-.15-3.043-.427L3 20l1.427-4.957A7.948 7.948 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                <span className="text-sm">Message</span>
-              </button>
-            </div>
+          <div className="flex items-center justify-end">
             <button onClick={() => onView?.(clinic)} className="bg-[#1C6A83] text-white px-4 py-2 rounded-xl hover:bg-[#155a6f] transition-all duration-200 shadow-sm hover:shadow-md">
               View
             </button>

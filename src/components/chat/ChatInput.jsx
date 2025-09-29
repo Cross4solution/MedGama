@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ChatInput({ message, onChange, onSend }) {
   return (
-    <div className="p-4 border-t bg-white rounded-b-lg">
+    <div className="p-4 border-t bg-white rounded-b-lg flex-shrink-0">
       <div className="flex items-center space-x-2">
         <button aria-label="Attach file" className="text-gray-600 hover:text-gray-800 bg-gray-50 border border-gray-200 rounded-lg p-2 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05 12 20.5a6 6 0 0 1-8.49-8.49l10-10a4 4 0 0 1 5.66 5.66L7.05 20.79"/></svg>
@@ -20,7 +20,7 @@ export default function ChatInput({ message, onChange, onSend }) {
         />
         <button
           onClick={onSend}
-          className="bg-blue-600 text-white p-2 rounded-xl border border-blue-700/20 hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200"
+          className="bg-blue-600 text-white p-2 rounded-xl border border-blue-700/20 hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200 mr-1"
           aria-label="Send message"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9 22 2z"/></svg>

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Save, Building2, MapPin, Globe, Info, Image as ImageIcon, Upload, Plus, X, DollarSign, Images, Package, Star, Stethoscope, Activity, Brain, Scissors, Link as LinkIcon } from 'lucide-react';
+import { Save, Building2, MapPin, Info, Image as ImageIcon, Upload, Plus, X, DollarSign, Images, Package, Star, Stethoscope, Activity, Brain, Scissors, Link as LinkIcon } from 'lucide-react';
 
 export default function ClinicProfileEdit() {
   const [tab, setTab] = useState('overview');
@@ -8,7 +8,6 @@ export default function ClinicProfileEdit() {
     heroImage: '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
     name: 'Anadolu Health Center',
     location: 'Istanbul, Turkey',
-    website: 'https://example.com',
     // About
     aboutTitle: 'About Us',
     aboutP1: "Anadolu Health Center is one of Turkey's leading healthcare institutions with 15 years of experience. Our JCI-accredited hospital provides healthcare services at international standards.",
@@ -162,20 +161,6 @@ export default function ClinicProfileEdit() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                 <input type="text" name="location" value={form.location} onChange={onChange} className="w-full h-11 px-3 border rounded-xl text-sm" placeholder="City, Country" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
-                <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="url"
-                    name="website"
-                    value={form.website}
-                    onChange={onChange}
-                    className="w-full h-11 pl-9 pr-3 border rounded-xl text-sm"
-                    placeholder="https://example.com"
-                  />
-                </div>
               </div>
             </div>
 

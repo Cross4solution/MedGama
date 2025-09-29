@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell } from 'lucide-react';
+import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
@@ -13,6 +13,7 @@ const Header = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
+  const [mobileLoginExpanded, setMobileLoginExpanded] = useState(false);
   // Removed profile dropdown (only avatar + username shown)
 
   const toggleMenu = () => {
@@ -21,6 +22,7 @@ const Header = () => {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+    setMobileLoginExpanded(false);
   };
 
   // Close login dropdown on outside click
@@ -205,9 +207,9 @@ const Header = () => {
                 type="button"
                 title="Messages"
                 onClick={() => navigate('/doctor-chat')}
-                className="md:hidden p-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-800"
+                className="md:hidden p-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 border border-transparent"
               >
-                <img src="/images/icon/chat-conversation-svgrepo-com.svg" alt="Messages" className="w-5 h-5" />
+                <img src="/images/icon/chat-conversation-svgrepo-com.svg" alt="Messages" className="w-5 h-5 invert" />
               </button>
             )}
             {user ? (
@@ -260,19 +262,35 @@ const Header = () => {
         <div className="fixed top-20 left-0 right-0 z-50 mx-4 max-w-md md:hidden overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ring-1 ring-black/5">
           <nav className="divide-y divide-gray-100">
             <div className="p-4 grid grid-cols-2 gap-2">
-              <Link to="/login" onClick={closeMenu} className="col-span-2 px-3 py-2 rounded-lg border text-sm font-semibold text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2">
-                <User className="w-4 h-4" />
-                <span>Patient Login</span>
-              </Link>
-              <Link to="/doctor-login" onClick={closeMenu} className="col-span-1 px-3 py-2 rounded-lg border text-sm font-medium text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2">
-                <Stethoscope className="w-4 h-4" />
-                <span>Doctor</span>
-              </Link>
-              <Link to="/clinic-login" onClick={closeMenu} className="col-span-1 px-3 py-2 rounded-lg border text-sm font-medium text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2">
-                <Hospital className="w-4 h-4" />
-                <span>Clinic</span>
-              </Link>
-              <Link to="/register" onClick={closeMenu} className="col-span-2 text-center px-3 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700">Register</Link>
+              {!mobileLoginExpanded ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setMobileLoginExpanded(true)}
+                    className="col-span-2 px-3 py-2 rounded-lg border text-sm font-semibold text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>Login</span>
+                  </button>
+                  <Link to="/register" onClick={closeMenu} className="col-span-2 text-center px-3 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700">Register</Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" onClick={closeMenu} className="col-span-2 px-3 py-2 rounded-lg border text-sm font-semibold text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2">
+                    <User className="w-4 h-4" />
+                    <span>Patient Login</span>
+                  </Link>
+                  <Link to="/doctor-login" onClick={closeMenu} className="col-span-1 px-3 py-2 rounded-lg border text-sm font-medium text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2">
+                    <Stethoscope className="w-4 h-4" />
+                    <span>Doctor</span>
+                  </Link>
+                  <Link to="/clinic-login" onClick={closeMenu} className="col-span-1 px-3 py-2 rounded-lg border text-sm font-medium text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2">
+                    <Hospital className="w-4 h-4" />
+                    <span>Clinic</span>
+                  </Link>
+                  <Link to="/register" onClick={closeMenu} className="col-span-2 text-center px-3 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700">Register</Link>
+                </>
+              )}
             </div>
             <div className="p-2">
               <Link to="/home-v2" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
@@ -343,7 +361,7 @@ const Header = () => {
                       <a key={`ext-${idx}`} href={it.href} target="_blank" rel="noopener noreferrer" onClick={closeMenu} className="flex items-center justify-between px-3 py-2 rounded-xl text-sm border transition border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-200">
                         <span className="flex items-center gap-2">
                           {it.icon === 'chat-conversation' ? (
-                            <img src="/images/icon/chat-conversation-svgrepo-com.svg" alt={it.label} className="w-4 h-4" />
+                            <MessageCircle className="w-4 h-4 text-gray-500" />
                           ) : (
                             <it.icon className="w-4 h-4 text-gray-500" />
                           )}
@@ -355,7 +373,7 @@ const Header = () => {
                       <Link key={`int-${idx}`} to={it.to} onClick={closeMenu} className="flex items-center justify-between px-3 py-2 rounded-xl text-sm border transition border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-200">
                         <span className="flex items-center gap-2">
                           {it.icon === 'chat-conversation' ? (
-                            <img src="/images/icon/chat-conversation-svgrepo-com.svg" alt={it.label} className="w-4 h-4" />
+                            <MessageCircle className="w-4 h-4 text-gray-500" />
                           ) : (
                             <it.icon className="w-4 h-4 text-gray-500" />
                           )}

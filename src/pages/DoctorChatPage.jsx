@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+﻿import React, { useMemo, useState, useEffect } from 'react';
 import ThreadsSidebar from 'components/chat/ThreadsSidebar';
 import ChatHeader from 'components/chat/ChatHeader';
 import ChatMessageList from 'components/chat/ChatMessageList';
@@ -6,41 +6,41 @@ import ChatInput from 'components/chat/ChatInput';
 
 const DoctorChatPage = () => {
   const [message, setMessage] = useState('');
-  const [channelFilter, setChannelFilter] = useState('Tümü');
+  const [channelFilter, setChannelFilter] = useState('TÃ¼mÃ¼');
   const [mobileChatOpen, setMobileChatOpen] = useState(false); // mobile: list -> chat
   const [mobileCurrentPage, setMobileCurrentPage] = useState(1);
   const threadsPerPage = 8;
-  // Thread list (mock) - daha fazla thread pagination test için
+  // Thread list (mock) - daha fazla thread pagination test iÃ§in
   const threads = useMemo(() => {
     const baseThreads = [
-      { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Cuma günü benim için daha uygun olur...', when: '15 dk', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA ≤5 dk', 'Acil'] },
-      { id: 'ali', name: 'Ali Şen', channel: 'Facebook', online: false, last: 'Rica ederim, sağlıklı günler...', when: '2 saat', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15 dk', 'Ön Değerlendirme'] },
-      { id: 'selin', name: 'Selin Acar', channel: 'Web Form', online: true, last: 'Evet, görüntüledim. Yarın görüşebiliriz.', when: '1 gün', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA ≤15 dk', 'Ön Değerlendirme'] },
-      { id: 'ayse', name: 'Ayşe Demir', channel: 'Chat', online: false, last: 'Elbette, size uygun saat nedir?', when: '2 gün', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA ≤5 dk', 'Randevu'] },
-      { id: 'mehmet', name: 'Mehmet Özkan', channel: 'WhatsApp', online: false, last: 'Size yardımcı olmak için arayabilirim.', when: '3 gün', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15 dk', 'Bilgi'] },
+      { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Cuma gÃ¼nÃ¼ benim iÃ§in daha uygun olur...', when: '15 dk', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA â‰¤5 dk', 'Acil'] },
+      { id: 'ali', name: 'Ali Åen', channel: 'Facebook', online: false, last: 'Rica ederim, saÄŸlÄ±klÄ± gÃ¼nler...', when: '2 saat', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15 dk', 'Ã–n DeÄŸerlendirme'] },
+      { id: 'selin', name: 'Selin Acar', channel: 'Web Form', online: true, last: 'Evet, gÃ¶rÃ¼ntÃ¼ledim. YarÄ±n gÃ¶rÃ¼ÅŸebiliriz.', when: '1 gÃ¼n', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA â‰¤15 dk', 'Ã–n DeÄŸerlendirme'] },
+      { id: 'ayse', name: 'AyÅŸe Demir', channel: 'Chat', online: false, last: 'Elbette, size uygun saat nedir?', when: '2 gÃ¼n', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA â‰¤5 dk', 'Randevu'] },
+      { id: 'mehmet', name: 'Mehmet Ã–zkan', channel: 'WhatsApp', online: false, last: 'Size yardÄ±mcÄ± olmak iÃ§in arayabilirim.', when: '3 gÃ¼n', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15 dk', 'Bilgi'] },
     ];
 
-    // Daha fazla thread ekle (pagination test için)
+    // Daha fazla thread ekle (pagination test iÃ§in)
     const additionalThreads = [];
-    const names = ['Ahmet Yılmaz', 'Fatma Kaya', 'Mustafa Demir', 'Elif Özkan', 'Can Şahin', 'Zeynep Arslan', 'Burak Çelik', 'Seda Yıldız', 'Emre Korkmaz', 'Gülay Aydın', 'Hakan Yılmaz', 'Pınar Öztürk', 'Serkan Doğan', 'Merve Kılıç', 'Tolga Ateş', 'Deniz Yılmaz', 'Cem Özdemir', 'Sibel Kaya', 'Oğuz Demir', 'Nur Özkan'];
+    const names = ['Ahmet YÄ±lmaz', 'Fatma Kaya', 'Mustafa Demir', 'Elif Ã–zkan', 'Can Åahin', 'Zeynep Arslan', 'Burak Ã‡elik', 'Seda YÄ±ldÄ±z', 'Emre Korkmaz', 'GÃ¼lay AydÄ±n', 'Hakan YÄ±lmaz', 'PÄ±nar Ã–ztÃ¼rk', 'Serkan DoÄŸan', 'Merve KÄ±lÄ±Ã§', 'Tolga AteÅŸ', 'Deniz YÄ±lmaz', 'Cem Ã–zdemir', 'Sibel Kaya', 'OÄŸuz Demir', 'Nur Ã–zkan'];
     const channels = ['WhatsApp', 'Facebook', 'Web Form', 'Chat', 'Instagram'];
     const lastMessages = [
-      'Merhaba, nasılsınız?',
+      'Merhaba, nasÄ±lsÄ±nÄ±z?',
       'Randevu almak istiyorum',
-      'Sonuçlarım hazır mı?',
-      'Teşekkür ederim',
-      'Yarın uygun musunuz?',
+      'SonuÃ§larÄ±m hazÄ±r mÄ±?',
+      'TeÅŸekkÃ¼r ederim',
+      'YarÄ±n uygun musunuz?',
       'Acil durum var',
       'Bilgi almak istiyorum',
       'Kontrol randevusu',
-      'Reçete yenileme',
+      'ReÃ§ete yenileme',
       'Soru sormak istiyorum'
     ];
     const tags = [
-      ['SLA ≤5 dk', 'Acil'],
-      ['SLA >15 dk', 'Ön Değerlendirme'],
-      ['SLA ≤15 dk', 'Randevu'],
-      ['SLA ≤5 dk', 'Bilgi'],
+      ['SLA â‰¤5 dk', 'Acil'],
+      ['SLA >15 dk', 'Ã–n DeÄŸerlendirme'],
+      ['SLA â‰¤15 dk', 'Randevu'],
+      ['SLA â‰¤5 dk', 'Bilgi'],
       ['SLA >15 dk', 'Kontrol']
     ];
 
@@ -51,7 +51,7 @@ const DoctorChatPage = () => {
         channel: channels[i % channels.length],
         online: Math.random() > 0.5,
         last: lastMessages[i % lastMessages.length],
-        when: `${i + 1} gün`,
+        when: `${i + 1} gÃ¼n`,
         avatar: i % 2 === 0 ? '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg' : '/images/portrait-candid-male-doctor_720.jpg',
         tags: tags[i % tags.length]
       });
@@ -66,7 +66,7 @@ const DoctorChatPage = () => {
       return [
         { id: 1, sender: 'patient', text: 'Hello! How can I help you? You can share your questions about your health condition.', time: '10:30' },
         { id: 2, sender: 'doctor', text: 'Hello doctor. I have been feeling chest pain for the last few days. It increases especially when I take a deep breath. Is this normal?', time: '10:32' },
-        { id: 3, sender: 'patient', text: 'These symptoms can have various causes. Could you provide more details?\n\n• When did the pain start?\n• Is it constant or intermittent?\n• Do you have any other symptoms?', time: '10:35' },
+        { id: 3, sender: 'patient', text: 'These symptoms can have various causes. Could you provide more details?\n\nâ€¢ When did the pain start?\nâ€¢ Is it constant or intermittent?\nâ€¢ Do you have any other symptoms?', time: '10:35' },
       ];
     }
     return [
@@ -81,7 +81,7 @@ const DoctorChatPage = () => {
 
   // Apply channel filter to thread list
   const filteredThreads = useMemo(() => {
-    return threads.filter(t => (channelFilter === 'Tümü' ? true : t.channel === channelFilter));
+    return threads.filter(t => (channelFilter === 'TÃ¼mÃ¼' ? true : t.channel === channelFilter));
   }, [threads, channelFilter]);
 
   // Mobile pagination logic
@@ -130,16 +130,16 @@ const DoctorChatPage = () => {
               <div className="w-12 h-12 rounded-full mr-3 overflow-hidden bg-gray-100">
                 <img 
                   src="/images/portrait-candid-male-doctor_720.jpg" 
-                  alt="Dr. Mehmet Özkan" 
+                  alt="Dr. Mehmet Ã–zkan" 
                   className="w-full h-full object-cover"
                   style={{ objectPosition: 'center 20%' }}
                 />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-gray-900 leading-tight">Dr. Mehmet Özkan</h1>
+                <h1 className="text-lg font-bold text-gray-900 leading-tight">Dr. Mehmet Ã–zkan</h1>
                 <div className="flex items-center text-[13px] text-gray-600">
                   <span>Cardiologist</span>
-                  <span className="mx-2">•</span>
+                  <span className="mx-2">â€¢</span>
                   <span>Anadolu Health Center</span>
                   <span className="ml-2 bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full text-[11px]">Online</span>
                 </div>
@@ -151,7 +151,7 @@ const DoctorChatPage = () => {
         <div className="flex-1 overflow-hidden">
           <div className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-2 h-full overflow-hidden`}>
         {/* Mobile: Threads list or Chat view */}
-        <div className="lg:hidden h-full overflow-hidden">
+        <div className="lg:hidden h-full overflow-hidden flex flex-col">
           {!mobileChatOpen ? (
             <div>
               <div className="mb-2">
@@ -161,7 +161,7 @@ const DoctorChatPage = () => {
                   onChange={(e)=>handleChannelChange(e.target.value)}
                   className="w-full px-3 py-2 border rounded-lg text-sm bg-white"
                 >
-                  {['Tümü','WhatsApp','Facebook','Web Form','Chat'].map(opt => (
+                  {['All','WhatsApp','Facebook','Web Form','Chat'].map(opt => (
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
@@ -204,7 +204,7 @@ const DoctorChatPage = () => {
                       onClick={() => handleMobilePageChange(mobileCurrentPage - 1)}
                       className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      ‹
+                      â€¹
                     </button>
                     {Array.from({ length: mobileTotalPages }, (_, i) => i + 1).map((page) => (
                       <button
@@ -224,7 +224,7 @@ const DoctorChatPage = () => {
                       onClick={() => handleMobilePageChange(mobileCurrentPage + 1)}
                       className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      ›
+                      â€º
                     </button>
                   </div>
                 </div>
