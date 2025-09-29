@@ -313,7 +313,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
 
           {/* Comments Preview */}
           {showCommentsPreview && (
-            <div className="px-3 pb-3 mt-2 border-t pt-3 bg-white/80 relative min-h-0 transform-gpu">
+            <div className="px-3 pb-3 mt-2 border-t pt-3 bg-white/80 relative min-h-0 transform-gpu overflow-x-hidden">
               {/* New comment input */}
               <div className="flex items-start gap-2 mt-1">
                 <img src={actorAvatar} alt="Your avatar" className="w-8 h-8 rounded-full object-cover border" />
@@ -385,7 +385,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                       </div>
                       {replyTo === 'c1r1' && (
                         <div className="mt-2">
-                          <div className="border rounded-xl p-1.5 flex items-center gap-2 max-w-[520px]">
+                          <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full">
                             <button type="button" className="p-2 text-gray-600 hover:text-teal-700" onClick={(e)=>e.stopPropagation()} aria-label="Emoji">
                               <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
                             </button>
@@ -394,7 +394,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                               value={replyText}
                               onChange={(e)=>setReplyText(e.target.value)}
                               placeholder="Yanıtınızı yazın..."
-                              className="flex-1 outline-none px-2 py-1 text-[14px]"
+                              className="flex-1 outline-none px-2 py-2 text-[14px]"
                             />
                             <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); /* submit mock */ setReplyTo(''); setReplyText(''); }}>
                             Reply
