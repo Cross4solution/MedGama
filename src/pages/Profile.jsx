@@ -4,7 +4,7 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
-import { User, Shield, Bell, Lock, Globe, Link as LinkIcon, ChevronRight, Eye, EyeOff } from 'lucide-react';
+import { User, Shield, Bell, Lock, Globe, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import PatientNotify from '../components/notifications/PatientNotify';
 
 export default function Profile() {
@@ -48,8 +48,7 @@ export default function Profile() {
   const [profilePublic, setProfilePublic] = useState(prefs.profilePublic ?? true);
   const [dataShare, setDataShare] = useState(prefs.dataShare ?? false);
 
-  // Connections
-  const [googleLinked, setGoogleLinked] = useState(!!prefs.googleLinked);
+  // Connections removed
 
   if (!user) {
     return (
@@ -93,11 +92,7 @@ export default function Profile() {
     alert('Gizlilik tercihleri kaydedildi. (Demo)');
   };
 
-  const toggleGoogle = () => {
-    const next = !googleLinked;
-    setGoogleLinked(next);
-    savePrefs({ ...loadPrefs(), googleLinked: next });
-  };
+  // Connections removed
 
   const NavItem = ({ id, icon: Icon, title, desc }) => (
     <button
@@ -130,7 +125,7 @@ export default function Profile() {
           <NavItem id="security" icon={Shield} title="Security" desc="Password" />
           <NavItem id="notifications" icon={Bell} title="Notifications" desc="Patient notifications" />
           <NavItem id="privacy" icon={Lock} title="Privacy" desc="Privacy and data" />
-          <NavItem id="connections" icon={LinkIcon} title="Connections" desc="Linked accounts" />
+          {/* Connections removed */}
         </aside>
 
         {/* Right content */}
@@ -298,24 +293,7 @@ export default function Profile() {
             </div>
           )}
 
-          {active === 'connections' && (
-            <div className="space-y-6">
-              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm flex items-center justify-between">
-                <div>
-                  <h2 className="text-base font-semibold text-gray-900">Google</h2>
-                  <p className="text-sm text-gray-600">Link or unlink your account with Google.</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={toggleGoogle}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${googleLinked? 'bg-gray-100 text-gray-800' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
-                >
-                  {googleLinked ? 'Disconnect' : 'Connect'}
-                </button>
-              </div>
-              <p className="text-xs text-gray-500">Demo: No real OAuth flow; only a preference is stored.</p>
-            </div>
-          )}
+          {/* Connections section removed */}
         </section>
       </div>
     </div>

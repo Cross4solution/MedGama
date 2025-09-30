@@ -54,8 +54,8 @@ export default function ClinicHero({
             <button
               onClick={onToggleFollow || onFollow}
               className={`${isFollowing
-                ? 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-50'
-                : 'bg-blue-600 text-white hover:bg-blue-700'} px-3 py-2 sm:px-3 sm:py-1 rounded-xl transition-all duration-200 flex items-center space-x-1 sm:space-x-2 shadow-sm hover:shadow-md min-w-0`}
+                ? 'bg-white text-blue-700 border-blue-300 hover:bg-blue-50'
+                : 'bg-blue-600 text-white hover:bg-blue-700 border-transparent'} border px-3 py-2 sm:px-3 sm:py-1 rounded-xl transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 shadow-sm hover:shadow-md w-28 sm:w-24`}
               aria-label={isFollowing ? 'Unfollow' : 'Follow'}
             >
               {isFollowing ? (

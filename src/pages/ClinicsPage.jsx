@@ -17,6 +17,15 @@ const MediTravelClinics = () => {
     features: [],
     insurance: []
   });
+
+  // Favori klinik ekle/çıkar
+  const toggleFavorite = (clinicId) => {
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(clinicId)) next.delete(clinicId); else next.add(clinicId);
+      return next;
+    });
+  };
   // Apply'e basılınca kullanılacak, gerçek filtreler
   const [appliedFilters, setAppliedFilters] = useState({
     rating: [],
@@ -125,7 +134,6 @@ const MediTravelClinics = () => {
       image: "/api/placeholder/300/200",
       tags: ["Nöroloji", "Ortopedi", "SGK Anlaşmalı"],
       description: "Akademik hastane, araştırma ve eğitim odaklı, deneyimli kadro, SGK anlaşmalı...",
-      features: ["Akademik", "Uzman Kadro", "SGK"],
       type: "academic"
     }
   ];
@@ -133,8 +141,8 @@ const MediTravelClinics = () => {
   // Uygulanan filtrelere göre sonuçları hesapla (client-side demo)
   const filteredClinics = clinics.filter((c) => {
     // Rating
-    if (appliedFilters.rating.includes('4.5+ Rating') && c.rating < 4.5) return false;
-    if (appliedFilters.rating.includes('4.0+ Rating') && c.rating < 4.0) return false;
+    if (appliedFilters.rating.includes('4.5+') && c.rating < 4.5) return false;
+    if (appliedFilters.rating.includes('4.0+') && c.rating < 4.0) return false;
 
     // Features map (EN -> dataset)
     const hasFeature = (label) => {
@@ -170,23 +178,11 @@ const MediTravelClinics = () => {
     return true;
   });
 
-  const toggleFavorite = (clinicId) => {
-    const newFavorites = new Set(favorites);
-    if (newFavorites.has(clinicId)) {
-      newFavorites.delete(clinicId);
-    } else {
-      newFavorites.add(clinicId);
-    }
-    setFavorites(newFavorites);
-  };
-
-  // Yardımcı bileşenlere taşındı: Rating/FeaturePill/Badge varyantları ClinicCard içinde ele alınıyor.
-
   // Filtre gruplarını UI bileşenine geçirmek için yapılandıralım
   const filterGroups = [
     {
       title: 'Rating',
-      options: ['4.5+ Rating', '4.0+ Rating'],
+      options: ['4.5+', '4.0+'],
       selected: selectedFilters.rating,
       onToggle: (opt) => toggleFilter('rating', opt),
     },

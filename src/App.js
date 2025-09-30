@@ -37,7 +37,8 @@ function AppContent() {
   const location = useLocation();
   const navType = useNavigationType();
   const { user } = useAuth();
-  const hasSidebar = user && user.role !== 'patient';
+  // Show sidebar for all logged-in users (including patients)
+  const hasSidebar = !!user;
   
   // Opsiyonel tekerlek kaydırma override'ı: varsayılan AÇIK (azıcık yavaş ve akıcı)
   // Scroll override: tek kaynaktan (config/scroll.js)
@@ -140,7 +141,7 @@ function AppContent() {
       {/* Global Header - auth sayfalarında gizle */}
       {showHeader && <Header />}
       
-      {/* Show sidebar only for non-patient roles */}
+      {/* Sidebar for logged-in users (patient/doctor/clinic) */}
       {hasSidebar && <SidebarPatient />}
       
       {/* Main content with proper spacing for header */}

@@ -13,13 +13,6 @@ export default function TimelineFeed() {
 
   return (
     <div className="space-y-6">
-      {/* Share Box (only for patients) */}
-      {user?.role === 'patient' && (
-        <div className="bg-white rounded-xl p-4 border shadow-sm">
-          <TimelineShareBox />
-        </div>
-      )}
-
       {/* Posts rendered with Explore-style TimelineCard data (compact + centered) */}
       {posts.map((item) => (
         <div

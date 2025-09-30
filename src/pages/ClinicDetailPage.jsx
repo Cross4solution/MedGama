@@ -1,30 +1,22 @@
 import React, { useState } from 'react';
 import {
   Award,
-  Calendar,
   Stethoscope,
   Activity,
   Brain,
   Scissors,
-  ChevronRight,
   CheckCircle,
-  Star,
   Shield,
   Users,
-  Plus,
-  Trash2,
   Link as LinkIcon,
-  Image as ImageIcon,
   MapPin
 } from 'lucide-react';
 import Badge from '../components/Badge';
 import ClinicHero from 'components/clinic/ClinicHero';
 import Tabs from 'components/tabs/Tabs';
-import ServiceCard from 'components/clinic/ServiceCard';
 import ReviewItem from 'components/reviews/ReviewItem';
 import ContactActions from 'components/clinic/ContactActions';
 import PriceRangeList from 'components/pricing/PriceRangeList';
-import QuickContactCard from 'components/clinic/QuickContactCard';
 import { useAuth } from '../context/AuthContext';
 
 const ClinicDetailPage = () => {
@@ -35,7 +27,7 @@ const ClinicDetailPage = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
 
-  // Editable fields (demo state). In a real app these would be fetched/saved via API.
+  // Editable fields (demo state).
   const [clinicName, setClinicName] = useState('Anadolu Health Center');
   const [clinicLocation, setClinicLocation] = useState('Istanbul, Turkey');
   const [heroImage, setHeroImage] = useState('/images/petr-magera-huwm7malj18-unsplash_720.jpg');
@@ -45,10 +37,10 @@ const ClinicDetailPage = () => {
   const [aboutP2, setAboutP2] = useState('With over 50 specialist doctors and state-of-the-art medical equipment, we offer services in\ncardiac surgery, oncology, neurology, and plastic surgery.');
 
   const [services, setServices] = useState([
-    { name: 'Kalp Cerrahisi', icon: 'Activity', description: 'Bypass, kapak replasmanı, arytoplasti' },
-    { name: 'Onkoloji', icon: 'Stethoscope', description: 'Kanser tanısı, kemoterapi, radyoterapi' },
-    { name: 'Nöroloji', icon: 'Brain', description: 'Beyin cerrahisi, epilepsi tedavisi' },
-    { name: 'Plastik Cerrahi', icon: 'Scissors', description: 'Estetik ve rekonstrüktif cerrahi' },
+    { name: 'Kalp Cerrahisi', icon: Activity, description: 'Bypass, kapak replasmanı, arytoplasti' },
+    { name: 'Onkoloji', icon: Stethoscope, description: 'Kanser tanısı, kemoterapi, radyoterapi' },
+    { name: 'Nöroloji', icon: Brain, description: 'Beyin cerrahisi, epilepsi tedavisi' },
+    { name: 'Plastik Cerrahi', icon: Scissors, description: 'Estetik ve rekonstrüktif cerrahi' },
   ]);
 
   const [doctorsText, setDoctorsText] = useState('Our expert doctors provide comprehensive care across multiple specialties, focusing on patient safety and outcomes.');
@@ -100,19 +92,6 @@ const ClinicDetailPage = () => {
     { service: 'Onkoloji Tedavi', range: '₺30K - ₺200K' }
   ];
 
-  const renderStars = (rating) => {
-    return (
-      <div className="flex items-center gap-1">
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            className={`w-4 h-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-          />
-        ))}
-      </div>
-    );
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
@@ -142,11 +121,11 @@ const ClinicDetailPage = () => {
               onFollow={() => {}}
             />
 
-
             {/* Tabs */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <Tabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
               <div className="px-6 pb-6">
+                {/* Overview */}
                 {activeTab === 'genel-bakis' && (
                   <div className="space-y-6">
                     <div>
@@ -176,14 +155,55 @@ const ClinicDetailPage = () => {
                         <span className="text-sm font-medium text-gray-700">Health Tourism</span>
                       </div>
                     </div>
-                    <div className="bg-purple-50 rounded-lg p-4 mb-6">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <Badge label="PRO Review" variant="purple" size="sm" rounded="full" icon={<Award className="w-4 h-4" />} />
-                      </div>
-                      <p className="text-purple-700 text-sm">
-                        By MediTravel Expert Team: "The clinic provides services at international standards. The medical staff and technological infrastructure are very strong. Patient satisfaction is at a high level."
-                      </p>
+                  </div>
+                )}
+
+                {/* Services */}
+                {activeTab === 'hizmetler' && (
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold text-gray-900">Our Services</h3>
+                    <div className="space-y-3">
+                      {services.map((service, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border"
+                        >
+                          <service.icon className="w-6 h-6 text-blue-600 flex-shrink-0" />
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                            <span className="font-medium text-gray-900">{service.name}</span>
+                            <span className="text-sm text-gray-600">{service.description}</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
+                  </div>
+                )}
+
+                {/* Doctors */}
+                {activeTab === 'doktorlar' && (
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold text-gray-900">Doctors</h3>
+                    <p className="text-gray-600">{doctorsText}</p>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="bg-white shadow rounded-lg p-4 flex items-center gap-4">
+                        <img
+                          src="/images/portrait-candid-male-doctor_720.jpg"
+                          alt="Doctor"
+                          className="w-16 h-16 rounded-full object-cover"
+                        />
+                        <div>
+                          <h4 className="font-semibold text-gray-900">Dr. Ali Yılmaz</h4>
+                          <p className="text-sm text-gray-600">Cardiac Surgeon</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Reviews */}
+                {activeTab === 'degerlendirmeler' && (
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold text-gray-900">Reviews</h3>
                     <div className="space-y-4">
                       {reviews.map((review) => (
                         <ReviewItem key={review.id} review={review} />
@@ -192,6 +212,7 @@ const ClinicDetailPage = () => {
                   </div>
                 )}
 
+                {/* Gallery */}
                 {activeTab === 'galeri' && (
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-900">Gallery</h3>
@@ -205,12 +226,21 @@ const ClinicDetailPage = () => {
                   </div>
                 )}
 
+                {/* Location */}
                 {activeTab === 'konum' && (
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-900">Location</h3>
                     <div className="space-y-2">
-                      <div className="flex items-start gap-2 text-gray-700"><MapPin className="w-5 h-5 mt-0.5 text-teal-600" /> <span>{locationAddress}</span></div>
-                      <a href={locationMapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-teal-700 hover:underline">
+                      <div className="flex items-start gap-2 text-gray-700">
+                        <MapPin className="w-5 h-5 mt-0.5 text-teal-600" />
+                        <span>{locationAddress}</span>
+                      </div>
+                      <a
+                        href={locationMapUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-teal-700 hover:underline"
+                      >
                         <LinkIcon className="w-4 h-4" /> View on Map
                       </a>
                     </div>
@@ -222,10 +252,8 @@ const ClinicDetailPage = () => {
 
           {/* Sidebar */}
           <div className="lg:w-80 space-y-6">
-            {/* Contact Actions */}
             <ContactActions onTelehealth={() => {}} onBook={() => {}} onMessage={() => {}} />
 
-            {/* Health Tourism Package */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Health Tourism Package</h3>
               <div className="space-y-3 mb-4">
@@ -239,10 +267,7 @@ const ClinicDetailPage = () => {
               </button>
             </div>
 
-            {/* Price Range */}
             <PriceRangeList items={priceRanges} />
-
-            {/* Quick Contact removed as requested */}
           </div>
         </div>
       </div>
@@ -250,4 +275,4 @@ const ClinicDetailPage = () => {
   );
 };
 
-export default ClinicDetailPage; 
+export default ClinicDetailPage;

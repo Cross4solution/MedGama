@@ -24,19 +24,13 @@ export default function SidebarPatient() {
   const roleLabel = role === 'doctor' ? 'Doctor' : role === 'clinic' ? 'Clinic' : role === 'admin' ? 'Admin' : 'Patient';
 
   const patientItems = [
-    // Profile Overview (second page)
-    { to: '/patient-home', label: 'Overview', icon: LayoutDashboard },
-    // Notifications (aligned with doctor/clinic order)
-    { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
-    // Messages
-    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon, badge: 2 },
-    // Appointments
-    { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
-    // Additional patient tabs
-    { to: '/explore', label: 'Explore', icon: Newspaper, badge: 5 },
-    { to: '/clinics', label: 'Clinics', icon: Building2 },
-    { to: '/saved', label: 'Saved', icon: Bookmark },
-    { to: '/terms-of-service', label: 'Settings', icon: Settings },
+    // Requested minimal menu for patient
+    { to: '/home-v2', label: 'Home', icon: Home },
+    { to: '/patient-home', label: 'MedStream', icon: Video },
+    { to: '/notifications', label: 'Notifications', icon: Bell },
+    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
+    { to: '/telehealth', label: 'Telehealth', icon: Monitor },
+    { to: '/profile', label: 'Settings', icon: Settings },
   ];
 
   // Doctor-specific menu (Profile → Medstream → Notifications → Messages → Schedule → Telehealth → CRM)

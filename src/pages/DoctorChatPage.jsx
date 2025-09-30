@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import ThreadsSidebar from 'components/chat/ThreadsSidebar';
 import ChatHeader from 'components/chat/ChatHeader';
 import ChatMessageList from 'components/chat/ChatMessageList';
@@ -13,35 +13,35 @@ const DoctorChatPage = () => {
   // Thread list (mock) - daha fazla thread pagination test iÃ§in
   const threads = useMemo(() => {
     const baseThreads = [
-      { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Cuma gÃ¼nÃ¼ benim iÃ§in daha uygun olur...', when: '15 dk', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA â‰¤5 dk', 'Acil'] },
-      { id: 'ali', name: 'Ali Åen', channel: 'Facebook', online: false, last: 'Rica ederim, saÄŸlÄ±klÄ± gÃ¼nler...', when: '2 saat', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15 dk', 'Ã–n DeÄŸerlendirme'] },
-      { id: 'selin', name: 'Selin Acar', channel: 'Web Form', online: true, last: 'Evet, gÃ¶rÃ¼ntÃ¼ledim. YarÄ±n gÃ¶rÃ¼ÅŸebiliriz.', when: '1 gÃ¼n', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA â‰¤15 dk', 'Ã–n DeÄŸerlendirme'] },
-      { id: 'ayse', name: 'AyÅŸe Demir', channel: 'Chat', online: false, last: 'Elbette, size uygun saat nedir?', when: '2 gÃ¼n', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA â‰¤5 dk', 'Randevu'] },
-      { id: 'mehmet', name: 'Mehmet Ã–zkan', channel: 'WhatsApp', online: false, last: 'Size yardÄ±mcÄ± olmak iÃ§in arayabilirim.', when: '3 gÃ¼n', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15 dk', 'Bilgi'] },
+      { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Friday would be more convenient for me...', when: '15min', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Urgent'] },
+      { id: 'ali', name: 'Ali Yılmaz', channel: 'Facebook', online: false, last: 'Youre welcome, have a good day', when: '2 hours', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15min', 'Preliminary Evaluation'] },
+      { id: 'selin', name: 'Selin Acar', channel: 'Web Form', online: true, last: 'Yes, I did. We can see each other tomorrow.', when: '1 day', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Preliminary Evaluation'] },
+      { id: 'ayse', name: 'Ayşe Demir', channel: 'Chat', online: false, last: 'Of course, what time suits you?', when: '2 day', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Date'] },
+      { id: 'mehmet', name: 'Mehmet Özkan', channel: 'WhatsApp', online: false, last: 'I can call to help you.', when: '3 day', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15min', 'Information'] },
     ];
 
     // Daha fazla thread ekle (pagination test iÃ§in)
     const additionalThreads = [];
-    const names = ['Ahmet YÄ±lmaz', 'Fatma Kaya', 'Mustafa Demir', 'Elif Ã–zkan', 'Can Åahin', 'Zeynep Arslan', 'Burak Ã‡elik', 'Seda YÄ±ldÄ±z', 'Emre Korkmaz', 'GÃ¼lay AydÄ±n', 'Hakan YÄ±lmaz', 'PÄ±nar Ã–ztÃ¼rk', 'Serkan DoÄŸan', 'Merve KÄ±lÄ±Ã§', 'Tolga AteÅŸ', 'Deniz YÄ±lmaz', 'Cem Ã–zdemir', 'Sibel Kaya', 'OÄŸuz Demir', 'Nur Ã–zkan'];
+    const names = ['Ahmet Yılmaz', 'Fatma Kaya', 'Mustafa Demir', 'Elif Özkan', 'Can Şahin', 'Zeynep Arslan', 'Burak Aletik', 'Seda Yıldız', 'Emre Korkmaz', 'Gülay Aydın', 'Hakan Yormaz', 'Pınar Yaşar', 'Serkan DoÄŸan', 'Merve Koç', 'Tolga At', 'Deniz Soluk', 'Cem Demir', 'Sibel Kaya', 'Oğuz Demir', 'Nur Rızkan'];
     const channels = ['WhatsApp', 'Facebook', 'Web Form', 'Chat', 'Instagram'];
     const lastMessages = [
-      'Merhaba, nasÄ±lsÄ±nÄ±z?',
-      'Randevu almak istiyorum',
-      'SonuÃ§larÄ±m hazÄ±r mÄ±?',
-      'TeÅŸekkÃ¼r ederim',
-      'YarÄ±n uygun musunuz?',
-      'Acil durum var',
-      'Bilgi almak istiyorum',
-      'Kontrol randevusu',
-      'ReÃ§ete yenileme',
-      'Soru sormak istiyorum'
+      'Hello, how are you?',
+      'Id like to make an appointment',
+      'Are my results ready?',
+      'Thank you',
+      'Are you available tomorrow?',
+      'There is an emergency',
+      'I want to get information',
+      'follow-up appointment',
+      'Prescription renewal',
+      'I want to ask a question'
     ];
     const tags = [
-      ['SLA â‰¤5 dk', 'Acil'],
-      ['SLA >15 dk', 'Ã–n DeÄŸerlendirme'],
-      ['SLA â‰¤15 dk', 'Randevu'],
-      ['SLA â‰¤5 dk', 'Bilgi'],
-      ['SLA >15 dk', 'Kontrol']
+      ['SLA >15min', 'Urgent'],
+      ['SLA >15min', 'Preliminary Evaluation'],
+      ['SLA >15min', 'Date'],
+      ['SLA >15min', 'Information'],
+      ['SLA >15min', 'Control']
     ];
 
     for (let i = 0; i < 20; i++) {
@@ -121,7 +121,7 @@ const DoctorChatPage = () => {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col bg-gray-50 overflow-hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+    <div className="min-h-screen w-full flex flex-col bg-gray-50">
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Doctor Info Header */}
         <div className="bg-white border-b flex-shrink-0">
@@ -139,7 +139,7 @@ const DoctorChatPage = () => {
                 <h1 className="text-lg font-bold text-gray-900 leading-tight">Dr. Mehmet Ã–zkan</h1>
                 <div className="flex items-center text-[13px] text-gray-600">
                   <span>Cardiologist</span>
-                  <span className="mx-2">â€¢</span>
+                  <span className="mx-2">$</span>
                   <span>Anadolu Health Center</span>
                   <span className="ml-2 bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full text-[11px]">Online</span>
                 </div>
@@ -243,7 +243,7 @@ const DoctorChatPage = () => {
           )}
         </div>
             {/* Desktop layout */}
-            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-full ml-24">
+            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-full">
               {/* Threads Sidebar */}
               <div className="w-80 flex-shrink-0">
                 <ThreadsSidebar
