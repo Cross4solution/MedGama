@@ -20,6 +20,7 @@ import ContactPage from './pages/ContactPage';
 import CookieBanner from './components/CookieBanner';
 import { Footer, Header } from './components/layout';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import DoctorLogin from './pages/DoctorLogin';
 import ClinicLogin from './pages/ClinicLogin';
 import Notifications from './pages/Notifications';
@@ -43,6 +44,8 @@ function AppContent() {
   // Opsiyonel tekerlek kaydırma override'ı: varsayılan AÇIK (azıcık yavaş ve akıcı)
   // Scroll override: tek kaynaktan (config/scroll.js)
   React.useEffect(() => {
+    // Do not override scroll on doctor chat page; allow internal containers to manage it
+    if (String(location.pathname || '').startsWith('/doctor-chat')) return;
     if (typeof window === 'undefined') return;
     if (!scrollConfig?.enabled) return;
 
@@ -87,7 +90,7 @@ function AppContent() {
       window.removeEventListener('wheel', handler);
       document.removeEventListener('wheel', handler);
     };
-  }, []);
+  }, [location.pathname]);
   
   // Route değişiminde sayfayı en üste al (ancak /post/* ve geriye dönüşlerde (POP) koru)
   React.useEffect(() => {
@@ -136,6 +139,7 @@ function AppContent() {
   const footerOnlyOn = ['/', '/home', '/home-v2'];
   const showFooter = footerOnlyOn.includes(location.pathname);
   
+  const isDoctorChat = String(location.pathname || '').startsWith('/doctor-chat');
   return (
     <div className={hasSidebar ? "lg:pl-52" : ""}>
       {/* Global Header - auth sayfalarında gizle */}
@@ -144,8 +148,8 @@ function AppContent() {
       {/* Sidebar for logged-in users (patient/doctor/clinic) */}
       {hasSidebar && <SidebarPatient />}
       
-      {/* Main content with proper spacing for header */}
-      <div className={showHeader ? (hasOwnContainer ? "pt-20" : "pt-16") : ""}>
+      {/* Main content with proper spacing for header (no extra padding on doctor chat) */}
+      <div className={showHeader ? (isDoctorChat ? "" : (hasOwnContainer ? "pt-20" : "pt-16")) : ""}>
         <Routes>
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />
@@ -191,7 +195,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppContent />
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
       </AuthProvider>
     </Router>
   );

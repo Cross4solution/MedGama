@@ -109,7 +109,7 @@ export default function ClinicProfileEdit() {
             {/* Hero & Branding */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Hero Image</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
                 <div className="flex items-center gap-3">
                   <div className="w-48 h-24 rounded-lg bg-gray-100 border flex items-center justify-center overflow-hidden">
                     {(heroPreview || form.heroImage) ? (

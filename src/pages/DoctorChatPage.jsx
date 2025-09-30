@@ -121,8 +121,8 @@ const DoctorChatPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-gray-50">
-      <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="h-[calc(100vh-4rem)] w-full flex flex-col bg-gray-50 overflow-hidden -mt-px">
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {/* Doctor Info Header */}
         <div className="bg-white border-b flex-shrink-0">
           <div className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-1`}>
@@ -148,10 +148,10 @@ const DoctorChatPage = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden">
-          <div className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-2 h-full overflow-hidden`}>
+        <div className="flex-1 overflow-hidden min-h-0">
+          <div className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-2 h-full overflow-hidden min-h-0`}>
         {/* Mobile: Threads list or Chat view */}
-        <div className="lg:hidden h-full overflow-hidden flex flex-col">
+        <div className="lg:hidden h-full overflow-hidden flex flex-col min-h-0">
           {!mobileChatOpen ? (
             <div>
               <div className="mb-2">
@@ -231,7 +231,7 @@ const DoctorChatPage = () => {
               )}
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border flex-1 flex flex-col overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border flex-1 flex flex-col overflow-hidden min-h-0">
               <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} />
               <ChatMessageList
                 messages={messages}
@@ -243,7 +243,7 @@ const DoctorChatPage = () => {
           )}
         </div>
             {/* Desktop layout */}
-            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-full">
+            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-full min-h-0">
               {/* Threads Sidebar */}
               <div className="w-80 flex-shrink-0">
                 <ThreadsSidebar
@@ -257,8 +257,8 @@ const DoctorChatPage = () => {
               </div>
 
               {/* Chat Area (expanded) */}
-              <div className="flex-1">
-                <div className="bg-white rounded-lg shadow-sm border h-full flex flex-col">
+              <div className="flex-1 min-h-0">
+                <div className="bg-white rounded-lg shadow-sm border h-full flex flex-col min-h-0">
                   {/* Chat Header */}
                   <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} />
 

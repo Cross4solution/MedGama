@@ -41,7 +41,7 @@ const TelehealthPage = () => {
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
             {stats.map((stat, index) => (
-              <div key={index} className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 aspect-square flex flex-col justify-between">
+              <div key={index} className="bg-white rounded-xl p-4 sm:p-5 lg:p-5 border border-gray-200 aspect-square md:aspect-[4/3] lg:aspect-[3/2] flex flex-col justify-between">
                 <div className="flex items-start sm:items-center justify-between">
                   <div>
                     <p className="text-xs sm:text-sm font-medium text-gray-600">{stat.title}</p>

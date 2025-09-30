@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import {
-  Heart,
-  CheckCircle,
-  Shield
-} from 'lucide-react';
+import { useToast } from '../context/ToastContext';
+import { Heart, CheckCircle, Shield } from 'lucide-react';
 import LoginForm from '../components/auth/LoginForm';
 import RegisterForm from '../components/auth/RegisterForm';
 import ForgotPasswordForm from '../components/auth/ForgotPasswordForm';
@@ -15,12 +12,15 @@ import PrivacyPopup from '../components/auth/PrivacyPopup';
 const AuthPages = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, register, demoLogin } = useAuth();
+  const { notify } = useToast();
+
   const [currentPage, setCurrentPage] = useState('login'); // 'login', 'register', or 'forgot-password'
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showTermsPopup, setShowTermsPopup] = useState(false);
   const [showPrivacyPopup, setShowPrivacyPopup] = useState(false);
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -36,7 +36,6 @@ const AuthPages = () => {
   });
   const [errors, setErrors] = useState({});
 
-  // Sync current page with route so /register opens Register form by default
   useEffect(() => {
     if (location.pathname === '/register') {
       setCurrentPage('register');
@@ -59,77 +58,71 @@ const AuthPages = () => {
 
   const validateForm = () => {
     const newErrors = {};
- 
+
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
- 
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
     }
- 
+
     if (currentPage === 'register') {
       if (!formData.firstName) newErrors.firstName = 'First name is required';
       if (!formData.lastName) newErrors.lastName = 'Last name is required';
       if (!formData.phone) newErrors.phone = 'Phone number is required';
-      else {
-        // Ülke kodu içermeli, örn: +90 555 123 45 67
-        const startsWithCountry = /^\s*\+\d{1,3}[\s\d()-]*$/.test(formData.phone);
-        if (!startsWithCountry) {
-          newErrors.phone = 'Ülke kodunuzu giriniz (örn. +90 555 123 45 67)';
-        }
+      if (formData.phone && !/^\s*\+\d{1,3}[\s\d()-]*$/.test(formData.phone)) {
+        newErrors.phone = 'Ülke kodunuzu giriniz (örn. +90 555 123 45 67)';
       }
-      if (!formData.confirmPassword) {
-        newErrors.confirmPassword = 'Confirm password is required';
-      } else if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = 'Passwords do not match';
-      }
-      if (!formData.acceptTerms) {
-        newErrors.acceptTerms = 'You must accept the Terms of Use';
-      }
+      if (!formData.confirmPassword) newErrors.confirmPassword = 'Confirm password is required';
+      if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+      if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the Terms of Use';
     }
- 
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Demo: mock login ve patient-home'a yönlendir
-    login();
-    navigate('/');
+    const ok = validateForm();
+    if (!ok) return;
+    try {
+      if (currentPage === 'login') {
+        const res = await login(formData.email, formData.password);
+        notify({ type: 'success', message: res?.message || 'Login successful' });
+        navigate('/home-v2');
+      } else if (currentPage === 'register') {
+        const res = await register(formData.email, formData.password, formData.confirmPassword);
+        notify({ type: 'success', message: res?.message || 'Registration successful. Please login.' });
+        navigate('/login');
+      } else {
+        notify({ type: 'info', message: 'Password reset link sent if the email exists.' });
+      }
+    } catch (err) {
+      if (err?.status === 401) {
+        notify({ type: 'error', message: err?.data?.message || 'Invalid credentials' });
+      } else if (err?.status === 422 && err?.data?.errors) {
+        const fieldErrors = {};
+        Object.entries(err.data.errors).forEach(([field, arr]) => {
+          fieldErrors[field] = Array.isArray(arr) ? arr[0] : String(arr);
+        });
+        setErrors((prev) => ({ ...prev, ...fieldErrors }));
+        notify({ type: 'error', message: err?.data?.message || 'Validation error' });
+      } else {
+        notify({ type: 'error', message: err?.message || 'Unexpected error' });
+      }
+    }
   };
 
   return (
     <div className="min-h-screen w-full flex relative">
       {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-teal-500 via-teal-600 to-cyan-700" style={{
-        background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #115e59 100%)'
-      }}>
-        {/* Floating circles */}
-        <div className="absolute top-10 left-10 w-24 h-24 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-white/10 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute top-20 right-4 sm:right-16 lg:right-32 w-32 h-32 sm:w-64 sm:h-64 lg:w-80 lg:h-80 bg-white/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-16 left-1/4 w-28 h-28 sm:w-56 sm:h-56 lg:w-72 lg:h-72 bg-white/10 rounded-full blur-xl animate-pulse delay-500"></div>
-        <div className="absolute bottom-8 right-4 sm:right-12 lg:right-20 w-20 h-20 sm:w-40 sm:h-40 lg:w-56 lg:h-56 bg-white/15 rounded-full blur-xl animate-pulse delay-700"></div>
-
-        {/* Geometric shapes */}
-        <div className="absolute top-1/4 left-2 sm:left-6 lg:left-10 w-2 h-2 sm:w-3 sm:h-3 lg:w-4 lg:h-4 bg-white/20 rotate-45 animate-bounce delay-300"></div>
-        <div className="absolute top-1/3 right-1/4 w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 bg-white/25 rotate-12 animate-bounce delay-500"></div>
-        <div className="absolute bottom-1/3 left-1/3 w-2 h-2 sm:w-3 sm:h-3 lg:w-5 lg:h-5 bg-white/30 rotate-45 animate-bounce delay-700"></div>
-        <div className="absolute bottom-1/4 right-3 sm:right-6 lg:right-12 w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 bg-white/35 rotate-12 animate-bounce delay-900"></div>
-
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="w-full h-full" style={{
-            backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-            backgroundSize: '40px 40px'
-          }}></div>
-        </div>
-      </div>
+      <div className="absolute inset-0 bg-gradient-to-br from-teal-500 via-teal-600 to-cyan-700" />
 
       {/* Form Container */}
       <div className="relative z-10 flex w-full min-h-screen items-center justify-center p-3 sm:p-6 overflow-y-auto">
@@ -139,15 +132,24 @@ const AuthPages = () => {
             {/* Mobile Form */}
             <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-3 sm:p-5 shadow-2xl border border-white/30 mb-4">
               {currentPage === 'login' ? (
-                <LoginForm 
-                  formData={formData}
-                  errors={errors}
-                  showPassword={showPassword}
-                  setShowPassword={setShowPassword}
-                  handleInputChange={handleInputChange}
-                  handleSubmit={handleSubmit}
-                  setCurrentPage={setCurrentPage}
-                />
+                <>
+                  <LoginForm 
+                    formData={formData}
+                    errors={errors}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    handleInputChange={handleInputChange}
+                    handleSubmit={handleSubmit}
+                    setCurrentPage={setCurrentPage}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => { demoLogin('patient'); navigate('/home-v2'); }}
+                    className="w-full mt-3 bg-gray-100 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-200"
+                  >
+                    Demo Login (Patient)
+                  </button>
+                </>
               ) : currentPage === 'register' ? (
                 <RegisterForm 
                   formData={formData}
@@ -243,15 +245,26 @@ const AuthPages = () => {
             <div className="flex-1 max-w-3xl">
               <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-6 md:p-8 shadow-2xl border border-white/30">
                 {currentPage === 'login' ? (
-                  <LoginForm 
-                    formData={formData}
-                    errors={errors}
-                    showPassword={showPassword}
-                    setShowPassword={setShowPassword}
-                    handleInputChange={handleInputChange}
-                    handleSubmit={handleSubmit}
-                    setCurrentPage={setCurrentPage}
-                  />
+                  <>
+                    <LoginForm 
+                      formData={formData}
+                      errors={errors}
+                      showPassword={showPassword}
+                      setShowPassword={setShowPassword}
+                      handleInputChange={handleInputChange}
+                      handleSubmit={handleSubmit}
+                      setCurrentPage={setCurrentPage}
+                    />
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        onClick={() => { demoLogin('patient'); navigate('/home-v2'); }}
+                        className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200"
+                      >
+                        Demo Login (Patient)
+                      </button>
+                    </div>
+                  </>
                 ) : currentPage === 'register' ? (
                   <RegisterForm 
                     formData={formData}
