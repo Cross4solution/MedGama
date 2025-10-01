@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -15,6 +15,7 @@ const Header = () => {
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const [mobileLoginExpanded, setMobileLoginExpanded] = useState(false);
   // Removed profile dropdown (only avatar + username shown)
+  const { pathname } = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -45,20 +46,26 @@ const Header = () => {
 
   return (
     <>
-    <header className={`fixed top-0 left-0 right-0 z-50 md:border-b bg-white`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 md:border-b ${pathname.startsWith('/explore') ? 'border-transparent' : 'border-gray-200'} bg-white`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
           {/* Logo */}
-          <Link to="/home-v2" onClick={closeMenu} className="flex items-center space-x-3 cursor-pointer select-none ml-9">
-            <img
-              src="/images/logo/crm-logo.jpg"
-              alt="MedGama Logo"
-              className="h-10 md:h-12 w-auto object-contain rounded"
-              loading="eager"
-              decoding="async"
-            />
-            <span className={`text-xl font-bold text-gray-900`}>MedGama</span>
-          </Link>
+          {(() => {
+            const role = user?.role;
+            const logoTo = role === 'doctor' || role === 'clinic' ? '/patient-home' : '/home-v2';
+            return (
+              <Link to={logoTo} onClick={closeMenu} className="flex items-center space-x-3 cursor-pointer select-none ml-9">
+                <img
+                  src="/images/logo/crm-logo.jpg"
+                  alt="MedGama Logo"
+                  className="h-10 md:h-12 w-auto object-contain rounded"
+                  loading="eager"
+                  decoding="async"
+                />
+                <span className={`text-xl font-bold text-gray-900`}>MedGama</span>
+              </Link>
+            );
+          })()}
 
           {/* Logoya daha da yakın menü */}
           <nav className="hidden md:flex items-center space-x-8 ml-auto mr-28">
@@ -275,7 +282,7 @@ const Header = () => {
             ];
             const doctorItems = [
               { to: '/profile', label: 'Profile', icon: User },
-              { to: '/patient-home', label: 'Medstream', icon: Video },
+              { to: '/explore', label: 'Medstream', icon: Video },
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/home-v2', label: 'Homepage', icon: Home },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
@@ -284,7 +291,7 @@ const Header = () => {
             ];
             const clinicItems = [
               { to: '/clinic', label: 'Profile', icon: User },
-              { to: '/patient-home', label: 'Medstream', icon: Video },
+              { to: '/explore', label: 'Medstream', icon: Video },
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/home-v2', label: 'Homepage', icon: Home },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },

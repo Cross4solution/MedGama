@@ -297,10 +297,10 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
             {/* Comments (right aligned, icon removed) */}
             <button
               type="button"
-              className="text-gray-500 hover:underline"
+              className="text-gray-500 group"
               onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
             >
-              <span className="inline-block align-middle min-w-[2.5ch] md:min-w-0 text-center tabular-nums">{item.comments}</span> comments
+              <span className="inline-block align-middle min-w-[2.5ch] md:min-w-0 text-center tabular-nums">{item.comments}</span> <span className="inline-block translate-y-[1px] group-hover:underline underline-offset-[2px]">comments</span>
             </button>
           </div>
 

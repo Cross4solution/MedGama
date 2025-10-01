@@ -121,7 +121,7 @@ const DoctorChatPage = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] w-full flex flex-col bg-gray-50 overflow-hidden -mt-px">
+    <div className="h-[calc(100vh-4rem)] w-full flex flex-col bg-gray-50 overflow-hidden mt-3">
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {/* Doctor Info Header */}
         <div className="bg-white border-b flex-shrink-0">
@@ -243,7 +243,7 @@ const DoctorChatPage = () => {
           )}
         </div>
             {/* Desktop layout */}
-            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-full min-h-0">
+            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-full min-h-0 mt-2">
               {/* Threads Sidebar */}
               <div className="w-80 flex-shrink-0">
                 <ThreadsSidebar

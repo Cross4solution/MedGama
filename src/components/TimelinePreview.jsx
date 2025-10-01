@@ -56,7 +56,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
   }, []);
 
   return (
-    <section id="timeline" className="py-2">
+    <section id="timeline" className="pt-0 pb-2">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold text-gray-900">Medstream</h2>
@@ -74,7 +74,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
         </div>
         <div className="rounded-lg border-2 border-gray-300 shadow-lg overflow-hidden" style={{ backgroundColor: '#EEF7F6' }}>
           {/* Scrollable feed area */}
-          <div ref={scrollRef} className="h-[86vh] overflow-y-auto pr-2 pt-2">
+          <div ref={scrollRef} className="h-[86vh] overflow-y-auto pr-2 pt-1">
             <div className="space-y-6">
               {data.slice(0, 8).map((item) => (
                 <div

@@ -225,8 +225,8 @@ export default function ExploreTimeline() {
   }, [hasMore, items.length]);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#EEF7F6' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen -mt-px" style={{ backgroundColor: '#EEF7F6' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 md:pt-1 pb-8">
         {/* Başlık + Sekmeler + Sıralama */}
         <TimelineControls
           user={user}

@@ -26,6 +26,12 @@ export default function PostDetail() {
   const [heroOpacity, setHeroOpacity] = React.useState(1);
   const [heroShiftPx, setHeroShiftPx] = React.useState(0);
   const baseHeightRef = React.useRef(0);
+  // Zoom/Pan state for desktop image view
+  const [zoom, setZoom] = React.useState(1);
+  const [offset, setOffset] = React.useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = React.useState(false);
+  const panStartRef = React.useRef({ x: 0, y: 0 });
+  const offsetStartRef = React.useRef({ x: 0, y: 0 });
   // Action bar local state (match TimelineCard)
   const [liked, setLiked] = React.useState(false);
   const [likeCount, setLikeCount] = React.useState(Number(item?.engagement?.likes) || Number(item?.likes) || 0);
@@ -135,6 +141,45 @@ export default function PostDetail() {
     }
   })();
 
+  // Zoom handlers (desktop)
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const onWheelZoom = (e) => {
+    // Only handle zooming on desktop; ignore if modifier keys pressed unpredictably
+    const isDesktop = typeof window !== 'undefined' ? window.innerWidth >= 1024 : false;
+    if (!isDesktop) return;
+    // Prevent page scroll while zooming over image area
+    e.preventDefault();
+    const delta = -Math.sign(e.deltaY) * 0.15; // wheel up => zoom in
+    setZoom((z) => clamp(Number((z + delta).toFixed(2)), 1, 4));
+  };
+
+  const onDoubleClickZoom = (e) => {
+    const isDesktop = typeof window !== 'undefined' ? window.innerWidth >= 1024 : false;
+    if (!isDesktop) return;
+    setZoom((z) => (z === 1 ? 2 : 1));
+    if (zoom === 1) {
+      // will become 2: keep current offset
+    } else {
+      // reset when returning to 1
+      setOffset({ x: 0, y: 0 });
+    }
+  };
+
+  const onMouseDownPan = (e) => {
+    const isDesktop = typeof window !== 'undefined' ? window.innerWidth >= 1024 : false;
+    if (!isDesktop || zoom === 1) return;
+    setIsPanning(true);
+    panStartRef.current = { x: e.clientX, y: e.clientY };
+    offsetStartRef.current = { ...offset };
+  };
+  const onMouseMovePan = (e) => {
+    if (!isPanning) return;
+    const dx = e.clientX - panStartRef.current.x;
+    const dy = e.clientY - panStartRef.current.y;
+    setOffset({ x: offsetStartRef.current.x + dx, y: offsetStartRef.current.y + dy });
+  };
+  const onMouseUpPan = () => setIsPanning(false);
+
   return (
     !item ? (
       <div className="min-h-screen bg-gray-50">
@@ -145,10 +190,22 @@ export default function PostDetail() {
       </div>
     ) : (
     <div className="fixed inset-0 bg-black/50 z-[90]">
-      <div className="absolute inset-0 flex flex-col lg:grid lg:grid-cols-[minmax(260px,1fr)_minmax(360px,560px)] overflow-y-hidden lg:overflow-y-visible overscroll-y-none touch-pan-y bg-white lg:bg-transparent">
+      <div className="absolute inset-0 flex flex-col lg:grid lg:grid-cols-[minmax(260px,1fr)_minmax(360px,560px)] overflow-y-hidden lg:overflow-y-visible overscroll-y-none touch-pan-y bg-transparent">
         {/* Left: Image column */}
-        <div className="flex flex-col bg-white lg:min-h-0">
-          <div className="relative flex items-center justify-center bg-white overflow-hidden select-none sticky top-0 z-10 flex-shrink-0 lg:h-screen" style={{ height: heroHeightPx ? `${heroHeightPx}px` : undefined, transition: 'height 0.12s ease-out', opacity: heroOpacity, willChange: 'height' }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        <div className="flex flex-col bg-transparent lg:min-h-0">
+          <div className="relative flex items-center justify-center bg-transparent overflow-hidden select-none sticky top-0 z-10 flex-shrink-0 lg:h-screen" style={{ height: heroHeightPx ? `${heroHeightPx}px` : undefined, transition: 'height 0.12s ease-out', opacity: heroOpacity, willChange: 'height' }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+          {/* Blurred background using the same image */}
+          {mediaList.length > 0 && (
+            <>
+              <img
+                src={mediaList[imgIndex]?.url}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-60"
+              />
+              <div className="absolute inset-0 bg-black/20" />
+            </>
+          )}
           <button
             onClick={() => navigate(-1)}
             className="absolute top-4 left-4 z-10 text-white/80 hover:text-white"
@@ -177,14 +234,33 @@ export default function PostDetail() {
             </>
           )}
           {mediaList.length > 0 ? (
-            <img 
-              src={mediaList[imgIndex]?.url} 
-              alt={item.title} 
-              className="w-full h-full object-cover"
-              onError={() => {
-                // Image error handling - fallback div will be shown automatically
-              }}
-            />
+            <div
+              className="relative flex items-center justify-center overflow-hidden bg-transparent rounded-md w-full h-full md:w-[92vw] md:h-[70vh] lg:w-[82vw] xl:w-[75vw] max-w-[1280px] mx-auto"
+              onWheel={onWheelZoom}
+              onDoubleClick={onDoubleClickZoom}
+              onMouseDown={onMouseDownPan}
+              onMouseMove={onMouseMovePan}
+              onMouseUp={onMouseUpPan}
+              onMouseLeave={onMouseUpPan}
+            >
+              <img
+                src={mediaList[imgIndex]?.url}
+                alt={item.title}
+                className={`max-w-none select-none ${zoom === 1 ? 'cursor-zoom-in' : 'cursor-grab active:cursor-grabbing'}`}
+                style={{
+                  width: 'auto',
+                  height: '100%',
+                  objectFit: 'contain',
+                  transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${zoom})`,
+                  transformOrigin: 'center center',
+                  willChange: 'transform',
+                }}
+                draggable={false}
+                onError={() => {
+                  // Image error handling - fallback div will be shown automatically
+                }}
+              />
+            </div>
           ) : null}
           {/* Broken image fallback - always visible when no media or image fails */}
           <div className={`${mediaList.length === 0 ? 'flex' : 'hidden'} flex-col items-center justify-center text-white/60 text-center p-8`}>
