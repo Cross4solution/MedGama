@@ -59,7 +59,7 @@ export default function ThreadsSidebar({
         </div>
         
         {totalPages > 1 && (
-          <div className="border-t bg-gray-50 p-1">
+          <div className="mt-2 border-t bg-gray-50 p-1">
             <div className="flex justify-center items-center space-x-1">
               <button
                 disabled={currentPage === 1}

@@ -277,8 +277,14 @@ const Header = () => {
         <div className="fixed top-20 left-0 right-0 z-50 mx-4 max-w-md md:hidden overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ring-1 ring-black/5">
           {(() => {
             const role = (user?.role || 'patient');
+            // Mirror mobile dropdown with SidebarPatient menu for patients
             const patientItems = [
-              { to: '/profile', label: 'Profile', icon: User },
+              { to: '/home-v2', label: 'Home', icon: Home },
+              { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/notifications', label: 'Notifications', icon: Bell },
+              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
+              { to: '/telehealth', label: 'Telehealth', icon: Monitor },
+              { to: '/profile', label: 'Settings', icon: Settings },
             ];
             const doctorItems = [
               { to: '/profile', label: 'Profile', icon: User },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Award,
   Stethoscope,
@@ -9,9 +9,13 @@ import {
   Shield,
   Users,
   Link as LinkIcon,
-  MapPin
+  MapPin,
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import Badge from '../components/Badge';
+import LeafletMap from 'components/map/LeafletMap';
 import ClinicHero from 'components/clinic/ClinicHero';
 import Tabs from 'components/tabs/Tabs';
 import ReviewItem from 'components/reviews/ReviewItem';
@@ -50,9 +54,26 @@ const ClinicDetailPage = () => {
     '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg',
     '/images/gautam-arora-gufqybn_cvg-unsplash_720.jpg'
   ]);
+  // Gallery modal state
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
 
   const [locationAddress, setLocationAddress] = useState('Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul');
   const [locationMapUrl, setLocationMapUrl] = useState('https://maps.google.com/?q=Istanbul+Turkey');
+  // Mobilde harita sürükleme/zoom için gestureHandling=greedy ekledik
+  const mapEmbedSrc = `https://www.google.com/maps?q=${encodeURIComponent(locationAddress)}&z=15&output=embed&hl=en&gestureHandling=greedy`;
+
+  // Gallery modal: keyboard support
+  useEffect(() => {
+    if (!galleryOpen) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setGalleryOpen(false);
+      if (e.key === 'ArrowLeft') setGalleryIndex((i) => (i - 1 + gallery.length) % gallery.length);
+      if (e.key === 'ArrowRight') setGalleryIndex((i) => (i + 1) % gallery.length);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [galleryOpen, gallery.length]);
 
   const tabs = [
     { id: 'genel-bakis', label: 'Overview' },
@@ -216,13 +237,62 @@ const ClinicDetailPage = () => {
                 {activeTab === 'galeri' && (
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-900">Gallery</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
                       {gallery.map((src, idx)=> (
-                        <div key={`g-${idx}`} className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                          <img src={src} alt={`Gallery ${idx+1}`} className="w-full h-full object-cover" />
-                        </div>
+                        <button
+                          key={`g-${idx}`}
+                          type="button"
+                          className="relative w-full pb-[100%] bg-gray-100 rounded-xl overflow-hidden ring-1 ring-black/5 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          onClick={() => { setGalleryIndex(idx); setGalleryOpen(true); }}
+                        >
+                          <img src={src} alt={`Gallery ${idx+1}`} className="absolute inset-0 w-full h-full object-cover transition-transform duration-200 hover:scale-[1.03]" />
+                        </button>
                       ))}
                     </div>
+
+                    {galleryOpen && (
+                      <div className="fixed inset-0 z-[100] flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setGalleryOpen(false)} />
+                        <div className="relative z-[101] w-[88vw] h-[88vw] md:w-[70vh] md:h-[70vh] max-w-[1100px] max-h-[1100px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/20 flex items-center justify-center">
+                          <img
+                            src={gallery[galleryIndex]}
+                            alt={`Gallery ${galleryIndex+1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Prev */}
+                          {gallery.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => setGalleryIndex((i) => (i - 1 + gallery.length) % gallery.length)}
+                              className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 h-10 w-10 md:h-11 md:w-11 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
+                              aria-label="Previous image"
+                            >
+                              <ChevronLeft className="w-6 h-6" />
+                            </button>
+                          )}
+                          {/* Next */}
+                          {gallery.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => setGalleryIndex((i) => (i + 1) % gallery.length)}
+                              className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 h-10 w-10 md:h-11 md:w-11 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
+                              aria-label="Next image"
+                            >
+                              <ChevronRight className="w-6 h-6" />
+                            </button>
+                          )}
+                          {/* Close */}
+                          <button
+                            type="button"
+                            onClick={() => setGalleryOpen(false)}
+                            className="absolute top-3 right-3 md:top-4 md:right-4 h-10 w-10 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
+                            aria-label="Close"
+                          >
+                            <X className="w-6 h-6" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -230,19 +300,14 @@ const ClinicDetailPage = () => {
                 {activeTab === 'konum' && (
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-900">Location</h3>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex items-start gap-2 text-gray-700">
                         <MapPin className="w-5 h-5 mt-0.5 text-teal-600" />
                         <span>{locationAddress}</span>
                       </div>
-                      <a
-                        href={locationMapUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-teal-700 hover:underline"
-                      >
-                        <LinkIcon className="w-4 h-4" /> View on Map
-                      </a>
+                      <div className="rounded-xl overflow-hidden border shadow-sm">
+                        <LeafletMap address={locationAddress} height="320px" />
+                      </div>
                     </div>
                   </div>
                 )}

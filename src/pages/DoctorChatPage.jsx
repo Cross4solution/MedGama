@@ -66,7 +66,7 @@ const DoctorChatPage = () => {
       return [
         { id: 1, sender: 'patient', text: 'Hello! How can I help you? You can share your questions about your health condition.', time: '10:30' },
         { id: 2, sender: 'doctor', text: 'Hello doctor. I have been feeling chest pain for the last few days. It increases especially when I take a deep breath. Is this normal?', time: '10:32' },
-        { id: 3, sender: 'patient', text: 'These symptoms can have various causes. Could you provide more details?\n\nâ€¢ When did the pain start?\nâ€¢ Is it constant or intermittent?\nâ€¢ Do you have any other symptoms?', time: '10:35' },
+        { id: 3, sender: 'patient', text: 'These symptoms can have various causes. Could you provide more details?\n\n When did the pain start?\n Is it constant or intermittent?\n Do you have any other symptoms?', time: '10:35' },
       ];
     }
     return [

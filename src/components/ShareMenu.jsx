@@ -82,7 +82,7 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
           ref={panelRef}
           role="menu"
           aria-label="Share options"
-          className="fixed z-50 rounded-xl border border-gray-200 bg-white/90 backdrop-blur-md shadow-lg ring-1 ring-black/5"
+          className="fixed z-[200] rounded-xl border border-gray-200 bg-white/90 backdrop-blur-md shadow-lg ring-1 ring-black/5"
           style={{ top: pos.top, left: pos.left, width: pos.width }}
         >
           <div className="p-2">
