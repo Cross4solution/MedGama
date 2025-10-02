@@ -48,20 +48,28 @@ const ClinicDetailPage = () => {
   ]);
 
   const [doctorsText, setDoctorsText] = useState('Our expert doctors provide comprehensive care across multiple specialties, focusing on patient safety and outcomes.');
+  
+  // Tabs listesi
+  const tabs = [
+    { id: 'genel-bakis', label: 'Overview' },
+    { id: 'hizmetler', label: 'Services' },
+    { id: 'doktorlar', label: 'Doctors' },
+    { id: 'degerlendirmeler', label: 'Reviews' },
+    { id: 'galeri', label: 'Gallery' },
+    { id: 'konum', label: 'Location' }
+  ];
 
+  // Gallery state
   const [gallery, setGallery] = useState([
     '/images/portrait-candid-male-doctor_720.jpg',
     '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg',
     '/images/gautam-arora-gufqybn_cvg-unsplash_720.jpg'
   ]);
-  // Gallery modal state
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
 
+  // Location state
   const [locationAddress, setLocationAddress] = useState('Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul');
-  const [locationMapUrl, setLocationMapUrl] = useState('https://maps.google.com/?q=Istanbul+Turkey');
-  // Mobilde harita sürükleme/zoom için gestureHandling=greedy ekledik
-  const mapEmbedSrc = `https://www.google.com/maps?q=${encodeURIComponent(locationAddress)}&z=15&output=embed&hl=en&gestureHandling=greedy`;
 
   // Gallery modal: keyboard support
   useEffect(() => {
@@ -75,14 +83,15 @@ const ClinicDetailPage = () => {
     return () => document.removeEventListener('keydown', onKey);
   }, [galleryOpen, gallery.length]);
 
-  const tabs = [
-    { id: 'genel-bakis', label: 'Overview' },
-    { id: 'hizmetler', label: 'Services' },
-    { id: 'doktorlar', label: 'Doctors' },
-    { id: 'degerlendirmeler', label: 'Reviews' },
-    { id: 'galeri', label: 'Gallery' },
-    { id: 'konum', label: 'Location' }
-  ];
+  // Modal açıkken body'ye sınıf ekle (header beyazlığını gizlemek için)
+  useEffect(() => {
+    if (galleryOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [galleryOpen]);
 
   const reviews = [
     {
@@ -251,45 +260,50 @@ const ClinicDetailPage = () => {
                     </div>
 
                     {galleryOpen && (
-                      <div className="fixed inset-0 z-[100] flex items-center justify-center">
-                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setGalleryOpen(false)} />
-                        <div className="relative z-[101] w-[88vw] h-[88vw] md:w-[70vh] md:h-[70vh] max-w-[1100px] max-h-[1100px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/20 flex items-center justify-center">
-                          <img
-                            src={gallery[galleryIndex]}
-                            alt={`Gallery ${galleryIndex+1}`}
-                            className="w-full h-full object-cover"
-                          />
-                          {/* Prev */}
+                      <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+                        <div className="fixed inset-0 z-0 bg-black/70 backdrop-blur-lg" onClick={() => setGalleryOpen(false)} />
+                        {/* Wrapper keeps arrows outside the image frame */}
+                        <div className="relative z-[101] flex items-center justify-center">
+                          {/* Image box */}
+                          <div className="relative w-[88vw] h-[88vw] md:w-[70vh] md:h-[70vh] max-w-[1100px] max-h-[1100px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/20 flex items-center justify-center">
+                            <img
+                              src={gallery[galleryIndex]}
+                              alt={`Gallery ${galleryIndex+1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            {/* Close */}
+                            <button
+                              type="button"
+                              onClick={() => setGalleryOpen(false)}
+                              className="absolute top-3 right-3 md:top-4 md:right-4 h-10 w-10 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
+                              aria-label="Close"
+                            >
+                              <X className="w-6 h-6" />
+                            </button>
+                          </div>
+                          {/* Prev - slightly further outside the image box */}
                           {gallery.length > 1 && (
                             <button
                               type="button"
                               onClick={() => setGalleryIndex((i) => (i - 1 + gallery.length) % gallery.length)}
-                              className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 h-10 w-10 md:h-11 md:w-11 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
+                              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[120%] mr-5 h-10 w-10 md:h-11 md:w-11 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
                               aria-label="Previous image"
                             >
                               <ChevronLeft className="w-6 h-6" />
                             </button>
                           )}
-                          {/* Next */}
+
+                          {/* Next - slightly further outside the image box */}
                           {gallery.length > 1 && (
                             <button
                               type="button"
                               onClick={() => setGalleryIndex((i) => (i + 1) % gallery.length)}
-                              className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 h-10 w-10 md:h-11 md:w-11 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
+                              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[120%] ml-5 h-10 w-10 md:h-11 md:w-11 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
                               aria-label="Next image"
                             >
                               <ChevronRight className="w-6 h-6" />
                             </button>
                           )}
-                          {/* Close */}
-                          <button
-                            type="button"
-                            onClick={() => setGalleryOpen(false)}
-                            className="absolute top-3 right-3 md:top-4 md:right-4 h-10 w-10 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
-                            aria-label="Close"
-                          >
-                            <X className="w-6 h-6" />
-                          </button>
                         </div>
                       </div>
                     )}

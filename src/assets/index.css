@@ -128,8 +128,30 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .date-with-icon input[type="date"]::placeholder { /* Standard */
   padding-left: 1.25rem;
 }
-
 /* Move the actual date text (and format mask) to the right in WebKit */
 .date-with-icon input[type="date"]::-webkit-datetime-edit {
   padding-left: 1.25rem;
+}
+
+/* Modal açıkken header alanını overlay ile doldur (tam uyum) */
+body.modal-open .site-header {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+/* Tüm viewport'u kaplayan overlay katmanı (header üzerinden çizilir) */
+body.modal-open .site-header::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.70); /* bg-black/70 */
+  backdrop-filter: blur(16px); /* backdrop-blur-lg */
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 9998; /* modal root: 9999, image box: 101 */
+  pointer-events: none;
+}
+/* Header içeriklerini görünmez yap (yer tutucu kalsın) */
+body.modal-open .site-header * {
+  visibility: hidden !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
 }

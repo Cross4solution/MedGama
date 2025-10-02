@@ -20,7 +20,8 @@ export default function ThreadsSidebar({
     setCurrentPage(page);
   };
   return (
-    <aside className="hidden lg:block w-full bg-white border rounded-lg overflow-hidden h-full flex flex-col">
+    <div className="hidden lg:flex w-full h-full flex-col">
+    <aside className="w-full bg-white border rounded-lg overflow-hidden flex-1 flex flex-col">
       <div className="p-2 border-b">
         <div className="flex items-center justify-between mb-3">
           <div>
@@ -32,7 +33,7 @@ export default function ThreadsSidebar({
           <input type="text" placeholder="Mesajlarda ara..." className="w-full pl-9 pr-3 py-1.5 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
         </div>
       </div>
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
         <div className="overflow-y-auto divide-y flex-1">
           {paginatedThreads.map((t) => (
             <div key={t.id} className={`p-3 hover:bg-gray-50 cursor-pointer ${activeThreadId===t.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`} onClick={()=>onSelectThread?.(t.id)}>
@@ -58,40 +59,42 @@ export default function ThreadsSidebar({
           ))}
         </div>
         
-        {totalPages > 1 && (
-          <div className="mt-2 border-t bg-gray-50 p-1">
-            <div className="flex justify-center items-center space-x-1">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-                className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                ‹
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`px-2 py-1 text-xs rounded ${
-                    page === currentPage 
-                      ? 'bg-blue-600 text-white' 
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => handlePageChange(currentPage + 1)}
-                className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                ›
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </aside>
+
+    {totalPages > 1 && (
+      <div className="bg-gray-50 border rounded-lg px-3 py-3">
+        <div className="flex justify-center items-center space-x-2">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+            className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            ‹
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-3 py-1.5 text-sm rounded ${
+                page === currentPage 
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => handlePageChange(currentPage + 1)}
+            className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+    )}
+    </div>
   );
 }
