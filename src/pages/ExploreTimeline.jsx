@@ -25,10 +25,25 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
       const sp = specialties[i % specialties.length];
       const cl = clinics[i % clinics.length];
       const ct = cities[i % cities.length];
-      const isDoctor = i % 5 === 0; // her 5. içerik doktor paylaşımı
-      const isClinic = !isDoctor && (i % 3 === 0);
-      const longClinic = 'We recently introduced enhanced patient navigation, multidisciplinary boards, and improved discharge planning. Outcomes indicate shorter hospital stays and higher satisfaction. Our new minimally invasive protocols reduced recovery time while maintaining safety. Clinicians share best practices weekly to keep consistency across departments.';
-      const longReview = 'I am very satisfied with the overall process. The staff was kind and professional, and communication was clear at every step. The pre-op guidance eased my concerns and post-op follow-up was timely. Facilities were clean and modern, and cost transparency helped me plan confidently. I would recommend this clinic to friends and family.';
+      // Tüm içerikleri doktor veya klinik güncellemesi yapıyoruz
+      const isDoctor = i % 2 === 0; // Yarısı doktor, yarısı klinik güncellemesi
+      const isClinic = !isDoctor;
+      
+      const doctorUpdates = [
+        'We are pleased to announce that our clinic has successfully performed over 500 minimally invasive cardiac procedures this year with a 99% success rate.',
+        'Our research team has published a new study on advanced treatment methods in the Journal of Medical Innovation.',
+        'We are proud to introduce our new state-of-the-art cardiac catheterization lab for more accurate diagnoses.'
+      ];
+      
+      const clinicUpdates = [
+        'We are excited to announce the opening of our new cardiology wing with cutting-edge technology.',
+        'Our hospital has been recognized as a Center of Excellence for Cardiac Care.',
+        'We are proud to introduce our new patient-centered care program for personalized treatment plans.'
+      ];
+      
+      const updateText = isDoctor 
+        ? doctorUpdates[i % doctorUpdates.length]
+        : clinicUpdates[i % clinicUpdates.length];
       // build media list (1-4 images) for LinkedIn-like grid
       const mediaPool = [
         { url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
@@ -41,24 +56,22 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
 
       items.push({
         id: `it-${i+1}`,
-        type: isDoctor ? 'doctor_update' : (isClinic ? 'clinic_update' : 'patient_review'),
-        title: isClinic ? `${cl}` : (isDoctor ? `Dr. ${['Ahmet','Ayşe','Mehmet','Elif','Can'][i%5]}` : `Patient Review`) ,
-        subtitle: isClinic || isDoctor ? sp : `${(4 + (i % 2)).toFixed(1)} ★`,
+        type: isDoctor ? 'doctor_update' : 'clinic_update',
+        title: isDoctor ? `Dr. ${['Ahmet','Ayşe','Mehmet','Elif','Can'][i%5]}` : `${cl}`,
+        subtitle: sp,
         city: ct,
         img: i % 2 === 0 ? '/images/petr-magera-huwm7malj18-unsplash_720.jpg' : '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg',
-        text: i % 3 === 0
-          ? longClinic
-          : longReview,
+        text: updateText,
         likes: 20 + (i % 100),
         comments: 2 + (i % 15),
         specialty: sp,
         countryCode: ct.split(', ')[1],
         // LinkedIn-like additions
         actor: {
-          id: isDoctor ? `doc-${(i%20)+1}` : (isClinic ? `clinic-${(i%20)+1}` : `pat-${(i%20)+1}`),
-          role: isDoctor ? 'doctor' : (isClinic ? 'clinic' : 'patient'),
-          name: isDoctor ? ("Dr. " + ['Ahmet','Ayşe','Mehmet','Elif','Can'][i%5]) : (isClinic ? cl : 'Patient'),
-          title: isDoctor ? sp : (isClinic ? sp : 'Shared experience'),
+          id: isDoctor ? `doc-${(i%20)+1}` : `clinic-${(i%20)+1}`,
+          role: isDoctor ? 'doctor' : 'clinic',
+          name: isDoctor ? ("Dr. " + ['Ahmet','Ayşe','Mehmet','Elif','Can'][i%5]) : cl,
+          title: sp,
           avatarUrl: '/images/portrait-candid-male-doctor_720.jpg',
         },
         socialContext: i % 5 === 0 ? 'MedGama bunu beğendi' : (i % 7 === 0 ? 'Bir bağlantın bunu beğendi' : ''),

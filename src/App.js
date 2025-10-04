@@ -29,7 +29,6 @@ import Profile from './pages/Profile';
 import ExploreTimeline from './pages/ExploreTimeline';
 import PostDetail from './pages/PostDetail';
 import DoctorProfilePage from './pages/DoctorProfile.jsx';
-import PatientProfilePage from './pages/PatientProfile.jsx';
 import ClinicProfileEdit from './pages/ClinicProfileEdit.jsx';
 import DoctorsDepartments from './pages/DoctorsDepartments.jsx';
 import scrollConfig from './config/scroll';
@@ -180,7 +179,6 @@ function AppContent() {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
-        <Route path="/patient/:id" element={<PatientProfilePage />} />
         <Route path="/post/:id" element={<PostDetail />} />
         </Routes>
       </div>

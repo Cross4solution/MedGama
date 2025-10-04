@@ -332,20 +332,6 @@ const ClinicDetailPage = () => {
           {/* Sidebar */}
           <div className="lg:w-80 space-y-6">
             <ContactActions onTelehealth={() => {}} onBook={() => {}} onMessage={() => {}} />
-
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Health Tourism Package</h3>
-              <div className="space-y-3 mb-4">
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <span>Treatment + Accommodation + Transfer</span>
-                </div>
-              </div>
-              <button className="w-full bg-purple-600 text-white py-1.5 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2">
-                <img src="/images/icon/archive-up-minimlistic-svgrepo-com.svg" alt="Archive" className="w-5 h-5 brightness-0 invert" />
-                <span>Create Package</span>
-              </button>
-            </div>
-
             <PriceRangeList items={priceRanges} />
           </div>
         </div>
