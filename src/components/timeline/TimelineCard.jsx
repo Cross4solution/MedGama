@@ -170,10 +170,10 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
             {!compact && (
               <div ref={moreMenuRef} className="flex items-center gap-2 text-gray-500 relative">
                 <span className="text-[11px] text-gray-400 mr-1">{timeLabel}</span>
-                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Daha fazla" onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>
+                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="More options" onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>
                   <MoreHorizontal className="w-5 h-5" />
                 </button>
-                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Gizle" onClick={(e)=>e.stopPropagation()}>
+                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Hide" onClick={(e)=>e.stopPropagation()}>
                   <X className="w-5 h-5" />
                 </button>
                 {showMoreMenu && (
@@ -392,7 +392,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                               autoFocus
                               value={replyText}
                               onChange={(e)=>setReplyText(e.target.value)}
-                              placeholder="Yanıtınızı yazın..."
+                              placeholder="Write your reply…"
                               className="flex-1 min-w-0 outline-none px-2 py-2 text-[14px]"
                             />
                             <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); /* submit mock */ setReplyTo(''); setReplyText(''); }}>
@@ -428,7 +428,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                             autoFocus
                             value={replyText}
                             onChange={(e)=>setReplyText(e.target.value)}
-                            placeholder="Yanıtınızı yazın..."
+                            placeholder="Write your reply…"
                               className="flex-1 min-w-0 outline-none px-2 py-2 text-[14px]"
                           />
                           <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>
@@ -485,7 +485,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               className={`w-full max-w-[100px] md:min-w-[110px] inline-flex items-center justify-center gap-1 md:gap-2 py-2 px-2 md:px-3 rounded-full text-xs md:text-sm border border-transparent bg-white text-gray-800 font-medium`}
               onClick={(e)=>{ e.stopPropagation(); if (disabledActions) return; setShowCommentsPreview(v=>!v); }}
             >
-              <img src="/images/icon/comment-alt-lines-svgrepo-com.svg" alt="Yorum" className="w-4 h-4 md:w-5 md:h-5" />
+              <img src="/images/icon/comment-alt-lines-svgrepo-com.svg" alt="Comment" className="w-4 h-4 md:w-5 md:h-5" />
               <span className="whitespace-nowrap">Comments</span>
             </button>
             <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full max-w-[100px] md:min-w-[110px] text-gray-600 font-medium text-xs md:text-sm" />
@@ -496,7 +496,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
             onClose={() => { setShowReportModal(false); }}
             title={
               <div className="flex items-center gap-2">
-                <span>Report gönder</span>
+                <span>Submit Report</span>
               </div>
             }
             footer={
@@ -514,39 +514,39 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                   disabled={!reportReason}
                   onClick={() => {
                     // submit mock
-                    showSuccessToast('Rapor gönderildi');
+                    showSuccessToast('Report submitted');
                     setShowReportModal(false);
                     setReportReason('');
                     setReportDesc('');
                   }}
                 >
-                  Gönder
+                  Submit
                 </button>
               </div>
             }
           >
             <div className="space-y-3">
               <div>
-                <label className="block text-xs text-gray-600 mb-1">Sebep</label>
+                <label className="block text-xs text-gray-600 mb-1">Reason</label>
                 <select
                   value={reportReason}
                   onChange={(e)=>setReportReason(e.target.value)}
                   className="w-full border rounded-md px-2 py-2 text-sm"
                 >
-                  <option value="">Seçiniz…</option>
+                  <option value="">Select…</option>
                   <option value="spam">Spam</option>
-                  <option value="misleading">Yanıltıcı bilgi</option>
-                  <option value="inappropriate">Uygunsuz içerik</option>
-                  <option value="other">Diğer</option>
+                  <option value="misleading">Misleading information</option>
+                  <option value="inappropriate">Inappropriate content</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-gray-600 mb-1">Açıklama (opsiyonel)</label>
+                <label className="block text-xs text-gray-600 mb-1">Description (optional)</label>
                 <textarea
                   rows={4}
                   value={reportDesc}
                   onChange={(e)=>setReportDesc(e.target.value)}
-                  placeholder="Kısaca açıklayınız…"
+                  placeholder="Briefly describe…"
                   className="w-full border rounded-md px-2 py-2 text-sm resize-y"
                 />
               </div>

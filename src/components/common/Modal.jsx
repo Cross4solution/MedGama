@@ -18,7 +18,7 @@ export default function Modal({ open, onClose, title, children, footer = null })
         <div className="w-full max-w-md rounded-xl bg-white shadow-xl border">
           <div className="px-4 py-3 border-b flex items-center justify-between">
             <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-sm">Kapat</button>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-sm">Close</button>
           </div>
           <div className="p-4 text-sm text-gray-800 max-h-[60vh] overflow-auto">{children}</div>
           {footer && <div className="px-4 py-3 border-t">{footer}</div>}

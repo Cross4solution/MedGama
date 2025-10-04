@@ -3,7 +3,7 @@ import FilterGroup from 'components/filters/FilterGroup';
 
 export default function FiltersSidebar({ groups = [], onApply }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
+    <div className="bg-white rounded-2xl shadow-lg p-6">
       <h3 className="text-xl font-semibold text-gray-900 mb-4">Filters</h3>
 
       <div className="space-y-4">

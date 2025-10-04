@@ -30,7 +30,7 @@ const CORE_ITEMS = [
 ];
 
 export default function CoreBoxes({ items = CORE_ITEMS }) {
-  const ICONS = [Stethoscope, Activity, MessageSquare, Video, Plane, Brain];
+  const ICONS = [Stethoscope, Activity, Brain, Plane, Video, MessageSquare];
   const PALETTE = [
     { bg: 'bg-teal-100', fg: 'text-teal-700' },
     { bg: 'bg-sky-100', fg: 'text-sky-700' },

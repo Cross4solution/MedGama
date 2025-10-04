@@ -29,7 +29,6 @@ const CookieBanner = () => {
   };
 
   const handleDeny = () => {
-    persist('declined');
     setShowBanner(false);
   };
 
@@ -37,7 +36,7 @@ const CookieBanner = () => {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-80 backdrop-blur-sm border-t border-gray-600 shadow-lg z-50 p-2 md:p-3">
+      <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-70 backdrop-blur-sm border-t border-gray-600 shadow-lg z-50 p-2 md:p-3">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
           <div className="flex-1">
             <p className="text-sm text-white leading-relaxed">

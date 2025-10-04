@@ -15,12 +15,12 @@ export default function SearchSections() {
         {isPatient && (
           <>
             <div
-              className="absolute inset-0 bg-cover bg-center filter blur-[0.5px] md:blur-[1px] brightness-90 md:brightness-95"
+              className="absolute inset-0 bg-cover bg-center filter blur-[0.5px] md:blur-[1px] brightness-95 md:brightness-100"
               style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
               aria-hidden="true"
             />
             {/* Dark overlay like HomeV2 hero */}
-            <div className="pointer-events-none absolute inset-0 bg-black/35 md:bg-black/40" aria-hidden="true" />
+            <div className="pointer-events-none absolute inset-0 bg-black/25 md:bg-black/30" aria-hidden="true" />
           </>
         )}
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
