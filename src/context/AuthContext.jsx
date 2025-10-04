@@ -74,7 +74,33 @@ export function AuthProvider({ children }) {
     setToken(null);
     return demo;
   };
-  const logout = () => { setUser(null); setToken(null); };
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [logoutCallback, setLogoutCallback] = useState(null);
+
+  const logout = (options = {}) => {
+    const { skipConfirmation = false } = options;
+    
+    if (skipConfirmation) {
+      setUser(null);
+      setToken(null);
+      return true;
+    }
+    
+    // Show confirmation dialog
+    return new Promise((resolve) => {
+      setLogoutCallback(() => (confirmed) => {
+        setShowLogoutConfirm(false);
+        if (confirmed) {
+          setUser(null);
+          setToken(null);
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
+      setShowLogoutConfirm(true);
+    });
+  };
 
   const value = useMemo(() => ({
     user,
@@ -90,7 +116,33 @@ export function AuthProvider({ children }) {
     setSidebarMobileOpen,
   }), [user, country, sidebarMobileOpen]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Logout</h3>
+            <p className="text-gray-600 mb-6">Are you sure you want to log out?</p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => logoutCallback?.(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => logoutCallback?.(true)}
+                className="px-4 py-2 text-sm font-medium text-white bg-rose-500 hover:bg-rose-600 rounded-lg"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

@@ -225,17 +225,20 @@ export default function ExploreTimeline() {
   }, [hasMore, items.length]);
 
   return (
-    <div className="min-h-screen -mt-px" style={{ backgroundColor: '#EEF7F6' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 md:pt-1 pb-8">
+    <div className="min-h-screen bg-[#EEF7F6]">
+      <div className="min-h-screen w-full bg-[#EEF7F6] fixed top-0 left-0 -z-10"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
         {/* Başlık + Sekmeler + Sıralama */}
-        <TimelineControls
-          user={user}
-          sort={sort}
-          onSortChange={setSort}
-          onUseLocation={askGeo}
-          geo={geo}
-          showSort={true}
-        />
+        <div className="mb-8">
+          <TimelineControls
+            user={user}
+            sort={sort}
+            onSortChange={setSort}
+            onUseLocation={askGeo}
+            geo={geo}
+            showSort={true}
+          />
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
           {/* Filters (LEFT) */}

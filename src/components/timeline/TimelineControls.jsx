@@ -20,13 +20,13 @@ export default function TimelineControls({
         </div>
 
         {/* Center: Segmented toggle (desktop) */}
-        <div className="hidden md:flex flex-1 justify-center">
+        <div className="hidden md:flex flex-1 justify-end ml-64">
           <div className="inline-flex rounded-full border border-gray-300 bg-white overflow-hidden shadow-sm">
             <button
               type="button"
               aria-pressed={sort === 'recent'}
               onClick={() => onSortChange?.('recent')}
-              className={`text-sm px-4 py-1.5 focus:outline-none transition-colors ${
+              className={`text-sm w-32 py-1.5 focus:outline-none transition-colors ${
                 sort === 'recent'
                   ? 'bg-teal-600 text-white'
                   : 'text-gray-700 hover:bg-gray-50'
@@ -38,7 +38,7 @@ export default function TimelineControls({
               type="button"
               aria-pressed={sort === 'top'}
               onClick={() => onSortChange?.('top')}
-              className={`text-sm px-4 py-1.5 focus:outline-none transition-colors ${
+              className={`text-sm w-32 py-1.5 focus:outline-none transition-colors ${
                 sort === 'top'
                   ? 'bg-teal-600 text-white'
                   : 'text-gray-700 hover:bg-gray-50'
