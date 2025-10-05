@@ -14,7 +14,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Star,
-  Minus
+  Minus,
+  Video
 } from 'lucide-react';
 
 const DoctorProfilePage = () => {
@@ -37,13 +38,7 @@ const DoctorProfilePage = () => {
     { name: 'Kalp Yetmezliği', icon: Heart, description: 'Kronik kalp hastalıklarının yönetimi' },
   ]);
 
-  const tabs = [
-    { id: 'genel-bakis', label: 'Overview' },
-    { id: 'hizmetler', label: 'Services' },
-    { id: 'degerlendirmeler', label: 'Reviews' },
-    { id: 'galeri', label: 'Gallery' },
-    { id: 'konum', label: 'Location' }
-  ];
+  // Removed other tabs, keeping only the overview section
 
   const [gallery] = useState([
     'https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=600',
@@ -151,32 +146,13 @@ const DoctorProfilePage = () => {
               </div>
             </div>
 
-            {/* Tabs */}
+            {/* Content */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              <div className="border-b">
-                <div className="flex overflow-x-auto">
-                  {tabs.map(tab => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-6 py-4 font-medium whitespace-nowrap transition-colors ${
-                        activeTab === tab.id
-                          ? 'text-teal-600 border-b-2 border-teal-600'
-                          : 'text-gray-600 hover:text-gray-900'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="px-6 pb-6">
+              <div className="px-6 pb-6 pt-6">
                 {/* Overview */}
                 {activeTab === 'genel-bakis' && (
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-4">{aboutTitle}</h3>
                       <p className="text-gray-600 leading-relaxed mb-4" style={{ whiteSpace: 'pre-line' }}>
                         {aboutP1}
                       </p>
@@ -347,14 +323,17 @@ const DoctorProfilePage = () => {
           {/* Sidebar */}
           <div className="lg:w-80 space-y-6">
             <div className="bg-white rounded-xl shadow-lg p-6 space-y-3">
-              <button className="w-full bg-teal-600 text-white py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors font-medium">
-                Online Consultation
+              <button className="w-full bg-teal-600 text-white py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors font-medium flex items-center justify-center gap-2">
+                <Video className="w-5 h-5" />
+                <span>Online Consultation</span>
               </button>
-              <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                Book Appointment
+              <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2">
+                <img src="/images/icon/calender-svgrepo-com.svg" alt="Calendar" className="w-5 h-5 brightness-0 invert" />
+                <span>Book Appointment</span>
               </button>
-              <button className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium">
-                Send Message
+              <button className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center justify-center gap-2">
+                <img src="/images/icon/chat-round-line-svgrepo-com.svg" alt="Chat" className="w-5 h-5 brightness-0 invert" />
+                <span>Send Message</span>
               </button>
             </div>
 

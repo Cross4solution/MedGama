@@ -19,6 +19,58 @@ const CookieBanner = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (showBanner) {
+      // Add styles to hide scrollbar while keeping scroll functionality
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      
+      // Store original styles
+      const originalStyles = {
+        bodyOverflow: document.body.style.overflow,
+        bodyPaddingRight: document.body.style.paddingRight,
+        htmlOverflow: document.documentElement.style.overflow
+      };
+      
+      // Apply styles to hide scrollbar
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+      document.documentElement.style.overflow = 'hidden';
+      
+      // Create and append style tag for WebKit browsers (Chrome, Safari, etc.)
+      const styleId = 'cookie-banner-scroll-style';
+      let style = document.getElementById(styleId);
+      
+      if (!style) {
+        style = document.createElement('style');
+        style.id = styleId;
+        style.innerHTML = `
+          html {
+            overflow: auto !important;
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+          }
+          html::-webkit-scrollbar {
+            display: none !important;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      return () => {
+        // Restore original styles
+        document.body.style.overflow = originalStyles.bodyOverflow;
+        document.body.style.paddingRight = originalStyles.bodyPaddingRight;
+        document.documentElement.style.overflow = originalStyles.htmlOverflow;
+        
+        // Remove style element
+        const styleElement = document.getElementById(styleId);
+        if (styleElement) {
+          styleElement.remove();
+        }
+      };
+    }
+  }, [showBanner]);
+
   const persist = (value) => {
     try { localStorage.setItem(STORAGE_KEY, value); } catch (e) { /* ignore */ }
   };
