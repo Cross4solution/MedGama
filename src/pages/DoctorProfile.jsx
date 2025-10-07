@@ -17,6 +17,7 @@ import {
   Minus,
   Video
 } from 'lucide-react';
+import Tabs from 'components/tabs/Tabs';
 
 const DoctorProfilePage = () => {
   const [activeTab, setActiveTab] = useState('genel-bakis');
@@ -38,7 +39,14 @@ const DoctorProfilePage = () => {
     { name: 'Kalp Yetmezliği', icon: Heart, description: 'Kronik kalp hastalıklarının yönetimi' },
   ]);
 
-  // Removed other tabs, keeping only the overview section
+  // Tabs list (restored similar to ClinicDetailPage)
+  const tabs = [
+    { id: 'genel-bakis', label: 'Overview' },
+    { id: 'hizmetler', label: 'Services' },
+    { id: 'degerlendirmeler', label: 'Reviews' },
+    { id: 'galeri', label: 'Gallery' },
+    { id: 'konum', label: 'Location' },
+  ];
 
   const [gallery] = useState([
     'https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=600',
@@ -148,7 +156,8 @@ const DoctorProfilePage = () => {
 
             {/* Content */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              <div className="px-6 pb-6 pt-6">
+              <Tabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
+              <div className="px-6 pb-6">
                 {/* Overview */}
                 {activeTab === 'genel-bakis' && (
                   <div className="space-y-6">

@@ -121,22 +121,22 @@ const DoctorChatPage = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] w-full flex flex-col bg-gray-50 overflow-hidden">
+    <div className="h-[calc(100vh-5rem)] w-full flex flex-col bg-gray-50">
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {/* Doctor Info Header */}
         <div className="bg-white border-b flex-shrink-0">
           <div className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-1`}>
             <div className="flex items-center">
               <div className="w-12 h-12 rounded-full mr-3 overflow-hidden bg-gray-100">
-                <img 
-                  src="/images/portrait-candid-male-doctor_720.jpg" 
-                  alt="Dr. Mehmet Ã–zkan" 
+                <img
+                  src="/images/portrait-candid-male-doctor_720.jpg"
+                  alt="Dr. Mehmet Özkan"
                   className="w-full h-full object-cover"
                   style={{ objectPosition: 'center 20%' }}
                 />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-gray-900 leading-tight">Dr. Mehmet Ã–zkan</h1>
+                <h1 className="text-lg font-bold text-gray-900 leading-tight">Dr. Mehmet Özkan</h1>
                 <div className="flex items-center text-[13px] text-gray-600">
                   <span>Cardiologist</span>
                   <span className="mx-2">$</span>

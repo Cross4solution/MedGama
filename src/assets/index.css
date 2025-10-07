@@ -1,3 +1,12 @@
+/* Prevent layout shift between pages by always reserving vertical scrollbar space */
+html {
+  overflow-y: scroll;
+}
+
+/* Ensure body background matches app default and under fixed header spacing is consistent */
+body {
+  background-color: #f9fafb; /* tailwind gray-50 close */
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

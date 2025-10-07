@@ -86,21 +86,17 @@ export default function SidebarPatient() {
       </Link>
     );
   };
-
   const initial = (user?.name || 'U')[0]?.toUpperCase();
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className={`hidden lg:block fixed left-0 w-52 top-20 z-40 h-[calc(100vh-5rem)]`}>
-        <div className="h-full pb-4">
-          <div className="h-full rounded-b-2xl border border-t-0 -mt-px bg-white shadow-sm flex flex-col">
+      <aside className={`hidden lg:block fixed left-0 w-52 top-[4.5rem] z-40 h-[calc(100vh-5rem)]`}>
+        <div className="h-full py-2 px-1">
+          <div className="h-full rounded-2xl border bg-white shadow-sm flex flex-col">
             {/* Header / Profile */}
             <div className="p-3 border-b relative">
               <div className={`flex items-center gap-3`}>
-                <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center font-semibold">
-                  {initial}
-                </div>
                 <div className="min-w-0">
                   <div className="text-sm font-semibold text-gray-900 truncate">{user?.name}</div>
                   <div className="text-xs text-gray-500 truncate">{roleLabel}</div>
@@ -160,7 +156,7 @@ export default function SidebarPatient() {
           />
           {/* Panel: starts below header height (top-20) */}
           <div className="fixed left-0 top-20 bottom-0 w-3/4 max-w-[13rem] z-[60]">
-            <div className="h-full border-r bg-white shadow-xl flex flex-col rounded-tr-2xl pb-4">
+            <div className="h-full border-r bg-white shadow-xl flex flex-col rounded-r-2xl pb-4">
               {/* Mobile Header */}
               <div className="p-3 border-b flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-teal-600 text-white flex items-center justify-center font-semibold">

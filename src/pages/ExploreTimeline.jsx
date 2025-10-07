@@ -238,11 +238,11 @@ export default function ExploreTimeline() {
   }, [hasMore, items.length]);
 
   return (
-    <div className="min-h-screen bg-[#EEF7F6] pt-2">
+    <div className="min-h-screen bg-[#EEF7F6] pt-0">
       <div className="min-h-screen w-full bg-[#EEF7F6] fixed top-0 left-0 -z-10"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1 pb-8 relative">
         {/* Başlık + Sekmeler + Sıralama */}
-        <div className="mb-2">
+        <div className="mb-1">
           <TimelineControls
             user={user}
             sort={sort}

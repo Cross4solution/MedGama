@@ -16,7 +16,6 @@ export default function TimelineControls({
         {/* Left: Title */}
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl font-bold text-gray-900">Explore Timeline</h1>
-          <p className="text-sm text-gray-600">{user ? 'Takip ettiklerin öncelikli, lokasyon önerileri karışık.' : 'Login olmadan rastgele içerikleri keşfet.'}</p>
         </div>
 
         {/* Center: Segmented toggle (desktop) */}
@@ -28,7 +27,7 @@ export default function TimelineControls({
               onClick={() => onSortChange?.('recent')}
               className={`text-sm w-32 py-1.5 focus:outline-none transition-colors ${
                 sort === 'recent'
-                  ? 'bg-teal-600 text-white'
+                  ? 'bg-teal-600 text-white font-semibold'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -40,7 +39,7 @@ export default function TimelineControls({
               onClick={() => onSortChange?.('top')}
               className={`text-sm w-32 py-1.5 focus:outline-none transition-colors ${
                 sort === 'top'
-                  ? 'bg-teal-600 text-white'
+                  ? 'bg-teal-600 text-white font-semibold'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -69,7 +68,7 @@ export default function TimelineControls({
               onClick={() => onSortChange?.('recent')}
               className={`text-sm px-4 py-2 focus:outline-none transition-colors ${
                 sort === 'recent'
-                  ? 'bg-teal-600 text-white'
+                  ? 'bg-teal-600 text-white font-semibold'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -81,7 +80,7 @@ export default function TimelineControls({
               onClick={() => onSortChange?.('top')}
               className={`text-sm px-4 py-2 focus:outline-none transition-colors ${
                 sort === 'top'
-                  ? 'bg-teal-600 text-white'
+                  ? 'bg-teal-600 text-white font-semibold'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
