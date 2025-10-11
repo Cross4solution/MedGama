@@ -253,7 +253,7 @@ export default function ExploreTimeline() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
           {/* Filters (LEFT) */}
           <TimelineFilterSidebar
             query={query}
@@ -275,7 +275,7 @@ export default function ExploreTimeline() {
 
           {/* Feed (RIGHT) */}
           <section className="order-1 lg:order-2">
-            <div className="max-w-[46rem] mx-auto">
+            <div className="max-w-[46rem] mx-auto lg:ml-5 lg:mr-auto">
               {/* Aktif filtre chipleri */}
               <ActiveFilterChips
                 items={[
@@ -284,7 +284,7 @@ export default function ExploreTimeline() {
                   query && { label: `Search: “${query}”`, onClear: () => setQuery('') },
                 ].filter(Boolean)}
               />
-              <div className={`space-y-3`}>
+              <div className="space-y-3">
                 {items.map((it) => (
                   <TimelineCard key={it.id} item={it} disabledActions={disabledActions} view={'list'} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
                 ))}

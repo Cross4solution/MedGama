@@ -286,9 +286,6 @@ export default function PostDetail() {
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">{item.specialty}</span>
                 </div>
               )}
-              {item.city && (
-                <p className="text-xs text-gray-500">{item.city}</p>
-              )}
             </div>
           </div>
 

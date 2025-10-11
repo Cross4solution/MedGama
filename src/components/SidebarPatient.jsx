@@ -92,8 +92,8 @@ export default function SidebarPatient() {
     <>
       {/* Desktop Sidebar */}
       <aside className={`hidden lg:block fixed left-0 w-52 top-[4.5rem] z-40 h-[calc(100vh-5rem)]`}>
-        <div className="h-full py-2 px-1">
-          <div className="h-full rounded-2xl border bg-white shadow-sm flex flex-col">
+        <div className="h-full py-2 pr-1 pl-0">
+          <div className="h-full rounded-r-2xl border border-l-0 bg-white shadow-sm flex flex-col">
             {/* Header / Profile */}
             <div className="p-3 border-b relative">
               <div className={`flex items-center gap-3`}>

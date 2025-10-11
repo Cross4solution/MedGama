@@ -7,6 +7,12 @@ html {
 body {
   background-color: #f9fafb; /* tailwind gray-50 close */
 }
+
+/* Global custom properties */
+:root {
+  /* Keep in sync with Sidebar width (Tailwind w-52 ≈ 13rem) */
+  --sidebar-width: 13rem;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
