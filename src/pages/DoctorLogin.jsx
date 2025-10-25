@@ -25,10 +25,18 @@ const DoctorLogin = () => {
       setLoading(false);
       return;
     }
-    // Demo auth: set role and redirect to patient home
-    login({ id: 'doc-demo-1', role: 'doctor', name: 'Demo Doctor' });
-    setLoading(false);
-    navigate('/patient-home', { replace: true });
+    try {
+      const res = await login(formData.email, formData.password);
+      const apiUser = res?.data?.user;
+      const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
+      navigate(isDoctor ? '/explore' : '/home-v2', { replace: true });
+    } catch (err) {
+      if (err?.status === 401) setError(err?.data?.message || 'Invalid credentials');
+      else if (err?.status === 422) setError(err?.data?.message || 'Validation error');
+      else setError(err?.message || 'Unexpected error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const features = [
@@ -172,13 +180,8 @@ const DoctorLogin = () => {
                 <span className="sm:hidden">Google</span>
                 <span className="hidden sm:inline">Sign in with Google</span>
               </button>
-              <button
-                type="button"
-                onClick={() => { login({ id: 'doc-demo-1', role: 'doctor', name: 'Demo Doctor' }); navigate('/patient-home', { replace: true }); }}
-                className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200"
-              >
-                <span className="sm:hidden">Demo</span>
-                <span className="hidden sm:inline">Demo Login (Doctor)</span>
+              <button type="button" disabled className="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-lg font-medium cursor-not-allowed">
+                Demo Login (Disabled)
               </button>
             </form>
             <div className="mt-6 text-center text-sm text-gray-600 space-y-2">

@@ -51,8 +51,7 @@ const Header = () => {
         <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
           {/* Logo */}
           {(() => {
-            const role = user?.role;
-            const logoTo = role === 'doctor' || role === 'clinic' ? '/patient-home' : '/home-v2';
+            const logoTo = '/home-v2';
             return (
               <Link to={logoTo} onClick={closeMenu} className="flex items-center space-x-3 cursor-pointer select-none ml-9">
                 <img

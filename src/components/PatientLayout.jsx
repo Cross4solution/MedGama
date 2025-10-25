@@ -11,9 +11,8 @@ import { useAuth } from '../context/AuthContext';
  */
 export default function PatientLayout({ children, className = '' }) {
   const { user } = useAuth();
-
   return (
-    <div className={`${user ? 'lg:ml-[var(--sidebar-width)]' : ''} ${className}`}>
+    <div className={`${className}`}>
       {children}
     </div>
   );

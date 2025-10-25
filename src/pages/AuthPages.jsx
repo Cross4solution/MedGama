@@ -12,7 +12,7 @@ import PrivacyPopup from '../components/auth/PrivacyPopup';
 const AuthPages = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, register, demoLogin } = useAuth();
+  const { login, register, registerDoctor, demoLogin } = useAuth();
   const { notify } = useToast();
 
   const [currentPage, setCurrentPage] = useState('login'); // 'login', 'register', or 'forgot-password'
@@ -22,6 +22,7 @@ const AuthPages = () => {
   const [showPrivacyPopup, setShowPrivacyPopup] = useState(false);
 
   const [formData, setFormData] = useState({
+    role: 'patient',
     email: '',
     password: '',
     confirmPassword: '',
@@ -35,6 +36,7 @@ const AuthPages = () => {
     receiveUpdates: false
   });
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (location.pathname === '/register') {
@@ -72,32 +74,41 @@ const AuthPages = () => {
     }
 
     if (currentPage === 'register') {
-      if (!formData.firstName) newErrors.firstName = 'First name is required';
-      if (!formData.lastName) newErrors.lastName = 'Last name is required';
-      if (!formData.phone) newErrors.phone = 'Phone number is required';
-      if (formData.phone && !/^\s*\+\d{1,3}[\s\d()-]*$/.test(formData.phone)) {
-        newErrors.phone = 'Ülke kodunuzu giriniz (örn. +90 555 123 45 67)';
-      }
       if (!formData.confirmPassword) newErrors.confirmPassword = 'Confirm password is required';
       if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
       if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the Terms of Use';
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const ok = validateForm();
-    if (!ok) return;
+    const currentErrors = validateForm();
+    if (Object.keys(currentErrors).length) {
+      const firstKey = Object.keys(currentErrors)[0];
+      const msg = firstKey ? (currentErrors[firstKey] || 'Please correct the highlighted fields') : 'Please correct the highlighted fields';
+      notify({ type: 'error', message: msg });
+      return;
+    }
     try {
+      setSubmitting(true);
       if (currentPage === 'login') {
         const res = await login(formData.email, formData.password);
         notify({ type: 'success', message: res?.message || 'Login successful' });
-        navigate('/home-v2');
+        const apiUser = res?.data?.user;
+        const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
+        navigate(isDoctor ? '/explore' : '/home-v2');
       } else if (currentPage === 'register') {
-        const res = await register(formData.email, formData.password, formData.confirmPassword);
+        if (formData.role === 'clinic') {
+          notify({ type: 'info', message: 'Clinic registration will be available soon. Please sign in via clinic portal.' });
+          setSubmitting(false);
+          navigate('/clinic-login');
+          return;
+        }
+        const doRegister = formData.role === 'doctor' ? registerDoctor : register;
+        const res = await doRegister(formData.email, formData.password, formData.confirmPassword);
         notify({ type: 'success', message: res?.message || 'Registration successful. Please login.' });
         navigate('/login');
       } else {
@@ -109,7 +120,8 @@ const AuthPages = () => {
       } else if (err?.status === 422 && err?.data?.errors) {
         const fieldErrors = {};
         Object.entries(err.data.errors).forEach(([field, arr]) => {
-          fieldErrors[field] = Array.isArray(arr) ? arr[0] : String(arr);
+          const key = field === 'password_confirmation' ? 'confirmPassword' : field;
+          fieldErrors[key] = Array.isArray(arr) ? arr[0] : String(arr);
         });
         setErrors((prev) => ({ ...prev, ...fieldErrors }));
         notify({ type: 'error', message: err?.data?.message || 'Validation error' });
@@ -125,12 +137,12 @@ const AuthPages = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-teal-500 via-teal-600 to-cyan-700" />
 
       {/* Form Container */}
-      <div className="relative z-10 flex w-full min-h-screen items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="relative z-10 flex w-full min-h-screen items-center justify-center p-3 sm:p-6 overflow-y-hidden">
         <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-4">
           {/* Mobile Layout: Form + Info Texts */}
           <div className="flex flex-col lg:hidden w-full max-w-md mx-auto py-3">
             {/* Mobile Form */}
-            <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-3 sm:p-5 shadow-2xl border border-white/30 mb-4">
+            <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-2 sm:p-4 shadow-2xl border border-white/30 mb-3">
               {currentPage === 'login' ? (
                 <>
                   <LoginForm 
@@ -243,7 +255,7 @@ const AuthPages = () => {
             
             {/* Right Side - Form */}
             <div className="flex-1 max-w-3xl">
-              <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-6 md:p-8 shadow-2xl border border-white/30">
+              <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-4 md:p-6 shadow-2xl border border-white/30">
                 {currentPage === 'login' ? (
                   <>
                     <LoginForm 
@@ -278,6 +290,7 @@ const AuthPages = () => {
                     setCurrentPage={setCurrentPage}
                     setShowTermsPopup={setShowTermsPopup}
                     setShowPrivacyPopup={setShowPrivacyPopup}
+                    submitting={submitting}
                   />
                 ) : (
                   <ForgotPasswordForm 

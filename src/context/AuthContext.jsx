@@ -57,13 +57,19 @@ export function AuthProvider({ children }) {
     }
     const res = await endpoints.login({ email: emailOrUser, password });
     const apiUser = res?.data?.user ?? { name: 'User' };
+    const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
+    const userWithRole = apiUser ? { ...apiUser, role: isDoctor ? 'doctor' : 'patient' } : null;
     const access = res?.data?.access_token ?? null;
-    setUser(apiUser);
+    setUser(userWithRole);
     setToken(access);
     return res;
   };
   const register = async (email, password, password_confirmation) => {
-    const res = await endpoints.register({ email, password, password_confirmation });
+    const res = await endpoints.userRegister({ email, password, password_confirmation });
+    return res;
+  };
+  const registerDoctor = async (email, password, password_confirmation) => {
+    const res = await endpoints.doctorRegister({ email, password, password_confirmation });
     return res;
   };
   const demoLogin = (role = 'patient') => {
@@ -110,6 +116,7 @@ export function AuthProvider({ children }) {
     login,
     demoLogin,
     register,
+    registerDoctor,
     logout,
     formatCurrency: (usd) => formatCurrency(usd, country),
     sidebarMobileOpen,
