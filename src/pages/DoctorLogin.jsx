@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff } from 'lucide-react';
@@ -15,6 +15,62 @@ const DoctorLogin = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  // Google Identity Services - render Google Sign-In button and handle credential
+  console.log('GIS clientId in runtime:', process.env.REACT_APP_GOOGLE_CLIENT_ID, 'origin:', window.location.origin);
+  useEffect(() => {
+    const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+    if (!clientId) return;
+
+    const handleCredentialResponse = async ({ credential }) => {
+      try {
+        // DEBUG: log id_token length and decoded payload (without verifying on client)
+        const parts = (credential || '').split('.');
+        const payload = parts[1] ? JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))) : null;
+        console.log('Google ID Token length:', credential?.length, 'payload:', payload);
+        const resp = await fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(credential));
+        if (!resp.ok) return;
+        const info = await resp.json();
+        const audOk = info && info.aud === process.env.REACT_APP_GOOGLE_CLIENT_ID;
+        if (!audOk) return;
+        try { localStorage.setItem('google_id_token', credential); } catch {}
+        try { localStorage.setItem('google_user', JSON.stringify(info)); } catch {}
+        navigate('/explore', { replace: true });
+      } catch (e) {}
+    };
+
+    let tries = 0;
+    const mountGoogle = () => {
+      /** @type {any} */
+      const google = (window).google;
+      const ready = !!(google && google.accounts && google.accounts.id);
+      const btn = document.getElementById('googleBtnDoctor');
+      if (ready && btn) {
+        try {
+          google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleCredentialResponse,
+            use_fedcm_for_prompt: false
+          });
+          google.accounts.id.renderButton(btn, {
+            theme: 'outline',
+            size: 'large',
+            text: 'continue_with',
+            shape: 'pill',
+            width: 360
+          });
+        } catch {}
+        return;
+      }
+      if (tries < 20) {
+        tries += 1;
+        setTimeout(mountGoogle, 250);
+      }
+    };
+    mountGoogle();
+  }, [navigate]);
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -169,17 +225,9 @@ const DoctorLogin = () => {
               <button type="submit" disabled={loading} className="w-full bg-teal-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50">
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
-              {/* Removed OR divider to meet design requirement */}
-              <button type="button" className="w-full bg-white border-2 border-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 flex items-center justify-center gap-2">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                </svg>
-                <span className="sm:hidden">Google</span>
-                <span className="hidden sm:inline">Sign in with Google</span>
-              </button>
+              {/* Google Sign-In Button (GIS) */}
+              <div id="googleBtnDoctor" className="w-full flex items-center justify-center"></div>
+              
               <button type="button" disabled className="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-lg font-medium cursor-not-allowed">
                 Demo Login (Disabled)
               </button>

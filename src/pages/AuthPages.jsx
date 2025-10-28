@@ -153,6 +153,7 @@ const AuthPages = () => {
                     handleInputChange={handleInputChange}
                     handleSubmit={handleSubmit}
                     setCurrentPage={setCurrentPage}
+                    googleId="googleBtnPatientMobile"
                   />
                   <button
                     type="button"
@@ -266,6 +267,7 @@ const AuthPages = () => {
                       handleInputChange={handleInputChange}
                       handleSubmit={handleSubmit}
                       setCurrentPage={setCurrentPage}
+                      googleId="googleBtnPatientDesktop"
                     />
                     <div className="mt-4">
                       <button

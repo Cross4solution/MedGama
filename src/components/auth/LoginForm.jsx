@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Heart, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 
 const LoginForm = ({ 
@@ -8,118 +8,157 @@ const LoginForm = ({
   setShowPassword, 
   handleInputChange, 
   handleSubmit, 
-  setCurrentPage 
-}) => (
-  <div className="w-full max-w-md mx-auto">
-    <div className="text-center mb-4 sm:mb-8">
-      <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-3">
-        <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-8 w-8 sm:h-10 sm:w-10 object-contain" />
-        <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">MedGama</span>
-      </div>
-      <p className="text-sm sm:text-base text-gray-600">Log in to your account and continue your health journey</p>
-    </div>
-    <div className="space-y-3 sm:space-y-6 flex flex-col items-center">
-      <div className="w-full">
-        <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-          Email
-        </label>
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm sm:text-base ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="name@example.com"
-          />
+  setCurrentPage,
+  googleId = 'googleBtn'
+}) => {
+  useEffect(() => {
+    const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+    if (!clientId) return;
+
+    const handleCredentialResponse = async ({ credential }) => {
+      try {
+        const resp = await fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(credential));
+        if (!resp.ok) return;
+        const info = await resp.json();
+        const audOk = info && info.aud === process.env.REACT_APP_GOOGLE_CLIENT_ID;
+        if (!audOk) return;
+        try { localStorage.setItem('google_id_token', credential); } catch {}
+        try { localStorage.setItem('google_user', JSON.stringify(info)); } catch {}
+        window.location.assign('/home-v2');
+      } catch (e) {
+      }
+    };
+
+    let tries = 0;
+    const mountGoogle = () => {
+      /** @type {any} */
+      const google = (window).google;
+      const ready = !!(google && google.accounts && google.accounts.id);
+      const btn = document.getElementById(googleId);
+      if (ready && btn) {
+        try {
+          google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleCredentialResponse,
+            use_fedcm_for_prompt: false
+          });
+          google.accounts.id.renderButton(btn, {
+            theme: 'outline',
+            size: 'large',
+            text: 'continue_with',
+            shape: 'pill',
+            width: 360
+          });
+        } catch {}
+        return;
+      }
+      if (tries < 20) {
+        tries += 1;
+        setTimeout(mountGoogle, 250);
+      }
+    };
+    mountGoogle();
+  }, [googleId]);
+
+  return (
+    <div className="w-full max-w-md mx-auto">
+      <div className="text-center mb-4 sm:mb-8">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-3">
+          <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-8 w-8 sm:h-10 sm:w-10 object-contain" />
+          <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">MedGama</span>
         </div>
-        {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1 text-center">{errors.email}</p>}
+        <p className="text-sm sm:text-base text-gray-600">Log in to your account and continue your health journey</p>
       </div>
-      <div className="w-full">
-        <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-          Password
-        </label>
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-          <input
-            type={showPassword ? 'text' : 'password'}
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm sm:text-base ${
-              errors.password ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter your password"
-          />
+      <div className="space-y-3 sm:space-y-6 flex flex-col items-center">
+        <div className="w-full">
+          <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+            Email
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm sm:text-base ${
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="name@example.com"
+            />
+          </div>
+          {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1 text-center">{errors.email}</p>}
+        </div>
+        <div className="w-full">
+          <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+            Password
+          </label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm sm:text-base ${
+                errors.password ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="Enter your password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showPassword ? <Eye className="w-4 h-4 sm:w-5 sm:h-5" /> : <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />}
+            </button>
+          </div>
+          {errors.password && <p className="text-red-500 text-xs sm:text-sm mt-1 text-center">{errors.password}</p>}
+        </div>
+        <div className="flex items-center justify-between w-full">
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span className="text-xs sm:text-sm text-gray-600">Remember me</span>
+          </label>
           <button
             type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            onClick={() => setCurrentPage('forgot-password')}
+            className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium"
           >
-            {showPassword ? <Eye className="w-4 h-4 sm:w-5 sm:h-5" /> : <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />}
+            Forgot password
           </button>
         </div>
-        {errors.password && <p className="text-red-500 text-xs sm:text-sm mt-1 text-center">{errors.password}</p>}
-      </div>
-      <div className="flex items-center justify-between w-full">
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-          />
-          <span className="text-xs sm:text-sm text-gray-600">Remember me</span>
-        </label>
         <button
           type="button"
-          onClick={() => setCurrentPage('forgot-password')}
-          className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium"
+          onClick={handleSubmit}
+          className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-sm sm:text-base shadow-sm hover:shadow-md"
         >
-          Forgot password
+          Login
         </button>
-      </div>
-      <button
-        type="button"
-        onClick={handleSubmit}
-                  className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-sm sm:text-base shadow-sm hover:shadow-md"
-      >
-        Login
-      </button>
-      <div className="relative my-6 w-full">
-        <div className="relative flex justify-center text-sm">
-          <span className="text-gray-500">or</span>
-        </div>
-      </div>
-      <div className="w-full">
-        <button
-          type="button"
-          className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 shadow-sm"
-        >
-          <div className="w-5 h-5 mr-2 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-5 h-5">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
+        <div className="relative my-6 w-full">
+          <div className="relative flex justify-center text-sm">
+            <span className="text-gray-500">or</span>
           </div>
-          <span className="text-sm font-medium text-gray-700">Continue with Google</span>
-        </button>
+        </div>
+        <div className="w-full">
+          <div id={googleId} className="w-full flex items-center justify-center"></div>
+        </div>
+        <p className="text-center text-sm text-gray-600">
+          Don't have an account?{' '}
+          <button
+            type="button"
+            onClick={() => setCurrentPage('register')}
+            className="text-blue-600 hover:text-blue-700 font-semibold"
+          >
+            Sign up
+          </button>
+        </p>
       </div>
-      <p className="text-center text-sm text-gray-600">
-        Don't have an account?{' '}
-        <button
-          type="button"
-          onClick={() => setCurrentPage('register')}
-          className="text-blue-600 hover:text-blue-700 font-semibold"
-        >
-          Sign up
-        </button>
-      </p>
     </div>
-  </div>
-);
+  );
+};
 
-export default LoginForm; 
+export default LoginForm;
