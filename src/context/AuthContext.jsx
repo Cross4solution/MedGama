@@ -56,13 +56,17 @@ export function AuthProvider({ children }) {
       return { success: true, message: 'Demo login', data: { user: emailOrUser } };
     }
     const res = await endpoints.login({ email: emailOrUser, password });
-    const apiUser = res?.data?.user ?? { name: 'User' };
-    const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
-    const userWithRole = apiUser ? { ...apiUser, role: isDoctor ? 'doctor' : 'patient' } : null;
-    const access = res?.data?.access_token ?? null;
+    // Accept both flat and nested API shapes
+    const apiUser = res?.user ?? res?.data?.user ?? null;
+    const access = res?.access_token ?? res?.data?.access_token ?? null;
+    if (!apiUser || !access) {
+      throw { status: 401, message: 'Invalid credentials', data: res };
+    }
+    const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
+    const userWithRole = { ...apiUser, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
     setUser(userWithRole);
     setToken(access);
-    return res;
+    return { data: { user: userWithRole, access_token: access } };
   };
   const register = async (email, password, password_confirmation) => {
     const res = await endpoints.userRegister({ email, password, password_confirmation });

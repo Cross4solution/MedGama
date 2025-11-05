@@ -228,8 +228,12 @@ const DoctorLogin = () => {
               {/* Google Sign-In Button (GIS) */}
               <div id="googleBtnDoctor" className="w-full flex items-center justify-center"></div>
               
-              <button type="button" disabled className="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-lg font-medium cursor-not-allowed">
-                Demo Login (Disabled)
+              <button
+                type="button"
+                onClick={() => { login({ id: 'doc-demo-1', role: 'doctor', name: 'Demo Doctor' }); navigate('/explore', { replace: true }); }}
+                className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200"
+              >
+                Demo Login (Doctor)
               </button>
             </form>
             <div className="mt-6 text-center text-sm text-gray-600 space-y-2">
