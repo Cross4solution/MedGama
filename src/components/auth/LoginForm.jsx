@@ -17,25 +17,18 @@ const LoginForm = ({
 
     const API_BASE = process.env.REACT_APP_API_BASE || '';
     const LOGIN_GOOGLE = process.env.REACT_APP_API_LOGIN_GOOGLE || '/api/login/google';
-    const CSRF_PATH = process.env.REACT_APP_API_CSRF_PATH || '/sanctum/csrf-cookie';
-
-    const ensureCsrf = async () => {
-      try {
-        await fetch((API_BASE + CSRF_PATH), { method: 'GET', credentials: 'include' });
-      } catch {}
-    };
+    
 
     const handleCredentialResponse = async ({ credential }) => {
       try {
-        await ensureCsrf();
         const resp = await fetch((API_BASE + LOGIN_GOOGLE), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
           body: JSON.stringify({ id_token: credential })
         });
         if (!resp.ok) return;
         const data = await resp.json().catch(() => ({}));
+        if (data && data.access_token) { try { localStorage.setItem('access_token', data.access_token); } catch {} }
         try { localStorage.setItem('google_id_token', credential); } catch {}
         try { localStorage.setItem('google_user', JSON.stringify(data?.user || data)); } catch {}
         window.location.assign('/home-v2');
