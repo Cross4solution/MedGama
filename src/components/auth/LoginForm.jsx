@@ -11,13 +11,13 @@ const LoginForm = ({
   setCurrentPage,
   googleId = 'googleBtn'
 }) => {
+  const tokenClientRef = useRef(null);
   useEffect(() => {
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
     if (!clientId) return;
 
     const API_BASE = process.env.REACT_APP_API_BASE || '';
     const LOGIN_GOOGLE = process.env.REACT_APP_API_LOGIN_GOOGLE || '/api/login/google';
-    const tokenClientRef = useRef(null);
     const mountAccessTokenFlow = () => {
       /** @type {any} */
       const google = (window).google;
