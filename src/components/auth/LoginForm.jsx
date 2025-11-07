@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Heart, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 
 const LoginForm = ({ 
@@ -17,53 +17,64 @@ const LoginForm = ({
 
     const API_BASE = process.env.REACT_APP_API_BASE || '';
     const LOGIN_GOOGLE = process.env.REACT_APP_API_LOGIN_GOOGLE || '/api/login/google';
-    
-
-    const handleCredentialResponse = async ({ credential }) => {
+    const tokenClientRef = useRef(null);
+    const mountAccessTokenFlow = () => {
+      /** @type {any} */
+      const google = (window).google;
+      const oauthReady = !!(google && google.accounts && google.accounts.oauth2);
+      const btn = document.getElementById(googleId);
+      if (!oauthReady || !btn) return false;
       try {
-        const resp = await fetch((API_BASE + LOGIN_GOOGLE), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_token: credential })
+        tokenClientRef.current = google.accounts.oauth2.initTokenClient({
+          client_id: clientId,
+          scope: 'openid email profile',
+          callback: async (tokenResponse) => {
+            try {
+              const access_token = tokenResponse?.access_token;
+              if (!access_token) return;
+              const resp = await fetch((API_BASE + LOGIN_GOOGLE), {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  'X-Requested-With': 'XMLHttpRequest'
+                },
+                mode: 'cors',
+                redirect: 'manual',
+                cache: 'no-store',
+                body: JSON.stringify({ access_token })
+              });
+              if (resp.type === 'opaqueredirect' || (resp.status >= 300 && resp.status < 400)) return;
+              if (!resp.ok) return;
+              const data = await resp.json().catch(() => ({}));
+              if (data && data.data && data.data.access_token) { try { localStorage.setItem('access_token', data.data.access_token); } catch {} }
+              else if (data && data.access_token) { try { localStorage.setItem('access_token', data.access_token); } catch {} }
+              try { localStorage.setItem('google_access_token', access_token); } catch {}
+              try { localStorage.setItem('google_user', JSON.stringify(data?.user || data?.data?.user || data)); } catch {}
+              window.location.assign('/home-v2');
+            } catch {}
+          }
         });
-        if (!resp.ok) return;
-        const data = await resp.json().catch(() => ({}));
-        if (data && data.access_token) { try { localStorage.setItem('access_token', data.access_token); } catch {} }
-        try { localStorage.setItem('google_id_token', credential); } catch {}
-        try { localStorage.setItem('google_user', JSON.stringify(data?.user || data)); } catch {}
-        window.location.assign('/home-v2');
-      } catch (e) {}
+        // Render a simple button inside placeholder
+        btn.innerHTML = '';
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'w-full flex items-center justify-center gap-2 border rounded-full py-2 px-3 hover:bg-gray-50';
+        b.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" class="h-5 w-5"/> <span class="text-sm font-medium">Continue with Google</span>';
+        b.addEventListener('click', () => {
+          try { tokenClientRef.current?.requestAccessToken({ prompt: 'consent' }); } catch {}
+        });
+        btn.appendChild(b);
+        return true;
+      } catch { return false; }
     };
 
     let tries = 0;
-    const mountGoogle = () => {
-      /** @type {any} */
-      const google = (window).google;
-      const ready = !!(google && google.accounts && google.accounts.id);
-      const btn = document.getElementById(googleId);
-      if (ready && btn) {
-        try {
-          google.accounts.id.initialize({
-            client_id: clientId,
-            callback: handleCredentialResponse,
-            use_fedcm_for_prompt: false
-          });
-          google.accounts.id.renderButton(btn, {
-            theme: 'outline',
-            size: 'large',
-            text: 'continue_with',
-            shape: 'pill',
-            width: 360
-          });
-        } catch {}
-        return;
-      }
-      if (tries < 20) {
-        tries += 1;
-        setTimeout(mountGoogle, 250);
-      }
+    const tick = () => {
+      if (mountAccessTokenFlow()) return;
+      if (tries < 20) { tries += 1; setTimeout(tick, 250); }
     };
-    mountGoogle();
+    tick();
   }, [googleId]);
 
   return (
