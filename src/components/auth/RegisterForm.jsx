@@ -69,7 +69,7 @@ const RegisterForm = ({
   const fd = (formData || {});
   
   // Global country options (island nations excluded per requirement)
-  const allCountries = useMemo(() => listCountriesAll({ excludeIslands: true, excludeNoCities: true }), []);
+  const allCountries = useMemo(() => listCountriesAll({ excludeIslands: false, excludeNoCities: false }), []);
 
   // Phone logic moved to PhoneNumberInput
 
@@ -329,6 +329,21 @@ const RegisterForm = ({
               />
             </div>
           </div>
+          {(fd.role ?? 'patient') === 'patient' && (
+            <div>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left md:text-left">
+                Medical history (chronic diseases, allergies, medications)
+              </label>
+              <textarea
+                name="medicalHistory"
+                value={fd.medicalHistory ?? ''}
+                onChange={handleInputChange}
+                rows={3}
+                className="w-full h-11 border border-gray-300 rounded-xl px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-white"
+                placeholder="Optional: e.g., Diabetes Type 2, Penicillin allergy, Hypertension, etc."
+              />
+            </div>
+          )}
         </div>
         <div className="space-y-3 sm:space-y-4 w-full max-w-md mt-4 sm:mt-6 pt-2 pb-2">
           <div>

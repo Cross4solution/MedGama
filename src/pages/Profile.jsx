@@ -4,7 +4,7 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
-import { User, Shield, Bell, Lock, Globe, ChevronRight, Eye, EyeOff } from 'lucide-react';
+import { User, Shield, Bell, Lock, Globe, ChevronRight, Eye, EyeOff, HeartPulse } from 'lucide-react';
 import PatientNotify from '../components/notifications/PatientNotify';
 
 export default function Profile() {
@@ -49,6 +49,34 @@ export default function Profile() {
   const [dataShare, setDataShare] = useState(prefs.dataShare ?? false);
 
   // Connections removed
+
+  // Patient medical history (frontend-only persistence)
+  const [medicalHistory, setMedicalHistory] = useState('');
+  React.useEffect(() => {
+    try {
+      if (user?.role === 'patient' && user?.email) {
+        const key = `patient_profile_extra_${user.email}`;
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const obj = JSON.parse(raw);
+          if (obj && typeof obj.medicalHistory === 'string') setMedicalHistory(obj.medicalHistory);
+        }
+      }
+    } catch {}
+  }, [user?.email, user?.role]);
+  const saveMedical = (e) => {
+    e?.preventDefault?.();
+    try {
+      if (user?.role === 'patient' && user?.email) {
+        const key = `patient_profile_extra_${user.email}`;
+        const raw = localStorage.getItem(key);
+        const prev = raw ? JSON.parse(raw) : {};
+        const next = { ...prev, medicalHistory: String(medicalHistory || '').trim() };
+        localStorage.setItem(key, JSON.stringify(next));
+        alert('Medical history saved. (Demo)');
+      }
+    } catch {}
+  };
 
   if (!user) {
     return (
@@ -125,6 +153,9 @@ export default function Profile() {
           <NavItem id="security" icon={Shield} title="Security" desc="Password" />
           <NavItem id="notifications" icon={Bell} title="Notifications" desc="Patient notifications" />
           <NavItem id="privacy" icon={Lock} title="Privacy" desc="Privacy and data" />
+          {user?.role === 'patient' && (
+            <NavItem id="medical" icon={HeartPulse} title="Medical History" desc="Diseases & meds" />
+          )}
           {/* Connections removed */}
         </aside>
 
@@ -290,6 +321,23 @@ export default function Profile() {
           {active === 'privacy' && (
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <p className="text-sm text-gray-600">Privacy settings are not available at the moment.</p>
+            </div>
+          )}
+
+          {active === 'medical' && user?.role === 'patient' && (
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h2 className="text-base font-semibold text-gray-900 mb-4">Medical History</h2>
+              <p className="text-sm text-gray-600 mb-3">Chronic diseases, allergies, medications (frontend only).</p>
+              <textarea
+                value={medicalHistory}
+                onChange={(e)=>setMedicalHistory(e.target.value)}
+                rows={6}
+                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm resize-y"
+                placeholder="e.g., Diabetes Type 2, Penicillin allergy, Hypertension, etc."
+              />
+              <div className="flex justify-end mt-3">
+                <button onClick={saveMedical} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save</button>
+              </div>
             </div>
           )}
 

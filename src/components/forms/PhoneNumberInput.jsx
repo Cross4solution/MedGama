@@ -14,11 +14,31 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
   const [dropdownHeight, setDropdownHeight] = useState(320);
 
   // Parse incoming value
-  const parsePhone = (val = '') => {
-    const m = (val || '').match(/^(\+\d{1,3})\s*(.*)$/);
-    return m ? { code: m[1], number: m[2] } : { code: '+90', number: (val || '').replace(/^\+/, '') };
+  const parseWithKnownCodes = (raw = '', knownCodes = []) => {
+    const s = String(raw || '').trim();
+    if (!s.startsWith('+')) {
+      return { code: '+90', number: s.replace(/\D+/g, '') };
+    }
+    const digits = s.replace(/\D+/g, '');
+    if (!digits) return { code: '+', number: '' };
+    // En uzun eşleşen ülke kodunu bul
+    const sorted = [...knownCodes].sort((a, b) => b.length - a.length);
+    const pref = sorted.find((c) => ('+' + digits).startsWith(c));
+    if (pref) {
+      const rest = ('+' + digits).slice(pref.length).replace(/^\+/, '');
+      return { code: pref, number: rest };
+    }
+    // Eşleşme yoksa makul bir fallback: ilk 3 hane kod gibi kabul et
+    const fallbackCode = '+' + digits.slice(0, Math.min(3, digits.length));
+    const rest = digits.slice(fallbackCode.length - 1);
+    return { code: fallbackCode, number: rest };
   };
-  const { code: initCode, number: initNumber } = parsePhone(value);
+
+  const { code: initCode, number: initNumber } = (() => {
+    // phoneCodes henüz aşağıda hesaplanacak; bu yüzden önce geçici listeyi çıkarıyoruz
+    const tempCodes = Array.from(new Set(Object.values(countryDialCodes || {})));
+    return parseWithKnownCodes(value, tempCodes);
+  })();
   const [phoneCode, setPhoneCode] = useState(initCode);
   const [phoneNumber, setPhoneNumber] = useState(initNumber);
   const displayPhone = phoneNumber ? `${phoneCode} ${phoneNumber}`.trim() : phoneCode;
@@ -205,7 +225,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
         name="phone"
         value={displayPhone}
         onChange={(e) => {
-          const raw = e.target.value || '';
+          const raw = String(e.target.value || '');
 
           // tamamen boş
           if (!raw.trim()) {
@@ -223,7 +243,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
             return;
           }
 
-          // + ile başlamıyorsa mevcut ülke koduna ekle
+          // + ile başlamıyorsa mevcut ülke koduna ekleyerek sadece sayıları al
           if (!raw.startsWith('+')) {
             const clean = raw.replace(/\D+/g, '');
             const limit = phoneMaxDigits[phoneCode] || 14;
@@ -235,26 +255,11 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
             return;
           }
 
-          // + ile başlıyorsa
-          const allDigits = raw.replace(/\D+/g, '');
-          if (allDigits.length === 0) {
-            setPhoneCode('+');
-            setPhoneNumber('');
-            onChange && onChange('+');
-            return;
-          }
-
-          let newCode = '+' + allDigits;
-          let phoneDigits = '';
-
-          if (allDigits.length > 3) {
-            newCode = '+' + allDigits.slice(0, 3);
-            phoneDigits = allDigits.slice(3);
-          }
-
+          // + ile başlıyorsa: bilinen ülke kodlarıyla en uzun eşleşme
+          const { code: newCode, number: restDigitsRaw } = parseWithKnownCodes(raw, phoneCodes);
           setPhoneCode(newCode);
           const limit = phoneMaxDigits[newCode] || 14;
-          const digits = phoneDigits.slice(0, limit);
+          const digits = String(restDigitsRaw || '').replace(/\D+/g, '').slice(0, limit);
           const formatted = formatPhone(newCode, digits);
           setPhoneNumber(formatted);
           const finalValue = digits ? `${newCode} ${digits}`.trim() : newCode;
@@ -278,43 +283,53 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
               onChange={(e)=>setPhoneCodeQuery(e.target.value)}
               placeholder="Search country or code"
               className="w-full border border-gray-300 rounded-md px-2 py-2 text-sm"
+              onTouchMove={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
             />
           </div>
-          {(phoneCodes.filter((c)=> {
+        {(phoneCodes
+          .filter((c)=> {
             const meta = phoneMeta[c] || {}; const q = phoneCodeQuery.trim().toLowerCase();
             if (Array.isArray(allowedCountryNames) && allowedCountryNames.length > 0) {
               if (!allowedCountryNames.includes(meta.name)) return false;
             }
             if (!q) return true; return (meta.name||'').toLowerCase().includes(q) || c.includes(q);
-          })).map((c)=> {
-            const meta = phoneMeta[c] || {};
-            const iso = meta.iso || isoFor(meta.name);
-            return (
-              <button
-                key={c}
-                type="button"
-                onClick={()=> {
-                  setShowPhoneCodes(false);
-                  setPhoneCode(c);
-                  const rawDigits = (phoneNumber || '').replace(/\D+/g, '');
-                  const limit = phoneMaxDigits[c] || 14;
-                  const digits = rawDigits.slice(0, limit);
-                  const formatted = formatPhone(c, digits);
-                  setPhoneNumber(formatted);
-                  const finalValue = digits ? `${c} ${digits}`.trim() : c;
-                  onChange && onChange(finalValue);
-                }}
-                className={`w-full text-left px-3 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-3 rounded-md ${ displayPhone.startsWith(c) ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
-              >
-                {iso && <img src={getFlagUrlByIso(iso)} alt="" width={20} height={15} className="inline-block rounded-sm" />}
-                <span className="flex-1 truncate">{meta.name || 'Country'}</span>
-                <span className="text-gray-500">{c}</span>
-              </button>
-            );
-          })}
-        </div>,
-        document.body
-      )}
-    </div>
-  );
+          })
+          .sort((a,b)=> {
+            const na = (phoneMeta[a]?.name || '').toString();
+            const nb = (phoneMeta[b]?.name || '').toString();
+            return na.localeCompare(nb, undefined, { sensitivity: 'base' });
+          })
+        ).map((c)=> {
+          const meta = phoneMeta[c] || {};
+          const iso = meta.iso || isoFor(meta.name);
+          return (
+            <button
+              key={c}
+              type="button"
+              onClick={()=> {
+                setShowPhoneCodes(false);
+                setPhoneCode(c);
+                const rawDigits = (phoneNumber || '').replace(/\D+/g, '');
+                const limit = phoneMaxDigits[c] || 14;
+                const digits = rawDigits.slice(0, limit);
+                const formatted = formatPhone(c, digits);
+                setPhoneNumber(formatted);
+                const finalValue = digits ? `${c} ${digits}`.trim() : c;
+                onChange && onChange(finalValue);
+              }}
+              className={`w-full text-left px-3 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-3 rounded-md ${ displayPhone.startsWith(c) ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+            >
+              {iso && <img src={getFlagUrlByIso(iso)} alt="" width={20} height={15} className="inline-block rounded-sm" />}
+              <span className="flex-1 truncate">{meta.name || 'Country'}</span>
+              <span className="text-gray-500">{c}</span>
+            </button>
+          );
+        })}
+      </div>,
+      document.body
+    )}
+  </div>
+);
+
 }

@@ -280,7 +280,6 @@ const Header = () => {
             const patientItems = [
               { to: '/home-v2', label: 'Home', icon: Home },
               { to: '/explore', label: 'Medstream', icon: Video },
-              { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },
               { to: '/profile', label: 'Settings', icon: Settings },

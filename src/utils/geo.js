@@ -4,6 +4,7 @@
 import countriesEurope from '../data/countriesEurope';
 import countryCities from '../data/countryCities';
 import countryCodes from '../data/countryCodes';
+import countryDialCodes from '../data/countryDialCodes';
 import adminDivisions from '../data/adminDivisions';
 import { Country as CSCCountry, State as CSCState, City as CSCCity } from 'country-state-city';
 // countryCities: { [countryName]: string[] }
@@ -286,8 +287,10 @@ export function listCountriesAll(options = {}) {
     if (excludeNoCities) names = names.filter((n) => !NO_CITY_COUNTRIES.has(n));
     return names.sort();
   } catch {
-    // Fallback: Avrupa + Asya + Orta Doğu + "United States" birleşimi
+    // Fallback: countryDialCodes anahtarları (tüm ülkeler) + bölgesel listelerle birleşim
+    const dialNames = Object.keys(countryDialCodes || {});
     const merged = new Set([
+      ...dialNames,
       ...countriesEurope,
       ...countriesAsia,
       ...countriesMiddleEast,
@@ -296,7 +299,7 @@ export function listCountriesAll(options = {}) {
     let out = Array.from(merged);
     if (excludeIslands) out = out.filter((n) => !isLikelyIsland(n));
     if (excludeNoCities) out = out.filter((n) => !NO_CITY_COUNTRIES.has(n));
-    return out.sort();
+    return out.sort((a,b)=> a.localeCompare(b, undefined, { sensitivity: 'base' }));
   }
 }
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 // Star icon no longer needed here; used inside the reusable component
-import TimelinePreview from '../components/TimelinePreview';
 import { SearchSections } from '../components/search';
 import CoreBoxes from '../components/CoreBoxes';
 import PopularClinicsShowcase from '../components/PopularClinicsShowcase';
@@ -65,16 +64,8 @@ export default function HomeV2() {
         <></>
       ) : (
         <>
-      {/* If patient logged in, show TimelinePreview instead of hero */}
-      {user && user.role === 'patient' ? (
-        <section className="bg-gradient-to-b from-gray-50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-6">
-            <TimelinePreview columns={3} onViewAll={handleViewAll} />
-          </div>
-        </section>
-      ) : (
-        // Hero / Slogan for guests and non-patient roles
-        <section className="relative overflow-hidden">
+      {/* Hero / Slogan */}
+      <section className="relative overflow-hidden">
           <div className="relative">
             {/* Background layer with a lighter blur (reduced for clarity) */}
             <div
@@ -118,8 +109,7 @@ export default function HomeV2() {
               </div>
             </div>
           </div>
-        </section>
-      )}
+      </section>
 
       {/* Unified Search sections via component */}
       <SearchSections />
@@ -127,8 +117,6 @@ export default function HomeV2() {
       {/* Core Boxes (6 items) */}
       <CoreBoxes />
 
-      {/* Timeline Önizleme: only for guests/non-patient to avoid duplicate */}
-      {(!user || user.role !== 'patient') && <TimelinePreview columns={3} onViewAll={handleViewAll} />}
 
       {/* Popular Clinics reusable showcase */}
       <PopularClinicsShowcase

@@ -32,6 +32,7 @@ const AuthPages = () => {
     phone: '',
     birthDate: '',
     city: '',
+    medicalHistory: '',
     acceptTerms: false,
     receiveUpdates: false
   });
@@ -109,6 +110,13 @@ const AuthPages = () => {
         }
         const doRegister = formData.role === 'doctor' ? registerDoctor : register;
         const res = await doRegister(formData.email, formData.password, formData.confirmPassword);
+        try {
+          if ((formData.role || 'patient') === 'patient' && formData.email) {
+            const key = `patient_profile_extra_${formData.email}`;
+            const extras = { medicalHistory: String(formData.medicalHistory || '').trim() };
+            localStorage.setItem(key, JSON.stringify(extras));
+          }
+        } catch {}
         notify({ type: 'success', message: res?.message || 'Registration successful. Please login.' });
         navigate('/login');
       } else {
@@ -256,7 +264,7 @@ const AuthPages = () => {
             
             {/* Right Side - Form */}
             <div className="flex-1 max-w-3xl">
-              <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-4 md:p-6 shadow-2xl border border-white/30">
+              <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-3 md:p-4 shadow-2xl border border-white/30">
                 {currentPage === 'login' ? (
                   <>
                     <LoginForm 

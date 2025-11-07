@@ -15,18 +15,31 @@ const LoginForm = ({
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
     if (!clientId) return;
 
+    const API_BASE = process.env.REACT_APP_API_BASE || '';
+    const LOGIN_GOOGLE = process.env.REACT_APP_API_LOGIN_GOOGLE || '/api/login/google';
+    const CSRF_PATH = process.env.REACT_APP_API_CSRF_PATH || '/sanctum/csrf-cookie';
+
+    const ensureCsrf = async () => {
+      try {
+        await fetch((API_BASE + CSRF_PATH), { method: 'GET', credentials: 'include' });
+      } catch {}
+    };
+
     const handleCredentialResponse = async ({ credential }) => {
       try {
-        const resp = await fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(credential));
+        await ensureCsrf();
+        const resp = await fetch((API_BASE + LOGIN_GOOGLE), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ id_token: credential })
+        });
         if (!resp.ok) return;
-        const info = await resp.json();
-        const audOk = info && info.aud === process.env.REACT_APP_GOOGLE_CLIENT_ID;
-        if (!audOk) return;
+        const data = await resp.json().catch(() => ({}));
         try { localStorage.setItem('google_id_token', credential); } catch {}
-        try { localStorage.setItem('google_user', JSON.stringify(info)); } catch {}
+        try { localStorage.setItem('google_user', JSON.stringify(data?.user || data)); } catch {}
         window.location.assign('/home-v2');
-      } catch (e) {
-      }
+      } catch (e) {}
     };
 
     let tries = 0;
