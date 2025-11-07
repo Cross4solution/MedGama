@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { Heart, Eye, EyeOff, Mail, Lock } from 'lucide-react';
 
 const LoginForm = ({ 
@@ -11,6 +12,7 @@ const LoginForm = ({
   setCurrentPage,
   googleId = 'googleBtn'
 }) => {
+  const { applyApiAuth } = useAuth();
   const tokenClientRef = useRef(null);
   useEffect(() => {
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
@@ -50,7 +52,14 @@ const LoginForm = ({
               if (data && data.data && data.data.access_token) { try { localStorage.setItem('access_token', data.data.access_token); } catch {} }
               else if (data && data.access_token) { try { localStorage.setItem('access_token', data.access_token); } catch {} }
               try { localStorage.setItem('google_access_token', access_token); } catch {}
-              try { localStorage.setItem('google_user', JSON.stringify(data?.user || data?.data?.user || data)); } catch {}
+              const applied = applyApiAuth?.(data);
+              try {
+                if (applied?.user && (applied?.access_token || localStorage.getItem('access_token'))) {
+                  const token = applied.access_token || localStorage.getItem('access_token');
+                  localStorage.setItem('auth_state', JSON.stringify({ user: applied.user, token, country: 'TR' }));
+                }
+              } catch {}
+              try { localStorage.setItem('google_user', JSON.stringify(applied?.user || data?.user || data?.data?.user || data)); } catch {}
               window.location.assign('/home-v2');
             } catch {}
           }

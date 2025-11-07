@@ -68,6 +68,27 @@ export function AuthProvider({ children }) {
     setToken(access);
     return { data: { user: userWithRole, access_token: access } };
   };
+
+  const applyApiAuth = (res) => {
+    try {
+      let apiUser = res?.user ?? res?.data?.user ?? null;
+      let access = res?.access_token ?? res?.data?.access_token ?? null;
+      if (!access) {
+        const lsAccess = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
+        if (lsAccess) access = lsAccess;
+      }
+      if (!apiUser) {
+        try { apiUser = JSON.parse(localStorage.getItem('google_user') || 'null'); } catch {}
+      }
+      if (!apiUser || !access) return null;
+      const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
+      const userWithRole = { ...apiUser, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+      setUser(userWithRole);
+      setToken(access);
+      try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country })); } catch {}
+      return { user: userWithRole, access_token: access };
+    } catch { return null; }
+  };
   const register = async (email, password, password_confirmation) => {
     const res = await endpoints.userRegister({ email, password, password_confirmation });
     return res;
@@ -118,6 +139,7 @@ export function AuthProvider({ children }) {
     country,
     setCountry,
     login,
+    applyApiAuth,
     demoLogin,
     register,
     registerDoctor,

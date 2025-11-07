@@ -5,7 +5,7 @@ import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff }
 
 const DoctorLogin = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, applyApiAuth } = useAuth();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -57,7 +57,8 @@ const DoctorLogin = () => {
               const outToken = (data && data.data && data.data.access_token) ? data.data.access_token : data?.access_token;
               if (outToken) { try { localStorage.setItem('access_token', outToken); } catch {} }
               try { localStorage.setItem('google_access_token', access_token); } catch {}
-              try { localStorage.setItem('google_user', JSON.stringify(data?.user || data?.data?.user || data)); } catch {}
+              const applied = applyApiAuth?.(data);
+              try { localStorage.setItem('google_user', JSON.stringify(applied?.user || data?.user || data?.data?.user || data)); } catch {}
               navigate('/explore', { replace: true });
             } catch (e) {}
           }
