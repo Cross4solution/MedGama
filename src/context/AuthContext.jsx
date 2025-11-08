@@ -31,17 +31,31 @@ export function AuthProvider({ children }) {
   const [country, setCountry] = useState('TR'); // default TR for demo
   // Global UI state for Patient Sidebar (mobile drawer)
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
+  const meUnavailableRef = React.useRef(false);
+  const loggedOutRef = React.useRef(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('auth_state');
-    if (saved) {
-      try {
+    try {
+      // If user explicitly logged out, don't auto-hydrate from tokens
+      if (localStorage.getItem('auth_logout') === '1') {
+        loggedOutRef.current = true;
+        return;
+      }
+      const saved = localStorage.getItem('auth_state');
+      if (saved) {
         const parsed = JSON.parse(saved);
         setUser(parsed.user || null);
         setToken(parsed.token || null);
         setCountry(parsed.country || 'TR');
-      } catch {}
-    }
+        return;
+      }
+      // Fallback: if no auth_state, but we do have a token from Google/backend, keep the session
+      const lsToken = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
+      if (lsToken) {
+        setToken(lsToken);
+        // user will be fetched by the next effect via fetchCurrentUser
+      }
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -82,11 +96,73 @@ export function AuthProvider({ children }) {
       }
       if (!apiUser || !access) return null;
       const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
-      const userWithRole = { ...apiUser, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+      const name = apiUser?.name || [apiUser?.fname, apiUser?.lname].filter(Boolean).join(' ').trim() || apiUser?.email || 'User';
+      const userWithRole = { ...apiUser, name, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
       setUser(userWithRole);
       setToken(access);
       try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country })); } catch {}
+      try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
       return { user: userWithRole, access_token: access };
+    } catch { return null; }
+  };
+
+  const API_BASE = process.env.REACT_APP_API_BASE || '';
+  const ME_PATH = process.env.REACT_APP_API_ME || '/api/auth/me';
+  const fetchCurrentUser = async (overrideToken) => {
+    try {
+      if (loggedOutRef.current) return null;
+      if (meUnavailableRef.current) return null;
+      const tk = overrideToken || token || localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
+      if (!tk) return null;
+      const resp = await fetch((API_BASE + ME_PATH), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${tk}`
+        },
+        cache: 'no-store',
+        mode: 'cors'
+      });
+      if (resp.status === 404) {
+        meUnavailableRef.current = true;
+      }
+      if (!resp.ok) {
+        // Fallback: keep session with local user snapshot if available
+        try {
+          const lsUser = JSON.parse(localStorage.getItem('google_user') || 'null');
+          if (lsUser) {
+            const name = lsUser?.name || [lsUser?.fname, lsUser?.lname].filter(Boolean).join(' ').trim() || lsUser?.email || 'User';
+            const userWithRole = { ...lsUser, name, role: lsUser?.role || 'patient' };
+            setUser(userWithRole);
+            setToken(tk);
+            localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country }));
+            return userWithRole;
+          }
+        } catch {}
+        return null;
+      }
+      const data = await resp.json().catch(() => ({}));
+      const apiUser = data?.user ?? data?.data?.user ?? data ?? null;
+      if (!apiUser) {
+        try {
+          const lsUser = JSON.parse(localStorage.getItem('google_user') || 'null');
+          if (lsUser) {
+            const name = lsUser?.name || [lsUser?.fname, lsUser?.lname].filter(Boolean).join(' ').trim() || lsUser?.email || 'User';
+            const userWithRole = { ...lsUser, name, role: lsUser?.role || 'patient' };
+            setUser(userWithRole);
+            setToken(tk);
+            localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country }));
+            return userWithRole;
+          }
+        } catch {}
+        return null;
+      }
+      const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
+      const userWithRole = { ...apiUser, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+      setUser(userWithRole);
+      setToken(tk);
+      try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country })); } catch {}
+      return userWithRole;
     } catch { return null; }
   };
   const register = async (email, password, password_confirmation) => {
@@ -114,6 +190,14 @@ export function AuthProvider({ children }) {
     if (skipConfirmation) {
       setUser(null);
       setToken(null);
+      try {
+        localStorage.removeItem('auth_state');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('google_access_token');
+        localStorage.removeItem('google_user');
+        localStorage.setItem('auth_logout', '1');
+        loggedOutRef.current = true;
+      } catch {}
       return true;
     }
     
@@ -124,6 +208,14 @@ export function AuthProvider({ children }) {
         if (confirmed) {
           setUser(null);
           setToken(null);
+          try {
+            localStorage.removeItem('auth_state');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('google_access_token');
+            localStorage.removeItem('google_user');
+            localStorage.setItem('auth_logout', '1');
+            loggedOutRef.current = true;
+          } catch {}
           resolve(true);
         } else {
           resolve(false);
@@ -140,6 +232,7 @@ export function AuthProvider({ children }) {
     setCountry,
     login,
     applyApiAuth,
+    fetchCurrentUser,
     demoLogin,
     register,
     registerDoctor,
@@ -148,6 +241,17 @@ export function AuthProvider({ children }) {
     sidebarMobileOpen,
     setSidebarMobileOpen,
   }), [user, country, sidebarMobileOpen]);
+
+  // If we have a token (from fallback) but no user yet, try to fetch current user once
+  useEffect(() => {
+    if (!user) {
+      const lsToken = token || localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
+      if (lsToken && !meUnavailableRef.current) {
+        fetchCurrentUser(lsToken).catch(() => {});
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   return (
     <AuthContext.Provider value={value}>

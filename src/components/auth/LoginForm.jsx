@@ -12,7 +12,7 @@ const LoginForm = ({
   setCurrentPage,
   googleId = 'googleBtn'
 }) => {
-  const { applyApiAuth } = useAuth();
+  const { applyApiAuth, fetchCurrentUser } = useAuth();
   const tokenClientRef = useRef(null);
   useEffect(() => {
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
@@ -57,6 +57,7 @@ const LoginForm = ({
                 if (applied?.user && (applied?.access_token || localStorage.getItem('access_token'))) {
                   const token = applied.access_token || localStorage.getItem('access_token');
                   localStorage.setItem('auth_state', JSON.stringify({ user: applied.user, token, country: 'TR' }));
+                  try { await fetchCurrentUser?.(token); } catch {}
                 }
               } catch {}
               try { localStorage.setItem('google_user', JSON.stringify(applied?.user || data?.user || data?.data?.user || data)); } catch {}
