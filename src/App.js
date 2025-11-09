@@ -9,7 +9,6 @@ import TelehealthAppointmentPage from './pages/TelehealthAppointmentPage';
 import TelehealthPage from './pages/TelehealthPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import ClinicsPage from './pages/ClinicsPage';
 import AuthPages from './pages/AuthPages';
 import AboutPage from './pages/AboutPage';
 import ForPatientsPage from './pages/ForPatientsPage';
@@ -127,7 +126,7 @@ function AppContent() {
   const pagesWithOwnContainer = [
     '/profile', '/notifications', '/doctors-departments', 
     '/patient-home', '/telehealth', '/telehealth-appointment',
-    '/clinic', '/explore', '/post', '/clinics'
+    '/clinic', '/explore', '/post'
   ];
   const hasOwnContainer = pagesWithOwnContainer.some(page => 
     location.pathname.startsWith(page)
@@ -153,7 +152,6 @@ function AppContent() {
         <Route path="/home" element={<HomeV2 />} />
         <Route path="/home-v2" element={<HomeV2 />} />
         <Route path="/explore" element={<ExploreTimeline />} />
-        <Route path="/clinics" element={<ClinicsPage />} />
         <Route path="/doctors-departments" element={<DoctorsDepartments />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />

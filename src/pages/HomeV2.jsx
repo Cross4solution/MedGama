@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { SearchSections } from '../components/search';
 import CoreBoxes from '../components/CoreBoxes';
 import PopularClinicsShowcase from '../components/PopularClinicsShowcase';
+import TimelinePreview from '../components/TimelinePreview';
 
 export default function HomeV2() {
   const { user } = useAuth();
@@ -116,6 +117,9 @@ export default function HomeV2() {
 
       {/* Core Boxes (6 items) */}
       <CoreBoxes />
+
+      {/* Medstream timeline preview between CoreBoxes and Popular Treatments */}
+      <TimelinePreview limit={8} onViewAll={() => navigate('/explore')} />
 
 
       {/* Popular Clinics reusable showcase */}

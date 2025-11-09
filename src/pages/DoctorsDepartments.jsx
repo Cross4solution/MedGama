@@ -201,8 +201,8 @@ export default function DoctorsDepartments() {
                       <input value={doctorEditing?.price||''} onChange={(e)=>setDoctorEditing((p)=>({...p, price: String(e.target.value).replace(/[^0-9]/g,'')}))} className="w-full h-11 px-3 border rounded-xl text-sm" placeholder="e.g., 800" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Availability</label>
-                      <input value={doctorEditing?.available||''} onChange={(e)=>setDoctorEditing((p)=>({...p, available:e.target.value}))} className="w-full h-11 px-3 border rounded-xl text-sm" placeholder="e.g., Today 15:00" />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Next Availability</label>
+                      <input type="datetime-local" value={doctorEditing?.available||''} onChange={(e)=>setDoctorEditing((p)=>({...p, available:e.target.value}))} className="w-full h-11 px-3 border rounded-xl text-sm" />
                     </div>
                   </div>
                 </div>

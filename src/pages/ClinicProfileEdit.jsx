@@ -1,6 +1,120 @@
 import React, { useRef, useState } from 'react';
 import { Save, Building2, MapPin, Info, Image as ImageIcon, Upload, Plus, X, DollarSign, Images, Package, Star, Stethoscope, Activity, Brain, Scissors, Link as LinkIcon } from 'lucide-react';
 
+function TagEditor({ label, value = [], onChange, placeholder }) {
+  const [text, setText] = useState('');
+  const add = () => {
+    const v = (text || '').trim();
+    if (!v) return;
+    if (!value.includes(v)) onChange([...(value || []), v]);
+    setText('');
+  };
+  const onKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      add();
+    }
+  };
+  const remove = (idx) => onChange((value || []).filter((_, i) => i !== idx));
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <div className="min-h-[44px] w-full px-2 py-1.5 border rounded-lg bg-white flex flex-wrap gap-2">
+        {value && value.map((tag, i) => (
+          <span key={`${tag}-${i}`} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 border text-xs">
+            {tag}
+            <button type="button" onClick={()=>remove(i)} className="ml-1 text-gray-500 hover:text-gray-700">
+              <X className="w-3 h-3" />
+            </button>
+          </span>
+        ))}
+        <input
+          value={text}
+          onChange={(e)=>setText(e.target.value)}
+          onKeyDown={onKeyDown}
+          onBlur={()=>{ if (text.trim()) add(); }}
+          placeholder={placeholder}
+          className="flex-1 min-w-[140px] h-7 px-2 text-sm outline-none"
+        />
+      </div>
+    </div>
+  );
+}
+
+function ServiceModal({ initial, onClose, onSave }) {
+  const [name, setName] = useState(initial?.name || '');
+  const [department, setDepartment] = useState(initial?.department || '');
+  const [icon, setIcon] = useState(initial?.icon || 'Activity');
+  const [description, setDescription] = useState(initial?.description || '');
+  const [procedures, setProcedures] = useState(initial?.procedures || []);
+  const [priceRange, setPriceRange] = useState(initial?.priceRange || '');
+  const [duration, setDuration] = useState(initial?.duration || '');
+  const [availability, setAvailability] = useState(Array.isArray(initial?.availability) ? initial.availability : []);
+  const [tags, setTags] = useState(initial?.tags || []);
+  const [languages, setLanguages] = useState(initial?.languages || []);
+  const [insurance, setInsurance] = useState(initial?.insurance || []);
+  const [visibility, setVisibility] = useState(initial?.visibility !== undefined ? !!initial.visibility : true);
+
+  const toggleAvail = (val) => {
+    setAvailability((prev) => prev.includes(val) ? prev.filter((x)=>x!==val) : [...prev, val]);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-2xl bg-white rounded-2xl shadow-xl border p-4 md:p-6">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-base font-semibold text-gray-900">{initial ? 'Edit Service' : 'Create Service'}</h3>
+          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-gray-50"><X className="w-4 h-4"/></button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input value={name} onChange={(e)=>setName(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="Service name" />
+          <input value={department} onChange={(e)=>setDepartment(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="Department" />
+          <select value={icon} onChange={(e)=>setIcon(e.target.value)} className="h-10 px-3 border rounded-lg text-sm">
+            <option value="Activity">Activity</option>
+            <option value="Stethoscope">Stethoscope</option>
+            <option value="Brain">Brain</option>
+            <option value="Scissors">Scissors</option>
+          </select>
+          <input value={priceRange} onChange={(e)=>setPriceRange(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="₺min - ₺max" />
+          <input value={duration} onChange={(e)=>setDuration(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="Duration (e.g., 45 min)" />
+          <div className="h-10 px-3 border rounded-lg text-sm flex items-center gap-3">
+            <label className="flex items-center gap-1 text-sm"><input type="checkbox" checked={availability.includes('Onsite')} onChange={()=>toggleAvail('Onsite')} /> Onsite</label>
+            <label className="flex items-center gap-1 text-sm"><input type="checkbox" checked={availability.includes('Telehealth')} onChange={()=>toggleAvail('Telehealth')} /> Telehealth</label>
+          </div>
+        </div>
+        <div className="mt-3">
+          <textarea value={description} onChange={(e)=>setDescription(e.target.value)} rows={3} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Short description" />
+        </div>
+        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <TagEditor label="Linked Procedures" value={procedures} onChange={setProcedures} placeholder="Add procedure" />
+          <TagEditor label="Tags" value={tags} onChange={setTags} placeholder="Add tag" />
+          <TagEditor label="Languages" value={languages} onChange={setLanguages} placeholder="TR, EN" />
+          <TagEditor label="Insurance" value={insurance} onChange={setInsurance} placeholder="Insurance" />
+        </div>
+        <div className="mt-3 flex items-center justify-between">
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={visibility} onChange={(e)=>setVisibility(e.target.checked)} /> Visible</label>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={onClose} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Cancel</button>
+            <button type="button" onClick={()=> onSave({ name, department, icon, description, procedures, priceRange, duration, availability, tags, languages, insurance, visibility }) } className="px-4 py-1.5 rounded-lg bg-[#1C6A83] text-white text-sm hover:bg-[#0F4A5C]">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StarRow({ value = 0 }) {
+  const arr = [1,2,3,4,5];
+  return (
+    <div className="flex items-center gap-0.5">
+      {arr.map((i) => (
+        <Star key={i} className={`w-4 h-4 ${i <= value ? 'text-yellow-500' : 'text-gray-300'}`} fill={i <= value ? 'currentColor' : 'none'} />
+      ))}
+    </div>
+  );
+}
+
 export default function ClinicProfileEdit() {
   const [tab, setTab] = useState('overview');
   const [form, setForm] = useState({
@@ -16,11 +130,11 @@ export default function ClinicProfileEdit() {
     logo: '',
   });
   const [services, setServices] = useState([
-    { id: 's1', name: 'Cardiac Surgery', icon: 'Activity', description: 'Bypass, valve replacement, arrhythmia surgery' },
-    { id: 's2', name: 'Oncology', icon: 'Stethoscope', description: 'Cancer diagnosis, chemotherapy, radiotherapy' },
-    { id: 's3', name: 'Neurology', icon: 'Brain', description: 'Neurosurgery, epilepsy treatment' },
-    { id: 's4', name: 'Plastic Surgery', icon: 'Scissors', description: 'Aesthetic and reconstructive surgery' },
+    { id: 's1', name: 'Cardiac Surgery Consultation', department: 'Cardiology', icon: 'Activity', description: 'Initial consultation with cardiac surgeon.', procedures: ['Bypass Evaluation','Valve Assessment'], priceRange: '₺2000 - ₺5000', duration: '45 min', availability: ['Onsite'], tags: ['adult','pre-op'], languages: ['TR','EN'], insurance: ['SGK'], visibility: true, order: 1 },
+    { id: 's2', name: 'Oncology Consultation', department: 'Oncology', icon: 'Stethoscope', description: 'Cancer diagnosis, chemo plan.', procedures: ['Chemo Plan'], priceRange: '₺1500 - ₺4000', duration: '30 min', availability: ['Onsite','Telehealth'], tags: ['adult'], languages: ['TR','EN'], insurance: ['Private'], visibility: true, order: 2 },
   ]);
+  const [serviceModalOpen, setServiceModalOpen] = useState(false);
+  const [editingService, setEditingService] = useState(null);
   const [doctorsText, setDoctorsText] = useState('Our expert doctors provide comprehensive care across multiple specialties, focusing on patient safety and outcomes.');
   const [gallery, setGallery] = useState([]); // {url,name}
   const [address, setAddress] = useState('Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul');
@@ -36,9 +150,44 @@ export default function ClinicProfileEdit() {
   const [saving, setSaving] = useState(false);
   const [heroPreview, setHeroPreview] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [reviews, setReviews] = useState([
+    { id: 'r1', user: 'Verified Patient', rating: 5, text: 'Excellent care and professional staff.', date: '2025-09-01' },
+    { id: 'r2', user: 'Anonymous', rating: 4, text: 'Quick appointment and clear explanations.', date: '2025-08-22' },
+    { id: 'r3', user: 'Verified Patient', rating: 3, text: 'Waiting time was a bit long, but overall fine.', date: '2025-07-10' }
+  ]);
   const heroInputRef = useRef(null);
   const logoInputRef = useRef(null);
   const galleryInputRef = useRef(null);
+  const [mapLat, setMapLat] = useState(41.0082); // Istanbul default
+  const [mapLng, setMapLng] = useState(28.9784);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const d = e?.data;
+      if (d && d.type === 'clinic-map-select' && typeof d.lat === 'number' && typeof d.lng === 'number') {
+        setMapLat(d.lat);
+        setMapLng(d.lng);
+      }
+    };
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  // Overview badges (accreditations)
+  const [accreditations, setAccreditations] = useState(['JCI Accredited','ISO 9001']);
+  const toggleAcc = (label) => setAccreditations((prev)=> prev.includes(label) ? prev.filter(x=>x!==label) : [...prev, label]);
+
+  // Doctors data: name, specialties, and three sets to power Advanced Search
+  const [doctorsData, setDoctorsData] = useState([
+    {
+      id: 'd1',
+      name: 'Dr. Example',
+      specialties: ['ENT'],
+      procedures: ['Sinus Lifting', 'Rhinoplasty'],
+      diseases: ['Sinusitis', 'Upper Respiratory Infection'],
+      symptoms: ['Headache', 'Nausea']
+    }
+  ]);
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -90,7 +239,6 @@ export default function ClinicProfileEdit() {
           {[
             { id: 'overview', label: 'Overview' },
             { id: 'services', label: 'Services' },
-            { id: 'doctors', label: 'Doctors' },
             { id: 'reviews', label: 'Reviews' },
             { id: 'gallery', label: 'Gallery' },
             { id: 'location', label: 'Location' },
@@ -106,75 +254,73 @@ export default function ClinicProfileEdit() {
             {/* Overview */}
             {tab === 'overview' && (
             <>
-            {/* Hero & Branding */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
-                <div className="flex items-center gap-3">
-                  <div className="w-48 h-24 rounded-lg bg-gray-100 border flex items-center justify-center overflow-hidden">
-                    {(heroPreview || form.heroImage) ? (
-                      <img src={heroPreview || form.heroImage} alt="hero" className="w-full h-full object-cover" />
-                    ) : (
-                      <ImageIcon className="w-6 h-6 text-gray-400" />
-                    )}
+              <h2 className="text-lg font-semibold text-gray-900">About Us</h2>
+              {/* Branding (Logo & Background) */}
+              <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 rounded-lg bg-gray-50 border flex items-center justify-center overflow-hidden">
+                      {(logoUrl || form.logo) ? (
+                        <img src={logoUrl || form.logo} alt="logo" className="w-full h-full object-cover" />
+                      ) : (
+                        <ImageIcon className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input ref={logoInputRef} onChange={(e)=>onSelectFile(e,'logo')} type="file" accept="image/*" className="hidden" />
+                      <button type="button" onClick={()=>logoInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border bg-white hover:bg-gray-50 text-sm"><Upload className="w-4 h-4"/> Upload</button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input ref={heroInputRef} onChange={(e)=>onSelectFile(e,'hero')} type="file" accept="image/*" className="hidden" />
-                    <button type="button" onClick={()=>heroInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border bg-white hover:bg-gray-50 text-sm"><Upload className="w-4 h-4"/> Upload</button>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Background Image</label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-full h-24 rounded-lg bg-gray-50 border flex items-center justify-center overflow-hidden">
+                      {(heroPreview || form.heroImage) ? (
+                        <img src={heroPreview || form.heroImage} alt="cover" className="w-full h-full object-cover" />
+                      ) : (
+                        <ImageIcon className="w-6 h-6 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="shrink-0">
+                      <input ref={heroInputRef} onChange={(e)=>onSelectFile(e,'hero')} type="file" accept="image/*" className="hidden" />
+                      <button type="button" onClick={()=>heroInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border bg-white hover:bg-gray-50 text-sm"><Upload className="w-4 h-4"/> Upload</button>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Logo (optional)</label>
-                <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 rounded-lg bg-gray-100 border flex items-center justify-center overflow-hidden">
-                    {(logoUrl || form.logo) ? (
-                      <img src={logoUrl || form.logo} alt="logo" className="w-full h-full object-cover" />
-                    ) : (
-                      <ImageIcon className="w-5 h-5 text-gray-400" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input ref={logoInputRef} onChange={(e)=>onSelectFile(e,'logo')} type="file" accept="image/*" className="hidden" />
-                    <button type="button" onClick={()=>logoInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border bg-white hover:bg-gray-50 text-sm"><Upload className="w-4 h-4"/> Upload</button>
-                  </div>
+              <div className="space-y-3 mt-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Paragraph 1</label>
+                  <textarea value={form.aboutP1} name="aboutP1" onChange={onChange} rows={3} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Intro paragraph" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Paragraph 2</label>
+                  <textarea value={form.aboutP2} name="aboutP2" onChange={onChange} rows={3} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Details paragraph" />
                 </div>
               </div>
-            </div>
 
-            {/* Basics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Clinic Name</label>
-                <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    name="name"
-                    value={form.name}
-                    onChange={onChange}
-                    className="w-full h-11 pl-9 pr-3 border rounded-xl text-sm"
-                    placeholder="e.g., MedGama Clinic"
-                  />
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Accreditations</label>
+                <div className="flex flex-wrap gap-3">
+                  {['JCI Accredited','ISO 9001','Ministry of Health','Health Tourism'].map((lab)=> (
+                    <label key={lab} className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm cursor-pointer ${accreditations.includes(lab) ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white hover:bg-gray-50'}`}>
+                      <input type="checkbox" className="hidden" checked={accreditations.includes(lab)} onChange={()=>toggleAcc(lab)} />
+                      {lab}
+                    </label>
+                  ))}
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                <input type="text" name="location" value={form.location} onChange={onChange} className="w-full h-11 px-3 border rounded-xl text-sm" placeholder="City, Country" />
-              </div>
-            </div>
 
-            {/* About */}
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">About Paragraph 1</label>
-                <textarea value={form.aboutP1} name="aboutP1" onChange={onChange} rows={3} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Intro paragraph" />
+                {/* Preview chips */}
+                {accreditations.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {accreditations.map((lab)=> (
+                      <span key={lab} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm bg-gray-50">{lab}</span>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">About Paragraph 2</label>
-                <textarea value={form.aboutP2} name="aboutP2" onChange={onChange} rows={3} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Details paragraph" />
-              </div>
-            </div>
             </>) }
 
             {/* Services Tab */}
@@ -182,43 +328,79 @@ export default function ClinicProfileEdit() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-base font-semibold text-gray-900">Services</h2>
-                  <button type="button" onClick={()=> setServices((p)=> [...p, { id: `s${Date.now()}`, name: '', icon: 'Activity', description: '' }]) } className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Plus className="w-4 h-4"/> Add Service</button>
+                  <button type="button" onClick={()=> { setEditingService(null); setServiceModalOpen(true); }} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Plus className="w-4 h-4"/> Add Service</button>
                 </div>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {services.map((s, idx) => (
-                    <div key={s.id} className="p-3 rounded-xl border bg-gray-50">
-                      <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-                        <input value={s.name} onChange={(e)=> setServices((arr)=> arr.map((it,i)=> i===idx ? { ...it, name: e.target.value } : it))} className="md:col-span-2 h-10 px-3 border rounded-lg text-sm" placeholder="Service name" />
-                        <select value={s.icon} onChange={(e)=> setServices((arr)=> arr.map((it,i)=> i===idx ? { ...it, icon: e.target.value } : it))} className="h-10 px-3 border rounded-lg text-sm">
-                          <option value="Activity">Activity</option>
-                          <option value="Stethoscope">Stethoscope</option>
-                          <option value="Brain">Brain</option>
-                          <option value="Scissors">Scissors</option>
-                        </select>
-                        <input value={s.description} onChange={(e)=> setServices((arr)=> arr.map((it,i)=> i===idx ? { ...it, description: e.target.value } : it))} className="md:col-span-2 h-10 px-3 border rounded-lg text-sm" placeholder="Short description" />
-                      </div>
-                      <div className="mt-2 flex items-center justify-end">
-                        <button type="button" onClick={()=> setServices((arr)=> arr.filter((_,i)=> i!==idx))} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Remove</button>
+                    <div key={s.id} className="p-4 rounded-xl border bg-white shadow-sm">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-gray-900">{s.name || 'Untitled Service'}</span>
+                            <span className="text-xs text-gray-600">· {s.department || '—'}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{s.description}</p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {s.priceRange && <span className="text-xs px-2 py-0.5 rounded-full border bg-gray-50">{s.priceRange}</span>}
+                            {Array.isArray(s.availability) && s.availability.map((a)=> (
+                              <span key={a} className="text-xs px-2 py-0.5 rounded-full border bg-gray-50">{a}</span>
+                            ))}
+                            {s.visibility === false && <span className="text-xs px-2 py-0.5 rounded-full border bg-yellow-50 text-yellow-700">Hidden</span>}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <button type="button" onClick={()=> { setEditingService({ data: s, index: idx }); setServiceModalOpen(true); }} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Edit</button>
+                          <button type="button" onClick={()=> setServices((arr)=> arr.filter((_,i)=> i!==idx))} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Remove</button>
+                        </div>
                       </div>
                     </div>
                   ))}
-                  {services.length === 0 && <div className="text-sm text-gray-500">No services yet.</div>}
                 </div>
+                {services.length === 0 && <div className="text-sm text-gray-500">No services yet.</div>}
+
+                {serviceModalOpen && (
+                  <ServiceModal
+                    initial={editingService?.data || null}
+                    onClose={()=> setServiceModalOpen(false)}
+                    onSave={(val)=>{
+                      if (editingService) {
+                        setServices((arr)=> arr.map((x,i)=> i===editingService.index ? { ...x, ...val } : x));
+                      } else {
+                        setServices((arr)=> [...arr, { id: `s${Date.now()}`, order: (arr[arr.length-1]?.order||0)+1, ...val }]);
+                      }
+                      setServiceModalOpen(false);
+                      setEditingService(null);
+                    }}
+                  />
+                )}
               </div>
             )}
 
-            {/* Doctors Tab */}
-            {tab === 'doctors' && (
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Doctors Intro Text</label>
-                <textarea value={doctorsText} onChange={(e)=> setDoctorsText(e.target.value)} rows={4} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Introductory text for the doctors section" />
-                <p className="text-sm text-gray-600">Manage your doctors and departments from the <a className="text-[#1C6A83] underline" href="/doctors-departments">Doctors & Departments</a> page.</p>
-              </div>
-            )}
 
             {/* Reviews Tab */}
             {tab === 'reviews' && (
-              <p className="text-sm text-gray-600">Reviews are user-generated. Moderation tools can be integrated here.</p>
+              <div className="space-y-3">
+                <div className="space-y-3">
+                  {reviews.map((r) => (
+                    <div key={r.id} className="p-3 rounded-xl border bg-white">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gray-900">{r.user}</span>
+                            <span className="text-xs text-gray-500">{r.date}</span>
+                          </div>
+                          <div className="mt-1"><StarRow value={r.rating} /></div>
+                          <p className="text-sm text-gray-700 mt-1">{r.text}</p>
+                        </div>
+                        <div>
+                          <button type="button" onClick={()=> alert('Reported (demo)')} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Report</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {reviews.length === 0 && <div className="text-sm text-gray-500">No reviews yet.</div>}
+                </div>
+              </div>
             )}
 
             {/* Gallery Tab */}
@@ -245,21 +427,42 @@ export default function ClinicProfileEdit() {
 
             {/* Location Tab */}
             {tab === 'location' && (
-              <div className="grid grid-cols-1 gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input type="text" value={address} onChange={(e)=> setAddress(e.target.value)} className="w-full h-11 pl-9 pr-3 border rounded-xl text-sm" placeholder="Full address" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Map URL</label>
-                  <div className="relative">
-                    <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input type="url" value={mapUrl} onChange={(e)=> setMapUrl(e.target.value)} className="w-full h-11 pl-9 pr-3 border rounded-xl text-sm" placeholder="https://maps.google.com/?q=..." />
-                  </div>
-                </div>
+              <div>
+                {(() => {
+                  const lat = mapLat;
+                  const lng = mapLng;
+                  const html = `<!DOCTYPE html>
+                    <html>
+                    <head>
+                      <meta charset=\"utf-8\" />
+                      <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+                      <link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\" crossorigin=\"\" />
+                      <style>html,body,#map{height:100%;margin:0}</style>
+                    </head>
+                    <body>
+                      <div id=\"map\"></div>
+                      <script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\" crossorigin=\"\"></script>
+                      <script>
+                        var map = L.map('map').setView([${lat}, ${lng}], 14);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+                        var marker = L.marker([${lat}, ${lng}], {draggable: true}).addTo(map);
+                        function report(lat,lng){
+                          try { parent.postMessage({ type: 'clinic-map-select', lat: lat, lng: lng }, '*'); } catch(e) {}
+                        }
+                        map.on('click', function(ev){
+                          var p = ev.latlng; marker.setLatLng(p); report(p.lat, p.lng);
+                        });
+                        marker.on('dragend', function(ev){ var p = ev.target.getLatLng(); report(p.lat, p.lng); });
+                      </script>
+                    </body>
+                    </html>`;
+                  return (
+                    <div className="rounded-xl border overflow-hidden">
+                      <iframe title="clinic-map" srcDoc={html} className="w-full h-[360px] border-0" />
+                      <div className="px-3 py-2 text-xs text-gray-600">Lat: {lat.toFixed(5)} · Lng: {lng.toFixed(5)}</div>
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
@@ -314,11 +517,13 @@ export default function ClinicProfileEdit() {
               </div>
             )}
 
-            <div className="flex justify-end">
-              <button type="submit" disabled={saving} className="inline-flex items-center gap-2 bg-[#1C6A83] text-white px-5 py-2.5 rounded-xl hover:bg-[#0F4A5C] disabled:opacity-60">
-                <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save'}
-              </button>
-            </div>
+            {tab !== 'reviews' && (
+              <div className="flex justify-end">
+                <button type="submit" disabled={saving} className="inline-flex items-center gap-2 bg-[#1C6A83] text-white px-5 py-2.5 rounded-xl hover:bg-[#0F4A5C] disabled:opacity-60">
+                  <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            )}
           </form>
         </div>
       </div>

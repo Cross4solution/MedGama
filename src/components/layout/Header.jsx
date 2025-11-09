@@ -71,9 +71,6 @@ const Header = () => {
             <Link to="/home-v2" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
               Homepage
             </Link>
-            <Link to="/clinics" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
-              Clinics
-            </Link>
             <Link to="/vasco-ai" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
               Vasco AI
             </Link>
@@ -249,10 +246,6 @@ const Header = () => {
                 <Home className="w-4 h-4" />
                 <span>Homepage</span>
               </Link>
-              <Link to="/clinics" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
-                <Building2 className="w-4 h-4" />
-                <span>Clinics</span>
-              </Link>
               <Link to="/vasco-ai" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Cpu className="w-4 h-4" />
                 <span>Vasco AI</span>
@@ -299,7 +292,6 @@ const Header = () => {
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/home-v2', label: 'Homepage', icon: Home },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
-              { to: '/clinics', label: 'Doctors & Departments', icon: Building2 },
               { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
             ];
             const items = role === 'clinic' ? clinicItems : (role === 'doctor' ? doctorItems : patientItems);
