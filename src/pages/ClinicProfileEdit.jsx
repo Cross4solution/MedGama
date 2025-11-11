@@ -254,7 +254,6 @@ export default function ClinicProfileEdit() {
             {/* Overview */}
             {tab === 'overview' && (
             <>
-              <h2 className="text-lg font-semibold text-gray-900">About Us</h2>
               {/* Branding (Logo & Background) */}
               <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -290,14 +289,10 @@ export default function ClinicProfileEdit() {
                   </div>
                 </div>
               </div>
-              <div className="space-y-3 mt-2">
+              <div className="mt-1">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Paragraph 1</label>
-                  <textarea value={form.aboutP1} name="aboutP1" onChange={onChange} rows={3} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Intro paragraph" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Paragraph 2</label>
-                  <textarea value={form.aboutP2} name="aboutP2" onChange={onChange} rows={3} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Details paragraph" />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">About Clinic</label>
+                  <textarea value={form.aboutP1} name="aboutP1" onChange={onChange} rows={3} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="About the clinic" />
                 </div>
               </div>
 
