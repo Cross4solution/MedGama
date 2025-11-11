@@ -118,8 +118,8 @@ const DoctorLogin = () => {
   ];
 
   const stats = [
-    { value: '1.2K+', label: 'Active Doctors' },
-    { value: '50K+', label: 'Patients Tracked' },
+    { value: '500+', label: 'Clinics' },
+    { value: '50K+', label: 'Patients' },
     { value: '98%', label: 'Satisfaction' },
   ];
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
+import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
 import Modal from '../common/Modal';
 
@@ -334,17 +335,10 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-5 h-5" />
                   </button>
                   {showEmoji && !disabledActions && (
-                    <div className="absolute left-0 top-full mt-1 z-10 bg-white border rounded-lg shadow-lg p-2 w-44">
-                      <div className="grid grid-cols-6 gap-1 text-xl select-none">
-                        {['😀','😂','😍','👍','👏','🎉','🙏','🔥','😎','🤔','😢','😮','❤️','💙','💯','✅','⭐','✨'].map((e,i)=> (
-                          <button
-                            key={i}
-                            type="button"
-                            className="hover:bg-gray-50 rounded"
-                            onClick={(ev)=>{ ev.stopPropagation(); setCommentText(t=>t + e); setShowEmoji(false); }}
-                          >{e}</button>
-                        ))}
-                      </div>
+                    <div className="absolute left-0 top-full mt-1 z-20">
+                      <EmojiPicker
+                        onSelect={(e)=>{ setCommentText(t => t + e); setShowEmoji(false); }}
+                      />
                     </div>
                   )}
                 </div>

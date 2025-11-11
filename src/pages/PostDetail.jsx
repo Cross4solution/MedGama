@@ -4,6 +4,7 @@ import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp } from 'lu
 import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
 import { useAuth } from '../context/AuthContext';
+import EmojiPicker from '../components/EmojiPicker';
 
 export default function PostDetail() {
   const { state } = useLocation();
@@ -15,6 +16,7 @@ export default function PostDetail() {
   const [newComment, setNewComment] = React.useState('');
   const { user } = useAuth();
   const isPatient = user?.role === 'patient';
+  const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
 
   // ExploreTimeline/TimelineCard üzerinden gelen state öncelikli
   const item = state?.item;
@@ -369,30 +371,6 @@ export default function PostDetail() {
                       <span className="font-semibold text-gray-900">Zehra Korkmaz</span>
                       <span className="text-[11px] text-gray-500">1 week</span>
                     </div>
-                    <p className="text-gray-800 mt-0.5">Very informative, thanks.</p>
-                    <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                      <button type="button" className="hover:text-gray-700" onClick={() => { setReplyTo(p => p === 'pd_c1' ? '' : 'pd_c1'); setReplyText(prev => (prev && replyTo==='pd_c1') ? prev : '@Zehra Korkmaz '); }}>Reply</button>
-                      <span>1 reply</span>
-                    </div>
-                    {replyTo === 'pd_c1' && (
-                      <div className="mt-2">
-                        <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full min-w-0">
-                          <button type="button" className="p-2 text-gray-600" aria-label="Emoji">
-                            <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
-                          </button>
-                          <input
-                            autoFocus
-                            value={replyText}
-                            onChange={(e)=>setReplyText(e.target.value)}
-                            placeholder="Yanıtınızı yazın..."
-                            className="flex-1 min-w-0 outline-none px-2 py-2 text-[14px]"
-                          />
-                          <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={()=>{ setReplyTo(''); setReplyText(''); }}>
-                            Reply
-                          </button>
-                        </div>
-                      </div>
-                    )}
 
                     {/* Reply */}
                     <div className="mt-3 pl-4 border-l">
@@ -427,8 +405,8 @@ export default function PostDetail() {
                     </div>
                     {replyTo === 'pd_c2' && (
                       <div className="mt-2">
-                        <div className="border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full min-w-0">
-                          <button type="button" className="p-2 text-gray-600" aria-label="Emoji">
+                        <div className="relative border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full min-w-0">
+                          <button type="button" className="p-2 text-gray-600 hover:text-teal-700" aria-label="Emoji" onClick={(e)=>{ e.stopPropagation(); setShowEmojiPicker((v)=>!v); }}>
                             <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
                           </button>
                           <input
@@ -441,6 +419,11 @@ export default function PostDetail() {
                           <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={()=>{ setReplyTo(''); setReplyText(''); }}>
                             Reply
                           </button>
+                          {showEmojiPicker && (
+                            <div className="absolute left-2 top-full mt-2 z-30" onClick={(e)=>e.stopPropagation()}>
+                              <EmojiPicker onSelect={(em)=>{ setReplyText(t => (t ? t + ' ' : '') + em); setShowEmojiPicker(false); }} />
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}

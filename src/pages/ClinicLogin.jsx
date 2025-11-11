@@ -65,10 +65,10 @@ const ClinicLogin = () => {
               ))}
             </div>
             <div className="grid grid-cols-3 gap-4 mt-6">
-              {[{value:'120+',label:'Active Clinics'},{value:'10K+',label:'Appointments/Month'},{value:'99%',label:'Uptime'}].map((s, i) => (
+              {[{value:'500+',label:'Clinics'},{value:'50K+',label:'Patients'},{value:'98%',label:'Satisfaction'}].map((s, i) => (
                 <div key={i} className="text-center">
                   <div className="text-3xl font-bold">{s.value}</div>
-                  <div className="text-indigo-100 text-sm">{s.label}</div>
+                  <div className="text-teal-100 text-sm">{s.label}</div>
                 </div>
               ))}
             </div>
