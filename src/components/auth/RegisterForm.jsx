@@ -7,6 +7,7 @@ import {
   Mail,
   Lock,
   User,
+  Stethoscope,
   Calendar,
   MapPin,
   Chrome,
@@ -129,9 +130,14 @@ const RegisterForm = ({
                   onClick={() => handleInputChange({ target: { name: 'role', value: opt.key } })}
                   className={`${(fd.role ?? 'patient') === opt.key
                     ? 'bg-blue-600 text-white shadow-sm'
-                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'} px-5 py-2.5 rounded-full text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 min-w-[120px] text-center`}
+                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'} inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 min-w-[120px]`}
                 >
-                  {opt.label}
+                  {opt.key === 'patient' ? (
+                    <User className="w-4 h-4" aria-hidden="true" />
+                  ) : (
+                    <Stethoscope className="w-4 h-4" aria-hidden="true" />
+                  )}
+                  <span>{opt.label}</span>
                 </button>
                ))}
                </div>

@@ -159,13 +159,11 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               <div className="flex items-center gap-1">
                 <Link to={actorLink} onClick={(e)=>e.stopPropagation()} className={`${nameText} font-semibold text-gray-900 truncate hover:underline`} title={actorName}>{actorName}</Link>
               </div>
-              <Link
-                to={titleLink}
-                onClick={(e)=>e.stopPropagation()}
-                className={`hover:underline ${compact ? 'block mt-0 pb-0.5 text-sm leading-6 text-gray-600 font-medium break-words' : 'block mt-0 pb-0.5 text-sm leading-6 text-gray-600 font-medium break-words'}`}
+              <span
+                className={`${compact ? 'block mt-0 pb-0.5 text-sm leading-6 text-gray-600 font-medium break-words' : 'block mt-0 pb-0.5 text-sm leading-6 text-gray-600 font-medium break-words'}`}
               >
                 {actorTitle}
-              </Link>
+              </span>
               </div>
             </div>
             {!compact && (
