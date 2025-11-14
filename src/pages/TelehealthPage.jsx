@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, Plus, Video, Clock, Calendar, CheckCircle, XCircle } from 'lucide-react';
 
 const TelehealthPage = () => {
@@ -28,6 +28,8 @@ const TelehealthPage = () => {
     { id: 9,  patient: 'Mert Koç',       start: addHours(1.5),  specialty: 'Dermatology' },
   ];
 
+  const [cancelModal, setCancelModal] = useState({ open: false, session: null });
+
   const completedSessions = [
     { id: 6, patient: 'Selin Acar',       start: addHours(-20), durationMin: 25, status: 'Completed' },
     { id: 7, patient: 'Mehmet Özkan',     start: addHours(-48), durationMin: 32, status: 'Completed' },
@@ -52,52 +54,74 @@ const TelehealthPage = () => {
     { title: 'Canceled', value: String(totals.canceled), subtitle: 'History', icon: XCircle, color: 'orange' },
   ];
 
+  const [upPage, setUpPage] = useState(1);
+  const [pastPage, setPastPage] = useState(1);
+  const pageSize = 3;
+
+  const upTotalPages = Math.max(1, Math.ceil(scheduledSessions.length / pageSize));
+  const upStart = (upPage - 1) * pageSize;
+  const upItems = scheduledSessions.slice(upStart, upStart + pageSize);
+
+  const pastTotalPages = Math.max(1, Math.ceil(completedSessions.length / pageSize));
+  const pastStart = (pastPage - 1) * pageSize;
+  const pastItems = completedSessions.slice(pastStart, pastStart + pageSize);
+
+  // Disable global scroll while on Telehealth page
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add('no-scroll');
+    return () => {
+      root.classList.remove('no-scroll');
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="h-screen overflow-hidden bg-gray-50 flex">
       {/* Uses global SidebarPatient */}
 
       {/* Main Content */}
       <div className="flex-1">
 
-        <div className="px-4 py-3 sm:px-6 sm:py-4">
+        <div className="px-4 pt-2 pb-3 sm:px-6 sm:pt-3 sm:pb-4">
           <div className="mb-2 sm:mb-4">
             <h1 className="text-2xl font-bold text-gray-900">Telehealth</h1>
             <p className="text-gray-600 mt-1">Online consultation and telemedicine management</p>
           </div>
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="bg-white rounded-xl p-4 sm:p-5 lg:p-5 border border-gray-200 aspect-square md:aspect-[4/3] lg:aspect-[3/2] flex flex-col justify-between">
-                <div className="flex items-start sm:items-center justify-between">
-                  <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1 sm:mt-2">{stat.value}</p>
-                    <p className={`text-xs sm:text-sm mt-1 sm:mt-2 ${
-                      stat.color === 'blue' ? 'text-blue-600' :
-                      stat.color === 'green' ? 'text-green-600' :
-                      stat.color === 'orange' ? 'text-orange-600' :
-                      'text-purple-600'
-                    }`}>
-                      {stat.subtitle}
-                    </p>
-                  </div>
-                  <div className={`p-2 sm:p-3 rounded-lg ${
-                    stat.color === 'blue' ? 'bg-blue-100' :
-                    stat.color === 'green' ? 'bg-green-100' :
-                    stat.color === 'orange' ? 'bg-orange-100' :
-                    'bg-purple-100'
-                  }`}>
-                    <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${
-                      stat.color === 'blue' ? 'text-blue-600' :
-                      stat.color === 'green' ? 'text-green-600' :
-                      stat.color === 'orange' ? 'text-orange-600' :
-                      'text-purple-600'
-                    }`} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+{/* Stats Cards */}
+<div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6">
+  {stats.map((stat, index) => (
+    <div key={index} className="bg-white rounded-xl px-4 py-1 sm:px-4 sm:py-2 lg:px-4 lg:py-2 border border-gray-200 aspect-[3/2] md:aspect-[3/2] lg:aspect-[2/1]">
+      <div className="h-full flex items-center justify-center gap-3 sm:gap-3">
+        <div className="text-center">
+          <p className="text-xs sm:text-sm font-medium text-gray-600">{stat.title}</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stat.value}</p>
+          <p className={`text-xs sm:text-sm mt-0.5 sm:mt-1 ${
+            stat.color === 'blue' ? 'text-blue-600' :
+            stat.color === 'green' ? 'text-green-600' :
+            stat.color === 'orange' ? 'text-orange-600' :
+            'text-purple-600'
+          }`}>
+            {stat.subtitle}
+          </p>
+        </div>
+        <div className={`p-2 sm:p-2 rounded-lg ${
+          stat.color === 'blue' ? 'bg-blue-100' :
+          stat.color === 'green' ? 'bg-green-100' :
+          stat.color === 'orange' ? 'bg-orange-100' :
+          'bg-purple-100'
+        }`}>
+          <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${
+            stat.color === 'blue' ? 'text-blue-600' :
+            stat.color === 'green' ? 'text-green-600' :
+            stat.color === 'orange' ? 'text-orange-600' :
+            'text-purple-600'
+          }`} />
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
 
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -106,7 +130,7 @@ const TelehealthPage = () => {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Upcoming Appointments</h2>
               <div className="bg-white rounded-lg border border-gray-200">
                 <div className="divide-y">
-                  {scheduledSessions.slice(0, 3).map((session) => (
+                  {upItems.map((session) => (
                     <div key={session.id} className="p-4 hover:bg-gray-50 transition-colors">
                       <div className="flex items-center gap-3 justify-between">
                         <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -137,6 +161,7 @@ const TelehealthPage = () => {
                                   disabled={!canCancel}
                                   className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-colors ${canCancel ? 'text-red-700 hover:text-red-900' : 'text-gray-300 cursor-not-allowed'}`}
                                   title={canCancel ? '' : 'Cancellation allowed until 4 hours before'}
+                                  onClick={() => { if (canCancel) setCancelModal({ open: true, session }); }}
                                 >
                                   <XCircle className="w-4 h-4" />
                                   <span>Cancel</span>
@@ -150,6 +175,31 @@ const TelehealthPage = () => {
                   ))}
                 </div>
               </div>
+              <div className="flex items-center justify-center space-x-1 mt-3">
+                <button
+                  className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                  disabled={upPage <= 1}
+                  onClick={() => setUpPage((p) => Math.max(1, p - 1))}
+                >
+                  Prev
+                </button>
+                {Array.from({ length: upTotalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setUpPage(p)}
+                    className={`px-3 py-1.5 text-sm rounded-lg border border-gray-200 ${p === upPage ? 'bg-gray-900 text-white' : 'hover:bg-gray-50'}`}
+                  >
+                    {p}
+                  </button>
+                ))}
+                <button
+                  className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                  disabled={upPage >= upTotalPages}
+                  onClick={() => setUpPage((p) => Math.min(upTotalPages, p + 1))}
+                >
+                  Next
+                </button>
+              </div>
             </div>
 
             {/* Past Appointments */}
@@ -157,7 +207,7 @@ const TelehealthPage = () => {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Past Appointments</h2>
               <div className="bg-white rounded-lg border border-gray-200">
                 <div className="divide-y">
-                  {completedSessions.map((session) => (
+                  {pastItems.map((session) => (
                     <div key={session.id} className="p-4 hover:bg-gray-50 transition-colors">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -201,10 +251,58 @@ const TelehealthPage = () => {
                   ))}
                 </div>
               </div>
+              <div className="flex items-center justify-center space-x-1 mt-3">
+                <button
+                  className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                  disabled={pastPage <= 1}
+                  onClick={() => setPastPage((p) => Math.max(1, p - 1))}
+                >
+                  Prev
+                </button>
+                {Array.from({ length: pastTotalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPastPage(p)}
+                    className={`px-3 py-1.5 text-sm rounded-lg border border-gray-200 ${p === pastPage ? 'bg-gray-900 text-white' : 'hover:bg-gray-50'}`}
+                  >
+                    {p}
+                  </button>
+                ))}
+                <button
+                  className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                  disabled={pastPage >= pastTotalPages}
+                  onClick={() => setPastPage((p) => Math.min(pastTotalPages, p + 1))}
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      {cancelModal.open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Cancel Telehealth Appointment</h3>
+            <p className="text-gray-700 mb-1">Your online telehealth appointment will be canceled.</p>
+            <p className="text-gray-600 mb-4">Date & time: <span className="font-medium text-gray-900">{fmtDateTime(cancelModal.session?.start)}</span></p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setCancelModal({ open: false, session: null })}
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
+              >
+                Keep Appointment
+              </button>
+              <button
+                onClick={() => setCancelModal({ open: false, session: null })}
+                className="px-4 py-2 text-sm font-medium text-white bg-rose-500 hover:bg-rose-600 rounded-lg"
+              >
+                Confirm Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

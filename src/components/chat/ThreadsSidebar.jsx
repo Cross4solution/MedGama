@@ -34,11 +34,11 @@ export default function ThreadsSidebar({
         </div>
       </div>
       <div className="flex-1 flex flex-col min-h-0">
-        <div className="overflow-y-auto divide-y flex-1">
+        <div className="overflow-hidden divide-y flex-1">
           {paginatedThreads.map((t) => (
-            <div key={t.id} className={`p-3 hover:bg-gray-50 cursor-pointer ${activeThreadId===t.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`} onClick={()=>onSelectThread?.(t.id)}>
-              <div className="flex items-start gap-3">
-                <div className="relative w-8 h-8 rounded-full mr-4 overflow-hidden bg-gray-100">
+            <div key={t.id} className={`p-2 hover:bg-gray-50 cursor-pointer ${activeThreadId===t.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`} onClick={()=>onSelectThread?.(t.id)}>
+              <div className="flex items-start gap-2">
+                <div className="relative w-6 h-6 rounded-full mr-3.5 overflow-hidden bg-gray-100">
                   <img src={t.avatar} alt="avatar" className="w-full h-full object-cover" loading="lazy" />
                   <span className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 ${t.online ? 'bg-green-500' : 'bg-gray-400'} rounded-full border-2 border-white`}></span>
                 </div>
@@ -63,7 +63,7 @@ export default function ThreadsSidebar({
     </aside>
 
     {totalPages > 1 && (
-      <div className="bg-gray-50 border rounded-lg px-3 py-3">
+      <div className="bg-gray-50 border rounded-lg px-3 py-3 mt-2">
         <div className="flex justify-center items-center space-x-2">
           <button
             disabled={currentPage === 1}

@@ -101,7 +101,7 @@ const Header = () => {
                           type="button"
                           role="menuitem"
                           onClick={()=>{ setLoginOpen(false); navigate('/login'); }}
-                          className="w-full inline-flex items-center gap-1 px-1 py-3 text-sm rounded-xl bg-green-50 text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 border border-green-200 shadow-sm"
+                          className="w-full inline-flex items-center gap-1 pl-2 pr-1 py-3 text-sm rounded-xl bg-green-50 text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 border border-green-200 shadow-sm"
                         >
                           <User className="w-4 h-4 text-green-600" />
                           <span className="font-medium">Patient Login</span>
@@ -110,7 +110,7 @@ const Header = () => {
                           type="button"
                           role="menuitem"
                           onClick={()=>{ setLoginOpen(false); navigate('/doctor-login'); }}
-                          className="w-full inline-flex items-center gap-1 px-1 py-3 text-sm rounded-xl bg-blue-50 text-blue-800 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 border border-blue-200 shadow-sm"
+                          className="w-full inline-flex items-center gap-1 pl-2 pr-1 py-3 text-sm rounded-xl bg-blue-50 text-blue-800 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 border border-blue-200 shadow-sm"
                         >
                           <Stethoscope className="w-4 h-4 text-blue-600" />
                           <span className="font-medium">Doctor Login</span>
@@ -119,7 +119,7 @@ const Header = () => {
                           type="button"
                           role="menuitem"
                           onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
-                          className="w-full inline-flex items-center gap-1 px-1 py-3 text-sm rounded-xl bg-purple-50 text-purple-800 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-200 border border-purple-200 shadow-sm"
+                          className="w-full inline-flex items-center gap-1 pl-2 pr-1 py-3 text-sm rounded-xl bg-purple-50 text-purple-800 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-200 border border-purple-200 shadow-sm"
                         >
                           <Hospital className="w-4 h-4 text-purple-600" />
                           <span className="font-medium">Clinic Login</span>
@@ -130,7 +130,7 @@ const Header = () => {
                           href={(process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login')}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full inline-flex items-center justify-between px-1 py-3 text-sm rounded-xl bg-gray-900 text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300 border border-gray-900 shadow-sm"
+                          className="w-full inline-flex items-center justify-between pl-2 pr-1 py-3 text-sm rounded-xl bg-gray-900 text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300 border border-gray-900 shadow-sm"
                         >
                           <span className="inline-flex items-center gap-1">
                             <LayoutDashboard className="w-4 h-4 text-white" />

@@ -3,6 +3,11 @@ html {
   overflow-y: scroll;
 }
 
+/* Page-level opt-out to fully disable scrolling */
+html.no-scroll {
+  overflow: hidden !important;
+}
+
 /* Ensure body background matches app default and under fixed header spacing is consistent */
 body {
   background-color: #f9fafb; /* tailwind gray-50 close */

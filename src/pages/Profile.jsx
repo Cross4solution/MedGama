@@ -4,7 +4,7 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
-import { User, Shield, Bell, Lock, Globe, ChevronRight, Eye, EyeOff, HeartPulse } from 'lucide-react';
+import { User, Shield, Bell, Globe, ChevronRight, Eye, EyeOff, HeartPulse } from 'lucide-react';
 import PatientNotify from '../components/notifications/PatientNotify';
 
 export default function Profile() {
@@ -152,7 +152,6 @@ export default function Profile() {
           <NavItem id="account" icon={User} title="Account" desc="Profile, country and appearance" />
           <NavItem id="security" icon={Shield} title="Security" desc="Password" />
           <NavItem id="notifications" icon={Bell} title="Notifications" desc="Patient notifications" />
-          <NavItem id="privacy" icon={Lock} title="Privacy" desc="Privacy and data" />
           {user?.role === 'patient' && (
             <NavItem id="medical" icon={HeartPulse} title="Medical History" desc="Diseases & meds" />
           )}
@@ -318,11 +317,7 @@ export default function Profile() {
             </div>
           )}
 
-          {active === 'privacy' && (
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <p className="text-sm text-gray-600">Privacy settings are not available at the moment.</p>
-            </div>
-          )}
+          
 
           {active === 'medical' && user?.role === 'patient' && (
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
