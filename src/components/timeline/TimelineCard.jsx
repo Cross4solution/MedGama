@@ -167,13 +167,10 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               </div>
             </div>
             {!compact && (
-              <div ref={moreMenuRef} className="flex items-center gap-2 text-gray-500 relative">
-                <span className="text-[11px] text-gray-400 mr-1">{timeLabel}</span>
+              <div ref={moreMenuRef} className="flex items-center gap-1 text-gray-500 relative">
+                <span className="text-[11px] text-gray-400">{timeLabel}</span>
                 <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="More options" onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>
                   <MoreHorizontal className="w-5 h-5" />
-                </button>
-                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="Hide" onClick={(e)=>e.stopPropagation()}>
-                  <X className="w-5 h-5" />
                 </button>
                 {showMoreMenu && (
                   <div className="absolute right-0 top-8 z-20 w-44 bg-white border rounded-lg shadow-md py-1 text-sm" onClick={(e)=>e.stopPropagation()}>

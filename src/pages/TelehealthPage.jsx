@@ -129,7 +129,7 @@ const TelehealthPage = () => {
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Upcoming Appointments</h2>
               <div className="bg-white rounded-lg border border-gray-200">
-                <div className="divide-y">
+                <div className="divide-y min-h-[280px]">
                   {upItems.map((session) => (
                     <div key={session.id} className="p-4 hover:bg-gray-50 transition-colors">
                       <div className="flex items-center gap-3 justify-between">
@@ -175,30 +175,36 @@ const TelehealthPage = () => {
                   ))}
                 </div>
               </div>
-              <div className="flex items-center justify-center space-x-1 mt-3">
-                <button
-                  className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                  disabled={upPage <= 1}
-                  onClick={() => setUpPage((p) => Math.max(1, p - 1))}
-                >
-                  Prev
-                </button>
-                {Array.from({ length: upTotalPages }, (_, i) => i + 1).map((p) => (
+              <div className="bg-gray-50 border rounded-lg px-3 py-2 mt-2">
+                <div className="flex justify-center items-center space-x-1.5">
                   <button
-                    key={p}
-                    onClick={() => setUpPage(p)}
-                    className={`px-3 py-1.5 text-sm rounded-lg border border-gray-200 ${p === upPage ? 'bg-gray-900 text-white' : 'hover:bg-gray-50'}`}
+                    disabled={upPage === 1}
+                    onClick={() => setUpPage((p) => Math.max(1, p - 1))}
+                    className="px-2.5 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {p}
+                    ‹
                   </button>
-                ))}
-                <button
-                  className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                  disabled={upPage >= upTotalPages}
-                  onClick={() => setUpPage((p) => Math.min(upTotalPages, p + 1))}
-                >
-                  Next
-                </button>
+                  {Array.from({ length: upTotalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setUpPage(page)}
+                      className={`px-2.5 py-1 text-sm rounded ${
+                        page === upPage
+                          ? 'bg-blue-600 text-white'
+                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    disabled={upPage === upTotalPages}
+                    onClick={() => setUpPage((p) => Math.min(upTotalPages, p + 1))}
+                    className="px-2.5 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    ›
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -206,7 +212,7 @@ const TelehealthPage = () => {
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Past Appointments</h2>
               <div className="bg-white rounded-lg border border-gray-200">
-                <div className="divide-y">
+                <div className="divide-y min-h-[280px]">
                   {pastItems.map((session) => (
                     <div key={session.id} className="p-4 hover:bg-gray-50 transition-colors">
                       <div className="flex items-center space-x-3">
@@ -251,42 +257,62 @@ const TelehealthPage = () => {
                   ))}
                 </div>
               </div>
-              <div className="flex items-center justify-center space-x-1 mt-3">
-                <button
-                  className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                  disabled={pastPage <= 1}
-                  onClick={() => setPastPage((p) => Math.max(1, p - 1))}
-                >
-                  Prev
-                </button>
-                {Array.from({ length: pastTotalPages }, (_, i) => i + 1).map((p) => (
+              <div className="bg-gray-50 border rounded-lg px-3 py-2 mt-2">
+                <div className="flex justify-center items-center space-x-1.5">
                   <button
-                    key={p}
-                    onClick={() => setPastPage(p)}
-                    className={`px-3 py-1.5 text-sm rounded-lg border border-gray-200 ${p === pastPage ? 'bg-gray-900 text-white' : 'hover:bg-gray-50'}`}
+                    disabled={pastPage === 1}
+                    onClick={() => setPastPage((p) => Math.max(1, p - 1))}
+                    className="px-2.5 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {p}
+                    ‹
                   </button>
-                ))}
-                <button
-                  className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                  disabled={pastPage >= pastTotalPages}
-                  onClick={() => setPastPage((p) => Math.min(pastTotalPages, p + 1))}
-                >
-                  Next
-                </button>
+                  {Array.from({ length: pastTotalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setPastPage(page)}
+                      className={`px-2.5 py-1 text-sm rounded ${
+                        page === pastPage
+                          ? 'bg-blue-600 text-white'
+                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    disabled={pastPage === pastTotalPages}
+                    onClick={() => setPastPage((p) => Math.min(pastTotalPages, p + 1))}
+                    className="px-2.5 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    ›
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       {cancelModal.open && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm mx-4">
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={() => setCancelModal({ open: false, session: null })}
+        >
+          <div
+            className="bg-white rounded-xl p-6 w-full max-w-sm mx-4 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              aria-label="Close"
+              className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-gray-100 text-gray-500"
+              onClick={() => setCancelModal({ open: false, session: null })}
+            >
+              <span className="block w-3.5 h-3.5 leading-none text-lg">×</span>
+            </button>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Cancel Telehealth Appointment</h3>
             <p className="text-gray-700 mb-1">Your online telehealth appointment will be canceled.</p>
             <p className="text-gray-600 mb-4">Date & time: <span className="font-medium text-gray-900">{fmtDateTime(cancelModal.session?.start)}</span></p>
-            <div className="flex justify-end space-x-3">
+            <div className="flex justify-end space-x-3 mt-2">
               <button
                 onClick={() => setCancelModal({ open: false, session: null })}
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"

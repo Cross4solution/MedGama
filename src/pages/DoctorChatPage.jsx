@@ -121,8 +121,8 @@ const DoctorChatPage = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-5rem)] w-full flex flex-col bg-gray-50">
-      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+    <div className="min-h-[calc(100vh-5rem)] w-full flex flex-col bg-gray-50 pb-4">
+      <div className="flex-1 flex flex-col min-h-0">
         {/* Doctor Info Header */}
         <div className="bg-white border-b flex-shrink-0">
           <div className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-1`}>
@@ -149,7 +149,7 @@ const DoctorChatPage = () => {
         </div>
 
         <div className="flex-1 overflow-hidden min-h-0">
-          <div className={`max-w-7xl mx-auto mt-2 sm:mt-3 px-2 sm:px-3 lg:px-4 py-2 h-full overflow-hidden min-h-0`}>
+          <div className={`max-w-7xl mx-auto mt-8 sm:mt-10 px-2 sm:px-3 lg:px-4 py-2 h-full overflow-hidden min-h-0`}>
         {/* Mobile: Threads list or Chat view */}
         <div className="lg:hidden h-full overflow-hidden flex flex-col min-h-0">
           {!mobileChatOpen ? (
