@@ -17,6 +17,7 @@ export default function PostDetail() {
   const { user } = useAuth();
   const isPatient = user?.role === 'patient';
   const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
+  const emojiReplyRef = React.useRef(null);
 
   // ExploreTimeline/TimelineCard üzerinden gelen state öncelikli
   const item = state?.item;
@@ -420,7 +421,7 @@ export default function PostDetail() {
                             Reply
                           </button>
                           {showEmojiPicker && (
-                            <div className="absolute left-2 top-full mt-2 z-30" onClick={(e)=>e.stopPropagation()}>
+                            <div ref={emojiReplyRef} className="absolute left-0 top-full mt-1 z-20" onClick={(e)=>e.stopPropagation()}>
                               <EmojiPicker onSelect={(em)=>{ setReplyText(t => (t ? t + ' ' : '') + em); setShowEmojiPicker(false); }} />
                             </div>
                           )}

@@ -22,6 +22,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
   const [reportReason, setReportReason] = useState('');
   const [reportDesc, setReportDesc] = useState('');
   const moreMenuRef = useRef(null);
+  const emojiPickerRef = useRef(null);
   const [showToast, setShowToast] = useState(false);
   const [toastText, setToastText] = useState('');
   const toastTimerRef = useRef(null);
@@ -38,6 +39,18 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
     document.addEventListener('mousedown', onDocClick);
     return () => document.removeEventListener('mousedown', onDocClick);
   }, [showMoreMenu]);
+
+  useEffect(() => {
+    if (!showEmoji) return;
+    const onDocClick = (e) => {
+      if (!emojiPickerRef.current) return;
+      if (!emojiPickerRef.current.contains(e.target)) {
+        setShowEmoji(false);
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [showEmoji]);
 
   const showSuccessToast = (text) => {
     setToastText(text);
@@ -330,7 +343,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-5 h-5" />
                   </button>
                   {showEmoji && !disabledActions && (
-                    <div className="absolute left-0 top-full mt-1 z-20">
+                    <div ref={emojiPickerRef} className="absolute left-0 top-full mt-1 z-20">
                       <EmojiPicker
                         onSelect={(e)=>{ setCommentText(t => t + e); setShowEmoji(false); }}
                       />
