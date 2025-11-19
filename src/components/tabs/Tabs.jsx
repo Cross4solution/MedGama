@@ -1,8 +1,31 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 export default function Tabs({ tabs = [], active, onChange }) {
+  const containerRef = useRef(null);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    // İlk render'da scroll yapma
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Tab değiştiğinde container'a scroll yap
+    if (containerRef.current) {
+      const headerHeight = 80; // Header yüksekliği (top-20 = 80px)
+      const elementTop = containerRef.current.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementTop - headerHeight - 20; // 20px ekstra boşluk
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  }, [active]);
+
   return (
-    <div className="p-4 pb-6">
+    <div ref={containerRef} className="p-4 pb-6">
       <nav className="flex overflow-x-auto gap-2 scrollbar-hide">
         {tabs.map((tab) => (
           <button

@@ -84,22 +84,22 @@ export default function PostComposer() {
 
       {/* Bottom: actions + post button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
-        <div className="flex items-center space-x-4 sm:space-x-6 relative">
+        <div className="flex items-center space-x-2 sm:space-x-4 relative">
           {/* Hidden inputs for direct select */}
           <input ref={photoRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=> setSelectedPhotos(Array.from(e.target.files||[]))} />
           <input ref={videoRef} type="file" accept="video/*" multiple className="hidden" onChange={(e)=> setSelectedVideos(Array.from(e.target.files||[]))} />
 
-          <button className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { setInitialAction('photo'); setOpen(true); }}>
-            <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
-            <span className="text-sm sm:text-base">Photo</span>
+          <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 py-0.5 px-1.5 rounded-md hover:bg-gray-50" type="button" onClick={() => { setInitialAction('photo'); setOpen(true); }}>
+            <ImageIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
+            <span className="text-xs sm:text-sm">Photo</span>
           </button>
-          <button className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { setInitialAction('video'); setOpen(true); }}>
-            <Video className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
-            <span className="text-sm sm:text-base">Video</span>
+          <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 py-0.5 px-1.5 rounded-md hover:bg-gray-50" type="button" onClick={() => { setInitialAction('video'); setOpen(true); }}>
+            <Video className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
+            <span className="text-xs sm:text-sm">Video</span>
           </button>
-          <button ref={emojiBtnRef} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" onClick={() => { setShowEmoji(v=>!v); }}>
-            <Smile className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
-            <span className="text-sm sm:text-base">Emoji</span>
+          <button ref={emojiBtnRef} className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 py-0.5 px-1.5 rounded-md hover:bg-gray-50" type="button" onClick={() => { setShowEmoji(v=>!v); }}>
+            <Smile className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
+            <span className="text-xs sm:text-sm">Emoji</span>
           </button>
           {showEmoji && (
             <div
@@ -166,7 +166,7 @@ export default function PostComposer() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base font-medium"
+          className="px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto text-xs sm:text-sm font-medium"
         >
           Post
         </button>

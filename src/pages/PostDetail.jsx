@@ -285,9 +285,7 @@ export default function PostDetail() {
             <div className="min-w-0">
               <h1 className="font-semibold text-gray-900 truncate" title={item.title}>{item.actor?.name || item.title}</h1>
               {item.specialty && (
-                <div className="mt-0.5">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">{item.specialty}</span>
-                </div>
+                <span className="block mt-0 pb-0.5 text-sm leading-6 text-gray-600 font-medium break-words">{item.specialty}</span>
               )}
             </div>
           </div>

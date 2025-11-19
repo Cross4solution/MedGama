@@ -29,7 +29,7 @@ export default function SidebarPatient() {
     { to: '/explore', label: 'MedStream', icon: Video },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
     { to: '/telehealth', label: 'Telehealth', icon: Monitor },
-    { to: '/profile', label: 'Settings', icon: Settings },
+    { to: '/profile', label: 'Profile', icon: User },
   ];
 
   // Doctor-specific menu (Profile → Medstream → Notifications → Messages → Schedule → Telehealth → CRM)
@@ -91,7 +91,7 @@ export default function SidebarPatient() {
     <>
       {/* Desktop Sidebar */}
       <aside className={`hidden lg:block fixed left-0 w-52 top-[4.5rem] z-40 h-[calc(100vh-5rem)]`}>
-        <div className="h-full py-2 pr-1 pl-0">
+        <div className="h-full py-2 pl-0">
           <div className="h-full rounded-r-2xl border border-l-0 bg-white shadow-sm flex flex-col">
             {/* Header / Profile */}
             <div className="p-3 border-b relative">

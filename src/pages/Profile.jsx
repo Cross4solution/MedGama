@@ -4,7 +4,7 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
-import { User, Shield, Bell, Globe, ChevronRight, Eye, EyeOff, HeartPulse } from 'lucide-react';
+import { User, Shield, Bell, Globe, ChevronRight, Eye, EyeOff, HeartPulse, X } from 'lucide-react';
 import PatientNotify from '../components/notifications/PatientNotify';
 
 export default function Profile() {
@@ -50,8 +50,27 @@ export default function Profile() {
 
   // Connections removed
 
-  // Patient medical history (frontend-only persistence)
-  const [medicalHistory, setMedicalHistory] = useState('');
+  // Patient medical history (frontend-only persistence) - now as tags
+  const [medicalConditions, setMedicalConditions] = useState([]);
+  const [conditionInput, setConditionInput] = useState('');
+  const [showConditionSuggestions, setShowConditionSuggestions] = useState(false);
+  const conditionInputRef = useRef(null);
+  
+  // Common medical conditions suggestions
+  const commonConditions = [
+    'Hypertension', 'Diabetes Type 2', 'Diabetes Type 1', 'Asthma', 
+    'Arthritis', 'Depression', 'Anxiety', 'Migraine', 'COPD',
+    'Heart Disease', 'High Cholesterol', 'Thyroid Disorder',
+    'Penicillin Allergy', 'Pollen Allergy', 'Food Allergy'
+  ];
+
+  const filteredConditions = conditionInput.trim() 
+    ? commonConditions.filter(c => 
+        c.toLowerCase().includes(conditionInput.toLowerCase()) && 
+        !medicalConditions.includes(c)
+      )
+    : [];
+  
   React.useEffect(() => {
     try {
       if (user?.role === 'patient' && user?.email) {
@@ -59,11 +78,52 @@ export default function Profile() {
         const raw = localStorage.getItem(key);
         if (raw) {
           const obj = JSON.parse(raw);
-          if (obj && typeof obj.medicalHistory === 'string') setMedicalHistory(obj.medicalHistory);
+          // Backward compatibility: convert string to array
+          if (obj && typeof obj.medicalHistory === 'string' && obj.medicalHistory) {
+            const converted = obj.medicalHistory.split(',').map(s => s.trim()).filter(Boolean);
+            setMedicalConditions(converted);
+          } else if (obj && Array.isArray(obj.medicalConditions)) {
+            setMedicalConditions(obj.medicalConditions);
+          }
         }
       }
     } catch {}
   }, [user?.email, user?.role]);
+
+  const addCondition = (text) => {
+    const trimmed = text.trim();
+    if (trimmed && !medicalConditions.includes(trimmed)) {
+      setMedicalConditions([...medicalConditions, trimmed]);
+    }
+    setConditionInput('');
+    setShowConditionSuggestions(false);
+  };
+
+  const removeCondition = (index) => {
+    setMedicalConditions(medicalConditions.filter((_, i) => i !== index));
+  };
+
+  const handleConditionKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const text = conditionInput.replace(/,$/, ''); // Remove trailing comma
+      if (filteredConditions.length > 0 && text.trim()) {
+        // If there are suggestions and input matches the first one, use it
+        const exactMatch = filteredConditions.find(c => c.toLowerCase() === text.toLowerCase());
+        addCondition(exactMatch || text);
+      } else if (text) {
+        addCondition(text);
+      }
+    } else if (e.key === 'Backspace' && !conditionInput && medicalConditions.length > 0) {
+      // Remove last tag on backspace if input is empty
+      removeCondition(medicalConditions.length - 1);
+    }
+  };
+
+  const clearAllConditions = () => {
+    setMedicalConditions([]);
+  };
+
   const saveMedical = (e) => {
     e?.preventDefault?.();
     try {
@@ -71,9 +131,9 @@ export default function Profile() {
         const key = `patient_profile_extra_${user.email}`;
         const raw = localStorage.getItem(key);
         const prev = raw ? JSON.parse(raw) : {};
-        const next = { ...prev, medicalHistory: String(medicalHistory || '').trim() };
+        const next = { ...prev, medicalConditions };
         localStorage.setItem(key, JSON.stringify(next));
-        alert('Medical history saved. (Demo)');
+        alert('Medical conditions saved. (Demo)');
       }
     } catch {}
   };
@@ -140,8 +200,8 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="mb-6">
+      <div className="max-w-6xl mx-auto px-4 py-4">
+        <div className="mb-4">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">Settings</h1>
           <p className="text-sm text-gray-600">Manage your account, security and preferences.</p>
         </div>
@@ -322,15 +382,80 @@ export default function Profile() {
           {active === 'medical' && user?.role === 'patient' && (
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <h2 className="text-base font-semibold text-gray-900 mb-4">Medical History</h2>
-              <p className="text-sm text-gray-600 mb-3">Chronic diseases, allergies, medications (frontend only).</p>
-              <textarea
-                value={medicalHistory}
-                onChange={(e)=>setMedicalHistory(e.target.value)}
-                rows={6}
-                className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm resize-y"
-                placeholder="e.g., Diabetes Type 2, Penicillin allergy, Hypertension, etc."
-              />
-              <div className="flex justify-end mt-3">
+              <p className="text-sm text-gray-600 mb-3">Current Medical Conditions (e.g., Hypertension, Diabetes, Asthma)</p>
+              
+              {/* Inline tags + input wrapper */}
+              <div className="relative">
+                <div className="border border-gray-300 rounded-lg px-2 py-1 text-base md:text-sm flex items-center flex-wrap gap-2 bg-white min-h-[42px]">
+                  {/* Tags */}
+                  {medicalConditions.map((condition, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-800 border border-teal-200"
+                    >
+                      {condition}
+                      <button
+                        type="button"
+                        onClick={() => removeCondition(index)}
+                        className="ml-0.5 text-teal-700 hover:text-teal-900"
+                        aria-label={`Remove ${condition}`}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                  
+                  {/* Inline input */}
+                  <input
+                    ref={conditionInputRef}
+                    placeholder={medicalConditions.length === 0 ? "Type condition and press Enter..." : ""}
+                    className="flex-1 min-w-[8ch] border-0 outline-none px-1 py-1 text-base md:text-sm bg-transparent"
+                    type="text"
+                    value={conditionInput}
+                    onChange={(e) => {
+                      setConditionInput(e.target.value);
+                      setShowConditionSuggestions(e.target.value.trim().length > 0);
+                    }}
+                    onKeyDown={handleConditionKeyDown}
+                    onFocus={() => conditionInput.trim() && setShowConditionSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowConditionSuggestions(false), 200)}
+                  />
+                  
+                  {/* Clear all button */}
+                  {medicalConditions.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={clearAllConditions}
+                      className="ml-auto text-gray-400 hover:text-gray-600"
+                      aria-label="Clear all"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Suggestions dropdown */}
+                {showConditionSuggestions && filteredConditions.length > 0 && (
+                  <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-56 overflow-auto text-sm">
+                    {filteredConditions.map((condition, idx) => (
+                      <li key={idx}>
+                        <button
+                          type="button"
+                          onClick={() => addCondition(condition)}
+                          className="w-full text-left px-3 py-2 hover:bg-teal-50 hover:text-teal-800 transition-colors"
+                        >
+                          {condition}
+                          <span className="ml-2 text-xs text-gray-500">(condition)</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <p className="text-xs text-gray-500 mt-1.5">Press <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">Enter</kbd> or <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">,</kbd> to add</p>
+              
+              <div className="flex justify-end mt-4">
                 <button onClick={saveMedical} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save</button>
               </div>
             </div>
