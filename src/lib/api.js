@@ -1,4 +1,7 @@
 // Lightweight JSON API client for MedGama
+
+import { logger } from "utils/logger";
+
 const BASE_URL = 'https://medgama.soulm8.co/api';
 
 export async function api(path, options = {}) {
@@ -11,11 +14,18 @@ export async function api(path, options = {}) {
         const parsed = JSON.parse(saved);
         token = parsed?.token || null;
       }
-    } catch {}
+      if (!token) {
+        const lsToken = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
+        if (lsToken) token = lsToken;
+      }
+    } catch (error) {
+      logger.error('Error fetching token from localStorage', error);
+    }
   }
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { 'Content-Type': 'application/json', Accept: 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
 
+  logger.info(`${method} ${BASE_URL}${path}`);
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
     headers,
@@ -39,4 +49,5 @@ export const endpoints = {
   login: (payload) => api('/auth/login', { method: 'POST', body: payload }),
   userRegister: (payload) => api('/auth/register/user', { method: 'POST', body: payload }),
   doctorRegister: (payload) => api('/auth/register/doctor', { method: 'POST', body: payload }),
+  updateProfile: (payload) => api('/authorized/user/profile', { method: 'PUT', body: payload }),
 };

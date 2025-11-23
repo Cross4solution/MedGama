@@ -4,16 +4,25 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
+import countryDialCodes from '../data/countryDialCodes';
 import { User, Shield, Bell, Globe, ChevronRight, Eye, EyeOff, HeartPulse, X } from 'lucide-react';
 import PatientNotify from '../components/notifications/PatientNotify';
 
 export default function Profile() {
-  const { user, country, login } = useAuth();
+  const { user, country, login, updateProfile } = useAuth();
   const [active, setActive] = useState('account');
 
   // Account state
   const [name, setName] = useState(user?.name || '');
   const [avatar, setAvatar] = useState(user?.avatar || '');
+  const [fname, setFname] = useState(user?.fname || '');
+  const [lname, setLname] = useState(user?.lname || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [phoneCc, setPhoneCc] = useState(user?.phone_cc || '');
+  const [profilePassword, setProfilePassword] = useState('');
+  const phoneCcRef = useRef(null);
+  const [phoneCcOpen, setPhoneCcOpen] = useState(false);
+  const [phoneCcQuery, setPhoneCcQuery] = useState('');
   const initialCountryName = useMemo(() => {
     if (!country) return '';
     const lower = country.toLowerCase();
@@ -138,22 +147,55 @@ export default function Profile() {
     } catch {}
   };
 
-  if (!user) {
-    return (
-      <div className="max-w-6xl mx-auto px-4 py-10">
-        <h1 className="text-xl font-semibold text-gray-900">Profile</h1>
-        <p className="mt-2 text-gray-600">Please sign in.</p>
-      </div>
-    );
-  }
-
-  const saveAccount = (e) => {
+  const saveAccount = async (e) => {
     e.preventDefault();
+
     const limitedName = (name || '').slice(0, 30).trim();
-    const updated = { ...user, name: limitedName || user.name, avatar: avatar.trim() || undefined };
-    const codeLower = countryCodes[countryName] || null;
-    const codeUpper = codeLower ? codeLower.toUpperCase() : country;
-    login(updated, codeUpper);
+    const displayName = limitedName || user.name;
+
+    if (!fname.trim()) {
+      alert('First name (fname) zorunludur.');
+      return;
+    }
+
+    if (!profilePassword || profilePassword.length < 8) {
+      alert('Şifre en az 8 karakter olmalıdır.');
+      return;
+    }
+
+    const rawPhoneCc = (phoneCc || '').trim();
+    const normalizedPhoneCc = rawPhoneCc ? rawPhoneCc.replace(/\s+/g, '') : '';
+    if (normalizedPhoneCc && !/^\+\d{1,4}$/.test(normalizedPhoneCc)) {
+      alert('Ülke kodu formatı geçersiz. Örnek: +90, +1');
+      return;
+    }
+
+    const digitsPhone = (phone || '').replace(/\D/g, '');
+    if (digitsPhone && (digitsPhone.length < 7 || digitsPhone.length > 15)) {
+      alert('Telefon numarası 7 ile 15 hane arasında olmalıdır.');
+      return;
+    }
+
+    const payload = {
+      fname: fname.trim().slice(0, 255),
+      lname: lname ? lname.trim().slice(0, 255) : null,
+      password: profilePassword,
+      phone: digitsPhone || null,
+      phone_cc: normalizedPhoneCc || null,
+    };
+
+    try {
+      const res = await updateProfile(payload);
+      const codeLower = countryCodes[countryName] || null;
+      const codeUpper = codeLower ? codeLower.toUpperCase() : country;
+      const updated = { ...user, fname: payload.fname, lname: payload.lname || undefined, phone: payload.phone || undefined, phone_cc: payload.phone_cc || undefined, name: displayName, avatar: avatar.trim() || undefined };
+      login(updated, codeUpper);
+      alert(res?.message || 'Profile updated.');
+      setProfilePassword('');
+    } catch (err) {
+      const msg = err?.message || err?.data?.message || 'Profil güncellenirken bir hata oluştu.';
+      alert(msg);
+    }
   };
 
   const saveSecurity = (e) => {
@@ -181,6 +223,56 @@ export default function Profile() {
   };
 
   // Connections removed
+
+  const resolvePhoneCcIso = (code) => {
+    const cc = String(code || '').trim();
+    if (!cc.startsWith('+')) return null;
+    try {
+      const entry = Object.entries(countryDialCodes || {}).find(([, dial]) => dial === cc);
+      if (!entry) return null;
+      const [name] = entry;
+      const iso = getFlagCode(name) || countryCodes[name] || null;
+      return iso || null;
+    } catch {
+      return null;
+    }
+  };
+
+  const phoneCodeOptions = useMemo(() => {
+    const codeToNames = new Map();
+    Object.entries(countryDialCodes || {}).forEach(([name, code]) => {
+      const arr = codeToNames.get(code) || [];
+      arr.push(name);
+      codeToNames.set(code, arr);
+    });
+    const arr = [];
+    codeToNames.forEach((names, code) => {
+      const rep = (names && names[0]) || '';
+      const iso = getFlagCode(rep) || countryCodes[rep] || null;
+      arr.push({ code, name: rep, iso });
+    });
+    return arr.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
+  }, []);
+
+  React.useEffect(() => {
+    if (!phoneCcOpen) return;
+    const onClick = (e) => {
+      if (phoneCcRef.current && !phoneCcRef.current.contains(e.target)) {
+        setPhoneCcOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, [phoneCcOpen]);
+
+  if (!user) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-10">
+        <h1 className="text-xl font-semibold text-gray-900">Profile</h1>
+        <p className="mt-2 text-gray-600">Please sign in.</p>
+      </div>
+    );
+  }
 
   const NavItem = ({ id, icon: Icon, title, desc }) => (
     <button
@@ -263,7 +355,7 @@ export default function Profile() {
 
               <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
                   <input
                     type="text"
                     value={name}
@@ -288,6 +380,119 @@ export default function Profile() {
                         return code ? `https://flagcdn.com/24x18/${code}.png` : null;
                       } catch { return null; }
                     }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name (fname)</label>
+                  <input
+                    type="text"
+                    value={fname}
+                    onChange={(e) => setFname(e.target.value)}
+                    maxLength={255}
+                    className="w-full border border-gray-300 rounded-lg px-3 text-sm h-10"
+                    placeholder="First name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name (lname)</label>
+                  <input
+                    type="text"
+                    value={lname}
+                    onChange={(e) => setLname(e.target.value)}
+                    maxLength={255}
+                    className="w-full border border-gray-300 rounded-lg px-3 text-sm h-10"
+                    placeholder="Last name (optional)"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Country Code (phone_cc)</label>
+                  <div className="relative" ref={phoneCcRef}>
+                    <button
+                      type="button"
+                      onClick={() => setPhoneCcOpen((o) => !o)}
+                      className="w-full border border-gray-300 rounded-lg pl-9 pr-8 text-sm h-10 bg-white flex items-center gap-2 text-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    >
+                      {resolvePhoneCcIso(phoneCc) && (
+                        <img
+                          src={`https://flagcdn.com/24x18/${resolvePhoneCcIso(phoneCc)}.png`}
+                          alt=""
+                          width={18}
+                          height={14}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 inline-block rounded-sm"
+                        />
+                      )}
+                      <span className="truncate">{phoneCc || 'Select code (e.g. +90)'}</span>
+                      <ChevronRight className={`w-4 h-4 ml-auto text-gray-400 transform transition-transform ${phoneCcOpen ? 'rotate-90' : ''}`} />
+                    </button>
+                    {phoneCcOpen && (
+                      <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto text-sm">
+                        <div className="p-2 border-b border-gray-100">
+                          <input
+                            type="text"
+                            value={phoneCcQuery}
+                            onChange={(e) => setPhoneCcQuery(e.target.value)}
+                            placeholder="Search country or code"
+                            className="w-full border border-gray-200 rounded px-2 py-1 text-sm"
+                          />
+                        </div>
+                        <ul>
+                          {phoneCodeOptions
+                            .filter((opt) => {
+                              const q = phoneCcQuery.trim().toLowerCase();
+                              if (!q) return true;
+                              const n = (opt.name || '').toLowerCase();
+                              return n.includes(q) || opt.code.includes(q);
+                            })
+                            .map((opt) => (
+                              <li key={opt.code}>
+                                <button
+                                  type="button"
+                                  className={`w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left ${phoneCc === opt.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+                                  onClick={() => {
+                                    setPhoneCc(opt.code);
+                                    setPhoneCcOpen(false);
+                                  }}
+                                >
+                                  {opt.iso && (
+                                    <img
+                                      src={`https://flagcdn.com/24x18/${opt.iso}.png`}
+                                      alt=""
+                                      width={18}
+                                      height={14}
+                                      className="inline-block rounded-sm"
+                                    />
+                                  )}
+                                  <span className="flex-1 truncate">{opt.name || 'Country'}</span>
+                                  <span className="text-gray-500">{opt.code}</span>
+                                </button>
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">Format: +CountryCode, örnek: +90, +1</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    maxLength={20}
+                    className="w-full border border-gray-300 rounded-lg px-3 text-sm h-10"
+                    placeholder="Phone number (digits only)"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">Sadece rakam, ülke kodu hariç, 7-15 hane arası önerilir.</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Password (required for update)</label>
+                  <input
+                    type="password"
+                    value={profilePassword}
+                    onChange={(e) => setProfilePassword(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 text-sm h-10"
+                    placeholder="Minimum 8 characters"
                   />
                 </div>
               </div>

@@ -19,7 +19,7 @@ export default function TimelineControls({
         </div>
 
         {/* Center: Segmented toggle (desktop) */}
-        <div className="hidden md:flex flex-1 justify-end ml-64">
+        <div className="hidden md:flex flex-1 justify-end ml-4">
           <div className="inline-flex rounded-full border border-gray-300 bg-white overflow-hidden shadow-sm">
             <button
               type="button"

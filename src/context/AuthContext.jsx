@@ -184,6 +184,15 @@ export function AuthProvider({ children }) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [logoutCallback, setLogoutCallback] = useState(null);
 
+  const updateProfile = async (payload) => {
+    console.log("sdlkdslkjgsdg, payload", payload)
+    const res = await endpoints.updateProfile(payload);
+    try {
+      await fetchCurrentUser();
+    } catch {}
+    return res;
+  };
+
   const logout = (options = {}) => {
     const { skipConfirmation = false } = options;
     
@@ -237,6 +246,7 @@ export function AuthProvider({ children }) {
     register,
     registerDoctor,
     logout,
+    updateProfile,
     formatCurrency: (usd) => formatCurrency(usd, country),
     sidebarMobileOpen,
     setSidebarMobileOpen,

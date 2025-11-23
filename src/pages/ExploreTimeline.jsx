@@ -83,6 +83,31 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     return items;
   }, []);
 
+  // Türkçe karakter ve case duyarsız metin normalizasyonu
+  const normalizeText = React.useCallback((str) => {
+    if (!str) return '';
+    let s = String(str).toLowerCase();
+    // Türkçe özel karakterleri ASCII karşılıklarına indirgeme
+    s = s
+      .replace(/ğ/g, 'g')
+      .replace(/Ğ/g, 'g')
+      .replace(/ü/g, 'u')
+      .replace(/Ü/g, 'u')
+      .replace(/ş/g, 's')
+      .replace(/Ş/g, 's')
+      .replace(/ı/g, 'i')
+      .replace(/İ/g, 'i')
+      .replace(/ö/g, 'o')
+      .replace(/Ö/g, 'o')
+      .replace(/ç/g, 'c')
+      .replace(/Ç/g, 'c');
+    try {
+      // Diğer aksanları da temizle (varsa)
+      s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    } catch {}
+    return s;
+  }, []);
+
   const filtered = useMemo(() => {
     let list = base;
     // Ülke adı -> ülke koduna çeviri (countryCodes)
@@ -90,8 +115,13 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     if (codeLower) list = list.filter(x => (x.countryCode || '').toLowerCase() === codeLower);
     if (specialtyFilter) list = list.filter(x => x.specialty === specialtyFilter);
     if (textQuery) {
-      const q = textQuery.toLowerCase();
-      list = list.filter(x => (x.title + ' ' + x.subtitle + ' ' + x.text).toLowerCase().includes(q));
+      const q = normalizeText(textQuery.trim());
+      if (q) {
+        list = list.filter(x => {
+          const haystack = normalizeText((x.title || '') + ' ' + (x.subtitle || '') + ' ' + (x.text || ''));
+          return haystack.includes(q);
+        });
+      }
     }
     // Tab ve mode etkisi
     if (tab === 'for-you') {

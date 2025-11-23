@@ -303,7 +303,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           {/* Social counts: likes left, comments button right (no icon) */}
           <div className="px-3 pt-2 mt-2 text-sm text-gray-500 flex items-center justify-between">
             {/* Likes */}
-            <div className="inline-flex items-center gap-2">
+            <div className="inline-flex items-center gap-1">
               <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#378fe9] text-white">
                 <ThumbsUp className="w-3 h-3" />
               </span>

@@ -47,6 +47,12 @@ export default function TimelineFilterSidebar({
             type="search"
             value={localQuery}
             onChange={(e) => setLocalQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleApplyFilters();
+              }
+            }}
             placeholder="Search in timeline..."
             className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
           />

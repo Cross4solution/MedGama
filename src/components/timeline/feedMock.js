@@ -16,13 +16,15 @@ const CITIES = ['Istanbul, TR','Ankara, TR','Izmir, TR','Berlin, DE','Munich, DE
 const doctorUpdates = [
   'We are pleased to announce that our clinic has successfully performed over 500 minimally invasive cardiac procedures this year with a 99% success rate.',
   'Our research team has published a new study on advanced treatment methods in the Journal of Medical Innovation.',
-  'We are proud to introduce our new state-of-the-art cardiac catheterization lab for more accurate diagnoses.'
+  'We are proud to introduce our new state-of-the-art cardiac catheterization lab for more accurate diagnoses.',
+  'I will be hosting a live Q&A session this week to answer your questions about heart health and lifestyle changes.',
 ];
 
 const clinicUpdates = [
   'We are excited to announce the opening of our new cardiology wing with cutting-edge technology.',
   'Our hospital has been recognized as a Center of Excellence for Cardiac Care.',
-  'We are proud to introduce our new patient-centered care program for personalized treatment plans.'
+  'We are proud to introduce our new patient-centered care program for personalized treatment plans.',
+  'We have extended our outpatient clinic hours to provide more flexible appointment options for our patients.',
 ];
 
 const mediaPool = [

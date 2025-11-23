@@ -119,7 +119,7 @@ export default function HomeV2() {
       <CoreBoxes />
 
       {/* Medstream timeline preview between CoreBoxes and Popular Treatments */}
-      <TimelinePreview limit={8} onViewAll={() => navigate('/explore')} />
+      <TimelinePreview limit={10} onViewAll={() => navigate('/explore')} />
 
 
       {/* Popular Clinics reusable showcase */}

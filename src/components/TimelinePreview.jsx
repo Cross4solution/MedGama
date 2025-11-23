@@ -11,10 +11,10 @@ import TimelineCard from 'components/timeline/TimelineCard';
 // props:
 // - items: [{ id, title, subtitle, image }] şeklinde liste. Boşsa placeholder üretilir.
 // - columns: grid kolon sayısı (md breakpoint)
-export default function TimelinePreview({ items = [], columns = 3, limit = 6, onViewAll }) {
+export default function TimelinePreview({ items = [], columns = 3, limit = 10, onViewAll }) {
   const navigate = useNavigate();
   // Explore-style ortak veri: doğrudan TimelineCard ile uyumlu
-  const defaults = useMemo(() => generateExploreStyleItems(limit ?? 6), [limit]);
+  const defaults = useMemo(() => generateExploreStyleItems(limit ?? 10), [limit]);
   const data = items.length ? items : defaults;
   const scrollRef = useRef(null);
 
@@ -74,9 +74,9 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
         </div>
         <div className="rounded-lg border-2 border-gray-300 shadow-lg overflow-hidden" style={{ backgroundColor: '#EEF7F6' }}>
           {/* Scrollable feed area */}
-          <div ref={scrollRef} className="h-[86vh] overflow-y-auto pr-2 pt-4">
+          <div ref={scrollRef} className="h-[86vh] overflow-y-auto pr-2 pt-4 pb-6">
             <div className="space-y-6">
-              {data.slice(0, 8).map((item) => (
+              {data.slice(0, 10).map((item) => (
                 <div
                   key={item.id}
                   id={`post-${item.id}`}
