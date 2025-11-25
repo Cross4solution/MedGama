@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigationType } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigationType, Navigate } from 'react-router-dom';
 import SidebarPatient from './components/SidebarPatient';
 import { useAuth } from './context/AuthContext';
 import HomeV2 from './pages/HomeV2';
@@ -34,7 +34,7 @@ import scrollConfig from './config/scroll';
 function AppContent() {
   const location = useLocation();
   const navType = useNavigationType();
-  const { user } = useAuth();
+  const { user, token, authReady } = useAuth();
   // Show sidebar for all logged-in users (including patients)
   const hasSidebar = !!user;
   
@@ -137,6 +137,13 @@ function AppContent() {
   const showFooter = footerOnlyOn.includes(location.pathname);
   
   const isDoctorChat = String(location.pathname || '').startsWith('/doctor-chat');
+  
+  const requireAuth = (Component) => {
+    // Auth henüz hydrate edilmediyse veya sadece token varsa (user fetch oluyor) bekle
+    if (!authReady) return null;
+    if (token && !user) return null;
+    return user ? <Component /> : <Navigate to="/login" replace />;
+  };
   return (
     <div className={hasSidebar ? "lg:pl-52" : ""}>
       {/* Global Header - auth sayfalarında gizle */}
@@ -155,10 +162,10 @@ function AppContent() {
         <Route path="/doctors-departments" element={<DoctorsDepartments />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />
-        <Route path="/clinic-edit" element={<ClinicProfileEdit />} />
-        <Route path="/doctor-chat" element={<DoctorChatPage />} />
-        <Route path="/telehealth" element={<TelehealthPage />} />
-        <Route path="/telehealth-appointment" element={<TelehealthAppointmentPage />} />
+        <Route path="/clinic-edit" element={requireAuth(ClinicProfileEdit)} />
+        <Route path="/doctor-chat" element={requireAuth(DoctorChatPage)} />
+        <Route path="/telehealth" element={requireAuth(TelehealthPage)} />
+        <Route path="/telehealth-appointment" element={requireAuth(TelehealthAppointmentPage)} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/auth" element={<AuthPages />} />
@@ -172,8 +179,8 @@ function AppContent() {
         {/* Role-specific logins */}
         <Route path="/doctor-login" element={<DoctorLogin />} />
         <Route path="/clinic-login" element={<ClinicLogin />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/notifications" element={requireAuth(Notifications)} />
+        <Route path="/profile" element={requireAuth(Profile)} />
         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
         <Route path="/post/:id" element={<PostDetail />} />
         </Routes>

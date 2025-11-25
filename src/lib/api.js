@@ -50,4 +50,5 @@ export const endpoints = {
   userRegister: (payload) => api('/auth/register/user', { method: 'POST', body: payload }),
   doctorRegister: (payload) => api('/auth/register/doctor', { method: 'POST', body: payload }),
   updateProfile: (payload) => api('/authorized/user/profile', { method: 'PUT', body: payload }),
+  me: (options = {}) => api('/authorized/user/profile', { method: 'GET', ...options }),
 };

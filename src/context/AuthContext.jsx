@@ -4,6 +4,19 @@ import { endpoints } from '../lib/api';
 // Very light mock auth just for frontend flows
 const AuthContext = createContext(null);
 
+function decodeJwt(token) {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  try {
+    const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const json = atob(payload);
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 const COUNTRY_TO_CURRENCY = {
   TR: { code: 'TRY', locale: 'tr-TR', symbol: '₺' },
   US: { code: 'USD', locale: 'en-US', symbol: '$' },
@@ -25,133 +38,195 @@ function formatCurrency(amountUSD, countryCode = 'US') {
   }
 }
 
+function normalizeApiUser(apiUser) {
+  if (!apiUser) return null;
+  const base = apiUser.user || apiUser;
+  const profile = base.user_profile || {};
+  const merged = { ...base, ...profile };
+
+  // Backend farklı alan isimleri kullanabileceği için (first_name, last_name, phone_country_code vb.)
+  // bunları frontend tarafında kullanılan fname, lname, phone_cc alanlarına mapliyoruz.
+  const fname = merged.fname || merged.first_name || '';
+  const lname = merged.lname || merged.last_name || '';
+  const phone = merged.phone || merged.phone_number || '';
+  const phone_cc = merged.phone_cc || merged.phone_country_code || '';
+
+  const name =
+    fname ||
+    merged.name ||
+    [fname, lname].filter(Boolean).join(' ').trim() ||
+    merged.email ||
+    '';
+
+  return { ...merged, fname, lname, phone, phone_cc, name };
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [tokenExpiresAt, setTokenExpiresAt] = useState(null);
   const [country, setCountry] = useState('TR'); // default TR for demo
   // Global UI state for Patient Sidebar (mobile drawer)
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
   const meUnavailableRef = React.useRef(false);
-  const loggedOutRef = React.useRef(false);
+  const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
     try {
-      // If user explicitly logged out, don't auto-hydrate from tokens
-      if (localStorage.getItem('auth_logout') === '1') {
-        loggedOutRef.current = true;
-        return;
-      }
       const saved = localStorage.getItem('auth_state');
       if (saved) {
         const parsed = JSON.parse(saved);
-        setUser(parsed.user || null);
+        const exp = parsed.token_expires_at || null;
+        const now = Date.now();
+        if (exp && now > exp) {
+          // Token süresi dolmuş: auth state'i temizle ve özel sayfalardaysan login'e at
+          setUser(null);
+          setToken(null);
+          setTokenExpiresAt(null);
+          try {
+            localStorage.removeItem('auth_state');
+            localStorage.removeItem('access_token');
+          } catch {}
+          try {
+            const path = typeof window !== 'undefined' && window.location ? (window.location.pathname || '/') : '/';
+            const protectedPrefixes = ['/profile', '/notifications', '/clinic-edit', '/telehealth', '/telehealth-appointment', '/doctor-chat'];
+            const onProtected = protectedPrefixes.some((p) => path.startsWith(p));
+            if (onProtected) {
+              window.location.assign('/login');
+            }
+          } catch {}
+          setAuthReady(true);
+          return;
+        }
+        const normalized = normalizeApiUser(parsed.user || null) || (parsed.user || null);
+        setUser(normalized);
         setToken(parsed.token || null);
+        setTokenExpiresAt(exp || null);
         setCountry(parsed.country || 'TR');
+        setAuthReady(true);
         return;
       }
       // Fallback: if no auth_state, but we do have a token from Google/backend, keep the session
       const lsToken = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
       if (lsToken) {
         setToken(lsToken);
+        const decoded = decodeJwt(lsToken);
+        const expMs = decoded?.exp ? decoded.exp * 1000 : null;
+        setTokenExpiresAt(expMs);
         // user will be fetched by the next effect via fetchCurrentUser
+        setAuthReady(true);
+        return;
       }
+      setAuthReady(true);
     } catch {}
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('auth_state', JSON.stringify({ user, token, country }));
-  }, [user, token, country]);
+    try {
+      localStorage.setItem('auth_state', JSON.stringify({ user, token, token_expires_at: tokenExpiresAt, country }));
+    } catch {}
+  }, [user, token, tokenExpiresAt, country]);
 
   const login = async (emailOrUser, password) => {
     // Backward-compatible demo login: if first arg is an object, treat it as user
     if (emailOrUser && typeof emailOrUser === 'object') {
-      setUser(emailOrUser);
+      const normalized = normalizeApiUser(emailOrUser) || emailOrUser;
+      setUser(normalized);
       setToken(null);
-      return { success: true, message: 'Demo login', data: { user: emailOrUser } };
+      return { success: true, message: 'Demo login', data: { user: normalized } };
     }
     const res = await endpoints.login({ email: emailOrUser, password });
     // Accept both flat and nested API shapes
-    const apiUser = res?.user ?? res?.data?.user ?? null;
+    const apiUserRaw = res?.user ?? res?.data?.user ?? null;
     const access = res?.access_token ?? res?.data?.access_token ?? null;
-    if (!apiUser || !access) {
+    const apiUserFallback = normalizeApiUser(apiUserRaw);
+    if (!access) {
       throw { status: 401, message: 'Invalid credentials', data: res };
     }
-    const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
-    const userWithRole = { ...apiUser, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
-    setUser(userWithRole);
+    const decoded = decodeJwt(access);
+    const expMs = decoded?.exp ? decoded.exp * 1000 : null;
+
+    // Önce sadece token'ı set et, user'ı backend'den /authorized/user/profile ile çek
     setToken(access);
-    return { data: { user: userWithRole, access_token: access } };
+    setTokenExpiresAt(expMs || null);
+    let finalUser = null;
+    try {
+      finalUser = await fetchCurrentUser(access);
+    } catch {
+      finalUser = null;
+    }
+
+    // Eğer profil endpoint'i başarısız olursa, login cevabındaki user'ı fallback olarak kullan
+    if (!finalUser && apiUserFallback) {
+      const isDoctor = apiUserFallback && typeof apiUserFallback === 'object' && ('specialty' in apiUserFallback || 'hospital' in apiUserFallback || 'access' in apiUserFallback || apiUserFallback?.role === 'doctor');
+      const userWithRole = { ...apiUserFallback, role: isDoctor ? 'doctor' : (apiUserFallback?.role || 'patient') };
+      setUser(userWithRole);
+      finalUser = userWithRole;
+    }
+
+    if (!finalUser) {
+      throw { status: 401, message: 'Invalid credentials', data: res };
+    }
+
+    try {
+      if (access) {
+        localStorage.setItem('access_token', access);
+      }
+      localStorage.setItem('auth_state', JSON.stringify({
+        user: finalUser,
+        token: access,
+        token_expires_at: expMs || null,
+        country,
+      }));
+    } catch {}
+
+    return { data: { user: finalUser, access_token: access } };
   };
 
   const applyApiAuth = (res) => {
     try {
-      let apiUser = res?.user ?? res?.data?.user ?? null;
+      let apiUserRaw = res?.user ?? res?.data?.user ?? null;
       let access = res?.access_token ?? res?.data?.access_token ?? null;
       if (!access) {
         const lsAccess = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
         if (lsAccess) access = lsAccess;
       }
-      if (!apiUser) {
-        try { apiUser = JSON.parse(localStorage.getItem('google_user') || 'null'); } catch {}
+      if (!apiUserRaw) {
+        try { apiUserRaw = JSON.parse(localStorage.getItem('google_user') || 'null'); } catch {}
       }
+      const apiUser = normalizeApiUser(apiUserRaw);
       if (!apiUser || !access) return null;
       const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
-      const name = apiUser?.name || [apiUser?.fname, apiUser?.lname].filter(Boolean).join(' ').trim() || apiUser?.email || 'User';
-      const userWithRole = { ...apiUser, name, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+      const userWithRole = { ...apiUser, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+      const decoded = decodeJwt(access);
+      const expMs = decoded?.exp ? decoded.exp * 1000 : null;
       setUser(userWithRole);
       setToken(access);
-      try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country })); } catch {}
-      try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
+      setTokenExpiresAt(expMs || null);
+      try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, token_expires_at: expMs || null, country })); } catch {}
       return { user: userWithRole, access_token: access };
     } catch { return null; }
   };
 
-  const API_BASE = process.env.REACT_APP_API_BASE || '';
-  const ME_PATH = process.env.REACT_APP_API_ME || '/api/auth/me';
   const fetchCurrentUser = async (overrideToken) => {
     try {
-      if (loggedOutRef.current) return null;
-      if (meUnavailableRef.current) return null;
       const tk = overrideToken || token || localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
       if (!tk) return null;
-      const resp = await fetch((API_BASE + ME_PATH), {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${tk}`
-        },
-        cache: 'no-store',
-        mode: 'cors'
-      });
-      if (resp.status === 404) {
-        meUnavailableRef.current = true;
-      }
-      if (!resp.ok) {
-        // Fallback: keep session with local user snapshot if available
-        try {
-          const lsUser = JSON.parse(localStorage.getItem('google_user') || 'null');
-          if (lsUser) {
-            const name = lsUser?.name || [lsUser?.fname, lsUser?.lname].filter(Boolean).join(' ').trim() || lsUser?.email || 'User';
-            const userWithRole = { ...lsUser, name, role: lsUser?.role || 'patient' };
-            setUser(userWithRole);
-            setToken(tk);
-            localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country }));
-            return userWithRole;
-          }
-        } catch {}
-        return null;
-      }
-      const data = await resp.json().catch(() => ({}));
-      const apiUser = data?.user ?? data?.data?.user ?? data ?? null;
+
+      // Prefer backend profile via API client (shares BASE_URL and token logic)
+      const data = await endpoints.me({ token: tk }).catch(() => null);
+
+      const apiUserRaw = data?.user ?? data?.data?.user ?? data ?? null;
+      const apiUser = normalizeApiUser(apiUserRaw);
       if (!apiUser) {
         try {
           const lsUser = JSON.parse(localStorage.getItem('google_user') || 'null');
           if (lsUser) {
-            const name = lsUser?.name || [lsUser?.fname, lsUser?.lname].filter(Boolean).join(' ').trim() || lsUser?.email || 'User';
-            const userWithRole = { ...lsUser, name, role: lsUser?.role || 'patient' };
+            const normalizedLs = normalizeApiUser(lsUser) || lsUser;
+            const userWithRole = { ...normalizedLs, role: normalizedLs?.role || 'patient' };
             setUser(userWithRole);
             setToken(tk);
-            localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country }));
+            try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, token_expires_at: tokenExpiresAt, country })); } catch {}
             return userWithRole;
           }
         } catch {}
@@ -159,10 +234,23 @@ export function AuthProvider({ children }) {
       }
       const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
       const userWithRole = { ...apiUser, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
-      setUser(userWithRole);
+
+      // Backend profil endpoint'i fname/lname/phone/phone_cc alanlarını boş string olarak döndürebiliyor.
+      // Bu durumda, daha önce login/register aşamasında dolu gelen değerleri kaybetmemek için
+      // mevcut user state'indeki değerleri koruyup sadece dolu gelen değerlerle overwrite ediyoruz.
+      const mergedUser = {
+        ...(user || {}),
+        ...userWithRole,
+        fname: userWithRole.fname || (user && user.fname) || '',
+        lname: userWithRole.lname || (user && user.lname) || '',
+        phone: userWithRole.phone || (user && user.phone) || '',
+        phone_cc: userWithRole.phone_cc || (user && user.phone_cc) || '',
+      };
+
+      setUser(mergedUser);
       setToken(tk);
-      try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country })); } catch {}
-      return userWithRole;
+      try { localStorage.setItem('auth_state', JSON.stringify({ user: mergedUser, token: tk, token_expires_at: tokenExpiresAt, country })); } catch {}
+      return mergedUser;
     } catch { return null; }
   };
   const register = async (email, password, password_confirmation) => {
@@ -185,11 +273,38 @@ export function AuthProvider({ children }) {
   const [logoutCallback, setLogoutCallback] = useState(null);
 
   const updateProfile = async (payload) => {
-    console.log("sdlkdslkjgsdg, payload", payload)
     const res = await endpoints.updateProfile(payload);
+
+    // Update cevabından dönen user + user_profile bilgisini hemen normalize edip
+    // context user state'ine yazalım ki form anında güncellensin.
+    try {
+      const apiUserRaw = res?.user ?? res?.data?.user ?? null;
+      const apiUser = normalizeApiUser(apiUserRaw);
+      if (apiUser) {
+        const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
+        const userWithRole = { ...apiUser, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+
+        const mergedUser = {
+          ...(user || {}),
+          ...userWithRole,
+          fname: userWithRole.fname || (user && user.fname) || '',
+          lname: userWithRole.lname || (user && user.lname) || '',
+          phone: userWithRole.phone || (user && user.phone) || '',
+          phone_cc: userWithRole.phone_cc || (user && user.phone_cc) || '',
+        };
+
+        setUser(mergedUser);
+        try { localStorage.setItem('auth_state', JSON.stringify({ user: mergedUser, token, token_expires_at: tokenExpiresAt, country })); } catch {}
+      }
+    } catch {}
+
+    // Ek olarak, backend profil endpoint'inden gelen diğer alanları da senkronize etmek için
+    // fetchCurrentUser'ı best-effort olarak çağırmaya devam edelim (merge mantığı sayesinde
+    // boş gelen fname/lname vb. değerler mevcut dolu değerleri ezmeyecek).
     try {
       await fetchCurrentUser();
     } catch {}
+
     return res;
   };
 
@@ -199,13 +314,12 @@ export function AuthProvider({ children }) {
     if (skipConfirmation) {
       setUser(null);
       setToken(null);
+      setTokenExpiresAt(null);
       try {
         localStorage.removeItem('auth_state');
         localStorage.removeItem('access_token');
         localStorage.removeItem('google_access_token');
         localStorage.removeItem('google_user');
-        localStorage.setItem('auth_logout', '1');
-        loggedOutRef.current = true;
       } catch {}
       return true;
     }
@@ -217,13 +331,12 @@ export function AuthProvider({ children }) {
         if (confirmed) {
           setUser(null);
           setToken(null);
+          setTokenExpiresAt(null);
           try {
             localStorage.removeItem('auth_state');
             localStorage.removeItem('access_token');
             localStorage.removeItem('google_access_token');
             localStorage.removeItem('google_user');
-            localStorage.setItem('auth_logout', '1');
-            loggedOutRef.current = true;
           } catch {}
           resolve(true);
         } else {
@@ -237,6 +350,8 @@ export function AuthProvider({ children }) {
   const value = useMemo(() => ({
     user,
     token,
+    tokenExpiresAt,
+    authReady,
     country,
     setCountry,
     login,
@@ -250,7 +365,7 @@ export function AuthProvider({ children }) {
     formatCurrency: (usd) => formatCurrency(usd, country),
     sidebarMobileOpen,
     setSidebarMobileOpen,
-  }), [user, country, sidebarMobileOpen]);
+  }), [user, token, tokenExpiresAt, authReady, country, sidebarMobileOpen]);
 
   // If we have a token (from fallback) but no user yet, try to fetch current user once
   useEffect(() => {

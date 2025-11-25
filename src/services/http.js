@@ -20,9 +20,6 @@ async function parseResponse(res) {
       data: data && typeof data === 'object' ? data : { message: String(data || res.statusText) },
       message: (data && data.message) || res.statusText || 'Request error'
     };
-    if (res.status === 401) {
-      try { localStorage.removeItem('access_token'); } catch {}
-    }
     throw err;
   }
   return data;
