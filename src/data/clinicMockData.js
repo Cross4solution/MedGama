@@ -153,12 +153,35 @@ export const priceRangesData = [
   { service: 'Onkoloji Tedavi', range: '₺30K - ₺200K' }
 ];
 
+export const certificatesData = [
+  '/images/certificates/sample-cert-1.jpg',
+  '/images/certificates/sample-cert-2.jpg',
+  '/images/certificates/sample-cert-3.jpg'
+];
+
+export const publicationsData = [
+  {
+    id: 'pub-1',
+    title: 'Outcomes of Cardiac Surgery in International Patients',
+    journal: 'International Journal of Cardiology (2023)',
+    url: 'https://example.com/publication-1'
+  },
+  {
+    id: 'pub-2',
+    title: 'Advances in Oncology Treatments at Anadolu Health Center',
+    journal: 'Oncology Today (2022)',
+    url: 'https://example.com/publication-2'
+  }
+];
+
 export const tabsConfig = [
   { id: 'genel-bakis', label: 'Overview' },
   { id: 'prices', label: 'Prices' },
   { id: 'doktorlar', label: 'Doctors' },
   { id: 'degerlendirmeler', label: 'Reviews' },
   { id: 'galeri', label: 'Gallery' },
-  { id: 'before-after', label: 'Before & After Photos' },
+  { id: 'before-after', label: 'Before & After' },
+  { id: 'certificates', label: 'Certificates' },
+  { id: 'publications', label: 'Publications' },
   { id: 'konum', label: 'Location' }
 ];

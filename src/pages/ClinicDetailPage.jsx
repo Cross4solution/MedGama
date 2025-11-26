@@ -15,6 +15,8 @@ import ReviewsTab from '../components/clinic/tabs/ReviewsTab';
 import GalleryTab from '../components/clinic/tabs/GalleryTab';
 import BeforeAfterTab from '../components/clinic/tabs/BeforeAfterTab';
 import LocationTab from '../components/clinic/tabs/LocationTab';
+import CertificatesTab from '../components/clinic/tabs/CertificatesTab';
+import PublicationsTab from '../components/clinic/tabs/PublicationsTab';
 
 // Mock Data
 import {
@@ -26,6 +28,8 @@ import {
   galleryData,
   beforeAfterData,
   priceRangesData,
+  certificatesData,
+  publicationsData,
   tabsConfig
 } from '../data/clinicMockData';
 
@@ -99,6 +103,10 @@ const ClinicDetailPage = () => {
             setSliderPosition={setSliderPosition}
           />
         );
+      case 'certificates':
+        return <CertificatesTab certificates={certificatesData} />;
+      case 'publications':
+        return <PublicationsTab publications={publicationsData} />;
       case 'konum':
         return <LocationTab locationAddress="Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul" />;
       default:
@@ -111,7 +119,7 @@ const ClinicDetailPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 max-w-3xl xl:max-w-4xl">
             {/* Hero Section */}
             <ClinicHero
               image={clinicInfo.heroImage}
@@ -119,15 +127,7 @@ const ClinicDetailPage = () => {
               location={clinicInfo.location}
               rating={clinicInfo.rating}
               reviews={clinicInfo.reviewCount}
-              badgeNode={(
-                <Badge
-                  label="JCI Accredited"
-                  variant="green"
-                  size="sm"
-                  rounded="full"
-                  icon={<CheckCircle className="w-4 h-4" />}
-                />
-              )}
+              badgeNode={null}
               isFavorite={isFavorite}
               onToggleFavorite={() => setIsFavorite(!isFavorite)}
               isFollowing={isFollowing}
@@ -145,7 +145,7 @@ const ClinicDetailPage = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:w-80 space-y-6">
+          <div className="lg:w-80 xl:w-96 space-y-6">
             <ContactActions onTelehealth={() => {}} onBook={() => {}} onMessage={() => {}} />
             <PriceRangeList items={priceRangesData} />
           </div>

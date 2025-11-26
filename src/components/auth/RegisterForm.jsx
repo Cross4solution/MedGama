@@ -399,7 +399,11 @@ const RegisterForm = ({
         </div>
 
         <div className="w-full max-w-md flex items-center justify-between gap-2 mt-2 mb-12 sm:mb-16">
-          <button onClick={handleBack} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="inline-flex items-center gap-2 bg-blue-600 text-white py-2 sm:py-2 px-5 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md"
+          >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
             Back
           </button>

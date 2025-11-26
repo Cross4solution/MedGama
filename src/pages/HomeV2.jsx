@@ -30,6 +30,22 @@ export default function HomeV2() {
 
   // Özellik kutuları ayrı bir bileşen üzerinden yönetiliyor (CoreBoxes)
 
+  const handleExploreClick = (e) => {
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+    }
+    try {
+      const target = document.getElementById('features');
+      if (target && typeof target.scrollIntoView === 'function') {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.location.hash = '#features';
+      }
+    } catch {
+      window.location.hash = '#features';
+    }
+  };
+
   const popularClinics = [
     { id: 1, name: 'Memorial Hospital', city: 'Ankara', dept: 'Plastic Surgery, Aesthetics', rating: 4.9, reviews: 186, image: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
     { id: 2, name: 'Ege University Hospital', city: 'Izmir', dept: 'Neurology, Orthopedics', rating: 4.7, reviews: 428, image: '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg' },
@@ -104,7 +120,7 @@ export default function HomeV2() {
                     One-click, end-to-end care: discovery, availability, telehealth, health tourism and secure communication.
                   </p>
                   <div className="mt-6 flex gap-3">
-                    <a href="#features" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm shadow-lg">Explore</a>
+                    <a href="#features" onClick={handleExploreClick} className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm shadow-lg">Explore</a>
                   </div>
                 </div>
               </div>
