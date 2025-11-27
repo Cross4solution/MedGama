@@ -53,15 +53,16 @@ const Header = () => {
           {(() => {
             const logoTo = '/home-v2';
             return (
-              <Link to={logoTo} onClick={closeMenu} className="flex items-center space-x-3 cursor-pointer select-none ml-9">
-                <img
-                  src="/images/logo/crm-logo.jpg"
-                  alt="MedGama Logo"
-                  className="h-10 md:h-12 w-auto object-contain rounded"
-                  loading="eager"
-                  decoding="async"
-                />
-                <span className={`text-xl font-bold text-gray-900`}>MedGama</span>
+              <Link to={logoTo} onClick={closeMenu} className="flex items-end cursor-pointer select-none ml-0">
+                <div className="h-10 md:h-12 flex items-end">
+                  <img
+                    src="/images/logo/crm-logo.jpg"
+                    alt="MedGama Logo"
+                    className="h-full w-auto object-contain rounded transform scale-[2.3] translate-y-[12px]"
+                    loading="eager"
+                    decoding="async"
+                  />
+                </div>
               </Link>
             );
           })()}

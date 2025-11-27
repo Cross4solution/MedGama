@@ -58,6 +58,25 @@ export default function BeforeAfterModal({
               document.addEventListener('mousemove', onMove);
               document.addEventListener('mouseup', onUp);
             }}
+            onTouchStart={(e) => {
+              const container = e.currentTarget.parentElement;
+              const onMove = (touchEvent) => {
+                const touch = touchEvent.touches[0];
+                if (!touch) return;
+                const rect = container.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                setSliderPosition(percent);
+              };
+              const onEnd = () => {
+                document.removeEventListener('touchmove', onMove);
+                document.removeEventListener('touchend', onEnd);
+                document.removeEventListener('touchcancel', onEnd);
+              };
+              document.addEventListener('touchmove', onMove, { passive: false });
+              document.addEventListener('touchend', onEnd);
+              document.addEventListener('touchcancel', onEnd);
+            }}
           >
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
               <div className="flex gap-1">

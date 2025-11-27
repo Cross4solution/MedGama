@@ -15,14 +15,18 @@ export default function ClinicHero({
   onToggleFollow,
   // Geriye dönük uyumluluk: onFollow hala gelebilir
   onFollow,
+  onImageClick,
 }) {
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 mt-6">
-      <div className="relative h-64 md:h-80">
-        <img 
+      <div
+        className={`relative h-64 md:h-80 ${onImageClick ? 'cursor-pointer group' : ''}`}
+        onClick={onImageClick}
+      >
+        <img
           src={image}
           alt={`${name} - Modern clinic environment`}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover group-hover:brightness-95 transition"
         />
         <div className="absolute top-4 right-4 flex items-center bg-white rounded-full px-3 py-1 shadow-md">
           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />

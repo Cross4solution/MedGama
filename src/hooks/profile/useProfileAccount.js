@@ -17,6 +17,7 @@ export function useProfileAccount() {
   const [lname, setLname] = useState(user?.lname || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [phoneCc, setPhoneCc] = useState(user?.phone_cc || '');
+  const [specialty, setSpecialty] = useState(user?.specialty || '');
   const [profilePassword, setProfilePassword] = useState('');
   const phoneCcRef = useRef(null);
   const [phoneCcOpen, setPhoneCcOpen] = useState(false);
@@ -27,6 +28,7 @@ export function useProfileAccount() {
     const entry = Object.entries(countryCodes).find(([, code]) => code === lower);
     return entry ? entry[0] : '';
   }, [country]);
+  const [initialized, setInitialized] = useState(false);
   const [countryName, setCountryName] = useState(initialCountryName);
   const fileInputRef = useRef(null);
   const [avatarFileName, setAvatarFileName] = useState('');
@@ -38,21 +40,23 @@ export function useProfileAccount() {
     }
   }, [token, fetchCurrentUser]);
 
-  // Backend'ten gelen user güncellendiğinde form state'lerini senkronize et
+  // Backend'ten gelen user ile form state'lerini sadece ilk yüklemede senkronize et
   useEffect(() => {
-    if (!user) return;
+    if (!user || initialized) return;
     setName(user.fname || '');
     setAvatar(user.avatar || '');
     setFname(user.fname || '');
     setLname(user.lname || '');
     setPhone(user.phone || '');
     setPhoneCc(user.phone_cc || '');
+    setSpecialty(user.specialty || '');
     const lower = (country || '').toLowerCase();
     if (lower) {
       const entry = Object.entries(countryCodes).find(([, code]) => code === lower);
       setCountryName(entry ? entry[0] : '');
     }
-  }, [user, country]);
+    setInitialized(true);
+  }, [user, country, initialized]);
 
   useEffect(() => {
     if (!phoneCcOpen) return;
@@ -153,6 +157,11 @@ export function useProfileAccount() {
       phone_cc: normalizedPhoneCc || null,
     };
 
+    // Doktor profili için specialty bilgisini de gönder
+    if ((user?.role || 'patient') === 'doctor') {
+      payload.specialty = specialty || null;
+    }
+
     try {
       const res = await updateProfile(payload);
       notify({ type: 'success', message: res?.message || 'Profile updated.' });
@@ -174,6 +183,7 @@ export function useProfileAccount() {
     lname,
     phone,
     phoneCc,
+    specialty,
     profilePassword,
     countryName,
     phoneCcOpen,
@@ -185,6 +195,7 @@ export function useProfileAccount() {
     setCountryName,
     setFname,
     setLname,
+    setSpecialty,
     setProfilePassword,
     handleDisplayNameChange,
     handleAvatarFileChange,

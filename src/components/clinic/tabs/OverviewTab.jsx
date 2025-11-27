@@ -28,6 +28,7 @@ export default function OverviewTab({ aboutTitle, aboutP1, aboutP2 }) {
           </div>
         ))}
       </div>
+
     </div>
   );
 }

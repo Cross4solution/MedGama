@@ -33,6 +33,7 @@ const AuthPages = () => {
     birthDate: '',
     city: '',
     medicalHistory: '',
+    specialty: '',
     acceptTerms: false,
     receiveUpdates: false
   });
@@ -78,6 +79,9 @@ const AuthPages = () => {
       if (!formData.confirmPassword) newErrors.confirmPassword = 'Confirm password is required';
       if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
       if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the Terms of Use';
+      if ((formData.role ?? 'patient') === 'doctor' && !formData.specialty) {
+        newErrors.specialty = 'Specialty is required for doctor registration';
+      }
     }
 
     setErrors(newErrors);
@@ -109,7 +113,9 @@ const AuthPages = () => {
           return;
         }
         const doRegister = formData.role === 'doctor' ? registerDoctor : register;
-        const res = await doRegister(formData.email, formData.password, formData.confirmPassword);
+        const res = await (formData.role === 'doctor'
+          ? doRegister(formData.email, formData.password, formData.confirmPassword, formData.specialty)
+          : doRegister(formData.email, formData.password, formData.confirmPassword));
         try {
           if ((formData.role || 'patient') === 'patient' && formData.email) {
             const key = `patient_profile_extra_${formData.email}`;
@@ -197,7 +203,7 @@ const AuthPages = () => {
             </div>
             {/* Info texts under the form (mobile) */}
             <div className="w-full px-3 mt-1">
-              <h2 className="text-base font-semibold text-white mb-1">Welcome to Medigama</h2>
+              <h2 className="text-base font-semibold text-white mb-1">Welcome to Medagama</h2>
               <p className="text-xs text-teal-100 mb-2">Trusted healthcare services with expert doctors and modern treatments.</p>
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li className="text-teal-50">Expert medical team</li>
@@ -217,7 +223,7 @@ const AuthPages = () => {
                 <div className="w-28 h-28 bg-white/15 rounded-full flex items-center justify-center mb-6">
                   <Heart className="w-16 h-16" />
                 </div>
-                <h2 className="text-4xl font-bold mb-3">Welcome to Medigama</h2>
+                <h2 className="text-4xl font-bold mb-3">Welcome to Medagama</h2>
                 <p className="text-lg text-teal-100 mb-8">Discover trusted healthcare services, expert doctors and modern treatment methods in one place.</p>
 
                 {/* Features */}

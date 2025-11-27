@@ -50,6 +50,7 @@ export default function Profile() {
                 lname={account.lname}
                 phone={account.phone}
                 phoneCc={account.phoneCc}
+                specialty={account.specialty}
                 profilePassword={account.profilePassword}
                 countryName={account.countryName}
                 phoneCcOpen={account.phoneCcOpen}
@@ -61,6 +62,7 @@ export default function Profile() {
                 setCountryName={account.setCountryName}
                 setFname={account.setFname}
                 setLname={account.setLname}
+                setSpecialty={account.setSpecialty}
                 setProfilePassword={account.setProfilePassword}
                 handleDisplayNameChange={account.handleDisplayNameChange}
                 handleAvatarFileChange={account.handleAvatarFileChange}

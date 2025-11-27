@@ -257,8 +257,8 @@ export function AuthProvider({ children }) {
     const res = await endpoints.userRegister({ email, password, password_confirmation });
     return res;
   };
-  const registerDoctor = async (email, password, password_confirmation) => {
-    const res = await endpoints.doctorRegister({ email, password, password_confirmation });
+  const registerDoctor = async (email, password, password_confirmation, specialty) => {
+    const res = await endpoints.doctorRegister({ email, password, password_confirmation, specialty });
     return res;
   };
   const demoLogin = (role = 'patient') => {

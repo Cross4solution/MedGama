@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toEnglishTimestamp } from '../utils/i18n';
 import { Star, MessageCircle, Heart, Clock, Image as ImageIcon, Folder, Share2 } from 'lucide-react';
@@ -17,6 +17,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 10, o
   const defaults = useMemo(() => generateExploreStyleItems(limit ?? 10), [limit]);
   const data = items.length ? items : defaults;
   const scrollRef = useRef(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   // Restore scroll to last clicked post if exists, else keep position
   useEffect(() => {
@@ -47,7 +48,10 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 10, o
     if (!done && !isNaN(saved) && saved > 0) {
       requestAnimationFrame(() => { el.scrollTop = saved; });
     }
-    const onScroll = () => sessionStorage.setItem(key, String(el.scrollTop));
+    const onScroll = () => {
+      setShowScrollTop(el.scrollTop > 200);
+      sessionStorage.setItem(key, String(el.scrollTop));
+    };
     el.addEventListener('scroll', onScroll);
     return () => {
       el.removeEventListener('scroll', onScroll);
@@ -72,7 +76,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 10, o
             <Link to="/explore" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">View all updates items</Link>
           )}
         </div>
-        <div className="rounded-lg border-2 border-gray-300 shadow-lg overflow-hidden" style={{ backgroundColor: '#EEF7F6' }}>
+        <div className="rounded-lg border-2 border-gray-300 shadow-lg overflow-hidden relative" style={{ backgroundColor: '#EEF7F6' }}>
           {/* Scrollable feed area */}
           <div ref={scrollRef} className="h-[86vh] overflow-y-auto pr-2 pt-4 pb-6">
             <div className="space-y-6">
@@ -88,6 +92,34 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 10, o
               ))}
             </div>
           </div>
+          {showScrollTop && (
+            <button
+              type="button"
+              onClick={() => {
+                try {
+                  scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                } catch {
+                  if (scrollRef.current) scrollRef.current.scrollTop = 0;
+                }
+              }}
+              className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 backdrop-blur shadow-xl border border-teal-500/70 text-teal-700 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400 absolute bottom-4 right-4 transition-colors"
+              aria-label="Scroll to top"
+            >
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-500 text-white shadow">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="w-4 h-4"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 5l-6 6h4v6h4v-6h4z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+            </button>
+          )}
         </div>
       </div>
     </section>

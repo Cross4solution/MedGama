@@ -13,9 +13,14 @@ const ForgotPasswordForm = ({
 }) => (
   <div className="w-full max-w-lg mx-auto">
     <div className="text-center mb-2 sm:mb-3">
-      <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-        <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 sm:h-9 sm:w-9 object-contain" />
-        <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedGama</span>
+      <div className="flex items-center justify-center mb-1 sm:mb-2">
+        <div className="h-9 sm:h-11 flex items-end">
+          <img
+            src="/images/logo/crm-logo.jpg"
+            alt="MedGama"
+            className="h-full w-auto object-contain transform scale-[2.1] translate-y-[6px]"
+          />
+        </div>
       </div>
       <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Password Reset</h1>
       <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-5">Enter your registered email and we'll send you a password reset link.</p>

@@ -12,6 +12,7 @@ export default function ProfileAccountSection({
   lname,
   phone,
   phoneCc,
+  specialty,
   profilePassword,
   countryName,
   phoneCcOpen,
@@ -23,6 +24,7 @@ export default function ProfileAccountSection({
   setCountryName,
   setFname,
   setLname,
+  setSpecialty,
   setProfilePassword,
   handleDisplayNameChange,
   handleAvatarFileChange,
@@ -209,6 +211,19 @@ export default function ProfileAccountSection({
             placeholder="Minimum 8 characters"
           />
         </div>
+        {user?.role === 'doctor' && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Specialty</label>
+            <input
+              type="text"
+              value={specialty || ''}
+              onChange={(e) => setSpecialty(e.target.value)}
+              maxLength={255}
+              className="w-full border border-gray-300 rounded-lg px-3 text-sm h-10"
+              placeholder="e.g. Cardiology"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end">

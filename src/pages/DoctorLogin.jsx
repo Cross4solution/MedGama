@@ -179,7 +179,13 @@ const DoctorLogin = () => {
         <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-6 gap-3">
           <div className="w-full max-w-md lg:max-w-lg bg-white/95 backdrop-blur-xl rounded-xl p-5 lg:p-6 shadow-2xl border border-white/30">
             <div className="text-center mb-5">
-              <img src="/images/logo/crm-logo.jpg" alt="MediTravel" className="h-12 w-auto mx-auto mb-3 rounded mix-blend-multiply" />
+              <div className="h-10 sm:h-12 flex items-end justify-center mb-3">
+                <img
+                  src="/images/logo/crm-logo.jpg"
+                  alt="MediTravel"
+                  className="h-full w-auto mx-auto rounded mix-blend-multiply transform scale-[2.3] translate-y-[8px]"
+                />
+              </div>
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1.5">
                 <span className="sm:hidden">Sign in</span>
                 <span className="hidden sm:inline">Sign in to your account</span>
