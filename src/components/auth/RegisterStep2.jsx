@@ -357,6 +357,16 @@ export default function RegisterStep2({
 }) {
   return (
     <>
+      <div className="w-full max-w-md flex justify-start mb-2">
+        <button
+          type="button"
+          onClick={handleBack}
+          className="inline-flex items-center gap-2 bg-blue-600 text-white py-2 sm:py-2 px-5 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+          Back
+        </button>
+      </div>
       <div className="grid grid-cols-1 gap-1 sm:gap-2 w-full max-w-md">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left md:text-left">
@@ -429,7 +439,7 @@ export default function RegisterStep2({
           </div>
         )}
         {role === 'patient' && (
-          <div>
+          <div className="mt-1">
             <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left md:text-left">
               Medical history (chronic diseases, allergies, medications)
             </label>
@@ -438,14 +448,14 @@ export default function RegisterStep2({
               value={fd.medicalHistory ?? ''}
               onChange={handleInputChange}
               rows={3}
-              className="w-full h-11 border border-gray-300 rounded-xl px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-white"
+              className="w-full h-20 border border-gray-300 rounded-xl px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-white"
               placeholder="Optional: e.g., Diabetes Type 2, Penicillin allergy, Hypertension, etc."
             />
           </div>
         )}
       </div>
 
-      <div className="space-y-2 sm:space-y-3 w-full max-w-md mt-3 sm:mt-4 pt-1 pb-1">
+      <div className="space-y-1 sm:space-y-1.5 w-full max-w-md mt-1.5 sm:mt-2 pt-0.5 pb-0">
         <div>
           <label className="flex items-start space-x-2 sm:space-x-3 justify-center md:justify-start">
             <input
@@ -453,7 +463,7 @@ export default function RegisterStep2({
               name="acceptTerms"
               checked={!!fd.acceptTerms}
               onChange={handleInputChange}
-              className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
             />
             <span className="text-sm text-gray-600 text-center md:text-left leading-relaxed">
               <span className="text-red-500">*</span>{' '}
@@ -486,7 +496,7 @@ export default function RegisterStep2({
             name="receiveUpdates"
             checked={!!fd.receiveUpdates}
             onChange={handleInputChange}
-            className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 mt-0.5"
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5 transform scale-[1.3]"
           />
           <span className="text-sm text-gray-600 text-center md:text-left leading-relaxed">
             I would like to receive emails about health tips, new services, and special offers.
@@ -494,15 +504,7 @@ export default function RegisterStep2({
         </label>
       </div>
 
-      <div className="w-full max-w-md flex items-center justify-between gap-2 mt-2 mb-6 sm:mb-8">
-        <button
-          type="button"
-          onClick={handleBack}
-          className="inline-flex items-center gap-2 bg-blue-600 text-white py-2 sm:py-2 px-5 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md"
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-          Back
-        </button>
+      <div className="w-full max-w-md flex items-center justify-end gap-2 mt-2 mb-2 sm:mb-3">
         <button
           type="submit"
           disabled={submitting}
@@ -511,8 +513,6 @@ export default function RegisterStep2({
           {submitting ? 'Creating…' : 'Create Account'}
         </button>
       </div>
-
-      <div aria-hidden className="h-4 sm:h-6" />
     </>
   );
 }

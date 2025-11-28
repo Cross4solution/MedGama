@@ -90,16 +90,7 @@ const LoginForm = ({
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-4 sm:mb-8">
-        <div className="flex items-center justify-center mb-1 sm:mb-3">
-          <div className="h-10 sm:h-12 flex items-end">
-            <img
-              src="/images/logo/crm-logo.jpg"
-              alt="MedGama"
-              className="h-full w-auto object-contain transform scale-[2.3] translate-y-[8px]"
-            />
-          </div>
-        </div>
-        <p className="text-sm sm:text-base text-gray-600">Log in to your account and continue your health journey</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Log in to your account</h1>
       </div>
       <div className="space-y-3 sm:space-y-6 flex flex-col items-center">
         <div className="w-full">

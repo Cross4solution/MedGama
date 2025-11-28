@@ -1,7 +1,8 @@
 import React from 'react';
 import {
   Heart,
-  Mail
+  Mail,
+  ArrowLeft
 } from 'lucide-react';
 
 const ForgotPasswordForm = ({ 
@@ -12,18 +13,21 @@ const ForgotPasswordForm = ({
   setCurrentPage 
 }) => (
   <div className="w-full max-w-lg mx-auto">
-    <div className="text-center mb-2 sm:mb-3">
-      <div className="flex items-center justify-center mb-1 sm:mb-2">
-        <div className="h-9 sm:h-11 flex items-end">
-          <img
-            src="/images/logo/crm-logo.jpg"
-            alt="MedGama"
-            className="h-full w-auto object-contain transform scale-[2.1] translate-y-[6px]"
-          />
-        </div>
+    <div className="mb-2 sm:mb-3 flex flex-col gap-2">
+      <div className="flex justify-start">
+        <button
+          type="button"
+          onClick={() => setCurrentPage('login')}
+          className="inline-flex flex-col items-center justify-center rounded-full bg-blue-600 text-white px-4 py-2 text-xs sm:text-sm shadow-sm hover:bg-blue-700 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 mb-0.5" />
+          <span>Back</span>
+        </button>
       </div>
-      <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Password Reset</h1>
-      <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-5">Enter your registered email and we'll send you a password reset link.</p>
+      <div className="text-center">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Password Reset</h1>
+        <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">Enter your registered email and we'll send you a reset link.</p>
+      </div>
     </div>
     <form onSubmit={handleSubmit} className="space-y-1.5 sm:space-y-3 flex flex-col items-center">
       <div className="w-full max-w-md">
@@ -50,21 +54,12 @@ const ForgotPasswordForm = ({
       </div>
       <button
         type="submit"
-                  className="w-full max-w-md bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md"
+        className="w-full max-w-md bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md"
       >
         Send Password Reset Link
       </button>
-      <div className="w-full max-w-md">
-        <button
-          type="button"
-          onClick={() => setCurrentPage('login')}
-          className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-xl hover:bg-gray-50 transition-all duration-200 text-xs sm:text-sm"
-        >
-          Back to login
-        </button>
-      </div>
     </form>
   </div>
 );
 
-export default ForgotPasswordForm; 
+export default ForgotPasswordForm;

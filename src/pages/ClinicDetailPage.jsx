@@ -153,6 +153,22 @@ const ClinicDetailPage = () => {
                 {renderTabContent()}
 
                 {/* Shared mini sections visible on all tabs */}
+                {publicationsData && publicationsData.length > 0 && (
+                  <div className="pt-2 border-t border-gray-100">
+                    <h4 className="text-base font-semibold text-gray-900 mb-2">Publications</h4>
+                    <ul className="space-y-1.5">
+                      {publicationsData.slice(0, 3).map((pub) => (
+                        <li key={pub.id} className="text-sm text-gray-700">
+                          <span className="font-medium">{pub.title}</span>
+                          {pub.journal && (
+                            <span className="block text-xs text-gray-500">{pub.journal}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {galleryData && galleryData.length > 0 && (
                   <div className="pt-2 border-t border-gray-100">
                     <div className="flex items-center justify-between mb-3">
@@ -197,22 +213,6 @@ const ClinicDetailPage = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {publicationsData && publicationsData.length > 0 && (
-                  <div className="pt-2 border-t border-gray-100">
-                    <h4 className="text-base font-semibold text-gray-900 mb-2">Publications</h4>
-                    <ul className="space-y-1.5">
-                      {publicationsData.slice(0, 3).map((pub) => (
-                        <li key={pub.id} className="text-sm text-gray-700">
-                          <span className="font-medium">{pub.title}</span>
-                          {pub.journal && (
-                            <span className="block text-xs text-gray-500">{pub.journal}</span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 )}
               </div>

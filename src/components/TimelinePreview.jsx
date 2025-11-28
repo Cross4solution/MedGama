@@ -49,7 +49,9 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 10, o
       requestAnimationFrame(() => { el.scrollTop = saved; });
     }
     const onScroll = () => {
-      setShowScrollTop(el.scrollTop > 200);
+      const maxScrollable = Math.max(el.scrollHeight - el.clientHeight, 0);
+      const halfPoint = maxScrollable / 2;
+      setShowScrollTop(el.scrollTop > halfPoint);
       sessionStorage.setItem(key, String(el.scrollTop));
     };
     el.addEventListener('scroll', onScroll);
@@ -102,10 +104,10 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 10, o
                   if (scrollRef.current) scrollRef.current.scrollTop = 0;
                 }
               }}
-              className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 backdrop-blur shadow-xl border border-teal-500/70 text-teal-700 hover:bg-teal-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-400 absolute bottom-4 right-4 transition-colors"
+              className="hidden sm:flex items-center justify-center w-11 h-11 rounded-full bg-slate-900/70 backdrop-blur shadow-xl border border-slate-900/70 text-white hover:bg-slate-900/90 focus:outline-none focus:ring-2 focus:ring-slate-500 absolute bottom-4 right-4 transition-colors"
               aria-label="Scroll to top"
             >
-              <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-500 text-white shadow">
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-500/90 text-white shadow">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"

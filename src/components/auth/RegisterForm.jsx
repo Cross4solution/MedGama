@@ -139,15 +139,6 @@ const RegisterForm = ({
   return (
   <div className="w-full max-w-md mx-auto">
          <div className="text-center mb-1.5 sm:mb-2 md:mb-2">
-           <div className="flex items-center justify-center mb-1 sm:mb-2">
-             <div className="h-9 sm:h-11 flex items-end">
-               <img
-                 src="/images/logo/crm-logo.jpg"
-                 alt="MedGama"
-                 className="h-full w-auto object-contain transform scale-[2.7] translate-y-[10px]"
-               />
-             </div>
-           </div>
            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Create an Account</h1>
        <p className="text-xs sm:text-sm text-gray-600">Sign up to start your health journey</p>
          </div>

@@ -50,7 +50,17 @@ export default function TimelineControls({
 
         {/* Right: Location (desktop) */}
         <div className="hidden md:flex flex-1 justify-end items-center gap-3">
-          <button onClick={onUseLocation} className="text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50">Use my location</button>
+          <button
+            onClick={onUseLocation}
+            className="text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50 inline-flex items-center gap-2"
+          >
+            <img
+              src="/images/icon/usemylocation.svg"
+              alt="Use my location icon"
+              className="w-4 h-4"
+            />
+            <span>Use my location</span>
+          </button>
           {geo?.lat && (
             <span className="text-xs text-gray-500">{geo.lat.toFixed(2)},{geo.lon.toFixed(2)}</span>
           )}
@@ -90,7 +100,17 @@ export default function TimelineControls({
         </div>
         {/* Location button right aligned */}
         <div className="flex-1 flex justify-end items-center gap-2 ml-3">
-          <button onClick={onUseLocation} className="text-sm px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50">Use my location</button>
+          <button
+            onClick={onUseLocation}
+            className="text-sm px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 inline-flex items-center gap-2"
+          >
+            <img
+              src="/images/icon/usemylocation.svg"
+              alt="Use my location icon"
+              className="w-4 h-4"
+            />
+            <span>Use my location</span>
+          </button>
           {geo?.lat && (
             <span className="text-xs text-gray-500">{geo.lat.toFixed(2)},{geo.lon.toFixed(2)}</span>
           )}

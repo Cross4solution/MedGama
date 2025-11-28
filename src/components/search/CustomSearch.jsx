@@ -379,7 +379,7 @@ export default function CustomSearch() {
           <button
             type="submit"
             disabled={!canSearch}
-            className="ml-auto md:ml-0 bg-gray-900 text-white rounded-lg text-base px-5 py-3 md:text-sm md:px-4 md:h-10 disabled:opacity-50 flex items-center gap-2 md:justify-center"
+            className="ml-auto md:ml-0 bg-[#000000] text-white rounded-lg text-base px-5 py-3 md:text-sm md:px-4 md:h-10 flex items-center gap-2 md:justify-center border border-[#000000] shadow-sm hover:bg-[#111111] focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="11" cy="11" r="8"></circle>
