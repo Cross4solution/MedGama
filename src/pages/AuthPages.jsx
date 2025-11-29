@@ -220,8 +220,12 @@ const AuthPages = () => {
             {/* Left Side - Illustration/Info */}
             <div className="flex-1 max-w-lg text-left">
               <div className="mb-8 text-white">
-                <div className="w-28 h-28 bg-white/15 rounded-full flex items-center justify-center mb-6">
-                  <Heart className="w-16 h-16" />
+                <div className="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center mb-6 shadow-xl ring-4 ring-white/30">
+                  <img
+                    src="/favicon.ico"
+                    alt="Medagama logo"
+                    className="w-20 h-20 rounded-2xl object-contain"
+                  />
                 </div>
                 <h2 className="text-4xl font-bold mb-3">Welcome to Medagama</h2>
                 <p className="text-lg text-teal-100 mb-8">Discover trusted healthcare services, expert doctors and modern treatment methods in one place.</p>

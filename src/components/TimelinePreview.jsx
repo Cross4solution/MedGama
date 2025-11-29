@@ -49,9 +49,8 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 10, o
       requestAnimationFrame(() => { el.scrollTop = saved; });
     }
     const onScroll = () => {
-      const maxScrollable = Math.max(el.scrollHeight - el.clientHeight, 0);
-      const halfPoint = maxScrollable / 2;
-      setShowScrollTop(el.scrollTop > halfPoint);
+      const threshold = 120; // 120px aşağı inince buton görünsün
+      setShowScrollTop(el.scrollTop > threshold);
       sessionStorage.setItem(key, String(el.scrollTop));
     };
     el.addEventListener('scroll', onScroll);
@@ -104,22 +103,20 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 10, o
                   if (scrollRef.current) scrollRef.current.scrollTop = 0;
                 }
               }}
-              className="hidden sm:flex items-center justify-center w-11 h-11 rounded-full bg-slate-900/70 backdrop-blur shadow-xl border border-slate-900/70 text-white hover:bg-slate-900/90 focus:outline-none focus:ring-2 focus:ring-slate-500 absolute bottom-4 right-4 transition-colors"
+              className="hidden sm:flex items-center justify-center w-11 h-11 rounded-full bg-[#1C6A83] shadow-xl text-white hover:bg-[#155a6f] focus:outline-none focus:ring-2 focus:ring-slate-500 absolute bottom-4 right-6 transition-colors"
               aria-label="Scroll to top"
             >
-              <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-500/90 text-white shadow">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  className="w-4 h-4"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M12 5l-6 6h4v6h4v-6h4z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="w-7 h-7 text-white"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 5l-6 6h4v6h4v-6h4z"
+                  fill="currentColor"
+                />
+              </svg>
             </button>
           )}
         </div>

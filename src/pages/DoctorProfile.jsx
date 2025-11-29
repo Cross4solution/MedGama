@@ -32,6 +32,12 @@ const DoctorProfilePage = () => {
     { name: 'Kalp Yetmezliği', icon: Heart, description: 'Kronik kalp hastalıklarının yönetimi' },
   ]);
 
+  const [certificates] = useState([
+    '/images/certificates/doctor-cert-1.jpg',
+    '/images/certificates/doctor-cert-2.jpg',
+    '/images/certificates/doctor-cert-3.jpg',
+  ]);
+
   const [publications] = useState([
     {
       id: 'pub-1',
@@ -136,7 +142,11 @@ const DoctorProfilePage = () => {
               <div className="px-6 pb-6">
                 {/* Overview */}
                 {activeTab === 'genel-bakis' && (
-                  <DoctorOverviewSection aboutP1={aboutP1} aboutP2={aboutP2} />
+                  <DoctorOverviewSection
+                    aboutP1={aboutP1}
+                    aboutP2={aboutP2}
+                    certificates={certificates}
+                  />
                 )}
 
                 {/* Services */}

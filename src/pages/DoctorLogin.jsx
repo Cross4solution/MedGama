@@ -139,8 +139,12 @@ const DoctorLogin = () => {
         {/* Info column */}
         <div className="hidden lg:flex flex-1 items-center justify-center px-10 py-6">
           <div className="max-w-lg text-white">
-            <div className="w-28 h-28 bg-white/15 rounded-full flex items-center justify-center mb-4">
-              <Stethoscope className="w-16 h-16" />
+            <div className="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center mb-4 shadow-xl ring-4 ring-white/30">
+              <img
+                src="/favicon.ico"
+                alt="Medagama logo"
+                className="w-20 h-20 rounded-2xl object-contain"
+              />
             </div>
             <h2 className="text-4xl font-bold mb-3">Welcome to the Doctor Portal</h2>
             <p className="text-base text-teal-100 mb-6">Manage your patients, track appointments, and control telehealth services from a single platform.</p>

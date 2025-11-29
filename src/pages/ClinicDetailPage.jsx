@@ -188,26 +188,6 @@ const ClinicDetailPage = () => {
                         </div>
                       </div>
                     )}
-
-                    {certificatesData && certificatesData.length > 0 && (
-                      <div className="pt-2 border-t border-gray-100">
-                        <h4 className="text-base font-semibold text-gray-900 mb-3">Certificates & Licences</h4>
-                        <div className="flex flex-wrap gap-3">
-                          {certificatesData.slice(0, 3).map((src, idx) => (
-                            <div
-                              key={`overview-cert-${idx}`}
-                              className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 flex items-center justify-center"
-                            >
-                              <img
-                                src={src}
-                                alt={`Certificate ${idx + 1}`}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </>
                 )}
               </div>
