@@ -179,6 +179,7 @@ export const tabsConfig = [
   { id: 'prices', label: 'Prices' },
   { id: 'doktorlar', label: 'Doctors' },
   { id: 'degerlendirmeler', label: 'Reviews' },
+  { id: 'publications', label: 'Publications' },
   { id: 'before-after', label: 'Before & After' },
   { id: 'konum', label: 'Location' }
 ];
