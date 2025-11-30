@@ -56,9 +56,9 @@ const Header = () => {
               <Link to={logoTo} onClick={closeMenu} className="flex items-end cursor-pointer select-none ml-0">
                 <div className="h-10 md:h-12 flex items-end">
                   <img
-                    src="/images/logo/crm-logo.jpg"
+                    src="/images/logo/logo-Photoroom.png"
                     alt="MedGama Logo"
-                    className="h-full w-auto object-contain rounded transform scale-[2.3] translate-y-[12px]"
+                    className="h-full w-auto object-contain rounded transform scale-[1.8] translate-y-[8px]"
                     loading="eager"
                     decoding="async"
                   />
