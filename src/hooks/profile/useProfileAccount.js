@@ -35,10 +35,10 @@ export function useProfileAccount() {
 
   // Profil sayfası açıldığında ve token hazır olduğunda backend'den en güncel user'ı çek
   useEffect(() => {
-    if (token) {
+    if (token && !user) {
       fetchCurrentUser?.();
     }
-  }, [token, fetchCurrentUser]);
+  }, [token, user, fetchCurrentUser]);
 
   // Backend'ten gelen user ile form state'lerini sadece ilk yüklemede senkronize et
   useEffect(() => {

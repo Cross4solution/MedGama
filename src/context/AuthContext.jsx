@@ -41,8 +41,11 @@ function formatCurrency(amountUSD, countryCode = 'US') {
 function normalizeApiUser(apiUser) {
   if (!apiUser) return null;
   const base = apiUser.user || apiUser;
-  const profile = base.user_profile || {};
-  const merged = { ...base, ...profile };
+  // Hasta profili user_profile içinde, doktor profili doctor_profile içinde gelebiliyor.
+  // İkisini de merge ederek tek bir user objesi haline getiriyoruz.
+  const userProfile = base.user_profile || {};
+  const doctorProfile = base.doctor_profile || {};
+  const merged = { ...base, ...userProfile, ...doctorProfile };
 
   // Backend farklı alan isimleri kullanabileceği için (first_name, last_name, phone_country_code vb.)
   // bunları frontend tarafında kullanılan fname, lname, phone_cc alanlarına mapliyoruz.
