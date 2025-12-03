@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import CountryCombobox from '../../components/forms/CountryCombobox';
 import countriesEurope from '../../data/countriesEurope';
 import { getFlagCode } from '../../utils/geo';
@@ -70,6 +71,23 @@ export default function ProfileAccountSection({
           </div>
         </div>
       </div>
+
+      {user?.role === 'doctor' && (
+        <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 shadow-sm flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-gray-900">Public doctor profile</p>
+            <p className="text-xs text-gray-600 mt-0.5">
+              View how your professional profile appears to patients on MedStream.
+            </p>
+          </div>
+          <Link
+            to="/doctor/doc-1"
+            className="inline-flex items-center px-3 py-2 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md whitespace-nowrap"
+          >
+            View doctor profile
+          </Link>
+        </div>
+      )}
 
       <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>

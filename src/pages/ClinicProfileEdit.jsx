@@ -1,5 +1,7 @@
 import React, { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Save, Building2, MapPin, Info, Image as ImageIcon, Upload, Plus, X, DollarSign, Images, Package, Star, Stethoscope, Activity, Brain, Scissors, Link as LinkIcon } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 function TagEditor({ label, value = [], onChange, placeholder }) {
   const [text, setText] = useState('');
@@ -116,6 +118,9 @@ function StarRow({ value = 0 }) {
 }
 
 export default function ClinicProfileEdit() {
+  const { user } = useAuth();
+  const isClinic = user?.role === 'clinic';
+
   const [tab, setTab] = useState('overview');
   const [form, setForm] = useState({
     // Hero & basics
@@ -233,6 +238,23 @@ export default function ClinicProfileEdit() {
         <h1 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Building2 className="w-5 h-5 text-[#1C6A83]" /> Edit Clinic Profile
         </h1>
+
+        {isClinic && (
+          <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50/60 p-4 shadow-sm flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium text-gray-900">Public clinic profile</p>
+              <p className="text-xs text-gray-600 mt-0.5">
+                View how your clinic profile appears to patients on MedStream.
+              </p>
+            </div>
+            <Link
+              to="/clinic"
+              className="inline-flex items-center px-3 py-2 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md whitespace-nowrap"
+            >
+              View clinic profile
+            </Link>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="mb-3 flex flex-wrap gap-2">
