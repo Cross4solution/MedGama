@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, MapPin, Star, Minus } from 'lucide-react';
+import { CheckCircle, MapPin, Star, Minus, Edit3 } from 'lucide-react';
 
 export default function DoctorHero({
   doctorName,
@@ -9,6 +9,8 @@ export default function DoctorHero({
   isFollowing,
   onToggleFollow,
   onOpenGallery,
+  medstreamUrl,
+  onEditMedstream,
 }) {
   return (
     <div className="relative rounded-2xl overflow-hidden shadow-lg mb-6">
@@ -38,6 +40,35 @@ export default function DoctorHero({
                 <span>4.9 (342 reviews)</span>
               </div>
             </div>
+            {medstreamUrl && (
+              <div
+                className="mt-2 inline-flex items-center gap-2 bg-black/30 rounded-full px-3 py-1 text-[11px] sm:text-xs"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <span className="text-blue-100 font-medium whitespace-nowrap">MedStream profile</span>
+                <a
+                  href={medstreamUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-200 hover:text-white underline truncate max-w-[200px] sm:max-w-[260px]"
+                >
+                  {medstreamUrl}
+                </a>
+                {onEditMedstream && (
+                  <button
+                    type="button"
+                    className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-black/40 text-blue-100 hover:bg-black/60 hover:text-white"
+                    aria-label="Edit MedStream URL"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditMedstream();
+                    }}
+                  >
+                    <Edit3 className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
           <button
             onClick={(e) => {

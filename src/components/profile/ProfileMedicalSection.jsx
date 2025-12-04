@@ -308,7 +308,7 @@ export default function ProfileMedicalSection({
 
         <div className="space-y-4">
           <div>
-            <h3 className="text-sm font-medium text-gray-900 mb-1">Past illnesses</h3>
+            <h3 className="text-sm font-medium text-gray-900 mb-1">Illness name + Diagnosis date</h3>
             <div className="grid grid-cols-[minmax(0,1.5fr),minmax(0,1fr)] gap-2 mb-2">
               <input
                 type="text"
@@ -317,15 +317,10 @@ export default function ProfileMedicalSection({
               />
               <InlineYearField />
             </div>
-            <textarea
-              rows={2}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g. Childhood asthma, resolved at age 12."
-            />
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-gray-900 mb-1">Surgeries / operations</h3>
+            <h3 className="text-sm font-medium text-gray-900 mb-1">Surgery name + Surgery date</h3>
             <div className="grid grid-cols-[minmax(0,1.5fr),minmax(0,1fr)] gap-2 mb-2">
               <input
                 type="text"
@@ -334,15 +329,10 @@ export default function ProfileMedicalSection({
               />
               <InlineDateField />
             </div>
-            <textarea
-              rows={2}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g. Appendectomy (2015), left knee arthroscopy (2019)."
-            />
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-gray-900 mb-1">Vaccinations</h3>
+            <h3 className="text-sm font-medium text-gray-900 mb-1">Vaccine + Date of Vaccination + Doses</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
               <input
                 type="text"
@@ -352,11 +342,6 @@ export default function ProfileMedicalSection({
               <InlineDateField />
               <InlineDoseField />
             </div>
-            <textarea
-              rows={2}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g. Tetanus (2021), COVID-19 3 doses (2021–2022)."
-            />
           </div>
 
           <div className="flex justify-end pt-1">

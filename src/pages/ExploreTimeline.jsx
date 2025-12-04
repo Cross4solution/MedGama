@@ -363,7 +363,12 @@ export default function ExploreTimeline() {
                           <span className="text-sm sm:text-base">Emoji</span>
                         </button>
                         <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>paperInputRef.current?.click(),0); }} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-text w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg>
+                          <img
+                            src="/images/icon/pdf.svg"
+                            alt="PDF icon"
+                            className="w-4 h-4 sm:w-5 sm:h-5"
+                            aria-hidden="true"
+                          />
                           <span className="text-sm sm:text-base">Research Paper</span>
                         </button>
                       </div>
@@ -440,7 +445,14 @@ export default function ExploreTimeline() {
                         <span className="text-sm">Emoji</span>
                       </button>
                       <button onClick={()=>paperInputRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add research paper">
-                        <span className="w-6 h-6 grid place-items-center rounded bg-indigo-50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-text w-4 h-4 text-indigo-600" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg></span>
+                        <span className="w-6 h-6 grid place-items-center rounded bg-indigo-50">
+                          <img
+                            src="/images/icon/pdf.svg"
+                            alt="PDF icon"
+                            className="w-4 h-4"
+                            aria-hidden="true"
+                          />
+                        </span>
                         <span className="text-sm">Research Paper</span>
                       </button>
                     </div>

@@ -20,6 +20,9 @@ const DoctorProfilePage = () => {
   const [doctorTitle] = useState('Kardiyoloji Uzmanı');
   const [doctorLocation] = useState('Istanbul, Turkey');
   const [heroImage] = useState('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800');
+  const [medstreamUrl, setMedstreamUrl] = useState('https://medstream.com/dr-ayse-yilmaz');
+  const [isEditingMedstream, setIsEditingMedstream] = useState(false);
+  const [tempMedstreamUrl, setTempMedstreamUrl] = useState('https://medstream.com/dr-ayse-yilmaz');
 
   const [aboutTitle] = useState('Hakkımda');
   const [aboutP1] = useState("1998 yılında İstanbul Üniversitesi Tıp Fakültesi'nden mezun oldum ve kardiyoloji alanında uzmanlık eğitimimi tamamladım.\n15 yılı aşkın süredir kardiyoloji alanında hizmet veriyorum.");
@@ -134,6 +137,11 @@ const DoctorProfilePage = () => {
                 setGalleryIndex(0);
                 setGalleryOpen(true);
               }}
+              medstreamUrl={medstreamUrl}
+              onEditMedstream={() => {
+                setTempMedstreamUrl(medstreamUrl || '');
+                setIsEditingMedstream(true);
+              }}
             />
 
             {/* Content */}
@@ -200,6 +208,42 @@ const DoctorProfilePage = () => {
           <DoctorSidebar />
         </div>
       </div>
+      {isEditingMedstream && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-xl p-5 w-full max-w-md">
+            <h2 className="text-sm font-semibold text-gray-900 mb-2">Edit MedStream profile URL</h2>
+            <p className="text-xs text-gray-500 mb-3">
+              This URL will be shown on your public doctor profile.
+            </p>
+            <input
+              type="text"
+              value={tempMedstreamUrl}
+              onChange={(e) => setTempMedstreamUrl(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 mb-4"
+              placeholder="https://medstream.com/your-profile"
+            />
+            <div className="flex justify-end gap-2 text-xs">
+              <button
+                type="button"
+                className="px-3 py-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+                onClick={() => setIsEditingMedstream(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                onClick={() => {
+                  setMedstreamUrl(tempMedstreamUrl.trim());
+                  setIsEditingMedstream(false);
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

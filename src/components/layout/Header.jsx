@@ -58,7 +58,7 @@ const Header = () => {
                   <img
                     src="/images/logo/logo-Photoroom.png"
                     alt="MedGama Logo"
-                    className="h-full w-auto object-contain rounded transform scale-[1.8] translate-y-[8px]"
+                    className="h-full w-auto object-contain rounded transform scale-[1.6] translate-y-[4px]"
                     loading="eager"
                     decoding="async"
                   />

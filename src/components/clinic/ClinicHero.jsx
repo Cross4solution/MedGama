@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Star, Heart, Minus } from 'lucide-react';
+import { MapPin, Star, Heart, Minus, Edit3 } from 'lucide-react';
 
 export default function ClinicHero({
   image,
@@ -16,6 +16,8 @@ export default function ClinicHero({
   // Geriye dönük uyumluluk: onFollow hala gelebilir
   onFollow,
   onImageClick,
+  medstreamUrl,
+  onEditMedstream,
 }) {
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 mt-6">
@@ -43,6 +45,32 @@ export default function ClinicHero({
               <MapPin className="w-5 h-5 mr-2 flex-shrink-0" />
               <span className="truncate">{location}</span>
             </div>
+            {medstreamUrl && (
+              <div className="mt-1 flex items-center gap-2 text-xs text-blue-700 break-all">
+                <span className="font-medium">MedStream profile:</span>
+                <a
+                  href={medstreamUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline break-all"
+                >
+                  {medstreamUrl}
+                </a>
+                {onEditMedstream && (
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300"
+                    aria-label="Edit MedStream URL"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditMedstream();
+                    }}
+                  >
+                    <Edit3 className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            )}
             {badgeNode && <div className="flex items-center">{badgeNode}</div>}
           </div>
           <div className="flex items-center justify-end sm:justify-start space-x-2 flex-shrink-0">
