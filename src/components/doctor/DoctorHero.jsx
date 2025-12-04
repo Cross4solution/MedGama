@@ -11,6 +11,7 @@ export default function DoctorHero({
   onOpenGallery,
   medstreamUrl,
   onEditMedstream,
+  followerCount,
 }) {
   return (
     <div className="relative rounded-2xl overflow-hidden shadow-lg mb-6">
@@ -40,6 +41,12 @@ export default function DoctorHero({
                 <span>4.9 (342 reviews)</span>
               </div>
             </div>
+            {typeof followerCount === 'number' && followerCount > 0 && (
+              <div className="mt-1 text-xs text-blue-100/90">
+                <span className="font-medium">{followerCount.toLocaleString('en-US')}</span>
+                <span className="ml-1 opacity-90">followers</span>
+              </div>
+            )}
             {medstreamUrl && (
               <div
                 className="mt-2 inline-flex items-center gap-2 bg-black/30 rounded-full px-3 py-1 text-[11px] sm:text-xs"

@@ -13,6 +13,7 @@ import AuthPages from './pages/AuthPages';
 import AboutPage from './pages/AboutPage';
 import ForPatientsPage from './pages/ForPatientsPage';
 import ForClinicsPage from './pages/ForClinicsPage';
+import FavoriteClinics from './pages/FavoriteClinics';
 import VascoAIPage from './pages/VascoAIPage';
 import ContactPage from './pages/ContactPage';
 import CookieBanner from './components/CookieBanner';
@@ -28,6 +29,7 @@ import ExploreTimeline from './pages/ExploreTimeline';
 import PostDetail from './pages/PostDetail';
 import DoctorProfilePage from './pages/DoctorProfile.jsx';
 import ClinicProfileEdit from './pages/ClinicProfileEdit.jsx';
+import DoctorProfileEdit from './pages/DoctorProfileEdit.jsx';
 import DoctorsDepartments from './pages/DoctorsDepartments.jsx';
 import scrollConfig from './config/scroll';
 
@@ -163,6 +165,7 @@ function AppContent() {
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />
         <Route path="/clinic-edit" element={requireAuth(ClinicProfileEdit)} />
+        <Route path="/doctor-edit" element={requireAuth(DoctorProfileEdit)} />
         <Route path="/doctor-chat" element={requireAuth(DoctorChatPage)} />
         <Route path="/telehealth" element={requireAuth(TelehealthPage)} />
         <Route path="/telehealth-appointment" element={requireAuth(TelehealthAppointmentPage)} />
@@ -181,6 +184,7 @@ function AppContent() {
         <Route path="/clinic-login" element={<ClinicLogin />} />
         <Route path="/notifications" element={requireAuth(Notifications)} />
         <Route path="/profile" element={requireAuth(Profile)} />
+        <Route path="/favorite-clinics" element={requireAuth(FavoriteClinics)} />
         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
         <Route path="/post/:id" element={<PostDetail />} />
         </Routes>

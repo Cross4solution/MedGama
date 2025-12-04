@@ -20,6 +20,7 @@ const DoctorProfilePage = () => {
   const [doctorTitle] = useState('Kardiyoloji Uzmanı');
   const [doctorLocation] = useState('Istanbul, Turkey');
   const [heroImage] = useState('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800');
+  const [doctorFollowers] = useState(1280);
   const [medstreamUrl, setMedstreamUrl] = useState('https://medstream.com/dr-ayse-yilmaz');
   const [isEditingMedstream, setIsEditingMedstream] = useState(false);
   const [tempMedstreamUrl, setTempMedstreamUrl] = useState('https://medstream.com/dr-ayse-yilmaz');
@@ -29,10 +30,46 @@ const DoctorProfilePage = () => {
   const [aboutP2] = useState('Hastalarıma en güncel tedavi yöntemlerini sunmak ve onların yaşam kalitesini artırmak önceliğimdir.\nUluslararası kongrelerde sunumlar yaptım ve çok sayıda bilimsel yayına imza attım.');
 
   const [services] = useState([
-    { name: 'Koroner Anjiyografi', icon: Heart, description: 'Kalp damarlarının görüntülenmesi ve tedavisi' },
-    { name: 'Ekokardiyografi', icon: Activity, description: 'Kalp ultrason görüntüleme' },
-    { name: 'Ritim Bozuklukları', icon: Activity, description: 'Aritmilerin tanı ve tedavisi' },
-    { name: 'Kalp Yetmezliği', icon: Heart, description: 'Kronik kalp hastalıklarının yönetimi' },
+    {
+      id: 'coronary-angiography',
+      name: 'Coronary Angiography',
+      icon: Heart,
+      description: 'Imaging and treatment of coronary arteries',
+      prices: [
+        { procedure: 'Coronary angiography (diagnostic)', range: '₺8,000 - ₺15,000' },
+        { procedure: 'Angiography + stent (single vessel)', range: '₺20,000 - ₺35,000' },
+      ],
+    },
+    {
+      id: 'echocardiography',
+      name: 'Echocardiography',
+      icon: Activity,
+      description: 'Heart ultrasound imaging',
+      prices: [
+        { procedure: 'Transthoracic echocardiography', range: '₺1,500 - ₺3,000' },
+        { procedure: 'Transesophageal echocardiography', range: '₺4,000 - ₺7,000' },
+      ],
+    },
+    {
+      id: 'rhythm-disorders',
+      name: 'Rhythm Disorders',
+      icon: Activity,
+      description: 'Diagnosis and treatment of cardiac arrhythmias',
+      prices: [
+        { procedure: 'Holter ECG (24–72 hours)', range: '₺2,000 - ₺4,000' },
+        { procedure: 'Radiofrequency ablation', range: '₺30,000 - ₺55,000' },
+      ],
+    },
+    {
+      id: 'heart-failure',
+      name: 'Heart Failure',
+      icon: Heart,
+      description: 'Management of chronic heart failure and cardiac diseases',
+      prices: [
+        { procedure: 'Heart failure assessment package', range: '₺3,500 - ₺6,000' },
+        { procedure: 'Follow-up visit (examination + ECG)', range: '₺1,000 - ₺1,800' },
+      ],
+    },
   ]);
 
   const [certificates] = useState([
@@ -142,6 +179,7 @@ const DoctorProfilePage = () => {
                 setTempMedstreamUrl(medstreamUrl || '');
                 setIsEditingMedstream(true);
               }}
+              followerCount={doctorFollowers}
             />
 
             {/* Content */}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, MessageCircle, Share2, Clock } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Clock, Languages } from 'lucide-react';
 import TimelineActionsRow from './TimelineActionsRow';
 import TimelineButton from './TimelineButton';
 import Badge from '../Badge';
@@ -67,6 +67,13 @@ export default function TimelinePostCard({ post }) {
                     <MessageCircle className="w-5 h-5" strokeWidth={2.5} />
                     <span>{post.engagement.comments}</span>
                   </button>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-gray-200 bg-white text-gray-700 text-xs hover:bg-gray-50"
+                    aria-label="Translate post"
+                  >
+                    <Languages className="w-4 h-4" />
+                  </button>
                 </>
               ) : (
                 <>
@@ -79,6 +86,14 @@ export default function TimelinePostCard({ post }) {
                     <span>{post.engagement.comments}</span>
                   </div>
                   <ShareMenu title="Share" url={typeof window !== 'undefined' ? window.location.href : ''} showNative={false} />
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-gray-200 bg-white text-gray-700 text-xs hover:bg-gray-50"
+                    aria-label="Translate post"
+                    onClick={(e)=>e.stopPropagation()}
+                  >
+                    <Languages className="w-4 h-4" />
+                  </button>
                 </>
               )}
             </>

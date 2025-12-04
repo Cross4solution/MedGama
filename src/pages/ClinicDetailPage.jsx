@@ -60,6 +60,42 @@ const ClinicDetailPage = () => {
   const [clinicMedstreamUrl, setClinicMedstreamUrl] = useState('https://medstream.com/clinic/anadolu-health-center');
   const [isEditingClinicMedstream, setIsEditingClinicMedstream] = useState(false);
   const [tempClinicMedstreamUrl, setTempClinicMedstreamUrl] = useState('https://medstream.com/clinic/anadolu-health-center');
+  const [clinicFollowers] = useState(2450);
+  const [clinicLikes] = useState(980);
+
+  const toggleFavoriteClinic = () => {
+    setIsFavorite((prev) => {
+      const next = !prev;
+      try {
+        if (user?.role === 'patient' && user?.email) {
+          const key = `patient_favorite_clinics_${user.email}`;
+          const raw = localStorage.getItem(key);
+          const list = raw ? JSON.parse(raw) : [];
+          const entry = {
+            name: clinicInfo.name,
+            location: clinicInfo.location,
+            image: clinicInfo.heroImage,
+          };
+
+          let nextList;
+          if (next) {
+            const exists = list.some(
+              (c) => c && c.name === entry.name && c.location === entry.location
+            );
+            nextList = exists ? list : [...list, entry];
+          } else {
+            nextList = list.filter(
+              (c) => !(c && c.name === entry.name && c.location === entry.location)
+            );
+          }
+          localStorage.setItem(key, JSON.stringify(nextList));
+        }
+      } catch {
+        // ignore storage errors in demo
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -76,7 +112,7 @@ const ClinicDetailPage = () => {
               reviews={clinicInfo.reviewCount}
               badgeNode={null}
               isFavorite={isFavorite}
-              onToggleFavorite={() => setIsFavorite(!isFavorite)}
+              onToggleFavorite={toggleFavoriteClinic}
               isFollowing={isFollowing}
               onToggleFollow={() => setIsFollowing((v) => !v)}
               onFollow={() => {}}
@@ -89,6 +125,8 @@ const ClinicDetailPage = () => {
                 setTempClinicMedstreamUrl(clinicMedstreamUrl || '');
                 setIsEditingClinicMedstream(true);
               }}
+              followerCount={clinicFollowers}
+              likeCount={clinicLikes}
             />
 
             {/* Tabs */}

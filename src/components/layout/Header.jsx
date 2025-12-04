@@ -57,7 +57,7 @@ const Header = () => {
                 <div className="h-10 md:h-12 flex items-end">
                   <img
                     src="/images/logo/logo-Photoroom.png"
-                    alt="MedGama Logo"
+                    alt="Medagama Logo"
                     className="h-full w-auto object-contain rounded transform scale-[1.6] translate-y-[4px]"
                     loading="eager"
                     decoding="async"
@@ -76,7 +76,7 @@ const Header = () => {
               Vasco AI
             </Link>
             <Link to="/about" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
-              About MedGama
+              About Medagama
             </Link>
           </nav>
 
@@ -253,7 +253,7 @@ const Header = () => {
               </Link>
               <Link to="/about" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Info className="w-4 h-4" />
-                <span>About MedGama</span>
+                <span>About MedaGama</span>
               </Link>
               {/* Contact removed */}
             </div>

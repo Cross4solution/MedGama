@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight, Video, User, Monitor } from 'lucide-react';
+import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight, Video, User, Monitor, Heart } from 'lucide-react';
 
 // Custom chat icon using public SVG (accepts className via props)
 const ChatRoundIcon = (props) => (
@@ -27,6 +27,7 @@ export default function SidebarPatient() {
     // Requested minimal menu for patient
     { to: '/home-v2', label: 'Home', icon: Home },
     { to: '/explore', label: 'MedStream', icon: Video },
+    { to: '/favorite-clinics', label: 'Favorite Clinics', icon: Heart },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
     { to: '/telehealth', label: 'Telehealth', icon: Monitor },
     { to: '/profile', label: 'Profile', icon: User },
@@ -35,6 +36,7 @@ export default function SidebarPatient() {
   // Doctor-specific menu (Profile → Medstream → Notifications → Messages → Schedule → Telehealth → CRM)
   const doctorItems = [
     { to: '/profile', label: 'Profile', icon: User },
+    { to: '/doctor-edit', label: 'Profile Settings', icon: Settings },
     { to: '/explore', label: 'Medstream', icon: Video },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
@@ -186,7 +188,7 @@ export default function SidebarPatient() {
 
                 {/* Header links section */}
                 <nav className="space-y-1">
-                  <Link to="/about" onClick={() => setSidebarMobileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-200 border border-transparent">About MedGama</Link>
+                  <Link to="/about" onClick={() => setSidebarMobileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-200 border border-transparent">About Medagama</Link>
                   <Link to="/for-patients" onClick={() => setSidebarMobileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-200 border border-transparent">For Patients</Link>
                   <Link to="/clinics" onClick={() => setSidebarMobileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-200 border border-transparent">For Clinics</Link>
                   <Link to="/vasco-ai" onClick={() => setSidebarMobileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-200 border border-transparent">Vasco AI</Link>

@@ -74,7 +74,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
           title: sp,
           avatarUrl: '/images/portrait-candid-male-doctor_720.jpg',
         },
-        socialContext: i % 5 === 0 ? 'MedGama bunu beğendi' : (i % 7 === 0 ? 'Bir bağlantın bunu beğendi' : ''),
+        socialContext: i % 5 === 0 ? 'Medagama bunu beğendi' : (i % 7 === 0 ? 'Bir bağlantın bunu beğendi' : ''),
         timeAgo: (1 + (i % 6)) + ' gün',
         visibility: 'public',
         media,

@@ -4,7 +4,7 @@ Bu kontrol listesi, müşteriye gönderim öncesi ilk filtre olarak zorunludur.
 
 ## Navigasyon & Hero
 - [ ] Header menüsü müşteri brief’i ile birebir: About MediTravel, For Patients, For Clinics, Vasco AI, Contact (opsiyonel)
-- [ ] Marka adı ve logo: “MedGama” doğru yerde, tutarlı
+- [ ] Marka adı ve logo: “MedaGama” doğru yerde, tutarlı
 - [ ] Hero başlığı: “Dünyanın 1 numaralı sağlık portalı”
 - [ ] Hero alt metni: tek tıkla uçtan uca çözüm mesajı; eşleşme/matching ifadesi yok
 - [ ] CTA sayısı ve metni doğru (tek CTA: Keşfet)

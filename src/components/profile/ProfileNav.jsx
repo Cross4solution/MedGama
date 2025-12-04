@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, User, Shield, Bell, HeartPulse } from 'lucide-react';
+import { ChevronRight, User, Shield, Bell, HeartPulse, Settings } from 'lucide-react';
 
 function NavItem({ id, icon: Icon, title, desc, active, onClick }) {
   return (

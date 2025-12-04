@@ -18,6 +18,8 @@ export default function ClinicHero({
   onImageClick,
   medstreamUrl,
   onEditMedstream,
+  followerCount,
+  likeCount,
 }) {
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 mt-6">
@@ -45,30 +47,37 @@ export default function ClinicHero({
               <MapPin className="w-5 h-5 mr-2 flex-shrink-0" />
               <span className="truncate">{location}</span>
             </div>
+            {(typeof followerCount === 'number' || typeof likeCount === 'number') && (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600 mb-1">
+                {typeof followerCount === 'number' && followerCount > 0 && (
+                  <span>
+                    <span className="font-semibold">{followerCount.toLocaleString('en-US')}</span>{' '}
+                    followers
+                  </span>
+                )}
+                {typeof likeCount === 'number' && likeCount > 0 && (
+                  <span>
+                    <span className="font-semibold">{likeCount.toLocaleString('en-US')}</span>{' '}
+                    likes
+                  </span>
+                )}
+              </div>
+            )}
             {medstreamUrl && (
-              <div className="mt-1 flex items-center gap-2 text-xs text-blue-700 break-all">
-                <span className="font-medium">MedStream profile:</span>
+              <div className="mt-1 flex items-center text-gray-600 text-xs">
+                <img
+                  src="/images/icon/link.svg"
+                  alt="MedStream link"
+                  className="w-5 h-5 mr-2 flex-shrink-0"
+                />
                 <a
                   href={medstreamUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline break-all"
+                  className="truncate"
                 >
                   {medstreamUrl}
                 </a>
-                {onEditMedstream && (
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300"
-                    aria-label="Edit MedStream URL"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEditMedstream();
-                    }}
-                  >
-                    <Edit3 className="w-3 h-3" />
-                  </button>
-                )}
               </div>
             )}
             {badgeNode && <div className="flex items-center">{badgeNode}</div>}

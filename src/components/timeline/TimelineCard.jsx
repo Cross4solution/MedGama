@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, Languages } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
@@ -302,21 +302,28 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
 
           {/* Social counts: likes left, comments button right (no icon) */}
           <div className="px-3 pt-2 mt-2 text-sm text-gray-500 flex items-center justify-between">
-            {/* Likes */}
             <div className="inline-flex items-center gap-1">
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#378fe9] text-white">
-                <ThumbsUp className="w-3 h-3" />
-              </span>
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#378fe9] text-white"><ThumbsUp className="w-3 h-3" /></span>
               <span className="min-w-[2.5ch] md:min-w-0 text-center tabular-nums">{likeCount}</span>
             </div>
-            {/* Comments (right aligned, icon removed) */}
-            <button
-              type="button"
-              className="text-gray-500 group"
-              onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
-            >
-              <span className="inline-block align-middle min-w-[2.5ch] md:min-w-0 text-center tabular-nums">{item.comments}</span> <span className="inline-block translate-y-[1px] group-hover:underline underline-offset-[2px]">comments</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                aria-label="Translate post"
+                className="inline-flex items-center justify-center w-7 h-7 rounded-full border border-gray-200 bg-white text-gray-600 text-xs hover:bg-gray-50"
+                onClick={(e)=>e.stopPropagation()}
+              >
+                <Languages className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                className="text-gray-500 group"
+                onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
+              >
+                <span className="inline-block align-middle min-w-[2.5ch] md:min-w-0 text-center tabular-nums">{item.comments}</span>{' '}
+                <span className="inline-block translate-y-[1px] group-hover:underline underline-offset-[2px]">comments</span>
+              </button>
+            </div>
           </div>
 
           {/* Comments Preview */}

@@ -7,7 +7,7 @@ export default function PrivacyPolicyPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Privacy Policy</h1>
         <p className="text-gray-700 mb-6">
           This Privacy Policy explains how we collect, use, disclose, and safeguard your information
-          when you use MedGama. If you do not agree with the terms of this privacy policy, please do not
+          when you use Medagama. If you do not agree with the terms of this privacy policy, please do not
           access the application.
         </p>
 
