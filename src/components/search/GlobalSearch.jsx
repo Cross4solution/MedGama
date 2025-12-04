@@ -13,12 +13,16 @@ export default function GlobalSearch() {
     'AestheticPlus',
     'Vision Center',
     'OrthoLife',
+    'Škoda Clinic',
+    'Clínica São João',
   ];
   const doctors = [
     'Dr. Ahmet Yılmaz',
     'Dr. Mehmet Demir',
     'Dr. Elif Kaya',
     'Dr. Ayşe Yılmaz',
+    'Dr. Jürgen Müller',
+    'Dr. Ana María Núñez',
   ];
 
   const normalize = (s) => s
