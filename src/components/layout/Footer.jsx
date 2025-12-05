@@ -1,8 +1,11 @@
 import React from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Footer() {
+  const { user } = useAuth();
+  const hasSidebar = !!user;
   return (
-    <footer className="border-t bg-[#1C6A83] text-slate-100">
+    <footer className={`border-t bg-[#1C6A83] text-slate-100 ${hasSidebar ? 'lg:-ml-52 lg:pl-52' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-sm">
         {/* Mobile: 2x2 (two groups) */}
         <div className="grid grid-cols-2 gap-8 md:hidden">

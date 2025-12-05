@@ -19,8 +19,10 @@ export default function BeforeAfterModal({
     <div className="fixed inset-0 z-[9999] flex items-center justify-center">
       <div className="fixed inset-0 z-0 bg-black/70 backdrop-blur-lg" onClick={onClose} />
       <div className="relative z-[101] flex items-center justify-center">
-        {/* Image comparison box */}
-        <div className="relative w-[88vw] h-[88vw] md:w-[70vh] md:h-[70vh] max-w-[800px] max-h-[800px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/20">
+        {/* Wrapper: allows close button to sit outside image box without clipping */}
+        <div className="relative">
+          {/* Image comparison box */}
+          <div className="relative w-[88vw] h-[88vw] md:w-[70vh] md:h-[70vh] max-w-[800px] max-h-[800px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/20">
           {/* Before Image (full width) */}
           <img
             src={currentPhoto.before}
@@ -92,16 +94,17 @@ export default function BeforeAfterModal({
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/60 text-white text-sm font-medium rounded-lg backdrop-blur">
             {currentPhoto.title}
           </div>
-          {/* Close */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-3 right-3 md:top-4 md:right-4 h-10 w-10 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
-            aria-label="Close"
-          >
-            <X className="w-6 h-6" />
-          </button>
         </div>
+        {/* Close button outside image box, on grey background */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute -top-7 -right-7 md:-top-8 md:-right-8 h-10 w-10 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center shadow-lg"
+          aria-label="Close"
+        >
+          <X className="w-6 h-6" />
+        </button>
+      </div>
         {/* Prev */}
         {photos.length > 1 && (
           <button

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight, Video, User, Monitor, Heart } from 'lucide-react';
+import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight, User, Monitor, Heart } from 'lucide-react';
 import { endpoints } from '../lib/api';
 
 // Custom chat icon using public SVG (accepts className via props)
@@ -9,6 +9,15 @@ const ChatRoundIcon = (props) => (
   <img
     src="/images/icon/chat-round-line-svgrepo-com.svg"
     alt="Messages"
+    {...props}
+  />
+);
+
+// Custom Medstream icon using public SVG (accepts className via props)
+const MedstreamIcon = (props) => (
+  <img
+    src="/images/icon/medstream.svg"
+    alt="MedStream"
     {...props}
   />
 );
@@ -69,7 +78,7 @@ export default function SidebarPatient() {
   const patientItems = [
     // Requested minimal menu for patient
     { to: '/home-v2', label: 'Home', icon: Home },
-    { to: '/explore', label: 'MedStream', icon: Video },
+    { to: '/explore', label: 'MedStream', icon: MedstreamIcon },
     { to: '/favorite-clinics', label: 'Favorite Clinics', icon: Heart },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
     { to: '/telehealth', label: 'Telehealth', icon: Monitor },
@@ -80,7 +89,7 @@ export default function SidebarPatient() {
   const doctorItems = [
     { to: '/profile', label: 'Profile', icon: User },
     { to: '/doctor-edit', label: 'Profile Settings', icon: Settings },
-    { to: '/explore', label: 'Medstream', icon: Video },
+    { to: '/explore', label: 'Medstream', icon: MedstreamIcon },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: unreadCount || undefined },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
     { to: '/telehealth-appointment', label: 'Schedule', icon: CalendarClock },
@@ -91,7 +100,7 @@ export default function SidebarPatient() {
   // Clinic-specific menu (Profile → Medstream → Notifications → Messages → Departments and Doctors → CRM)
   const clinicItems = [
     { to: '/clinic-edit', label: 'Profile', icon: User },
-    { to: '/explore', label: 'Medstream', icon: Video },
+    { to: '/explore', label: 'Medstream', icon: MedstreamIcon },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: unreadCount || undefined },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
     { to: '/doctors-departments', label: 'Departments and Doctors', icon: Building2 },

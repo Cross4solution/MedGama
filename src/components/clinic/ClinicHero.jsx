@@ -48,7 +48,7 @@ export default function ClinicHero({
               <span className="truncate">{location}</span>
             </div>
             {(typeof followerCount === 'number' || typeof likeCount === 'number') && (
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600 mb-1">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600 mb-3">
                 {typeof followerCount === 'number' && followerCount > 0 && (
                   <span>
                     <span className="font-semibold">{followerCount.toLocaleString('en-US')}</span>{' '}
@@ -64,7 +64,7 @@ export default function ClinicHero({
               </div>
             )}
             {medstreamUrl && (
-              <div className="mt-1 flex items-center text-gray-600 text-xs">
+              <div className="mt-1 flex items-center text-gray-700 text-sm">
                 <img
                   src="/images/icon/link.svg"
                   alt="MedStream link"
@@ -74,7 +74,7 @@ export default function ClinicHero({
                   href={medstreamUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="truncate"
+                  className="truncate font-medium"
                 >
                   {medstreamUrl}
                 </a>

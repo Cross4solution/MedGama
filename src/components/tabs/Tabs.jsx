@@ -1,5 +1,29 @@
 import React, { useRef, useEffect } from 'react';
 
+// Biraz daha yavaş ve kontrollü scroll için basit helper
+function smoothScrollTo(targetTop, duration = 600) {
+  const start = window.pageYOffset;
+  const distance = targetTop - start;
+  const startTime = performance.now();
+
+  function step(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // easeInOutQuad
+    const eased = progress < 0.5
+      ? 2 * progress * progress
+      : -1 + (4 - 2 * progress) * progress;
+
+    window.scrollTo(0, start + distance * eased);
+
+    if (elapsed < duration) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
 export default function Tabs({ tabs = [], active, onChange }) {
   const containerRef = useRef(null);
   const isFirstRender = useRef(true);
@@ -17,10 +41,7 @@ export default function Tabs({ tabs = [], active, onChange }) {
       const elementTop = containerRef.current.getBoundingClientRect().top + window.pageYOffset;
       const offsetPosition = elementTop - headerHeight - 20; // 20px ekstra boşluk
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+      smoothScrollTo(offsetPosition, 650);
     }
   }, [active]);
 

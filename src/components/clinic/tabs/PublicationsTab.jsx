@@ -24,9 +24,15 @@ export default function PublicationsTab({ publications = [] }) {
                   href={pub.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-teal-700 hover:text-teal-800 hover:underline whitespace-nowrap"
+                  className="inline-flex items-center gap-1 text-sm text-teal-700 hover:text-teal-800 hover:underline whitespace-nowrap"
                 >
-                  View publication
+                  <img
+                    src="/images/icon/pdf.svg"
+                    alt="PDF icon"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
+                    aria-hidden="true"
+                  />
+                  <span>View publication</span>
                 </a>
               )}
             </li>

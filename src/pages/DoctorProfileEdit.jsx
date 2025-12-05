@@ -239,55 +239,59 @@ export default function DoctorProfileEdit() {
               <div className="space-y-3">
                 {services.map((s, idx) => (
                   <div key={s.id} className="p-4 rounded-xl border bg-white shadow-sm">
-                    <div className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-3">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Activity className="w-4 h-4 text-[#1C6A83]" />
-                          <input
-                            value={s.name}
-                            onChange={(e) =>
-                              setServices((arr) =>
-                                arr.map((x, i) => (i === idx ? { ...x, name: e.target.value } : x))
-                              )
-                            }
-                            placeholder="Service name"
-                            className="flex-1 h-9 px-2 border rounded-lg text-sm"
-                          />
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-3">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Activity className="w-4 h-4 text-[#1C6A83]" />
+                              <input
+                                value={s.name}
+                                onChange={(e) =>
+                                  setServices((arr) =>
+                                    arr.map((x, i) => (i === idx ? { ...x, name: e.target.value } : x))
+                                  )
+                                }
+                                placeholder="Service name"
+                                className="flex-1 h-9 px-2 border rounded-lg text-sm"
+                              />
+                            </div>
+                            <textarea
+                              value={s.description}
+                              onChange={(e) =>
+                                setServices((arr) =>
+                                  arr.map((x, i) => (i === idx ? { ...x, description: e.target.value } : x))
+                                )
+                              }
+                              rows={2}
+                              placeholder="Short description"
+                              className="w-full border rounded-lg px-2 py-1.5 text-sm resize-none"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="block text-xs font-medium text-gray-700">Price range</label>
+                            <input
+                              value={s.priceRange}
+                              onChange={(e) =>
+                                setServices((arr) =>
+                                  arr.map((x, i) => (i === idx ? { ...x, priceRange: e.target.value } : x))
+                                )
+                              }
+                              placeholder="₺min - ₺max"
+                              className="w-full h-9 px-2 border rounded-lg text-sm"
+                            />
+                          </div>
                         </div>
-                        <textarea
-                          value={s.description}
-                          onChange={(e) =>
-                            setServices((arr) =>
-                              arr.map((x, i) => (i === idx ? { ...x, description: e.target.value } : x))
-                            )
-                          }
-                          rows={2}
-                          placeholder="Short description"
-                          className="w-full border rounded-lg px-2 py-1.5 text-sm resize-none"
-                        />
                       </div>
-                      <div className="space-y-2">
-                        <label className="block text-xs font-medium text-gray-700">Price range</label>
-                        <input
-                          value={s.priceRange}
-                          onChange={(e) =>
-                            setServices((arr) =>
-                              arr.map((x, i) => (i === idx ? { ...x, priceRange: e.target.value } : x))
-                            )
-                          }
-                          placeholder="₺min - ₺max"
-                          className="w-full h-9 px-2 border rounded-lg text-sm"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setServices((arr) => arr.filter((_, i) => i !== idx))
-                          }
-                          className="mt-2 inline-flex items-center gap-1 px-2 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-xs"
-                        >
-                          <X className="w-3 h-3" /> Remove
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setServices((arr) => arr.filter((_, i) => i !== idx))
+                        }
+                        className="mt-0 inline-flex items-center gap-1 px-2 py-1.5 rounded-lg border border-red-200 text-red-600 bg-white hover:bg-red-50 text-xs"
+                      >
+                        <X className="w-3 h-3" /> Remove
+                      </button>
                     </div>
                   </div>
                 ))}

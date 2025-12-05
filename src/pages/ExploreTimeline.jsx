@@ -363,12 +363,24 @@ export default function ExploreTimeline() {
                           <span className="text-sm sm:text-base">Emoji</span>
                         </button>
                         <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>paperInputRef.current?.click(),0); }} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button">
-                          <img
-                            src="/images/icon/pdf.svg"
-                            alt="PDF icon"
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             className="w-4 h-4 sm:w-5 sm:h-5"
                             aria-hidden="true"
-                          />
+                          >
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="9" y1="13" x2="15" y2="13"></line>
+                            <line x1="9" y1="17" x2="13" y2="17"></line>
+                          </svg>
                           <span className="text-sm sm:text-base">Research Paper</span>
                         </button>
                       </div>

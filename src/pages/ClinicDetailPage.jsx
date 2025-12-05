@@ -67,8 +67,9 @@ const ClinicDetailPage = () => {
     setIsFavorite((prev) => {
       const next = !prev;
       try {
-        if (user?.role === 'patient' && user?.email) {
-          const key = `patient_favorite_clinics_${user.email}`;
+        const userKey = user?.email || user?.id;
+        if (userKey) {
+          const key = `patient_favorite_clinics_${userKey}`;
           const raw = localStorage.getItem(key);
           const list = raw ? JSON.parse(raw) : [];
           const entry = {

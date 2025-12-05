@@ -9,6 +9,7 @@ import TimelinePreview from '../components/TimelinePreview';
 
 export default function HomeV2() {
   const { user } = useAuth();
+  const hasSidebar = !!user;
   const navigate = useNavigate();
   const [showAllTimeline, setShowAllTimeline] = useState(false);
   const handleViewAll = () => navigate('/explore');
@@ -82,17 +83,17 @@ export default function HomeV2() {
       ) : (
         <>
       {/* Hero / Slogan */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden lg:overflow-visible">
           <div className="relative">
             {/* Background layer with a lighter blur (reduced for clarity) */}
             <div
-              className="absolute inset-0 bg-cover bg-center filter blur-[0.5px] md:blur-[1px] brightness-95 md:brightness-100"
+              className={`absolute inset-0 bg-cover bg-center filter blur-[0.5px] md:blur-[1px] brightness-95 md:brightness-100 ${hasSidebar ? 'lg:-left-52 lg:right-0' : ''}`}
               style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
               aria-hidden="true"
             />
             {/* Subtle dark overlay on top of the background image */}
             <div
-              className="pointer-events-none absolute inset-0 bg-black/25 md:bg-black/30"
+              className={`pointer-events-none absolute inset-0 bg-black/25 md:bg-black/30 ${hasSidebar ? 'lg:-left-52 lg:right-0' : ''}`}
               aria-hidden="true"
             />
             {/* Removed white bottom gradient as requested */}
