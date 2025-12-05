@@ -308,6 +308,14 @@ export function AuthProvider({ children }) {
       await fetchCurrentUser();
     } catch {}
 
+    // Profili güncelledikten sonra backend yeni bir bildirim oluşturduğunda,
+    // sidebar'daki unread badge'in hemen yenilenmesi için global event fırlat.
+    try {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('medgama:notifications-updated'));
+      }
+    } catch {}
+
     return res;
   };
 

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight, Video, User, Monitor, Heart } from 'lucide-react';
+import { endpoints } from '../lib/api';
 
 // Custom chat icon using public SVG (accepts className via props)
 const ChatRoundIcon = (props) => (
@@ -13,10 +14,52 @@ const ChatRoundIcon = (props) => (
 );
 
 export default function SidebarPatient() {
-  const { user, logout, sidebarMobileOpen, setSidebarMobileOpen } = useAuth();
+  const { user, token, logout, sidebarMobileOpen, setSidebarMobileOpen } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   // Mobile drawer state is managed globally in AuthContext
+
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const loadUnreadCount = async () => {
+    if (!token) {
+      setUnreadCount(0);
+      return;
+    }
+    try {
+      const res = await endpoints.doctorNotifications();
+      const paginator = res?.data?.notifications ?? res?.notifications ?? null;
+      const list = Array.isArray(paginator?.data) ? paginator.data : [];
+      const unread = list.filter((n) => !n.read_at).length;
+      setUnreadCount(unread);
+    } catch {
+      // Sessizce yut: badge zorunlu değil
+    }
+  };
+
+  useEffect(() => {
+    loadUnreadCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, pathname]);
+
+  useEffect(() => {
+    const handler = () => {
+      loadUnreadCount();
+    };
+    window.addEventListener('medgama:notifications-updated', handler);
+    return () => window.removeEventListener('medgama:notifications-updated', handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  // Periyodik olarak unread sayısını yenile (yakın gerçek zamanlı etki için)
+  useEffect(() => {
+    if (!token) return undefined;
+    const interval = window.setInterval(() => {
+      loadUnreadCount();
+    }, 30000); // 30 saniyede bir kontrol
+    return () => window.clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   if (!user) return null;
 
@@ -38,7 +81,7 @@ export default function SidebarPatient() {
     { to: '/profile', label: 'Profile', icon: User },
     { to: '/doctor-edit', label: 'Profile Settings', icon: Settings },
     { to: '/explore', label: 'Medstream', icon: Video },
-    { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
+    { to: '/notifications', label: 'Notifications', icon: Bell, badge: unreadCount || undefined },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
     { to: '/telehealth-appointment', label: 'Schedule', icon: CalendarClock },
     { to: '/telehealth', label: 'Telehealth', icon: Monitor },
@@ -49,7 +92,7 @@ export default function SidebarPatient() {
   const clinicItems = [
     { to: '/clinic-edit', label: 'Profile', icon: User },
     { to: '/explore', label: 'Medstream', icon: Video },
-    { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
+    { to: '/notifications', label: 'Notifications', icon: Bell, badge: unreadCount || undefined },
     { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
     { to: '/doctors-departments', label: 'Departments and Doctors', icon: Building2 },
     { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },

@@ -49,6 +49,8 @@ export const endpoints = {
   login: (payload) => api('/auth/login', { method: 'POST', body: payload }),
   userRegister: (payload) => api('/auth/register/user', { method: 'POST', body: payload }),
   doctorRegister: (payload) => api('/auth/register/doctor', { method: 'POST', body: payload }),
-  updateProfile: (payload) => api('/authorized/user/profile', { method: 'PUT', body: payload }),
-  me: (options = {}) => api('/authorized/user/profile', { method: 'GET', ...options }),
+  updateProfile: (payload) => api('/authorized/doctor/profile', { method: 'PUT', body: payload }),
+  me: (options = {}) => api('/authorized/doctor/profile', { method: 'GET', ...options }),
+  doctorNotifications: (options = {}) => api('/authorized/doctor/notification', { method: 'GET', ...options }),
+  doctorNotificationsMarkAllRead: (options = {}) => api('/authorized/doctor/notification/makeread', { method: 'GET', ...options }),
 };

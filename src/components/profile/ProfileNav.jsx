@@ -38,14 +38,6 @@ export default function ProfileNav({ active, setActive, role }) {
         active={active}
         onClick={setActive}
       />
-      <NavItem
-        id="notifications"
-        icon={Bell}
-        title="Notifications"
-        desc="Patient notifications"
-        active={active}
-        onClick={setActive}
-      />
       {role === 'patient' && (
         <NavItem
           id="medical"

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   AtSign,
   MessageCircle,
@@ -9,6 +9,9 @@ import {
   Bell,
   Info,
 } from 'lucide-react';
+import { endpoints } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const TYPE_META = {
   mention: { label: 'Mentions', icon: AtSign, color: 'text-purple-600 bg-purple-50' },
@@ -21,16 +24,48 @@ const TYPE_META = {
 };
 
 export default function Notifications() {
-  // Seed notifications (demo)
-  const [items, setItems] = useState([
-    { id: 'n1', type: 'mention', title: 'You were mentioned', body: 'Dr. Ahmet mentioned you in a discussion.', time: '2m', read: false, href: '/explore' },
-    { id: 'n2', type: 'message', title: 'New message', body: 'Clinic Support: "Hello, how can we help?"', time: '10m', read: false, href: '/doctor-chat' },
-    { id: 'n3', type: 'comment', title: 'New comment', body: 'Bir kullanıcı gönderinize yorum yaptı.', comment: 'Tedaviden sonra ağrılarım ciddi şekilde azaldı, teşekkür ederim. İlgili tavrınız ve hızlı dönüşünüz için ayrıca minnettarım.', time: '1h', read: false, href: '/explore' },
-    { id: 'n4', type: 'like', title: 'New like', body: 'Your update received 12 new likes.', time: '3h', read: true, href: '/explore' },
-    { id: 'n5', type: 'follow', title: 'New follower', body: 'Ayşe started following you.', time: 'yesterday', read: true, href: '/doctor/doc-3' },
-    { id: 'n6', type: 'appointment', title: 'Appointment reminder', body: 'Telehealth appointment at 14:30 tomorrow.', time: '2d', read: true, href: '/telehealth-appointment' },
-    { id: 'n7', type: 'system', title: 'System update', body: 'We have improved security and performance.', time: '3d', read: true },
-  ]);
+  const { token } = useAuth();
+  const { notify } = useToast();
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [markingAll, setMarkingAll] = useState(false);
+
+  const loadNotifications = async () => {
+    if (!token) return;
+
+    setLoading(true);
+    try {
+      const res = await endpoints.doctorNotifications();
+      const paginator = res?.data?.notifications ?? res?.notifications ?? null;
+      const list = Array.isArray(paginator?.data) ? paginator.data : [];
+      const mapped = list.map((n, idx) => ({
+        id: n.id ?? idx,
+        type: 'system',
+        title: n.data?.title || 'Bildirim',
+        body: n.data?.content || '',
+        time: n.created_at || n.updated_at || '',
+        read: !!n.read_at,
+        href: null,
+      }));
+      setItems(mapped);
+    } catch (err) {
+      const msg = err?.message || err?.data?.message || 'Bildirimler alınırken bir hata oluştu.';
+      notify({ type: 'error', message: msg });
+      try {
+        window.dispatchEvent(new Event('medgama:notifications-updated'));
+      } catch {}
+    } finally {
+      setLoading(false);
+      try {
+        window.dispatchEvent(new Event('medgama:notifications-updated'));
+      } catch {}
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   const TABS = useMemo(() => ([
     { id: 'all', label: 'All', icon: Bell, count: items.length },
@@ -46,7 +81,24 @@ export default function Notifications() {
   const [tab, setTab] = useState('all');
   const filtered = tab === 'all' ? items : items.filter(i => i.type === tab);
 
-  const markAllAsRead = () => setItems(prev => prev.map(i => ({ ...i, read: true })));
+  const markAllAsRead = async () => {
+    if (!token || !items.length) return;
+
+    setMarkingAll(true);
+    try {
+      await endpoints.doctorNotificationsMarkAllRead();
+      await loadNotifications();
+      notify({ type: 'success', message: 'Tüm bildirimler okundu olarak işaretlendi.' });
+    } catch (err) {
+      const msg = err?.message || err?.data?.message || 'Bildirimler okundu işaretlenirken bir hata oluştu.';
+      notify({ type: 'error', message: msg });
+    } finally {
+      setMarkingAll(false);
+      try {
+        window.dispatchEvent(new Event('medgama:notifications-updated'));
+      } catch {}
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -57,8 +109,15 @@ export default function Notifications() {
           <Bell className="w-5 h-5 text-teal-700" /> Notifications
         </h1>
         <div className="flex items-center gap-2">
-          <button onClick={markAllAsRead} className="px-3 py-1.5 rounded-lg text-sm border bg-white text-gray-700 border-gray-200 hover:bg-gray-50">Mark all as read</button>
+          <button
+            onClick={markAllAsRead}
+            disabled={markingAll || loading || !items.length}
+            className="px-3 py-1.5 rounded-lg text-sm border bg-white text-gray-700 border-gray-200 hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {markingAll ? 'Processing...' : 'Mark all as read'}
+          </button>
         </div>
+
       </div>
 
       <div className="grid grid-cols-12 gap-4">
@@ -94,7 +153,10 @@ export default function Notifications() {
           <div className="rounded-xl border bg-white shadow-sm">
             <div className="h-[70vh] overflow-y-auto pr-2">
               <div className="divide-y">
-                {filtered.length === 0 && (
+                {loading && !filtered.length && (
+                  <div className="p-8 text-center text-sm text-gray-500">Loading notifications...</div>
+                )}
+                {!loading && filtered.length === 0 && (
                   <div className="p-8 text-center text-sm text-gray-500">No notifications</div>
                 )}
                 {filtered.map((n) => {
