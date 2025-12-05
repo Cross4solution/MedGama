@@ -367,7 +367,13 @@ export default function ClinicProfileEdit() {
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           <button type="button" onClick={()=> { setEditingService({ data: s, index: idx }); setServiceModalOpen(true); }} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Edit</button>
-                          <button type="button" onClick={()=> setServices((arr)=> arr.filter((_,i)=> i!==idx))} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Remove</button>
+                          <button
+                            type="button"
+                            onClick={()=> setServices((arr)=> arr.filter((_,i)=> i!==idx))}
+                            className="mt-0 inline-flex items-center gap-1 px-2 py-1.5 rounded-lg border border-red-200 text-red-600 bg-white hover:bg-red-50 text-xs"
+                          >
+                            <X className="w-3 h-3" /> Remove
+                          </button>
                         </div>
                       </div>
                     </div>
