@@ -1,6 +1,30 @@
 import React from 'react';
 
 export default function DoctorsTab({ doctorsText, deptDoctors, selectedDept, setSelectedDept }) {
+  const scrollDownSlightly = () => {
+    try {
+      const startY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const distance = 160;
+      const duration = 900;
+      const startTime = performance.now();
+
+      const step = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = progress < 0.5
+          ? 2 * progress * progress
+          : -1 + (4 - 2 * progress) * progress;
+        const nextY = startY + distance * eased;
+        window.scrollTo(0, nextY);
+        if (elapsed < duration) requestAnimationFrame(step);
+      };
+
+      requestAnimationFrame(step);
+    } catch {
+      try { window.scrollBy(0, 160); } catch {}
+    }
+  };
+
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold text-gray-900">Doctors</h3>
@@ -12,7 +36,11 @@ export default function DoctorsTab({ doctorsText, deptDoctors, selectedDept, set
           <button
             key={dep.id}
             type="button"
-            onClick={() => setSelectedDept(selectedDept === dep.id ? null : dep.id)}
+            onClick={() => {
+              const next = selectedDept === dep.id ? null : dep.id;
+              setSelectedDept(next);
+              if (next) scrollDownSlightly();
+            }}
             className={`text-left p-4 rounded-xl border shadow-sm bg-white hover:bg-teal-50 transition ${selectedDept === dep.id ? 'ring-2 ring-teal-500' : ''}`}
           >
             <div className="font-semibold text-gray-900">{dep.name}</div>

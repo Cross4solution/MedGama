@@ -21,6 +21,37 @@ export default function ClinicHero({
   followerCount,
   likeCount,
 }) {
+  const [showCopyToast, setShowCopyToast] = React.useState(false);
+
+  const handleMedstreamClick = async (e) => {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    if (!medstreamUrl) return;
+    try {
+      if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(medstreamUrl);
+      } else {
+        const el = document.createElement('textarea');
+        el.value = medstreamUrl;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      }
+      setShowCopyToast(true);
+    } catch {
+      // silently ignore copy errors
+    }
+  };
+
+  React.useEffect(() => {
+    if (!showCopyToast) return undefined;
+    const t = window.setTimeout(() => setShowCopyToast(false), 2000);
+    return () => window.clearTimeout(t);
+  }, [showCopyToast]);
+
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 mt-6">
       <div
@@ -64,21 +95,20 @@ export default function ClinicHero({
               </div>
             )}
             {medstreamUrl && (
-              <div className="mt-1 flex items-center text-gray-700 text-sm">
+              <button
+                type="button"
+                onClick={handleMedstreamClick}
+                className="mt-1 flex items-center text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/40 rounded-md"
+              >
                 <img
                   src="/images/icon/link.svg"
                   alt="MedStream link"
                   className="w-5 h-5 mr-2 flex-shrink-0"
                 />
-                <a
-                  href={medstreamUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="truncate font-medium"
-                >
+                <span className="truncate font-medium text-left">
                   {medstreamUrl}
-                </a>
-              </div>
+                </span>
+              </button>
             )}
             {badgeNode && <div className="flex items-center">{badgeNode}</div>}
           </div>
@@ -114,6 +144,13 @@ export default function ClinicHero({
           </div>
         </div>
       </div>
+
+      {showCopyToast && (
+        <div className="fixed bottom-6 right-6 z-50 max-w-xs rounded-xl bg-gray-900/90 text-white px-4 py-3 shadow-lg flex items-center gap-2 text-sm">
+          <img src="/images/icon/link.svg" alt="Copied" className="w-4 h-4 flex-shrink-0 opacity-80" />
+          <span className="font-medium">Link copied to clipboard</span>
+        </div>
+      )}
     </div>
   );
 }
