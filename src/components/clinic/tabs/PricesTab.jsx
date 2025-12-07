@@ -4,7 +4,7 @@ export default function PricesTab({ services, selectedService, setSelectedServic
   const scrollDownSlightly = () => {
     try {
       const startY = window.pageYOffset || document.documentElement.scrollTop || 0;
-      const distance = 160;
+      const distance = 320; // 160'tan 240'a çıkarıldı
       const duration = 900;
       const startTime = performance.now();
 
