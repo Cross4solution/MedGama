@@ -1,6 +1,7 @@
 import React from 'react';
 import { Video } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import DoctorAppointmentCalendar from '../pricing/DoctorAppointmentCalendar';
 
 export default function DoctorSidebar() {
   const { user } = useAuth();
@@ -48,22 +49,26 @@ export default function DoctorSidebar() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Price Range</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-600">Consultation</span>
-            <span className="font-medium text-gray-900"> 500 -  800</span>
-          </div>
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-600">Angiography</span>
-            <span className="font-medium text-gray-900"> 8K -  15K</span>
-          </div>
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-600">Echocardiography</span>
-            <span className="font-medium text-gray-900"> 1K -  2K</span>
+      <div className="space-y-4">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="font-semibold text-gray-900 mb-4">Price Range</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-gray-600">Consultation</span>
+              <span className="font-medium text-gray-900"> 500 -  800</span>
+            </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-gray-600">Angiography</span>
+              <span className="font-medium text-gray-900"> 8K -  15K</span>
+            </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-gray-600">Echocardiography</span>
+              <span className="font-medium text-gray-900"> 1K -  2K</span>
+            </div>
           </div>
         </div>
+
+        <DoctorAppointmentCalendar onChange={() => {}} />
       </div>
     </div>
   );

@@ -5,6 +5,30 @@ export default function DoctorServicesSection({ services }) {
 
   const selectedService = services.find((s) => s.id === selectedServiceId);
 
+  const scrollDownSlightly = () => {
+    try {
+      const startY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const distance = 320;
+      const duration = 900;
+      const startTime = performance.now();
+
+      const step = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = progress < 0.5
+          ? 2 * progress * progress
+          : -1 + (4 - 2 * progress) * progress;
+        const nextY = startY + distance * eased;
+        window.scrollTo(0, nextY);
+        if (elapsed < duration) requestAnimationFrame(step);
+      };
+
+      requestAnimationFrame(step);
+    } catch {
+      try { window.scrollBy(0, 160); } catch {}
+    }
+  };
+
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold text-gray-900">Services</h3>
@@ -14,7 +38,11 @@ export default function DoctorServicesSection({ services }) {
           <button
             key={service.id || service.name}
             type="button"
-            onClick={() => setSelectedServiceId(selectedServiceId === service.id ? null : service.id)}
+            onClick={() => {
+              const next = selectedServiceId === service.id ? null : service.id;
+              setSelectedServiceId(next);
+              if (next) scrollDownSlightly();
+            }}
             className={`text-left p-4 rounded-xl border shadow-sm bg-white hover:bg-teal-50 transition ${
               selectedServiceId === service.id ? 'ring-2 ring-teal-500' : ''
             }`}
