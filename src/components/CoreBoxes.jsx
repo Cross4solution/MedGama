@@ -43,8 +43,9 @@ export default function CoreBoxes({ items = CORE_ITEMS }) {
   ];
 
   return (
-    <section id="features" className="pt-4 pb-8">
+    <section id="features" className="pt-12 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="mb-6 text-lg font-semibold text-gray-900">Discover Our World-First Services</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
           {items.slice(0, 6).map((f, i) => {
             const Icon = ICONS[i % ICONS.length];
