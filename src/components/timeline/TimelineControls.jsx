@@ -15,7 +15,7 @@ export default function TimelineControls({
       <div className="flex items-center">
         {/* Left: Title */}
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold text-gray-900">Explore Timeline</h1>
+          <h1 className="text-2xl font-bold text-gray-900 text-center md:text-left">Explore Timeline</h1>
         </div>
 
         {/* Center: Segmented toggle (desktop) */}
@@ -68,15 +68,15 @@ export default function TimelineControls({
       </div>
 
       {/* Mobile controls */}
-      <div className="mt-3 md:hidden flex items-center">
+      <div className="mt-3 md:hidden flex flex-col gap-2">
         {/* Centered toggle */}
-        <div className="flex-1 flex justify-center">
-          <div className="inline-flex rounded-full border border-gray-300 bg-white overflow-hidden shadow-sm">
+        <div className="w-full flex justify-center">
+          <div className="inline-flex w-full max-w-xs rounded-full border border-gray-300 bg-white overflow-hidden shadow-sm">
             <button
               type="button"
               aria-pressed={sort === 'recent'}
               onClick={() => onSortChange?.('recent')}
-              className={`text-sm px-4 py-2 focus:outline-none transition-colors ${
+              className={`text-sm w-1/2 py-2 focus:outline-none transition-colors text-center ${
                 sort === 'recent'
                   ? 'bg-teal-600 text-white font-semibold'
                   : 'text-gray-700 hover:bg-gray-50'
@@ -88,7 +88,7 @@ export default function TimelineControls({
               type="button"
               aria-pressed={sort === 'top'}
               onClick={() => onSortChange?.('top')}
-              className={`text-sm px-4 py-2 focus:outline-none transition-colors ${
+              className={`text-sm w-1/2 py-2 focus:outline-none transition-colors text-center ${
                 sort === 'top'
                   ? 'bg-teal-600 text-white font-semibold'
                   : 'text-gray-700 hover:bg-gray-50'
@@ -98,11 +98,11 @@ export default function TimelineControls({
             </button>
           </div>
         </div>
-        {/* Location button right aligned */}
-        <div className="flex-1 flex justify-end items-center gap-2 ml-3">
+        {/* Location button - full width under toggle */}
+        <div className="w-full flex justify-center items-center gap-2">
           <button
             onClick={onUseLocation}
-            className="text-sm px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 inline-flex items-center gap-2"
+            className="w-full text-sm px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 inline-flex items-center justify-center gap-2 max-w-xs"
           >
             <img
               src="/images/icon/usemylocation.svg"

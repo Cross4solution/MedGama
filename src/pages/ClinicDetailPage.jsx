@@ -253,6 +253,68 @@ const ClinicDetailPage = () => {
           <div className="lg:w-80 xl:w-96 space-y-6">
             <ContactActions onTelehealth={() => {}} onBook={() => {}} onMessage={() => {}} />
 
+            {/* Payments card: Deposit & Video Call payment */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-sm">Clinic Payments</h3>
+                  <p className="text-[11px] text-gray-500">Secure and instant payments</p>
+                </div>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-[11px] font-medium text-emerald-700 border border-emerald-100">
+                  Payment
+                </span>
+              </div>
+
+              <div className="space-y-3 mt-2">
+                <button
+                  type="button"
+                  className="w-full bg-emerald-600 text-white py-2.5 px-4 rounded-lg hover:bg-emerald-700 transition-colors font-medium flex items-center justify-center gap-2 text-sm"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                  >
+                    <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
+                    <line x1="2" y1="10" x2="22" y2="10" />
+                    <line x1="8" y1="15" x2="10" y2="15" />
+                  </svg>
+                  <span>Pay Deposit</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center gap-2 text-sm"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                  >
+                    <path d="m16 13 5 3v-8l-5 3"></path>
+                    <rect x="2" y="6" width="14" height="12" rx="2"></rect>
+                  </svg>
+                  <span>Pay for Video Call</span>
+                </button>
+              </div>
+            </div>
+
             <PriceRangeList items={priceRangesData} />
           </div>
         </div>

@@ -149,23 +149,11 @@ const MessagesPage = () => {
         </div>
 
         <div className="flex-1 overflow-hidden min-h-0">
-          <div className={`max-w-7xl mx-auto mt-0 sm:mt-2 px-3 sm:px-4 lg:px-6 pt-2 pb-0 h-full overflow-hidden min-h-0`}>
+          <div className={`max-w-7xl mx-auto mt-6 sm:mt-2 px-3 sm:px-4 lg:px-6 pt-2 pb-0 h-full overflow-hidden min-h-0`}>
         {/* Mobile: Threads list or Chat view */}
-        <div className="lg:hidden h-full overflow-hidden flex flex-col min-h-0">
+        <div className="lg:hidden h-[calc(100vh-80px)] flex flex-col overflow-y-auto">
           {!mobileChatOpen ? (
             <div>
-              <div className="mb-2">
-                <label className="block text-xs text-gray-500 mb-1">Kanal</label>
-                <select
-                  value={channelFilter}
-                  onChange={(e)=>handleChannelChange(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg text-sm bg-white"
-                >
-                  {['All','WhatsApp','Facebook','Web Form','Chat'].map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </div>
               <div className="bg-white border rounded-lg overflow-hidden divide-y">
                 {mobilePaginatedThreads.map((t)=> (
                   <button
@@ -204,7 +192,7 @@ const MessagesPage = () => {
                       onClick={() => handleMobilePageChange(mobileCurrentPage - 1)}
                       className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      â€¹
+                      ‹
                     </button>
                     {Array.from({ length: mobileTotalPages }, (_, i) => i + 1).map((page) => (
                       <button
@@ -224,7 +212,7 @@ const MessagesPage = () => {
                       onClick={() => handleMobilePageChange(mobileCurrentPage + 1)}
                       className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      â€º
+                      ›
                     </button>
                   </div>
                 </div>
