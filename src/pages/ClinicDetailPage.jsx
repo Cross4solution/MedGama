@@ -253,23 +253,6 @@ const ClinicDetailPage = () => {
           <div className="lg:w-80 xl:w-96 space-y-6">
             <ContactActions onTelehealth={() => {}} onBook={() => {}} onMessage={() => {}} />
 
-            <div className="bg-white rounded-xl shadow-lg p-5 border border-emerald-100">
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900">Tourism package</h3>
-                  <p className="text-xs text-gray-600 mt-0.5">
-                    Highlight your clinic's health tourism offer with a dedicated package.
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                className="mt-3 w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-orange-500 text-white text-xs font-medium shadow-sm hover:bg-orange-600 hover:shadow-md transition-colors"
-              >
-                Create tourism package
-              </button>
-            </div>
-
             <PriceRangeList items={priceRangesData} />
           </div>
         </div>

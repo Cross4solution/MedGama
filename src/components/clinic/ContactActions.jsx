@@ -27,6 +27,18 @@ export default function ContactActions({ onTelehealth, onBook, onMessage }) {
         <img src="/images/icon/chat-round-line-svgrepo-com.svg" alt="Chat" className="w-5 h-5 brightness-0 invert" />
         <span>Send Message</span>
       </button>
+
+      <button
+        type="button"
+        className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium flex items-center justify-center gap-2"
+      >
+        <img
+          src="/images/icon/archive-up-minimlistic-svgrepo-com.svg"
+          alt="Tourism package"
+          className="w-5 h-5 brightness-0 invert"
+        />
+        <span>One-click Health Tourism Package</span>
+      </button>
     </div>
   );
 }

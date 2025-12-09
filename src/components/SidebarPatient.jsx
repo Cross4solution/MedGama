@@ -17,7 +17,7 @@ const ChatRoundIcon = (props) => (
 const MedstreamIcon = (props) => (
   <img
     src="/images/icon/medstream.svg"
-    alt="MedStream"
+    alt="Medstream"
     {...props}
   />
 );
@@ -78,9 +78,9 @@ export default function SidebarPatient() {
   const patientItems = [
     // Requested minimal menu for patient
     { to: '/home-v2', label: 'Home', icon: Home },
-    { to: '/explore', label: 'MedStream', icon: MedstreamIcon },
+    { to: '/explore', label: 'Medstream', icon: MedstreamIcon },
     { to: '/favorite-clinics', label: 'Favorite Clinics', icon: Heart },
-    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
+    { to: '/messages', label: 'Messages', icon: ChatRoundIcon },
     { to: '/telehealth', label: 'Telehealth', icon: Monitor },
     { to: '/profile', label: 'Profile', icon: User },
   ];
@@ -91,7 +91,7 @@ export default function SidebarPatient() {
     { to: '/doctor-edit', label: 'Profile Settings', icon: Settings },
     { to: '/explore', label: 'Medstream', icon: MedstreamIcon },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: unreadCount || undefined },
-    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
+    { to: '/messages', label: 'Messages', icon: ChatRoundIcon },
     { to: '/telehealth-appointment', label: 'Schedule', icon: CalendarClock },
     { to: '/telehealth', label: 'Telehealth', icon: Monitor },
     { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
@@ -102,7 +102,7 @@ export default function SidebarPatient() {
     { to: '/clinic-edit', label: 'Profile', icon: User },
     { to: '/explore', label: 'Medstream', icon: MedstreamIcon },
     { to: '/notifications', label: 'Notifications', icon: Bell, badge: unreadCount || undefined },
-    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
+    { to: '/messages', label: 'Messages', icon: ChatRoundIcon },
     { to: '/doctors-departments', label: 'Departments and Doctors', icon: Building2 },
     { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
   ];
@@ -184,7 +184,7 @@ export default function SidebarPatient() {
                 }}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm rounded-xl bg-rose-500 text-white hover:bg-rose-600 shadow-sm transition-colors duration-200"
               >
-                <LogOut className="w-4 h-4" /> Logout
+                <LogOut className="w-4 h-4 -scale-x-100" /> Log out
               </button>
             </div>
           </div>
@@ -256,7 +256,7 @@ export default function SidebarPatient() {
                   onClick={() => { setSidebarMobileOpen(false); logout(); navigate('/home-v2'); }}
                   className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm rounded-xl bg-rose-500 text-white hover:bg-rose-600 shadow-sm transition-colors duration-200"
                 >
-                  <LogOut className="w-4 h-4" /> Logout
+                  <LogOut className="w-4 h-4 -scale-x-100" /> Log out
                 </button>
               </div>
             </div>

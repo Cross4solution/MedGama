@@ -38,7 +38,7 @@ export default function TimelineFilterSidebar({
   };
 
   return (
-    <aside className="order-1 lg:order-1 space-y-4 lg:sticky lg:top-24 h-max">
+    <aside className="order-1 lg:order-1 space-y-4 lg:sticky lg:top-24 h-max lg:-ml-2">
       <div className="bg-white rounded-xl shadow-sm border p-4">
         <h3 className="font-semibold text-gray-900 mb-3">Search</h3>
         <div className="relative">

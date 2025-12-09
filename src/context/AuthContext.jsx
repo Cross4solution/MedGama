@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
           } catch {}
           try {
             const path = typeof window !== 'undefined' && window.location ? (window.location.pathname || '/') : '/';
-            const protectedPrefixes = ['/profile', '/notifications', '/clinic-edit', '/telehealth', '/telehealth-appointment', '/doctor-chat'];
+            const protectedPrefixes = ['/profile', '/notifications', '/clinic-edit', '/telehealth', '/telehealth-appointment', '/messages'];
             const onProtected = protectedPrefixes.some((p) => path.startsWith(p));
             if (onProtected) {
               window.location.assign('/login');
@@ -408,7 +408,7 @@ export function AuthProvider({ children }) {
                 onClick={() => logoutCallback?.(true)}
                 className="px-4 py-2 text-sm font-medium text-white bg-rose-500 hover:bg-rose-600 rounded-lg"
               >
-                Logout
+                Log out
               </button>
             </div>
           </div>

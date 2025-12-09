@@ -274,7 +274,7 @@ const Header = () => {
             const patientItems = [
               { to: '/home-v2', label: 'Home', icon: Home },
               { to: '/explore', label: 'Medstream', icon: Video },
-              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
+              { to: '/messages', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },
               { to: '/profile', label: 'Settings', icon: Settings },
             ];
@@ -283,7 +283,7 @@ const Header = () => {
               { to: '/explore', label: 'Medstream', icon: Video },
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/home-v2', label: 'Homepage', icon: Home },
-              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
+              { to: '/messages', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },
             ];
@@ -292,7 +292,7 @@ const Header = () => {
               { to: '/explore', label: 'Medstream', icon: Video },
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/home-v2', label: 'Homepage', icon: Home },
-              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
+              { to: '/messages', label: 'Messages', icon: 'chat-conversation' },
               { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
             ];
             const items = role === 'clinic' ? clinicItems : (role === 'doctor' ? doctorItems : patientItems);
@@ -338,7 +338,7 @@ const Header = () => {
                     onClick={() => { closeMenu(); logout(); }}
                     className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"
                   >
-                    Logout
+                    Log out
                   </button>
                 </div>
               </nav>

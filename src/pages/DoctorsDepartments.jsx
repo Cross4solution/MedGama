@@ -127,12 +127,27 @@ export default function DoctorsDepartments() {
                       <div className="min-w-0">
                         <div className="text-sm font-medium text-gray-900 truncate">{doc.name}</div>
                         <div className="text-xs text-gray-500 truncate">{doc.specialty}</div>
-                        <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-gray-600">
-                          <span className="inline-flex items-center gap-1"><Star className="w-4 h-4 text-amber-500"/> {doc.rating}</span>
-                          <span className="inline-flex items-center gap-1"><MessageSquare className="w-4 h-4"/> {doc.reviewCount} reviews</span>
-                          <span className="inline-flex items-center gap-1"><BadgeDollarSign className="w-4 h-4"/> {doc.price}₺</span>
-                          <span className="inline-flex items-center gap-1"><MapPin className="w-4 h-4"/> {doc.distanceKm} km</span>
-                          <span className="inline-flex items-center gap-1"><User className="w-4 h-4"/> {doc.available || '—'}</span>
+                        <div className="flex flex-wrap items-center gap-2 mt-2 text-[11px] text-gray-600">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-50 border border-gray-200">
+                            <Star className="w-3.5 h-3.5 text-amber-500"/>
+                            <span>{doc.rating}</span>
+                          </span>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-50 border border-gray-200">
+                            <MessageSquare className="w-3.5 h-3.5"/>
+                            <span>{doc.reviewCount} reviews</span>
+                          </span>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-50 border border-gray-200">
+                            <BadgeDollarSign className="w-3.5 h-3.5"/>
+                            <span>Exam fee: {doc.price}₺</span>
+                          </span>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-50 border border-gray-200">
+                            <MapPin className="w-3.5 h-3.5"/>
+                            <span>{doc.distanceKm} km</span>
+                          </span>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-50 border border-gray-200">
+                            <User className="w-3.5 h-3.5"/>
+                            <span>Next available: {doc.available || '—'}</span>
+                          </span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -195,15 +210,14 @@ export default function DoctorsDepartments() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Specialty</label>
                     <input value={doctorEditing?.specialty||''} onChange={(e)=>setDoctorEditing((p)=>({...p, specialty:e.target.value}))} className="w-full h-11 px-3 border rounded-xl text-sm" placeholder="e.g., Cardiologist" />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Price (₺)</label>
-                      <input value={doctorEditing?.price||''} onChange={(e)=>setDoctorEditing((p)=>({...p, price: String(e.target.value).replace(/[^0-9]/g,'')}))} className="w-full h-11 px-3 border rounded-xl text-sm" placeholder="e.g., 800" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Next Availability</label>
-                      <input type="datetime-local" value={doctorEditing?.available||''} onChange={(e)=>setDoctorEditing((p)=>({...p, available:e.target.value}))} className="w-full h-11 px-3 border rounded-xl text-sm" />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Examination Fee (₺)</label>
+                    <input
+                      value={doctorEditing?.price||''}
+                      onChange={(e)=>setDoctorEditing((p)=>({...p, price: String(e.target.value).replace(/[^0-9]/g,'')}))}
+                      className="w-full h-11 px-3 border rounded-xl text-sm"
+                      placeholder="e.g., 800 (exam fee)"
+                    />
                   </div>
                 </div>
                 <div className="mt-4 flex items-center justify-end gap-2">

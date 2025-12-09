@@ -4,7 +4,7 @@ import SidebarPatient from './components/SidebarPatient';
 import { useAuth } from './context/AuthContext';
 import HomeV2 from './pages/HomeV2';
 import ClinicDetailPage from './pages/ClinicDetailPage';
-import DoctorChatPage from './pages/DoctorChatPage';
+import MessagesPage from './pages/MessagesPage.jsx';
 import TelehealthAppointmentPage from './pages/TelehealthAppointmentPage';
 import TelehealthPage from './pages/TelehealthPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
@@ -43,8 +43,8 @@ function AppContent() {
   // Opsiyonel tekerlek kaydırma override'ı: varsayılan AÇIK (azıcık yavaş ve akıcı)
   // Scroll override: tek kaynaktan (config/scroll.js)
   React.useEffect(() => {
-    // Do not override scroll on doctor chat page; allow internal containers to manage it
-    if (String(location.pathname || '').startsWith('/doctor-chat')) return;
+    // Do not override scroll on messages page; allow internal containers to manage it
+    if (String(location.pathname || '').startsWith('/messages')) return;
     if (typeof window === 'undefined') return;
     if (!scrollConfig?.enabled) return;
 
@@ -138,7 +138,7 @@ function AppContent() {
   const footerOnlyOn = ['/', '/home', '/home-v2'];
   const showFooter = footerOnlyOn.includes(location.pathname);
   
-  const isDoctorChat = String(location.pathname || '').startsWith('/doctor-chat');
+  const isMessagesPage = String(location.pathname || '').startsWith('/messages');
   
   const requireAuth = (Component) => {
     // Auth henüz hydrate edilmediyse veya sadece token varsa (user fetch oluyor) bekle
@@ -154,8 +154,8 @@ function AppContent() {
       {/* Sidebar for logged-in users (patient/doctor/clinic) */}
       {hasSidebar && <SidebarPatient />}
       
-      {/* Main content with proper spacing for header (no extra padding on doctor chat) */}
-      <div className={showHeader ? (isDoctorChat ? "" : (hasOwnContainer ? "pt-20" : "pt-16")) : ""}>
+      {/* Main content with proper spacing for header (no extra padding on messages page) */}
+      <div className={showHeader ? (isMessagesPage ? "" : (hasOwnContainer ? "pt-20" : "pt-16")) : ""}>
         <Routes>
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />
@@ -166,7 +166,7 @@ function AppContent() {
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />
         <Route path="/clinic-edit" element={requireAuth(ClinicProfileEdit)} />
         <Route path="/doctor-edit" element={requireAuth(DoctorProfileEdit)} />
-        <Route path="/doctor-chat" element={requireAuth(DoctorChatPage)} />
+        <Route path="/messages" element={requireAuth(MessagesPage)} />
         <Route path="/telehealth" element={requireAuth(TelehealthPage)} />
         <Route path="/telehealth-appointment" element={requireAuth(TelehealthAppointmentPage)} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />

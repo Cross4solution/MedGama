@@ -332,7 +332,7 @@ export default function ExploreTimeline() {
 
           {/* Feed (RIGHT) */}
           <section className="order-1 lg:order-2">
-            <div className="max-w-[46rem] mx-auto lg:ml-14 lg:mr-auto">
+            <div className="max-w-[46rem] mx-auto lg:ml-6 lg:mr-auto">
               {/* Composer (doctors/clinics only) */}
               {(() => {
                 const isDoctor = !!(user && (user.role === 'doctor' || (user?.specialty || user?.hospital || user?.access)));

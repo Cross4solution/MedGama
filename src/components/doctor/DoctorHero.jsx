@@ -99,7 +99,7 @@ export default function DoctorHero({
                 }}
               >
                 <img
-                  alt="MedStream link"
+                  alt="Medstream link"
                   className="w-5 h-5 mr-2 flex-shrink-0"
                   src="/images/icon/link.svg"
                 />
@@ -108,7 +108,7 @@ export default function DoctorHero({
                   <button
                     type="button"
                     className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    aria-label="Edit MedStream URL"
+                    aria-label="Edit Medstream URL"
                     onClick={(event) => {
                       event.stopPropagation();
                       onEditMedstream();
@@ -130,7 +130,7 @@ export default function DoctorHero({
                 className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-[11px] sm:text-xs font-medium text-[#1C6A83] hover:border-[#1C6A83] hover:bg-[#1C6A83]/5 transition"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-[#1C6A83]" />
-                <span>MedStream Aesthetic Center</span>
+                <span>Medstream Aesthetic Center</span>
               </a>
             </div>
           </div>

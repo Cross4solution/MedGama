@@ -36,7 +36,7 @@ export default function ThreadsSidebar({
       <div className="flex-1 flex flex-col min-h-0">
         <div className="overflow-hidden divide-y flex-1">
           {paginatedThreads.map((t) => (
-            <div key={t.id} className={`p-2 hover:bg-gray-50 cursor-pointer ${activeThreadId===t.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`} onClick={()=>onSelectThread?.(t.id)}>
+            <div key={t.id} className={`py-[0.8rem] px-2 hover:bg-gray-50 cursor-pointer ${activeThreadId===t.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`} onClick={()=>onSelectThread?.(t.id)}>
               <div className="flex items-start gap-2">
                 <div className="relative w-6 h-6 rounded-full mr-3.5 overflow-hidden bg-gray-100">
                   <img src={t.avatar} alt="avatar" className="w-full h-full object-cover" loading="lazy" />

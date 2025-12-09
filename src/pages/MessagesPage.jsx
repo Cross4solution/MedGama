@@ -4,7 +4,7 @@ import ChatHeader from 'components/chat/ChatHeader';
 import ChatMessageList from 'components/chat/ChatMessageList';
 import ChatInput from 'components/chat/ChatInput';
 
-const DoctorChatPage = () => {
+const MessagesPage = () => {
   const [message, setMessage] = useState('');
   const [channelFilter, setChannelFilter] = useState('TÃ¼mÃ¼');
   const [mobileChatOpen, setMobileChatOpen] = useState(false); // mobile: list -> chat
@@ -121,7 +121,7 @@ const DoctorChatPage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] w-full flex flex-col bg-white pb-4">
+    <div className="min-h-screen w-full flex flex-col bg-white pb-0">
       <div className="flex-1 flex flex-col min-h-0">
         {/* Doctor Info Header */}
         <div className="bg-white border-b flex-shrink-0">
@@ -149,7 +149,7 @@ const DoctorChatPage = () => {
         </div>
 
         <div className="flex-1 overflow-hidden min-h-0">
-          <div className={`max-w-7xl mx-auto mt-0 sm:mt-2 px-3 sm:px-4 lg:px-6 py-2 h-full overflow-hidden min-h-0`}>
+          <div className={`max-w-7xl mx-auto mt-0 sm:mt-2 px-3 sm:px-4 lg:px-6 pt-2 pb-0 h-full overflow-hidden min-h-0`}>
         {/* Mobile: Threads list or Chat view */}
         <div className="lg:hidden h-full overflow-hidden flex flex-col min-h-0">
           {!mobileChatOpen ? (
@@ -243,7 +243,7 @@ const DoctorChatPage = () => {
           )}
         </div>
             {/* Desktop layout */}
-            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-full min-h-0 mt-2">
+            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-[calc(100vh-100px)] mt-2">
               {/* Threads Sidebar */}
               <div className="w-80 flex-shrink-0 h-full flex flex-col min-h-0">
                 <ThreadsSidebar
@@ -281,7 +281,6 @@ const DoctorChatPage = () => {
       </div>
     </div>
   );
-}
-;
+};
 
-export default DoctorChatPage;
+export default MessagesPage;
