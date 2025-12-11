@@ -382,26 +382,26 @@ export default function DoctorsDepartments() {
                 {doctorsOfSelected.map((doc) => (
                   <article
                     key={doc.id}
-                    className="bg-white rounded-2xl border border-gray-100 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-sm"
+                    className="bg-[#1C6A83] rounded-2xl border border-[#135065] p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-sm"
                   >
                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-sm font-medium text-gray-500 overflow-hidden flex-shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white/90 overflow-hidden flex-shrink-0 border border-white/20">
                         <span>{(doc.name || '?').split(' ').map((x) => x[0]).join('').slice(0, 2)}</span>
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-sm font-semibold text-gray-900 truncate">{doc.name}</h3>
-                        <p className="text-xs text-gray-600 truncate">{doc.title || 'Specialist'}</p>
-                        <p className="mt-0.5 text-[11px] text-gray-500 truncate">
+                        <h3 className="text-sm font-semibold text-white truncate">{doc.name}</h3>
+                        <p className="text-xs text-slate-100/80 truncate">{doc.title || 'Specialist'}</p>
+                        <p className="mt-0.5 text-[11px] text-slate-100/70 truncate">
                           {doc.departmentName || selectedDept?.name} · Anadolu Health Center
                         </p>
 
-                        <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-gray-600">
+                        <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-100/90">
                           {typeof doc.rating === 'number' && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/10 text-amber-200 border border-white/20">
                               <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                               <span className="font-medium">{doc.rating.toFixed(1)}</span>
                               {typeof doc.reviewCount === 'number' && (
-                                <span className="text-[10px] text-amber-800/80">({doc.reviewCount})</span>
+                                <span className="text-[10px] text-amber-100/90">({doc.reviewCount})</span>
                               )}
                             </span>
                           )}
@@ -413,14 +413,14 @@ export default function DoctorsDepartments() {
                       <button
                         type="button"
                         onClick={() => openEditDoctor(doc)}
-                        className="px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                        className="px-3 py-1.5 rounded-xl border border-white/30 text-xs font-medium text-white hover:bg-white/10"
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => deleteDoctor(doc)}
-                        className="px-3 py-1.5 rounded-xl border border-rose-100 bg-rose-50 text-xs font-medium text-rose-600 hover:bg-rose-100"
+                        className="px-3 py-1.5 rounded-xl border border-rose-200/70 bg-rose-400/80 text-xs font-medium text-white hover:bg-rose-300/90"
                       >
                         Delete
                       </button>
