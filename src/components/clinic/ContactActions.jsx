@@ -37,7 +37,7 @@ export default function ContactActions({ onTelehealth, onBook, onMessage }) {
           alt="Tourism package"
           className="w-5 h-5 brightness-0 invert"
         />
-        <span>One-click Health Tourism Package</span>
+        <span>One-click Health Tourism</span>
       </button>
     </div>
   );
