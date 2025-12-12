@@ -15,6 +15,8 @@ export default function ClinicHero({
   onToggleFollow,
   // Geriye dönük uyumluluk: onFollow hala gelebilir
   onFollow,
+  showInviteButton,
+  onInvite,
   onImageClick,
   medstreamUrl,
   onEditMedstream,
@@ -106,6 +108,20 @@ export default function ClinicHero({
             >
               <Heart className={`w-5 h-5 sm:w-6 sm:h-6 ${isFavorite ? 'fill-current' : ''}`} />
             </button>
+
+            {showInviteButton && typeof onInvite === 'function' && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onInvite();
+                }}
+                className="border border-[#1C6A83] text-[#1C6A83] bg-white hover:bg-[#1C6A83]/5 px-3 py-2 sm:px-3 sm:py-1 rounded-xl transition-all duration-200 flex items-center justify-center shadow-sm hover:shadow-md"
+              >
+                <span className="text-sm whitespace-nowrap">Invite</span>
+              </button>
+            )}
+
             <button
               onClick={onToggleFollow || onFollow}
               className={`${isFollowing

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle } from 'lucide-react';
+import { useParams } from 'react-router-dom';
 import Badge from '../components/Badge';
 import ClinicHero from '../components/clinic/ClinicHero';
 import Tabs from '../components/tabs/Tabs';
@@ -7,6 +8,7 @@ import ContactActions from '../components/clinic/ContactActions';
 import PriceRangeList from '../components/pricing/PriceRangeList';
 import ImageGalleryModal from '../components/clinic/modals/ImageGalleryModal';
 import { useAuth } from '../context/AuthContext';
+import { createInvite } from '../lib/invites';
 
 // Tab Components
 import OverviewTab from '../components/clinic/tabs/OverviewTab';
@@ -36,6 +38,11 @@ import {
 
 const ClinicDetailPage = () => {
   const { user } = useAuth();
+  const params = useParams();
+  const viewedClinicId = params?.id || 'clinic-1';
+  const isDoctor = user?.role === 'doctor';
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteMessage, setInviteMessage] = useState('');
 
   // UI State
   const [activeTab, setActiveTab] = useState('genel-bakis');
@@ -145,6 +152,8 @@ const ClinicDetailPage = () => {
                 setGalleryIndex(0);
                 setGalleryOpen(true);
               }}
+              showInviteButton={isDoctor}
+              onInvite={() => setInviteOpen(true)}
               medstreamUrl={clinicMedstreamUrl}
               onEditMedstream={() => {
                 setTempClinicMedstreamUrl(clinicMedstreamUrl || '');
@@ -207,6 +216,7 @@ const ClinicDetailPage = () => {
                     deptDoctors={departmentsData}
                     selectedDept={selectedDept}
                     setSelectedDept={setSelectedDept}
+                    clinicId={viewedClinicId}
                   />
                 )}
 
@@ -404,6 +414,60 @@ const ClinicDetailPage = () => {
                 }}
               >
                 Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {inviteOpen && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-xl p-5 w-full max-w-md">
+            <h2 className="text-sm font-semibold text-gray-900 mb-2">Kliniğe bağlan</h2>
+            <p className="text-xs text-gray-500 mb-3">Kliniğe bir davet gönderilecek. Kabul ederse bu klinikte çalışan doktor olarak listelenirsin.</p>
+            <textarea
+              rows={3}
+              value={inviteMessage}
+              onChange={(e) => setInviteMessage(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 mb-4 resize-none"
+              placeholder="Mesaj (opsiyonel)"
+            />
+            <div className="flex justify-end gap-2 text-xs">
+              <button
+                type="button"
+                className="px-3 py-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+                onClick={() => {
+                  setInviteOpen(false);
+                  setInviteMessage('');
+                }}
+              >
+                Vazgeç
+              </button>
+              <button
+                type="button"
+                className="px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                onClick={() => {
+                  const fromId = user?.id || user?.email || user?.name || 'doc-1';
+                  createInvite({
+                    fromType: 'doctor',
+                    fromId,
+                    fromName: user?.name || 'Doctor',
+                    fromTitle: user?.title || '',
+                    fromAvatar: user?.avatar || '',
+                    toType: 'clinic',
+                    toId: viewedClinicId,
+                    toName: clinicInfo.name,
+                    toTitle: '',
+                    toAvatar: '',
+                    message: inviteMessage,
+                    clinicMeta: { id: viewedClinicId, name: clinicInfo.name, href: `/clinic/${viewedClinicId}` },
+                    doctorMeta: { id: fromId, name: user?.name || 'Doctor', title: user?.title || '', href: `/doctor/${fromId}` },
+                  });
+                  setInviteOpen(false);
+                  setInviteMessage('');
+                }}
+              >
+                Davet Gönder
               </button>
             </div>
           </div>

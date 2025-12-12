@@ -1,19 +1,30 @@
 import React from 'react';
 import { CheckCircle, MapPin, Star, Minus, Edit3 } from 'lucide-react';
 
-export default function DoctorHero({
-  doctorName,
-  doctorTitle,
-  doctorLocation,
-  heroImage,
-  isFollowing,
-  onToggleFollow,
-  onOpenGallery,
-  medstreamUrl,
-  onEditMedstream,
-  followerCount,
-  }) {
+export default function DoctorHero(props) {
+  const {
+    doctorName,
+    doctorTitle,
+    doctorLocation,
+    heroImage,
+    isFollowing,
+    onToggleFollow,
+    onOpenGallery,
+    medstreamUrl,
+    onEditMedstream,
+    isEditMode,
+    clinicName = '',
+    clinicHref = '',
+    clinics,
+    followerCount,
+    showInviteButton,
+    onInvite,
+  } = props || {};
   const [showCopyToast, setShowCopyToast] = React.useState(false);
+
+  const clinicBadges = Array.isArray(clinics) && clinics.length
+    ? clinics
+    : (clinicName ? [{ id: clinicHref || clinicName, name: clinicName, href: clinicHref || '#' }] : []);
 
   const handleMedstreamClick = async (e) => {
     if (e && typeof e.preventDefault === 'function') e.preventDefault();
@@ -71,6 +82,15 @@ export default function DoctorHero({
             <div className="flex items-center gap-2 mb-1.5">
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">{doctorName}</h1>
               <CheckCircle className="w-6 h-6 text-blue-500 flex-shrink-0" />
+              {clinicBadges.map((c) => (
+                <span
+                  key={c.id || c.href || c.name}
+                  className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-[11px] sm:text-xs font-medium text-[#1C6A83] hover:border-[#1C6A83] hover:bg-[#1C6A83]/5 transition"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1C6A83]" />
+                  <span>{c.name}</span>
+                </span>
+              ))}
             </div>
             <p className="text-base sm:text-lg text-gray-700 mb-1.5">{doctorTitle}</p>
 
@@ -104,7 +124,7 @@ export default function DoctorHero({
                   src="/images/icon/link.svg"
                 />
                 <span className="truncate font-medium text-left">{medstreamUrl}</span>
-                {onEditMedstream && (
+                {isEditMode && onEditMedstream && (
                   <button
                     type="button"
                     className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -119,48 +139,49 @@ export default function DoctorHero({
                 )}
               </div>
             )}
-
-            <div className="mt-2 flex items-center gap-2 text-[11px] sm:text-xs text-gray-600">
-              <span className="font-semibold text-gray-800 whitespace-nowrap">
-                Çalıştığı klinik:
-              </span>
-
-              <a
-                href="/clinics/medstream-aesthetic-center"
-                className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-[11px] sm:text-xs font-medium text-[#1C6A83] hover:border-[#1C6A83] hover:bg-[#1C6A83]/5 transition"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#1C6A83]" />
-                <span>Medstream Aesthetic Center</span>
-              </a>
-            </div>
           </div>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleFollow();
-            }}
-            className={`${isFollowing
-              ? 'bg-white text-blue-700 border-blue-300 hover:bg-blue-50'
-              : 'bg-blue-600 text-white hover:bg-blue-700 border-transparent'} border px-3 py-2 sm:px-3 sm:py-1 rounded-xl transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 shadow-sm hover:shadow-md w-28 sm:w-24`}
-            aria-label={isFollowing ? 'Unfollow' : 'Follow'}
-          >
-            {isFollowing ? (
-              <>
-                <Minus className="w-4 h-4 flex-shrink-0" />
-                <span className="text-sm whitespace-nowrap">Unfollow</span>
-              </>
-            ) : (
-              <>
-                <img
-                  src="/images/icon/plus-svgrepo-com.svg"
-                  alt="Plus"
-                  className="w-4 h-4 flex-shrink-0 brightness-0 invert"
-                />
-                <span className="text-sm whitespace-nowrap">Follow</span>
-              </>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {showInviteButton && typeof onInvite === 'function' && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onInvite();
+                }}
+                className="border border-[#1C6A83] text-[#1C6A83] bg-white hover:bg-[#1C6A83]/5 px-3 py-2 sm:px-3 sm:py-1 rounded-xl transition-all duration-200 flex items-center justify-center shadow-sm hover:shadow-md"
+              >
+                <span className="text-sm whitespace-nowrap">Invite</span>
+              </button>
             )}
-          </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFollow();
+              }}
+              className={`${isFollowing
+                ? 'bg-white text-blue-700 border-blue-300 hover:bg-blue-50'
+                : 'bg-blue-600 text-white hover:bg-blue-700 border-transparent'} border px-3 py-2 sm:px-3 sm:py-1 rounded-xl transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 shadow-sm hover:shadow-md w-28 sm:w-24`}
+              aria-label={isFollowing ? 'Unfollow' : 'Follow'}
+            >
+              {isFollowing ? (
+                <>
+                  <Minus className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm whitespace-nowrap">Unfollow</span>
+                </>
+              ) : (
+                <>
+                  <img
+                    src="/images/icon/plus-svgrepo-com.svg"
+                    alt="Plus"
+                    className="w-4 h-4 flex-shrink-0 brightness-0 invert"
+                  />
+                  <span className="text-sm whitespace-nowrap">Follow</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

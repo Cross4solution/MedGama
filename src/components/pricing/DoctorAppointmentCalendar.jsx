@@ -18,6 +18,12 @@ export default function DoctorAppointmentCalendar({ onChange }) {
     '14:00','14:30','15:00','15:30','16:00','16:30',
   ];
 
+  const bookedSlotsByDate = {
+    '2025-12-05': ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30'],
+    '2025-12-12': ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00'],
+    '2025-12-20': [...timeSlots],
+  };
+
   const formatIso = (y, m, d) => {
     const mm = String(m + 1).padStart(2, '0');
     const dd = String(d).padStart(2, '0');
@@ -25,6 +31,8 @@ export default function DoctorAppointmentCalendar({ onChange }) {
   };
 
   const selected = draftDate ? new Date(draftDate) : null;
+  const selectedIso = draftDate || selectedDate || '';
+  const selectedBooked = selectedIso ? (bookedSlotsByDate[selectedIso] || []) : [];
   const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
   const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0);
   const startWeekday = (startOfMonth.getDay() + 6) % 7; // Mon=0
@@ -32,7 +40,11 @@ export default function DoctorAppointmentCalendar({ onChange }) {
 
   const handleSelectDay = (day) => {
     const iso = formatIso(month.getFullYear(), month.getMonth(), day);
+    const booked = bookedSlotsByDate[iso] || [];
+    if (Array.isArray(booked) && booked.length >= timeSlots.length) return;
     setDraftDate(iso);
+    const firstAvailable = timeSlots.find((t) => !(bookedSlotsByDate[iso] || []).includes(t));
+    if (firstAvailable) setDraftTime(firstAvailable);
   };
 
   const handleTimeChange = (e) => {
@@ -143,6 +155,10 @@ export default function DoctorAppointmentCalendar({ onChange }) {
                       <div key={`empty-${i}`} />
                     ))}
                     {days.map((day) => {
+                      const iso = formatIso(month.getFullYear(), month.getMonth(), day);
+                      const booked = bookedSlotsByDate[iso] || [];
+                      const fullyBooked = Array.isArray(booked) && booked.length >= timeSlots.length;
+                      const hasAnyBooked = Array.isArray(booked) && booked.length > 0;
                       const isSelected =
                         selected &&
                         selected.getFullYear() === month.getFullYear() &&
@@ -153,10 +169,15 @@ export default function DoctorAppointmentCalendar({ onChange }) {
                           key={day}
                           type="button"
                           onClick={() => handleSelectDay(day)}
-                          className={`h-7 rounded-full flex items-center justify-center transition-colors ${
+                          disabled={fullyBooked}
+                          className={`h-7 rounded-full flex items-center justify-center transition-colors border ${
                             isSelected
-                              ? 'bg-blue-600 text-white shadow-sm'
-                              : 'text-gray-800 hover:bg-blue-50'
+                              ? 'bg-blue-600 text-white shadow-sm border-blue-600 ring-2 ring-blue-200'
+                              : fullyBooked
+                                ? 'bg-rose-100 text-rose-800 border-rose-200 cursor-not-allowed opacity-70 line-through'
+                                : hasAnyBooked
+                                  ? 'bg-amber-100 text-amber-900 border-amber-200 hover:bg-amber-200'
+                                  : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
                           }`}
                         >
                           {day}
@@ -173,15 +194,22 @@ export default function DoctorAppointmentCalendar({ onChange }) {
                   <div className="grid grid-cols-3 gap-2">
                     {timeSlots.map((t) => {
                       const active = draftTime === t;
+                      const isBooked = selectedIso ? selectedBooked.includes(t) : false;
+                      const isDisabled = isBooked || !selectedIso;
                       return (
                         <button
                           key={t}
                           type="button"
+                          disabled={isDisabled}
                           onClick={() => handleTimeChange({ target: { value: t } })}
                           className={`h-8 rounded-full px-2 text-xs flex items-center justify-center border transition-colors ${
                             active
-                              ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                              : 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-300'
+                              ? 'bg-blue-600 text-white border-blue-600 shadow-sm ring-2 ring-blue-200'
+                              : isBooked
+                                ? 'bg-rose-100 text-rose-800 border-rose-200 cursor-not-allowed opacity-80 line-through'
+                                : isDisabled
+                                  ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                  : 'bg-white text-gray-900 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-400'
                           }`}
                         >
                           {t}
@@ -206,7 +234,7 @@ export default function DoctorAppointmentCalendar({ onChange }) {
                 className="px-3 py-1.5 rounded-lg bg-[#1C6A83] text-white hover:bg-[#0F4A5C]"
                 onClick={applySelection}
               >
-                Save slot
+                Book Appointment
               </button>
             </div>
           </div>

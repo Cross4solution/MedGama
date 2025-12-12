@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Activity, Heart } from 'lucide-react';
 import Tabs from 'components/tabs/Tabs';
 import DoctorHero from 'components/doctor/DoctorHero';
@@ -11,10 +12,23 @@ import DoctorPublicationsSection from 'components/doctor/DoctorPublicationsSecti
 import DoctorLocationSection from 'components/doctor/DoctorLocationSection';
 import DoctorSidebar from 'components/doctor/DoctorSidebar';
 import DoctorGalleryModal from 'components/doctor/DoctorGalleryModal';
+import { useAuth } from '../context/AuthContext';
+import { createInvite, getClinicsForDoctor } from '../lib/invites';
 
 const DoctorProfilePage = () => {
+  const { user } = useAuth();
+  const params = useParams();
+  const viewedDoctorId = params?.id || 'doc-1';
   const [activeTab, setActiveTab] = useState('genel-bakis');
   const [isFollowing, setIsFollowing] = useState(false);
+  const isEditMode = user?.role === 'doctor';
+  const isClinic = user?.role === 'clinic';
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteMessage, setInviteMessage] = useState('');
+  const [connectedClinics, setConnectedClinics] = useState([]);
+  const fallbackClinics = connectedClinics.length
+    ? connectedClinics
+    : [{ id: 'clinic-1', name: 'Medstream Aesthetic Center', href: '/clinic/clinic-1' }];
 
   const [doctorName] = useState('Dr. Ayşe Yılmaz');
   const [doctorTitle] = useState('Kardiyoloji Uzmanı');
@@ -156,6 +170,24 @@ const DoctorProfilePage = () => {
     return () => document.body.classList.remove('modal-open');
   }, [galleryOpen]);
 
+  useEffect(() => {
+    const syncConnections = () => {
+      const list = getClinicsForDoctor(viewedDoctorId);
+      setConnectedClinics(Array.isArray(list) ? list : []);
+    };
+    syncConnections();
+    try {
+      window.addEventListener('storage', syncConnections);
+      window.addEventListener('medgama:connections-updated', syncConnections);
+    } catch {}
+    return () => {
+      try {
+        window.removeEventListener('storage', syncConnections);
+        window.removeEventListener('medgama:connections-updated', syncConnections);
+      } catch {}
+    };
+  }, [viewedDoctorId]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 pt-6">
@@ -179,6 +211,12 @@ const DoctorProfilePage = () => {
                 setTempMedstreamUrl(medstreamUrl || '');
                 setIsEditingMedstream(true);
               }}
+              isEditMode={isEditMode}
+              clinicName=""
+              clinicHref=""
+              clinics={fallbackClinics}
+              showInviteButton={isClinic}
+              onInvite={() => setInviteOpen(true)}
               followerCount={doctorFollowers}
             />
 
@@ -277,6 +315,60 @@ const DoctorProfilePage = () => {
                 }}
               >
                 Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {inviteOpen && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-xl p-5 w-full max-w-md">
+            <h2 className="text-sm font-semibold text-gray-900 mb-2">Doktoru kliniğe ekle</h2>
+            <p className="text-xs text-gray-500 mb-3">Doktora bir davet gönderilecek. Kabul ederse kliniğinizin doktor listesine eklenecek.</p>
+            <textarea
+              rows={3}
+              value={inviteMessage}
+              onChange={(e) => setInviteMessage(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 mb-4 resize-none"
+              placeholder="Mesaj (opsiyonel)"
+            />
+            <div className="flex justify-end gap-2 text-xs">
+              <button
+                type="button"
+                className="px-3 py-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+                onClick={() => {
+                  setInviteOpen(false);
+                  setInviteMessage('');
+                }}
+              >
+                Vazgeç
+              </button>
+              <button
+                type="button"
+                className="px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                onClick={() => {
+                  const fromId = user?.id || user?.email || user?.name || 'clinic-1';
+                  createInvite({
+                    fromType: 'clinic',
+                    fromId,
+                    fromName: user?.name || 'Clinic',
+                    fromTitle: '',
+                    fromAvatar: user?.avatar || '',
+                    toType: 'doctor',
+                    toId: viewedDoctorId,
+                    toName: doctorName,
+                    toTitle: doctorTitle,
+                    toAvatar: '',
+                    message: inviteMessage,
+                    clinicMeta: { id: fromId, name: user?.name || 'Clinic', href: `/clinic/${fromId}` },
+                    doctorMeta: { id: viewedDoctorId, name: doctorName, title: doctorTitle, href: `/doctor/${viewedDoctorId}` },
+                  });
+                  setInviteOpen(false);
+                  setInviteMessage('');
+                }}
+              >
+                Davet Gönder
               </button>
             </div>
           </div>

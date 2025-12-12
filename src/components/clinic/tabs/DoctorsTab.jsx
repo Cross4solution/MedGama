@@ -1,6 +1,27 @@
 import React from 'react';
+import { getDoctorsForClinic } from '../../../lib/invites';
 
-export default function DoctorsTab({ doctorsText, deptDoctors, selectedDept, setSelectedDept }) {
+export default function DoctorsTab(props) {
+  const { doctorsText, deptDoctors, selectedDept, setSelectedDept, clinicId } = props || {};
+  const [affiliated, setAffiliated] = React.useState([]);
+
+  React.useEffect(() => {
+    const sync = () => {
+      const list = getDoctorsForClinic(clinicId);
+      setAffiliated(Array.isArray(list) ? list : []);
+    };
+    sync();
+    try {
+      window.addEventListener('storage', sync);
+      window.addEventListener('medgama:connections-updated', sync);
+    } catch {}
+    return () => {
+      try {
+        window.removeEventListener('storage', sync);
+        window.removeEventListener('medgama:connections-updated', sync);
+      } catch {}
+    };
+  }, [clinicId]);
   const scrollDownSlightly = () => {
     try {
       const startY = window.pageYOffset || document.documentElement.scrollTop || 0;
@@ -29,6 +50,27 @@ export default function DoctorsTab({ doctorsText, deptDoctors, selectedDept, set
     <div className="space-y-6">
       <h3 className="text-xl font-semibold text-gray-900">Doctors</h3>
       <p className="text-gray-600">{doctorsText}</p>
+
+      {affiliated.length > 0 && (
+        <div className="space-y-3">
+          <h4 className="text-lg font-semibold text-gray-900">Affiliated Doctors</h4>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {affiliated.map((doc) => (
+              <a
+                key={doc.id}
+                href={doc.href || '#'}
+                className="bg-white shadow rounded-lg p-4 flex items-center gap-4 hover:bg-gray-50 transition"
+              >
+                <img src={doc.avatar} alt={doc.name} className="w-16 h-16 rounded-full object-cover" />
+                <div>
+                  <h5 className="font-semibold text-gray-900">{doc.name}</h5>
+                  <p className="text-sm text-gray-600">{doc.title}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Department tiles */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
