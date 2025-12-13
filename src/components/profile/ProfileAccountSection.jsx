@@ -234,10 +234,11 @@ export default function ProfileAccountSection({
             <label className="block text-sm font-medium text-gray-700 mb-1">Specialty</label>
             <input
               type="text"
-              value={specialty || ''}
-              onChange={(e) => setSpecialty(e.target.value)}
+              value={(user?.specialty || specialty) || ''}
+              readOnly
+              disabled
               maxLength={255}
-              className="w-full border border-gray-300 rounded-lg px-3 text-sm h-10"
+              className="w-full border border-gray-300 rounded-lg px-3 text-sm h-10 bg-gray-50 text-gray-700 cursor-not-allowed"
               placeholder="e.g. Cardiology"
             />
           </div>

@@ -57,6 +57,10 @@ export function useProfileAccount() {
     }
     setInitialized(true);
   }, [user, country, initialized]);
+  useEffect(() => {
+    if (!user) return;
+    setSpecialty(user.specialty || '');
+  }, [user?.specialty]);
 
   useEffect(() => {
     if (!phoneCcOpen) return;
@@ -156,11 +160,6 @@ export function useProfileAccount() {
       phone: digitsPhone || null,
       phone_cc: normalizedPhoneCc || null,
     };
-
-    // Doktor profili için specialty bilgisini de gönder
-    if ((user?.role || 'patient') === 'doctor') {
-      payload.specialty = specialty || null;
-    }
 
     try {
       const res = await updateProfile(payload);

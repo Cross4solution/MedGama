@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Save, User, Info, Plus, X, Images, Star, Activity } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import DoctorAvailabilityEditor from '../components/doctor/DoctorAvailabilityEditor';
 
 function StarRow({ value = 0 }) {
   const arr = [1, 2, 3, 4, 5];
@@ -116,6 +117,7 @@ export default function DoctorProfileEdit() {
               { id: 'reviews', label: 'Reviews' },
               { id: 'gallery', label: 'Gallery' },
               { id: 'location', label: 'Location' },
+              { id: 'availability', label: 'Availability' },
             ].map((t) => (
               <button
                 key={t.id}
@@ -173,6 +175,10 @@ export default function DoctorProfileEdit() {
                 </button>
               </div>
             </div>
+          )}
+
+          {tab === 'availability' && (
+            <DoctorAvailabilityEditor user={user} />
           )}
 
           {/* Reviews Tab - static preview similar to clinic edit */}

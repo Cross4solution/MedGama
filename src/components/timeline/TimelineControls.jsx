@@ -15,7 +15,7 @@ export default function TimelineControls({
       <div className="flex items-center">
         {/* Left: Title */}
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold text-gray-900 text-center md:text-left">Explore Timeline</h1>
+          <h1 className="text-2xl font-bold text-gray-900 text-center md:text-left md:-ml-1 lg:-ml-2">Explore Timeline</h1>
         </div>
 
         {/* Center: Segmented toggle (desktop) */}

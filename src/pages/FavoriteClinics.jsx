@@ -3,10 +3,46 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Heart, MapPin } from 'lucide-react';
 
+const DEMO_CLINICS = [
+  {
+    name: 'Acibadem Maslak Hospital',
+    location: 'Istanbul, TR',
+    image: '/images/care-team-with-patient_720.jpg',
+  },
+  {
+    name: 'Memorial Ankara Clinic',
+    location: 'Ankara, TR',
+    image: '/images/doctor-explaining_720.jpg',
+  },
+  {
+    name: 'Ege University Hospital',
+    location: 'Izmir, TR',
+    image: '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg',
+  },
+  {
+    name: 'Florence Nightingale',
+    location: 'Istanbul, TR',
+    image: '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+  },
+  {
+    name: 'Anadolu Health Center',
+    location: 'Kocaeli, TR',
+    image: '/images/doctor-explaining_720.jpg',
+  },
+  {
+    name: 'Medicana International',
+    location: 'Istanbul, TR',
+    image: '/images/care-team-with-patient_720.jpg',
+  },
+];
+
 export default function FavoriteClinicsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
+
+  const showingDemo = favorites.length === 0;
+  const listToRender = showingDemo ? DEMO_CLINICS : favorites;
 
   const handleRemoveFavorite = (e, clinicToRemove) => {
     if (e && typeof e.stopPropagation === 'function') {
@@ -52,61 +88,58 @@ export default function FavoriteClinicsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center gap-2 mb-4">
           <Heart className="w-5 h-5 text-red-500" />
           <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Favorite Clinics</h1>
         </div>
-        {favorites.length === 0 ? (
-          <p className="text-sm text-gray-600">
-            You don&apos;t have any favorite clinics yet. Go to a clinic page and tap the heart icon to add it here.
+        {showingDemo && (
+          <p className="text-sm text-gray-600 mb-4">
+            You don&apos;t have any favorite clinics yet. Here are a few examples.
           </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {favorites.map((clinic, idx) => (
-              <div
-                key={idx}
-                className="group text-left rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm shadow-sm overflow-hidden flex flex-col"
-              >
-                {/* Hero alanı */}
-                <div className="relative h-40 bg-gray-100">
-                  {clinic.image ? (
-                    <img
-                      src={clinic.image}
-                      alt={clinic.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-teal-700 text-lg font-bold">
-                      {clinic.name?.charAt(0) || 'C'}
-                    </div>
-                  )}
+        )}
 
-                  {/* Favorite Rozeti */}
-                  <div
-                    className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/80 backdrop-blur-sm text-[11px] text-teal-700 border border-teal-100 shadow-sm"
-                  >
-                    <Heart className="w-3.5 h-3.5 text-teal-600" />
-                    <span className="font-medium">Favorite</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {listToRender.map((clinic, idx) => (
+            <div
+              key={idx}
+              className="group text-left rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm shadow-sm overflow-hidden flex flex-col"
+            >
+              <div className="relative h-40 bg-gray-100">
+                {clinic.image ? (
+                  <img
+                    src={clinic.image}
+                    alt={clinic.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-teal-700 text-lg font-bold">
+                    {clinic.name?.charAt(0) || 'C'}
                   </div>
+                )}
+
+                <div className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/80 backdrop-blur-sm text-[11px] text-teal-700 border border-teal-100 shadow-sm">
+                  <Heart className="w-3.5 h-3.5 text-teal-600" />
+                  <span className="font-medium">Favorite</span>
                 </div>
+              </div>
 
-                {/* Alt bilgi alanı */}
-                <div className="p-4 flex-1 flex flex-col gap-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="font-semibold text-gray-900 truncate text-[15px]">
-                        {clinic.name}
-                      </div>
-
-                      {clinic.location && (
-                        <div className="mt-1 flex items-center text-xs text-gray-600 truncate">
-                          <MapPin className="w-3.5 h-3.5 mr-1 text-gray-400" />
-                          <span className="truncate">{clinic.location}</span>
-                        </div>
-                      )}
+              <div className="p-4 flex-1 flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="font-semibold text-gray-900 truncate text-[15px]">
+                      {clinic.name}
                     </div>
 
+                    {clinic.location && (
+                      <div className="mt-1 flex items-center text-xs text-gray-600 truncate">
+                        <MapPin className="w-3.5 h-3.5 mr-1 text-gray-400" />
+                        <span className="truncate">{clinic.location}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {!showingDemo && (
                     <button
                       type="button"
                       onClick={(e) => handleRemoveFavorite(e, clinic)}
@@ -115,36 +148,31 @@ export default function FavoriteClinicsPage() {
                     >
                       <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
                     </button>
-                  </div>
+                  )}
+                </div>
 
-                  <div
-                    className="
-      flex items-center justify-between 
-      text-[11px] text-gray-500
-    "
+                <div className="flex items-center justify-between text-[11px] text-gray-500">
+                  <span className="flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal-500/70" />
+                    <span>{showingDemo ? 'Example card' : 'Saved to favorites'}</span>
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation?.();
+                      navigate('/clinic');
+                    }}
+                    className="inline-flex items-center gap-1 text-teal-700 font-medium hover:underline"
                   >
-                    <span className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-teal-500/70" />
-                      <span>Saved to favorites</span>
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation?.();
-                        navigate('/clinic');
-                      }}
-                      className="inline-flex items-center gap-1 text-teal-700 font-medium hover:underline"
-                    >
-                      <span>View details</span>
-                      <span className="text-[10px]">→</span>
-                    </button>
-                  </div>
+                    <span>View details</span>
+                    <span className="text-[10px]">→</span>
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -58,7 +58,7 @@ const Header = () => {
                   <img
                     src="/images/logo/logo-Photoroom.png"
                     alt="Medagama Logo"
-                    className="h-full w-auto object-contain rounded transform scale-[1.6] translate-y-[4px] translate-x-[20px]"
+                    className={`h-full w-auto object-contain rounded transform scale-[1.6] translate-y-[4px] ${user ? 'translate-x-[-6px]' : 'translate-x-[20px]'}`}
                     loading="eager"
                     decoding="async"
                   />
