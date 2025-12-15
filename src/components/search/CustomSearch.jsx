@@ -172,9 +172,9 @@ export default function CustomSearch() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="bg-white border border-gray-200 rounded-xl p-3 md:p-3">
-        <div className="grid gap-4 grid-cols-2 md:grid-cols-[12rem,12rem,1.1fr,auto,1.1fr,auto]">
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-[13rem,13rem,1.1fr,auto,1.1fr,auto]">
         {/* 1. Country */}
-        <div className="max-w-48">
+        <div className="max-w-52">
           <CountryCombobox
             options={countries}
             value={country}
@@ -189,7 +189,7 @@ export default function CustomSearch() {
         </div>
 
         {/* 2. City */}
-        <div className="max-w-48">
+        <div className="max-w-52">
           <CityCombobox
             options={country ? citiesOptions : []}
             value={city}
