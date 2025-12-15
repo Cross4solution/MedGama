@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import Badge from '../components/Badge';
 import ClinicHero from '../components/clinic/ClinicHero';
 import Tabs from '../components/tabs/Tabs';
@@ -38,11 +38,15 @@ import {
 
 const ClinicDetailPage = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const params = useParams();
   const viewedClinicId = params?.id || 'clinic-1';
   const isDoctor = user?.role === 'doctor';
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteMessage, setInviteMessage] = useState('');
+
+  const accreditations = location?.state?.accreditations || [];
+  const accreditationDocs = location?.state?.accreditationDocs || [];
 
   // UI State
   const [activeTab, setActiveTab] = useState('genel-bakis');
@@ -197,6 +201,8 @@ const ClinicDetailPage = () => {
                     aboutTitle={aboutData.title}
                     aboutP1={aboutData.paragraph1}
                     aboutP2={aboutData.paragraph2}
+                    accreditations={accreditations}
+                    accreditationDocs={accreditationDocs}
                   />
                 )}
 

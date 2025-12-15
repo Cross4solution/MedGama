@@ -1,110 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Save, Building2, MapPin, Info, Image as ImageIcon, Upload, Plus, X, DollarSign, Images, Package, Star, Stethoscope, Activity, Brain, Scissors, Link as LinkIcon } from 'lucide-react';
+import { Save, Building2, MapPin, Info, Image as ImageIcon, Upload, Plus, X, Images, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-
-function TagEditor({ label, value = [], onChange, placeholder }) {
-  const [text, setText] = useState('');
-  const add = () => {
-    const v = (text || '').trim();
-    if (!v) return;
-    if (!value.includes(v)) onChange([...(value || []), v]);
-    setText('');
-  };
-  const onKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      add();
-    }
-  };
-  const remove = (idx) => onChange((value || []).filter((_, i) => i !== idx));
-  return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <div className="min-h-[44px] w-full px-2 py-1.5 border rounded-lg bg-white flex flex-wrap gap-2">
-        {value && value.map((tag, i) => (
-          <span key={`${tag}-${i}`} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 border text-xs">
-            {tag}
-            <button type="button" onClick={()=>remove(i)} className="ml-1 text-gray-500 hover:text-gray-700">
-              <X className="w-3 h-3" />
-            </button>
-          </span>
-        ))}
-        <input
-          value={text}
-          onChange={(e)=>setText(e.target.value)}
-          onKeyDown={onKeyDown}
-          onBlur={()=>{ if (text.trim()) add(); }}
-          placeholder={placeholder}
-          className="flex-1 min-w-[140px] h-7 px-2 text-sm outline-none"
-        />
-      </div>
-    </div>
-  );
-}
-
-function ServiceModal({ initial, onClose, onSave }) {
-  const [name, setName] = useState(initial?.name || '');
-  const [department, setDepartment] = useState(initial?.department || '');
-  const [icon, setIcon] = useState(initial?.icon || 'Activity');
-  const [description, setDescription] = useState(initial?.description || '');
-  const [procedures, setProcedures] = useState(initial?.procedures || []);
-  const [priceRange, setPriceRange] = useState(initial?.priceRange || '');
-  const [duration, setDuration] = useState(initial?.duration || '');
-  const [availability, setAvailability] = useState(Array.isArray(initial?.availability) ? initial.availability : []);
-  const [tags, setTags] = useState(initial?.tags || []);
-  const [languages, setLanguages] = useState(initial?.languages || []);
-  const [insurance, setInsurance] = useState(initial?.insurance || []);
-  const [visibility, setVisibility] = useState(initial?.visibility !== undefined ? !!initial.visibility : true);
-
-  const toggleAvail = (val) => {
-    setAvailability((prev) => prev.includes(val) ? prev.filter((x)=>x!==val) : [...prev, val]);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-2xl bg-white rounded-2xl shadow-xl border p-4 md:p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base font-semibold text-gray-900">{initial ? 'Edit Service' : 'Create Service'}</h3>
-          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-gray-50"><X className="w-4 h-4"/></button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input value={name} onChange={(e)=>setName(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="Service name" />
-          <input value={department} onChange={(e)=>setDepartment(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="Department" />
-          <select value={icon} onChange={(e)=>setIcon(e.target.value)} className="h-10 px-3 border rounded-lg text-sm">
-            <option value="Activity">Activity</option>
-            <option value="Stethoscope">Stethoscope</option>
-            <option value="Brain">Brain</option>
-            <option value="Scissors">Scissors</option>
-          </select>
-          <input value={priceRange} onChange={(e)=>setPriceRange(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="₺min - ₺max" />
-          <input value={duration} onChange={(e)=>setDuration(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="Duration (e.g., 45 min)" />
-          <div className="h-10 px-3 border rounded-lg text-sm flex items-center gap-3">
-            <label className="flex items-center gap-1 text-sm"><input type="checkbox" checked={availability.includes('Onsite')} onChange={()=>toggleAvail('Onsite')} /> Onsite</label>
-            <label className="flex items-center gap-1 text-sm"><input type="checkbox" checked={availability.includes('Telehealth')} onChange={()=>toggleAvail('Telehealth')} /> Telehealth</label>
-          </div>
-        </div>
-        <div className="mt-3">
-          <textarea value={description} onChange={(e)=>setDescription(e.target.value)} rows={3} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Short description" />
-        </div>
-        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
-          <TagEditor label="Linked Procedures" value={procedures} onChange={setProcedures} placeholder="Add procedure" />
-          <TagEditor label="Tags" value={tags} onChange={setTags} placeholder="Add tag" />
-          <TagEditor label="Languages" value={languages} onChange={setLanguages} placeholder="TR, EN" />
-          <TagEditor label="Insurance" value={insurance} onChange={setInsurance} placeholder="Insurance" />
-        </div>
-        <div className="mt-3 flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={visibility} onChange={(e)=>setVisibility(e.target.checked)} /> Visible</label>
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={onClose} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Cancel</button>
-            <button type="button" onClick={()=> onSave({ name, department, icon, description, procedures, priceRange, duration, availability, tags, languages, insurance, visibility }) } className="px-4 py-1.5 rounded-lg bg-[#1C6A83] text-white text-sm hover:bg-[#0F4A5C]">Save</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import ReportReviewModal from '../components/reviews/ReportReviewModal';
 
 function StarRow({ value = 0 }) {
   const arr = [1,2,3,4,5];
@@ -121,6 +19,9 @@ export default function ClinicProfileEdit() {
   const { user } = useAuth();
   const isClinic = user?.role === 'clinic';
 
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReview, setReportReview] = useState(null);
+
   const [tab, setTab] = useState('overview');
   const [form, setForm] = useState({
     // Hero & basics
@@ -134,13 +35,6 @@ export default function ClinicProfileEdit() {
     // Optional brand visuals
     logo: '',
   });
-  const [services, setServices] = useState([
-    { id: 's1', name: 'Cardiac Surgery Consultation', department: 'Cardiology', icon: 'Activity', description: 'Initial consultation with cardiac surgeon.', procedures: ['Bypass Evaluation','Valve Assessment'], priceRange: '₺2000 - ₺5000', duration: '45 min', availability: ['Onsite'], tags: ['adult','pre-op'], languages: ['TR','EN'], insurance: ['SGK'], visibility: true, order: 1 },
-    { id: 's2', name: 'Oncology Consultation', department: 'Oncology', icon: 'Stethoscope', description: 'Cancer diagnosis, chemo plan.', procedures: ['Chemo Plan'], priceRange: '₺1500 - ₺4000', duration: '30 min', availability: ['Onsite','Telehealth'], tags: ['adult'], languages: ['TR','EN'], insurance: ['Private'], visibility: true, order: 2 },
-  ]);
-  const [serviceModalOpen, setServiceModalOpen] = useState(false);
-  const [editingService, setEditingService] = useState(null);
-  const [doctorsText, setDoctorsText] = useState('Our expert doctors provide comprehensive care across multiple specialties, focusing on patient safety and outcomes.');
   const [gallery, setGallery] = useState([]); // {url,name}
   const [address, setAddress] = useState('Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul');
   const [mapUrl, setMapUrl] = useState('https://maps.google.com/?q=Istanbul+Turkey');
@@ -149,9 +43,24 @@ export default function ClinicProfileEdit() {
     { id: 'pr2', service: 'Cardiac Surgery', range: '₺50K - ₺150K' },
     { id: 'pr3', service: 'Oncology Treatment', range: '₺30K - ₺200K' },
   ]);
-  const [packages, setPackages] = useState([
-    { id: 'p1', name: 'Basic Package', treatment: 'Dental Implant', accommodation: '3 nights hotel', transfer: 'Airport pickup', price: 1500 },
-  ]);
+  const [publications, setPublications] = useState([]);
+  const [beforeAfterPairs, setBeforeAfterPairs] = useState([]);
+  const addBeforeAfterPair = () => setBeforeAfterPairs((prev) => ([
+    ...prev,
+    { id: `ba${Date.now()}`, beforeUrl: '', beforeName: '', afterUrl: '', afterName: '' }
+  ]));
+  const onBeforeAfterFile = (idx, side, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setBeforeAfterPairs((prev) => prev.map((p, i) => {
+      if (i !== idx) return p;
+      if (side === 'before') return { ...p, beforeUrl: url, beforeName: file.name };
+      return { ...p, afterUrl: url, afterName: file.name };
+    }));
+    e.target.value = null;
+  };
+  const removeBeforeAfterPair = (idx) => setBeforeAfterPairs((prev) => prev.filter((_, i) => i !== idx));
   const [saving, setSaving] = useState(false);
   const [heroPreview, setHeroPreview] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
@@ -179,8 +88,34 @@ export default function ClinicProfileEdit() {
   }, []);
 
   // Overview badges (accreditations)
-  const [accreditations, setAccreditations] = useState(['JCI Accredited','ISO 9001']);
-  const toggleAcc = (label) => setAccreditations((prev)=> prev.includes(label) ? prev.filter(x=>x!==label) : [...prev, label]);
+  const [accreditations, setAccreditations] = useState([]);
+  const removeAcc = (label) => setAccreditations((prev) => prev.filter((x) => x !== label));
+  const [customAcc, setCustomAcc] = useState('');
+  const addCustomAcc = () => {
+    const label = (customAcc || '').trim();
+    if (!label) return;
+    setAccreditations((prev) => {
+      const exists = prev.some((x) => x.toLowerCase() === label.toLowerCase());
+      return exists ? prev : [...prev, label];
+    });
+    setCustomAcc('');
+  };
+
+  const [accreditationDocs, setAccreditationDocs] = useState([]);
+  const accDocsInputRef = useRef(null);
+  const addAccreditationDocs = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const items = files.map((f) => ({
+      id: `accdoc_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      name: f.name,
+      type: f.type,
+      url: URL.createObjectURL(f)
+    }));
+    setAccreditationDocs((prev) => [...prev, ...items]);
+    e.target.value = null;
+  };
+  const removeAccreditationDoc = (id) => setAccreditationDocs((prev) => prev.filter((d) => d.id !== id));
 
   // Doctors data: name, specialties, and three sets to power Advanced Search
   const [doctorsData, setDoctorsData] = useState([
@@ -212,18 +147,11 @@ export default function ClinicProfileEdit() {
   const addGalleryImages = (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-    const items = files.map((f) => ({ url: URL.createObjectURL(f), name: f.name }));
+    const items = files.map((f) => ({ url: URL.createObjectURL(f), name: f.name, type: f.type }));
     setGallery((prev) => [...prev, ...items]);
+    e.target.value = null;
   };
   const removeGalleryImage = (idx) => setGallery((prev) => prev.filter((_, i) => i !== idx));
-
-  const addPackage = () => {
-    const name = window.prompt('Package Name');
-    if (!name) return;
-    setPackages((prev) => ([...prev, { id: `p${Date.now()}`, name, treatment: '', accommodation: '', transfer: '', price: 0 }]));
-  };
-  const updatePackage = (id, patch) => setPackages((prev) => prev.map((p) => p.id === id ? { ...p, ...patch } : p));
-  const removePackage = (id) => setPackages((prev) => prev.filter((p) => p.id !== id));
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -249,6 +177,7 @@ export default function ClinicProfileEdit() {
             </div>
             <Link
               to="/clinic"
+              state={{ accreditations, accreditationDocs }}
               className="inline-flex items-center px-3 py-2 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md whitespace-nowrap"
             >
               View clinic profile
@@ -260,12 +189,11 @@ export default function ClinicProfileEdit() {
         <div className="mb-3 flex flex-wrap gap-2">
           {[
             { id: 'overview', label: 'Overview' },
-            { id: 'services', label: 'Services' },
+            { id: 'prices', label: 'Prices' },
             { id: 'reviews', label: 'Reviews' },
+            { id: 'publications', label: 'Publications' },
             { id: 'gallery', label: 'Gallery' },
             { id: 'location', label: 'Location' },
-            { id: 'pricing', label: 'Pricing' },
-            { id: 'packages', label: 'Packages' },
           ].map(t => (
             <button key={t.id} onClick={()=>setTab(t.id)} type="button" className={`px-3 py-1.5 text-sm border-b-2 transition-colors ${tab===t.id ? 'text-[#1C6A83] border-[#1C6A83]' : 'text-gray-700 border-transparent hover:text-[#1C6A83] hover:border-[#1C6A83]'}`}>{t.label}</button>
           ))}
@@ -320,85 +248,81 @@ export default function ClinicProfileEdit() {
 
               <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Accreditations</label>
-                <div className="flex flex-wrap gap-3">
-                  {['JCI Accredited','ISO 9001','Ministry of Health','Health Tourism'].map((lab)=> (
-                    <label key={lab} className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm cursor-pointer ${accreditations.includes(lab) ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white hover:bg-gray-50'}`}>
-                      <input type="checkbox" className="hidden" checked={accreditations.includes(lab)} onChange={()=>toggleAcc(lab)} />
-                      {lab}
-                    </label>
-                  ))}
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <input
+                    value={customAcc}
+                    onChange={(e)=>setCustomAcc(e.target.value)}
+                    onKeyDown={(e)=>{ if (e.key === 'Enter') { e.preventDefault(); addCustomAcc(); } }}
+                    type="text"
+                    className="flex-1 min-w-[220px] px-3 py-2 rounded-xl border text-sm bg-white"
+                    placeholder="Add accreditation"
+                  />
+                  <button
+                    type="button"
+                    onClick={addCustomAcc}
+                    className="inline-flex items-center px-3 py-2 rounded-xl border text-sm bg-white hover:bg-gray-50"
+                  >
+                    Add
+                  </button>
                 </div>
 
                 {/* Preview chips */}
                 {accreditations.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-2">
                     {accreditations.map((lab)=> (
-                      <span key={lab} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm bg-gray-50">{lab}</span>
+                      <span key={lab} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm bg-gray-50">
+                        {lab}
+                        <button type="button" onClick={() => removeAcc(lab)} className="-mr-1 text-gray-500 hover:text-gray-700">
+                          <X className="w-4 h-4" />
+                        </button>
+                      </span>
                     ))}
                   </div>
                 )}
-              </div>
-            </>) }
 
-            {/* Services Tab */}
-            {tab === 'services' && (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-base font-semibold text-gray-900">Services</h2>
-                  <button type="button" onClick={()=> { setEditingService(null); setServiceModalOpen(true); }} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Plus className="w-4 h-4"/> Add Service</button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {services.map((s, idx) => (
-                    <div key={s.id} className="p-4 rounded-xl border bg-white shadow-sm">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold text-gray-900">{s.name || 'Untitled Service'}</span>
-                            <span className="text-xs text-gray-600">· {s.department || '—'}</span>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Accreditation Documents</label>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      ref={accDocsInputRef}
+                      onChange={addAccreditationDocs}
+                      type="file"
+                      accept="image/*,application/pdf"
+                      multiple
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => accDocsInputRef.current?.click()}
+                      className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border bg-white hover:bg-gray-50 text-sm"
+                    >
+                      <Upload className="w-4 h-4" /> Upload
+                    </button>
+                    <span className="text-xs text-gray-500">PDF or image</span>
+                  </div>
+
+                  {accreditationDocs.length > 0 && (
+                    <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {accreditationDocs.map((d) => (
+                        <div key={d.id} className="flex items-center justify-between gap-3 px-3 py-2 rounded-xl border bg-white">
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium text-gray-900 truncate">{d.name}</div>
+                            <a href={d.url} target="_blank" rel="noreferrer" className="text-xs text-[#1C6A83] hover:underline">View</a>
                           </div>
-                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{s.description}</p>
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {s.priceRange && <span className="text-xs px-2 py-0.5 rounded-full border bg-gray-50">{s.priceRange}</span>}
-                            {Array.isArray(s.availability) && s.availability.map((a)=> (
-                              <span key={a} className="text-xs px-2 py-0.5 rounded-full border bg-gray-50">{a}</span>
-                            ))}
-                            {s.visibility === false && <span className="text-xs px-2 py-0.5 rounded-full border bg-yellow-50 text-yellow-700">Hidden</span>}
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <button type="button" onClick={()=> { setEditingService({ data: s, index: idx }); setServiceModalOpen(true); }} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Edit</button>
                           <button
                             type="button"
-                            onClick={()=> setServices((arr)=> arr.filter((_,i)=> i!==idx))}
-                            className="mt-0 inline-flex items-center gap-1 px-2 py-1.5 rounded-lg border border-red-200 text-red-600 bg-white hover:bg-red-50 text-xs"
+                            onClick={() => removeAccreditationDoc(d.id)}
+                            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg border border-red-200 text-red-600 bg-white hover:bg-red-50 text-xs"
                           >
                             <X className="w-3 h-3" /> Remove
                           </button>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-                {services.length === 0 && <div className="text-sm text-gray-500">No services yet.</div>}
-
-                {serviceModalOpen && (
-                  <ServiceModal
-                    initial={editingService?.data || null}
-                    onClose={()=> setServiceModalOpen(false)}
-                    onSave={(val)=>{
-                      if (editingService) {
-                        setServices((arr)=> arr.map((x,i)=> i===editingService.index ? { ...x, ...val } : x));
-                      } else {
-                        setServices((arr)=> [...arr, { id: `s${Date.now()}`, order: (arr[arr.length-1]?.order||0)+1, ...val }]);
-                      }
-                      setServiceModalOpen(false);
-                      setEditingService(null);
-                    }}
-                  />
-                )}
               </div>
-            )}
-
+            </>) }
 
             {/* Reviews Tab */}
             {tab === 'reviews' && (
@@ -416,12 +340,93 @@ export default function ClinicProfileEdit() {
                           <p className="text-sm text-gray-700 mt-1">{r.text}</p>
                         </div>
                         <div>
-                          <button type="button" onClick={()=> alert('Reported (demo)')} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Report</button>
+                          <button
+                            type="button"
+                            onClick={() => { setReportReview(r); setReportOpen(true); }}
+                            className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"
+                          >
+                            Reports
+                          </button>
                         </div>
                       </div>
                     </div>
                   ))}
                   {reviews.length === 0 && <div className="text-sm text-gray-500">No reviews yet.</div>}
+                </div>
+
+                <ReportReviewModal
+                  open={reportOpen}
+                  onClose={() => { setReportOpen(false); setReportReview(null); }}
+                  review={reportReview}
+                />
+              </div>
+            )}
+
+            {tab === 'publications' && (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-base font-semibold text-gray-900">Publications</h2>
+                  <button
+                    type="button"
+                    onClick={()=> setPublications((p)=> [...p, { id: `pub${Date.now()}`, title: '', docName: '', docUrl: '', docType: '' }])}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"
+                  >
+                    <Plus className="w-4 h-4"/> Add Publication
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {publications.map((p, idx) => (
+                    <div key={p.id} className="p-3 rounded-xl border bg-gray-50">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <input
+                          value={p.title}
+                          onChange={(e)=> setPublications((arr)=> arr.map((x,i)=> i===idx ? { ...x, title: e.target.value } : x))}
+                          className="h-10 px-3 border rounded-lg text-sm"
+                          placeholder="Title"
+                        />
+                        <div className="md:col-span-2 flex items-center gap-2 min-w-0">
+                          <input
+                            id={`pub-doc-${idx}`}
+                            type="file"
+                            accept="application/pdf"
+                            className="hidden"
+                            onChange={(e)=>{
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const url = URL.createObjectURL(file);
+                              setPublications((arr)=> arr.map((x,i)=> i===idx ? { ...x, docName: file.name, docUrl: url, docType: file.type } : x));
+                              e.target.value = null;
+                            }}
+                          />
+                          <label
+                            htmlFor={`pub-doc-${idx}`}
+                            className="shrink-0 inline-flex items-center gap-2 px-3 h-10 rounded-lg border bg-white hover:bg-gray-50 text-sm cursor-pointer"
+                          >
+                            <Upload className="w-4 h-4" /> {p.docUrl ? 'Change PDF' : 'Upload Files'}
+                          </label>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="text-sm text-gray-700 truncate">{p.docName || 'No file selected'}</div>
+                              {p.docUrl && (
+                                <a href={p.docUrl} target="_blank" rel="noreferrer" className="shrink-0 text-sm text-[#1C6A83] hover:underline">View</a>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-2 flex items-center justify-end">
+                        <button
+                          type="button"
+                          onClick={()=> setPublications((arr)=> arr.filter((_,i)=> i!==idx))}
+                          className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {publications.length === 0 && <div className="text-sm text-gray-500">No publications yet.</div>}
                 </div>
               </div>
             )}
@@ -432,18 +437,83 @@ export default function ClinicProfileEdit() {
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-base font-semibold text-gray-900">Gallery</h2>
                   <div>
-                    <input ref={galleryInputRef} onChange={addGalleryImages} type="file" accept="image/*" multiple className="hidden" />
-                    <button type="button" onClick={()=>galleryInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Images className="w-4 h-4"/> Add Images</button>
+                    <input ref={galleryInputRef} onChange={addGalleryImages} type="file" accept="image/*,video/*" multiple className="hidden" />
+                    <button type="button" onClick={()=>galleryInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Images className="w-4 h-4"/> Add Files</button>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {gallery.map((g, idx) => (
                     <div key={`${g.url}-${idx}`} className="relative group rounded-lg overflow-hidden border bg-gray-50">
-                      <img src={g.url} alt={g.name||'image'} className="w-full h-28 object-cover" />
+                      {String(g?.type || '').startsWith('video/') ? (
+                        <video src={g.url} controls className="w-full h-28 object-cover" />
+                      ) : (
+                        <img src={g.url} alt={g.name||'file'} className="w-full h-28 object-cover" />
+                      )}
                       <button type="button" onClick={()=>removeGalleryImage(idx)} className="absolute top-2 right-2 bg-white/90 hover:bg-white border rounded-full p-1 shadow"><X className="w-4 h-4"/></button>
                     </div>
                   ))}
                   {gallery.length === 0 && <div className="text-sm text-gray-500">No images yet.</div>}
+                </div>
+
+                <div className="mt-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-base font-semibold text-gray-900">Before & After</h2>
+                    <button type="button" onClick={addBeforeAfterPair} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">
+                      <Plus className="w-4 h-4"/> Add Pair
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {beforeAfterPairs.map((pair, idx) => (
+                      <div key={pair.id} className="p-3 rounded-xl border bg-white">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <div className="text-xs font-medium text-gray-600 mb-2">Before</div>
+                            <input id={`ba-before-${idx}`} type="file" accept="image/*" className="hidden" onChange={(e)=>onBeforeAfterFile(idx,'before',e)} />
+                            <div className="rounded-xl border bg-gray-50 overflow-hidden">
+                              {pair.beforeUrl ? (
+                                <img src={pair.beforeUrl} alt={pair.beforeName || 'before'} className="w-full h-40 object-cover" />
+                              ) : (
+                                <div className="h-40 flex items-center justify-center text-xs text-gray-500">No image</div>
+                              )}
+                            </div>
+                            <div className="mt-2 flex items-center justify-between gap-2">
+                              <div className="text-xs text-gray-500 truncate">{pair.beforeName || '—'}</div>
+                              <label htmlFor={`ba-before-${idx}`} className="shrink-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-xs cursor-pointer">
+                                <Upload className="w-3.5 h-3.5" /> Upload
+                              </label>
+                            </div>
+                          </div>
+
+                          <div>
+                            <div className="text-xs font-medium text-gray-600 mb-2">After</div>
+                            <input id={`ba-after-${idx}`} type="file" accept="image/*" className="hidden" onChange={(e)=>onBeforeAfterFile(idx,'after',e)} />
+                            <div className="rounded-xl border bg-gray-50 overflow-hidden">
+                              {pair.afterUrl ? (
+                                <img src={pair.afterUrl} alt={pair.afterName || 'after'} className="w-full h-40 object-cover" />
+                              ) : (
+                                <div className="h-40 flex items-center justify-center text-xs text-gray-500">No image</div>
+                              )}
+                            </div>
+                            <div className="mt-2 flex items-center justify-between gap-2">
+                              <div className="text-xs text-gray-500 truncate">{pair.afterName || '—'}</div>
+                              <label htmlFor={`ba-after-${idx}`} className="shrink-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-xs cursor-pointer">
+                                <Upload className="w-3.5 h-3.5" /> Upload
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 flex justify-end">
+                          <button type="button" onClick={()=>removeBeforeAfterPair(idx)} className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg border border-red-200 text-red-600 bg-white hover:bg-red-50 text-xs">
+                            <X className="w-3 h-3" /> Remove pair
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {beforeAfterPairs.length === 0 && <div className="text-sm text-gray-500">No before/after items yet.</div>}
+                  </div>
                 </div>
               </div>
             )}
@@ -490,7 +560,7 @@ export default function ClinicProfileEdit() {
             )}
 
             {/* Pricing Tab */}
-            {tab === 'pricing' && (
+            {tab === 'prices' && (
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-base font-semibold text-gray-900">Price Ranges</h2>
@@ -509,33 +579,6 @@ export default function ClinicProfileEdit() {
                     </div>
                   ))}
                   {pricing.length === 0 && <div className="text-sm text-gray-500">No price items yet.</div>}
-                </div>
-              </div>
-            )}
-
-            {/* Packages Tab */}
-            {tab === 'packages' && (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-base font-semibold text-gray-900">Health Tourism Packages</h2>
-                  <button type="button" onClick={addPackage} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><img src="/images/icon/archive-up-minimlistic-svgrepo-com.svg" alt="Archive" className="w-4 h-4"/> Create Package</button>
-                </div>
-                <div className="space-y-3">
-                  {packages.map((p) => (
-                    <div key={p.id} className="p-3 rounded-xl border bg-gray-50">
-                      <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
-                        <input value={p.name} onChange={(e)=>updatePackage(p.id,{ name: e.target.value })} className="md:col-span-2 h-10 px-3 border rounded-lg text-sm" placeholder="Package Name" />
-                        <input value={p.treatment} onChange={(e)=>updatePackage(p.id,{ treatment: e.target.value })} className="h-10 px-3 border rounded-lg text-sm" placeholder="Treatment" />
-                        <input value={p.accommodation} onChange={(e)=>updatePackage(p.id,{ accommodation: e.target.value })} className="h-10 px-3 border rounded-lg text-sm" placeholder="Accommodation" />
-                        <input value={p.transfer} onChange={(e)=>updatePackage(p.id,{ transfer: e.target.value })} className="h-10 px-3 border rounded-lg text-sm" placeholder="Transfer" />
-                        <input value={p.price} onChange={(e)=>updatePackage(p.id,{ price: e.target.value.replace(/[^0-9]/g,'') })} className="h-10 px-3 border rounded-lg text-sm" placeholder="Price" />
-                      </div>
-                      <div className="mt-2 flex items-center justify-end gap-2">
-                        <button type="button" onClick={()=>removePackage(p.id)} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Remove</button>
-                      </div>
-                    </div>
-                  ))}
-                  {packages.length === 0 && <div className="text-sm text-gray-500">No packages yet.</div>}
                 </div>
               </div>
             )}

@@ -17,7 +17,7 @@ export default function SearchSections() {
       </section>
 
       {/* Clinics Search (unified clinic/doctor autocomplete) */}
-      <section id="clinics-search" className={"pt-5 pb-6 bg-white"}>
+      <section id="clinics-search" className={"mt-4 pt-5 pb-6 bg-[#F5F7F8] border-y border-slate-200/70"}>
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
           <h2 className={"text-lg font-semibold mb-3 text-center text-gray-900"}>Clinics Search</h2>
           <GlobalSearch />

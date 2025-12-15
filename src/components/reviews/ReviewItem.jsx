@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckCircle, Star } from 'lucide-react';
 import { toEnglishTimestamp } from 'utils/i18n';
+import ReportReviewModal from './ReportReviewModal';
 
 export default function ReviewItem({ review }) {
+  const [reportOpen, setReportOpen] = useState(false);
+
   return (
     <div className="border border-gray-200 rounded-lg p-6">
       <div className="flex items-start justify-between mb-3">
@@ -31,9 +34,22 @@ export default function ReviewItem({ review }) {
         </div>
       </div>
       <p className="text-gray-700 mb-3">{review.comment}</p>
-      <div className="mt-2 text-sm text-gray-600 flex justify-end">
-        <span>{toEnglishTimestamp(review.date) || 'Just now'}</span>
+      <div className="mt-2 flex items-center justify-between">
+        <span className="text-sm text-gray-600">{toEnglishTimestamp(review.date) || 'Just now'}</span>
+        <button
+          type="button"
+          onClick={() => setReportOpen(true)}
+          className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"
+        >
+          Reports
+        </button>
       </div>
+
+      <ReportReviewModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        review={review}
+      />
     </div>
   );
 }
