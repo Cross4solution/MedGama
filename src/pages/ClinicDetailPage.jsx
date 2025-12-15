@@ -72,31 +72,7 @@ const ClinicDetailPage = () => {
   const [isEditingClinicMedstream, setIsEditingClinicMedstream] = useState(false);
   const [tempClinicMedstreamUrl, setTempClinicMedstreamUrl] = useState('https://medstream.com/clinic/anadolu-health-center');
   const [clinicFollowers] = useState(2450);
-  const [clinicLikes] = useState(980);
-  const [showMedstreamCopyToast, setShowMedstreamCopyToast] = useState(false);
-
-  const handleClinicMedstreamClick = async (e) => {
-    if (e && typeof e.preventDefault === 'function') e.preventDefault();
-    if (!clinicMedstreamUrl) return;
-    try {
-      if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(clinicMedstreamUrl);
-      } else {
-        const el = document.createElement('textarea');
-        el.value = clinicMedstreamUrl;
-        el.setAttribute('readonly', '');
-        el.style.position = 'absolute';
-        el.style.left = '-9999px';
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-      }
-      setShowMedstreamCopyToast(true);
-    } catch {
-      // ignore copy errors
-    }
-  };
+  const [clinicFollowing] = useState(980);
 
   const toggleFavoriteClinic = () => {
     setIsFavorite((prev) => {
@@ -163,33 +139,9 @@ const ClinicDetailPage = () => {
                 setTempClinicMedstreamUrl(clinicMedstreamUrl || '');
                 setIsEditingClinicMedstream(true);
               }}
+              followingCount={clinicFollowing}
               followerCount={clinicFollowers}
-              likeCount={clinicLikes}
             />
-
-            {clinicMedstreamUrl && (
-              <div className="mt-0.5 mb-1.5">
-                <button
-                  type="button"
-                  onClick={handleClinicMedstreamClick}
-                  className="inline-flex w-full items-center gap-2 rounded-full bg-transparent px-1 sm:px-2 py-1 text-xs sm:text-sm text-gray-700 focus:outline-none"
-                >
-                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#1C6A83]/5 text-[#1C6A83] flex-shrink-0">
-                    <img
-                      src="/images/icon/link.svg"
-                      alt="MedStream link"
-                      className="w-3.5 h-3.5 opacity-90"
-                    />
-                  </span>
-                  <span className="text-[11px] uppercase tracking-wide text-gray-500 font-semibold hidden sm:inline">
-                    MedStream
-                  </span>
-                  <span className="truncate font-medium text-[#1C6A83] text-left">
-                    {clinicMedstreamUrl}
-                  </span>
-                </button>
-              </div>
-            )}
 
             {/* Tabs */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -383,12 +335,6 @@ const ClinicDetailPage = () => {
           </div>
         </div>
       </div>
-      {showMedstreamCopyToast && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-xs rounded-xl bg-gray-900/90 text-white px-4 py-3 shadow-lg flex items-center gap-2 text-sm">
-          <img src="/images/icon/link.svg" alt="Copied" className="w-4 h-4 flex-shrink-0 opacity-80" />
-          <span className="font-medium">Link copied to clipboard</span>
-        </div>
-      )}
       {isEditingClinicMedstream && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-xl shadow-xl p-5 w-full max-w-md">

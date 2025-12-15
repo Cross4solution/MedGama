@@ -16,6 +16,7 @@ export default function DoctorHero(props) {
     clinicName = '',
     clinicHref = '',
     clinics,
+    followingCount,
     followerCount,
     showInviteButton,
     onInvite,
@@ -101,14 +102,22 @@ export default function DoctorHero(props) {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600 mb-2">
-              {typeof followerCount === 'number' && followerCount > 0 && (
-                <span>
-                  <span className="font-semibold">{followerCount.toLocaleString('en-US')}</span>{' '}
-                  followers
-                </span>
-              )}
-            </div>
+            {(typeof followingCount === 'number' || typeof followerCount === 'number') && (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600 mb-2">
+                {typeof followingCount === 'number' && followingCount > 0 && (
+                  <span>
+                    <span className="font-semibold">{followingCount.toLocaleString('en-US')}</span>{' '}
+                    following
+                  </span>
+                )}
+                {typeof followerCount === 'number' && followerCount > 0 && (
+                  <span>
+                    <span className="font-semibold">{followerCount.toLocaleString('en-US')}</span>{' '}
+                    followers
+                  </span>
+                )}
+              </div>
+            )}
 
             {medstreamUrl && (
               <div

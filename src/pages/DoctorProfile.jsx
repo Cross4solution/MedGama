@@ -35,6 +35,7 @@ const DoctorProfilePage = () => {
   const [doctorLocation] = useState('Istanbul, Turkey');
   const [heroImage] = useState('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800');
   const [doctorFollowers] = useState(1280);
+  const [doctorFollowing] = useState(640);
   const [medstreamUrl, setMedstreamUrl] = useState('https://medstream.com/dr-ayse-yilmaz');
   const [isEditingMedstream, setIsEditingMedstream] = useState(false);
   const [tempMedstreamUrl, setTempMedstreamUrl] = useState('https://medstream.com/dr-ayse-yilmaz');
@@ -217,6 +218,7 @@ const DoctorProfilePage = () => {
               clinics={fallbackClinics}
               showInviteButton={isClinic}
               onInvite={() => setInviteOpen(true)}
+              followingCount={doctorFollowing}
               followerCount={doctorFollowers}
             />
 

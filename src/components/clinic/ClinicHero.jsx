@@ -20,8 +20,8 @@ export default function ClinicHero({
   onImageClick,
   medstreamUrl,
   onEditMedstream,
+  followingCount,
   followerCount,
-  likeCount,
 }) {
   const [showCopyToast, setShowCopyToast] = React.useState(false);
 
@@ -55,7 +55,7 @@ export default function ClinicHero({
   }, [showCopyToast]);
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-3 mt-6">
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
       <div
         className={`relative h-64 md:h-80 ${onImageClick ? 'cursor-pointer group' : ''}`}
         onClick={onImageClick}
@@ -72,35 +72,75 @@ export default function ClinicHero({
         </div>
       </div>
 
-      <div className="p-6">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{name}</h1>
-            <div className="flex items-center text-gray-600 mb-2">
-              <MapPin className="w-5 h-5 mr-2 flex-shrink-0" />
-              <span className="truncate">{location}</span>
+      <div className="px-4 py-3 sm:px-6 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 gap-3">
+          <div className="flex-1 min-w-0 max-w-2xl">
+            <div className="flex items-center gap-2 mb-1.5">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">{name}</h1>
+              {badgeNode}
             </div>
-            {(typeof followerCount === 'number' || typeof likeCount === 'number') && (
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600 mb-3">
+
+            <div className="flex items-center text-gray-600 mb-1.5 gap-3 text-sm">
+              <div className="flex items-center gap-1">
+                <MapPin className="w-4 h-4" />
+                <span className="truncate">{location}</span>
+              </div>
+            </div>
+
+            {(typeof followingCount === 'number' || typeof followerCount === 'number') && (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600 mb-2">
+                {typeof followingCount === 'number' && followingCount > 0 && (
+                  <span>
+                    <span className="font-semibold">{followingCount.toLocaleString('en-US')}</span>{' '}
+                    following
+                  </span>
+                )}
                 {typeof followerCount === 'number' && followerCount > 0 && (
                   <span>
                     <span className="font-semibold">{followerCount.toLocaleString('en-US')}</span>{' '}
                     followers
                   </span>
                 )}
-                {typeof likeCount === 'number' && likeCount > 0 && (
-                  <span>
-                    <span className="font-semibold">{likeCount.toLocaleString('en-US')}</span>{' '}
-                    likes
-                  </span>
+              </div>
+            )}
+
+            {medstreamUrl && (
+              <div
+                className="mt-1 inline-flex items-center text-gray-700 text-sm focus-within:ring-2 focus-within:ring-[#1C6A83]/40 rounded-md cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMedstreamClick(e);
+                }}
+              >
+                <img
+                  alt="Medstream link"
+                  className="w-5 h-5 mr-2 flex-shrink-0"
+                  src="/images/icon/link.svg"
+                />
+                <span className="truncate font-medium text-left">{medstreamUrl}</span>
+                {onEditMedstream && (
+                  <button
+                    type="button"
+                    className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    aria-label="Edit Medstream URL"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onEditMedstream();
+                    }}
+                  >
+                    <Edit3 className="w-3 h-3" />
+                  </button>
                 )}
               </div>
             )}
-            {badgeNode && <div className="flex items-center">{badgeNode}</div>}
           </div>
-          <div className="flex items-center justify-end sm:justify-start space-x-2 flex-shrink-0">
+
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button
-              onClick={onToggleFavorite}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite?.();
+              }}
               className={`p-2 sm:p-3 rounded-full transition-colors ${
                 isFavorite ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600'
               }`}
@@ -123,7 +163,10 @@ export default function ClinicHero({
             )}
 
             <button
-              onClick={onToggleFollow || onFollow}
+              onClick={(e) => {
+                e.stopPropagation();
+                (onToggleFollow || onFollow)?.();
+              }}
               className={`${isFollowing
                 ? 'bg-white text-blue-700 border-blue-300 hover:bg-blue-50'
                 : 'bg-blue-600 text-white hover:bg-blue-700 border-transparent'} border px-3 py-2 sm:px-3 sm:py-1 rounded-xl transition-all duration-200 flex items-center justify-center space-x-1 sm:space-x-2 shadow-sm hover:shadow-md w-28 sm:w-24`}

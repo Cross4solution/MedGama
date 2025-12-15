@@ -165,9 +165,8 @@ export default function CustomSearch() {
     return filterOptions(merged, symptomQuery);
   }, [symptoms, procedures, symptomQuery]);
   const specialtyMatches = useMemo(() => {
-    const merged = [...specialties, ...procedures];
-    return filterOptions(merged, specialtyQuery);
-  }, [specialties, procedures, specialtyQuery]);
+    return filterOptions(specialties, specialtyQuery);
+  }, [specialties, specialtyQuery]);
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
