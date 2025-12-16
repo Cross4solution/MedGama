@@ -2,20 +2,31 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import Modal from '../common/Modal';
+import { useToast } from '../../context/ToastContext';
 
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout } = useAuth();
   const navigate = useNavigate();
+  const { notify } = useToast();
   const [isMenuOpen, setIsMenuOpen] = useState(false); // legacy (mobile menu removed)
   const [isScrolled, setIsScrolled] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const loginRef = useRef(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
-  const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
+  const [supportSubject, setSupportSubject] = useState('');
+  const [supportMessage, setSupportMessage] = useState('');
   const [mobileLoginExpanded, setMobileLoginExpanded] = useState(false);
   // Removed profile dropdown (only avatar + username shown)
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (!supportOpen) return;
+    setSupportSubject('');
+    setSupportMessage('');
+  }, [supportOpen]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -35,6 +46,15 @@ const Header = () => {
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!profileOpen) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setProfileOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [profileOpen]);
 
   // Header transparency on scroll
   useEffect(() => {
@@ -147,15 +167,68 @@ const Header = () => {
               ) : (
                 <>
                   <div className="relative" ref={profileRef}>
-                    {/* Static avatar + name for all roles (no dropdown) */}
-                    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-transparent" title={user.name}>
+                    <button
+                      type="button"
+                      aria-haspopup="menu"
+                      aria-expanded={profileOpen}
+                      onClick={() => setProfileOpen((p) => !p)}
+                      className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-transparent hover:border-gray-200"
+                      title={user.name}
+                    >
                       <img
                         src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
                         alt={user.name}
                         className="w-8 h-8 rounded-full object-cover border"
                       />
                       <span className="text-sm text-gray-800 font-medium max-w-[160px] truncate">{user.name}</span>
-                    </div>
+                      <svg className="w-4 h-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
+                    </button>
+
+                    {profileOpen && (
+                      <div role="menu" className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-xl ring-1 ring-black/5 overflow-hidden z-50 p-1">
+                        {(() => {
+                          const role = user?.role || 'patient';
+                          const profileTo = role === 'clinic' ? '/clinic' : '/profile';
+                          const editTo = role === 'clinic' ? '/clinic-edit' : (role === 'doctor' ? '/doctor-edit' : '/profile');
+                          return (
+                            <>
+                              {role === 'doctor' && (
+                                <Link
+                                  to={profileTo}
+                                  role="menuitem"
+                                  onClick={() => setProfileOpen(false)}
+                                  className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm font-medium text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                >
+                                  <Settings className="w-4 h-4 text-gray-500" />
+                                  <span>Settings</span>
+                                </Link>
+                              )}
+                              <Link
+                                to={editTo}
+                                role="menuitem"
+                                onClick={() => setProfileOpen(false)}
+                                className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm font-medium text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                              >
+                                <User className="w-4 h-4 text-gray-500" />
+                                <span>Profile</span>
+                              </Link>
+                              <button
+                                type="button"
+                                role="menuitem"
+                                onClick={() => {
+                                  setProfileOpen(false);
+                                  setSupportOpen(true);
+                                }}
+                                className="w-full text-left flex items-center gap-2 px-2.5 py-2 rounded-md text-sm font-medium text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                              >
+                                <Info className="w-4 h-4 text-gray-500" />
+                                <span>Support</span>
+                              </button>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    )}
                   </div>
                 </>
               )}
@@ -189,20 +262,6 @@ const Header = () => {
         </div>
       </div>
     </header>
-    {/* Logout confirm modal */}
-    {confirmLogoutOpen && (
-      <div className="fixed inset-0 z-[60] flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/40" onClick={()=>setConfirmLogoutOpen(false)} />
-        <div role="dialog" aria-modal="true" className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-sm w-[90%] p-5">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">Log out?</h3>
-          <p className="text-sm text-gray-600 mb-4">You are about to log out of your account. Are you sure?</p>
-          <div className="flex justify-end gap-2">
-            <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
-            <button onClick={()=>{ setConfirmLogoutOpen(false); logout(); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">log out</button>
-          </div>
-        </div>
-      </div>
-    )}
     {/* Guest mobile menu (local) */}
     {!user && isMenuOpen && (
       <>
@@ -276,7 +335,7 @@ const Header = () => {
               { to: '/explore', label: 'Medstream', icon: Video },
               { to: '/messages', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },
-              { to: '/profile', label: 'Settings', icon: Settings },
+              { to: '/profile', label: 'Profile', icon: User },
             ];
             const doctorItems = [
               { to: '/profile', label: 'Profile', icon: User },
@@ -335,7 +394,13 @@ const Header = () => {
                 </div>
                 <div className="p-2">
                   <button
-                    onClick={() => { closeMenu(); logout(); }}
+                    onClick={async () => {
+                      closeMenu();
+                      const confirmed = await logout();
+                      if (confirmed) {
+                        try { window.location.assign('/home-v2'); } catch {}
+                      }
+                    }}
                     className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"
                   >
                     Log out
@@ -347,6 +412,59 @@ const Header = () => {
         </div>
       </>
     )}
+
+    <Modal
+      open={supportOpen}
+      onClose={() => setSupportOpen(false)}
+      title={<span className="inline-flex items-center gap-2">Support</span>}
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"
+            onClick={() => setSupportOpen(false)}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="px-3 py-1.5 rounded-lg bg-[#1C6A83] text-white text-sm hover:bg-[#0F4A5C]"
+            onClick={() => {
+              if (!supportSubject.trim() || !supportMessage.trim()) {
+                notify({ type: 'error', message: 'Please fill subject and message.' });
+                return;
+              }
+              notify({ type: 'success', message: 'Support message sent.' });
+              setSupportOpen(false);
+            }}
+          >
+            Send
+          </button>
+        </div>
+      }
+    >
+      <div className="space-y-3">
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Subject</label>
+          <input
+            value={supportSubject}
+            onChange={(e) => setSupportSubject(e.target.value)}
+            className="w-full h-10 px-3 border rounded-lg text-sm bg-white focus:outline-none focus:ring-4 focus:ring-[#1C6A83]/15 focus:border-[#1C6A83]/40"
+            placeholder="Type a subject…"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Message</label>
+          <textarea
+            rows={5}
+            value={supportMessage}
+            onChange={(e) => setSupportMessage(e.target.value)}
+            className="w-full px-3 py-2 border rounded-lg text-sm resize-y focus:outline-none focus:ring-4 focus:ring-[#1C6A83]/15 focus:border-[#1C6A83]/40"
+            placeholder="Write your message…"
+          />
+        </div>
+      </div>
+    </Modal>
     </>
   );
 };

@@ -20,7 +20,7 @@ export default function ChatMessage({ message, leftAvatar, rightAvatar }) {
           <div className={`text-[11px] mt-1 flex items-center justify-between gap-2 ${isDoctor ? 'text-blue-100' : 'text-gray-500'}`}>
             <div className="flex items-center gap-2">
               <span>{message.time}</span>
-              {!isDoctor && (
+              {isDoctor && (
                 <span className="inline-flex items-center gap-1">
                   {message.status === 'sent' && <span title="Sent">✓</span>}
                   {message.status === 'delivered' && <span title="Delivered">✓✓</span>}

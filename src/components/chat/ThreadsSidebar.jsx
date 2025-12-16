@@ -34,9 +34,13 @@ export default function ThreadsSidebar({
         </div>
       </div>
       <div className="flex-1 flex flex-col min-h-0">
-        <div className="overflow-hidden divide-y flex-1">
+        <div className="overflow-hidden flex-1 p-2 space-y-2">
           {paginatedThreads.map((t) => (
-            <div key={t.id} className={`py-[0.8rem] px-2 hover:bg-gray-50 cursor-pointer ${activeThreadId===t.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`} onClick={()=>onSelectThread?.(t.id)}>
+            <div
+              key={t.id}
+              className={`min-h-[84px] py-2.5 px-3 cursor-pointer border rounded-lg ${activeThreadId===t.id ? 'bg-blue-50 border-blue-200 border-l-4 border-l-blue-500' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
+              onClick={()=>onSelectThread?.(t.id)}
+            >
               <div className="flex items-start gap-2">
                 <div className="relative w-6 h-6 rounded-full mr-3.5 overflow-hidden bg-gray-100">
                   <img src={t.avatar} alt="avatar" className="w-full h-full object-cover" loading="lazy" />
@@ -46,11 +50,6 @@ export default function ThreadsSidebar({
                   <div className="flex items-center justify-between mb-0.5">
                     <h4 className="font-medium text-gray-900 truncate text-sm lg:text-sm">{t.name}</h4>
                     <span className="text-xs text-gray-500">{t.when}</span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-1 mt-0.5">
-                    {t.tags?.map(tag => (
-                      <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50 text-gray-700">{tag}</span>
-                    ))}
                   </div>
                   <p className="text-xs lg:text-sm text-gray-600 truncate">{t.last}</p>
                 </div>

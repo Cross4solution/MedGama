@@ -98,7 +98,7 @@ const MessagesPage = () => {
     if (message.trim()) {
       const newMessage = {
         id: messages.length + 1,
-        sender: 'patient',
+        sender: 'doctor',
         text: message,
         time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
       };
@@ -154,11 +154,11 @@ const MessagesPage = () => {
         <div className="lg:hidden h-[calc(100vh-80px)] flex flex-col overflow-y-auto">
           {!mobileChatOpen ? (
             <div>
-              <div className="bg-white border rounded-lg overflow-hidden divide-y">
+              <div className="bg-white rounded-lg p-2 space-y-2">
                 {mobilePaginatedThreads.map((t)=> (
                   <button
                     key={t.id}
-                    className="w-full text-left p-3 hover:bg-gray-50"
+                    className="w-full min-h-[84px] text-left p-2.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
                     onClick={()=>handleSelectThread(t.id)}
                   >
                     <div className="flex items-start gap-3">
@@ -172,11 +172,6 @@ const MessagesPage = () => {
                           <span className="text-[11px] text-gray-500">{t.when}</span>
                         </div>
                         <p className="text-xs text-gray-600 truncate">{t.last}</p>
-                        <div className="mt-1 flex items-center gap-2">
-                          {t.tags?.slice(0,2).map(tag => (
-                            <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50 text-gray-700">{tag}</span>
-                          ))}
-                        </div>
                       </div>
                     </div>
                   </button>

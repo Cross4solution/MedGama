@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 /**
  * @param {{
@@ -10,7 +10,17 @@ import React from 'react';
  * }} props
  */
 export default function Modal({ open, onClose, title, children, footer = null }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
+
   return (
     <div className="fixed inset-0 z-[100]">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} aria-hidden="true" />
