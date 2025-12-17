@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function DoctorAppointmentCalendar({ onChange }) {
@@ -108,20 +109,20 @@ export default function DoctorAppointmentCalendar({ onChange }) {
         </button>
       </div>
 
-      {open && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-xl p-5 w-full max-w-md">
-            <h4 className="text-sm font-semibold text-gray-900 mb-1">Choose date &amp; time</h4>
-            <p className="text-xs text-gray-500 mb-3">Select a suitable day from the calendar and then choose a time slot.</p>
+      {open && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-[1px] p-4">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <h4 className="text-lg font-semibold text-gray-900 mb-2">Choose date &amp; time</h4>
+            <p className="text-sm text-gray-500 mb-4">Select a suitable day from the calendar and then choose a time slot.</p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2">Date</label>
-                <div className="border border-gray-200 rounded-xl p-3 text-xs bg-gray-50">
-                  <div className="flex items-center justify-between mb-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-3">Date</label>
+                <div className="border border-gray-200 rounded-xl p-4 text-sm bg-gray-50 h-full">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2 text-gray-800">
-                      <Calendar className="w-4 h-4 text-gray-500" />
-                      <span className="font-medium">
+                      <Calendar className="w-5 h-5 text-gray-500" />
+                      <span className="font-medium text-base">
                         {month.toLocaleString('default', { month: 'long' })} {month.getFullYear()}
                       </span>
                     </div>
@@ -129,28 +130,28 @@ export default function DoctorAppointmentCalendar({ onChange }) {
                       <button
                         type="button"
                         onClick={() => setMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))}
-                        className="p-1 rounded-full hover:bg-gray-100 text-gray-500"
+                        className="p-2 rounded-full hover:bg-gray-100 text-gray-500"
                       >
-                        <ChevronLeft className="w-3 h-3" />
+                        <ChevronLeft className="w-4 h-4" />
                       </button>
                       <button
                         type="button"
                         onClick={() => setMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))}
-                        className="p-1 rounded-full hover:bg-gray-100 text-gray-500"
+                        className="p-2 rounded-full hover:bg-gray-100 text-gray-500"
                       >
-                        <ChevronRight className="w-3 h-3" />
+                        <ChevronRight className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-7 gap-1 mb-1 text-[10px] text-gray-500">
+                  <div className="grid grid-cols-7 gap-1.5 mb-2 text-xs text-gray-500">
                     {['Mo','Tu','We','Th','Fr','Sa','Su'].map((d) => (
                       <div key={d} className="text-center">
                         {d}
                       </div>
                     ))}
                   </div>
-                  <div className="grid grid-cols-7 gap-1 text-[11px]">
+                  <div className="grid grid-cols-7 gap-1.5 text-sm">
                     {Array.from({ length: startWeekday }).map((_, i) => (
                       <div key={`empty-${i}`} />
                     ))}
@@ -158,7 +159,6 @@ export default function DoctorAppointmentCalendar({ onChange }) {
                       const iso = formatIso(month.getFullYear(), month.getMonth(), day);
                       const booked = bookedSlotsByDate[iso] || [];
                       const fullyBooked = Array.isArray(booked) && booked.length >= timeSlots.length;
-                      const hasAnyBooked = Array.isArray(booked) && booked.length > 0;
                       const isSelected =
                         selected &&
                         selected.getFullYear() === month.getFullYear() &&
@@ -170,14 +170,12 @@ export default function DoctorAppointmentCalendar({ onChange }) {
                           type="button"
                           onClick={() => handleSelectDay(day)}
                           disabled={fullyBooked}
-                          className={`h-7 rounded-full flex items-center justify-center transition-colors border ${
+                          className={`h-9 rounded-full flex items-center justify-center transition-colors border ${
                             isSelected
                               ? 'bg-blue-600 text-white shadow-sm border-blue-600 ring-2 ring-blue-200'
                               : fullyBooked
                                 ? 'bg-rose-100 text-rose-800 border-rose-200 cursor-not-allowed opacity-70 line-through'
-                                : hasAnyBooked
-                                  ? 'bg-amber-100 text-amber-900 border-amber-200 hover:bg-amber-200'
-                                  : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
+                                : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
                           }`}
                         >
                           {day}
@@ -187,11 +185,11 @@ export default function DoctorAppointmentCalendar({ onChange }) {
                   </div>
                 </div>
               </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2">Time</label>
-                <div className="border border-gray-200 rounded-xl p-3 text-xs bg-gray-50">
-                  <div className="text-[11px] text-gray-500 mb-2">Available slots</div>
-                  <div className="grid grid-cols-3 gap-2">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-3">Time</label>
+                <div className="border border-gray-200 rounded-xl p-4 text-sm bg-gray-50 h-full">
+                  <div className="text-xs text-gray-500 mb-3">Available slots</div>
+                  <div className="grid grid-cols-3 gap-2.5">
                     {timeSlots.map((t) => {
                       const active = draftTime === t;
                       const isBooked = selectedIso ? selectedBooked.includes(t) : false;
@@ -202,14 +200,14 @@ export default function DoctorAppointmentCalendar({ onChange }) {
                           type="button"
                           disabled={isDisabled}
                           onClick={() => handleTimeChange({ target: { value: t } })}
-                          className={`h-8 rounded-full px-2 text-xs flex items-center justify-center border transition-colors ${
+                          className={`h-10 rounded-full px-3 text-sm flex items-center justify-center border transition-colors ${
                             active
                               ? 'bg-blue-600 text-white border-blue-600 shadow-sm ring-2 ring-blue-200'
                               : isBooked
                                 ? 'bg-rose-100 text-rose-800 border-rose-200 cursor-not-allowed opacity-80 line-through'
                                 : isDisabled
                                   ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                                  : 'bg-white text-gray-900 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-400'
+                                  : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
                           }`}
                         >
                           {t}
@@ -221,26 +219,26 @@ export default function DoctorAppointmentCalendar({ onChange }) {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 mt-4 text-xs">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 mt-8 pt-4 border-t border-gray-200 text-sm">
               <button
                 type="button"
-                className="px-3 py-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
                 onClick={() => setOpen(false)}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="px-3 py-1.5 rounded-lg bg-[#1C6A83] text-white hover:bg-[#0F4A5C]"
+                className="px-5 py-2.5 rounded-lg bg-[#1C6A83] text-white hover:bg-[#0F4A5C] font-medium"
                 onClick={applySelection}
               >
                 Book Appointment
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
 }
-

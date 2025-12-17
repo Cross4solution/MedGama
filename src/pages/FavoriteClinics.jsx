@@ -103,7 +103,8 @@ export default function FavoriteClinicsPage() {
           {listToRender.map((clinic, idx) => (
             <div
               key={idx}
-              className="group text-left rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm shadow-sm overflow-hidden flex flex-col"
+              onClick={() => navigate('/clinic')}
+              className="group text-left rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm shadow-sm overflow-hidden flex flex-col cursor-pointer hover:shadow-md transition-shadow"
             >
               <div className="relative h-40 bg-gray-100">
                 {clinic.image ? (
@@ -113,13 +114,13 @@ export default function FavoriteClinicsPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-teal-700 text-lg font-bold">
+                  <div className="w-full h-full flex items-center justify-center text-rose-700 text-lg font-bold">
                     {clinic.name?.charAt(0) || 'C'}
                   </div>
                 )}
 
-                <div className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/80 backdrop-blur-sm text-[11px] text-teal-700 border border-teal-100 shadow-sm">
-                  <Heart className="w-3.5 h-3.5 text-teal-600" />
+                <div className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/80 backdrop-blur-sm text-[11px] text-rose-700 border border-rose-100 shadow-sm">
+                  <Heart className="w-3.5 h-3.5 text-rose-600" />
                   <span className="font-medium">Favorite</span>
                 </div>
               </div>
@@ -153,7 +154,7 @@ export default function FavoriteClinicsPage() {
 
                 <div className="flex items-center justify-between text-[11px] text-gray-500">
                   <span className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-teal-500/70" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500/70" />
                     <span>{showingDemo ? 'Example card' : 'Saved to favorites'}</span>
                   </span>
 
@@ -163,7 +164,7 @@ export default function FavoriteClinicsPage() {
                       e.stopPropagation?.();
                       navigate('/clinic');
                     }}
-                    className="inline-flex items-center gap-1 text-teal-700 font-medium hover:underline"
+                    className="inline-flex items-center gap-1 text-rose-700 font-medium hover:underline"
                   >
                     <span>View details</span>
                     <span className="text-[10px]">→</span>

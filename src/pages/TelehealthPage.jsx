@@ -226,32 +226,6 @@ const TelehealthPage = () => {
                           <p className="text-xs text-gray-500">{fmtDateTime(session.start)} - {session.durationMin} min</p>
                           <p className="text-xs text-green-600">{session.status}</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          {(() => {
-                            const m = minutesUntil(session.start);
-                            const canJoin = m <= 15 && m >= 0;
-                            const canCancel = m >= 240;
-                            return (
-                              <>
-                                <button
-                                  disabled={!canJoin}
-                                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-white transition-colors ${canJoin ? 'bg-teal-600 hover:bg-teal-700' : 'bg-gray-300 cursor-not-allowed'}`}
-                                >
-                                  <Video className="w-4 h-4" />
-                                  <span>Join</span>
-                                </button>
-                                <button
-                                  disabled={!canCancel}
-                                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-colors ${canCancel ? 'text-red-700 hover:text-red-900' : 'text-gray-300 cursor-not-allowed'}`}
-                                  title={canCancel ? '' : 'Cancellation allowed until 4 hours before'}
-                                >
-                                  <XCircle className="w-4 h-4" />
-                                  <span>Cancel</span>
-                                </button>
-                              </>
-                            );
-                          })()}
-                        </div>
                       </div>
                     </div>
                   ))}

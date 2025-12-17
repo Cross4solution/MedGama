@@ -14,7 +14,7 @@ export default function DoctorReviewsSection({ reviews = [] }) {
                   <span className="font-semibold text-gray-900">{review.name}</span>
                   {review.verified && <CheckCircle className="w-4 h-4 text-blue-600" />}
                 </div>
-                <div className="text-sm text-gray-500">{review.date}</div>
+                <div className="text-xs text-gray-500">{review.date}</div>
               </div>
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
