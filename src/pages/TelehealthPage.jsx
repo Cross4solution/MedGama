@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Search, Plus, Video, Clock, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import Modal from '../components/common/Modal';
+import { useToast } from '../context/ToastContext';
 
 const TelehealthPage = () => {
+  const { notify } = useToast();
   // Helpers
   const fmtDateTime = (d) => {
     try {
@@ -17,41 +20,58 @@ const TelehealthPage = () => {
 
   const minutesUntil = (d) => Math.floor((new Date(d).getTime() - Date.now()) / 60000);
 
+  const getProp = (obj, key) => {
+    try {
+      if (!obj) return undefined;
+      return obj[key];
+    } catch {
+      return undefined;
+    }
+  };
+
   // Mock data (Date based)
   const now = new Date();
   const addHours = (h) => new Date(now.getTime() + h * 3600000);
 
-  const scheduledSessions = [
-    { id: 3,  patient: 'Deniz Öztürk',   start: addHours(0.2),  specialty: 'Initial Consultation' },
-    { id: 4,  patient: 'Zeynep Kaya',    start: addHours(6),    specialty: 'Follow-up' },
-    { id: 5,  patient: 'Ali Şen',        start: addHours(30),   specialty: 'Preoperative' },
-    { id: 9,  patient: 'Mert Koç',       start: addHours(1.5),  specialty: 'Dermatology' },
+  const initialScheduledSessions = [
+    { id: 3,  patient: 'Deniz Öztürk',   start: addHours(0.2),  specialty: 'Initial Consultation', joinUrl: 'https://zoom.us/j/100000003' },
+    { id: 4,  patient: 'Zeynep Kaya',    start: addHours(6),    specialty: 'Follow-up', joinUrl: 'https://zoom.us/j/100000004' },
+    { id: 5,  patient: 'Ali Şen',        start: addHours(30),   specialty: 'Preoperative', joinUrl: 'https://zoom.us/j/100000005' },
+    { id: 9,  patient: 'Mert Koç',       start: addHours(1.5),  specialty: 'Dermatology', joinUrl: 'https://zoom.us/j/100000009' },
   ];
 
   const [cancelModal, setCancelModal] = useState({ open: false, session: null });
 
-  const completedSessions = [
+  const initialCompletedSessions = [
     { id: 6, patient: 'Selin Acar',       start: addHours(-20), durationMin: 25, status: 'Completed' },
     { id: 7, patient: 'Mehmet Özkan',     start: addHours(-48), durationMin: 32, status: 'Completed' },
     { id: 8, patient: 'Fatma Yılmaz',     start: addHours(-72), durationMin: 18, status: 'Completed' },
   ];
 
-  const canceledSessions = [
+  const initialCanceledSessions = [
     { id: 10, patient: 'Burcu Tekin',     start: addHours(-10), reason: 'Patient canceled' },
   ];
 
-  const totals = {
-    total: scheduledSessions.length + completedSessions.length + canceledSessions.length,
-    scheduled: scheduledSessions.length,
-    completed: completedSessions.length,
-    canceled: canceledSessions.length,
-  };
+  const [scheduledSessions, setScheduledSessions] = useState(initialScheduledSessions);
+  const [completedSessions] = useState(initialCompletedSessions);
+  const [canceledSessions, setCanceledSessions] = useState(initialCanceledSessions);
+
+  const [sessionsModal, setSessionsModal] = useState({ open: false, filter: 'total' });
+
+  const totals = useMemo(() => {
+    return {
+      total: scheduledSessions.length + completedSessions.length + canceledSessions.length,
+      scheduled: scheduledSessions.length,
+      completed: completedSessions.length,
+      canceled: canceledSessions.length,
+    };
+  }, [scheduledSessions.length, completedSessions.length, canceledSessions.length]);
 
   const stats = [
-    { title: 'Total Sessions', value: String(totals.total), subtitle: 'All time', icon: Video, color: 'green' },
-    { title: 'Scheduled', value: String(totals.scheduled), subtitle: 'Upcoming', icon: Calendar, color: 'blue' },
-    { title: 'Completed', value: String(totals.completed), subtitle: 'Finished', icon: CheckCircle, color: 'purple' },
-    { title: 'Canceled', value: String(totals.canceled), subtitle: 'History', icon: XCircle, color: 'orange' },
+    { key: 'total', title: 'Total Sessions', value: String(totals.total), subtitle: 'All time', icon: Video, color: 'green' },
+    { key: 'scheduled', title: 'Scheduled', value: String(totals.scheduled), subtitle: 'Upcoming', icon: Calendar, color: 'blue' },
+    { key: 'completed', title: 'Completed', value: String(totals.completed), subtitle: 'Finished', icon: CheckCircle, color: 'purple' },
+    { key: 'canceled', title: 'Canceled', value: String(totals.canceled), subtitle: 'History', icon: XCircle, color: 'orange' },
   ];
 
   const [upPage, setUpPage] = useState(1);
@@ -65,6 +85,46 @@ const TelehealthPage = () => {
   const pastTotalPages = Math.max(1, Math.ceil(completedSessions.length / pageSize));
   const pastStart = (pastPage - 1) * pageSize;
   const pastItems = completedSessions.slice(pastStart, pastStart + pageSize);
+
+  const getSessionsForModal = () => {
+    const all = [
+      ...scheduledSessions.map((s) => ({ ...s, _kind: 'scheduled' })),
+      ...completedSessions.map((s) => ({ ...s, _kind: 'completed' })),
+      ...canceledSessions.map((s) => ({ ...s, _kind: 'canceled' })),
+    ];
+    if (sessionsModal.filter === 'scheduled') return all.filter((x) => x._kind === 'scheduled');
+    if (sessionsModal.filter === 'completed') return all.filter((x) => x._kind === 'completed');
+    if (sessionsModal.filter === 'canceled') return all.filter((x) => x._kind === 'canceled');
+    return all;
+  };
+
+  const sessionsModalTitle = () => {
+    if (sessionsModal.filter === 'scheduled') return 'Scheduled Sessions';
+    if (sessionsModal.filter === 'completed') return 'Completed Sessions';
+    if (sessionsModal.filter === 'canceled') return 'Canceled Sessions';
+    return 'All Sessions';
+  };
+
+  const handleJoin = (session) => {
+    const url = session?.joinUrl || `https://zoom.us/j/${session?.id || ''}`;
+    try {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch {
+      try {
+        window.location.assign(url);
+      } catch {}
+    }
+  };
+
+  const confirmCancel = (session) => {
+    if (!session) return;
+    setScheduledSessions((arr) => arr.filter((s) => s.id !== session.id));
+    setCanceledSessions((arr) => ([
+      { id: session.id, patient: session.patient, start: session.start, reason: 'Canceled by doctor' },
+      ...arr,
+    ]));
+    notify({ type: 'success', message: 'Appointment canceled. Notification message + email sent to the patient.' });
+  };
 
   // Disable global scroll while on Telehealth page
   useEffect(() => {
@@ -90,7 +150,12 @@ const TelehealthPage = () => {
 {/* Stats Cards */}
 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6">
   {stats.map((stat, index) => (
-    <div key={index} className="bg-white rounded-xl px-4 py-1 sm:px-4 sm:py-2 lg:px-4 lg:py-2 border border-gray-200 aspect-[3/2] md:aspect-[3/2] lg:aspect-[2/1]">
+    <button
+      key={index}
+      type="button"
+      onClick={() => setSessionsModal({ open: true, filter: stat.key })}
+      className="bg-white rounded-xl px-4 py-1 sm:px-4 sm:py-2 lg:px-4 lg:py-2 border border-gray-200 aspect-[3/2] md:aspect-[3/2] lg:aspect-[2/1] hover:bg-gray-50 transition-colors cursor-pointer"
+    >
       <div className="h-full flex items-center justify-center gap-3 sm:gap-3">
         <div className="text-center">
           <p className="text-xs sm:text-sm font-medium text-gray-600">{stat.title}</p>
@@ -118,7 +183,7 @@ const TelehealthPage = () => {
           }`} />
         </div>
       </div>
-    </div>
+    </button>
   ))}
 </div>
 
@@ -146,12 +211,13 @@ const TelehealthPage = () => {
                         <div className="flex items-center gap-2">
                           {(() => {
                             const m = minutesUntil(session.start);
-                            const canJoin = m <= 15 && m >= 0;
+                            const canJoin = m <= 10 && m >= 0;
                             const canCancel = m >= 240;
                             return (
                               <>
                                 <button
                                   disabled={!canJoin}
+                                  onClick={() => { if (canJoin) handleJoin(session); }}
                                   className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-white transition-colors ${canJoin ? 'bg-teal-600 hover:bg-teal-700' : 'bg-gray-300 cursor-not-allowed'}`}
                                 >
                                   <Video className="w-4 h-4" />
@@ -294,7 +360,10 @@ const TelehealthPage = () => {
                 Keep Appointment
               </button>
               <button
-                onClick={() => setCancelModal({ open: false, session: null })}
+                onClick={() => {
+                  confirmCancel(cancelModal.session);
+                  setCancelModal({ open: false, session: null });
+                }}
                 className="px-4 py-2 text-sm font-medium text-white bg-rose-500 hover:bg-rose-600 rounded-lg"
               >
                 Confirm Cancel
@@ -303,6 +372,81 @@ const TelehealthPage = () => {
           </div>
         </div>
       )}
+
+      <Modal
+        open={sessionsModal.open}
+        onClose={() => setSessionsModal({ open: false, filter: sessionsModal.filter })}
+        title={sessionsModalTitle()}
+        footer={(
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"
+              onClick={() => setSessionsModal({ open: false, filter: sessionsModal.filter })}
+            >
+              Close
+            </button>
+          </div>
+        )}
+      >
+        <div className="space-y-2">
+          {getSessionsForModal().map((s) => (
+            <div key={`${s._kind}_${s.id}`} className="rounded-lg border bg-gray-50 p-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-gray-900 truncate">{s.patient}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">{fmtDateTime(s.start)}</div>
+                  {(() => {
+                    const specialty = getProp(s, 'specialty');
+                    const status = getProp(s, 'status');
+                    const reason = getProp(s, 'reason');
+                    if (s._kind === 'scheduled' && specialty) {
+                      return <div className="text-xs text-gray-600 mt-1 truncate">{String(specialty)}</div>;
+                    }
+                    if (s._kind === 'completed') {
+                      return <div className="text-xs text-green-700 mt-1">{String(status || 'Completed')}</div>;
+                    }
+                    if (s._kind === 'canceled') {
+                      return <div className="text-xs text-rose-700 mt-1">{String(reason || 'Canceled')}</div>;
+                    }
+                    return null;
+                  })()}
+                </div>
+
+                <div className="flex flex-col items-end gap-2">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ${
+                    s._kind === 'scheduled'
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                      : s._kind === 'completed'
+                        ? 'bg-green-50 text-green-700 border-green-200'
+                        : 'bg-rose-50 text-rose-700 border-rose-200'
+                  }`}>
+                    {s._kind}
+                  </span>
+
+                  {s._kind === 'scheduled' && (
+                    (() => {
+                      const m = minutesUntil(s.start);
+                      const canJoin = m <= 10 && m >= 0;
+                      return (
+                    <button
+                      type="button"
+                      disabled={!canJoin}
+                      onClick={() => handleJoin(s)}
+                      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs ${canJoin ? 'bg-teal-600 hover:bg-teal-700 text-white' : 'bg-gray-300 text-white cursor-not-allowed'}`}
+                    >
+                      <Video className="w-4 h-4" />
+                      Join
+                    </button>
+                      );
+                    })()
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 };
