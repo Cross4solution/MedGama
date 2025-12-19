@@ -348,10 +348,10 @@ export default function ExploreTimeline() {
                         Make a Post...
                       </button>
                     </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 mt-4 sm:pr-4">
                       <div className="flex items-center space-x-4 sm:space-x-6 relative">
                         <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>imageInputRef.current?.click(),0); }} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-image w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                          <img src="/images/icon/image.svg" alt="Photo" className="w-4 h-4 sm:w-5 sm:h-5" />
                           <span className="text-sm sm:text-base">Photo</span>
                         </button>
                         <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>videoInputRef.current?.click(),0); }} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button">
@@ -359,32 +359,15 @@ export default function ExploreTimeline() {
                           <span className="text-sm sm:text-base">Video</span>
                         </button>
                         <button onClick={()=>{ setIsComposerOpen(true); setShowEmojiModal(true); }} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" aria-label="Add emoji">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-smile w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
+                          <img src="/images/icon/emoji.svg" alt="Emoji" className="w-4 h-4 sm:w-5 sm:h-5" />
                           <span className="text-sm sm:text-base">Emoji</span>
                         </button>
                         <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>paperInputRef.current?.click(),0); }} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="w-4 h-4 sm:w-5 sm:h-5"
-                            aria-hidden="true"
-                          >
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="9" y1="13" x2="15" y2="13"></line>
-                            <line x1="9" y1="17" x2="13" y2="17"></line>
-                          </svg>
+                          <img src="/images/icon/research-paper.svg" alt="Research Paper" className="w-4 h-4 sm:w-5 sm:h-5" />
                           <span className="text-sm sm:text-base">Research Paper</span>
                         </button>
                       </div>
-                      <button type="button" onClick={()=>setIsComposerOpen(true)} className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base font-medium">Post</button>
+                      <button type="button" onClick={()=>setIsComposerOpen(true)} className="h-10 px-10 rounded-full bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto text-xs sm:text-sm font-bold inline-flex items-center justify-center">Post</button>
                     </div>
                   </div>
                 );

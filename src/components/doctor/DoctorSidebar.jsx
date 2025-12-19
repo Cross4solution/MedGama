@@ -11,14 +11,14 @@ export default function DoctorSidebar() {
     <div className="lg:w-96 xl:w-[26rem] space-y-6">
       <div className="bg-white rounded-xl shadow-lg p-4">
         <div className="grid grid-cols-1 gap-2">
-          <button className="w-full h-14 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors font-medium flex items-center justify-start gap-3 px-4">
+          <button className="w-[98%] mx-auto h-14 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors font-medium flex items-center justify-start gap-3 px-4">
             <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/15 flex-shrink-0">
               <Video className="w-4 h-4" />
             </span>
             <span className="text-sm leading-tight">Online Consultation</span>
           </button>
 
-          <button className="w-full h-14 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium flex items-center justify-start gap-3 px-4">
+          <button className="w-[98%] mx-auto h-14 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium flex items-center justify-start gap-3 px-4">
             <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/15 flex-shrink-0">
               <img
                 src="/images/icon/calender-svgrepo-com.svg"
@@ -29,7 +29,7 @@ export default function DoctorSidebar() {
             <span className="text-sm leading-tight">Book Appointment</span>
           </button>
 
-          <button className="w-full h-14 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors font-medium flex items-center justify-start gap-3 px-4">
+          <button className="w-[98%] mx-auto h-14 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors font-medium flex items-center justify-start gap-3 px-4">
             <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/15 flex-shrink-0">
               <img
                 src="/images/icon/chat-round-line-svgrepo-com.svg"
@@ -42,7 +42,7 @@ export default function DoctorSidebar() {
 
           <button
             type="button"
-            className="w-full h-14 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors font-medium flex items-center justify-start gap-3 px-4"
+            className="w-[98%] mx-auto h-14 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors font-medium flex items-center justify-start gap-3 px-4"
           >
             <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/15 flex-shrink-0">
               <img
