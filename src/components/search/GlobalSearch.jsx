@@ -109,33 +109,42 @@ export default function GlobalSearch() {
         </button>
       )}
       {open && results.length > 0 && (
-        <div className="absolute z-20 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
-          <ul role="listbox" className="max-h-64 overflow-auto">
-            {results.map((r, idx) => (
-              <li key={idx}>
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={activeIndex === idx}
-                  onMouseEnter={() => setActiveIndex(idx)}
-                  onClick={() => onSelect(r.name)}
-                  className={`w-full text-left px-4 py-3 text-sm flex items-center justify-between ${activeIndex===idx ? 'bg-gray-50' : 'hover:bg-gray-50'}`}
-                >
-                  <span className="flex items-center gap-2">
-                    <span>{r.name}</span>
-                  </span>
-                  <span className="flex items-center gap-1 text-xs text-gray-500">
-                    <img
-                      src={r.type === 'Klinik' ? '/images/icon/medical-clinic-svgrepo-com.svg' : '/images/icon/doctor-man-profile-svgrepo-com.svg'}
-                      alt={r.type}
-                      className="w-3.5 h-3.5 opacity-80"
-                      loading="lazy"
-                    />
-                    {r.type === 'Klinik' ? 'Clinic' : r.type === 'Doktor' ? 'Doctor' : r.type}
-                  </span>
-                </button>
-              </li>
-            ))}
+        <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Results</span>
+            <span className="text-xs text-gray-400">{results.length} found</span>
+          </div>
+          <ul role="listbox" className="max-h-72 overflow-auto py-1">
+            {results.map((r, idx) => {
+              const isClinic = r.type === 'Klinik';
+              return (
+                <li key={idx}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={activeIndex === idx}
+                    onMouseEnter={() => setActiveIndex(idx)}
+                    onClick={() => onSelect(r.name)}
+                    className={`w-full text-left px-4 py-3 flex items-center justify-between gap-3 transition-colors ${activeIndex === idx ? 'bg-gray-50' : 'hover:bg-gray-50'}`}
+                  >
+                    <span className="flex items-center gap-3 min-w-0">
+                      <span className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${isClinic ? 'bg-teal-50 text-teal-600' : 'bg-blue-50 text-blue-600'}`}>
+                        <img
+                          src={isClinic ? '/images/icon/medical-clinic-svgrepo-com.svg' : '/images/icon/doctor-man-profile-svgrepo-com.svg'}
+                          alt=""
+                          className="w-5 h-5"
+                          loading="lazy"
+                        />
+                      </span>
+                      <span className="text-sm font-medium text-gray-800 truncate">{r.name}</span>
+                    </span>
+                    <span className={`flex-shrink-0 text-xs font-medium px-2.5 py-1 rounded-full ${isClinic ? 'bg-teal-50 text-teal-700' : 'bg-blue-50 text-blue-700'}`}>
+                      {isClinic ? 'Clinic' : 'Doctor'}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
