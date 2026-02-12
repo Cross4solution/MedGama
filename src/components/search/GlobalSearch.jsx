@@ -1,10 +1,21 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 
 export default function GlobalSearch() {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [ph, setPh] = useState('Search clinics or doctors');
   const [activeIndex, setActiveIndex] = useState(-1);
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const clinics = [
     'Acıbadem Sağlık Grubu',
@@ -75,7 +86,7 @@ export default function GlobalSearch() {
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-lg sm:max-w-xl md:max-w-2xl focus-within:ring-4 focus-within:ring-[#1C6A83]/15 rounded-full transition-shadow">
+    <div ref={wrapperRef} className="relative mx-auto w-full max-w-lg sm:max-w-xl md:max-w-2xl focus-within:ring-4 focus-within:ring-[#1C6A83]/15 rounded-full transition-shadow">
       {/* Search icon (prefix) */}
       <svg
         className="pointer-events-none absolute z-10 left-4 top-1/2 -translate-y-1/2 text-[#1C6A83] opacity-60 w-5 h-5"
