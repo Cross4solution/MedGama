@@ -115,11 +115,11 @@ const RegisterForm = ({
                      onClick={() => handleInputChange({ target: { name: 'role', value: opt.key } })}
                      className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                        isActive
-                         ? 'bg-white text-gray-900 shadow-sm'
+                         ? 'bg-teal-600 text-white shadow-sm'
                          : 'text-gray-500 hover:text-gray-700'
                      }`}
                    >
-                     <opt.Icon className={`w-4 h-4 ${isActive ? 'text-teal-600' : ''}`} aria-hidden="true" />
+                     <opt.Icon className={`w-4 h-4 ${isActive ? 'text-white' : ''}`} aria-hidden="true" />
                      <span>{opt.label}</span>
                    </button>
                  );
