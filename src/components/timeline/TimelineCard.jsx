@@ -1,10 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
 import Modal from '../common/Modal';
+
+function MediaImg({ src, alt, className, onClick = undefined }) {
+  const [failed, setFailed] = React.useState(false);
+  if (failed) {
+    return (
+      <div className={`${className} bg-gray-100 flex items-center justify-center`} onClick={onClick} role={onClick ? 'button' : undefined}>
+        <div className="flex flex-col items-center gap-1.5 text-gray-300">
+          <ImageOff className="w-8 h-8" />
+          <span className="text-xs font-medium">Image unavailable</span>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      className={className}
+      onError={() => setFailed(true)}
+      onClick={onClick}
+    />
+  );
+}
 
 export default function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
   const avatarUrl = item.avatar || '/images/portrait-candid-male-doctor_720.jpg';
@@ -236,7 +260,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     onClick={goToPost}
                     className="block w-full text-left"
                   >
-                    <img src={media[0].url} alt={media[0].alt || actorName} loading="lazy" className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
+                    <MediaImg src={media[0].url} alt={media[0].alt || actorName} className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
                   </button>
                 </div>
               )}
@@ -249,7 +273,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                       onClick={goToPost}
                       className="block w-full text-left"
                     >
-                      <img src={m.url} alt={m.alt || actorName} loading="lazy" className={`w-full ${grid2H} object-cover`} />
+                      <MediaImg src={m.url} alt={m.alt || actorName} className={`w-full ${grid2H} object-cover`} />
                     </button>
                   ))}
                 </div>
@@ -261,7 +285,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                     onClick={goToPost}
                     className="block w-full text-left"
                   >
-                    <img src={media[0].url} alt={media[0].alt || actorName} loading="lazy" className={`w-full ${grid3LeftH} object-cover col-span-1`} />
+                    <MediaImg src={media[0].url} alt={media[0].alt || actorName} className={`w-full ${grid3LeftH} object-cover col-span-1`} />
                   </button>
                   <div className="grid grid-rows-2 gap-2">
                     {media.slice(1,3).map((m, i) => (
@@ -271,7 +295,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                         onClick={goToPost}
                         className="block w-full text-left"
                       >
-                        <img src={m.url} alt={m.alt || actorName} loading="lazy" className={`w-full ${grid3SmallH} object-cover`} />
+                        <MediaImg src={m.url} alt={m.alt || actorName} className={`w-full ${grid3SmallH} object-cover`} />
                       </button>
                     ))}
                   </div>
@@ -286,7 +310,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                         onClick={goToPost}
                         className="block w-full text-left"
                       >
-                        <img src={m.url} alt={m.alt || actorName} loading="lazy" className={`w-full ${grid4H} object-cover`} />
+                        <MediaImg src={m.url} alt={m.alt || actorName} className={`w-full ${grid4H} object-cover`} />
                       </button>
                       {i === 3 && media.length > 4 && (
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
