@@ -100,31 +100,30 @@ const RegisterForm = ({
          <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3 flex flex-col items-center">
            {step === 1 && (
            <>
-           <div className="w-full max-w-md mb-1 sm:mb-1.5">
-             <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">Register as</label>
-             <div className="w-full flex justify-center pl-4">
-              <div className="grid grid-cols-2 gap-2">
+           <div className="w-full max-w-md mb-2">
+             <label className="block text-xs font-medium text-gray-500 mb-2 text-left">Register as</label>
+             <div className="inline-flex w-full rounded-xl bg-gray-100 p-1">
                {[
-                 { key: 'patient', label: 'Patient' },
-                 { key: 'doctor', label: 'Doctor' },
-               ].map((opt) => (
-                 <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => handleInputChange({ target: { name: 'role', value: opt.key } })}
-                  className={`${(fd.role ?? 'patient') === opt.key
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'} inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 min-w-[120px]`}
-                >
-                  {opt.key === 'patient' ? (
-                    <User className="w-4 h-4" aria-hidden="true" />
-                  ) : (
-                    <Stethoscope className="w-4 h-4" aria-hidden="true" />
-                  )}
-                  <span>{opt.label}</span>
-                </button>
-               ))}
-               </div>
+                 { key: 'patient', label: 'Patient', Icon: User },
+                 { key: 'doctor', label: 'Doctor', Icon: Stethoscope },
+               ].map((opt) => {
+                 const isActive = (fd.role ?? 'patient') === opt.key;
+                 return (
+                   <button
+                     key={opt.key}
+                     type="button"
+                     onClick={() => handleInputChange({ target: { name: 'role', value: opt.key } })}
+                     className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                       isActive
+                         ? 'bg-white text-gray-900 shadow-sm'
+                         : 'text-gray-500 hover:text-gray-700'
+                     }`}
+                   >
+                     <opt.Icon className={`w-4 h-4 ${isActive ? 'text-teal-600' : ''}`} aria-hidden="true" />
+                     <span>{opt.label}</span>
+                   </button>
+                 );
+               })}
              </div>
            </div>
             <div className="grid grid-cols-1 gap-1 w-full max-w-md">
