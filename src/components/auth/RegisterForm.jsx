@@ -102,7 +102,7 @@ const RegisterForm = ({
            <>
            <div className="w-full max-w-md mb-2">
              <label className="block text-xs font-medium text-gray-500 mb-2 text-left">Register as</label>
-             <div className="inline-flex w-full rounded-xl bg-gray-100 p-1">
+             <div className="inline-flex w-full rounded-xl bg-gray-100 p-1 gap-1">
                {[
                  { key: 'patient', label: 'Patient', Icon: User },
                  { key: 'doctor', label: 'Doctor', Icon: Stethoscope },
@@ -113,13 +113,13 @@ const RegisterForm = ({
                      key={opt.key}
                      type="button"
                      onClick={() => handleInputChange({ target: { name: 'role', value: opt.key } })}
-                     className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                     className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
                        isActive
-                         ? 'bg-teal-600 text-white shadow-sm'
-                         : 'text-gray-500 hover:text-gray-700'
+                         ? 'bg-teal-600 text-white shadow-md'
+                         : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300 hover:text-gray-800'
                      }`}
                    >
-                     <opt.Icon className={`w-4 h-4 ${isActive ? 'text-white' : ''}`} aria-hidden="true" />
+                     <opt.Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-400'}`} aria-hidden="true" />
                      <span>{opt.label}</span>
                    </button>
                  );
