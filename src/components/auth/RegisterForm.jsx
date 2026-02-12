@@ -257,9 +257,9 @@ const RegisterForm = ({
       )}
       {step === 2 && (
         <>
-        <div className="grid grid-cols-1 gap-1 sm:gap-2 w-full max-w-md">
+        <div className="grid grid-cols-1 gap-4 w-full max-w-md">
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left md:text-left">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
               Country
             </label>
             <div className="relative">
@@ -268,11 +268,10 @@ const RegisterForm = ({
                   options={allCountries}
                   value={fd.country ?? ''}
                   onChange={(val) => {
-                    // Update selected country; PhoneNumberInput will sync code via countryName prop
                     handleInputChange({ target: { name: 'country', value: val } });
                   }}
                   placeholder="Select a country"
-                  triggerClassName="w-full h-11 border border-gray-300 rounded-xl pl-10 pr-3 text-sm bg-white text-left flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-shadow"
+                  triggerClassName="w-full h-11 border border-gray-300 rounded-xl pl-10 pr-3 text-sm bg-white text-left flex items-center gap-2 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                   getFlagUrl={(name) => {
                     try {
                       const code = getFlagCode(name);
@@ -282,121 +281,112 @@ const RegisterForm = ({
                 />
             </div>
             {errors.country && (
-              <div className="flex items-center mt-2 text-red-500 text-xs">
-                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-                <span className="text-center md:text-left">{errors.country}</span>
-              </div>
+              <p className="text-red-500 text-xs mt-1.5 text-left">{errors.country}</p>
             )}
           </div>
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left md:text-left">Phone</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">Phone Number</label>
             <PhoneNumberInput
               value={fd.phone ?? ''}
               countryName={fd.country ?? ''}
               onChange={(val) => handleInputChange({ target: { name: 'phone', value: val } })}
               allowedCountryNames={allCountries}
             />
-            {errors.phone && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.phone}</p>}
+            {errors.phone && <p className="text-red-500 text-xs mt-1.5 text-left">{errors.phone}</p>}
           </div>
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left md:text-left">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
               Date of Birth
             </label>
             <div
               className="relative date-with-icon cursor-pointer"
               onClick={() => dobRef.current?.showPicker?.()}
             >
-              <Calendar className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Calendar className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 ref={dobRef}
                 type="date"
                 name="birthDate"
                 value={fd.birthDate ?? ''}
                 onChange={handleInputChange}
-                className="w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm bg-white border-gray-300"
+                className="w-full h-11 pl-10 pr-4 border border-gray-300 rounded-xl hover:border-gray-400 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all text-left text-sm bg-white"
               />
             </div>
           </div>
           {(fd.role ?? 'patient') === 'patient' && (
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left md:text-left">
-                Medical history (chronic diseases, allergies, medications)
+              <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+                Medical History
               </label>
+              <p className="text-xs text-gray-400 mb-1.5 text-left">Chronic diseases, allergies, current medications</p>
               <textarea
                 name="medicalHistory"
                 value={fd.medicalHistory ?? ''}
                 onChange={handleInputChange}
-                rows={3}
-                className="w-full h-11 border border-gray-300 rounded-xl px-3 py-2 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-white"
-                placeholder="Optional: e.g., Diabetes Type 2, Penicillin allergy, Hypertension, etc."
+                rows={4}
+                className="w-full border border-gray-300 rounded-xl px-3.5 py-3 text-sm resize-none hover:border-gray-400 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all bg-white placeholder:text-gray-400"
+                placeholder="e.g., Diabetes Type 2, Penicillin allergy, Aspirin 100mg daily..."
               />
             </div>
           )}
         </div>
-        <div className="space-y-3 sm:space-y-4 w-full max-w-md mt-4 sm:mt-6 pt-2 pb-2">
-          <div>
-            <label className="flex items-start space-x-2 sm:space-x-3 justify-center md:justify-start">
-              <input
-                type="checkbox"
-                name="acceptTerms"
-                checked={!!fd.acceptTerms}
-                onChange={handleInputChange}
-                className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
-              />
-              <span className="text-sm text-gray-600 text-center md:text-left leading-relaxed">
-                <span className="text-red-500">*</span>
-                {' '}
-                I have read and agree to the{' '}
-                <button
-                  type="button"
-                  onClick={() => setShowTermsPopup(true)}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  Terms of Use
-                </button>{' '}and{' '}
-                <button
-                  type="button"
-                  onClick={() => setShowPrivacyPopup(true)}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  Privacy Policy
-                </button>
-                .
-              </span>
-            </label>
-            {errors.acceptTerms && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.acceptTerms}</p>}
-          </div>
-          <label className="flex items-start space-x-2 sm:space-x-3 justify-center md:justify-start">
+
+        <div className="w-full max-w-md mt-5 pt-4 border-t border-gray-100 space-y-3">
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              name="acceptTerms"
+              checked={!!fd.acceptTerms}
+              onChange={handleInputChange}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5 flex-shrink-0"
+            />
+            <span className="text-sm text-gray-600 text-left leading-relaxed">
+              <span className="text-red-500">*</span>{' '}
+              I have read and agree to the{' '}
+              <button
+                type="button"
+                onClick={() => setShowTermsPopup(true)}
+                className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
+              >
+                Terms of Use
+              </button>{' '}and{' '}
+              <button
+                type="button"
+                onClick={() => setShowPrivacyPopup(true)}
+                className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
+              >
+                Privacy Policy
+              </button>
+            </span>
+          </label>
+          {errors.acceptTerms && <p className="text-red-500 text-xs ml-7 text-left">{errors.acceptTerms}</p>}
+          <label className="flex items-start gap-3 cursor-pointer group">
             <input
               type="checkbox"
               name="receiveUpdates"
               checked={!!fd.receiveUpdates}
               onChange={handleInputChange}
-              className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 mt-0.5"
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5 flex-shrink-0"
             />
-            <span className="text-sm text-gray-600 text-center md:text-left leading-relaxed">
-             I would like to receive emails about health tips, new services, and special offers.
-           </span>
+            <span className="text-sm text-gray-500 text-left leading-relaxed">
+              I would like to receive emails about health tips, new services, and special offers.
+            </span>
           </label>
         </div>
 
-        <div className="w-full max-w-md flex items-center justify-between gap-2 mt-2 mb-12 sm:mb-16">
-          <button onClick={handleBack} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100">
+        <div className="w-full max-w-md flex items-center justify-between gap-3 mt-6 mb-4">
+          <button onClick={handleBack} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
             Back
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className={`inline-flex items-center gap-2 py-2 sm:py-2.5 px-5 rounded-xl focus:ring-4 transition-all duration-200 font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md ${submitting ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-500 text-white hover:bg-green-600 focus:ring-green-200'}`}
+            className={`inline-flex items-center gap-2 py-2.5 px-6 rounded-xl focus:ring-4 transition-all duration-200 font-semibold text-sm shadow-sm hover:shadow-md ${submitting ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-teal-600 text-white hover:bg-teal-700 focus:ring-teal-200'}`}
           >
             {submitting ? 'Creating…' : 'Create Account'}
           </button>
         </div>
-        {/* Spacer to force visible gap before the login link */}
-        <div aria-hidden className="h-10 sm:h-14" />
         </>
       )}
       <p className="mt-0 text-center text-sm sm:text-base text-gray-600">
