@@ -131,15 +131,10 @@ const Header = () => {
                         <a
                           role="menuitem"
                           href={(process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login')}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full flex items-center justify-between gap-3 px-3 py-3 text-sm rounded-lg bg-gray-800 border border-gray-700 text-white hover:bg-gray-700 transition-all"
+                          className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-gray-800 border border-gray-700 text-white hover:bg-gray-700 transition-all"
                         >
-                          <span className="flex items-center gap-3">
-                            <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-700 text-gray-300"><LayoutDashboard className="w-[18px] h-[18px]" /></span>
-                            <span className="font-semibold">CRM Panel</span>
-                          </span>
-                          <ArrowUpRight className="w-4 h-4 text-gray-400" />
+                          <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-700 text-gray-300"><LayoutDashboard className="w-[18px] h-[18px]" /></span>
+                          <span className="font-semibold">CRM Panel</span>
                         </a>
                       </div>
                     )}

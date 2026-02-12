@@ -23,6 +23,10 @@ const DoctorProfilePage = () => {
   const [activeTab, setActiveTab] = useState('genel-bakis');
   const [isFollowing, setIsFollowing] = useState(false);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [doctorName] = useState('Dr. Ayşe Yılmaz');
   const [doctorTitle] = useState('Kardiyoloji Uzmanı');
   const [doctorLocation] = useState('Istanbul, Turkey');
@@ -105,7 +109,7 @@ const DoctorProfilePage = () => {
   return (
     <div className="min-h-screen bg-gray-50/50">
       {/* Hero Section */}
-      <div className="relative h-56 md:h-72">
+      <div className="relative h-40 md:h-48">
         <img src={heroImage} alt={doctorName} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
         <div className="absolute top-4 right-4 flex items-center bg-white/95 backdrop-blur-sm rounded-xl px-3 py-1.5 shadow-sm border border-white/20">
@@ -116,7 +120,7 @@ const DoctorProfilePage = () => {
       </div>
 
       {/* Doctor Info Bar */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 relative z-10 mb-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-12 relative z-10 mb-6">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>

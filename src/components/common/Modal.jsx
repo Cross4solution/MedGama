@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 
 /**
  * @param {{
@@ -12,17 +13,17 @@ import React from 'react';
 export default function Modal({ open, onClose, title, children, footer = null }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-[100]">
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} aria-hidden="true" />
-      <div className="absolute inset-0 flex items-start justify-center p-4 sm:p-6">
-        <div className="w-full max-w-md rounded-xl bg-white shadow-xl border">
-          <div className="px-4 py-3 border-b flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-sm">Close</button>
-          </div>
-          <div className="p-4 text-sm text-gray-800 max-h-[60vh] overflow-auto">{children}</div>
-          {footer && <div className="px-4 py-3 border-t">{footer}</div>}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+      <div className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl border border-gray-200 animate-in">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 className="text-base font-bold text-gray-900">{title}</h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+            <X className="w-4 h-4" />
+          </button>
         </div>
+        <div className="px-5 py-4 text-sm text-gray-700 max-h-[60vh] overflow-auto">{children}</div>
+        {footer && <div className="px-5 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl">{footer}</div>}
       </div>
     </div>
   );

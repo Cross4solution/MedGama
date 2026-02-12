@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle } from 'lucide-react';
 import Badge from '../components/Badge';
 import ClinicHero from '../components/clinic/ClinicHero';
@@ -31,6 +31,10 @@ import {
 
 const ClinicDetailPage = () => {
   const { user } = useAuth();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // UI State
   const [activeTab, setActiveTab] = useState('genel-bakis');
@@ -119,15 +123,7 @@ const ClinicDetailPage = () => {
               location={clinicInfo.location}
               rating={clinicInfo.rating}
               reviews={clinicInfo.reviewCount}
-              badgeNode={(
-                <Badge
-                  label="JCI Accredited"
-                  variant="green"
-                  size="sm"
-                  rounded="full"
-                  icon={<CheckCircle className="w-4 h-4" />}
-                />
-              )}
+              badgeNode={null}
               isFavorite={isFavorite}
               onToggleFavorite={() => setIsFavorite(!isFavorite)}
               isFollowing={isFollowing}

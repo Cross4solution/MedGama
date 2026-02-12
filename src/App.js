@@ -30,6 +30,7 @@ import DoctorProfilePage from './pages/DoctorProfile.jsx';
 import ClinicProfileEdit from './pages/ClinicProfileEdit.jsx';
 import DoctorsDepartments from './pages/DoctorsDepartments.jsx';
 import scrollConfig from './config/scroll';
+import ScrollToTopButton from './components/common/ScrollToTopButton';
 
 function AppContent() {
   const location = useLocation();
@@ -177,6 +178,7 @@ function AppContent() {
       
       {showFooter && <Footer />}
       {showCookieBanner && <CookieBanner />}
+      {!isAuthPage && <ScrollToTopButton />}
     </div>
   );
 }

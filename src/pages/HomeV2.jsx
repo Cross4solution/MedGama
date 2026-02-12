@@ -85,29 +85,22 @@ export default function HomeV2() {
                 <div>
                   <h1
                     className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md antialiased"
-                    style={{
-                      WebkitTextStroke: '0',
-                      fontVariantLigatures: 'none',
-                      fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif'
-                    }}
                   >
                     #1 Health Portal in the World
                   </h1>
                   <p
                     className="mt-4 text-white md:text-lg font-medium drop-shadow-sm antialiased"
-                    style={{
-                      WebkitTextStroke: '0',
-                      fontVariantLigatures: 'none',
-                      fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif'
-                    }}
                   >
                     One-click, end-to-end care: discovery, availability, telehealth, health tourism and secure communication.
                   </p>
                   <div className="mt-6 flex gap-3">
-                    <a href="#features" className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm text-gray-900 px-5 py-2.5 rounded-full hover:bg-white hover:shadow-lg text-sm font-semibold transition-all shadow-md">
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById('clinics-search')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                      className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm text-teal-700 px-5 py-2.5 rounded-full hover:bg-white hover:shadow-lg text-sm font-semibold transition-all shadow-md"
+                    >
                       Explore
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>

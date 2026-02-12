@@ -327,7 +327,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           {/* Social counts */}
           <div className="px-3 pt-2 mt-2 text-xs text-gray-500 flex items-center justify-between">
             <button type="button" onClick={handleLike} className="inline-flex items-center gap-1.5 hover:text-gray-700 transition-colors">
-              <span className={`inline-flex items-center justify-center w-[18px] h-[18px] rounded-full ${liked ? 'bg-teal-500' : 'bg-gray-300'} text-white`}>
+              <span className={`inline-flex items-center justify-center w-[18px] h-[18px] rounded-full ${liked ? 'bg-blue-500' : 'bg-blue-500'} text-white`}>
                 <ThumbsUp className="w-[10px] h-[10px]" />
               </span>
               <span className="tabular-nums font-medium">{likeCount}</span>
@@ -343,7 +343,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
 
           {/* Comments Preview */}
           {showCommentsPreview && (
-            <div className="px-4 pb-4 mt-0 border-t border-gray-100 pt-4 bg-gray-50/50 relative min-h-0 transform-gpu overflow-x-hidden">
+            <div className="px-4 pb-4 mt-0 border-t border-gray-200 pt-4 bg-gray-100/70 relative min-h-0 transform-gpu overflow-x-hidden">
               {/* New comment input */}
               <div className="flex items-start gap-2.5">
                 <img src={actorAvatar} alt="Your avatar" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
@@ -380,7 +380,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                 <div className="flex items-start gap-2.5">
                   <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Ayça Karaman" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
                   <div className="flex-1 min-w-0">
-                    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-100">
+                    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-200 shadow-sm">
                       <div className="flex items-center justify-between gap-2 mb-0.5">
                         <span className="text-sm font-semibold text-gray-900">Ayça Karaman</span>
                         <span className="text-[11px] text-gray-400">1 week</span>
@@ -398,7 +398,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                       <div className="flex items-start gap-2.5">
                         <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Cem Arslan" className="w-7 h-7 rounded-full object-cover ring-1 ring-gray-200" />
                         <div className="flex-1 min-w-0">
-                          <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-100">
+                          <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-200 shadow-sm">
                             <div className="flex items-center justify-between gap-2 mb-0.5">
                               <span className="text-sm font-semibold text-gray-900">Dr. Cem Arslan</span>
                               <span className="text-[11px] text-gray-400">1 week</span>
@@ -452,7 +452,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                 <div className="flex items-start gap-2.5">
                   <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Efe Yılmaz" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
                   <div className="flex-1 min-w-0">
-                    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-100">
+                    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-200 shadow-sm">
                       <div className="flex items-center justify-between gap-2 mb-0.5">
                         <span className="text-sm font-semibold text-gray-900">Efe Yılmaz</span>
                         <span className="text-[11px] text-gray-400">1 week</span>
@@ -516,26 +516,21 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           <Modal
             open={showReportModal}
             onClose={() => { setShowReportModal(false); }}
-            title={
-              <div className="flex items-center gap-2">
-                <span>Submit Report</span>
-              </div>
-            }
+            title="Submit Report"
             footer={
               <div className="flex items-center justify-end gap-2">
                 <button
                   type="button"
-                  className="px-3 py-1.5 rounded-md border text-sm text-gray-700 hover:bg-gray-50"
+                  className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
                   onClick={() => setShowReportModal(false)}
                 >
-                 Cancel
+                  Cancel
                 </button>
                 <button
                   type="button"
-                  className="px-3 py-1.5 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                   disabled={!reportReason}
                   onClick={() => {
-                    // submit mock
                     showSuccessToast('Report submitted');
                     setShowReportModal(false);
                     setReportReason('');
@@ -547,15 +542,15 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               </div>
             }
           >
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="block text-xs text-gray-600 mb-1">Reason</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Reason</label>
                 <select
                   value={reportReason}
                   onChange={(e)=>setReportReason(e.target.value)}
-                  className="w-full border rounded-md px-2 py-2 text-sm"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none appearance-none cursor-pointer"
                 >
-                  <option value="">Select…</option>
+                  <option value="">Select...</option>
                   <option value="spam">Spam</option>
                   <option value="misleading">Misleading information</option>
                   <option value="inappropriate">Inappropriate content</option>
@@ -563,13 +558,13 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-gray-600 mb-1">Description (optional)</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Description (optional)</label>
                 <textarea
-                  rows={4}
+                  rows={3}
                   value={reportDesc}
                   onChange={(e)=>setReportDesc(e.target.value)}
-                  placeholder="Briefly describe…"
-                  className="w-full border rounded-md px-2 py-2 text-sm resize-y"
+                  placeholder="Briefly describe the issue..."
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none resize-none"
                 />
               </div>
             </div>
@@ -609,7 +604,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
             <div className="mt-4 flex items-center justify-between">
               <div className="flex items-center gap-3 text-gray-400 text-xs">
                 <span className="inline-flex items-center gap-1.5 font-medium" aria-label="likes">
-                  <span className="inline-flex items-center justify-center w-[16px] h-[16px] rounded-full bg-teal-500 text-white"><ThumbsUp className="w-[9px] h-[9px]" /></span>
+                  <span className="inline-flex items-center justify-center w-[16px] h-[16px] rounded-full bg-blue-500 text-white"><ThumbsUp className="w-[9px] h-[9px]" /></span>
                   {item.likes}
                 </span>
                 <span className="inline-block w-0.5 h-0.5 rounded-full bg-gray-300" />
