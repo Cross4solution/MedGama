@@ -22,10 +22,7 @@ export default function SearchSections() {
       {/* Custom Search (Country → City → Speciality → Symptom/Procedure) */}
       <section className="pt-8 pb-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 mb-4">
-            <SlidersHorizontal className="w-4.5 h-4.5 text-teal-600" />
-            <h2 className="text-lg font-bold text-gray-900">Advanced Search</h2>
-          </div>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Advanced Search</h2>
           <CustomSearch />
           {/* Title for course/feature boxes under custom search */}
           <div className="mt-14 mb-2 flex items-center gap-2">
