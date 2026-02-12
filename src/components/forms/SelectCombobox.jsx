@@ -97,12 +97,12 @@ export default function SelectCombobox({
       <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none" />
 
       {open && (
-        <div className={`absolute z-30 w-full bg-white border border-gray-200 rounded-xl shadow-lg ${dropUp ? 'bottom-full mb-1' : 'mt-1'} ${menuClassName}`}>
+        <div className={`absolute z-30 w-full min-w-[220px] bg-white border border-gray-200 rounded-xl shadow-xl ${dropUp ? 'bottom-full mb-1' : 'mt-1'} ${menuClassName}`}>
           {searchable && (
-            <div className="p-2">
+            <div className="p-2.5 border-b border-gray-100">
               <input
-                className="w-full border border-gray-200 rounded px-2 py-1 text-xs md:text-sm"
-                placeholder="Search"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
+                placeholder="Search..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 autoFocus
@@ -110,12 +110,12 @@ export default function SelectCombobox({
             </div>
           )}
           <SlowScrollList
-            className="max-h-64 overflow-y-auto text-sm py-1"
+            className="max-h-72 overflow-y-auto text-sm py-1"
             items={filtered}
             renderItem={(opt) => (
               <button
                 type="button"
-                className="w-full text-left px-3 py-2 hover:bg-gray-50"
+                className={`w-full text-left px-3.5 py-2.5 transition-colors ${opt.value === value ? 'bg-teal-50 text-teal-700 font-medium' : 'text-gray-700 hover:bg-gray-50'}`}
                 onClick={() => {
                   onChange && onChange(opt.value);
                   setOpen(false);
