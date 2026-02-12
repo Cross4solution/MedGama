@@ -140,17 +140,18 @@ const AuthPages = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex relative">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-teal-500 via-teal-600 to-cyan-700" />
+    <div className="min-h-screen w-full flex relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800" />
+      <div className="absolute inset-0 opacity-[0.03]" style={{backgroundImage:'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'}} />
 
-      {/* Form Container */}
-      <div className="relative z-10 flex w-full min-h-screen items-center justify-center p-3 sm:p-6 overflow-y-hidden">
-        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-4">
-          {/* Mobile Layout: Form + Info Texts */}
-          <div className="flex flex-col lg:hidden w-full max-w-md mx-auto py-3">
-            {/* Mobile Form */}
-            <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-2 sm:p-4 shadow-2xl border border-white/30 mb-3">
+      {/* Content */}
+      <div className="relative z-10 flex w-full min-h-screen items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-16">
+
+          {/* Mobile Layout */}
+          <div className="flex flex-col lg:hidden w-full max-w-md mx-auto">
+            <div className="w-full bg-white rounded-2xl p-5 sm:p-6 shadow-2xl">
               {currentPage === 'login' ? (
                 <>
                   <LoginForm 
@@ -166,9 +167,9 @@ const AuthPages = () => {
                   <button
                     type="button"
                     onClick={() => { demoLogin('patient'); navigate('/home-v2'); }}
-                    className="w-full mt-3 bg-gray-100 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-200"
+                    className="w-full mt-4 bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 border border-gray-200 transition-colors"
                   >
-                    Demo Login (Patient)
+                    Try Demo
                   </button>
                 </>
               ) : currentPage === 'register' ? (
@@ -195,76 +196,68 @@ const AuthPages = () => {
                 />
               )}
             </div>
-            {/* Info texts under the form (mobile) */}
-            <div className="w-full px-3 mt-1">
-              <h2 className="text-base font-semibold text-white mb-1">Welcome to Medigama</h2>
-              <p className="text-xs text-teal-100 mb-2">Trusted healthcare services with expert doctors and modern treatments.</p>
-              <ul className="list-disc list-inside space-y-1 text-sm">
-                <li className="text-teal-50">Expert medical team</li>
-                <li className="text-teal-50">Safe and fast service</li>
-                <li className="text-teal-50">24/7 patient support</li>
-              </ul>
+            <div className="w-full px-2 mt-4 mb-4">
+              <div className="flex items-center gap-6 justify-center text-white/70 text-xs">
+                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> SSL Secure</span>
+                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5" /> HIPAA Compliant</span>
+              </div>
             </div>
-            
-
           </div>
           
-          {/* Desktop Layout: Side by Side */}
-          <div className="hidden lg:flex w-full max-w-6xl items-center justify-center gap-12">
-            {/* Left Side - Illustration/Info */}
-            <div className="flex-1 max-w-lg text-left">
-              <div className="mb-8 text-white">
-                <div className="w-28 h-28 bg-white/15 rounded-full flex items-center justify-center mb-6">
-                  <Heart className="w-16 h-16" />
+          {/* Desktop Layout */}
+          <div className="hidden lg:flex w-full max-w-6xl items-center justify-center gap-16">
+            {/* Left Side */}
+            <div className="flex-1 max-w-md text-left">
+              <div className="text-white">
+                <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 border border-white/20">
+                  <Heart className="w-10 h-10" />
                 </div>
-                <h2 className="text-4xl font-bold mb-3">Welcome to Medigama</h2>
-                <p className="text-lg text-teal-100 mb-8">Discover trusted healthcare services, expert doctors and modern treatment methods in one place.</p>
+                <h2 className="text-4xl font-bold mb-4 leading-tight">Welcome to<br />MedGama</h2>
+                <p className="text-base text-teal-100/90 mb-10 leading-relaxed">Your trusted platform for healthcare services, expert doctors, and modern treatment methods — all in one place.</p>
 
                 {/* Features */}
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5" />
+                <div className="space-y-5">
+                  {[
+                    { icon: CheckCircle, text: 'Expert medical team with verified credentials' },
+                    { icon: Shield, text: 'Secure, encrypted & HIPAA-compliant' },
+                    { icon: Heart, text: '24/7 patient support & telehealth' },
+                  ].map((f, i) => (
+                    <div key={i} className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/10 flex-shrink-0">
+                        <f.icon className="w-5 h-5 text-teal-200" />
+                      </div>
+                      <span className="text-white/85 text-sm">{f.text}</span>
                     </div>
-                    <span className="text-white/90">Expert medical team</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                      <Shield className="w-5 h-5" />
-                    </div>
-                    <span className="text-white/90">Secure and fast service</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                      <Heart className="w-5 h-5" />
-                    </div>
-                    <span className="text-white/90">24/7 patient support</span>
-                  </div>
+                  ))}
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 mt-6">
+                <div className="flex gap-8 mt-10 pt-8 border-t border-white/10">
                   {[{value:'500+',label:'Clinics'},{value:'50K+',label:'Patients'},{value:'98%',label:'Satisfaction'}].map((s, i) => (
-                    <div key={i} className="text-center">
-                      <div className="text-3xl font-bold">{s.value}</div>
-                      <div className="text-teal-100 text-sm">{s.label}</div>
+                    <div key={i}>
+                      <div className="text-2xl font-bold text-white">{s.value}</div>
+                      <div className="text-teal-200/70 text-xs mt-0.5">{s.label}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* Badges */}
-                <div className="flex space-x-4 mt-6">
-                  <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-white">
-                    <Shield className="w-4 h-4" />
-                    <span className="text-sm font-medium">SSL Secure</span>
+                <div className="flex gap-3 mt-8">
+                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 text-white/80 border border-white/10">
+                    <Shield className="w-3.5 h-3.5" />
+                    <span className="text-xs font-medium">SSL Secure</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 text-white/80 border border-white/10">
+                    <CheckCircle className="w-3.5 h-3.5" />
+                    <span className="text-xs font-medium">HIPAA Compliant</span>
                   </div>
                 </div>
               </div>
             </div>
             
             {/* Right Side - Form */}
-            <div className="flex-1 max-w-3xl">
-              <div className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-3 md:p-4 shadow-2xl border border-white/30">
+            <div className="flex-1 max-w-lg">
+              <div className="w-full bg-white rounded-2xl p-6 md:p-8 shadow-2xl">
                 {currentPage === 'login' ? (
                   <>
                     <LoginForm 
@@ -281,9 +274,9 @@ const AuthPages = () => {
                       <button
                         type="button"
                         onClick={() => { demoLogin('patient'); navigate('/home-v2'); }}
-                        className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200"
+                        className="w-full bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 border border-gray-200 transition-colors"
                       >
-                        Demo Login (Patient)
+                        Try Demo
                       </button>
                     </div>
                   </>

@@ -72,22 +72,6 @@ const RegisterForm = ({
   // Global country options (island nations excluded per requirement)
   const allCountries = useMemo(() => listCountriesAll({ excludeIslands: false, excludeNoCities: false }), []);
 
-  // Phone logic moved to PhoneNumberInput
-
-  // Phone logic moved to PhoneNumberInput
-
-  // Phone logic moved to PhoneNumberInput
-
-  // Phone logic moved to PhoneNumberInput
-
-  // phone helpers removed (now inside PhoneNumberInput)
-
-  // Phone logic moved to PhoneNumberInput
-
-  // Phone logic moved to PhoneNumberInput
-
-  // Phone logic moved to PhoneNumberInput
-
   const validateStep1 = () => {
     setLocalErrors({});
     return true;
@@ -113,7 +97,7 @@ const RegisterForm = ({
            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Create an Account</h1>
        <p className="text-xs sm:text-sm text-gray-600">Sign up to start your health journey</p>
          </div>
-         <form onSubmit={handleSubmit} className="space-y-1 sm:space-y-1 md:space-y-1 flex flex-col items-center">
+         <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3 flex flex-col items-center">
            {step === 1 && (
            <>
            <div className="w-full max-w-md mb-1 sm:mb-1.5">
