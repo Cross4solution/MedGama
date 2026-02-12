@@ -151,7 +151,7 @@ const AuthPages = () => {
 
           {/* Mobile Layout */}
           <div className="flex flex-col lg:hidden w-full max-w-md mx-auto">
-            <div className="w-full bg-white rounded-2xl p-5 sm:p-6 shadow-2xl">
+            <div className="w-full bg-white rounded-2xl p-5 sm:p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
               {currentPage === 'login' ? (
                 <>
                   <LoginForm 
@@ -257,7 +257,7 @@ const AuthPages = () => {
             
             {/* Right Side - Form */}
             <div className="flex-1 max-w-lg">
-              <div className="w-full bg-white rounded-2xl p-6 md:p-8 shadow-2xl">
+              <div className="w-full bg-white rounded-2xl p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
                 {currentPage === 'login' ? (
                   <>
                     <LoginForm 
