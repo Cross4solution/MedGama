@@ -278,57 +278,51 @@ export default function PostDetail() {
         </div>
 
         {/* Right: Content panel */}
-        <div ref={containerRef} className="bg-white flex-1 relative z-0 px-4 pb-10 overflow-y-auto min-h-0 lg:h-full lg:overflow-y-auto" style={{ height: heroHeightPx ? `calc(100vh - ${heroHeightPx}px)` : undefined }}>
+        <div ref={containerRef} className="bg-white flex-1 relative z-0 overflow-y-auto min-h-0 lg:h-full lg:overflow-y-auto" style={{ height: heroHeightPx ? `calc(100vh - ${heroHeightPx}px)` : undefined }}>
           {/* Header */}
-          <div className="p-4 border-b flex items-center gap-3 sticky top-0 z-10 bg-white shadow-sm">
-            <img src={item.actor?.avatarUrl || item.avatar || '/images/portrait-candid-male-doctor_720.jpg'} alt={item.title} className="w-10 h-10 rounded-full object-cover border" />
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3 sticky top-0 z-10 bg-white/95 backdrop-blur-sm">
+            <img src={item.actor?.avatarUrl || item.avatar || '/images/portrait-candid-male-doctor_720.jpg'} alt={item.title} className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-100" />
             <div className="min-w-0">
-              <h1 className="font-semibold text-gray-900 truncate" title={item.title}>{item.actor?.name || item.title}</h1>
+              <h1 className="text-sm font-bold text-gray-900 truncate" title={item.title}>{item.actor?.name || item.title}</h1>
               {item.specialty && (
-                <span className="block mt-0 pb-0.5 text-sm leading-6 text-gray-600 font-medium break-words">{item.specialty}</span>
+                <span className="block text-xs text-gray-500 font-medium mt-0.5">{item.specialty}</span>
               )}
             </div>
           </div>
 
           {/* Text */}
-          <div className="p-4 bg-white mt-4 rounded-lg shadow-sm">
-            <p className="text-[15px] leading-7 text-gray-800 whitespace-pre-wrap">{item.text}</p>
+          <div className="px-5 py-4">
+            <p className="text-sm leading-relaxed text-gray-700 whitespace-pre-wrap">{item.text}</p>
           </div>
 
-          {/* Action bar (TimelineCard ile aynı görünüm) */}
-          <div className="px-2 md:px-3 py-2 border-t mt-1 grid grid-cols-3 gap-1 md:gap-2 justify-items-center bg-white rounded-lg shadow-sm">
+          {/* Action bar */}
+          <div className="px-4 py-2 border-t border-b border-gray-100 grid grid-cols-3 gap-1 justify-items-center">
             <button
               type="button"
-              className={`w-full max-w-[100px] md:min-w-[110px] inline-flex items-center justify-center gap-1 md:gap-2 py-2 px-2 md:px-3 rounded-full text-xs md:text-sm border border-transparent bg-white ${liked ? 'text-blue-600' : 'text-gray-700'} font-medium`}
+              className={`w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm transition-colors ${liked ? 'text-blue-600 bg-blue-50/50' : 'text-gray-600 hover:bg-gray-50'} font-medium`}
               onClick={handleLike}
             >
-              <span className={`inline-flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-full ${liked ? 'bg-blue-100 ring-1 ring-blue-500' : ''}`}>
-                {liked ? (
-                  <ThumbsUp className="w-3 h-3 md:w-4 md:h-4" strokeWidth={2.8} stroke="#2563eb" fill="#ffffff" />
-                ) : (
-                  <ThumbsUp className="w-3 h-3 md:w-4 md:h-4 text-gray-600" strokeWidth={1.9} fill="none" />
-                )}
-              </span>
-              <span className={`font-medium`}>Like</span>
+              <ThumbsUp className={`w-4 h-4 ${liked ? '' : ''}`} strokeWidth={liked ? 2.5 : 1.8} fill={liked ? '#2563eb' : 'none'} />
+              <span>Like</span>
             </button>
             <button
               type="button"
-              className={`w-full max-w-[100px] md:min-w-[110px] inline-flex items-center justify-center gap-1 md:gap-2 py-2 px-2 md:px-3 rounded-full text-xs md:text-sm border border-transparent bg-white text-gray-800 font-medium`}
-              onClick={(e) => { e?.stopPropagation?.(); /* inert on PostDetail */ }}
+              className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-600 hover:bg-gray-50 font-medium transition-colors"
+              onClick={(e) => { e?.stopPropagation?.(); setShowComments(v => !v); }}
             >
-              <img src="/images/icon/comment-alt-lines-svgrepo-com.svg" alt="Yorum" className="w-4 h-4 md:w-5 md:h-5" />
-              <span className="whitespace-nowrap">Comments</span>
+              <MessageCircle className="w-4 h-4" strokeWidth={1.8} />
+              <span>Comments</span>
             </button>
-            <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full max-w-[100px] md:min-w-[110px] text-gray-600 font-medium text-xs md:text-sm" />
+            <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-sm" />
           </div>
 
-          {/* Comments (default open) */}
+          {/* Comments */}
           {showComments && (
-            <div className="p-4 bg-white mt-4 rounded-lg shadow-sm relative min-h-0 transform-gpu overflow-x-hidden">
+            <div className="px-5 py-4 bg-gray-50/50 relative min-h-0 transform-gpu overflow-x-hidden">
               {/* New comment input */}
-              <div className="flex items-start gap-2 mb-4">
-                <img src={item.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg'} alt="Your avatar" className="w-8 h-8 rounded-full object-cover border" />
-                <div className="flex-1 border rounded-full px-3 py-2 flex items-center gap-2 bg-white border-gray-200">
+              <div className="flex items-start gap-2.5 mb-5">
+                <img src={item.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg'} alt="Your avatar" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
+                <div className="flex-1 border border-gray-200 rounded-xl px-3.5 py-2.5 flex items-center gap-2 bg-white hover:border-gray-300 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-400 transition-all">
                   <input 
                     placeholder="Write a comment…" 
                     className="flex-1 outline-none text-sm bg-transparent"
@@ -349,10 +343,10 @@ export default function PostDetail() {
                       }
                     }}
                     disabled={!newComment.trim()}
-                    className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
                       newComment.trim() 
-                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        ? 'bg-teal-600 text-white hover:bg-teal-700' 
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     }`}
                   >
                     Send
@@ -361,28 +355,32 @@ export default function PostDetail() {
               </div>
 
               {/* Threaded comments */}
-              <div className="mt-4 space-y-4 text-sm">
+              <div className="space-y-4 text-sm">
                 {/* Parent */}
-                <div className="flex items-start gap-3">
-                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Zehra Korkmaz" className="w-9 h-9 rounded-full object-cover border" />
+                <div className="flex items-start gap-2.5">
+                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Zehra Korkmaz" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-900">Zehra Korkmaz</span>
-                      <span className="text-[11px] text-gray-500">1 week</span>
+                    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-100">
+                      <div className="flex items-center justify-between gap-2 mb-0.5">
+                        <span className="text-sm font-semibold text-gray-900">Zehra Korkmaz</span>
+                        <span className="text-[11px] text-gray-400">1 week</span>
+                      </div>
                     </div>
 
-                    {/* Reply */}
-                    <div className="mt-3 pl-4 border-l">
-                      <div className="flex items-start gap-3">
-                        <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Bora Eren" className="w-8 h-8 rounded-full object-cover border" />
+                    {/* Reply thread */}
+                    <div className="mt-2.5 ml-4 pl-3 border-l-2 border-gray-200">
+                      <div className="flex items-start gap-2.5">
+                        <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Bora Eren" className="w-7 h-7 rounded-full object-cover ring-1 ring-gray-200" />
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-900">Dr. Bora Eren</span>
-                            <span className="text-[11px] text-gray-500">1 week</span>
+                          <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-100">
+                            <div className="flex items-center justify-between gap-2 mb-0.5">
+                              <span className="text-sm font-semibold text-gray-900">Dr. Bora Eren</span>
+                              <span className="text-[11px] text-gray-400">1 week</span>
+                            </div>
+                            <p className="text-sm text-gray-700 leading-relaxed"><span className="font-semibold text-teal-700">@Zehra Korkmaz</span> glad it helped 🙏</p>
                           </div>
-                          <p className="text-gray-800 mt-0.5"><span className="font-semibold">Zehra Korkmaz</span> glad it helped 🙏</p>
-                          <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                            <button type="button" className="hover:text-gray-700">Reply</button>
+                          <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-1">
+                            <button type="button" className="font-medium hover:text-gray-600 transition-colors">Reply</button>
                           </div>
                         </div>
                       </div>
@@ -391,31 +389,30 @@ export default function PostDetail() {
                 </div>
 
                 {/* Another parent */}
-                <div className="flex items-start gap-3">
-                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Onur Demirtaş" className="w-9 h-9 rounded-full object-cover border" />
+                <div className="flex items-start gap-2.5">
+                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Onur Demirtaş" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-900">Onur Demirtaş</span>
-                      <span className="text-[11px] text-gray-500">5 days</span>
+                    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-100">
+                      <div className="flex items-center justify-between gap-2 mb-0.5">
+                        <span className="text-sm font-semibold text-gray-900">Onur Demirtaş</span>
+                        <span className="text-[11px] text-gray-400">5 days</span>
+                      </div>
+                      <p className="text-sm text-gray-700 leading-relaxed">Great update 👏</p>
                     </div>
-                    <p className="text-gray-800 mt-0.5">Great update 👏</p>
-                    <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                      <button type="button" className="hover:text-gray-700" onClick={() => { setReplyTo(p => p === 'pd_c2' ? '' : 'pd_c2'); setReplyText(prev => (prev && replyTo==='pd_c2') ? prev : '@Onur Demirtaş '); }}>Reply</button>
+                    <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-1">
+                      <button type="button" className="font-medium hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === 'pd_c2' ? '' : 'pd_c2'); setReplyText(prev => (prev && replyTo==='pd_c2') ? prev : '@Onur Demirtaş '); }}>Reply</button>
                     </div>
                     {replyTo === 'pd_c2' && (
                       <div className="mt-2">
-                        <div className="relative border rounded-xl p-1.5 flex items-center gap-2 w-full max-w-full min-w-0">
-                          <button type="button" className="p-2 text-gray-600 hover:text-teal-700" aria-label="Emoji" onClick={(e)=>{ e.stopPropagation(); setShowEmojiPicker((v)=>!v); }}>
-                            <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-6 h-6" />
-                          </button>
+                        <div className="relative border border-gray-200 rounded-xl p-1.5 flex items-center gap-2 bg-white">
                           <input
                             autoFocus
                             value={replyText}
                             onChange={(e)=>setReplyText(e.target.value)}
-                            placeholder="Yanıtınızı yazın..."
-                            className="flex-1 min-w-0 outline-none px-2 py-2 text-[14px]"
+                            placeholder="Write your reply…"
+                            className="flex-1 min-w-0 outline-none px-2.5 py-1.5 text-sm rounded-lg"
                           />
-                          <button type="button" className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700" onClick={()=>{ setReplyTo(''); setReplyText(''); }}>
+                          <button type="button" className="px-3 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700 transition-colors" onClick={()=>{ setReplyTo(''); setReplyText(''); }}>
                             Reply
                           </button>
                           {showEmojiPicker && (
