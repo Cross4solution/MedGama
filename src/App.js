@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigationType } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
 import SidebarPatient from './components/SidebarPatient';
 import { useAuth } from './context/AuthContext';
 import HomeV2 from './pages/HomeV2';
@@ -82,10 +82,8 @@ function AppContent() {
     };
 
     window.addEventListener('wheel', handler, { passive: false });
-    document.addEventListener('wheel', handler, { passive: false });
     return () => {
       window.removeEventListener('wheel', handler);
-      document.removeEventListener('wheel', handler);
     };
   }, [location.pathname]);
   
@@ -114,13 +112,11 @@ function AppContent() {
     }
   }, [location.pathname, navType]);
   
-  // Cookie banner: auth sayfalarında gösterme
-  const hideCookieOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];
-  const showCookieBanner = !hideCookieOn.includes(location.pathname);
-  
-  // Header: auth sayfalarında gösterme
-  const hideHeaderOn = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];
-  const showHeader = !hideHeaderOn.includes(location.pathname);
+  // Auth sayfalarında header ve cookie banner'ı gizle
+  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];
+  const isAuthPage = hideOnAuthPages.includes(location.pathname);
+  const showCookieBanner = !isAuthPage;
+  const showHeader = !isAuthPage;
   
   // Sayfa türüne göre padding ayarı
   const pagesWithOwnContainer = [

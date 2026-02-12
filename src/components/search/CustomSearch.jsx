@@ -39,8 +39,7 @@ export default function CustomSearch() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    // eslint-disable-next-line no-console
-    console.log('Custom search:', { country, city, specialty, symptom });
+    // TODO: integrate with search API
   };
 
   // Dış API ile ülke listesi/flag kodu alma kaldırıldı; veriler utils/geo içinden geliyor.

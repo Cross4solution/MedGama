@@ -17,7 +17,6 @@ const DoctorLogin = () => {
   };
 
   // Google Identity Services - OAuth2 access_token flow
-  console.log('GIS clientId in runtime:', process.env.REACT_APP_GOOGLE_CLIENT_ID, 'origin:', window.location.origin);
   useEffect(() => {
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
     if (!clientId) return;

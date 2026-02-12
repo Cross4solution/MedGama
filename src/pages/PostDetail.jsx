@@ -336,7 +336,7 @@ export default function PostDetail() {
                     onChange={(e) => setNewComment(e.target.value)}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && newComment.trim()) {
-                        console.log('New comment:', newComment);
+                        // TODO: submit comment to backend
                         setNewComment('');
                       }
                     }}
@@ -344,7 +344,7 @@ export default function PostDetail() {
                   <button 
                     onClick={() => {
                       if (newComment.trim()) {
-                        console.log('New comment:', newComment);
+                        // TODO: submit comment to backend
                         setNewComment('');
                       }
                     }}

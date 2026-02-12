@@ -1,9 +1,8 @@
 import React from 'react';
-import PatientLayout from '../components/PatientLayout';
 
 const TermsOfServicePage = () => {
   return (
-    <PatientLayout>
+    <div>
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header Section */}
@@ -303,7 +302,7 @@ const TermsOfServicePage = () => {
           </div>
         </div>
       </div>
-    </PatientLayout>
+    </div>
   );
 };
 

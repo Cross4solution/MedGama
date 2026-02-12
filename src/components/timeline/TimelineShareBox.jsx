@@ -14,8 +14,6 @@ export default function TimelineShareBox() {
 
   function handlePost(newPost) {
     // TODO: integrate with timeline data store
-    // eslint-disable-next-line no-console
-    console.log('New post:', newPost);
   }
 
   return (

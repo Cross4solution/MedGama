@@ -58,8 +58,6 @@ export default function PostComposer() {
 
   function handlePost(newPost) {
     // TODO: integrate with timeline data store (same as TimelineShareBox)
-    // eslint-disable-next-line no-console
-    console.log('New post from PatientHome:', newPost);
   }
 
   return (
