@@ -107,11 +107,11 @@ const ClinicDetailPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {/* Hero Section */}
             <ClinicHero
               image={clinicInfo.heroImage}
@@ -136,16 +136,16 @@ const ClinicDetailPage = () => {
             />
 
             {/* Tabs */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
               <Tabs tabs={tabsConfig} active={activeTab} onChange={setActiveTab} />
-              <div className="px-6 pb-6">
+              <div className="px-5 sm:px-6 py-6">
                 {renderTabContent()}
               </div>
             </div>
           </div>
 
           {/* Sidebar */}
-          <div className="lg:w-80 space-y-6">
+          <div className="lg:w-80 space-y-4 lg:sticky lg:top-24 h-max">
             <ContactActions onTelehealth={() => {}} onBook={() => {}} onMessage={() => {}} />
             <PriceRangeList items={priceRangesData} />
           </div>

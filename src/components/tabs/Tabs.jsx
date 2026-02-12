@@ -25,16 +25,16 @@ export default function Tabs({ tabs = [], active, onChange }) {
   }, [active]);
 
   return (
-    <div ref={containerRef} className="p-4 pb-6">
-      <nav className="flex overflow-x-auto gap-2 scrollbar-hide">
+    <div ref={containerRef} className="px-4 sm:px-6 pt-1 border-b border-gray-100">
+      <nav className="flex overflow-x-auto gap-1 scrollbar-hide -mb-px">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => onChange?.(tab.id)}
-            className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+            className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all duration-200 ${
               active === tab.id
-                ? 'text-[#1C6A83] border-[#1C6A83]'
-                : 'text-gray-700 border-transparent hover:text-[#1C6A83] hover:border-[#1C6A83]'
+                ? 'text-teal-700 border-teal-600'
+                : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'
             }`}
           >
             {tab.label}
