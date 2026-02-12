@@ -89,13 +89,13 @@ const RegisterForm = ({
 
   return (
   <div className="w-full max-w-md mx-auto">
-         <div className="text-center mb-1.5 sm:mb-2 md:mb-2">
-           <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-             <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 sm:h-9 sm:w-9 object-contain" />
-             <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedGama</span>
+         <div className="text-center mb-1">
+           <div className="flex items-center justify-center gap-2 mb-0.5">
+             <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 object-contain" />
+             <span className="text-lg font-extrabold tracking-tight text-gray-900">MedGama</span>
            </div>
-           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Create an Account</h1>
-       <p className="text-xs sm:text-sm text-gray-600">Sign up to start your health journey</p>
+           <h1 className="text-lg font-bold text-gray-900 mb-0.5">Create an Account</h1>
+           <p className="text-xs text-gray-500">Sign up to start your health journey</p>
          </div>
          <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3 flex flex-col items-center">
            {step === 1 && (
@@ -257,9 +257,9 @@ const RegisterForm = ({
       )}
       {step === 2 && (
         <>
-        <div className="grid grid-cols-1 gap-4 w-full max-w-md">
+        <div className="grid grid-cols-1 gap-2.5 w-full max-w-md">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+            <label className="block text-xs font-medium text-gray-700 mb-1 text-left">
               Country
             </label>
             <div className="relative">
@@ -285,7 +285,7 @@ const RegisterForm = ({
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">Phone Number</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1 text-left">Phone Number</label>
             <PhoneNumberInput
               value={fd.phone ?? ''}
               countryName={fd.country ?? ''}
@@ -295,7 +295,7 @@ const RegisterForm = ({
             {errors.phone && <p className="text-red-500 text-xs mt-1.5 text-left">{errors.phone}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+            <label className="block text-xs font-medium text-gray-700 mb-1 text-left">
               Date of Birth
             </label>
             <div
@@ -315,23 +315,22 @@ const RegisterForm = ({
           </div>
           {(fd.role ?? 'patient') === 'patient' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
-                Medical History
+              <label className="block text-xs font-medium text-gray-700 mb-1 text-left">
+                Medical History <span className="font-normal text-gray-400">(chronic diseases, allergies, medications)</span>
               </label>
-              <p className="text-xs text-gray-400 mb-1.5 text-left">Chronic diseases, allergies, current medications</p>
               <textarea
                 name="medicalHistory"
                 value={fd.medicalHistory ?? ''}
                 onChange={handleInputChange}
-                rows={4}
-                className="w-full border border-gray-300 rounded-xl px-3.5 py-3 text-sm resize-none hover:border-gray-400 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all bg-white placeholder:text-gray-400"
+                rows={2}
+                className="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm resize-none hover:border-gray-400 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all bg-white placeholder:text-gray-400"
                 placeholder="e.g., Diabetes Type 2, Penicillin allergy, Aspirin 100mg daily..."
               />
             </div>
           )}
         </div>
 
-        <div className="w-full max-w-md mt-5 pt-4 border-t border-gray-100 space-y-3">
+        <div className="w-full max-w-md mt-3 pt-3 border-t border-gray-100 space-y-2">
           <label className="flex items-start gap-3 cursor-pointer group">
             <input
               type="checkbox"
@@ -374,7 +373,7 @@ const RegisterForm = ({
           </label>
         </div>
 
-        <div className="w-full max-w-md flex items-center justify-between gap-3 mt-6 mb-4">
+        <div className="w-full max-w-md flex items-center justify-between gap-3 mt-4 mb-2">
           <button onClick={handleBack} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
             Back
