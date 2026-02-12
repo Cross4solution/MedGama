@@ -96,47 +96,50 @@ const Header = () => {
                       <svg className="w-4 h-4 ml-1 inline-block text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
                     </button>
                     {loginOpen && (
-                      <div role="menu" className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50 p-2 space-y-2">
+                      <div role="menu" className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in slide-in-from-top-1">
+                        <div className="px-3 pt-2 pb-1.5">
+                          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Sign in as</p>
+                        </div>
                         <button
                           type="button"
                           role="menuitem"
                           onClick={()=>{ setLoginOpen(false); navigate('/login'); }}
-                          className="w-full inline-flex items-center gap-1 pl-2 pr-1 py-3 text-sm rounded-xl bg-green-50 text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 border border-green-200 shadow-sm"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                         >
-                          <User className="w-4 h-4 text-green-600" />
-                          <span className="font-medium">Patient Login</span>
+                          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600"><User className="w-4 h-4" /></span>
+                          <span className="font-medium">Patient</span>
                         </button>
                         <button
                           type="button"
                           role="menuitem"
                           onClick={()=>{ setLoginOpen(false); navigate('/doctor-login'); }}
-                          className="w-full inline-flex items-center gap-1 pl-2 pr-1 py-3 text-sm rounded-xl bg-blue-50 text-blue-800 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 border border-blue-200 shadow-sm"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                         >
-                          <Stethoscope className="w-4 h-4 text-blue-600" />
-                          <span className="font-medium">Doctor Login</span>
+                          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600"><Stethoscope className="w-4 h-4" /></span>
+                          <span className="font-medium">Doctor</span>
                         </button>
                         <button
                           type="button"
                           role="menuitem"
                           onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
-                          className="w-full inline-flex items-center gap-1 pl-2 pr-1 py-3 text-sm rounded-xl bg-purple-50 text-purple-800 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-200 border border-purple-200 shadow-sm"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                         >
-                          <Hospital className="w-4 h-4 text-purple-600" />
-                          <span className="font-medium">Clinic Login</span>
+                          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-violet-50 text-violet-600"><Hospital className="w-4 h-4" /></span>
+                          <span className="font-medium">Clinic</span>
                         </button>
-                        {/* CRM Login (external) */}
+                        <div className="my-1.5 border-t border-gray-100" />
                         <a
                           role="menuitem"
                           href={(process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login')}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full inline-flex items-center justify-between pl-2 pr-1 py-3 text-sm rounded-xl bg-gray-900 text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300 border border-gray-900 shadow-sm"
+                          className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
                         >
-                          <span className="inline-flex items-center gap-1">
-                            <LayoutDashboard className="w-4 h-4 text-white" />
-                            <span className="font-medium">CRM Login</span>
+                          <span className="flex items-center gap-3">
+                            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-500"><LayoutDashboard className="w-4 h-4" /></span>
+                            <span className="font-medium">CRM Panel</span>
                           </span>
-                          <ArrowUpRight className="w-3.5 h-3.5 text-gray-200" />
+                          <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
                         </a>
                       </div>
                     )}
