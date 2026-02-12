@@ -97,11 +97,11 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
         ref={btnRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`inline-flex items-center justify-center gap-2 py-2 px-3 rounded-full text-sm border border-transparent bg-white text-gray-800 font-medium transition-colors hover:rounded-md hover:border-gray-200 hover:bg-gray-100 ${buttonClassName}`.trim()}
+        className={`inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-600 font-medium transition-colors hover:bg-gray-50 ${buttonClassName}`.trim()}
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <Share2 className="w-5 h-5 text-gray-600" strokeWidth={2.0} aria-hidden="true" />
+        <Share2 className="w-4 h-4" strokeWidth={1.8} aria-hidden="true" />
         <span>{title}</span>
       </button>
 
@@ -110,14 +110,15 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
           ref={panelRef}
           role="menu"
           aria-label="Share options"
-          className="fixed z-[9999] rounded-xl border border-gray-200 bg-white/95 backdrop-blur-md shadow-lg ring-1 ring-black/5"
+          className="fixed z-[9999] rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5"
           style={{ top: pos.top, left: pos.left, width: pos.width }}
         >
-          <div className="p-2">
+          <div className="px-1.5 py-1.5">
+            <p className="px-3 py-1.5 text-[11px] font-medium text-gray-400 uppercase tracking-wider">Share via</p>
             {showNative && (
-              <button onClick={handleNativeShare} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-                <span className="inline-flex items-center justify-center w-4 h-4">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <button onClick={handleNativeShare} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition-colors">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600">
                     <path d="M22 2L11 13"></path>
                     <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
                   </svg>
@@ -125,24 +126,25 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
                 <span>Share (System)</span>
               </button>
             )}
-            <a href={xUrl} target="_blank" rel="noreferrer" className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-              <XIcon className="w-4 h-4" />
+            <a href={xUrl} target="_blank" rel="noreferrer" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition-colors">
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-900"><XIcon className="w-4 h-4 text-white" /></span>
               <span>X</span>
             </a>
-            <a href={fb} target="_blank" rel="noreferrer" className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-              <Facebook className="w-4 h-4" />
+            <a href={fb} target="_blank" rel="noreferrer" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition-colors">
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600"><Facebook className="w-4 h-4 text-white" /></span>
               <span>Facebook</span>
             </a>
-            <a href={wa} target="_blank" rel="noreferrer" className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-              <WhatsAppIcon className="w-4 h-4" />
+            <a href={wa} target="_blank" rel="noreferrer" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition-colors">
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-500"><WhatsAppIcon className="w-4 h-4 text-white" /></span>
               <span>WhatsApp</span>
             </a>
-            <a href={mail} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-              <Mail className="w-4 h-4" />
+            <a href={mail} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition-colors">
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100"><Mail className="w-4 h-4 text-orange-600" /></span>
               <span>Email</span>
             </a>
-            <button onClick={handleCopy} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700">
-              <LinkIcon className="w-4 h-4" />
+            <div className="mx-2 my-1 border-t border-gray-100" />
+            <button onClick={handleCopy} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition-colors">
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100"><LinkIcon className="w-4 h-4 text-gray-600" /></span>
               <span>Copy Link</span>
             </button>
           </div>
