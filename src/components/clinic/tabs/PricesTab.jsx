@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 export default function PricesTab({ services, selectedService, setSelectedService }) {
+  const pricesRef = useRef(null);
+
+  useEffect(() => {
+    if (selectedService && pricesRef.current) {
+      setTimeout(() => {
+        pricesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  }, [selectedService]);
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-bold text-gray-900">Top Services</h3>
@@ -27,7 +36,7 @@ export default function PricesTab({ services, selectedService, setSelectedServic
 
       {/* Prices of selected service */}
       {selectedService && (
-        <div className="space-y-3">
+        <div ref={pricesRef} className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-bold text-gray-900">
               {services.find(s => s.id === selectedService)?.name} — Pricing

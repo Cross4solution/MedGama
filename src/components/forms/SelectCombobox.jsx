@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 // Reusable select-like combobox with search, outside-click close, and custom left icon
 export default function SelectCombobox({
@@ -18,6 +19,9 @@ export default function SelectCombobox({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const ref = useRef(null);
+  const btnRef = useRef(null);
+  const panelRef = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
 
   const toOption = (opt) => (typeof opt === 'string' ? { label: opt, value: opt } : opt);
   const list = useMemo(() => options.map(toOption), [options]);
@@ -31,9 +35,26 @@ export default function SelectCombobox({
     return list.filter((opt) => normalize(opt.label).includes(q));
   }, [list, query, searchable]);
 
+  const updatePos = useCallback(() => {
+    if (!btnRef.current) return;
+    const r = btnRef.current.getBoundingClientRect();
+    setPos({ top: r.bottom + 4, left: r.left, width: r.width });
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    updatePos();
+    window.addEventListener('scroll', updatePos, true);
+    window.addEventListener('resize', updatePos);
+    return () => {
+      window.removeEventListener('scroll', updatePos, true);
+      window.removeEventListener('resize', updatePos);
+    };
+  }, [open, updatePos]);
+
   useEffect(() => {
     const onClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target) && panelRef.current && !panelRef.current.contains(e.target)) setOpen(false);
     };
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
@@ -73,6 +94,7 @@ export default function SelectCombobox({
 
       {/* Trigger button styled like the original select */}
       <button
+        ref={btnRef}
         type="button"
         className={
           triggerClassName && triggerClassName.length > 0
@@ -96,8 +118,12 @@ export default function SelectCombobox({
       {/* Subtle shadow on focus/hover (visual only) */}
       <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none" />
 
-      {open && (
-        <div className={`absolute z-30 w-full min-w-[220px] bg-white border border-gray-200 rounded-xl shadow-xl ${dropUp ? 'bottom-full mb-1' : 'mt-1'} ${menuClassName}`}>
+      {open && createPortal(
+        <div
+          ref={panelRef}
+          className={`fixed z-[9999] min-w-[220px] bg-white border border-gray-200 rounded-xl shadow-xl ${menuClassName}`}
+          style={{ top: pos.top, left: pos.left, width: pos.width }}
+        >
           {searchable && (
             <div className="p-2.5 border-b border-gray-100">
               <input
@@ -128,7 +154,8 @@ export default function SelectCombobox({
             getKey={(opt) => opt.value}
             wheelFactor={wheelFactor}
           />
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

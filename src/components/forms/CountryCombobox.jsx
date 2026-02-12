@@ -1,10 +1,14 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import countryCodes from '../../data/countryCodes';
 
 export default function CountryCombobox({ options = [], value, onChange, placeholder = 'Select Country', triggerClassName = '', getFlagUrl }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const ref = useRef(null);
+  const btnRef = useRef(null);
+  const panelRef = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
 
   const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
@@ -47,9 +51,26 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
     });
   }, [options, query, aliases]);
 
+  const updatePos = useCallback(() => {
+    if (!btnRef.current) return;
+    const r = btnRef.current.getBoundingClientRect();
+    setPos({ top: r.bottom + 4, left: r.left, width: r.width });
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    updatePos();
+    window.addEventListener('scroll', updatePos, true);
+    window.addEventListener('resize', updatePos);
+    return () => {
+      window.removeEventListener('scroll', updatePos, true);
+      window.removeEventListener('resize', updatePos);
+    };
+  }, [open, updatePos]);
+
   useEffect(() => {
     const onClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target) && panelRef.current && !panelRef.current.contains(e.target)) setOpen(false);
     };
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
@@ -75,6 +96,7 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
   return (
     <div className="relative" ref={ref}>
       <button
+        ref={btnRef}
         type="button"
         className={
           triggerClassName && triggerClassName.length > 0
@@ -94,23 +116,27 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
           placeholder
         )}
       </button>
-      {open && (
-        <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
-          <div className="p-2">
+      {open && createPortal(
+        <div
+          ref={panelRef}
+          className="fixed z-[9999] bg-white border border-gray-200 rounded-xl shadow-xl"
+          style={{ top: pos.top, left: pos.left, width: pos.width }}
+        >
+          <div className="p-2.5 border-b border-gray-100">
             <input
-              className="w-full border border-gray-200 rounded px-2 py-1 text-base md:text-sm"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
               placeholder="Search country"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               autoFocus
             />
           </div>
-          <ul className="max-h-64 overflow-y-auto text-sm">
+          <ul className="max-h-64 overflow-y-auto text-sm py-1">
             {filtered.map((opt) => (
               <li key={opt}>
                 <button
                   type="button"
-                  className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2"
+                  className="w-full text-left px-3.5 py-2.5 hover:bg-gray-50 flex items-center gap-2 transition-colors"
                   onClick={() => { onChange && onChange(opt); setOpen(false); setQuery(''); }}
                 >
                   {resolveFlagUrl(opt) && (
@@ -124,7 +150,8 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
               <li className="px-3 py-2 text-gray-500 text-xs">No results</li>
             )}
           </ul>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

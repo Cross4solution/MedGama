@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 export default function DoctorsTab({ doctorsText, deptDoctors, selectedDept, setSelectedDept }) {
+  const doctorsListRef = useRef(null);
+
+  useEffect(() => {
+    if (selectedDept && doctorsListRef.current) {
+      setTimeout(() => {
+        doctorsListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  }, [selectedDept]);
   return (
     <div className="space-y-6">
       <div>
@@ -25,7 +34,7 @@ export default function DoctorsTab({ doctorsText, deptDoctors, selectedDept, set
 
       {/* Doctors of selected department */}
       {selectedDept && (
-        <div className="space-y-3">
+        <div ref={doctorsListRef} className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-bold text-gray-900">
               {deptDoctors.find(d => d.id === selectedDept)?.name} Doctors

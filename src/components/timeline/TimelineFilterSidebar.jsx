@@ -39,9 +39,9 @@ export default function TimelineFilterSidebar({
 
   return (
     <aside className="order-1 lg:order-1 lg:sticky lg:top-24 h-max">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
         {/* Header */}
-        <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+        <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
           <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
             <Search className="w-4 h-4 text-teal-600" />
             Filters

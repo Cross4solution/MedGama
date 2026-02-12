@@ -18,17 +18,17 @@ export default function ContactActions({ onTelehealth, onBook, onMessage }) {
         
         <button 
           onClick={onBook} 
-          className="w-full bg-white text-gray-700 py-2.5 px-4 rounded-xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all font-semibold text-sm flex items-center justify-center gap-2"
+          className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm"
         >
-          <img src="/images/icon/calender-svgrepo-com.svg" alt="Calendar" className="w-4 h-4 opacity-60" />
+          <img src="/images/icon/calender-svgrepo-com.svg" alt="Calendar" className="w-4 h-4 brightness-0 invert" />
           <span>Book Appointment</span>
         </button>
         
         <button 
           onClick={onMessage} 
-          className="w-full bg-white text-gray-700 py-2.5 px-4 rounded-xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all font-semibold text-sm flex items-center justify-center gap-2"
+          className="w-full bg-violet-600 text-white py-2.5 px-4 rounded-xl hover:bg-violet-700 focus:ring-4 focus:ring-violet-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm"
         >
-          <img src="/images/icon/chat-round-line-svgrepo-com.svg" alt="Chat" className="w-4 h-4 opacity-60" />
+          <img src="/images/icon/chat-round-line-svgrepo-com.svg" alt="Chat" className="w-4 h-4 brightness-0 invert" />
           <span>Send Message</span>
         </button>
       </div>
