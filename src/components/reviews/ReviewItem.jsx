@@ -4,36 +4,34 @@ import { toEnglishTimestamp } from 'utils/i18n';
 
 export default function ReviewItem({ review }) {
   return (
-    <div className="border border-gray-200 rounded-lg p-6">
+    <div className="border border-gray-200 rounded-xl p-5 hover:border-gray-300 transition-all">
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <span className="font-semibold text-blue-600">{review.name?.[0]}</span>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-teal-50 rounded-full flex items-center justify-center ring-1 ring-teal-100">
+            <span className="text-sm font-bold text-teal-700">{review.name?.[0]}</span>
           </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-semibold">{review.name}</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-semibold text-gray-900">{review.name}</span>
               {review.verified && (
-                <CheckCircle className="w-4 h-4 text-green-500" />
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
               )}
             </div>
-            <div className="flex items-center gap-1 text-yellow-500 mt-1">
+            <div className="flex items-center gap-0.5 mt-0.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-200'}`} />
               ))}
             </div>
           </div>
         </div>
-        <div className="ml-4">
+        <div className="flex flex-col items-end gap-1">
           {review.service && (
-            <span className="text-sm text-gray-600">{review.service}</span>
+            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">{review.service}</span>
           )}
+          <span className="text-[11px] text-gray-400">{toEnglishTimestamp(review.date) || 'Just now'}</span>
         </div>
       </div>
-      <p className="text-gray-700 mb-3">{review.comment}</p>
-      <div className="mt-2 text-sm text-gray-600 flex justify-end">
-        <span>{toEnglishTimestamp(review.date) || 'Just now'}</span>
-      </div>
+      <p className="text-sm text-gray-600 leading-relaxed">{review.comment}</p>
     </div>
   );
 }
