@@ -169,17 +169,18 @@ export default function CustomSearch() {
   }, [specialties, procedures, specialtyQuery]);
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="bg-white border border-gray-200 rounded-xl p-3 md:p-3">
-        <div className="grid gap-4 grid-cols-2 md:grid-cols-[12rem,12rem,1.1fr,auto,1.1fr,auto]">
+    <form onSubmit={onSubmit}>
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-5 shadow-sm">
+        <div className="grid gap-3 md:gap-4 grid-cols-2 md:grid-cols-[11rem,11rem,1.1fr,auto,1.1fr,auto] items-start">
         {/* 1. Country */}
-        <div className="max-w-48">
+        <div>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">Country</label>
           <CountryCombobox
             options={countries}
             value={country}
             onChange={(val) => { setCountry((val || '').trim()); setCity(''); }}
-            placeholder="Country"
-            triggerClassName="w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left"
+            placeholder="Select country"
+            triggerClassName="w-full h-10 border border-gray-300 rounded-xl px-3 text-sm bg-white text-left hover:border-gray-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
             getFlagUrl={(name) => {
               const code = getFlagCode(name);
               return code ? `https://flagcdn.com/24x18/${code}.png` : null;
@@ -188,7 +189,8 @@ export default function CustomSearch() {
         </div>
 
         {/* 2. City */}
-        <div className="max-w-48">
+        <div>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">{adminType === 'state' ? 'State/Province' : 'City'}</label>
           <CityCombobox
             options={country ? citiesOptions : []}
             value={city}
@@ -196,15 +198,16 @@ export default function CustomSearch() {
             disabled={!country}
             loading={loadingCities}
             wheelFactor={1}
-            placeholder={adminType === 'state' ? 'State/Province' : 'City'}
-            triggerClassName="w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left"
+            placeholder={country ? 'Select...' : 'Choose country first'}
+            triggerClassName={`w-full h-10 border border-gray-300 rounded-xl px-3 text-sm bg-white text-left transition-all ${!country ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400'}`}
           />
         </div>
 
         {/* 3. Symptom */}
         <div className="relative col-span-2 md:col-span-1">
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">Symptom / Procedure</label>
           <div
-            className={`border border-gray-300 rounded-lg px-2 py-1 text-base md:text-sm flex items-center flex-wrap gap-2 ${disableSymptom ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+            className={`border border-gray-300 rounded-xl px-2.5 py-1.5 text-sm flex items-center flex-wrap gap-1.5 min-h-[2.5rem] transition-all ${disableSymptom ? 'bg-gray-50 cursor-not-allowed opacity-60' : 'bg-white hover:border-gray-400 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-400'}`}
           >
             {listTokens(symptom).map((tok) => (
               <span key={tok} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-800 border border-teal-200">
@@ -286,12 +289,15 @@ export default function CustomSearch() {
           )}
         </div>
 
-        <div className="flex items-center justify-center text-gray-500 col-span-2 md:col-span-1">or</div>
+        <div className="flex items-center justify-center col-span-2 md:col-span-1 md:pt-6">
+          <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">or</span>
+        </div>
 
         {/* 4. Specialty */}
         <div className="relative col-span-2 md:col-span-1">
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">Specialty</label>
           <div
-            className={`border border-gray-300 rounded-lg px-2 py-1 text-base md:text-sm flex items-center flex-wrap gap-2 ${disableSpecialty ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+            className={`border border-gray-300 rounded-xl px-2.5 py-1.5 text-sm flex items-center flex-wrap gap-1.5 min-h-[2.5rem] transition-all ${disableSpecialty ? 'bg-gray-50 cursor-not-allowed opacity-60' : 'bg-white hover:border-gray-400 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-400'}`}
           >
             {listTokens(specialty).map((tok) => (
               <span key={tok} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-800 border border-teal-200">
@@ -374,11 +380,11 @@ export default function CustomSearch() {
         </div>
 
         {/* 5. Search button */}
-        <div className="flex md:block col-span-2 md:col-span-1">
+        <div className="flex md:block col-span-2 md:col-span-1 md:pt-6">
           <button
             type="submit"
             disabled={!canSearch}
-            className="ml-auto md:ml-0 bg-gray-900 text-white rounded-lg text-base px-5 py-3 md:text-sm md:px-4 md:h-10 disabled:opacity-50 flex items-center gap-2 md:justify-center"
+            className="ml-auto md:ml-0 bg-teal-600 text-white rounded-xl text-sm font-semibold px-5 py-2.5 md:h-10 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 justify-center hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all shadow-sm hover:shadow-md"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="11" cy="11" r="8"></circle>
@@ -389,7 +395,6 @@ export default function CustomSearch() {
         </div>
       </div>
     </div>
-    
     </form>
   );
 }
