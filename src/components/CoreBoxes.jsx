@@ -43,20 +43,21 @@ export default function CoreBoxes({ items = CORE_ITEMS }) {
   ];
 
   return (
-    <section id="features" className="pt-4 pb-8">
+    <section id="features" className="pt-4 pb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {items.slice(0, 6).map((f, i) => {
             const Icon = ICONS[i % ICONS.length];
             const theme = PALETTE[i % PALETTE.length];
             return (
-              <div key={i} className="group rounded-2xl border bg-white shadow-sm overflow-hidden">
-                <div className="p-4 flex flex-col h-full">
-                  <div className={`w-9 h-9 rounded-lg ${theme.bg} mb-3 flex items-center justify-center flex-shrink-0`}>
-                    <Icon className={`w-4 h-4 ${theme.fg}`} aria-hidden="true" />
+              <div key={i} className="group relative rounded-2xl border border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative p-5 sm:p-6 flex flex-col h-full">
+                  <div className={`w-11 h-11 rounded-xl ${theme.bg} mb-4 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className={`w-5 h-5 ${theme.fg}`} aria-hidden="true" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base leading-5 sm:leading-6 mb-2">{f.title}</h3>
-                  <p className="text-[13px] sm:text-[15px] text-gray-600 leading-5 sm:leading-6 flex-grow">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-[15px] leading-5 sm:leading-6 mb-2">{f.title}</h3>
+                  <p className="text-[13px] sm:text-sm text-gray-500 leading-5 sm:leading-relaxed flex-grow">
                     {f.desc}
                   </p>
                 </div>
