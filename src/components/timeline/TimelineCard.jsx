@@ -324,22 +324,20 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
             </div>
           )}
 
-          {/* Social counts: likes left, comments button right (no icon) */}
-          <div className="px-3 pt-2 mt-2 text-sm text-gray-500 flex items-center justify-between">
-            {/* Likes */}
-            <div className="inline-flex items-center gap-2">
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#378fe9] text-white">
-                <ThumbsUp className="w-3 h-3" />
+          {/* Social counts */}
+          <div className="px-3 pt-2 mt-2 text-xs text-gray-500 flex items-center justify-between">
+            <button type="button" onClick={handleLike} className="inline-flex items-center gap-1.5 hover:text-gray-700 transition-colors">
+              <span className={`inline-flex items-center justify-center w-[18px] h-[18px] rounded-full ${liked ? 'bg-teal-500' : 'bg-gray-300'} text-white`}>
+                <ThumbsUp className="w-[10px] h-[10px]" />
               </span>
-              <span className="min-w-[2.5ch] md:min-w-0 text-center tabular-nums">{likeCount}</span>
-            </div>
-            {/* Comments (right aligned, icon removed) */}
+              <span className="tabular-nums font-medium">{likeCount}</span>
+            </button>
             <button
               type="button"
-              className="text-gray-500 group"
+              className="text-gray-400 hover:text-gray-600 transition-colors"
               onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
             >
-              <span className="inline-block align-middle min-w-[2.5ch] md:min-w-0 text-center tabular-nums">{item.comments}</span> <span className="inline-block translate-y-[1px] group-hover:underline underline-offset-[2px]">comments</span>
+              <span className="tabular-nums font-medium">{item.comments}</span> comments
             </button>
           </div>
 
@@ -491,27 +489,25 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           
 
           {/* Action bar */}
-          <div className="px-3 py-1.5 border-t border-gray-100 mt-1 grid grid-cols-3 gap-1 justify-items-center">
+          <div className="px-3 py-1.5 border-t border-gray-100 mt-2 grid grid-cols-3 gap-1 justify-items-center">
             <button
               type="button"
-              className={`w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm transition-colors ${liked ? 'text-blue-600 bg-blue-50/50' : 'text-gray-600 hover:bg-gray-50'} font-medium`}
+              className={`w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[13px] transition-all ${liked ? 'text-teal-600 bg-teal-50/60 font-semibold' : 'text-gray-500 hover:bg-gray-50 font-medium'}`}
               onClick={handleLike}
             >
-              <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full ${liked ? '' : ''}`}>
-                {liked ? (
-                  <ThumbsUp className="w-4 h-4" strokeWidth={2.5} stroke="#2563eb" fill="#dbeafe" />
-                ) : (
-                  <ThumbsUp className="w-4 h-4" strokeWidth={1.8} fill="none" />
-                )}
-              </span>
+              {liked ? (
+                <ThumbsUp className="w-[15px] h-[15px]" strokeWidth={2.2} />
+              ) : (
+                <ThumbsUp className="w-[15px] h-[15px]" strokeWidth={1.6} fill="none" />
+              )}
               <span>Like</span>
             </button>
             <button
               type="button"
-              className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-600 hover:bg-gray-50 font-medium transition-colors"
+              className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[13px] text-gray-500 hover:bg-gray-50 font-medium transition-all"
               onClick={(e)=>{ e.stopPropagation(); if (disabledActions) return; setShowCommentsPreview(v=>!v); }}
             >
-              <MessageCircle className="w-4 h-4" strokeWidth={1.8} />
+              <MessageCircle className="w-[15px] h-[15px]" strokeWidth={1.6} />
               <span>Comment</span>
             </button>
             <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-sm" />
@@ -611,21 +607,24 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
             </div>
             <p className={`mt-3 leading-6 text-gray-800 line-clamp-3 ${compact ? 'text-[14px]' : 'text-[15px]'}`}>{item.text}</p>
             <div className="mt-4 flex items-center justify-between">
-              <div className="flex items-center gap-3 text-gray-500 text-xs">
-                <span className="inline-flex items-center gap-1" aria-label="likes"><Heart className="w-4 h-4" />{item.likes}</span>
-                <span className="inline-block w-1 h-1 rounded-full bg-gray-300" />
-                <span className="inline-flex items-center gap-1" aria-label="comments"><MessageCircle className="w-4 h-4" />{item.comments}</span>
+              <div className="flex items-center gap-3 text-gray-400 text-xs">
+                <span className="inline-flex items-center gap-1.5 font-medium" aria-label="likes">
+                  <span className="inline-flex items-center justify-center w-[16px] h-[16px] rounded-full bg-teal-500 text-white"><ThumbsUp className="w-[9px] h-[9px]" /></span>
+                  {item.likes}
+                </span>
+                <span className="inline-block w-0.5 h-0.5 rounded-full bg-gray-300" />
+                <span className="inline-flex items-center gap-1 font-medium" aria-label="comments"><MessageCircle className="w-3.5 h-3.5" />{item.comments}</span>
               </div>
-              <div className="flex items-center gap-1 bg-gray-50 rounded-full p-1 shadow-sm">
-                <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to like' : 'Like'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`} onClick={(e)=>e.stopPropagation()}>
-                  <Heart className="w-4 h-4" />
+              <div className="flex items-center gap-0.5 bg-gray-50 rounded-full p-0.5 shadow-sm">
+                <button type="button" aria-label="Like" className="p-1.5 rounded-full transition text-gray-500 hover:bg-gray-100 hover:text-teal-600" onClick={(e)=>e.stopPropagation()}>
+                  <ThumbsUp className="w-3.5 h-3.5" strokeWidth={1.6} fill="none" />
                 </button>
-                <button type="button" disabled={disabledActions} aria-label={disabledActions ? 'Login to comment' : 'Comment'} className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100 hover:text-teal-700'}`} onClick={(e)=>e.stopPropagation()}>
-                  <MessageCircle className="w-4 h-4" />
+                <button type="button" aria-label="Comment" className="p-1.5 rounded-full transition text-gray-500 hover:bg-gray-100 hover:text-teal-600" onClick={(e)=>e.stopPropagation()}>
+                  <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.6} />
                 </button>
                 <ShareMenu title="Share" url={shareUrl} showNative={false} />
-                <button type="button" aria-label="Save" className="p-1.5 rounded-full transition text-gray-600 hover:bg-gray-100 hover:text-teal-700" onClick={(e)=>e.stopPropagation()}>
-                  <Bookmark className="w-4 h-4" />
+                <button type="button" aria-label="Save" className="p-1.5 rounded-full transition text-gray-500 hover:bg-gray-100 hover:text-teal-600" onClick={(e)=>e.stopPropagation()}>
+                  <Bookmark className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>

@@ -104,7 +104,10 @@ export default function HomeV2() {
                     One-click, end-to-end care: discovery, availability, telehealth, health tourism and secure communication.
                   </p>
                   <div className="mt-6 flex gap-3">
-                    <a href="#features" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm shadow-lg">Explore</a>
+                    <a href="#features" className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm text-gray-900 px-5 py-2.5 rounded-full hover:bg-white hover:shadow-lg text-sm font-semibold transition-all shadow-md">
+                      Explore
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
                   </div>
                 </div>
               </div>

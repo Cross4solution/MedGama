@@ -30,7 +30,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gray-900 text-gray-400">
+    <footer className="bg-[#1C6A83] text-white/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
         {/* Main grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
@@ -40,7 +40,7 @@ export default function Footer() {
               <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 rounded-lg object-contain" />
               <span className="text-white text-base font-bold tracking-tight">MedGama</span>
             </div>
-            <p className="text-sm leading-relaxed text-gray-500 mb-4">
+            <p className="text-sm leading-relaxed text-white/60 mb-4">
               A global, end-to-end health portal for patients, doctors and clinics.
             </p>
             <div className="flex items-center gap-2">
@@ -49,7 +49,7 @@ export default function Footer() {
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
-                  className="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-gray-500 hover:bg-gray-700 hover:text-white transition-all"
+                  className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-white/70 hover:bg-white/25 hover:text-white transition-all"
                 >
                   {s.icon}
                 </a>
@@ -59,11 +59,11 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Quick Links</h3>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Quick Links</h3>
             <ul className="space-y-2.5">
               {quickLinks.map((l) => (
                 <li key={l.label}>
-                  <a href={l.href} className="text-sm text-gray-400 hover:text-white transition-colors">{l.label}</a>
+                  <a href={l.href} className="text-sm text-white/70 hover:text-white transition-colors">{l.label}</a>
                 </li>
               ))}
             </ul>
@@ -71,11 +71,11 @@ export default function Footer() {
 
           {/* Social */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Connect</h3>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Connect</h3>
             <ul className="space-y-2.5">
               {socialLinks.map((s) => (
                 <li key={s.label}>
-                  <a href={s.href} className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center gap-2">
+                  <a href={s.href} className="text-sm text-white/70 hover:text-white transition-colors inline-flex items-center gap-2">
                     {s.icon}
                     <span>{s.label}</span>
                   </a>
@@ -86,11 +86,11 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Legal</h3>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Legal</h3>
             <ul className="space-y-2.5">
               {legalLinks.map((l) => (
                 <li key={l.label}>
-                  <a href={l.href} className="text-sm text-gray-400 hover:text-white transition-colors">{l.label}</a>
+                  <a href={l.href} className="text-sm text-white/70 hover:text-white transition-colors">{l.label}</a>
                 </li>
               ))}
             </ul>
@@ -98,12 +98,12 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 pt-6 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span className="text-xs text-gray-600">© {year} MedGama. All rights reserved.</span>
-          <div className="flex items-center gap-4 text-xs text-gray-600">
-            <a href="/privacy-policy" className="hover:text-gray-400 transition-colors">Privacy</a>
-            <span className="text-gray-700">·</span>
-            <a href="/terms-of-service" className="hover:text-gray-400 transition-colors">Terms</a>
+        <div className="mt-10 pt-6 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span className="text-xs text-white/50">© {year} MedGama. All rights reserved.</span>
+          <div className="flex items-center gap-4 text-xs text-white/50">
+            <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy</a>
+            <span className="text-white/30">·</span>
+            <a href="/terms-of-service" className="hover:text-white transition-colors">Terms</a>
           </div>
         </div>
       </div>

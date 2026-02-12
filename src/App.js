@@ -106,7 +106,7 @@ function AppContent() {
     }
     if (isPostDetail) return; // post detayına giderken mevcut konumu koru
     try {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'auto' });
     } catch {
       window.scrollTo(0, 0);
     }
@@ -122,7 +122,7 @@ function AppContent() {
   const pagesWithOwnContainer = [
     '/profile', '/notifications', '/doctors-departments', 
     '/patient-home', '/telehealth', '/telehealth-appointment',
-    '/clinic', '/explore', '/post'
+    '/clinic', '/explore', '/post', '/doctor'
   ];
   const hasOwnContainer = pagesWithOwnContainer.some(page => 
     location.pathname.startsWith(page)

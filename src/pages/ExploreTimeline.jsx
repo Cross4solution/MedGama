@@ -128,7 +128,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
 
 export default function ExploreTimeline() {
   const { user, country } = useAuth();
-  const disabledActions = !user; // guest ise aksiyonlar kapalı
+  const disabledActions = false; // allow interactions for all users
   const navigate = useNavigate();
 
   const [query, setQuery] = useState('');
