@@ -90,61 +90,61 @@ const Header = () => {
                       aria-haspopup="menu"
                       aria-expanded={loginOpen}
                       onClick={() => setLoginOpen((p) => !p)}
-                      className="text-sm text-gray-700 hover:text-gray-900 px-3 py-2 rounded-lg border border-transparent hover:border-gray-200"
+                      className="text-sm font-semibold text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all"
                     >
                       Login
-                      <svg className="w-4 h-4 ml-1 inline-block text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
+                      <svg className="w-4 h-4 ml-1.5 inline-block text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
                     </button>
                     {loginOpen && (
-                      <div role="menu" className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in slide-in-from-top-1">
-                        <div className="px-3 pt-2 pb-1.5">
-                          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Sign in as</p>
+                      <div role="menu" className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 p-2 space-y-1">
+                        <div className="px-2 pt-1 pb-1">
+                          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Sign in as</p>
                         </div>
                         <button
                           type="button"
                           role="menuitem"
                           onClick={()=>{ setLoginOpen(false); navigate('/login'); }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 hover:border-emerald-300 transition-all"
                         >
-                          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600"><User className="w-4 h-4" /></span>
-                          <span className="font-medium">Patient</span>
+                          <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600"><User className="w-[18px] h-[18px]" /></span>
+                          <span className="font-semibold">Patient</span>
                         </button>
                         <button
                           type="button"
                           role="menuitem"
                           onClick={()=>{ setLoginOpen(false); navigate('/doctor-login'); }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-blue-50 border border-blue-200 text-blue-800 hover:bg-blue-100 hover:border-blue-300 transition-all"
                         >
-                          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600"><Stethoscope className="w-4 h-4" /></span>
-                          <span className="font-medium">Doctor</span>
+                          <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-blue-100 text-blue-600"><Stethoscope className="w-[18px] h-[18px]" /></span>
+                          <span className="font-semibold">Doctor</span>
                         </button>
                         <button
                           type="button"
                           role="menuitem"
                           onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-violet-50 border border-violet-200 text-violet-800 hover:bg-violet-100 hover:border-violet-300 transition-all"
                         >
-                          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-violet-50 text-violet-600"><Hospital className="w-4 h-4" /></span>
-                          <span className="font-medium">Clinic</span>
+                          <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-violet-100 text-violet-600"><Hospital className="w-[18px] h-[18px]" /></span>
+                          <span className="font-semibold">Clinic</span>
                         </button>
-                        <div className="my-1.5 border-t border-gray-100" />
+                        <div className="my-1 border-t border-gray-100" />
                         <a
                           role="menuitem"
                           href={(process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login')}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+                          className="w-full flex items-center justify-between gap-3 px-3 py-3 text-sm rounded-lg bg-gray-800 border border-gray-700 text-white hover:bg-gray-700 transition-all"
                         >
                           <span className="flex items-center gap-3">
-                            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-500"><LayoutDashboard className="w-4 h-4" /></span>
-                            <span className="font-medium">CRM Panel</span>
+                            <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-700 text-gray-300"><LayoutDashboard className="w-[18px] h-[18px]" /></span>
+                            <span className="font-semibold">CRM Panel</span>
                           </span>
-                          <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
+                          <ArrowUpRight className="w-4 h-4 text-gray-400" />
                         </a>
                       </div>
                     )}
                   </div>
-                  <Link to="/register" className="text-sm bg-teal-600 text-white px-3 py-2 rounded-lg hover:bg-teal-700">Register</Link>
+                  <Link to="/register" className="text-sm font-semibold bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 shadow-sm hover:shadow transition-all">Register</Link>
                 </>
               ) : (
                 <>
