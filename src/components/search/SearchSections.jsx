@@ -13,12 +13,7 @@ export default function SearchSections() {
       <section id="clinics-search" className="pt-8 pb-8 bg-gradient-to-b from-gray-50 to-white border-b border-gray-100">
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-medium mb-3">
-              <Search className="w-3.5 h-3.5" />
-              <span>Quick Search</span>
-            </div>
             <h2 className="text-xl font-bold text-gray-900">Find Clinics & Doctors</h2>
-            <p className="text-sm text-gray-500 mt-1">Search by name to find the right healthcare provider</p>
           </div>
           <GlobalSearch />
         </div>
