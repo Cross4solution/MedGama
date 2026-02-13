@@ -143,7 +143,11 @@ export default function ExploreTimeline() {
   // Composer state
   const [isComposerOpen, setIsComposerOpen] = useState(false);
   const [composerText, setComposerText] = useState('');
-  const [hasMedia, setHasMedia] = useState(false);
+  const [composerPhotos, setComposerPhotos] = useState([]);
+  const [composerVideos, setComposerVideos] = useState([]);
+  const [composerPhotoUrls, setComposerPhotoUrls] = useState([]);
+  const [composerVideoUrls, setComposerVideoUrls] = useState([]);
+  const hasMedia = composerPhotos.length > 0 || composerVideos.length > 0;
   const imageInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const paperInputRef = useRef(null);
@@ -162,6 +166,29 @@ export default function ExploreTimeline() {
   const insertEmoji = (e) => {
     setComposerText((t) => (t ? t + ' ' + e : e));
   };
+
+  // Build preview URLs for composer photos/videos
+  useEffect(() => {
+    const urls = composerPhotos.map(f => URL.createObjectURL(f));
+    setComposerPhotoUrls(urls);
+    return () => urls.forEach(u => { try { URL.revokeObjectURL(u); } catch {} });
+  }, [composerPhotos]);
+
+  useEffect(() => {
+    const urls = composerVideos.map(f => URL.createObjectURL(f));
+    setComposerVideoUrls(urls);
+    return () => urls.forEach(u => { try { URL.revokeObjectURL(u); } catch {} });
+  }, [composerVideos]);
+
+  // Cleanup composer state when modal closes
+  useEffect(() => {
+    if (!isComposerOpen) {
+      setComposerPhotos([]);
+      setComposerVideos([]);
+      setComposerText('');
+      setShowEmojiModal(false);
+    }
+  }, [isComposerOpen]);
 
   // Removed: EN-only Procedure/Symptom state and helpers (panel dropped)
 
@@ -273,9 +300,29 @@ export default function ExploreTimeline() {
       <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 via-white to-gray-50 fixed top-0 left-0 -z-10"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-12 relative">
         {/* Hidden pickers for composer */}
-        <input ref={imageInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=>{ if (e?.target?.files?.length) setHasMedia(true); }} />
-        <input ref={videoInputRef} type="file" accept="video/*" multiple className="hidden" onChange={(e)=>{ if (e?.target?.files?.length) setHasMedia(true); }} />
-        <input ref={paperInputRef} type="file" accept="application/pdf" className="hidden" onChange={(e)=>{ if (e?.target?.files?.length) setHasMedia(true); }} />
+        <input ref={imageInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=>{
+          const files = Array.from(e?.target?.files || []);
+          if (files.length) {
+            setComposerPhotos(prev => {
+              const merged = [...prev];
+              files.forEach(f => { if (!merged.some(p => p.name === f.name && p.size === f.size)) merged.push(f); });
+              return merged;
+            });
+          }
+          try { e.target.value = ''; } catch {}
+        }} />
+        <input ref={videoInputRef} type="file" accept="video/*" multiple className="hidden" onChange={(e)=>{
+          const files = Array.from(e?.target?.files || []);
+          if (files.length) {
+            setComposerVideos(prev => {
+              const merged = [...prev];
+              files.forEach(f => { if (!merged.some(p => p.name === f.name && p.size === f.size)) merged.push(f); });
+              return merged;
+            });
+          }
+          try { e.target.value = ''; } catch {}
+        }} />
+        <input ref={paperInputRef} type="file" accept="application/pdf" className="hidden" onChange={(e)=>{ try { e.target.value = ''; } catch {} }} />
         {/* Başlık + Sekmeler + Sıralama */}
         <div className="mb-2">
           <TimelineControls
@@ -394,8 +441,46 @@ export default function ExploreTimeline() {
                 </div>
               </div>
               <div className="px-4 sm:px-5 pt-3">
-                <textarea rows={5} placeholder={`What's on your mind, ${user?.name || 'Guest'}?`} value={composerText} onChange={(e)=>setComposerText(e.target.value)} className="w-full text-[17px] leading-7 placeholder:text-gray-400 text-gray-900 outline-none resize-none min-h-[140px]"></textarea>
+                <textarea rows={hasMedia ? 3 : 5} placeholder={`What's on your mind, ${user?.name || 'Guest'}?`} value={composerText} onChange={(e)=>setComposerText(e.target.value)} className={`w-full text-[17px] leading-7 placeholder:text-gray-400 text-gray-900 outline-none resize-none ${hasMedia ? 'min-h-[80px]' : 'min-h-[140px]'}`}></textarea>
               </div>
+              {/* Media Preview */}
+              {hasMedia && (
+                <div className="px-4 sm:px-5 pb-2">
+                  <div className="rounded-xl border border-gray-200/80 bg-gray-50/50 p-2.5">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Attachments ({composerPhotoUrls.length + composerVideoUrls.length})</span>
+                      <button type="button" onClick={()=>{ setComposerPhotos([]); setComposerVideos([]); }} className="text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors">Remove all</button>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {composerPhotoUrls.map((src, i) => (
+                        <div key={`cp${i}`} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200/60 shadow-sm bg-white">
+                          <img src={src} alt={`photo-${i+1}`} className="w-full h-full object-cover" />
+                          <button type="button" onClick={()=>setComposerPhotos(arr=>arr.filter((_,idx)=>idx!==i))} className="absolute top-1 right-1 w-5 h-5 bg-black/50 backdrop-blur-sm text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70">
+                            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                          </button>
+                        </div>
+                      ))}
+                      {composerVideoUrls.map((src, i) => (
+                        <div key={`cv${i}`} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200/60 shadow-sm bg-gray-900">
+                          <video src={src} className="w-full h-full object-cover" muted playsInline />
+                          <button type="button" onClick={()=>setComposerVideos(arr=>arr.filter((_,idx)=>idx!==i))} className="absolute top-1 right-1 w-5 h-5 bg-black/50 backdrop-blur-sm text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70">
+                            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                          </button>
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                              <div className="w-0 h-0 border-t-[4px] border-t-transparent border-l-[7px] border-l-white border-b-[4px] border-b-transparent ml-0.5" />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      <button type="button" onClick={()=>imageInputRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 bg-white hover:bg-teal-50/30 flex flex-col items-center justify-center gap-0.5 transition-all group">
+                        <svg className="w-4 h-4 text-gray-400 group-hover:text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
+                        <span className="text-[9px] font-medium text-gray-400 group-hover:text-teal-600">Add</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="px-4 sm:px-5 pt-2 pb-4">
                 <div className="rounded-2xl border bg-white relative overflow-visible">
                   <div className="px-4 py-3 text-sm text-gray-600 border-b">Add to your post</div>
