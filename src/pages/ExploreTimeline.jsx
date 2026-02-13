@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getCountryNames } from '../data/cityLoader';
@@ -185,7 +185,7 @@ export default function ExploreTimeline() {
   const GEO_KEY = 'explore_geo_consent'; // 'granted' | 'denied'
   const GEO_POS_KEY = 'explore_geo_pos'; // JSON: { lat, lon }
 
-  const askGeo = () => {
+  const askGeo = useCallback(() => {
     if (!navigator?.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -201,7 +201,15 @@ export default function ExploreTimeline() {
         try { localStorage.setItem(GEO_KEY, 'denied'); } catch {}
       }
     );
-  };
+  }, []);
+
+  const handleCountryChange = useCallback((val) => {
+    if (val === 'Andorra') {
+      const ok = window.confirm('Are you there now? Press OK to set Turkey.');
+      if (ok) return setCountryName('Turkey');
+    }
+    setCountryName(val);
+  }, []);
 
   useEffect(() => {
     // Filtre değişince sayfayı başa al
@@ -286,13 +294,7 @@ export default function ExploreTimeline() {
             query={query}
             onQueryChange={setQuery}
             countryName={countryName}
-            onCountryChange={(val)=>{
-              if (val === 'Andorra') {
-                const ok = window.confirm('Are you there now? Press OK to set Turkey.');
-                if (ok) return setCountryName('Turkey');
-              }
-              setCountryName(val);
-            }}
+            onCountryChange={handleCountryChange}
             specialty={specialty}
             onSpecialtyChange={setSpecialty}
             countryOptions={countryOptions}
