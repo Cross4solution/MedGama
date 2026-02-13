@@ -234,9 +234,19 @@ const ISLAND_TERRITORIES = new Set([
   'British Indian Ocean Territory',
 ]);
 
+// Major island nations that should NEVER be excluded (important for health tourism)
+const MAJOR_ISLAND_COUNTRIES = new Set([
+  'United Kingdom', 'Japan', 'Australia', 'New Zealand', 'Indonesia', 'Philippines',
+  'Ireland', 'Iceland', 'Singapore', 'Sri Lanka', 'Taiwan', 'Cuba', 'Cyprus',
+  'Dominican Republic', 'Jamaica', 'Madagascar', 'Haiti', 'Trinidad and Tobago',
+  'Bahrain', 'Malta', 'Papua New Guinea',
+]);
+
 // Ada/ada benzeri isimleri yakalamak için sezgisel filtre
 function isLikelyIsland(name = '') {
   const n = String(name);
+  // Never exclude major island nations
+  if (MAJOR_ISLAND_COUNTRIES.has(n)) return false;
   if (ISLAND_COUNTRIES.has(n) || ISLAND_TERRITORIES.has(n)) return true;
   const islandishKeywords = [
     ' Island', ' Islands', 'Isle', 'Âland', 'Åland', 'Cayman', 'Bermuda', 'Greenland',
