@@ -66,13 +66,14 @@ const TelehealthPage = () => {
   const pastStart = (pastPage - 1) * pageSize;
   const pastItems = completedSessions.slice(pastStart, pastStart + pageSize);
 
-  // Disable global scroll while on Telehealth page
+  // Allow normal scrolling on mobile, disable on desktop
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.add('no-scroll');
-    return () => {
-      root.classList.remove('no-scroll');
-    };
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const toggle = (e) => { e.matches ? root.classList.add('no-scroll') : root.classList.remove('no-scroll'); };
+    toggle(mq);
+    mq.addEventListener('change', toggle);
+    return () => { root.classList.remove('no-scroll'); mq.removeEventListener('change', toggle); };
   }, []);
 
   const colorMap = {
@@ -119,8 +120,8 @@ const TelehealthPage = () => {
   );
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-b from-gray-50/60 to-white flex">
-      <div className="flex-1 overflow-y-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/60 to-white">
+      <div className="flex-1">
         <div className="px-4 pt-3 pb-4 sm:px-6 sm:pt-4 sm:pb-6">
           {/* Page Header */}
           <div className="flex items-center gap-3 mb-5">
@@ -175,7 +176,7 @@ const TelehealthPage = () => {
                           <p className="text-[11px] text-teal-600 font-medium">{fmtDateTime(session.start)}</p>
                           <p className="text-[11px] text-gray-400">{session.specialty}</p>
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                           {(() => {
                             const m = minutesUntil(session.start);
                             const canJoin = m <= 15 && m >= 0;
@@ -184,19 +185,19 @@ const TelehealthPage = () => {
                               <>
                                 <button
                                   disabled={!canJoin}
-                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 ${canJoin ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50 hover:shadow-lg' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                                  className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition-all duration-200 ${canJoin ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50 hover:shadow-lg' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
                                 >
-                                  <Video className="w-3.5 h-3.5" />
+                                  <Video className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                                   <span>Join</span>
                                 </button>
                                 <button
                                   disabled={!canCancel}
-                                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${canCancel ? 'text-rose-600 hover:bg-rose-50 hover:text-rose-700' : 'text-gray-300 cursor-not-allowed'}`}
+                                  className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-medium transition-colors ${canCancel ? 'text-rose-600 hover:bg-rose-50 hover:text-rose-700' : 'text-gray-300 cursor-not-allowed'}`}
                                   title={canCancel ? '' : 'Cancellation allowed until 4 hours before'}
                                   onClick={() => { if (canCancel) setCancelModal({ open: true, session }); }}
                                 >
-                                  <XCircle className="w-3.5 h-3.5" />
-                                  <span>Cancel</span>
+                                  <XCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                  <span className="hidden sm:inline">Cancel</span>
                                 </button>
                               </>
                             );

@@ -135,10 +135,10 @@ export default function DoctorsDepartments() {
                         <div className="text-[11px] text-gray-400 font-medium">{dep.info || '—'}</div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={()=>openEditDept(dep)} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors"><Pencil className="w-3 h-3" /> Edit</button>
-                      <button onClick={()=>deleteDept(dep.id)} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-rose-600 hover:bg-rose-50 transition-colors"><Trash2 className="w-3 h-3" /> Delete</button>
-                      <button onClick={()=>openCreateDoctor(dep.id)} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/60 transition-colors"><Plus className="w-3 h-3" /> Doctor</button>
+                    <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+                      <button onClick={()=>openEditDept(dep)} className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-medium border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors"><Pencil className="w-3 h-3" /> <span className="hidden sm:inline">Edit</span></button>
+                      <button onClick={()=>deleteDept(dep.id)} className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-medium text-rose-600 hover:bg-rose-50 transition-colors"><Trash2 className="w-3 h-3" /> <span className="hidden sm:inline">Delete</span></button>
+                      <button onClick={()=>openCreateDoctor(dep.id)} className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/60 transition-colors"><Plus className="w-3 h-3" /> <span className="hidden sm:inline">Doctor</span></button>
                     </div>
                   </div>
                 </div>
