@@ -85,18 +85,18 @@ export default function TelehealthAppointmentPage() {
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Clinic / Fee */}
-              <div className="bg-white rounded-lg shadow-sm border p-6">
-                <div className="flex items-center gap-4">
+              <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
                   <img
                     src={doctors[0].image}
                     alt="Clinic image"
-                    className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                    className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover flex-shrink-0"
                   />
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900">Anadolu Sağlık Merkezi</h3>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <span> Istanbul, Turkey</span>
-                      <span className="ml-4">4.8 (342 reviews)</span>
+                  <div className="min-w-0">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate">Anadolu Sağlık Merkezi</h3>
+                    <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-600 gap-1 sm:gap-0">
+                      <span>Istanbul, Turkey</span>
+                      <span className="ml-2 sm:ml-4">4.8 (342 reviews)</span>
                     </div>
                     <div className="mt-2">
                       <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
@@ -120,27 +120,27 @@ export default function TelehealthAppointmentPage() {
                         className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${selectedDoctor === doctor.name ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}
                         onClick={() => setSelectedDoctor(doctor.name)}
                       >
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-start gap-3 sm:gap-4">
                           <input
                             type="radio"
                             name="doctor"
                             value={doctor.name}
                             checked={selectedDoctor === doctor.name}
                             onChange={(e) => setSelectedDoctor(e.target.value)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-1 flex-shrink-0"
                           />
                           <img
                             src={doctor.image}
                             alt={doctor.name}
-                            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
                           />
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <h4 className="font-medium text-gray-900 truncate">{doctor.name}</h4>
-                              <span className="text-blue-600 font-semibold">{formatCurrency(doctor.priceUSD)}</span>
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5">
+                              <h4 className="font-medium text-gray-900 truncate text-sm sm:text-base">{doctor.name}</h4>
+                              <span className="text-blue-600 font-semibold text-sm">{formatCurrency(doctor.priceUSD)}</span>
                             </div>
-                            <p className="text-sm text-gray-600 truncate">{doctor.specialty} • {doctor.experience}</p>
-                            <div className="text-sm text-gray-600 mt-1">Rating: {doctor.rating} ({doctor.reviews} reviews)</div>
+                            <p className="text-xs sm:text-sm text-gray-600 truncate">{doctor.specialty} • {doctor.experience}</p>
+                            <div className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">Rating: {doctor.rating} ({doctor.reviews} reviews)</div>
                           </div>
                         </div>
                       </div>

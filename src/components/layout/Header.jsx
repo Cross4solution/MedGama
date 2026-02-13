@@ -53,7 +53,7 @@ const Header = () => {
           {(() => {
             const logoTo = '/home-v2';
             return (
-              <Link to={logoTo} onClick={closeMenu} className="flex items-center space-x-3 cursor-pointer select-none ml-9">
+              <Link to={logoTo} onClick={closeMenu} className="flex items-center space-x-2 sm:space-x-3 cursor-pointer select-none ml-9 sm:ml-9">
                 <img
                   src="/images/logo/crm-logo.jpg"
                   alt="MedGama Logo"
