@@ -174,7 +174,7 @@ export default function CustomSearch() {
   return (
     <form onSubmit={onSubmit}>
       <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-5 shadow-sm">
-        <div className="grid gap-3 md:gap-4 grid-cols-2 md:grid-cols-[11rem,11rem,1.1fr,auto,1.1fr,auto] items-start">
+        <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-[11rem,11rem,1.1fr,auto,1.1fr,auto] items-start">
         {/* 1. Country */}
         <div>
           <label className="block text-xs font-medium text-gray-500 mb-1.5">Country</label>
@@ -207,7 +207,7 @@ export default function CustomSearch() {
         </div>
 
         {/* 3. Symptom */}
-        <div className="relative col-span-2 md:col-span-1">
+        <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
           <label className="block text-xs font-medium text-gray-500 mb-1.5">Symptom / Procedure</label>
           <div
             className={`border border-gray-300 rounded-xl px-2.5 py-1.5 text-sm flex items-center flex-wrap gap-1.5 min-h-[2.5rem] transition-all ${disableSymptom ? 'bg-gray-50 cursor-not-allowed opacity-60' : 'bg-white hover:border-gray-400 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-400'}`}
@@ -292,12 +292,16 @@ export default function CustomSearch() {
           )}
         </div>
 
-        <div className="flex items-center justify-center col-span-2 md:col-span-1 md:pt-6">
-          <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">or</span>
+        <div className="flex items-center justify-center col-span-1 sm:col-span-2 md:col-span-1 md:pt-6 py-1 md:py-0">
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="flex-1 h-px bg-gray-200 md:hidden"></div>
+            <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">or</span>
+            <div className="flex-1 h-px bg-gray-200 md:hidden"></div>
+          </div>
         </div>
 
         {/* 4. Specialty */}
-        <div className="relative col-span-2 md:col-span-1">
+        <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
           <label className="block text-xs font-medium text-gray-500 mb-1.5">Specialty</label>
           <div
             className={`border border-gray-300 rounded-xl px-2.5 py-1.5 text-sm flex items-center flex-wrap gap-1.5 min-h-[2.5rem] transition-all ${disableSpecialty ? 'bg-gray-50 cursor-not-allowed opacity-60' : 'bg-white hover:border-gray-400 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-400'}`}
@@ -383,11 +387,11 @@ export default function CustomSearch() {
         </div>
 
         {/* 5. Search button */}
-        <div className="flex md:block col-span-2 md:col-span-1 md:pt-6">
+        <div className="col-span-1 sm:col-span-2 md:col-span-1 md:pt-6">
           <button
             type="submit"
             disabled={!canSearch}
-            className="ml-auto md:ml-0 bg-teal-600 text-white rounded-xl text-sm font-semibold px-5 py-2.5 md:h-10 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 justify-center hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all shadow-sm hover:shadow-md"
+            className="w-full md:w-auto bg-teal-600 text-white rounded-xl text-sm font-semibold px-5 py-2.5 h-10 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 justify-center hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all shadow-sm hover:shadow-md"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="11" cy="11" r="8"></circle>
