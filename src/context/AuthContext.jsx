@@ -174,6 +174,7 @@ export function AuthProvider({ children }) {
     return res;
   };
   const demoLogin = (role = 'patient') => {
+    if (process.env.NODE_ENV === 'production') return null;
     const demo = role === 'doctor' ? { id: 'doc-demo-1', role: 'doctor', name: 'Demo Doctor' }
       : role === 'clinic' ? { id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }
       : { id: 'patient-demo-1', role: 'patient', name: 'Demo Patient' };

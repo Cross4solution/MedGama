@@ -63,11 +63,19 @@ const DoctorLogin = () => {
           }
         });
         // Replace placeholder with a simple button
-        btn.innerHTML = '';
+        while (btn.firstChild) btn.removeChild(btn.firstChild);
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'w-full flex items-center justify-center gap-2 border rounded-full py-2 px-3 hover:bg-gray-50';
-        b.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" class="h-5 w-5"/> <span class="text-sm font-medium">Continue with Google</span>';
+        const img = document.createElement('img');
+        img.src = 'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg';
+        img.alt = 'G';
+        img.className = 'h-5 w-5';
+        const span = document.createElement('span');
+        span.className = 'text-sm font-medium';
+        span.textContent = 'Continue with Google';
+        b.appendChild(img);
+        b.appendChild(span);
         b.addEventListener('click', () => {
           try { tokenClient.requestAccessToken({ prompt: 'consent' }); } catch {}
         });

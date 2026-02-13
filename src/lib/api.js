@@ -1,5 +1,5 @@
 // Lightweight JSON API client for MedGama
-const BASE_URL = 'https://medgama.soulm8.co/api';
+const BASE_URL = process.env.REACT_APP_API_BASE || 'https://medgama.soulm8.co/api';
 
 export async function api(path, options = {}) {
   const { method = 'GET', body } = options;

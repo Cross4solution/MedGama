@@ -163,6 +163,7 @@ export default function ClinicProfileEdit() {
 
   React.useEffect(() => {
     const onMsg = (e) => {
+      if (e.origin !== window.location.origin) return;
       const d = e?.data;
       if (d && d.type === 'clinic-map-select' && typeof d.lat === 'number' && typeof d.lng === 'number') {
         setMapLat(d.lat);
