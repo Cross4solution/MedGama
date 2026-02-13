@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, Clock, TrendingUp } from 'lucide-react';
 
-export default function TimelineControls({
+function TimelineControls({
   user,
   sort,
   onSortChange,
@@ -115,3 +115,5 @@ export default function TimelineControls({
     </div>
   );
 }
+
+export default React.memo(TimelineControls);

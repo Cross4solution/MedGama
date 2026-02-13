@@ -44,7 +44,7 @@ export default function DoctorsTab({ doctorsText, deptDoctors, selectedDept, set
           <div className="grid sm:grid-cols-2 gap-3">
             {(deptDoctors.find(d => d.id === selectedDept)?.doctors || []).map((doc) => (
               <div key={doc.id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3.5 hover:border-gray-300 hover:shadow-sm transition-all">
-                <img src={doc.avatar} alt={doc.name} className="w-14 h-14 rounded-full object-cover ring-2 ring-gray-100" />
+                <img src={doc.avatar} alt={doc.name} loading="lazy" className="w-14 h-14 rounded-full object-cover ring-2 ring-gray-100" />
                 <div>
                   <h5 className="text-sm font-semibold text-gray-900">{doc.name}</h5>
                   <p className="text-xs text-gray-500 mt-0.5">{doc.title}</p>

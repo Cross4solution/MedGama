@@ -17,7 +17,7 @@ export default function TimelinePostCard({ post }) {
       <div className="p-6 pb-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img src={post.clinic?.avatar || post.patient?.avatar} alt="Avatar" className="w-12 h-12 rounded-full object-cover" />
+            <img src={post.clinic?.avatar || post.patient?.avatar} alt="Avatar" loading="lazy" className="w-12 h-12 rounded-full object-cover" />
             <div>
               <div className="flex items-center space-x-2">
                 <h4 className="font-semibold text-gray-800">{post.clinic?.name || post.patient?.name}</h4>
@@ -50,7 +50,7 @@ export default function TimelinePostCard({ post }) {
         )}
       </div>
 
-      {post.image && <img src={post.image} alt="Post content" className="w-full h-64 object-cover" />}
+      {post.image && <img src={post.image} alt="Post content" loading="lazy" className="w-full h-64 object-cover" />}
 
       {/* Post Actions */}
       <div className="p-6 pt-4 border-t border-gray-100">

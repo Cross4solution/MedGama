@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ChatMessage({ message, leftAvatar, rightAvatar }) {
+function ChatMessage({ message, leftAvatar, rightAvatar }) {
   const isDoctor = message.sender === 'doctor';
   return (
     <div className={`flex ${isDoctor ? 'justify-end' : 'justify-start'}`}>
@@ -28,3 +28,5 @@ export default function ChatMessage({ message, leftAvatar, rightAvatar }) {
     </div>
   );
 }
+
+export default React.memo(ChatMessage);

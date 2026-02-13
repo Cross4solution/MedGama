@@ -13,7 +13,7 @@ export default function GalleryTab({ gallery, galleryIndex, setGalleryIndex, gal
             className="relative w-full pb-[100%] bg-gray-100 rounded-xl overflow-hidden ring-1 ring-black/5 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             onClick={() => { setGalleryIndex(idx); setGalleryOpen(true); }}
           >
-            <img src={src} alt={`Gallery ${idx+1}`} className="absolute inset-0 w-full h-full object-cover transition-transform duration-200 hover:scale-[1.03]" />
+            <img src={src} alt={`Gallery ${idx+1}`} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-200 hover:scale-[1.03]" />
           </button>
         ))}
       </div>

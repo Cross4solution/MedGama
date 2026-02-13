@@ -312,7 +312,7 @@ export default function ExploreTimeline() {
                   <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 ring-2 ring-teal-100 ring-offset-1">
-                        <img alt="Guest" className="w-full h-full object-cover object-center" src="/images/portrait-candid-male-doctor_720.jpg" />
+                        <img alt="Guest" loading="lazy" className="w-full h-full object-cover object-center" src="/images/portrait-candid-male-doctor_720.jpg" />
                       </div>
                       <button type="button" onClick={()=>setIsComposerOpen(true)} className="flex-1 text-left px-4 py-3 bg-gray-50/80 rounded-xl border border-gray-200/60 focus:outline-none focus:ring-2 focus:ring-teal-500/30 text-gray-500 hover:bg-gray-100/80 hover:border-gray-300/60 transition-all duration-200 text-sm">
                         Make a Post...
@@ -384,7 +384,7 @@ export default function ExploreTimeline() {
               </div>
               <div className="px-4 sm:px-5 pt-4">
                 <div className="flex items-center gap-3">
-                  <img alt="Guest" className="w-10 h-10 rounded-full object-cover border" src="/images/portrait-candid-male-doctor_720.jpg" />
+                  <img alt="Guest" loading="lazy" className="w-10 h-10 rounded-full object-cover border" src="/images/portrait-candid-male-doctor_720.jpg" />
                   <div>
                     <div className="text-sm font-medium text-gray-900">{user?.name || 'Guest'}</div>
                     <span className="inline-flex items-center gap-1 text-xs text-teal-800 bg-teal-50 border border-teal-100 px-2 py-1 rounded-md">{user?.role === 'clinic' ? 'Clinic' : 'Doctor'}</span>

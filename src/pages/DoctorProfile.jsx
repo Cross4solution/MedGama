@@ -110,7 +110,7 @@ const DoctorProfilePage = () => {
     <div className="min-h-screen bg-gray-50/50">
       {/* Hero Section */}
       <div className="relative h-40 md:h-48">
-        <img src={heroImage} alt={doctorName} className="w-full h-full object-cover" />
+        <img src={heroImage} alt={doctorName} loading="lazy" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
         <div className="absolute top-4 right-4 flex items-center bg-white/95 backdrop-blur-sm rounded-xl px-3 py-1.5 shadow-sm border border-white/20">
           <Star className="w-4 h-4 fill-amber-400 text-amber-400 mr-1" />
@@ -255,7 +255,7 @@ const DoctorProfilePage = () => {
                           className="group relative w-full pb-[100%] bg-gray-100 rounded-xl overflow-hidden border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400/40"
                           onClick={() => { setGalleryIndex(idx); setGalleryOpen(true); }}
                         >
-                          <img src={src} alt={`Gallery ${idx+1}`} className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" />
+                          <img src={src} alt={`Gallery ${idx+1}`} loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" />
                         </button>
                       ))}
                     </div>

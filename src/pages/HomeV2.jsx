@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 // Star icon no longer needed here; used inside the reusable component
@@ -10,21 +10,6 @@ import TimelinePreview from '../components/TimelinePreview';
 export default function HomeV2() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [showAllTimeline, setShowAllTimeline] = useState(false);
-  const handleViewAll = () => navigate('/explore');
-
-  // Login dropdown state + outside click close
-  const [loginOpen, setLoginOpen] = useState(false);
-  const loginRef = useRef(null);
-  useEffect(() => {
-    const onClickOutside = (e) => {
-      if (loginRef.current && !loginRef.current.contains(e.target)) {
-        setLoginOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', onClickOutside);
-    return () => document.removeEventListener('mousedown', onClickOutside);
-  }, []);
 
   // removed unused departments
 

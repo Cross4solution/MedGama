@@ -3,7 +3,7 @@ import { CountryCombobox, SelectCombobox } from 'components/forms';
 import { getFlagCode } from '../../utils/geo';
 import { Search } from 'lucide-react';
 
-export default function TimelineFilterSidebar({
+function TimelineFilterSidebar({
   query: initialQuery,
   onQueryChange,
   countryName: initialCountryName,
@@ -148,3 +148,5 @@ export default function TimelineFilterSidebar({
     </aside>
   );
 }
+
+export default React.memo(TimelineFilterSidebar);

@@ -23,11 +23,11 @@ export default function BeforeAfterTab({
             <h4 className="text-sm font-semibold text-gray-900 mb-2.5">{item.title}</h4>
             <div className="grid grid-cols-2 gap-2 mb-2.5">
               <div className="relative pb-[100%] bg-gray-100 rounded-lg overflow-hidden">
-                <img src={item.before} alt="Before" className="absolute inset-0 w-full h-full object-cover" />
+                <img src={item.before} alt="Before" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
                 <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur-sm text-white text-[11px] font-medium rounded-md">Before</span>
               </div>
               <div className="relative pb-[100%] bg-gray-100 rounded-lg overflow-hidden">
-                <img src={item.after} alt="After" className="absolute inset-0 w-full h-full object-cover" />
+                <img src={item.after} alt="After" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
                 <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-teal-600/80 backdrop-blur-sm text-white text-[11px] font-medium rounded-md">After</span>
               </div>
             </div>

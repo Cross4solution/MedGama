@@ -1,7 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 
-export default function ActiveFilterChips({ items = [] }) {
+function ActiveFilterChips({ items = [] }) {
   if (!items.length) return null;
   return (
     <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -18,3 +18,5 @@ export default function ActiveFilterChips({ items = [] }) {
     </div>
   );
 }
+
+export default React.memo(ActiveFilterChips);

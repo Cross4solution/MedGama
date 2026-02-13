@@ -35,7 +35,7 @@ export default function TimelineProReviewCard({ professionalReview }) {
         <p className="text-gray-700 mb-4">{professionalReview.description}</p>
         <div className="grid grid-cols-3 gap-2 mb-4">
           {professionalReview.images?.map((src, idx) => (
-            <img key={idx} src={src} alt={`Review ${idx + 1}`} className="w-full h-24 object-cover rounded-lg" />
+            <img key={idx} src={src} alt={`Review ${idx + 1}`} loading="lazy" className="w-full h-24 object-cover rounded-lg" />
           ))}
         </div>
         <div className="grid grid-cols-3 gap-4 mb-4">
