@@ -2,12 +2,26 @@
 // Sources: local data files under src/data and remote fallback APIs (encapsulated here)
 
 import countriesEurope from '../data/countriesEurope';
-import countryCities from '../data/countryCities';
+import { loadCities } from '../data/cityLoader';
 import countryCodes from '../data/countryCodes';
 import countryDialCodes from '../data/countryDialCodes';
 import adminDivisions from '../data/adminDivisions';
-import { Country as CSCCountry, State as CSCState, City as CSCCity } from 'country-state-city';
-// countryCities: { [countryName]: string[] }
+// Lazy-load country-state-city to avoid 8MB+ in main bundle
+let _cscCache = null;
+async function getCSC() {
+  if (_cscCache) return _cscCache;
+  const mod = await import('country-state-city');
+  _cscCache = {
+    Country: mod.Country,
+    State: mod.State,
+    City: mod.City,
+  };
+  return _cscCache;
+}
+// Sync fallback for functions that were previously sync — returns null if not yet loaded
+function getCSCSync() {
+  return _cscCache;
+}
 
 function sanitizeCityNames(country, list) {
   if (!Array.isArray(list)) return list;
@@ -45,14 +59,6 @@ export function listTurkeyProvinces() {
   return PROVINCES_TURKEY.slice();
 }
 
-// Her ihtimale karşı: countryCities verisini de 81 ille sınırla (başka yerler doğrudan kullanırsa çatışma olmasın)
-try {
-  if (countryCities) {
-    countryCities['Turkey'] = PROVINCES_TURKEY;
-    countryCities['Türkiye'] = PROVINCES_TURKEY;
-    countryCities['Turkiye'] = PROVINCES_TURKEY;
-  }
-} catch {}
 
 // Cache versioning to invalidate older small city lists
 const CITY_CACHE_VERSION = 'v9';
@@ -254,7 +260,7 @@ const NO_CITY_COUNTRIES = new Set([
   'Vatican City','Vatican City State','Holy See',
 ]);
 
-export function listCountries(regions = ['Europe', 'Asia', 'MiddleEast']) {
+export async function listCountries(regions = ['Europe', 'Asia', 'MiddleEast']) {
   // Bölge listeleri ile CSC ülke adlarını kesiştirerek döndür
   const targetSets = [];
   if (regions.includes('Europe')) targetSets.push(countriesEurope);
@@ -264,7 +270,8 @@ export function listCountries(regions = ['Europe', 'Asia', 'MiddleEast']) {
   const alwaysInclude = ['United States'];
   const out = new Set(alwaysInclude);
   try {
-    const all = CSCCountry.getAllCountries() || [];
+    const csc = await getCSC();
+    const all = csc.Country.getAllCountries() || [];
     for (const c of all) {
       const name = c?.name;
       if (!name) continue;
@@ -278,10 +285,11 @@ export function listCountries(regions = ['Europe', 'Asia', 'MiddleEast']) {
 }
 
 // Tüm dünyadaki ülkeleri döndürür. CSC erişimi varsa tamamını, yoksa mevcut statik listelerin birleşimini kullanır.
-export function listCountriesAll(options = {}) {
+export async function listCountriesAll(options = {}) {
   const { excludeIslands = false, excludeNoCities = false } = options;
   try {
-    const all = CSCCountry.getAllCountries() || [];
+    const csc = await getCSC();
+    const all = csc.Country.getAllCountries() || [];
     let names = Array.from(new Set(all.map((c) => c?.name).filter(Boolean)));
     if (excludeIslands) names = names.filter((n) => !isLikelyIsland(n));
     if (excludeNoCities) names = names.filter((n) => !NO_CITY_COUNTRIES.has(n));
@@ -308,11 +316,14 @@ export function getFlagCode(countryName) {
   if (!countryName) return null;
   const stripParen = (s) => s?.toString().replace(/\s*\([^)]*\)\s*/g, '').trim();
   try {
-    const all = CSCCountry.getAllCountries() || [];
-    const variants = [countryName, ...getCountryVariants(countryName)].map(stripParen);
-    for (const v of variants) {
-      const hit = all.find((c) => c?.name === v);
-      if (hit?.isoCode) return String(hit.isoCode).toLowerCase();
+    const csc = getCSCSync();
+    if (csc) {
+      const all = csc.Country.getAllCountries() || [];
+      const variants = [countryName, ...getCountryVariants(countryName)].map(stripParen);
+      for (const v of variants) {
+        const hit = all.find((c) => c?.name === v);
+        if (hit?.isoCode) return String(hit.isoCode).toLowerCase();
+      }
     }
   } catch {}
 
@@ -379,11 +390,12 @@ function getCountryVariants(name) {
 export async function loadStatesOnly(country) {
   // Öncelik CSC: ülke ISO -> eyalet/il isimleri
   try {
-    const all = CSCCountry.getAllCountries() || [];
+    const csc = await getCSC();
+    const all = csc.Country.getAllCountries() || [];
     const found = all.find((c) => (c?.name === country))
       || all.find((c) => getCountryVariants(country).includes(c?.name));
     if (found && found.isoCode) {
-      const states = CSCState.getStatesOfCountry(found.isoCode) || [];
+      const states = csc.State.getStatesOfCountry(found.isoCode) || [];
       const names = states.map((s) => s?.name).filter(Boolean);
       if (names.length) return names;
     }
@@ -407,14 +419,15 @@ export async function loadCitiesOnly(country) {
   } catch {}
   // 1) CSC: ülke ISO -> şehir isimleri (gerekirse state bazında)
   try {
-    const all = CSCCountry.getAllCountries() || [];
+    const csc = await getCSC();
+    const all = csc.Country.getAllCountries() || [];
     const raw = (country || '').trim();
     const found = all.find((c) => (c?.name === raw))
       || all.find((c) => getCountryVariants(raw).includes(c?.name));
     if (found && found.isoCode) {
       // Özel: Bazı ülkelerde şehir olarak eyalet/il göster
       if (COUNTRIES_USE_STATES_AS_CITIES.has(raw) || getCountryVariants(raw).some((v)=>COUNTRIES_USE_STATES_AS_CITIES.has(v))) {
-        const states = CSCState.getStatesOfCountry(found.isoCode) || [];
+        const states = csc.State.getStatesOfCountry(found.isoCode) || [];
         const stateNames = (states || []).map((s)=>s?.name).filter(Boolean);
         if (stateNames.length) return applyCityLimit(raw, stateNames);
         // CSC başarısızsa adminDivisions'a düş
@@ -425,15 +438,15 @@ export async function loadCitiesOnly(country) {
           return PROVINCES_TURKEY;
         }
       }
-      const states = CSCState.getStatesOfCountry(found.isoCode) || [];
+      const states = csc.State.getStatesOfCountry(found.isoCode) || [];
       const out = new Set();
       if (states.length) {
         for (const st of states) {
-          const cities = CSCCity.getCitiesOfState(found.isoCode, st.isoCode) || [];
+          const cities = csc.City.getCitiesOfState(found.isoCode, st.isoCode) || [];
           cities.forEach((ct) => ct?.name && out.add(ct.name));
         }
       } else {
-        const cities = CSCCity.getCitiesOfCountry(found.isoCode) || [];
+        const cities = csc.City.getCitiesOfCountry(found.isoCode) || [];
         cities.forEach((ct) => ct?.name && out.add(ct.name));
       }
       let arr = Array.from(out);
@@ -443,7 +456,7 @@ export async function loadCitiesOnly(country) {
         // Eğer CSC az sayıda döndürdüyse diğer kaynaklarla birleştir
         const FORCE_MERGE_COUNTRIES = new Set(['Canada','United States','India','China','Brazil','Russia']);
         if (arr.length < 150 || FORCE_MERGE_COUNTRIES.has(raw)) {
-          const quick = countryCities[raw] || [];
+          const quick = await loadCities(raw) || [];
           try {
             // @ts-ignore - dynamic JSON import in JS file
             const mod = await import('../data/worldCities.min.json');
@@ -472,9 +485,9 @@ export async function loadCitiesOnly(country) {
     }
   } catch {}
 
-  // 2) countryCities quick list
+  // 2) countryCities quick list (dynamic import)
   const raw2 = (country || '').trim();
-  const quick = countryCities[raw2] || [];
+  const quick = await loadCities(raw2) || [];
   if (Array.isArray(quick) && quick.length) return applyCityLimit(raw2, sanitizeCityNames(raw2, quick));
 
   // 3) worldCities filtered (dynamic import, TS uyarısını bastır)

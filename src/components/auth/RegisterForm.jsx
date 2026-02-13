@@ -70,8 +70,11 @@ const RegisterForm = ({
   /** @type {any} */
   const fd = (formData || {});
   
-  // Global country options (island nations excluded per requirement)
-  const allCountries = useMemo(() => listCountriesAll({ excludeIslands: false, excludeNoCities: false }), []);
+  // Global country options (loaded async)
+  const [allCountries, setAllCountries] = useState([]);
+  useEffect(() => {
+    listCountriesAll({ excludeIslands: false, excludeNoCities: false }).then(setAllCountries);
+  }, []);
 
   const validateStep1 = () => {
     setLocalErrors({});

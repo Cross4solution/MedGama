@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import countryCities from '../data/countryCities';
+import { getCountryNames } from '../data/cityLoader';
 import countryCodes from '../data/countryCodes';
 import TimelineFilterSidebar from 'components/timeline/TimelineFilterSidebar';
 import TimelineControls from 'components/timeline/TimelineControls';
@@ -177,7 +177,7 @@ export default function ExploreTimeline() {
   });
 
   // seçenekler
-  const countryOptions = Object.keys(countryCities || {});
+  const countryOptions = getCountryNames();
   const specialtyOptions = SPECIALTIES;
 
   // Konum izni (opsiyonel) - tek seferlik izin akışı ve localStorage ile kalıcılık

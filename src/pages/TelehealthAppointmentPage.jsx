@@ -19,8 +19,11 @@ export default function TelehealthAppointmentPage() {
   });
   const [paymentMethod, setPaymentMethod] = useState('credit');
 
-  // Countries for PhoneNumberInput
-  const allCountries = useMemo(() => listCountriesAll({ excludeIslands: true, excludeNoCities: true }), []);
+  // Countries for PhoneNumberInput (loaded async)
+  const [allCountries, setAllCountries] = useState([]);
+  useEffect(() => {
+    listCountriesAll({ excludeIslands: true, excludeNoCities: true }).then(setAllCountries);
+  }, []);
 
   // Refs for date pickers (appointment date and DOB)
   const apptDateRef = useRef(null);

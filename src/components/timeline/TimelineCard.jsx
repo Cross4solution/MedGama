@@ -30,7 +30,7 @@ function MediaImg({ src, alt, className, onClick = undefined }) {
   );
 }
 
-export default function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
+function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
   const avatarUrl = item.avatar || '/images/portrait-candid-male-doctor_720.jpg';
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
@@ -629,3 +629,10 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
     </article>
   );
 }
+
+export default React.memo(TimelineCard, (prev, next) => {
+  return prev.item?.id === next.item?.id
+    && prev.view === next.view
+    && prev.compact === next.compact
+    && prev.disabledActions === next.disabledActions;
+});
