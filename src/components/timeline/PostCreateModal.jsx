@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Video, Smile, X } from 'lucide-react';
+import { Image, Video, Smile, X, FileText, Send } from 'lucide-react';
 
 export default function PostCreateModal({ open, onClose, user, onPost, initialAction = undefined, onResetInitialAction = undefined }) {
   const [text, setText] = useState('');
@@ -106,10 +106,13 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
     setText('');
   }
 
+  const hasMedia = photoUrls.length > 0 || videoUrls.length > 0;
+  const canPost = text.trim() || hasMedia;
+
   return (
     <div className="fixed inset-0 z-[100]">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
       <div className="absolute inset-0 flex items-start justify-center p-4 sm:p-6 md:p-8">
@@ -119,228 +122,267 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
           aria-label="Create post"
           ref={dialogRef}
           tabIndex={-1}
-          className="w-full max-w-xl bg-white rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95"
+          className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden mt-4 sm:mt-8"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b">
-            <h3 className="text-lg font-semibold text-gray-900">Create post</h3>
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
+            <h3 className="text-sm font-bold text-gray-900">Create Post</h3>
             <button
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-gray-100 text-gray-500"
+              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
               aria-label="Close"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Author row */}
-          <div className="px-4 sm:px-5 pt-4">
-            <div className="flex items-center gap-3">
-              <img src={avatar} alt={displayName} className="w-10 h-10 rounded-full object-cover border" />
-              <div>
-                <div className="text-sm font-medium text-gray-900">{displayName}</div>
-                <span className="inline-flex items-center gap-1 text-xs text-teal-800 bg-teal-50 border border-teal-100 px-2 py-1 rounded-md">
-                  {specialty}
-                </span>
+          {/* Scrollable content */}
+          <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
+            {/* Author row */}
+            <div className="px-5 pt-4">
+              <div className="flex items-center gap-3">
+                <img src={avatar} alt={displayName} className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-md" />
+                <div>
+                  <div className="text-[13px] font-bold text-gray-900">{displayName}</div>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-teal-700 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100/80 px-1.5 py-0.5 rounded-md">
+                    {specialty}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Textarea */}
-          <div className="px-4 sm:px-5 pt-3">
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              rows={5}
-              placeholder={`What's on your mind, ${displayName}?`}
-              className="w-full text-[17px] leading-7 placeholder:text-gray-400 text-gray-900 outline-none resize-none min-h-[140px]"
-            />
-          </div>
+            {/* Textarea */}
+            <div className="px-5 pt-3">
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                rows={hasMedia ? 3 : 5}
+                placeholder={`What's on your mind, ${displayName}?`}
+                className="w-full text-sm leading-6 placeholder:text-gray-400 text-gray-900 outline-none resize-none bg-transparent"
+              />
+            </div>
 
-          {/* Add to your post */}
-          <div className="px-4 sm:px-5 pt-2 pb-4">
-            <div className="rounded-2xl border bg-white">
-              <div className="px-4 py-3 text-sm text-gray-600 border-b">Add to your post</div>
-              <div className="p-3">
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                  {/* Hidden file inputs */}
-                  <input
-                    ref={photoRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={(e)=> {
-                      const newFiles = Array.from(e.target.files || []);
-                      setPhotos(prev => {
-                        const merged = [...prev];
-                        newFiles.forEach(f => {
-                          if (!merged.some(p => p.name === f.name && p.size === f.size)) {
-                            merged.push(f);
-                          }
-                        });
-                        return merged;
-                      });
-                      // aynı dosyayı tekrar seçebilmek için input'u sıfırla
-                      try { e.target.value = ''; } catch {}
-                    }}
-                  />
-                  <input
-                    ref={videoRef}
-                    type="file"
-                    accept="video/*"
-                    multiple
-                    className="hidden"
-                    onChange={(e)=> {
-                      const newFiles = Array.from(e.target.files || []);
-                      setVideos(prev => {
-                        const merged = [...prev];
-                        newFiles.forEach(f => {
-                          if (!merged.some(p => p.name === f.name && p.size === f.size)) {
-                            merged.push(f);
-                          }
-                        });
-                        return merged;
-                      });
-                      try { e.target.value = ''; } catch {}
-                    }}
-                  />
-
-                  <button onClick={()=>photoRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add photo">
-                    <span className="w-6 h-6 grid place-items-center rounded bg-emerald-50"><Image className="w-4 h-4 text-emerald-600" /></span>
-                    <span className="text-sm">Photo</span>
-                  </button>
-                  <button onClick={()=>videoRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add video">
-                    <span className="w-6 h-6 grid place-items-center rounded bg-sky-50"><Video className="w-4 h-4 text-sky-600" /></span>
-                    <span className="text-sm">Video</span>
-                  </button>
-                  <button onClick={()=>setShowEmoji((v)=>!v)} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add emoji">
-                    <span className="w-6 h-6 grid place-items-center rounded bg-amber-50"><Smile className="w-4 h-4 text-amber-500" /></span>
-                    <span className="text-sm">Emoji</span>
-                  </button>
-                </div>
-                {showEmoji && (
-                  <div className="mt-3 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl shadow-lg w-full max-h-[300px] overflow-hidden">
-                    {/* Kategori Tabları - İkonlarla */}
-                    <div className="flex border-b border-gray-200 bg-white rounded-t-xl">
-                      {Object.entries(emojiCategories).map(([category, emojis]) => {
-                        const categoryIcons = {
-                          'Yüz İfadeleri': '😀',
-                          'El İşaretleri': '👋',
-                          'Kalp ve Duygular': '❤️',
-                          'Spor ve Oyunlar': '🏆',
-                          'Kutlama ve Parti': '🎉'
-                        };
-                        return (
-                          <button
-                            key={category}
-                            onClick={() => setSelectedCategory(category)}
-                            className={`flex-1 px-2 py-2 text-center transition-all duration-200 ${
-                              selectedCategory === category
-                                ? 'bg-blue-500 text-white border-b-2 border-blue-500'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
-                            }`}
-                            title={category}
-                          >
-                            <div className="text-lg">{categoryIcons[category]}</div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    
-                    {/* Emoji Grid */}
-                    <div className="p-3 max-h-[220px] overflow-y-auto">
-                      <div className="grid grid-cols-6 gap-1">
-                        {emojiCategories[selectedCategory]?.map((emoji, i) => (
-                          <button 
-                            key={i} 
-                            type="button" 
-                            className="hover:bg-blue-100 hover:scale-110 rounded-lg p-1 text-center transition-all duration-200 transform hover:shadow-md" 
-                            onClick={() => { 
-                              setText(t => (t ? t + ' ' : '') + emoji); 
-                              setShowEmoji(false); 
-                            }}
-                            title={emoji}
-                          >
-                            <span className="text-lg">{emoji}</span>
-                          </button>
-                        ))}
+            {/* Media Preview Area */}
+            {hasMedia && (
+              <div className="px-5 pb-2">
+                <div className="rounded-xl border border-gray-200/80 bg-gray-50/50 p-3">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                      Attachments ({photoUrls.length + videoUrls.length})
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => { setPhotos([]); setVideos([]); }}
+                      className="text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors"
+                    >
+                      Remove all
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {photoUrls.map((src, i) => (
+                      <div key={`p${i}`} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200/60 shadow-sm bg-white">
+                        <button type="button" onClick={() => setViewer({ type: 'photo', url: src })} className="absolute inset-0">
+                          <img src={src} alt={`photo-${i+1}`} className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Remove photo"
+                          onClick={() => removePhotoAt(i)}
+                          className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/50 backdrop-blur-sm text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/70"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                        <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/40 to-transparent h-6 pointer-events-none" />
+                        <span className="absolute bottom-1 left-1.5 text-[9px] font-medium text-white/90">
+                          {photos[i]?.name?.slice(0, 12) || `Photo ${i+1}`}
+                        </span>
                       </div>
-                    </div>
-                    
-                    {/* Alt Bilgi */}
-                    <div className="px-3 py-1 bg-gray-50 border-t border-gray-200 rounded-b-xl">
-                      <p className="text-xs text-gray-500 text-center">
-                        {emojiCategories[selectedCategory]?.length} emoji
-                      </p>
+                    ))}
+                    {videoUrls.map((src, i) => (
+                      <div key={`v${i}`} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200/60 shadow-sm bg-gray-900">
+                        <button type="button" onClick={() => setViewer({ type: 'video', url: src })} className="absolute inset-0">
+                          <video src={src} className="w-full h-full object-cover" muted playsInline />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Remove video"
+                          onClick={() => removeVideoAt(i)}
+                          className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/50 backdrop-blur-sm text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/70"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                        {/* Play icon overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[9px] border-l-white border-b-[5px] border-b-transparent ml-0.5" />
+                          </div>
+                        </div>
+                        <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/50 to-transparent h-6 pointer-events-none" />
+                        <span className="absolute bottom-1 left-1.5 text-[9px] font-medium text-white/90">
+                          {videos[i]?.name?.slice(0, 12) || `Video ${i+1}`}
+                        </span>
+                      </div>
+                    ))}
+                    {/* Add more button */}
+                    <button
+                      type="button"
+                      onClick={() => photoRef.current?.click()}
+                      className="aspect-square rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 bg-white hover:bg-teal-50/30 flex flex-col items-center justify-center gap-1 transition-all duration-200 group"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-gray-100 group-hover:bg-teal-100 flex items-center justify-center transition-colors">
+                        <Image className="w-3.5 h-3.5 text-gray-400 group-hover:text-teal-600 transition-colors" />
+                      </div>
+                      <span className="text-[9px] font-medium text-gray-400 group-hover:text-teal-600">Add</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Hidden file inputs */}
+            <input
+              ref={photoRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e)=> {
+                const newFiles = Array.from(e.target.files || []);
+                setPhotos(prev => {
+                  const merged = [...prev];
+                  newFiles.forEach(f => {
+                    if (!merged.some(p => p.name === f.name && p.size === f.size)) {
+                      merged.push(f);
+                    }
+                  });
+                  return merged;
+                });
+                try { e.target.value = ''; } catch {}
+              }}
+            />
+            <input
+              ref={videoRef}
+              type="file"
+              accept="video/*"
+              multiple
+              className="hidden"
+              onChange={(e)=> {
+                const newFiles = Array.from(e.target.files || []);
+                setVideos(prev => {
+                  const merged = [...prev];
+                  newFiles.forEach(f => {
+                    if (!merged.some(p => p.name === f.name && p.size === f.size)) {
+                      merged.push(f);
+                    }
+                  });
+                  return merged;
+                });
+                try { e.target.value = ''; } catch {}
+              }}
+            />
+
+            {/* Emoji picker */}
+            {showEmoji && (
+              <div className="px-5 pb-2">
+                <div className="bg-white border border-gray-200/80 rounded-xl shadow-sm overflow-hidden">
+                  <div className="flex border-b border-gray-100">
+                    {Object.entries(emojiCategories).map(([category]) => {
+                      const categoryIcons = {
+                        'Yüz İfadeleri': '😀',
+                        'El İşaretleri': '👋',
+                        'Kalp ve Duygular': '❤️',
+                        'Spor ve Oyunlar': '🏆',
+                        'Kutlama ve Parti': '🎉'
+                      };
+                      return (
+                        <button
+                          key={category}
+                          onClick={() => setSelectedCategory(category)}
+                          className={`flex-1 px-2 py-2 text-center transition-all duration-200 ${
+                            selectedCategory === category
+                              ? 'bg-teal-50 border-b-2 border-teal-500'
+                              : 'text-gray-600 hover:bg-gray-50'
+                          }`}
+                          title={category}
+                        >
+                          <div className="text-base">{categoryIcons[category]}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="p-2.5 max-h-[180px] overflow-y-auto">
+                    <div className="grid grid-cols-8 gap-0.5">
+                      {emojiCategories[selectedCategory]?.map((emoji, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className="hover:bg-teal-50 rounded-lg p-1 text-center transition-colors"
+                          onClick={() => {
+                            setText(t => (t ? t + ' ' : '') + emoji);
+                            setShowEmoji(false);
+                          }}
+                          title={emoji}
+                        >
+                          <span className="text-lg">{emoji}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
-                )}
+                </div>
               </div>
-            </div>
+            )}
+          </div>
 
-            {/* Post button */}
-            <div className="mt-3">
+          {/* Bottom bar: attachment buttons + post */}
+          <div className="px-5 py-3 border-t border-gray-100 bg-gradient-to-r from-gray-50/60 to-white">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-1">
+                <button onClick={()=>photoRef.current?.click()} className="p-2 rounded-xl hover:bg-emerald-50 transition-colors group" aria-label="Add photo" title="Photo">
+                  <Image className="w-5 h-5 text-emerald-600" />
+                </button>
+                <button onClick={()=>videoRef.current?.click()} className="p-2 rounded-xl hover:bg-sky-50 transition-colors group" aria-label="Add video" title="Video">
+                  <Video className="w-5 h-5 text-sky-600" />
+                </button>
+                <button onClick={()=>setShowEmoji((v)=>!v)} className={`p-2 rounded-xl transition-colors ${showEmoji ? 'bg-amber-50' : 'hover:bg-amber-50'}`} aria-label="Emoji" title="Emoji">
+                  <Smile className="w-5 h-5 text-amber-600" />
+                </button>
+                <button className="p-2 rounded-xl hover:bg-violet-50 transition-colors group" aria-label="Research paper" title="Research Paper">
+                  <FileText className="w-5 h-5 text-violet-600" />
+                </button>
+              </div>
               <button
                 onClick={handlePost}
-                disabled={!text.trim()}
-                className={`w-full py-2.5 rounded-xl text-white font-medium ${text.trim() ? 'bg-teal-600 hover:bg-teal-700' : 'bg-gray-300 cursor-not-allowed'}`}
+                disabled={!canPost}
+                className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${canPost ? 'text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
               >
+                <Send className="w-4 h-4" />
                 Post
               </button>
-              {(photos.length>0 || videos.length>0) && (
-                <div className="mt-2 text-xs text-gray-500">
-                  {photos.length>0 && <span className="mr-3">{photos.length} photo selected</span>}
-                  {videos.length>0 && <span>{videos.length} video selected</span>}
-                </div>
-              )}
-              {(photoUrls.length>0 || videoUrls.length>0) && (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {photoUrls.map((src, i) => (
-                    <div key={`p${i}`} className="relative w-20 h-20 rounded-lg overflow-hidden border">
-                      <button type="button" onClick={() => setViewer({ type: 'photo', url: src })} className="absolute inset-0">
-                        <img src={src} alt={`photo-${i+1}`} className="w-full h-full object-cover" />
-                      </button>
-                      <button type="button" aria-label="Remove photo" onClick={() => removePhotoAt(i)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                  {videoUrls.map((src, i) => (
-                    <div key={`v${i}`} className="relative w-24 h-20 rounded-lg overflow-hidden border bg-black/5">
-                      <button type="button" onClick={() => setViewer({ type: 'video', url: src })} className="absolute inset-0">
-                        <video src={src} className="w-full h-full object-cover" muted playsInline />
-                      </button>
-                      <button type="button" aria-label="Remove video" onClick={() => removeVideoAt(i)} className="absolute -top-1 -right-1 bg-white/90 border border-gray-200 text-gray-600 rounded-full p-1 shadow">
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {viewer && (
-                <div className="fixed inset-0 z-[110]">
-                  <div className="absolute inset-0 bg-black/60" onClick={() => setViewer(null)} />
-                  <div className="absolute inset-0 flex items-center justify-center p-4">
-                    <div className="relative max-w-3xl w-full">
-                      <button type="button" onClick={() => setViewer(null)} className="absolute -top-3 -right-3 bg-white/90 border border-gray-200 rounded-full p-2 shadow" aria-label="Close preview">
-                        <X className="w-4 h-4" />
-                      </button>
-                      <div className="bg-black rounded-lg overflow-hidden">
-                        {viewer.type === 'photo' ? (
-                          <img src={viewer.url} alt="preview" className="w-full h-auto max-h-[80vh] object-contain" />
-                        ) : (
-                          <video src={viewer.url} className="w-full h-auto max-h-[80vh]" controls autoPlay />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Full-screen media viewer */}
+      {viewer && (
+        <div className="fixed inset-0 z-[110]">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setViewer(null)} />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="relative max-w-3xl w-full">
+              <button type="button" onClick={() => setViewer(null)} className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors z-10" aria-label="Close preview">
+                <X className="w-4 h-4 text-gray-700" />
+              </button>
+              <div className="bg-black rounded-2xl overflow-hidden shadow-2xl">
+                {viewer.type === 'photo' ? (
+                  <img src={viewer.url} alt="preview" className="w-full h-auto max-h-[80vh] object-contain" />
+                ) : (
+                  <video src={viewer.url} className="w-full h-auto max-h-[80vh]" controls autoPlay />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

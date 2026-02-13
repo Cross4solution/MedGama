@@ -50,10 +50,9 @@ export default function CoreBoxes({ items = CORE_ITEMS }) {
             const Icon = ICONS[i % ICONS.length];
             const theme = PALETTE[i % PALETTE.length];
             return (
-              <div key={i} className="group relative rounded-2xl border border-gray-200 bg-white hover:border-gray-300 hover:shadow-lg transition-all duration-300 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div key={i} className="relative rounded-2xl border border-gray-200 bg-white overflow-hidden">
                 <div className="relative p-5 sm:p-6 flex flex-col h-full">
-                  <div className={`w-11 h-11 rounded-xl ${theme.bg} mb-4 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`w-11 h-11 rounded-xl ${theme.bg} mb-4 flex items-center justify-center flex-shrink-0`}>
                     <Icon className={`w-5 h-5 ${theme.fg}`} aria-hidden="true" />
                   </div>
                   <h3 className="font-bold text-gray-900 text-sm sm:text-[15px] leading-5 sm:leading-6 mb-2">{f.title}</h3>

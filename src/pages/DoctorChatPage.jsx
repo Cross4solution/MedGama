@@ -121,27 +121,28 @@ const DoctorChatPage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] w-full flex flex-col bg-gray-50 pb-4">
+    <div className="min-h-[calc(100vh-5rem)] w-full flex flex-col bg-gradient-to-b from-gray-50/60 to-white pb-4">
       <div className="flex-1 flex flex-col min-h-0">
         {/* Doctor Info Header */}
-        <div className="bg-white border-b flex-shrink-0">
-          <div className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-1`}>
-            <div className="flex items-center">
-              <div className="w-12 h-12 rounded-full mr-3 overflow-hidden bg-gray-100">
+        <div className="bg-white/95 backdrop-blur-sm border-b border-gray-100 flex-shrink-0">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2.5">
+            <div className="flex items-center gap-3">
+              <div className="relative flex-shrink-0">
                 <img
                   src="/images/portrait-candid-male-doctor_720.jpg"
                   alt="Dr. Mehmet Özkan"
-                  className="w-full h-full object-cover"
+                  className="w-11 h-11 rounded-xl object-cover ring-2 ring-white shadow-md"
                   style={{ objectPosition: 'center 20%' }}
                 />
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white bg-emerald-500" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-gray-900 leading-tight">Dr. Mehmet Özkan</h1>
-                <div className="flex items-center text-[13px] text-gray-600">
+                <h1 className="text-sm font-bold text-gray-900 leading-tight">Dr. Mehmet Özkan</h1>
+                <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-medium mt-0.5">
                   <span>Cardiologist</span>
-                  <span className="mx-2">$</span>
+                  <span className="text-gray-300">·</span>
                   <span>Anadolu Health Center</span>
-                  <span className="ml-2 bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full text-[11px]">Online</span>
+                  <span className="ml-1 inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-md text-[10px] font-semibold border border-emerald-100/80">Online</span>
                 </div>
               </div>
             </div>
@@ -166,29 +167,32 @@ const DoctorChatPage = () => {
                   ))}
                 </select>
               </div>
-              <div className="bg-white border rounded-lg overflow-hidden divide-y">
-                {mobilePaginatedThreads.map((t)=> (
+              <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
+                {mobilePaginatedThreads.map((t, idx)=> (
                   <button
                     key={t.id}
-                    className="w-full text-left p-3 hover:bg-gray-50"
+                    className={`w-full text-left px-4 py-3.5 hover:bg-gray-50/60 transition-colors ${idx > 0 ? 'border-t border-gray-100' : ''} ${activeThreadId === t.id ? 'bg-teal-50/40' : ''}`}
                     onClick={()=>handleSelectThread(t.id)}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="relative w-11 h-11 rounded-full overflow-hidden bg-gray-100">
-                        <img src={t.avatar} alt={t.name} className="w-full h-full object-cover" loading="lazy" />
-                        <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 ${t.online ? 'bg-green-500' : 'bg-gray-400'} rounded-full border-2 border-white`}></span>
+                      <div className="relative flex-shrink-0">
+                        <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-sm" loading="lazy" />
+                        <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${t.online ? 'bg-emerald-500' : 'bg-gray-300'} rounded-full border-2 border-white`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-gray-900 truncate">{t.name}</h4>
-                          <span className="text-[11px] text-gray-500">{t.when}</span>
+                        <div className="flex items-center justify-between mb-0.5">
+                          <h4 className="text-[13px] font-semibold text-gray-900 truncate">{t.name}</h4>
+                          <span className="text-[10px] text-gray-400 font-medium flex-shrink-0 ml-2">{t.when}</span>
                         </div>
-                        <p className="text-xs text-gray-600 truncate">{t.last}</p>
-                        <div className="mt-1 flex items-center gap-2">
-                          {t.tags?.slice(0,2).map(tag => (
-                            <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full border bg-gray-50 text-gray-700">{tag}</span>
-                          ))}
+                        <div className="flex items-center gap-1.5 mb-1">
+                          {t.tags?.slice(0,2).map(tag => {
+                            const isUrgent = tag.toLowerCase().includes('urgent');
+                            return (
+                              <span key={tag} className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${isUrgent ? 'bg-rose-50 text-rose-600 border border-rose-200/80' : 'bg-gray-100/80 text-gray-500 border border-gray-200/60'}`}>{tag}</span>
+                            );
+                          })}
                         </div>
+                        <p className="text-xs text-gray-500 truncate leading-relaxed">{t.last}</p>
                       </div>
                     </div>
                   </button>
@@ -231,7 +235,7 @@ const DoctorChatPage = () => {
               )}
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border flex-1 flex flex-col overflow-hidden min-h-0">
+            <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 flex-1 flex flex-col overflow-hidden min-h-0">
               <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} />
               <ChatMessageList
                 messages={messages}
@@ -258,7 +262,7 @@ const DoctorChatPage = () => {
 
               {/* Chat Area (expanded) */}
               <div className="flex-1 min-h-0">
-                <div className="bg-white rounded-lg shadow-sm border h-full flex flex-col min-h-0">
+                <div className="bg-white rounded-2xl shadow-lg shadow-gray-200/30 border border-gray-200/60 h-full flex flex-col min-h-0">
                   {/* Chat Header */}
                   <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} />
 

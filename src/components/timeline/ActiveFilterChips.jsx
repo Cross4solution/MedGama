@@ -1,14 +1,17 @@
 import React from 'react';
+import { X } from 'lucide-react';
 
 export default function ActiveFilterChips({ items = [] }) {
   if (!items.length) return null;
   return (
-    <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
+    <div className="mb-4 flex flex-wrap items-center gap-2">
       {items.map((chip, idx) => (
-        <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 border text-gray-700">
+        <span key={idx} className="inline-flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full bg-teal-50 border border-teal-200/60 text-teal-800 text-xs font-medium shadow-sm">
           {chip.label}
           {chip.onClear && (
-            <button onClick={chip.onClear} className="ml-1 text-gray-500 hover:text-gray-700" aria-label="clear">✕</button>
+            <button onClick={chip.onClear} className="ml-0.5 p-0.5 rounded-full hover:bg-teal-100 text-teal-500 hover:text-teal-700 transition-colors" aria-label="clear">
+              <X className="w-3 h-3" />
+            </button>
           )}
         </span>
       ))}

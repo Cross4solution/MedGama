@@ -1,11 +1,71 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+
+const PLACEHOLDER_HINTS = [
+  'Search clinics or doctors',
+  'Try "Dental implant Istanbul"',
+  'Try "Cardiology"',
+  'Try "Dr. Ahmet Yılmaz"',
+  'Try "Hair transplant"',
+  'Try "Rhinoplasty Turkey"',
+];
 
 export default function GlobalSearch() {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
-  const [ph, setPh] = useState('Search clinics or doctors');
+  const [ph, setPh] = useState(PLACEHOLDER_HINTS[0]);
   const [activeIndex, setActiveIndex] = useState(-1);
   const wrapperRef = useRef(null);
+  const phIndexRef = useRef(0);
+  const phCharRef = useRef(0);
+  const phDirectionRef = useRef('deleting'); // 'typing' | 'deleting' | 'pause'
+  const phTimerRef = useRef(null);
+
+  // Lightweight typing animation for placeholder
+  const animatePlaceholder = useCallback(() => {
+    const dir = phDirectionRef.current;
+    const idx = phIndexRef.current;
+    const full = PLACEHOLDER_HINTS[idx];
+
+    if (dir === 'pause') {
+      // Wait then start deleting
+      phDirectionRef.current = 'deleting';
+      phTimerRef.current = setTimeout(animatePlaceholder, 1200);
+      return;
+    }
+
+    if (dir === 'deleting') {
+      if (phCharRef.current > 0) {
+        phCharRef.current -= 1;
+        setPh(full.slice(0, phCharRef.current));
+        phTimerRef.current = setTimeout(animatePlaceholder, 15);
+      } else {
+        // Move to next hint
+        phIndexRef.current = (idx + 1) % PLACEHOLDER_HINTS.length;
+        phDirectionRef.current = 'typing';
+        phTimerRef.current = setTimeout(animatePlaceholder, 200);
+      }
+      return;
+    }
+
+    // typing
+    const target = PLACEHOLDER_HINTS[phIndexRef.current];
+    if (phCharRef.current < target.length) {
+      phCharRef.current += 1;
+      setPh(target.slice(0, phCharRef.current));
+      phTimerRef.current = setTimeout(animatePlaceholder, 28);
+    } else {
+      phDirectionRef.current = 'pause';
+      phTimerRef.current = setTimeout(animatePlaceholder, 2000);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Start animation after initial pause
+    phCharRef.current = PLACEHOLDER_HINTS[0].length;
+    phDirectionRef.current = 'pause';
+    phTimerRef.current = setTimeout(animatePlaceholder, 3000);
+    return () => clearTimeout(phTimerRef.current);
+  }, [animatePlaceholder]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -54,10 +114,6 @@ export default function GlobalSearch() {
       .slice(0, 8);
   }, [query]);
 
-  // Set static placeholder (no animation)
-  useEffect(() => {
-    setPh('Search clinics or doctors');
-  }, []);
 
   const onSelect = (name) => {
     setQuery(name); // autofill input with selected value

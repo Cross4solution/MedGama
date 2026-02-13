@@ -261,15 +261,15 @@ export default function ExploreTimeline() {
   }, [hasMore, items.length]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-0">
-      <div className="min-h-screen w-full bg-gray-50 fixed top-0 left-0 -z-10"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1 pb-8 relative">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50 pt-0">
+      <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 via-white to-gray-50 fixed top-0 left-0 -z-10"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-12 relative">
         {/* Hidden pickers for composer */}
         <input ref={imageInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=>{ if (e?.target?.files?.length) setHasMedia(true); }} />
         <input ref={videoInputRef} type="file" accept="video/*" multiple className="hidden" onChange={(e)=>{ if (e?.target?.files?.length) setHasMedia(true); }} />
         <input ref={paperInputRef} type="file" accept="application/pdf" className="hidden" onChange={(e)=>{ if (e?.target?.files?.length) setHasMedia(true); }} />
         {/* Başlık + Sekmeler + Sıralama */}
-        <div className="mb-1">
+        <div className="mb-2">
           <TimelineControls
             user={user}
             sort={sort}
@@ -280,7 +280,7 @@ export default function ExploreTimeline() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           {/* Filters (LEFT) */}
           <TimelineFilterSidebar
             query={query}
@@ -302,42 +302,44 @@ export default function ExploreTimeline() {
 
           {/* Feed (RIGHT) */}
           <section className="order-1 lg:order-2">
-            <div className="max-w-[46rem] mx-auto lg:ml-14 lg:mr-auto">
+            <div className="max-w-[44rem] mx-auto lg:ml-8 lg:mr-auto">
               {/* Composer (doctors/clinics only) */}
               {(() => {
                 const isDoctor = !!(user && (user.role === 'doctor' || (user?.specialty || user?.hospital || user?.access)));
                 const isClinic = !!(user && (user.role === 'clinic'));
                 if (!isDoctor && !isClinic) return null;
                 return (
-                  <div className="bg-white rounded-xl p-4 border shadow-sm mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+                  <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 ring-2 ring-teal-100 ring-offset-1">
                         <img alt="Guest" className="w-full h-full object-cover object-center" src="/images/portrait-candid-male-doctor_720.jpg" />
                       </div>
-                      <button type="button" onClick={()=>setIsComposerOpen(true)} className="flex-1 text-left p-3 bg-gray-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:bg-gray-100">
+                      <button type="button" onClick={()=>setIsComposerOpen(true)} className="flex-1 text-left px-4 py-3 bg-gray-50/80 rounded-xl border border-gray-200/60 focus:outline-none focus:ring-2 focus:ring-teal-500/30 text-gray-500 hover:bg-gray-100/80 hover:border-gray-300/60 transition-all duration-200 text-sm">
                         Make a Post...
                       </button>
                     </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
-                      <div className="flex items-center space-x-4 sm:space-x-6 relative">
-                        <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>imageInputRef.current?.click(),0); }} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-image w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
-                          <span className="text-sm sm:text-base">Photo</span>
-                        </button>
-                        <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>videoInputRef.current?.click(),0); }} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-video w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
-                          <span className="text-sm sm:text-base">Video</span>
-                        </button>
-                        <button onClick={()=>{ setIsComposerOpen(true); setShowEmojiModal(true); }} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button" aria-label="Add emoji">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-smile w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
-                          <span className="text-sm sm:text-base">Emoji</span>
-                        </button>
-                        <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>paperInputRef.current?.click(),0); }} className="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-blue-600 py-1 px-2 rounded-md hover:bg-gray-50" type="button">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-text w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg>
-                          <span className="text-sm sm:text-base">Research Paper</span>
-                        </button>
+                    <div className="border-t border-gray-100 mt-4 pt-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                          <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>imageInputRef.current?.click(),0); }} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-emerald-600 py-2 px-3 rounded-lg hover:bg-emerald-50/60 transition-all duration-200" type="button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-emerald-500" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                            <span className="text-sm font-medium">Photo</span>
+                          </button>
+                          <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>videoInputRef.current?.click(),0); }} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-sky-600 py-2 px-3 rounded-lg hover:bg-sky-50/60 transition-all duration-200" type="button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-sky-500" aria-hidden="true"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
+                            <span className="text-sm font-medium">Video</span>
+                          </button>
+                          <button onClick={()=>{ setIsComposerOpen(true); setShowEmojiModal(true); }} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-amber-600 py-2 px-3 rounded-lg hover:bg-amber-50/60 transition-all duration-200" type="button" aria-label="Add emoji">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-amber-500" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
+                            <span className="text-sm font-medium">Emoji</span>
+                          </button>
+                          <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>paperInputRef.current?.click(),0); }} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-indigo-600 py-2 px-3 rounded-lg hover:bg-indigo-50/60 transition-all duration-200" type="button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-indigo-500" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg>
+                            <span className="text-sm font-medium hidden sm:inline">Research</span>
+                          </button>
+                        </div>
+                        <button type="button" onClick={()=>setIsComposerOpen(true)} className="px-5 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200">Post</button>
                       </div>
-                      <button type="button" onClick={()=>setIsComposerOpen(true)} className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto text-sm sm:text-base font-medium">Post</button>
                     </div>
                   </div>
                 );
@@ -350,17 +352,17 @@ export default function ExploreTimeline() {
                   query && { label: `Search: “${query}”`, onClear: () => setQuery('') },
                 ].filter(Boolean)}
               />
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {items.map((it) => (
                   <TimelineCard key={it.id} item={it} disabledActions={disabledActions} view={'list'} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
                 ))}
                 {isLoadingMore && [1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}
               </div>
-              <div className="flex items-center justify-between mt-5">
-                <p className="text-xs text-gray-500">Showing {items.length} of {total}</p>
+              <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
+                <p className="text-xs text-gray-400 font-medium">Showing <span className="text-gray-600 font-semibold">{items.length}</span> of <span className="text-gray-600 font-semibold">{total}</span></p>
                 {hasMore && (
                   <>
-                    <button onClick={() => setPage(p => p + 1)} className="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm">Load more</button>
+                    <button onClick={() => setPage(p => p + 1)} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200">Load more</button>
                     <span ref={loadMoreRef} className="sr-only">Observer</span>
                   </>
                 )}
@@ -371,12 +373,12 @@ export default function ExploreTimeline() {
 
         {/* Composer Modal */}
         {isComposerOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/40" onClick={()=>setIsComposerOpen(false)}></div>
-            <div role="dialog" aria-modal="true" aria-label="Create post" tabIndex={-1} className="relative w-full max-w-xl bg-white rounded-2xl shadow-xl overflow-visible animate-in fade-in zoom-in-95">
-              <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b">
-                <h3 className="text-lg font-semibold text-gray-900">Create post</h3>
-                <button className="p-2 rounded-full hover:bg-gray-100 text-gray-500" aria-label="Close" onClick={()=>setIsComposerOpen(false)}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="absolute inset-0 bg-black/50" onClick={()=>setIsComposerOpen(false)}></div>
+            <div role="dialog" aria-modal="true" aria-label="Create post" tabIndex={-1} className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-visible animate-in fade-in zoom-in-95">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
+                <h3 className="text-lg font-bold text-gray-900">Create post</h3>
+                <button className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close" onClick={()=>setIsComposerOpen(false)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x w-5 h-5" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
                 </button>
               </div>
@@ -438,7 +440,7 @@ export default function ExploreTimeline() {
                   </div>
                 </div>
                 <div className="mt-3">
-                  <button disabled={!composerText && !hasMedia} className={`w-full py-2.5 rounded-xl text-white font-medium ${(!composerText && !hasMedia) ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>Post</button>
+                  <button disabled={!composerText && !hasMedia} className={`w-full py-2.5 rounded-xl text-white font-semibold transition-all duration-200 ${(!composerText && !hasMedia) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-sm hover:shadow-md'}`}>Post</button>
                 </div>
               </div>
             </div>

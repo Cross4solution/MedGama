@@ -1,4 +1,5 @@
 import React from 'react';
+import { MapPin, Clock, TrendingUp } from 'lucide-react';
 
 export default function TimelineControls({
   user,
@@ -11,38 +12,43 @@ export default function TimelineControls({
   showSort = false,
 }) {
   return (
-    <div className="mb-4">
-      <div className="flex items-center">
+    <div className="mb-6">
+      <div className="flex items-center justify-between">
         {/* Left: Title */}
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold text-gray-900">Explore Timeline</h1>
+          <h1 className="text-lg md:text-xl font-bold text-gray-900 tracking-tight">
+            Explore Timeline
+          </h1>
+          <p className="text-xs text-gray-400 mt-0.5 hidden md:block">Discover the latest from your medical network</p>
         </div>
 
         {/* Center: Segmented toggle (desktop) */}
-        <div className="hidden md:flex flex-1 justify-end ml-64">
-          <div className="inline-flex rounded-full border border-gray-300 bg-white overflow-hidden shadow-sm">
+        <div className="hidden md:flex items-center">
+          <div className="inline-flex rounded-xl bg-gray-100/80 p-1 gap-1">
             <button
               type="button"
               aria-pressed={sort === 'recent'}
               onClick={() => onSortChange?.('recent')}
-              className={`text-sm w-32 py-1.5 focus:outline-none transition-colors ${
+              className={`text-sm w-36 py-2 rounded-lg focus:outline-none transition-all duration-200 inline-flex items-center justify-center gap-1.5 font-semibold ${
                 sort === 'recent'
-                  ? 'bg-teal-600 text-white font-semibold'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/60'
               }`}
             >
+              <Clock className="w-3.5 h-3.5" />
               Most Recent
             </button>
             <button
               type="button"
               aria-pressed={sort === 'top'}
               onClick={() => onSortChange?.('top')}
-              className={`text-sm w-32 py-1.5 focus:outline-none transition-colors ${
+              className={`text-sm w-36 py-2 rounded-lg focus:outline-none transition-all duration-200 inline-flex items-center justify-center gap-1.5 font-semibold ${
                 sort === 'top'
-                  ? 'bg-teal-600 text-white font-semibold'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/60'
               }`}
             >
+              <TrendingUp className="w-3.5 h-3.5" />
               Top Posts
             </button>
           </div>
@@ -50,51 +56,60 @@ export default function TimelineControls({
 
         {/* Right: Location (desktop) */}
         <div className="hidden md:flex flex-1 justify-end items-center gap-3">
-          <button onClick={onUseLocation} className="text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50">Use my location</button>
+          <button
+            onClick={onUseLocation}
+            className="text-sm px-4 py-2 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium shadow-sm"
+          >
+            <MapPin className="w-4 h-4 text-teal-500" />
+            Use my location
+          </button>
           {geo?.lat && (
-            <span className="text-xs text-gray-500">{geo.lat.toFixed(2)},{geo.lon.toFixed(2)}</span>
+            <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">{geo.lat.toFixed(2)}, {geo.lon.toFixed(2)}</span>
           )}
         </div>
       </div>
 
       {/* Mobile controls */}
-      <div className="mt-3 md:hidden flex items-center">
+      <div className="mt-4 md:hidden flex items-center gap-3">
         {/* Centered toggle */}
         <div className="flex-1 flex justify-center">
-          <div className="inline-flex rounded-full border border-gray-300 bg-white overflow-hidden shadow-sm">
+          <div className="inline-flex rounded-xl bg-gray-100/80 p-1 gap-1">
             <button
               type="button"
               aria-pressed={sort === 'recent'}
               onClick={() => onSortChange?.('recent')}
-              className={`text-sm px-4 py-2 focus:outline-none transition-colors ${
+              className={`text-sm px-4 py-2 rounded-lg focus:outline-none transition-all duration-200 inline-flex items-center gap-1.5 font-semibold ${
                 sort === 'recent'
-                  ? 'bg-teal-600 text-white font-semibold'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/60'
               }`}
             >
-              Most Recent
+              <Clock className="w-3.5 h-3.5" />
+              Recent
             </button>
             <button
               type="button"
               aria-pressed={sort === 'top'}
               onClick={() => onSortChange?.('top')}
-              className={`text-sm px-4 py-2 focus:outline-none transition-colors ${
+              className={`text-sm px-4 py-2 rounded-lg focus:outline-none transition-all duration-200 inline-flex items-center gap-1.5 font-semibold ${
                 sort === 'top'
-                  ? 'bg-teal-600 text-white font-semibold'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-white/60'
               }`}
             >
-              Top Posts
+              <TrendingUp className="w-3.5 h-3.5" />
+              Top
             </button>
           </div>
         </div>
         {/* Location button right aligned */}
-        <div className="flex-1 flex justify-end items-center gap-2 ml-3">
-          <button onClick={onUseLocation} className="text-sm px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50">Use my location</button>
-          {geo?.lat && (
-            <span className="text-xs text-gray-500">{geo.lat.toFixed(2)},{geo.lon.toFixed(2)}</span>
-          )}
-        </div>
+        <button
+          onClick={onUseLocation}
+          className="text-sm px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition-all duration-200 inline-flex items-center gap-1.5 text-gray-600 font-medium"
+        >
+          <MapPin className="w-4 h-4 text-teal-500" />
+          <span className="hidden sm:inline">Location</span>
+        </button>
       </div>
       {/* Tabs kaldırıldı */}
     </div>

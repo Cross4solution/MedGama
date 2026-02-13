@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Plus, Video, Clock, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { Video, Calendar, CheckCircle, XCircle, ChevronLeft, ChevronRight, X, AlertTriangle } from 'lucide-react';
 
 const TelehealthPage = () => {
   // Helpers
@@ -75,75 +75,107 @@ const TelehealthPage = () => {
     };
   }, []);
 
-  return (
-    <div className="h-screen overflow-hidden bg-gray-50 flex">
-      {/* Uses global SidebarPatient */}
+  const colorMap = {
+    green: { bg: 'bg-emerald-100/80', text: 'text-emerald-600', sub: 'text-emerald-600', gradient: 'from-emerald-500 to-teal-600' },
+    blue: { bg: 'bg-blue-100/80', text: 'text-blue-600', sub: 'text-blue-600', gradient: 'from-blue-500 to-indigo-600' },
+    purple: { bg: 'bg-purple-100/80', text: 'text-purple-600', sub: 'text-purple-600', gradient: 'from-purple-500 to-violet-600' },
+    orange: { bg: 'bg-amber-100/80', text: 'text-amber-600', sub: 'text-amber-600', gradient: 'from-amber-500 to-orange-600' },
+  };
 
-      {/* Main Content */}
-      <div className="flex-1">
-
-        <div className="px-4 pt-2 pb-3 sm:px-6 sm:pt-3 sm:pb-4">
-          <div className="mb-2 sm:mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">Telehealth</h1>
-            <p className="text-gray-600 mt-1">Online consultation and telemedicine management</p>
-          </div>
-{/* Stats Cards */}
-<div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6">
-  {stats.map((stat, index) => (
-    <div key={index} className="bg-white rounded-xl px-4 py-1 sm:px-4 sm:py-2 lg:px-4 lg:py-2 border border-gray-200 aspect-[3/2] md:aspect-[3/2] lg:aspect-[2/1]">
-      <div className="h-full flex items-center justify-center gap-3 sm:gap-3">
-        <div className="text-center">
-          <p className="text-xs sm:text-sm font-medium text-gray-600">{stat.title}</p>
-          <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">{stat.value}</p>
-          <p className={`text-xs sm:text-sm mt-0.5 sm:mt-1 ${
-            stat.color === 'blue' ? 'text-blue-600' :
-            stat.color === 'green' ? 'text-green-600' :
-            stat.color === 'orange' ? 'text-orange-600' :
-            'text-purple-600'
-          }`}>
-            {stat.subtitle}
-          </p>
-        </div>
-        <div className={`p-2 sm:p-2 rounded-lg ${
-          stat.color === 'blue' ? 'bg-blue-100' :
-          stat.color === 'green' ? 'bg-green-100' :
-          stat.color === 'orange' ? 'bg-orange-100' :
-          'bg-purple-100'
-        }`}>
-          <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${
-            stat.color === 'blue' ? 'text-blue-600' :
-            stat.color === 'green' ? 'text-green-600' :
-            stat.color === 'orange' ? 'text-orange-600' :
-            'text-purple-600'
-          }`} />
+  const renderPagination = (currentPage, totalPages, onPageChange) => (
+    totalPages > 1 && (
+      <div className="rounded-xl border border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-sm px-3 py-2 mt-2">
+        <div className="flex justify-center items-center gap-1">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => onPageChange(page)}
+              className={`w-8 h-8 text-xs font-semibold rounded-lg transition-all duration-200 ${
+                page === currentPage
+                  ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
-    </div>
-  ))}
-</div>
+    )
+  );
 
+  return (
+    <div className="h-screen overflow-hidden bg-gradient-to-b from-gray-50/60 to-white flex">
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-4 pt-3 pb-4 sm:px-6 sm:pt-4 sm:pb-6">
+          {/* Page Header */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center shadow-md shadow-teal-200/50">
+              <Video className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">Telehealth</h1>
+              <p className="text-[11px] text-gray-400 font-medium">Online consultation and telemedicine management</p>
+            </div>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            {stats.map((stat, index) => {
+              const c = colorMap[stat.color] || colorMap.green;
+              return (
+                <div key={index} className="rounded-2xl border border-gray-200/60 bg-white shadow-sm hover:shadow-md transition-shadow duration-200 px-4 py-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{stat.title}</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                      <p className={`text-[11px] font-medium mt-0.5 ${c.sub}`}>{stat.subtitle}</p>
+                    </div>
+                    <div className={`w-10 h-10 rounded-xl ${c.bg} flex items-center justify-center shadow-sm`}>
+                      <stat.icon className={`w-5 h-5 ${c.text}`} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
           {/* Two Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Upcoming Appointments */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Upcoming Appointments</h2>
-              <div className="bg-white rounded-lg border border-gray-200">
-                <div className="divide-y min-h-[280px]">
-                  {upItems.map((session) => (
-                    <div key={session.id} className="p-4 hover:bg-gray-50 transition-colors">
+              <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-teal-500 to-emerald-500" />
+                Upcoming Appointments
+              </h2>
+              <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
+                <div className="min-h-[260px]">
+                  {upItems.map((session, idx) => (
+                    <div key={session.id} className={`px-4 py-3.5 hover:bg-gray-50/60 transition-colors ${idx > 0 ? 'border-t border-gray-100' : ''}`}>
                       <div className="flex items-center gap-3 justify-between">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-medium text-gray-700">
-                            {session.patient.split(' ').map((n) => n[0]).join('')}
-                          </span>
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">
+                          {session.patient.split(' ').map((n) => n[0]).join('')}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">{session.patient}</h4>
-                          <p className="text-xs text-teal-700">{fmtDateTime(session.start)}</p>
-                          <p className="text-xs text-gray-500">{session.specialty}</p>
+                          <h4 className="text-sm font-semibold text-gray-900 truncate">{session.patient}</h4>
+                          <p className="text-[11px] text-teal-600 font-medium">{fmtDateTime(session.start)}</p>
+                          <p className="text-[11px] text-gray-400">{session.specialty}</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-shrink-0">
                           {(() => {
                             const m = minutesUntil(session.start);
                             const canJoin = m <= 15 && m >= 0;
@@ -152,18 +184,18 @@ const TelehealthPage = () => {
                               <>
                                 <button
                                   disabled={!canJoin}
-                                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-white transition-colors ${canJoin ? 'bg-teal-600 hover:bg-teal-700' : 'bg-gray-300 cursor-not-allowed'}`}
+                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 ${canJoin ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50 hover:shadow-lg' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
                                 >
-                                  <Video className="w-4 h-4" />
+                                  <Video className="w-3.5 h-3.5" />
                                   <span>Join</span>
                                 </button>
                                 <button
                                   disabled={!canCancel}
-                                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-colors ${canCancel ? 'text-red-700 hover:text-red-900' : 'text-gray-300 cursor-not-allowed'}`}
+                                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${canCancel ? 'text-rose-600 hover:bg-rose-50 hover:text-rose-700' : 'text-gray-300 cursor-not-allowed'}`}
                                   title={canCancel ? '' : 'Cancellation allowed until 4 hours before'}
                                   onClick={() => { if (canCancel) setCancelModal({ open: true, session }); }}
                                 >
-                                  <XCircle className="w-4 h-4" />
+                                  <XCircle className="w-3.5 h-3.5" />
                                   <span>Cancel</span>
                                 </button>
                               </>
@@ -175,58 +207,29 @@ const TelehealthPage = () => {
                   ))}
                 </div>
               </div>
-              <div className="bg-gray-50 border rounded-lg px-3 py-2 mt-2">
-                <div className="flex justify-center items-center space-x-1.5">
-                  <button
-                    disabled={upPage === 1}
-                    onClick={() => setUpPage((p) => Math.max(1, p - 1))}
-                    className="px-2.5 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    ‹
-                  </button>
-                  {Array.from({ length: upTotalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setUpPage(page)}
-                      className={`px-2.5 py-1 text-sm rounded ${
-                        page === upPage
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                  <button
-                    disabled={upPage === upTotalPages}
-                    onClick={() => setUpPage((p) => Math.min(upTotalPages, p + 1))}
-                    className="px-2.5 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    ›
-                  </button>
-                </div>
-              </div>
+              {renderPagination(upPage, upTotalPages, setUpPage)}
             </div>
 
             {/* Past Appointments */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Past Appointments</h2>
-              <div className="bg-white rounded-lg border border-gray-200">
-                <div className="divide-y min-h-[280px]">
-                  {pastItems.map((session) => (
-                    <div key={session.id} className="p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-medium text-gray-700">
-                            {session.patient.split(' ').map((n) => n[0]).join('')}
-                          </span>
+              <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-purple-500 to-violet-500" />
+                Past Appointments
+              </h2>
+              <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
+                <div className="min-h-[260px]">
+                  {pastItems.map((session, idx) => (
+                    <div key={session.id} className={`px-4 py-3.5 hover:bg-gray-50/60 transition-colors ${idx > 0 ? 'border-t border-gray-100' : ''}`}>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">
+                          {session.patient.split(' ').map((n) => n[0]).join('')}
                         </div>
-                        <div className="flex-1">
-                          <h4 className="text-sm font-medium text-gray-900">{session.patient}</h4>
-                          <p className="text-xs text-gray-500">{fmtDateTime(session.start)} - {session.durationMin} min</p>
-                          <p className="text-xs text-green-600">{session.status}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-semibold text-gray-900 truncate">{session.patient}</h4>
+                          <p className="text-[11px] text-gray-500">{fmtDateTime(session.start)} - {session.durationMin} min</p>
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100/80 mt-0.5">{session.status}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-shrink-0">
                           {(() => {
                             const m = minutesUntil(session.start);
                             const canJoin = m <= 15 && m >= 0;
@@ -235,17 +238,17 @@ const TelehealthPage = () => {
                               <>
                                 <button
                                   disabled={!canJoin}
-                                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-white transition-colors ${canJoin ? 'bg-teal-600 hover:bg-teal-700' : 'bg-gray-300 cursor-not-allowed'}`}
+                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 ${canJoin ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
                                 >
-                                  <Video className="w-4 h-4" />
+                                  <Video className="w-3.5 h-3.5" />
                                   <span>Join</span>
                                 </button>
                                 <button
                                   disabled={!canCancel}
-                                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-colors ${canCancel ? 'text-red-700 hover:text-red-900' : 'text-gray-300 cursor-not-allowed'}`}
+                                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${canCancel ? 'text-rose-600 hover:bg-rose-50' : 'text-gray-300 cursor-not-allowed'}`}
                                   title={canCancel ? '' : 'Cancellation allowed until 4 hours before'}
                                 >
-                                  <XCircle className="w-4 h-4" />
+                                  <XCircle className="w-3.5 h-3.5" />
                                   <span>Cancel</span>
                                 </button>
                               </>
@@ -257,74 +260,58 @@ const TelehealthPage = () => {
                   ))}
                 </div>
               </div>
-              <div className="bg-gray-50 border rounded-lg px-3 py-2 mt-2">
-                <div className="flex justify-center items-center space-x-1.5">
-                  <button
-                    disabled={pastPage === 1}
-                    onClick={() => setPastPage((p) => Math.max(1, p - 1))}
-                    className="px-2.5 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    ‹
-                  </button>
-                  {Array.from({ length: pastTotalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setPastPage(page)}
-                      className={`px-2.5 py-1 text-sm rounded ${
-                        page === pastPage
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                  <button
-                    disabled={pastPage === pastTotalPages}
-                    onClick={() => setPastPage((p) => Math.min(pastTotalPages, p + 1))}
-                    className="px-2.5 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    ›
-                  </button>
-                </div>
-              </div>
+              {renderPagination(pastPage, pastTotalPages, setPastPage)}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Cancel Modal */}
       {cancelModal.open && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          onClick={() => setCancelModal({ open: false, session: null })}
-        >
-          <div
-            className="bg-white rounded-xl p-6 w-full max-w-sm mx-4 relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              aria-label="Close"
-              className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-gray-100 text-gray-500"
-              onClick={() => setCancelModal({ open: false, session: null })}
+        <div className="fixed inset-0 z-[100]">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setCancelModal({ open: false, session: null })} />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
             >
-              <span className="block w-3.5 h-3.5 leading-none text-lg">×</span>
-            </button>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Cancel Telehealth Appointment</h3>
-            <p className="text-gray-700 mb-1">Your online telehealth appointment will be canceled.</p>
-            <p className="text-gray-600 mb-4">Date & time: <span className="font-medium text-gray-900">{fmtDateTime(cancelModal.session?.start)}</span></p>
-            <div className="flex justify-end space-x-3 mt-2">
-              <button
-                onClick={() => setCancelModal({ open: false, session: null })}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
-              >
-                Keep Appointment
-              </button>
-              <button
-                onClick={() => setCancelModal({ open: false, session: null })}
-                className="px-4 py-2 text-sm font-medium text-white bg-rose-500 hover:bg-rose-600 rounded-lg"
-              >
-                Confirm Cancel
-              </button>
+              <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-rose-50/80 to-white flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">
+                    <AlertTriangle className="w-4 h-4 text-rose-600" />
+                  </div>
+                  <h3 className="text-sm font-bold text-gray-900">Cancel Appointment</h3>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Close"
+                  className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                  onClick={() => setCancelModal({ open: false, session: null })}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="px-5 py-4">
+                <p className="text-sm text-gray-600 leading-relaxed">Your online telehealth appointment will be canceled.</p>
+                <div className="mt-3 px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-100">
+                  <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Date & Time</p>
+                  <p className="text-sm font-semibold text-gray-900 mt-0.5">{fmtDateTime(cancelModal.session?.start)}</p>
+                </div>
+              </div>
+              <div className="px-5 pb-4 flex justify-end gap-2">
+                <button
+                  onClick={() => setCancelModal({ open: false, session: null })}
+                  className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                >
+                  Keep
+                </button>
+                <button
+                  onClick={() => setCancelModal({ open: false, session: null })}
+                  className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 rounded-xl shadow-md shadow-rose-200/50 transition-all duration-200"
+                >
+                  Confirm Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>

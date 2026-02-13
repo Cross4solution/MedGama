@@ -17,6 +17,7 @@ import {
 import PhoneNumberInput from '../forms/PhoneNumberInput';
 import { listCountriesAll, getFlagCode } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox';
+import MedicalHistoryTags from './MedicalHistoryTags';
 // getFlagCode imported above with listCountriesAll
 
 /**
@@ -317,13 +318,9 @@ const RegisterForm = ({
               <label className="block text-xs font-medium text-gray-700 mb-1 text-left">
                 Medical History <span className="font-normal text-gray-400">(chronic diseases, allergies, medications)</span>
               </label>
-              <textarea
-                name="medicalHistory"
+              <MedicalHistoryTags
                 value={fd.medicalHistory ?? ''}
-                onChange={handleInputChange}
-                rows={2}
-                className="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm resize-none hover:border-gray-400 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all bg-white placeholder:text-gray-400"
-                placeholder="e.g., Diabetes Type 2, Penicillin allergy, Aspirin 100mg daily..."
+                onChange={(val) => handleInputChange({ target: { name: 'medicalHistory', value: val } })}
               />
             </div>
           )}

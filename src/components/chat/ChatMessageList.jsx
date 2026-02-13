@@ -16,7 +16,7 @@ export default function ChatMessageList({ messages = [], leftAvatar, rightAvatar
   }, [messages]);
 
   return (
-    <div ref={containerRef} className="flex-1 min-h-0 p-4 pl-8 overflow-y-auto overscroll-contain space-y-4">
+    <div ref={containerRef} className="flex-1 min-h-0 px-5 py-4 overflow-y-auto overscroll-contain space-y-4 bg-gradient-to-b from-gray-50/40 to-white">
       {messages.map((msg) => (
         <ChatMessage key={msg.id} message={msg} leftAvatar={leftAvatar} rightAvatar={rightAvatar} />)
       )}

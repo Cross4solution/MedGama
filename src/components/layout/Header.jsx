@@ -128,14 +128,15 @@ const Header = () => {
                           <span className="font-semibold">Clinic</span>
                         </button>
                         <div className="my-1 border-t border-gray-100" />
-                        <a
+                        <button
+                          type="button"
                           role="menuitem"
-                          href={(process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login')}
+                          onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
                           className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-gray-800 border border-gray-700 text-white hover:bg-gray-700 transition-all"
                         >
                           <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-700 text-gray-300"><LayoutDashboard className="w-[18px] h-[18px]" /></span>
                           <span className="font-semibold">CRM Panel</span>
-                        </a>
+                        </button>
                       </div>
                     )}
                   </div>
@@ -262,11 +263,13 @@ const Header = () => {
     {user && isMenuOpen && (
       <>
         {/* Backdrop */}
-        <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px] md:hidden" onClick={closeMenu} />
+        <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px] md:hidden" onClick={closeMenu} />
         {/* Panel */}
-        <div className="fixed top-20 left-0 right-0 z-50 mx-4 max-w-md md:hidden overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ring-1 ring-black/5">
+        <div className="fixed top-20 left-0 right-0 z-50 mx-4 max-w-md md:hidden overflow-hidden rounded-2xl border border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-2xl">
           {(() => {
             const role = (user?.role || 'patient');
+            const initial = (user?.name || 'U')[0]?.toUpperCase();
+            const roleLabel = String(role).charAt(0).toUpperCase() + String(role).slice(1);
             // Mirror mobile dropdown with SidebarPatient menu for patients
             const patientItems = [
               { to: '/home-v2', label: 'Home', icon: Home },
@@ -290,50 +293,59 @@ const Header = () => {
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/home-v2', label: 'Homepage', icon: Home },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
-              { href: (process.env.REACT_APP_CRM_URL || 'https://crmtaslak.netlify.app/login'), label: 'CRM', icon: ArrowUpRight, external: true },
+              { to: '/clinic-login', label: 'CRM', icon: ArrowUpRight },
             ];
             const items = role === 'clinic' ? clinicItems : (role === 'doctor' ? doctorItems : patientItems);
             return (
-              <nav className="divide-y divide-gray-100">
-                <div className="p-4 flex items-center gap-3 border-b border-gray-100">
-                  <img src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'} alt={user.name} className="w-10 h-10 rounded-full object-cover border" />
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
-                    <p className="text-xs text-gray-500 truncate">{String(role).charAt(0).toUpperCase() + String(role).slice(1)}</p>
+              <nav>
+                {/* Profile header */}
+                <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white rounded-t-2xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-teal-200/50">
+                      {initial}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+                      <p className="text-[11px] text-gray-500 font-medium truncate">{roleLabel}</p>
+                    </div>
                   </div>
                 </div>
+                {/* Menu items */}
                 <div className="p-2">
-                  {items.map((it, idx) => (
-                    it.external ? (
-                      <a key={`ext-${idx}`} href={it.href} target="_blank" rel="noopener noreferrer" onClick={closeMenu} className="flex items-center justify-between px-3 py-2 rounded-xl text-sm border transition border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-200">
-                        <span className="flex items-center gap-2">
-                          {it.icon === 'chat-conversation' ? (
-                            <MessageCircle className="w-4 h-4 text-gray-500" />
-                          ) : (
-                            <it.icon className="w-4 h-4 text-gray-500" />
-                          )}
-                          {it.label}
-                        </span>
-                        <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
-                      </a>
-                    ) : (
-                      <Link key={`int-${idx}`} to={it.to} onClick={closeMenu} className="flex items-center justify-between px-3 py-2 rounded-xl text-sm border transition border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-200">
-                        <span className="flex items-center gap-2">
-                          {it.icon === 'chat-conversation' ? (
-                            <MessageCircle className="w-4 h-4 text-gray-500" />
-                          ) : (
-                            <it.icon className="w-4 h-4 text-gray-500" />
-                          )}
+                  <div className="mb-2 px-3 pt-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Menu</div>
+                  {items.map((it, idx) => {
+                    const active = it.to ? pathname === it.to : false;
+                    const IconEl = it.icon === 'chat-conversation' ? MessageCircle : it.icon;
+                    if (it.external) {
+                      return (
+                        <a key={`ext-${idx}`} href={it.href} target="_blank" rel="noopener noreferrer" onClick={closeMenu} className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 text-gray-600 hover:bg-gray-50/80 hover:text-gray-900">
+                          <span className="flex items-center gap-2.5">
+                            <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100/80 group-hover:bg-gray-200/60 transition-colors">
+                              <IconEl className="w-3.5 h-3.5 text-gray-500 group-hover:text-gray-700" />
+                            </span>
+                            {it.label}
+                          </span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
+                        </a>
+                      );
+                    }
+                    return (
+                      <Link key={`int-${idx}`} to={it.to} onClick={closeMenu} className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${active ? 'bg-gradient-to-r from-teal-50 to-emerald-50/60 text-teal-700 shadow-sm ring-1 ring-teal-100' : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-900'}`}>
+                        <span className="flex items-center gap-2.5">
+                          <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-teal-100/80' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
+                            <IconEl className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
+                          </span>
                           {it.label}
                         </span>
                       </Link>
-                    )
-                  ))}
+                    );
+                  })}
                 </div>
-                <div className="p-2">
+                {/* Logout */}
+                <div className="px-3 pb-3 pt-1 border-t border-gray-100">
                   <button
                     onClick={() => { closeMenu(); logout(); }}
-                    className="w-full text-left px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"
+                    className="w-full flex items-center justify-center gap-2 mt-2 px-3 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-600 hover:to-red-600 shadow-md shadow-rose-200/50 transition-all duration-200"
                   >
                     Logout
                   </button>

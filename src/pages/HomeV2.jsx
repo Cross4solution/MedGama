@@ -96,7 +96,7 @@ export default function HomeV2() {
                   <div className="mt-6 flex gap-3">
                     <button
                       type="button"
-                      onClick={() => document.getElementById('clinics-search')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                      onClick={() => document.getElementById('discover-services')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                       className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm text-teal-700 px-5 py-2.5 rounded-full hover:bg-white hover:shadow-lg text-sm font-semibold transition-all shadow-md"
                     >
                       Explore

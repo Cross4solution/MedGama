@@ -181,7 +181,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
 
   return (
     <article
-      className={`group rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden`}
+      className={`group rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden`}
     >
       {view === 'list' ? (
         <div className="flex flex-col">
@@ -189,7 +189,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           <div className={`flex items-start justify-between ${headerPad}`}>
             <div className={`flex items-start ${headerGap} min-w-0`}>
               <Link to={actorLink} onClick={(e)=>e.stopPropagation()}>
-                <img src={actorAvatar} alt={actorName} className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
+                <img src={actorAvatar} alt={actorName} loading="lazy" className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
               </Link>
               <div className="min-w-0">
               {/* socialContext (e.g., liked by N) removed per design */}
@@ -325,7 +325,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           )}
 
           {/* Social counts */}
-          <div className="px-3 pt-2 mt-2 text-xs text-gray-500 flex items-center justify-between">
+          <div className="px-4 pt-2.5 mt-2 text-xs text-gray-500 flex items-center justify-between">
             <button type="button" onClick={handleLike} className="inline-flex items-center gap-1.5 hover:text-gray-700 transition-colors">
               <span className={`inline-flex items-center justify-center w-[18px] h-[18px] rounded-full ${liked ? 'bg-blue-500' : 'bg-blue-500'} text-white`}>
                 <ThumbsUp className="w-[10px] h-[10px]" />
@@ -343,10 +343,10 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
 
           {/* Comments Preview */}
           {showCommentsPreview && (
-            <div className="px-4 pb-4 mt-0 border-t border-gray-200 pt-4 bg-gray-100/70 relative min-h-0 transform-gpu overflow-x-hidden">
+            <div className="px-4 pb-4 mt-0 border-t border-gray-100 pt-4 bg-gradient-to-b from-gray-50/80 to-gray-50/40 relative min-h-0 transform-gpu overflow-x-hidden">
               {/* New comment input */}
               <div className="flex items-start gap-2.5">
-                <img src={actorAvatar} alt="Your avatar" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
+                <img src={actorAvatar} alt="Your avatar" loading="lazy" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
                 <div className="relative flex-1">
                   <input
                     placeholder={disabledActions ? 'Sign in to comment…' : 'Write a comment…'}
@@ -375,37 +375,37 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
               </div>
 
               {/* Threaded comments (mock) */}
-              <div className="mt-4 space-y-4">
+              <div className="mt-4 space-y-3">
                 {/* Parent comment */}
                 <div className="flex items-start gap-2.5">
-                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Ayça Karaman" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
+                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Ayça Karaman" className="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm" />
                   <div className="flex-1 min-w-0">
-                    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-200 shadow-sm">
+                    <div className="bg-white rounded-2xl px-4 py-3 border border-gray-100 shadow-sm">
                       <div className="flex items-center justify-between gap-2 mb-0.5">
                         <span className="text-sm font-semibold text-gray-900">Ayça Karaman</span>
                         <span className="text-[11px] text-gray-400">1 week</span>
                       </div>
                       <p className="text-sm text-gray-700 leading-relaxed">Congrats! 🎉</p>
                     </div>
-                    <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-1">
+                    <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-2">
                       <button type="button" className="font-medium hover:text-gray-600 transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1' ? '' : 'c1'); setReplyText(prev => (prev && replyTo==='c1') ? prev : '@Ayça Karaman '); }}>Reply</button>
                       <span className="text-gray-300">·</span>
                       <span>1 reply</span>
                     </div>
 
                     {/* Reply */}
-                    <div className="mt-2.5 ml-4 pl-3 border-l-2 border-gray-200">
+                    <div className="mt-2 ml-5 pl-4 border-l-2 border-gray-200/80">
                       <div className="flex items-start gap-2.5">
-                        <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Cem Arslan" className="w-7 h-7 rounded-full object-cover ring-1 ring-gray-200" />
+                        <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Cem Arslan" className="w-7 h-7 rounded-full object-cover ring-2 ring-white shadow-sm" />
                         <div className="flex-1 min-w-0">
-                          <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-200 shadow-sm">
+                          <div className="bg-white rounded-2xl px-4 py-3 border border-gray-100 shadow-sm">
                             <div className="flex items-center justify-between gap-2 mb-0.5">
                               <span className="text-sm font-semibold text-gray-900">Dr. Cem Arslan</span>
                               <span className="text-[11px] text-gray-400">1 week</span>
                             </div>
-                            <p className="text-sm text-gray-700 leading-relaxed"><span className="font-semibold text-teal-700">@Ayça Karaman</span> Thanks 🙏</p>
+                            <p className="text-sm text-gray-700 leading-relaxed"><span className="font-semibold text-teal-600">@Ayça Karaman</span> Thanks 🙏</p>
                           </div>
-                          <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-1">
+                          <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-2">
                             <button type="button" className="font-medium hover:text-gray-600 transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1r1' ? '' : 'c1r1'); setReplyText(prev => (prev && replyTo==='c1r1') ? prev : '@Dr. Cem Arslan '); }}>Reply</button>
                             <span className="text-gray-300">·</span>
                             <span>1 reply</span>
@@ -450,16 +450,16 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
 
                 {/* Another parent comment */}
                 <div className="flex items-start gap-2.5">
-                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Efe Yılmaz" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
+                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Efe Yılmaz" className="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm" />
                   <div className="flex-1 min-w-0">
-                    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-200 shadow-sm">
+                    <div className="bg-white rounded-2xl px-4 py-3 border border-gray-100 shadow-sm">
                       <div className="flex items-center justify-between gap-2 mb-0.5">
                         <span className="text-sm font-semibold text-gray-900">Efe Yılmaz</span>
                         <span className="text-[11px] text-gray-400">1 week</span>
                       </div>
                       <p className="text-sm text-gray-700 leading-relaxed">Well done 👏</p>
                     </div>
-                    <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-1">
+                    <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-2">
                       <button type="button" className="font-medium hover:text-gray-600 transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c2' ? '' : 'c2'); setReplyText(prev => (prev && replyTo==='c2') ? prev : '@Efe Yılmaz '); }}>Reply</button>
                       <span className="text-gray-300">·</span>
                       <span>1 reply</span>
@@ -489,7 +489,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           
 
           {/* Action bar */}
-          <div className="px-3 py-1.5 border-t border-gray-100 mt-2 grid grid-cols-3 gap-1 justify-items-center">
+          <div className="px-4 py-1.5 border-t border-gray-100 mt-2 grid grid-cols-3 gap-1 justify-items-center">
             <button
               type="button"
               className={`w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[13px] transition-all ${liked ? 'text-teal-600 bg-teal-50/60 font-semibold' : 'text-gray-500 hover:bg-gray-50 font-medium'}`}
@@ -592,7 +592,7 @@ export default function TimelineCard({ item, disabledActions, view = 'grid', onO
           </div>
           <div className="p-5">
             <div className="flex items-center gap-3">
-              <img src={avatarUrl} alt={item.title} className={`${compact ? 'w-10 h-10' : 'w-12 h-12'} rounded-full object-cover border`} />
+              <img src={avatarUrl} alt={item.title} loading="lazy" className={`${compact ? 'w-10 h-10' : 'w-12 h-12'} rounded-full object-cover border`} />
               <div className="min-w-0">
                 <h3 className={`font-semibold text-gray-900 truncate ${compact ? 'text-base' : 'text-lg'}`} title={item.title}>{item.title}</h3>
                 <p className="text-xs text-gray-600 flex items-center gap-1 mt-0.5">

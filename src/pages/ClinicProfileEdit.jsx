@@ -18,12 +18,12 @@ function TagEditor({ label, value = [], onChange, placeholder }) {
   const remove = (idx) => onChange((value || []).filter((_, i) => i !== idx));
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <div className="min-h-[44px] w-full px-2 py-1.5 border rounded-lg bg-white flex flex-wrap gap-2">
+      <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{label}</label>
+      <div className="min-h-[42px] w-full px-2.5 py-1.5 border border-gray-200 rounded-xl bg-white hover:border-gray-300 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-400 transition-all flex flex-wrap gap-1.5">
         {value && value.map((tag, i) => (
-          <span key={`${tag}-${i}`} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 border text-xs">
+          <span key={`${tag}-${i}`} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-teal-50 text-teal-700 border border-teal-200 text-xs font-medium">
             {tag}
-            <button type="button" onClick={()=>remove(i)} className="ml-1 text-gray-500 hover:text-gray-700">
+            <button type="button" onClick={()=>remove(i)} className="ml-0.5 p-0.5 rounded hover:bg-teal-100 transition-colors">
               <X className="w-3 h-3" />
             </button>
           </span>
@@ -34,7 +34,7 @@ function TagEditor({ label, value = [], onChange, placeholder }) {
           onKeyDown={onKeyDown}
           onBlur={()=>{ if (text.trim()) add(); }}
           placeholder={placeholder}
-          className="flex-1 min-w-[140px] h-7 px-2 text-sm outline-none"
+          className="flex-1 min-w-[140px] h-7 px-1 text-sm outline-none bg-transparent placeholder:text-gray-400"
         />
       </div>
     </div>
@@ -60,43 +60,43 @@ function ServiceModal({ initial, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-2xl bg-white rounded-2xl shadow-xl border p-4 md:p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base font-semibold text-gray-900">{initial ? 'Edit Service' : 'Create Service'}</h3>
-          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-gray-50"><X className="w-4 h-4"/></button>
+    <div className="fixed inset-0 z-[100]">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
+        <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white flex items-center justify-between">
+          <h3 className="text-sm font-bold text-gray-900">{initial ? 'Edit Service' : 'Create Service'}</h3>
+          <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"><X className="w-4 h-4"/></button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input value={name} onChange={(e)=>setName(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="Service name" />
-          <input value={department} onChange={(e)=>setDepartment(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="Department" />
-          <select value={icon} onChange={(e)=>setIcon(e.target.value)} className="h-10 px-3 border rounded-lg text-sm">
-            <option value="Activity">Activity</option>
-            <option value="Stethoscope">Stethoscope</option>
-            <option value="Brain">Brain</option>
-            <option value="Scissors">Scissors</option>
-          </select>
-          <input value={priceRange} onChange={(e)=>setPriceRange(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="₺min - ₺max" />
-          <input value={duration} onChange={(e)=>setDuration(e.target.value)} className="h-10 px-3 border rounded-lg text-sm" placeholder="Duration (e.g., 45 min)" />
-          <div className="h-10 px-3 border rounded-lg text-sm flex items-center gap-3">
-            <label className="flex items-center gap-1 text-sm"><input type="checkbox" checked={availability.includes('Onsite')} onChange={()=>toggleAvail('Onsite')} /> Onsite</label>
-            <label className="flex items-center gap-1 text-sm"><input type="checkbox" checked={availability.includes('Telehealth')} onChange={()=>toggleAvail('Telehealth')} /> Telehealth</label>
+        <div className="px-5 py-4 space-y-3 max-h-[70vh] overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input value={name} onChange={(e)=>setName(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="Service name" />
+            <input value={department} onChange={(e)=>setDepartment(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="Department" />
+            <select value={icon} onChange={(e)=>setIcon(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none">
+              <option value="Activity">Activity</option>
+              <option value="Stethoscope">Stethoscope</option>
+              <option value="Brain">Brain</option>
+              <option value="Scissors">Scissors</option>
+            </select>
+            <input value={priceRange} onChange={(e)=>setPriceRange(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="₺min - ₺max" />
+            <input value={duration} onChange={(e)=>setDuration(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="Duration (e.g., 45 min)" />
+            <div className="h-10 px-3 border border-gray-200 rounded-xl text-sm flex items-center gap-3">
+              <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={availability.includes('Onsite')} onChange={()=>toggleAvail('Onsite')} /> Onsite</label>
+              <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={availability.includes('Telehealth')} onChange={()=>toggleAvail('Telehealth')} /> Telehealth</label>
+            </div>
+          </div>
+          <textarea value={description} onChange={(e)=>setDescription(e.target.value)} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="Short description" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <TagEditor label="Linked Procedures" value={procedures} onChange={setProcedures} placeholder="Add procedure" />
+            <TagEditor label="Tags" value={tags} onChange={setTags} placeholder="Add tag" />
+            <TagEditor label="Languages" value={languages} onChange={setLanguages} placeholder="TR, EN" />
+            <TagEditor label="Insurance" value={insurance} onChange={setInsurance} placeholder="Insurance" />
           </div>
         </div>
-        <div className="mt-3">
-          <textarea value={description} onChange={(e)=>setDescription(e.target.value)} rows={3} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Short description" />
-        </div>
-        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
-          <TagEditor label="Linked Procedures" value={procedures} onChange={setProcedures} placeholder="Add procedure" />
-          <TagEditor label="Tags" value={tags} onChange={setTags} placeholder="Add tag" />
-          <TagEditor label="Languages" value={languages} onChange={setLanguages} placeholder="TR, EN" />
-          <TagEditor label="Insurance" value={insurance} onChange={setInsurance} placeholder="Insurance" />
-        </div>
-        <div className="mt-3 flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={visibility} onChange={(e)=>setVisibility(e.target.checked)} /> Visible</label>
+        <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between">
+          <label className="flex items-center gap-2 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={visibility} onChange={(e)=>setVisibility(e.target.checked)} /> Visible</label>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={onClose} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Cancel</button>
-            <button type="button" onClick={()=> onSave({ name, department, icon, description, procedures, priceRange, duration, availability, tags, languages, insurance, visibility }) } className="px-4 py-1.5 rounded-lg bg-[#1C6A83] text-white text-sm hover:bg-[#0F4A5C]">Save</button>
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
+            <button type="button" onClick={()=> onSave({ name, department, icon, description, procedures, priceRange, duration, availability, tags, languages, insurance, visibility }) } className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 rounded-xl shadow-md shadow-teal-200/50 transition-all duration-200">Save</button>
           </div>
         </div>
       </div>
@@ -228,79 +228,87 @@ export default function ClinicProfileEdit() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/60 to-white">
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <h1 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-[#1C6A83]" /> Edit Clinic Profile
-        </h1>
-
-        {/* Tabs */}
-        <div className="mb-3 flex flex-wrap gap-2">
-          {[
-            { id: 'overview', label: 'Overview' },
-            { id: 'services', label: 'Services' },
-            { id: 'reviews', label: 'Reviews' },
-            { id: 'gallery', label: 'Gallery' },
-            { id: 'location', label: 'Location' },
-            { id: 'pricing', label: 'Pricing' },
-            { id: 'packages', label: 'Packages' },
-          ].map(t => (
-            <button key={t.id} onClick={()=>setTab(t.id)} type="button" className={`px-3 py-1.5 text-sm border-b-2 transition-colors ${tab===t.id ? 'text-[#1C6A83] border-[#1C6A83]' : 'text-gray-700 border-transparent hover:text-[#1C6A83] hover:border-[#1C6A83]'}`}>{t.label}</button>
-          ))}
+        {/* Page Header */}
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center shadow-md shadow-teal-200/50">
+            <Building2 className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-gray-900">Edit Clinic Profile</h1>
+            <p className="text-[11px] text-gray-400 font-medium">Manage your clinic information and services</p>
+          </div>
         </div>
 
-        <div className="rounded-2xl border bg-white shadow-sm p-4 md:p-6">
+        {/* Tabs */}
+        <div className="mb-4 border-b border-gray-100">
+          <nav className="flex overflow-x-auto gap-1 scrollbar-hide -mb-px">
+            {[
+              { id: 'overview', label: 'Overview' },
+              { id: 'services', label: 'Services' },
+              { id: 'reviews', label: 'Reviews' },
+              { id: 'gallery', label: 'Gallery' },
+              { id: 'location', label: 'Location' },
+              { id: 'pricing', label: 'Pricing' },
+              { id: 'packages', label: 'Packages' },
+            ].map(t => (
+              <button key={t.id} onClick={()=>setTab(t.id)} type="button" className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all duration-200 ${tab===t.id ? 'text-teal-700 border-teal-600' : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'}`}>{t.label}</button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 p-5 md:p-6">
           <form onSubmit={onSubmit} className="space-y-5">
             {/* Overview */}
             {tab === 'overview' && (
             <>
               {/* Branding (Logo & Background) */}
-              <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
-                  <div className="flex items-center gap-3">
-                    <div className="w-16 h-16 rounded-lg bg-gray-50 border flex items-center justify-center overflow-hidden">
+                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Logo</label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
                       {(logoUrl || form.logo) ? (
                         <img src={logoUrl || form.logo} alt="logo" className="w-full h-full object-cover" />
                       ) : (
-                        <ImageIcon className="w-5 h-5 text-gray-400" />
+                        <ImageIcon className="w-5 h-5 text-gray-300" />
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div>
                       <input ref={logoInputRef} onChange={(e)=>onSelectFile(e,'logo')} type="file" accept="image/*" className="hidden" />
-                      <button type="button" onClick={()=>logoInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border bg-white hover:bg-gray-50 text-sm"><Upload className="w-4 h-4"/> Upload</button>
+                      <button type="button" onClick={()=>logoInputRef.current?.click()} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-200"><Upload className="w-3.5 h-3.5"/> Upload</button>
                     </div>
                   </div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Background Image</label>
-                  <div className="flex items-center gap-3">
-                    <div className="w-full h-24 rounded-lg bg-gray-50 border flex items-center justify-center overflow-hidden">
+                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Background Image</label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-full h-24 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
                       {(heroPreview || form.heroImage) ? (
                         <img src={heroPreview || form.heroImage} alt="cover" className="w-full h-full object-cover" />
                       ) : (
-                        <ImageIcon className="w-6 h-6 text-gray-400" />
+                        <ImageIcon className="w-6 h-6 text-gray-300" />
                       )}
                     </div>
                     <div className="shrink-0">
                       <input ref={heroInputRef} onChange={(e)=>onSelectFile(e,'hero')} type="file" accept="image/*" className="hidden" />
-                      <button type="button" onClick={()=>heroInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border bg-white hover:bg-gray-50 text-sm"><Upload className="w-4 h-4"/> Upload</button>
+                      <button type="button" onClick={()=>heroInputRef.current?.click()} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-200"><Upload className="w-3.5 h-3.5"/> Upload</button>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="mt-1">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">About Clinic</label>
-                  <textarea value={form.aboutP1} name="aboutP1" onChange={onChange} rows={3} className="w-full px-3 py-2 border rounded-xl text-sm" placeholder="About the clinic" />
-                </div>
+
+              <div className="mt-5">
+                <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">About Clinic</label>
+                <textarea value={form.aboutP1} name="aboutP1" onChange={onChange} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="About the clinic" />
               </div>
 
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Accreditations</label>
-                <div className="flex flex-wrap gap-3">
+              <div className="mt-5">
+                <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Accreditations</label>
+                <div className="flex flex-wrap gap-2">
                   {['JCI Accredited','ISO 9001','Ministry of Health','Health Tourism'].map((lab)=> (
-                    <label key={lab} className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm cursor-pointer ${accreditations.includes(lab) ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white hover:bg-gray-50'}`}>
+                    <label key={lab} className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium cursor-pointer transition-all duration-200 ${accreditations.includes(lab) ? 'bg-teal-50 border-teal-200 text-teal-700 shadow-sm' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'}`}>
                       <input type="checkbox" className="hidden" checked={accreditations.includes(lab)} onChange={()=>toggleAcc(lab)} />
                       {lab}
                     </label>
@@ -311,7 +319,7 @@ export default function ClinicProfileEdit() {
                 {accreditations.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-2">
                     {accreditations.map((lab)=> (
-                      <span key={lab} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm bg-gray-50">{lab}</span>
+                      <span key={lab} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-gray-200/60 text-xs font-medium text-gray-600 bg-gray-50/80">{lab}</span>
                     ))}
                   </div>
                 )}
@@ -514,7 +522,7 @@ export default function ClinicProfileEdit() {
 
             {tab !== 'reviews' && (
               <div className="flex justify-end">
-                <button type="submit" disabled={saving} className="inline-flex items-center gap-2 bg-[#1C6A83] text-white px-5 py-2.5 rounded-xl hover:bg-[#0F4A5C] disabled:opacity-60">
+                <button type="submit" disabled={saving} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 disabled:opacity-60">
                   <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save'}
                 </button>
               </div>

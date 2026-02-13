@@ -4,7 +4,7 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
-import { User, Shield, Bell, Globe, ChevronRight, Eye, EyeOff, HeartPulse, X } from 'lucide-react';
+import { User, Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload } from 'lucide-react';
 import PatientNotify from '../components/notifications/PatientNotify';
 
 export default function Profile() {
@@ -29,8 +29,6 @@ export default function Profile() {
     try { return JSON.parse(localStorage.getItem('profile_prefs') || '{}'); } catch { return {}; }
   };
   const savePrefs = (obj) => localStorage.setItem('profile_prefs', JSON.stringify(obj || {}));
-  const prefs = useMemo(() => loadPrefs(), []);
-
   // Security
   const [oldPwd, setOldPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
@@ -40,13 +38,7 @@ export default function Profile() {
   const [showNewPwd, setShowNewPwd] = useState(false);
   const [showNewPwd2, setShowNewPwd2] = useState(false);
 
-  // Notifications
-  const [emailNoti, setEmailNoti] = useState(prefs.emailNoti ?? true);
-  const [pushNoti, setPushNoti] = useState(prefs.pushNoti ?? false);
-
-  // Privacy
-  const [profilePublic, setProfilePublic] = useState(prefs.profilePublic ?? true);
-  const [dataShare, setDataShare] = useState(prefs.dataShare ?? false);
+  // Notifications & Privacy prefs available via loadPrefs() when needed
 
   // Connections removed
 
@@ -166,72 +158,92 @@ export default function Profile() {
     alert('Güvenlik ayarları kaydedildi. (Demo)');
   };
 
-  const saveNotifications = (e) => {
-    e.preventDefault();
-    const next = { ...loadPrefs(), emailNoti, pushNoti };
-    savePrefs(next);
-    alert('Bildirim tercihleri kaydedildi. (Demo)');
-  };
-
-  const savePrivacy = (e) => {
-    e.preventDefault();
-    const next = { ...loadPrefs(), profilePublic, dataShare };
-    savePrefs(next);
-    alert('Gizlilik tercihleri kaydedildi. (Demo)');
-  };
 
   // Connections removed
 
-  const NavItem = ({ id, icon: Icon, title, desc }) => (
-    <button
-      type="button"
-      onClick={() => setActive(id)}
-      className={`w-full text-left p-3 rounded-lg border transition-colors flex items-start gap-3 ${active===id? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'}`}
-      aria-current={active===id}
-    >
-      <Icon className={`w-5 h-5 ${active===id? 'text-blue-600' : 'text-gray-500'}`} />
-      <span>
-        <span className="block text-sm font-medium text-gray-900">{title}</span>
-        <span className="block text-xs text-gray-500">{desc}</span>
-      </span>
-      <ChevronRight className="w-4 h-4 ml-auto text-gray-400" />
-    </button>
-  );
+  const NavItem = ({ id, icon: Icon, title, desc }) => {
+    const isActive = active === id;
+    return (
+      <button
+        type="button"
+        onClick={() => setActive(id)}
+        className={`w-full text-left px-3 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 ${
+          isActive
+            ? 'bg-gradient-to-r from-teal-50 to-emerald-50/60 text-teal-700 shadow-sm ring-1 ring-teal-100'
+            : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-900'
+        }`}
+        aria-current={isActive}
+      >
+        <span className={`flex items-center justify-center w-8 h-8 rounded-lg ${isActive ? 'bg-teal-100/80' : 'bg-gray-100/80'} transition-colors`}>
+          <Icon className={`w-4 h-4 ${isActive ? 'text-teal-600' : 'text-gray-500'}`} />
+        </span>
+        <span className="flex-1 min-w-0">
+          <span className={`block text-[13px] font-semibold ${isActive ? 'text-teal-800' : 'text-gray-900'}`}>{title}</span>
+          <span className="block text-[11px] text-gray-400 font-medium">{desc}</span>
+        </span>
+        <ChevronRight className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-teal-400' : 'text-gray-300'}`} />
+      </button>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto px-4 py-4">
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Settings</h1>
-          <p className="text-sm text-gray-600">Manage your account, security and preferences.</p>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/60 to-white">
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        {/* Page Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center shadow-md shadow-teal-200/50">
+            <Settings className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-gray-900">Settings</h1>
+            <p className="text-[11px] text-gray-400 font-medium">Manage your account, security and preferences.</p>
+          </div>
         </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[260px,1fr] gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[260px,1fr] gap-6">
         {/* Left nav */}
-        <aside className="space-y-2">
-          <NavItem id="account" icon={User} title="Account" desc="Profile, country and appearance" />
-          <NavItem id="security" icon={Shield} title="Security" desc="Password" />
-          <NavItem id="notifications" icon={Bell} title="Notifications" desc="Patient notifications" />
-          {user?.role === 'patient' && (
-            <NavItem id="medical" icon={HeartPulse} title="Medical History" desc="Diseases & meds" />
-          )}
-          {/* Connections removed */}
+        <aside>
+          <div className="sticky top-24 rounded-2xl border border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-lg shadow-gray-200/40 overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
+              <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Settings</div>
+            </div>
+            <div className="p-2 space-y-0.5">
+              <NavItem id="account" icon={User} title="Account" desc="Profile, country and appearance" />
+              <NavItem id="security" icon={Shield} title="Security" desc="Password" />
+              <NavItem id="notifications" icon={Bell} title="Notifications" desc="Patient notifications" />
+              {user?.role === 'patient' && (
+                <NavItem id="medical" icon={HeartPulse} title="Medical History" desc="Diseases & meds" />
+              )}
+            </div>
+          </div>
         </aside>
 
         {/* Right content */}
         <section className="space-y-8">
           {active === 'account' && (
-            <form onSubmit={saveAccount} className="space-y-6">
-              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                <h2 className="text-base font-semibold text-gray-900 mb-4">Profile</h2>
-                <div className="flex items-center gap-4">
-                  <img
-                    src={avatar || user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
-                    alt={user.name}
-                    className="w-16 h-16 rounded-full object-cover border"
-                  />
+            <form onSubmit={saveAccount} className="space-y-5">
+              <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
+                <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-teal-500 to-emerald-500" />
+                  Profile
+                </h2>
+                <div className="flex items-center gap-5">
+                  <div className="relative group">
+                    <img
+                      src={avatar || user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                      alt={user.name}
+                      className="w-16 h-16 rounded-xl object-cover ring-2 ring-white shadow-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute inset-0 rounded-xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    >
+                      <Camera className="w-5 h-5 text-white" />
+                    </button>
+                  </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Profile photo</label>
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Profile photo</label>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -250,32 +262,33 @@ export default function Profile() {
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="px-3 h-10 inline-flex items-center border border-gray-300 rounded-lg text-sm bg-white hover:bg-gray-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-200"
                       >
+                        <Upload className="w-3.5 h-3.5" />
                         Choose file
                       </button>
-                      <span className="text-sm text-gray-600 truncate max-w-[240px]">{avatarFileName || 'No file selected'}</span>
+                      <span className="text-xs text-gray-400 truncate max-w-[200px]">{avatarFileName || 'No file selected'}</span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Choose an image file to set your profile picture. (Stored locally for demo)</p>
+                    <p className="text-[11px] text-gray-400 mt-1.5">Choose an image file to set your profile picture.</p>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Name</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     maxLength={30}
-                    className="w-full border border-gray-300 rounded-lg px-3 text-sm h-10"
+                    className="w-full border border-gray-200 rounded-xl px-3 text-sm h-10 hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
                     placeholder="Your name"
                   />
-                  <p className="mt-1 text-xs text-gray-500">{Math.max(0, 30 - (name?.length || 0))} characters left</p>
+                  <p className="mt-1 text-[11px] text-gray-400">{Math.max(0, 30 - (name?.length || 0))} characters left</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Country</label>
                   <CountryCombobox
                     options={countriesEurope}
                     value={countryName}
@@ -293,29 +306,32 @@ export default function Profile() {
               </div>
 
               <div className="flex justify-end">
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save</button>
+                <button type="submit" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">Save</button>
               </div>
             </form>
           )}
 
           {active === 'security' && (
-            <form onSubmit={saveSecurity} className="space-y-6">
-              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                <h2 className="text-base font-semibold text-gray-900 mb-4">Password</h2>
+            <form onSubmit={saveSecurity} className="space-y-5">
+              <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
+                <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-purple-500 to-violet-500" />
+                  Password
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Current Password</label>
                     <div className="relative">
                       <input
                         type={showOldPwd ? 'text' : 'password'}
                         value={oldPwd}
                         onChange={(e)=>setOldPwd(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm"
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
                       />
                       <button
                         type="button"
                         onClick={()=>setShowOldPwd(s=>!s)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         aria-label={showOldPwd ? 'Hide password' : 'Show password'}
                       >
                         {showOldPwd ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -323,18 +339,18 @@ export default function Profile() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">New Password</label>
                     <div className="relative">
                       <input
                         type={showNewPwd ? 'text' : 'password'}
                         value={newPwd}
                         onChange={(e)=>setNewPwd(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm"
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
                       />
                       <button
                         type="button"
                         onClick={()=>setShowNewPwd(s=>!s)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         aria-label={showNewPwd ? 'Hide password' : 'Show password'}
                       >
                         {showNewPwd ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -342,18 +358,18 @@ export default function Profile() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Repeat New</label>
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Repeat New</label>
                     <div className="relative">
                       <input
                         type={showNewPwd2 ? 'text' : 'password'}
                         value={newPwd2}
                         onChange={(e)=>setNewPwd2(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm"
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
                       />
                       <button
                         type="button"
                         onClick={()=>setShowNewPwd2(s=>!s)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                         aria-label={showNewPwd2 ? 'Hide password' : 'Show password'}
                       >
                         {showNewPwd2 ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -363,15 +379,18 @@ export default function Profile() {
                 </div>
               </div>
               <div className="flex justify-end">
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save</button>
+                <button type="submit" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">Save</button>
               </div>
             </form>
           )}
 
           {active === 'notifications' && (
             <div className="space-y-4">
-              <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                <h2 className="text-base font-semibold text-gray-900 mb-4">Patient Notifications</h2>
+              <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
+                <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-amber-500 to-orange-500" />
+                  Patient Notifications
+                </h2>
                 <PatientNotify />
               </div>
             </div>
@@ -380,8 +399,11 @@ export default function Profile() {
           
 
           {active === 'medical' && user?.role === 'patient' && (
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-900 mb-4">Medical History</h2>
+            <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
+              <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-rose-500 to-pink-500" />
+                Medical History
+              </h2>
               <p className="text-sm text-gray-600 mb-3">Current Medical Conditions (e.g., Hypertension, Diabetes, Asthma)</p>
               
               {/* Inline tags + input wrapper */}
@@ -456,7 +478,7 @@ export default function Profile() {
               <p className="text-xs text-gray-500 mt-1.5">Press <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">Enter</kbd> or <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">,</kbd> to add</p>
               
               <div className="flex justify-end mt-4">
-                <button onClick={saveMedical} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save</button>
+                <button onClick={saveMedical} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">Save</button>
               </div>
             </div>
           )}

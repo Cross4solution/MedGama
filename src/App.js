@@ -1,36 +1,44 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
 import SidebarPatient from './components/SidebarPatient';
 import { useAuth } from './context/AuthContext';
-import HomeV2 from './pages/HomeV2';
-import ClinicDetailPage from './pages/ClinicDetailPage';
-import DoctorChatPage from './pages/DoctorChatPage';
-import TelehealthAppointmentPage from './pages/TelehealthAppointmentPage';
-import TelehealthPage from './pages/TelehealthPage';
-import TermsOfServicePage from './pages/TermsOfServicePage';
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import AuthPages from './pages/AuthPages';
-import AboutPage from './pages/AboutPage';
-import ForPatientsPage from './pages/ForPatientsPage';
-import ForClinicsPage from './pages/ForClinicsPage';
-import VascoAIPage from './pages/VascoAIPage';
-import ContactPage from './pages/ContactPage';
 import CookieBanner from './components/CookieBanner';
 import { Footer, Header } from './components/layout';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
-import DoctorLogin from './pages/DoctorLogin';
-import ClinicLogin from './pages/ClinicLogin';
-import Notifications from './pages/Notifications';
-// (PatientLayout removed)
-import Profile from './pages/Profile';
-import ExploreTimeline from './pages/ExploreTimeline';
-import PostDetail from './pages/PostDetail';
-import DoctorProfilePage from './pages/DoctorProfile.jsx';
-import ClinicProfileEdit from './pages/ClinicProfileEdit.jsx';
-import DoctorsDepartments from './pages/DoctorsDepartments.jsx';
 import scrollConfig from './config/scroll';
 import ScrollToTopButton from './components/common/ScrollToTopButton';
+
+// Lazy-loaded pages for code splitting
+const HomeV2 = React.lazy(() => import('./pages/HomeV2'));
+const ExploreTimeline = React.lazy(() => import('./pages/ExploreTimeline'));
+const ClinicDetailPage = React.lazy(() => import('./pages/ClinicDetailPage'));
+const DoctorChatPage = React.lazy(() => import('./pages/DoctorChatPage'));
+const TelehealthAppointmentPage = React.lazy(() => import('./pages/TelehealthAppointmentPage'));
+const TelehealthPage = React.lazy(() => import('./pages/TelehealthPage'));
+const TermsOfServicePage = React.lazy(() => import('./pages/TermsOfServicePage'));
+const PrivacyPolicyPage = React.lazy(() => import('./pages/PrivacyPolicyPage'));
+const AuthPages = React.lazy(() => import('./pages/AuthPages'));
+const AboutPage = React.lazy(() => import('./pages/AboutPage'));
+const ForPatientsPage = React.lazy(() => import('./pages/ForPatientsPage'));
+const ForClinicsPage = React.lazy(() => import('./pages/ForClinicsPage'));
+const VascoAIPage = React.lazy(() => import('./pages/VascoAIPage'));
+const ContactPage = React.lazy(() => import('./pages/ContactPage'));
+const DoctorLogin = React.lazy(() => import('./pages/DoctorLogin'));
+const ClinicLogin = React.lazy(() => import('./pages/ClinicLogin'));
+const Notifications = React.lazy(() => import('./pages/Notifications'));
+const Profile = React.lazy(() => import('./pages/Profile'));
+const PostDetail = React.lazy(() => import('./pages/PostDetail'));
+const DoctorProfilePage = React.lazy(() => import('./pages/DoctorProfile.jsx'));
+const ClinicProfileEdit = React.lazy(() => import('./pages/ClinicProfileEdit.jsx'));
+const DoctorsDepartments = React.lazy(() => import('./pages/DoctorsDepartments.jsx'));
+
+// Minimal loading fallback
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="w-8 h-8 border-3 border-teal-200 border-t-teal-600 rounded-full animate-spin" />
+  </div>
+);
 
 function AppContent() {
   const location = useLocation();
@@ -144,6 +152,7 @@ function AppContent() {
       
       {/* Main content with proper spacing for header (no extra padding on doctor chat) */}
       <div className={showHeader ? (isDoctorChat ? "" : (hasOwnContainer ? "pt-20" : "pt-16")) : ""}>
+        <Suspense fallback={<PageLoader />}>
         <Routes>
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />
@@ -174,6 +183,7 @@ function AppContent() {
         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
         <Route path="/post/:id" element={<PostDetail />} />
         </Routes>
+        </Suspense>
       </div>
       
       {showFooter && <Footer />}
