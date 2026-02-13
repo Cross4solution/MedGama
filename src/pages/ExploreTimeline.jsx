@@ -400,7 +400,7 @@ export default function ExploreTimeline() {
                 <div className="rounded-2xl border bg-white relative overflow-visible">
                   <div className="px-4 py-3 text-sm text-gray-600 border-b">Add to your post</div>
                   <div className="p-3">
-                    <div className="grid grid-cols-4 gap-2 sm:gap-3">
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
                       <button onClick={()=>imageInputRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add photo">
                         <span className="w-6 h-6 grid place-items-center rounded bg-emerald-50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-image w-4 h-4 text-emerald-600" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg></span>
                         <span className="text-sm">Photo</span>
