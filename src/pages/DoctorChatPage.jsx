@@ -6,11 +6,11 @@ import ChatInput from 'components/chat/ChatInput';
 
 const DoctorChatPage = () => {
   const [message, setMessage] = useState('');
-  const [channelFilter, setChannelFilter] = useState('TÃ¼mÃ¼');
+  const [channelFilter, setChannelFilter] = useState('All');
   const [mobileChatOpen, setMobileChatOpen] = useState(false); // mobile: list -> chat
   const [mobileCurrentPage, setMobileCurrentPage] = useState(1);
   const threadsPerPage = 8;
-  // Thread list (mock) - daha fazla thread pagination test iÃ§in
+  // Thread list (mock)
   const threads = useMemo(() => {
     const baseThreads = [
       { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Friday would be more convenient for me...', when: '15min', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Urgent'] },
@@ -20,9 +20,9 @@ const DoctorChatPage = () => {
       { id: 'mehmet', name: 'Mehmet Özkan', channel: 'WhatsApp', online: false, last: 'I can call to help you.', when: '3 day', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15min', 'Information'] },
     ];
 
-    // Daha fazla thread ekle (pagination test iÃ§in)
+    // Additional threads for pagination
     const additionalThreads = [];
-    const names = ['Ahmet Yılmaz', 'Fatma Kaya', 'Mustafa Demir', 'Elif Özkan', 'Can Şahin', 'Zeynep Arslan', 'Burak Aletik', 'Seda Yıldız', 'Emre Korkmaz', 'Gülay Aydın', 'Hakan Yormaz', 'Pınar Yaşar', 'Serkan DoÄŸan', 'Merve Koç', 'Tolga At', 'Deniz Soluk', 'Cem Demir', 'Sibel Kaya', 'Oğuz Demir', 'Nur Rızkan'];
+    const names = ['Ahmet Yilmaz', 'Fatma Kaya', 'Mustafa Demir', 'Elif Ozkan', 'Can Sahin', 'Zeynep Arslan', 'Burak Aletik', 'Seda Yildiz', 'Emre Korkmaz', 'Gulay Aydin', 'Hakan Yormaz', 'Pinar Yasar', 'Serkan Dogan', 'Merve Koc', 'Tolga At', 'Deniz Soluk', 'Cem Demir', 'Sibel Kaya', 'Oguz Demir', 'Nur Rizkan'];
     const channels = ['WhatsApp', 'Facebook', 'Web Form', 'Chat', 'Instagram'];
     const lastMessages = [
       'Hello, how are you?',
@@ -51,7 +51,7 @@ const DoctorChatPage = () => {
         channel: channels[i % channels.length],
         online: Math.random() > 0.5,
         last: lastMessages[i % lastMessages.length],
-        when: `${i + 1} gÃ¼n`,
+        when: `${i + 1} day`,
         avatar: i % 2 === 0 ? '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg' : '/images/portrait-candid-male-doctor_720.jpg',
         tags: tags[i % tags.length]
       });
@@ -81,7 +81,7 @@ const DoctorChatPage = () => {
 
   // Apply channel filter to thread list
   const filteredThreads = useMemo(() => {
-    return threads.filter(t => (channelFilter === 'TÃ¼mÃ¼' ? true : t.channel === channelFilter));
+    return threads.filter(t => (channelFilter === 'All' ? true : t.channel === channelFilter));
   }, [threads, channelFilter]);
 
   // Mobile pagination logic
@@ -156,7 +156,7 @@ const DoctorChatPage = () => {
           {!mobileChatOpen ? (
             <div>
               <div className="mb-2">
-                <label className="block text-xs text-gray-500 mb-1">Kanal</label>
+                <label className="block text-xs text-gray-500 mb-1">Channel</label>
                 <select
                   value={channelFilter}
                   onChange={(e)=>handleChannelChange(e.target.value)}
@@ -208,7 +208,7 @@ const DoctorChatPage = () => {
                       onClick={() => handleMobilePageChange(mobileCurrentPage - 1)}
                       className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      â€¹
+                      ‹
                     </button>
                     {Array.from({ length: mobileTotalPages }, (_, i) => i + 1).map((page) => (
                       <button
@@ -228,7 +228,7 @@ const DoctorChatPage = () => {
                       onClick={() => handleMobilePageChange(mobileCurrentPage + 1)}
                       className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      â€º
+                      ›
                     </button>
                   </div>
                 </div>

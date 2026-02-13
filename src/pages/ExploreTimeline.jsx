@@ -368,26 +368,26 @@ export default function ExploreTimeline() {
                       </button>
                     </div>
                     <div className="border-t border-gray-100 mt-4 pt-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>imageInputRef.current?.click(),0); }} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-emerald-600 py-2 px-3 rounded-lg hover:bg-emerald-50/60 transition-all duration-200" type="button">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-0.5 sm:gap-1 flex-1 min-w-0 overflow-x-auto">
+                          <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>imageInputRef.current?.click(),0); }} className="inline-flex items-center gap-1 sm:gap-1.5 text-gray-600 hover:text-emerald-600 py-2 px-2 sm:px-3 rounded-lg hover:bg-emerald-50/60 transition-all duration-200 flex-shrink-0" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-emerald-500" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
-                            <span className="text-sm font-medium">Photo</span>
+                            <span className="text-sm font-medium hidden sm:inline">Photo</span>
                           </button>
-                          <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>videoInputRef.current?.click(),0); }} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-sky-600 py-2 px-3 rounded-lg hover:bg-sky-50/60 transition-all duration-200" type="button">
+                          <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>videoInputRef.current?.click(),0); }} className="inline-flex items-center gap-1 sm:gap-1.5 text-gray-600 hover:text-sky-600 py-2 px-2 sm:px-3 rounded-lg hover:bg-sky-50/60 transition-all duration-200 flex-shrink-0" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-sky-500" aria-hidden="true"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
-                            <span className="text-sm font-medium">Video</span>
+                            <span className="text-sm font-medium hidden sm:inline">Video</span>
                           </button>
-                          <button onClick={()=>{ setIsComposerOpen(true); setShowEmojiModal(true); }} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-amber-600 py-2 px-3 rounded-lg hover:bg-amber-50/60 transition-all duration-200" type="button" aria-label="Add emoji">
+                          <button onClick={()=>{ setIsComposerOpen(true); setShowEmojiModal(true); }} className="inline-flex items-center gap-1 sm:gap-1.5 text-gray-600 hover:text-amber-600 py-2 px-2 sm:px-3 rounded-lg hover:bg-amber-50/60 transition-all duration-200 flex-shrink-0" type="button" aria-label="Add emoji">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-amber-500" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
-                            <span className="text-sm font-medium">Emoji</span>
+                            <span className="text-sm font-medium hidden sm:inline">Emoji</span>
                           </button>
-                          <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>paperInputRef.current?.click(),0); }} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-indigo-600 py-2 px-3 rounded-lg hover:bg-indigo-50/60 transition-all duration-200" type="button">
+                          <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>paperInputRef.current?.click(),0); }} className="inline-flex items-center gap-1 sm:gap-1.5 text-gray-600 hover:text-indigo-600 py-2 px-2 sm:px-3 rounded-lg hover:bg-indigo-50/60 transition-all duration-200 flex-shrink-0" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-indigo-500" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg>
                             <span className="text-sm font-medium hidden sm:inline">Research</span>
                           </button>
                         </div>
-                        <button type="button" onClick={()=>setIsComposerOpen(true)} className="px-5 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200">Post</button>
+                        <button type="button" onClick={()=>setIsComposerOpen(true)} className="px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200 flex-shrink-0">Post</button>
                       </div>
                     </div>
                   </div>
