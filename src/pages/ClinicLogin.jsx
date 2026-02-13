@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Building2, Users, Calendar, Video, Shield, Lock, Eye, EyeOff } from 'lucide-react';
 
 const ClinicLogin = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+
+  // If user is already logged in (doctor/clinic), skip login form
+  useEffect(() => {
+    if (user) {
+      if (user.role !== 'clinic') {
+        // Switch role to clinic (e.g. doctor → clinic)
+        login({ ...user, id: user.id || 'clinic-1', role: 'clinic', name: user.name || 'Clinic' });
+      }
+      navigate('/clinic-edit', { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

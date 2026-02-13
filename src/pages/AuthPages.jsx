@@ -34,6 +34,8 @@ const AuthPages = () => {
     city: '',
     medicalHistory: '',
     acceptTerms: false,
+    acceptPrivacy: false,
+    acceptHealthData: false,
     receiveUpdates: false
   });
   const [errors, setErrors] = useState({});
@@ -78,6 +80,7 @@ const AuthPages = () => {
       if (!formData.confirmPassword) newErrors.confirmPassword = 'Confirm password is required';
       if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
       if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the Terms of Use';
+      if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'You must accept the Privacy Policy to proceed';
     }
 
     setErrors(newErrors);
@@ -199,7 +202,7 @@ const AuthPages = () => {
             <div className="w-full px-2 mt-4 mb-4">
               <div className="flex items-center gap-6 justify-center text-white/70 text-xs">
                 <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> SSL Secure</span>
-                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5" /> HIPAA Compliant</span>
+                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5" /> GDPR Compliant</span>
               </div>
             </div>
           </div>
@@ -219,7 +222,7 @@ const AuthPages = () => {
                 <div className="space-y-5">
                   {[
                     { icon: CheckCircle, text: 'Expert medical team with verified credentials' },
-                    { icon: Shield, text: 'Secure, encrypted & HIPAA-compliant' },
+                    { icon: Shield, text: 'Secure, encrypted & GDPR-compliant' },
                     { icon: Heart, text: '24/7 patient support & telehealth' },
                   ].map((f, i) => (
                     <div key={i} className="flex items-center gap-4">
@@ -249,7 +252,7 @@ const AuthPages = () => {
                   </div>
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 text-white/80 border border-white/10">
                     <CheckCircle className="w-3.5 h-3.5" />
-                    <span className="text-xs font-medium">HIPAA Compliant</span>
+                    <span className="text-xs font-medium">GDPR Compliant</span>
                   </div>
                 </div>
               </div>

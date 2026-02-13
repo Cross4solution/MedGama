@@ -1,45 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import CookieInfoPopup from './CookieInfoPopup';
+import { useCookieConsent } from '../context/CookieConsentContext';
+import { Shield, Settings, Check, X, ChevronDown, ChevronUp, Cookie, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-const STORAGE_KEY = 'cookie_consent_status'; // 'accepted' | 'declined'
+const COOKIE_CATEGORIES = [
+  {
+    key: 'necessary',
+    label: 'Strictly Necessary',
+    description: 'Essential for the website to function. These cookies enable core features like security, session management, and accessibility. They cannot be disabled.',
+    locked: true,
+  },
+  {
+    key: 'functional',
+    label: 'Functional',
+    description: 'Enable personalized features such as remembering your preferences, language settings, and region. Disabling these may affect your user experience.',
+  },
+  {
+    key: 'analytics',
+    label: 'Analytics & Performance',
+    description: 'Help us understand how visitors interact with our website by collecting anonymous usage data. This information is used to improve our services.',
+  },
+  {
+    key: 'marketing',
+    label: 'Marketing & Advertising',
+    description: 'Used to deliver relevant advertisements and measure the effectiveness of marketing campaigns. These may be set by third-party partners.',
+  },
+];
 
 const CookieBanner = () => {
-  const [showBanner, setShowBanner] = useState(false);
-  const [showCookieInfoPopup, setShowCookieInfoPopup] = useState(false);
+  const {
+    showBanner,
+    showSettings,
+    consent,
+    acceptAll,
+    declineAll,
+    acceptSelected,
+    openSettings,
+    closeSettings,
+  } = useCookieConsent();
 
+  const [localConsent, setLocalConsent] = useState({ ...consent });
+  const [expandedCategory, setExpandedCategory] = useState(null);
+
+  // Sync local state when consent changes
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) {
-        setShowBanner(true);
-      }
-    } catch (e) {
-      // localStorage erişilemezse (örn. private mode), banner bir kez gösterilsin
-      setShowBanner(true);
-    }
-  }, []);
+    setLocalConsent({ ...consent });
+  }, [consent]);
 
+  // Lock body scroll when banner is visible
   useEffect(() => {
     if (showBanner) {
-      // Add styles to hide scrollbar while keeping scroll functionality
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-      
-      // Store original styles
       const originalStyles = {
         bodyOverflow: document.body.style.overflow,
         bodyPaddingRight: document.body.style.paddingRight,
-        htmlOverflow: document.documentElement.style.overflow
+        htmlOverflow: document.documentElement.style.overflow,
       };
-      
-      // Apply styles to hide scrollbar
       document.body.style.overflow = 'hidden';
       document.body.style.paddingRight = `${scrollbarWidth}px`;
       document.documentElement.style.overflow = 'hidden';
-      
-      // Create and append style tag for WebKit browsers (Chrome, Safari, etc.)
+
       const styleId = 'cookie-banner-scroll-style';
       let style = document.getElementById(styleId);
-      
       if (!style) {
         style = document.createElement('style');
         style.id = styleId;
@@ -55,74 +77,213 @@ const CookieBanner = () => {
         `;
         document.head.appendChild(style);
       }
-      
+
       return () => {
-        // Restore original styles
         document.body.style.overflow = originalStyles.bodyOverflow;
         document.body.style.paddingRight = originalStyles.bodyPaddingRight;
         document.documentElement.style.overflow = originalStyles.htmlOverflow;
-        
-        // Remove style element
         const styleElement = document.getElementById(styleId);
-        if (styleElement) {
-          styleElement.remove();
-        }
+        if (styleElement) styleElement.remove();
       };
     }
   }, [showBanner]);
 
-  const persist = (value) => {
-    try { localStorage.setItem(STORAGE_KEY, value); } catch (e) { /* ignore */ }
+  const handleToggle = (key) => {
+    if (key === 'necessary') return;
+    setLocalConsent((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleAccept = () => {
-    persist('accepted');
-    setShowBanner(false);
+  const handleSavePreferences = () => {
+    acceptSelected(localConsent);
   };
 
-  const handleDeny = () => {
-    setShowBanner(false);
-  };
+  if (!showBanner && !showSettings) return null;
 
-  if (!showBanner) return null;
-
-  return (
-    <>
-      <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-70 backdrop-blur-sm border-t border-gray-600 shadow-lg z-50 p-2 md:p-3">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
-          <div className="flex-1">
-            <p className="text-sm text-white leading-relaxed">
-              We use cookies to enhance your experience on our website.
-              <span 
-                className="text-blue-300 hover:text-blue-200 cursor-pointer font-medium ml-1"
-                onClick={() => setShowCookieInfoPopup(true)}
+  // Settings panel (detailed cookie preferences)
+  if (showSettings) {
+    return (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+        <div className="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl">
+          {/* Header */}
+          <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 rounded-t-2xl z-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center">
+                  <Settings className="w-4.5 h-4.5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-gray-900">Cookie Preferences</h2>
+                  <p className="text-[11px] text-gray-400">Manage your cookie settings</p>
+                </div>
+              </div>
+              <button
+                onClick={closeSettings}
+                className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
               >
-                Learn more
-              </span>
-              . By continuing, you consent to the use of cookies.
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="px-6 py-4 bg-blue-50/50 border-b border-blue-100/50">
+            <p className="text-sm text-gray-600 leading-relaxed">
+              We use cookies and similar technologies to provide you with the best experience. 
+              Under the <strong>GDPR</strong>, you have the right to choose which cookie categories you allow. 
+              Necessary cookies are always active as they are essential for the site to function.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+          {/* Categories */}
+          <div className="px-6 py-4 space-y-3">
+            {COOKIE_CATEGORIES.map((cat) => {
+              const isExpanded = expandedCategory === cat.key;
+              const isEnabled = cat.locked ? true : localConsent[cat.key];
+              return (
+                <div key={cat.key} className="border border-gray-200 rounded-xl overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 bg-gray-50/50">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedCategory(isExpanded ? null : cat.key)}
+                      className="flex items-center gap-2 text-left flex-1 min-w-0"
+                    >
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      )}
+                      <span className="text-sm font-semibold text-gray-800">{cat.label}</span>
+                      {cat.locked && (
+                        <span className="text-[10px] font-medium text-teal-700 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded-full">
+                          Always Active
+                        </span>
+                      )}
+                    </button>
+                    {/* Toggle */}
+                    <button
+                      type="button"
+                      onClick={() => handleToggle(cat.key)}
+                      disabled={cat.locked}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 ${
+                        cat.locked
+                          ? 'bg-teal-500 cursor-not-allowed opacity-70'
+                          : isEnabled
+                          ? 'bg-teal-500 cursor-pointer'
+                          : 'bg-gray-300 cursor-pointer'
+                      }`}
+                      role="switch"
+                      aria-checked={isEnabled}
+                      aria-label={`Toggle ${cat.label} cookies`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                          isEnabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  {isExpanded && (
+                    <div className="px-4 py-3 border-t border-gray-100 bg-white">
+                      <p className="text-xs text-gray-500 leading-relaxed">{cat.description}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Links */}
+          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50/30">
+            <div className="flex items-center gap-4 text-xs text-gray-400">
+              <Link to="/cookie-policy" onClick={closeSettings} className="hover:text-teal-600 transition-colors inline-flex items-center gap-1">
+                Cookie Policy <ExternalLink className="w-3 h-3" />
+              </Link>
+              <Link to="/privacy-policy" onClick={closeSettings} className="hover:text-teal-600 transition-colors inline-flex items-center gap-1">
+                Privacy Policy <ExternalLink className="w-3 h-3" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 rounded-b-2xl flex flex-col sm:flex-row gap-2">
             <button
-              onClick={handleDeny}
-              className="px-4 py-1.5 border border-gray-400 text-white bg-transparent rounded-lg hover:bg-gray-700 transition-all duration-200 font-medium text-sm shadow-sm"
+              onClick={declineAll}
+              className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all text-sm font-medium"
             >
-              Decline
+              Reject All
             </button>
             <button
-              onClick={handleAccept}
-              className="px-4 py-1.5 bg-[#1C6A83] text-white rounded-lg hover:brightness-95 transition-all duration-200 font-medium text-sm shadow-sm"
+              onClick={handleSavePreferences}
+              className="flex-1 px-4 py-2.5 border border-teal-300 text-teal-700 bg-teal-50 rounded-xl hover:bg-teal-100 transition-all text-sm font-medium"
             >
-              Accept
+              Save Preferences
+            </button>
+            <button
+              onClick={acceptAll}
+              className="flex-1 px-4 py-2.5 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all text-sm font-semibold shadow-sm"
+            >
+              Accept All
             </button>
           </div>
         </div>
       </div>
-      {showCookieInfoPopup && (
-        <CookieInfoPopup setShowCookieInfoPopup={setShowCookieInfoPopup} />
-      )}
-    </>
+    );
+  }
+
+  // Main banner
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-50">
+      {/* Backdrop overlay */}
+      <div className="absolute inset-0 -top-screen" />
+      <div className="bg-gray-900/95 backdrop-blur-md border-t border-gray-700/50 shadow-2xl">
+        <div className="max-w-6xl mx-auto px-4 py-4 md:py-5">
+          {/* Top row: icon + text */}
+          <div className="flex items-start gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-teal-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <Shield className="w-5 h-5 text-teal-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-white font-semibold text-sm mb-1">Your Privacy Matters</h3>
+              <p className="text-sm text-gray-300 leading-relaxed">
+                We use cookies and similar technologies to provide essential functionality, analyze site usage, and deliver personalized content. 
+                Under the <strong className="text-white">GDPR</strong>, you have the right to control how your data is used.{' '}
+                <Link to="/cookie-policy" className="text-teal-400 hover:text-teal-300 font-medium underline underline-offset-2">
+                  Cookie Policy
+                </Link>{' · '}
+                <Link to="/privacy-policy" className="text-teal-400 hover:text-teal-300 font-medium underline underline-offset-2">
+                  Privacy Policy
+                </Link>
+              </p>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-end">
+            <button
+              onClick={openSettings}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-500 text-gray-300 rounded-xl hover:bg-gray-800 hover:text-white transition-all text-sm font-medium order-3 sm:order-1"
+            >
+              <Settings className="w-4 h-4" />
+              Customize
+            </button>
+            <button
+              onClick={declineAll}
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-gray-500 text-gray-300 rounded-xl hover:bg-gray-800 hover:text-white transition-all text-sm font-medium order-2"
+            >
+              <X className="w-4 h-4" />
+              Reject All
+            </button>
+            <button
+              onClick={acceptAll}
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all text-sm font-semibold shadow-lg shadow-teal-900/30 order-1 sm:order-3"
+            >
+              <Check className="w-4 h-4" />
+              Accept All
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

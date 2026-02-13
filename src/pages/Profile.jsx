@@ -4,11 +4,14 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
-import { User, Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload } from 'lucide-react';
+import { User, Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink } from 'lucide-react';
+import { useCookieConsent } from '../context/CookieConsentContext';
+import { Link } from 'react-router-dom';
 import PatientNotify from '../components/notifications/PatientNotify';
 
 export default function Profile() {
-  const { user, country, login } = useAuth();
+  const { user, country, login, logout } = useAuth();
+  const { openSettings: openCookieSettings, consent, consentTimestamp, resetConsent } = useCookieConsent();
   const [active, setActive] = useState('account');
 
   // Account state
@@ -214,6 +217,7 @@ export default function Profile() {
               {user?.role === 'patient' && (
                 <NavItem id="medical" icon={HeartPulse} title="Medical History" desc="Diseases & meds" />
               )}
+              <NavItem id="privacy" icon={Cookie} title="Privacy & Data" desc="GDPR rights & cookies" />
             </div>
           </div>
         </aside>
@@ -479,6 +483,135 @@ export default function Profile() {
               
               <div className="flex justify-end mt-4">
                 <button onClick={saveMedical} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">Save</button>
+              </div>
+            </div>
+          )}
+
+          {active === 'privacy' && (
+            <div className="space-y-5">
+              {/* Cookie Consent Management */}
+              <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
+                <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-teal-500 to-emerald-500" />
+                  Cookie Preferences
+                </h2>
+                <p className="text-xs text-gray-500 mb-3">Manage which cookies you allow. Necessary cookies are always active.</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                  {[
+                    { key: 'necessary', label: 'Necessary', always: true },
+                    { key: 'functional', label: 'Functional' },
+                    { key: 'analytics', label: 'Analytics' },
+                    { key: 'marketing', label: 'Marketing' },
+                  ].map((cat) => (
+                    <div key={cat.key} className="flex items-center gap-2 text-xs">
+                      <span className={`w-2 h-2 rounded-full ${cat.always || consent[cat.key] ? 'bg-green-500' : 'bg-gray-300'}`} />
+                      <span className="text-gray-700">{cat.label}</span>
+                      <span className={`text-[10px] font-medium ${cat.always || consent[cat.key] ? 'text-green-600' : 'text-gray-400'}`}>
+                        {cat.always ? 'Always' : consent[cat.key] ? 'On' : 'Off'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {consentTimestamp && (
+                  <p className="text-[10px] text-gray-400 mb-3">Last updated: {new Date(consentTimestamp).toLocaleString()}</p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={openCookieSettings} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-all">
+                    <Settings className="w-3.5 h-3.5" /> Manage Cookies
+                  </button>
+                  <button onClick={resetConsent} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all">
+                    Reset Preferences
+                  </button>
+                </div>
+              </div>
+
+              {/* Data Export */}
+              <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
+                <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-blue-500 to-indigo-500" />
+                  Your Data (GDPR Art. 20)
+                </h2>
+                <p className="text-xs text-gray-500 mb-3">Download a copy of all your personal data in machine-readable JSON format.</p>
+                <button
+                  onClick={() => {
+                    const exportData = {
+                      exportDate: new Date().toISOString(),
+                      gdprExport: true,
+                      userData: { name: user?.name, email: user?.email, role: user?.role, id: user?.id },
+                      cookieConsent: consent,
+                      consentTimestamp,
+                    };
+                    try {
+                      const prefs = localStorage.getItem('profile_prefs');
+                      if (prefs) exportData.preferences = JSON.parse(prefs);
+                      if (user?.email) {
+                        const med = localStorage.getItem(`patient_profile_extra_${user.email}`);
+                        if (med) exportData.medicalData = JSON.parse(med);
+                      }
+                    } catch {}
+                    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `medgama-data-${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all"
+                >
+                  <Download className="w-3.5 h-3.5" /> Download My Data
+                </button>
+              </div>
+
+              {/* More Rights */}
+              <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
+                <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-purple-500 to-violet-500" />
+                  Privacy Rights
+                </h2>
+                <p className="text-xs text-gray-500 mb-3">Under the GDPR, you have the right to access, rectify, delete, restrict, and port your data.</p>
+                <div className="flex flex-wrap gap-2">
+                  <Link to="/data-rights" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 transition-all">
+                    <Shield className="w-3.5 h-3.5" /> All Privacy Rights <ExternalLink className="w-3 h-3" />
+                  </Link>
+                  <Link to="/privacy-policy" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all">
+                    Privacy Policy <ExternalLink className="w-3 h-3" />
+                  </Link>
+                  <Link to="/cookie-policy" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all">
+                    Cookie Policy <ExternalLink className="w-3 h-3" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Delete Account */}
+              <div className="rounded-2xl border border-rose-200/60 bg-rose-50/30 p-5 shadow-sm">
+                <h2 className="text-sm font-bold text-rose-900 mb-2 flex items-center gap-2">
+                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-rose-500 to-red-500" />
+                  Delete Account & Data
+                </h2>
+                <p className="text-xs text-rose-700/70 mb-3">Permanently delete your account and all associated data. This action cannot be undone. Server-side data will be deleted within 30 days per GDPR Art. 17.</p>
+                <button
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete your account and all data? This action cannot be undone.')) {
+                      try {
+                        const keysToRemove = [];
+                        for (let i = 0; i < localStorage.length; i++) {
+                          const key = localStorage.key(i);
+                          if (key && key !== 'cookie_consent') keysToRemove.push(key);
+                        }
+                        keysToRemove.forEach((k) => localStorage.removeItem(k));
+                        sessionStorage.clear();
+                      } catch {}
+                      logout({ skipConfirmation: true });
+                      window.location.href = '/';
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-rose-300 bg-rose-100 text-rose-700 hover:bg-rose-200 transition-all"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Delete My Account
+                </button>
               </div>
             </div>
           )}

@@ -329,7 +329,8 @@ const RegisterForm = ({
           )}
         </div>
 
-        <div className="w-full max-w-md mt-3 pt-3 border-t border-gray-100 space-y-2">
+        <div className="w-full max-w-md mt-3 pt-3 border-t border-gray-100 space-y-2.5">
+          {/* Terms of Use — required */}
           <label className="flex items-start gap-3 cursor-pointer group">
             <input
               type="checkbox"
@@ -347,7 +348,23 @@ const RegisterForm = ({
                 className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
               >
                 Terms of Use
-              </button>{' '}and{' '}
+              </button>
+            </span>
+          </label>
+          {errors.acceptTerms && <p className="text-red-500 text-xs ml-7 text-left">{errors.acceptTerms}</p>}
+
+          {/* Privacy Policy — required (GDPR Art. 7) */}
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              name="acceptPrivacy"
+              checked={!!fd.acceptPrivacy}
+              onChange={handleInputChange}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5 flex-shrink-0"
+            />
+            <span className="text-sm text-gray-600 text-left leading-relaxed">
+              <span className="text-red-500">*</span>{' '}
+              I have read and consent to the processing of my personal data as described in the{' '}
               <button
                 type="button"
                 onClick={() => setShowPrivacyPopup(true)}
@@ -357,7 +374,27 @@ const RegisterForm = ({
               </button>
             </span>
           </label>
-          {errors.acceptTerms && <p className="text-red-500 text-xs ml-7 text-left">{errors.acceptTerms}</p>}
+          {errors.acceptPrivacy && <p className="text-red-500 text-xs ml-7 text-left">{errors.acceptPrivacy}</p>}
+
+          {/* Health Data Consent — optional, for patients (GDPR Art. 9) */}
+          {(fd.role ?? 'patient') === 'patient' && (
+            <>
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  name="acceptHealthData"
+                  checked={!!fd.acceptHealthData}
+                  onChange={handleInputChange}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5 flex-shrink-0"
+                />
+                <span className="text-sm text-gray-500 text-left leading-relaxed">
+                  I explicitly consent to the processing of my health data (medical history, conditions, allergies) for care coordination purposes. <span className="text-gray-400 text-xs">(Optional — GDPR Art. 9)</span>
+                </span>
+              </label>
+            </>
+          )}
+
+          {/* Marketing opt-in — optional, unbundled (GDPR Art. 7) */}
           <label className="flex items-start gap-3 cursor-pointer group">
             <input
               type="checkbox"
@@ -367,7 +404,7 @@ const RegisterForm = ({
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5 flex-shrink-0"
             />
             <span className="text-sm text-gray-500 text-left leading-relaxed">
-              I would like to receive emails about health tips, new services, and special offers.
+              I would like to receive emails about health tips, new services, and special offers. <span className="text-gray-400 text-xs">(Optional — you can unsubscribe at any time)</span>
             </span>
           </label>
         </div>

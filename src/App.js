@@ -6,6 +6,7 @@ import CookieBanner from './components/CookieBanner';
 import { Footer, Header } from './components/layout';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { CookieConsentProvider } from './context/CookieConsentContext';
 import scrollConfig from './config/scroll';
 import ScrollToTopButton from './components/common/ScrollToTopButton';
 
@@ -32,6 +33,8 @@ const PostDetail = React.lazy(() => import('./pages/PostDetail'));
 const DoctorProfilePage = React.lazy(() => import('./pages/DoctorProfile.jsx'));
 const ClinicProfileEdit = React.lazy(() => import('./pages/ClinicProfileEdit.jsx'));
 const DoctorsDepartments = React.lazy(() => import('./pages/DoctorsDepartments.jsx'));
+const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage'));
+const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRightsPage'));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -167,6 +170,8 @@ function AppContent() {
         <Route path="/telehealth-appointment" element={<TelehealthAppointmentPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+        <Route path="/data-rights" element={<DataPrivacyRightsPage />} />
         <Route path="/auth" element={<AuthPages />} />
         <Route path="/login" element={<AuthPages />} />
         <Route path="/register" element={<AuthPages />} />
@@ -196,11 +201,13 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <ToastProvider>
-          <AppContent />
-        </ToastProvider>
-      </AuthProvider>
+      <CookieConsentProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <AppContent />
+          </ToastProvider>
+        </AuthProvider>
+      </CookieConsentProvider>
     </Router>
   );
 }

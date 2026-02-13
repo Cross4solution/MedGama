@@ -23,10 +23,10 @@ export default function Footer() {
   ];
 
   const legalLinks = [
-    { label: 'GDPR', href: '#' },
-    { label: 'HIPAA', href: '#' },
-    { label: 'Terms of Service', href: '/terms-of-service' },
     { label: 'Privacy Policy', href: '/privacy-policy' },
+    { label: 'Cookie Policy', href: '/cookie-policy' },
+    { label: 'Terms of Service', href: '/terms-of-service' },
+    { label: 'Data Rights (GDPR)', href: '/data-rights' },
   ];
 
   return (

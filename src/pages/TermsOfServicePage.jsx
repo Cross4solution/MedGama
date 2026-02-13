@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const TermsOfServicePage = () => {
   return (
@@ -8,7 +9,8 @@ const TermsOfServicePage = () => {
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
-          <p className="text-lg text-gray-600">MediTravel Health Tourism Platform Terms of Use</p>
+          <p className="text-lg text-gray-600">MedGama Health Tourism Platform Terms of Use</p>
+          <p className="text-sm text-gray-400 mt-1">Last updated: February 13, 2026</p>
         </div>
         {/* Summary Box */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
@@ -19,7 +21,7 @@ const TermsOfServicePage = () => {
             <div>
               <h3 className="text-lg font-semibold text-blue-900 mb-2">Agreement Summary</h3>
               <p className="text-blue-800">
-                This agreement defines the terms of use for health tourism, telehealth, and clinic services provided on the MediTravel platform.
+                This agreement defines the terms of use for health tourism, telehealth, and clinic services provided on the MedGama platform.
               </p>
             </div>
           </div>
@@ -131,11 +133,16 @@ const TermsOfServicePage = () => {
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
             <div className="flex items-center mb-4">
               <span className="text-red-600 text-xl mr-3">🔒</span>
-              <h3 className="text-lg font-semibold text-red-900">GDPR & HIPAA Compliance</h3>
+              <h3 className="text-lg font-semibold text-red-900">GDPR (EU) 2016/679 Compliance</h3>
             </div>
-            <p className="text-red-800">
-              Our platform is designed to fully comply with European GDPR and US HIPAA standards.
+            <p className="text-red-800 mb-3">
+              Our platform is designed to fully comply with the European General Data Protection Regulation (GDPR). Your personal data is processed in accordance with our <Link to="/privacy-policy" className="font-semibold underline underline-offset-2">Privacy Policy</Link>.
             </p>
+            <div className="text-red-700 text-sm space-y-1">
+              <p>• Data Protection Officer: <span className="font-medium">dpo@medgama.com</span></p>
+              <p>• Exercise your rights: <Link to="/data-rights" className="font-medium underline underline-offset-2">Data Privacy Rights Center</Link></p>
+              <p>• Cookie management: <Link to="/cookie-policy" className="font-medium underline underline-offset-2">Cookie Policy</Link></p>
+            </div>
           </div>
           {/* Data Security Features */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -268,7 +275,7 @@ const TermsOfServicePage = () => {
                 <h3 className="text-lg font-semibold text-blue-900">Limitation of Liability</h3>
               </div>
               <div className="text-blue-800 text-sm">
-                <p className="mb-2">MediTravel is a technology platform and not a medical service provider. The platform:</p>
+                <p className="mb-2">MedGama is a technology platform and not a medical service provider. The platform:</p>
                 <ul className="space-y-1 ml-4">
                   <li>• Acts as an intermediary between clinics</li>
                   <li>• Does not provide medical advice</li>
@@ -292,13 +299,16 @@ const TermsOfServicePage = () => {
         </section>
         {/* Agreement Footer */}
         <div className="bg-gray-100 rounded-lg p-8 text-center">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">I Accept the Agreement</h3>
-          <p className="text-gray-600 mb-6">
-            By using the MediTravel platform, you agree to all the terms and conditions above.
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Agreement</h3>
+          <p className="text-gray-600 mb-4">
+            By using the MedGama platform, you agree to all the terms and conditions above.
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            Your personal data is processed in accordance with our <Link to="/privacy-policy" className="text-teal-600 font-medium underline underline-offset-2">Privacy Policy</Link> and the GDPR. You can exercise your data rights at any time via our <Link to="/data-rights" className="text-teal-600 font-medium underline underline-offset-2">Data Rights Center</Link>.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-teal-600 text-white px-6 py-1.5 rounded-lg hover:bg-teal-700 font-medium">I Agree</button>
-            <button className="bg-gray-600 text-white px-6 py-1.5 rounded-lg hover:bg-gray-700 font-medium">Go Back</button>
+            <Link to="/register" className="bg-teal-600 text-white px-6 py-1.5 rounded-lg hover:bg-teal-700 font-medium inline-block">Create Account</Link>
+            <Link to="/" className="bg-gray-600 text-white px-6 py-1.5 rounded-lg hover:bg-gray-700 font-medium inline-block">Go Back</Link>
           </div>
         </div>
       </div>

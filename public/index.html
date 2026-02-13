@@ -42,6 +42,23 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Google OAuth script loaded conditionally based on cookie consent (GDPR) -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('cookie_consent');
+          if (saved) {
+            var parsed = JSON.parse(saved);
+            if (parsed && parsed.consent && parsed.consent.functional === true) {
+              var s = document.createElement('script');
+              s.src = 'https://accounts.google.com/gsi/client';
+              s.async = true;
+              s.defer = true;
+              document.body.appendChild(s);
+            }
+          }
+        } catch(e) {}
+      })();
+    </script>
   </body>
 </html>
