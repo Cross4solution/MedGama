@@ -26,8 +26,20 @@ const resources = {
   pt: { translation: pt },
 };
 
+// Custom language detector: TR browsers → Turkish, everything else → English
+const geoLanguageDetector = {
+  name: 'geoDefault',
+  lookup() {
+    const navLang = navigator.language || navigator.userLanguage || '';
+    return navLang.toLowerCase().startsWith('tr') ? 'tr' : 'en';
+  },
+};
+
+const customDetector = new LanguageDetector();
+customDetector.addDetector(geoLanguageDetector);
+
 i18n
-  .use(LanguageDetector)
+  .use(customDetector)
   .use(initReactI18next)
   .init({
     resources,
@@ -36,7 +48,7 @@ i18n
       escapeValue: false,
     },
     detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
+      order: ['localStorage', 'geoDefault'],
       lookupLocalStorage: 'preferred_language',
       caches: ['localStorage'],
     },
