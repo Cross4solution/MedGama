@@ -341,7 +341,9 @@
       "connectToStart": "Connect this integration to start syncing",
       "viewFullHistory": "View Full History",
       "dataNotice": "All integrations process personal health data in compliance with KVKK (Law No. 6698) and GDPR regulations. Data is encrypted in transit (TLS 1.3) and at rest (AES-256). API credentials are stored securely and never exposed in logs.",
-      "credentialsNotice": "Credentials are encrypted and stored securely. Changes require admin authorization."
+      "credentialsNotice": "Credentials are encrypted and stored securely. Changes require admin authorization.",
+      "dataProcessingNotice": "Data Processing Notice (KVKK / GDPR)",
+      "notConfigured": "Not configured"
     },
     "settings": {
       "title": "Settings",

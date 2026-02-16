@@ -341,7 +341,9 @@
       "connectToStart": "Senkronizasyona başlamak için bu entegrasyonu bağlayın",
       "viewFullHistory": "Tüm Geçmişi Gör",
       "dataNotice": "Tüm entegrasyonlar kişisel sağlık verilerini KVKK (6698 Sayılı Kanun) ve GDPR düzenlemelerine uygun olarak işler. Veriler aktarım sırasında (TLS 1.3) ve depolamada (AES-256) şifrelenir. API kimlik bilgileri güvenli şekilde saklanır ve kayıtlarda asla açığa çıkmaz.",
-      "credentialsNotice": "Kimlik bilgileri şifrelenerek güvenli şekilde saklanır. Değişiklikler yönetici onayı gerektirir."
+      "credentialsNotice": "Kimlik bilgileri şifrelenmiş ve güvenli bir şekilde saklanmaktadır. Değişiklikler yönetici yetkilendirmesi gerektirir.",
+      "dataProcessingNotice": "Veri İşleme Bildirimi (KVKK / GDPR)",
+      "notConfigured": "Yapılandırılmamış"
     },
     "settings": {
       "title": "Ayarlar",

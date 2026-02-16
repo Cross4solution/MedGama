@@ -170,12 +170,12 @@ const CRMIntegrations = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Integrations</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage connections to government health systems and services</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.integrations.title')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t('crm.integrations.subtitle')}</p>
         </div>
         <button className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
           <RefreshCw className="w-4 h-4" />
-          Sync All
+          {t('crm.integrations.syncAll')}
         </button>
       </div>
 
@@ -186,21 +186,21 @@ const CRMIntegrations = () => {
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             <p className="text-lg font-bold text-emerald-700">{connectedCount}</p>
           </div>
-          <p className="text-[11px] text-emerald-600 font-medium">Connected</p>
+          <p className="text-[11px] text-emerald-600 font-medium">{t('crm.integrations.connected')}</p>
         </div>
         <div className="bg-amber-50 rounded-xl border border-amber-200 px-4 py-3">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-600" />
             <p className="text-lg font-bold text-amber-700">{warningCount}</p>
           </div>
-          <p className="text-[11px] text-amber-600 font-medium">Warning</p>
+          <p className="text-[11px] text-amber-600 font-medium">{t('crm.integrations.warning')}</p>
         </div>
         <div className="bg-red-50 rounded-xl border border-red-200 px-4 py-3">
           <div className="flex items-center gap-2">
             <XCircle className="w-4 h-4 text-red-600" />
             <p className="text-lg font-bold text-red-700">{disconnectedCount}</p>
           </div>
-          <p className="text-[11px] text-red-600 font-medium">Disconnected</p>
+          <p className="text-[11px] text-red-600 font-medium">{t('crm.integrations.disconnected')}</p>
         </div>
       </div>
 
@@ -208,10 +208,9 @@ const CRMIntegrations = () => {
       <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-start gap-3">
         <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
         <div>
-          <p className="text-xs font-semibold text-blue-800">Data Processing Notice (KVKK / GDPR)</p>
+          <p className="text-xs font-semibold text-blue-800">{t('crm.integrations.dataProcessingNotice')}</p>
           <p className="text-[11px] text-blue-600 leading-relaxed mt-0.5">
-            All integrations process personal health data in compliance with KVKK (Law No. 6698) and GDPR regulations.
-            Data is encrypted in transit (TLS 1.3) and at rest (AES-256). API credentials are stored securely and never exposed in logs.
+            {t('crm.integrations.dataNotice')}
           </p>
         </div>
       </div>
@@ -239,7 +238,7 @@ const CRMIntegrations = () => {
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-sm font-bold text-gray-900">{integration.name}</h3>
                   {integration.required && (
-                    <span className="text-[9px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-200 uppercase">Required</span>
+                    <span className="text-[9px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-200 uppercase">{t('crm.integrations.required')}</span>
                   )}
                   <StatusIndicator status={integration.status} />
                 </div>
@@ -255,12 +254,12 @@ const CRMIntegrations = () => {
               <div className="hidden sm:block text-right flex-shrink-0">
                 {integration.lastSync ? (
                   <>
-                    <p className="text-xs text-gray-500">Last sync</p>
+                    <p className="text-xs text-gray-500">{t('crm.integrations.lastSync')}</p>
                     <p className="text-[11px] font-medium text-gray-700">{integration.lastSync}</p>
                     <p className="text-[10px] text-gray-400">{integration.syncCount.toLocaleString()} records</p>
                   </>
                 ) : (
-                  <p className="text-xs text-gray-400">Not configured</p>
+                  <p className="text-xs text-gray-400">{t('crm.integrations.notConfigured')}</p>
                 )}
               </div>
 
@@ -296,9 +295,9 @@ const CRMIntegrations = () => {
             {/* Tabs */}
             <div className="flex border-b border-gray-100 px-6">
               {[
-                { key: 'overview', label: 'Overview' },
-                { key: 'credentials', label: 'Credentials' },
-                { key: 'logs', label: 'Sync Logs' },
+                { key: 'overview', label: t('crm.integrations.overview') },
+                { key: 'credentials', label: t('crm.integrations.credentials') },
+                { key: 'logs', label: t('crm.integrations.syncLogs') },
               ].map((tab) => (
                 <button
                   key={tab.key}
@@ -320,12 +319,12 @@ const CRMIntegrations = () => {
               {activeDetailTab === 'overview' && (
                 <div className="space-y-5">
                   <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Description</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('common.description')}</p>
                     <p className="text-sm text-gray-600 leading-relaxed">{selectedIntegration.description}</p>
                   </div>
 
                   <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Features</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('crm.integrations.features')}</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {selectedIntegration.features.map((f, i) => (
                         <div key={i} className="flex items-center gap-2 text-xs text-gray-600">
@@ -339,15 +338,15 @@ const CRMIntegrations = () => {
                   {selectedIntegration.lastSync && (
                     <div className="grid grid-cols-3 gap-3">
                       <div className="bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
-                        <p className="text-xs text-gray-400 font-medium">Last Sync</p>
+                        <p className="text-xs text-gray-400 font-medium">{t('crm.integrations.lastSync')}</p>
                         <p className="text-sm font-semibold text-gray-900 mt-0.5">{selectedIntegration.lastSync}</p>
                       </div>
                       <div className="bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
-                        <p className="text-xs text-gray-400 font-medium">Total Records</p>
+                        <p className="text-xs text-gray-400 font-medium">{t('crm.integrations.totalRecords')}</p>
                         <p className="text-sm font-semibold text-gray-900 mt-0.5">{selectedIntegration.syncCount.toLocaleString()}</p>
                       </div>
                       <div className="bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
-                        <p className="text-xs text-gray-400 font-medium">Status</p>
+                        <p className="text-xs text-gray-400 font-medium">{t('common.status')}</p>
                         <p className={`text-sm font-semibold mt-0.5 capitalize ${
                           selectedIntegration.status === 'connected' ? 'text-emerald-600' :
                           selectedIntegration.status === 'warning' ? 'text-amber-600' : 'text-red-600'
@@ -363,7 +362,7 @@ const CRMIntegrations = () => {
                 <div className="space-y-4">
                   <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex items-center gap-2">
                     <Shield className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                    <p className="text-[11px] text-amber-700">Credentials are encrypted and stored securely. Changes require admin authorization.</p>
+                    <p className="text-[11px] text-amber-700">{t('crm.integrations.credentialsNotice')}</p>
                   </div>
 
                   {selectedIntegration.fields.map((field) => (
@@ -417,8 +416,8 @@ const CRMIntegrations = () => {
                   {selectedIntegration.status === 'disconnected' ? (
                     <div className="flex flex-col items-center justify-center py-8 text-gray-400">
                       <WifiOff className="w-8 h-8 mb-2 opacity-40" />
-                      <p className="text-sm font-medium">No sync history</p>
-                      <p className="text-xs mt-1">Connect this integration to start syncing</p>
+                      <p className="text-sm font-medium">{t('crm.integrations.noSyncHistory')}</p>
+                      <p className="text-xs mt-1">{t('crm.integrations.connectToStart')}</p>
                     </div>
                   ) : (
                     <>
@@ -447,7 +446,7 @@ const CRMIntegrations = () => {
                         </div>
                       ))}
                       <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 mt-2">
-                        <History className="w-3.5 h-3.5" /> View Full History
+                        <History className="w-3.5 h-3.5" /> {t('crm.integrations.viewFullHistory')}
                       </button>
                     </>
                   )}
@@ -460,25 +459,25 @@ const CRMIntegrations = () => {
               <div>
                 {selectedIntegration.status === 'connected' && (
                   <button className="text-xs font-medium text-red-600 hover:text-red-700 flex items-center gap-1">
-                    <WifiOff className="w-3.5 h-3.5" /> Disconnect
+                    <WifiOff className="w-3.5 h-3.5" /> {t('crm.integrations.disconnect')}
                   </button>
                 )}
               </div>
               <div className="flex items-center gap-2">
                 {selectedIntegration.status !== 'disconnected' && (
                   <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-1.5">
-                    <TestTube className="w-3.5 h-3.5" /> Test Connection
+                    <TestTube className="w-3.5 h-3.5" /> {t('crm.integrations.testConnection')}
                   </button>
                 )}
                 {selectedIntegration.status !== 'disconnected' && (
                   <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-1.5">
-                    <RefreshCw className="w-3.5 h-3.5" /> Sync Now
+                    <RefreshCw className="w-3.5 h-3.5" /> {t('crm.integrations.syncNow')}
                   </button>
                 )}
                 {activeDetailTab === 'credentials' && (
                   <button className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm flex items-center gap-1.5">
                     <Save className="w-3.5 h-3.5" />
-                    {selectedIntegration.status === 'disconnected' ? 'Connect' : 'Save'}
+                    {selectedIntegration.status === 'disconnected' ? t('crm.integrations.connect') : t('common.save')}
                   </button>
                 )}
               </div>
