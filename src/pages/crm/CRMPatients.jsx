@@ -4,6 +4,7 @@ import {
   MapPin, Calendar, ChevronLeft, ChevronRight, FileText, Activity,
   AlertCircle, Heart, MoreVertical, Download,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const MOCK_PATIENTS = [
@@ -32,6 +33,7 @@ const PatientStatusBadge = ({ status }) => {
 };
 
 const CRMPatients = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedPatient, setSelectedPatient] = useState(null);

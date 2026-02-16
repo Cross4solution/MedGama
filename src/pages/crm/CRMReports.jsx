@@ -3,6 +3,7 @@ import {
   PieChart, BarChart3, TrendingUp, Download, Calendar, Users, DollarSign,
   CalendarDays, Clock, Activity, FileText, ArrowUpRight, Filter,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const REPORT_CARDS = [
   { title: 'Patient Demographics', description: 'Age, gender, location distribution of your patient base', icon: Users, color: 'bg-violet-50 text-violet-600 border-violet-200', stats: '1,284 patients' },
@@ -34,6 +35,7 @@ const TOP_DIAGNOSES = [
 ];
 
 const CRMReports = () => {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState('month');
 
   return (

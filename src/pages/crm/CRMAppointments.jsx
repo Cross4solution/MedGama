@@ -4,6 +4,7 @@ import {
   Video, Phone, MapPin, MoreVertical, X, User, Mail, FileText,
   CheckCircle2, XCircle, AlertCircle, Edit3, Trash2, Eye,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -49,6 +50,7 @@ const MethodIcon = ({ method, size = 'sm' }) => {
 
 // ─── Main Component ──────────────────────────────────────────
 const CRMAppointments = () => {
+  const { t } = useTranslation();
   const [view, setView] = useState('list'); // list | calendar
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [calendarMonth, setCalendarMonth] = useState(new Date());

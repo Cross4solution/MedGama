@@ -4,6 +4,7 @@ import {
   MoreVertical, X, Check, CheckCheck, Clock, Circle, ChevronLeft, Star,
   Archive, Trash2, Filter, Users,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const MOCK_CONVERSATIONS = [
@@ -45,6 +46,7 @@ const MOCK_MESSAGES = {
 
 // ─── Component ───────────────────────────────────────────────
 const CRMMessages = () => {
+  const { t } = useTranslation();
   const [activeConversation, setActiveConversation] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [messageText, setMessageText] = useState('');

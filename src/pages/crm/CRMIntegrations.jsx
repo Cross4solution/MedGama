@@ -5,6 +5,7 @@ import {
   FileText, CreditCard, Stethoscope, Building2, Pill, Receipt,
   Eye, EyeOff, Save, TestTube, History, X, Info,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ─── Integration Definitions ─────────────────────────────────
 const INTEGRATIONS = [
@@ -145,6 +146,7 @@ const StatusIndicator = ({ status }) => {
 
 // ─── Main Component ──────────────────────────────────────────
 const CRMIntegrations = () => {
+  const { t } = useTranslation();
   const [selectedIntegration, setSelectedIntegration] = useState(null);
   const [showPasswords, setShowPasswords] = useState({});
   const [activeDetailTab, setActiveDetailTab] = useState('overview');

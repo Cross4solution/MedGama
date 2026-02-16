@@ -4,6 +4,7 @@ import {
   ChevronLeft, ChevronRight, User, Calendar, Pill, AlertTriangle, CheckCircle2,
   Clock, FileText, Copy,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const MOCK_PRESCRIPTIONS = [
   { id: 1, date: '2026-02-16', patient: 'Zeynep Kaya', age: 34, diagnosis: 'Seasonal Allergies', medications: [{ name: 'Cetirizine 10mg', dosage: '1x daily', duration: '14 days' }, { name: 'Fluticasone Nasal Spray', dosage: '2 puffs/nostril daily', duration: '30 days' }], status: 'active', notes: 'Avoid allergens. Follow-up in 2 weeks.' },
@@ -22,6 +23,7 @@ const PrescriptionStatusBadge = ({ status }) => {
 };
 
 const CRMPrescriptions = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedRx, setSelectedRx] = useState(null);

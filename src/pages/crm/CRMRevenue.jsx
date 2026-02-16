@@ -4,6 +4,7 @@ import {
   CreditCard, Banknote, ArrowUpRight, ArrowDownRight, ChevronLeft, ChevronRight,
   Eye, FileText, Search, PieChart, BarChart3, Receipt,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const MOCK_TRANSACTIONS = [
@@ -53,6 +54,7 @@ const PaymentStatusBadge = ({ status }) => {
 };
 
 const CRMRevenue = () => {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState('month');
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');

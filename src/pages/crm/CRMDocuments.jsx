@@ -4,6 +4,7 @@ import {
   File, Image, FileSpreadsheet, FilePlus, Clock, User, Filter,
   ChevronRight, MoreVertical, Star, Share2,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const MOCK_DOCUMENTS = [
   { id: 1, name: 'Lab Results - Mehmet Ozkan', type: 'pdf', size: '2.4 MB', patient: 'Mehmet Ozkan', category: 'Lab Results', uploadedAt: '2026-02-16', uploadedBy: 'System', starred: true },
@@ -28,6 +29,7 @@ const FileIcon = ({ type }) => {
 };
 
 const CRMDocuments = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [showUploadModal, setShowUploadModal] = useState(false);
