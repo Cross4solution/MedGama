@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const TODAY = new Date();
@@ -115,6 +116,7 @@ const RiskBadge = ({ risk }) => {
 
 const CRMDashboard = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [appointmentFilter, setAppointmentFilter] = useState('all');
 
   const filteredAppointments = useMemo(() => {
@@ -141,11 +143,11 @@ const CRMDashboard = () => {
             className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md"
           >
             <Plus className="w-4 h-4" />
-            New Appointment
+            {t('crm.dashboard.newAppointment')}
           </Link>
           <button className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
             <RefreshCw className="w-4 h-4" />
-            <span className="hidden sm:inline">Refresh</span>
+            <span className="hidden sm:inline">{t('common.refresh')}</span>
           </button>
         </div>
       </div>
@@ -180,7 +182,7 @@ const CRMDashboard = () => {
                 <CalendarDays className="w-4 h-4 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-gray-900">Today's Schedule</h2>
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.dashboard.todayAppointments')}</h2>
                 <p className="text-[11px] text-gray-400">{MOCK_APPOINTMENTS.length} appointments</p>
               </div>
             </div>
@@ -212,7 +214,7 @@ const CRMDashboard = () => {
             {filteredAppointments.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                 <CalendarDays className="w-10 h-10 mb-2 opacity-40" />
-                <p className="text-sm font-medium">No appointments found</p>
+                <p className="text-sm font-medium">{t('crm.dashboard.noAppointments')}</p>
               </div>
             ) : (
               filteredAppointments.map((apt) => (
@@ -269,7 +271,7 @@ const CRMDashboard = () => {
           {/* Footer */}
           <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
             <Link to="/crm/appointments" className="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
-              View Full Schedule <ChevronRight className="w-3.5 h-3.5" />
+              {t('crm.dashboard.viewAll')} <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
@@ -283,7 +285,7 @@ const CRMDashboard = () => {
                 <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
                   <Bell className="w-4 h-4 text-red-500" />
                 </div>
-                <h2 className="text-sm font-bold text-gray-900">Urgent Alerts</h2>
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.dashboard.urgentAlerts')}</h2>
               </div>
               <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
                 {MOCK_URGENT_NOTES.filter((n) => !n.read).length} new
@@ -313,7 +315,7 @@ const CRMDashboard = () => {
               ))}
             </div>
             <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
-              <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">View All Notifications</button>
+              <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('crm.dashboard.viewAll')}</button>
             </div>
           </div>
 
@@ -324,7 +326,7 @@ const CRMDashboard = () => {
                 <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
                   <DollarSign className="w-4 h-4 text-emerald-600" />
                 </div>
-                <h2 className="text-sm font-bold text-gray-900">Weekly Revenue</h2>
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.dashboard.weeklyRevenue')}</h2>
               </div>
               <span className="text-xs font-semibold text-emerald-600">€8,400</span>
             </div>
@@ -360,9 +362,9 @@ const CRMDashboard = () => {
                 <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
                   <Users className="w-4 h-4 text-violet-600" />
                 </div>
-                <h2 className="text-sm font-bold text-gray-900">Recent Patients</h2>
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.dashboard.recentPatients')}</h2>
               </div>
-              <Link to="/crm/patients" className="text-xs font-semibold text-teal-600 hover:text-teal-700">View All</Link>
+              <Link to="/crm/patients" className="text-xs font-semibold text-teal-600 hover:text-teal-700">{t('crm.dashboard.viewAll')}</Link>
             </div>
             <div className="divide-y divide-gray-50">
               {MOCK_RECENT_PATIENTS.map((p, i) => (
@@ -384,7 +386,7 @@ const CRMDashboard = () => {
 
       {/* Quick Actions */}
       <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
-        <h2 className="text-sm font-bold text-gray-900 mb-3">Quick Actions</h2>
+        <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.dashboard.quickActions')}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
           {[
             { label: 'New Patient', icon: UserPlus, color: 'bg-blue-50 text-blue-600 hover:bg-blue-100', path: '/crm/patients' },
