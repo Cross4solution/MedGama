@@ -53,6 +53,7 @@
     "city": "Şehir",
     "specialty": "Uzmanlık",
     "priceRange": "Fiyat Aralığı",
+    "apply": "Uygula",
     "clinic": "Klinik",
     "menu": "Menü",
     "links": "Bağlantılar"
@@ -572,6 +573,15 @@
     "alwaysActive": "Her Zaman Aktif",
     "privacyMatters": "Gizliliğiniz Önemlidir",
     "bannerText": "Temel işlevsellik, analitik ve kişisel içerik için çerezler kullanıyoruz. GDPR kapsamında verilerinizi siz kontrol edersiniz."
+  },
+  "clinicDetail": {
+    "tab_genel-bakis": "Genel Bakış",
+    "tab_prices": "Fiyatlar",
+    "tab_doktorlar": "Doktorlar",
+    "tab_degerlendirmeler": "Değerlendirmeler",
+    "tab_galeri": "Galeri",
+    "tab_before-after": "Öncesi & Sonrası Fotoğraflar",
+    "tab_konum": "Konum"
   },
   "profile": {
     "title": "Profil",

@@ -6,6 +6,7 @@ import Tabs from '../components/tabs/Tabs';
 import ContactActions from '../components/clinic/ContactActions';
 import PriceRangeList from '../components/pricing/PriceRangeList';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 // Tab Components
 import OverviewTab from '../components/clinic/tabs/OverviewTab';
@@ -31,6 +32,7 @@ import {
 
 const ClinicDetailPage = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -133,7 +135,7 @@ const ClinicDetailPage = () => {
 
             {/* Tabs */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-              <Tabs tabs={tabsConfig} active={activeTab} onChange={setActiveTab} />
+              <Tabs tabs={tabsConfig.map(tab => ({ ...tab, label: t(`clinicDetail.tab_${tab.id}`, tab.label) }))} active={activeTab} onChange={setActiveTab} />
               <div className="px-5 sm:px-6 py-6">
                 {renderTabContent()}
               </div>
