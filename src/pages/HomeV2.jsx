@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 // Star icon no longer needed here; used inside the reusable component
 import { SearchSections } from '../components/search';
 import CoreBoxes from '../components/CoreBoxes';
@@ -23,6 +24,7 @@ const POPULAR_CLINICS_20 = Array.from({ length: 20 }, (_, i) => ({ ...POPULAR_CL
 export default function HomeV2() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Popular vitrini artık reusable component ile render ediliyor
 
@@ -57,12 +59,12 @@ export default function HomeV2() {
                   <h1
                     className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md antialiased"
                   >
-                    #1 Health Portal in the World
+                    {t('home.heroTitle')}
                   </h1>
                   <p
                     className="mt-4 text-white md:text-lg font-medium drop-shadow-sm antialiased"
                   >
-                    One-click, end-to-end care: discovery, availability, telehealth, health tourism and secure communication.
+                    {t('home.heroSubtitle')}
                   </p>
                   <div className="mt-6 flex gap-3">
                     <button
@@ -70,7 +72,7 @@ export default function HomeV2() {
                       onClick={() => document.getElementById('discover-services')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                       className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm text-teal-700 px-5 py-2.5 rounded-full hover:bg-white hover:shadow-lg text-sm font-semibold transition-all shadow-md"
                     >
-                      Explore
+                      {t('home.explore')}
                     </button>
                   </div>
                 </div>

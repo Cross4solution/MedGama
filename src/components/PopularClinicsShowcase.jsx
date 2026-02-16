@@ -1,7 +1,9 @@
 import React, { useMemo, useRef } from 'react';
 import { Star, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 function ClinicCard({ clinic, onClick, onView }) {
+  const { t } = useTranslation();
   return (
     <div
       role="button"
@@ -25,13 +27,13 @@ function ClinicCard({ clinic, onClick, onView }) {
           <span className="truncate">{clinic.city} · {clinic.dept}</span>
         </div>
         <div className="mt-auto pt-3 flex items-center justify-between">
-          <span className="text-[11px] text-gray-400 font-medium">{clinic.reviews} Reviews</span>
+          <span className="text-[11px] text-gray-400 font-medium">{clinic.reviews} {t('home.reviews')}</span>
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onView(clinic); }}
             className="px-3.5 py-1.5 bg-teal-600 text-white text-xs font-semibold rounded-lg hover:bg-teal-700 transition-colors shadow-sm"
           >
-            View
+            {t('common.view')}
           </button>
         </div>
       </div>
@@ -55,12 +57,15 @@ function ScrollArrow({ direction, onClick }) {
 
 export default function PopularClinicsShowcase({
   items = [],
-  title = 'Popular Treatments',
-  midTitle = 'Popular Clinics',
+  title: titleProp,
+  midTitle: midTitleProp,
   viewAllHref = '#',
   onCardClick = (_c) => {},
   onViewClick = (_c) => {},
 }) {
+  const { t } = useTranslation();
+  const title = titleProp || t('home.popularTreatments');
+  const midTitle = midTitleProp || t('home.popularClinics');
   const scrollRefTop = useRef(null);
   const scrollRefBottom = useRef(null);
   const columns = useMemo(() => {
@@ -92,7 +97,7 @@ export default function PopularClinicsShowcase({
         {/* Top: Popular Treatments */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-gray-900">{title}</h2>
-          <a href={viewAllHref} className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">View All →</a>
+          <a href={viewAllHref} className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('home.viewAll')} →</a>
         </div>
         <div className="relative mb-10">
           <ScrollArrow direction="left" onClick={() => scrollByAmount(scrollRefTop, -1)} />
@@ -119,7 +124,7 @@ export default function PopularClinicsShowcase({
         {/* Bottom: Popular Clinics */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-gray-900">{midTitle}</h2>
-          <a href={viewAllHref} className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">View All →</a>
+          <a href={viewAllHref} className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('home.viewAll')} →</a>
         </div>
         <div className="relative">
           <ScrollArrow direction="left" onClick={() => scrollByAmount(scrollRefBottom, -1)} />

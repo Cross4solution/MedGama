@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, ArrowUpRight, Video, User, Monitor, ChevronRight } from 'lucide-react';
 
 // Custom chat icon using public SVG (accepts className via props)
@@ -16,40 +17,40 @@ export default function SidebarPatient() {
   const { user, logout, sidebarMobileOpen, setSidebarMobileOpen } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   // Mobile drawer state is managed globally in AuthContext
 
   if (!user) return null;
 
   const role = user?.role || 'patient';
-  const roleLabel = role === 'doctor' ? 'Doctor' : role === 'clinic' ? 'Clinic' : role === 'admin' ? 'Admin' : 'Patient';
+  const roleLabel = role === 'doctor' ? t('common.doctor') : role === 'clinic' ? t('common.clinic') : role === 'admin' ? 'Admin' : t('common.patient');
 
   const patientItems = [
-    // Requested minimal menu for patient
-    { to: '/home-v2', label: 'Home', icon: Home },
-    { to: '/explore', label: 'MedStream', icon: Video },
-    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
-    { to: '/telehealth', label: 'Telehealth', icon: Monitor },
-    { to: '/profile', label: 'Profile', icon: User },
+    { to: '/home-v2', label: t('sidebar.home'), icon: Home },
+    { to: '/explore', label: t('sidebar.medstream'), icon: Video },
+    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
+    { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
+    { to: '/profile', label: t('sidebar.profile'), icon: User },
   ];
 
   // Doctor-specific menu (Profile → Medstream → Notifications → Messages → Schedule → Telehealth → CRM)
   const doctorItems = [
-    { to: '/profile', label: 'Profile', icon: User },
-    { to: '/explore', label: 'Medstream', icon: Video },
-    { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
-    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
-    { to: '/telehealth-appointment', label: 'Schedule', icon: CalendarClock },
-    { to: '/telehealth', label: 'Telehealth', icon: Monitor },
+    { to: '/profile', label: t('sidebar.profile'), icon: User },
+    { to: '/explore', label: t('sidebar.medstream'), icon: Video },
+    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
+    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
+    { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
+    { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
     { to: '/clinic-login', label: 'CRM', icon: ArrowUpRight },
   ];
 
   // Clinic-specific menu (Profile → Medstream → Notifications → Messages → Departments and Doctors → CRM)
   const clinicItems = [
-    { to: '/clinic-edit', label: 'Profile', icon: User },
-    { to: '/explore', label: 'Medstream', icon: Video },
-    { to: '/notifications', label: 'Notifications', icon: Bell, badge: 3 },
-    { to: '/doctor-chat', label: 'Messages', icon: ChatRoundIcon },
-    { to: '/doctors-departments', label: 'Departments and Doctors', icon: Building2 },
+    { to: '/clinic-edit', label: t('sidebar.profile'), icon: User },
+    { to: '/explore', label: t('sidebar.medstream'), icon: Video },
+    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
+    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
+    { to: '/doctors-departments', label: t('nav.departments'), icon: Building2 },
     { to: '/clinic-login', label: 'CRM', icon: ArrowUpRight },
   ];
 
@@ -115,7 +116,7 @@ export default function SidebarPatient() {
             {/* Navigation */}
             <div className="flex-1 overflow-y-auto py-3">
               <div className="px-3">
-                <div className="mb-3 px-3 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Menu</div>
+                <div className="mb-3 px-3 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu') || 'Menu'}</div>
                 <nav className="space-y-1">
                   {items.map((it, idx) => (
                     <NavItem key={`${it.to || it.href || it.label || 'item'}-${idx}`} {...it} />
@@ -135,7 +136,7 @@ export default function SidebarPatient() {
                 }}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-600 hover:to-red-600 shadow-md shadow-rose-200/50 hover:shadow-lg hover:shadow-rose-300/50 transition-all duration-200 hover:-translate-y-0.5"
               >
-                <LogOut className="w-4 h-4" /> Logout
+                <LogOut className="w-4 h-4" /> {t('common.logout')}
               </button>
             </div>
           </div>
@@ -169,7 +170,7 @@ export default function SidebarPatient() {
 
               {/* Mobile Nav */}
               <div className="px-3 py-3 flex-1 overflow-y-auto">
-                <div className="mb-3 px-3 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Menu</div>
+                <div className="mb-2 px-3 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu') || 'Menu'}</div>
                 <nav className="space-y-1">
                   {items.map((it) => {
                     const active = it.to ? pathname === it.to : false;
@@ -220,13 +221,13 @@ export default function SidebarPatient() {
                 <div className="my-4 border-t border-gray-100" />
 
                 {/* Header links section */}
-                <div className="mb-2 px-3 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Links</div>
+                <div className="mb-2 px-3 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.links') || 'Links'}</div>
                 <nav className="space-y-0.5">
-                  <Link to="/about" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">About MedGama</Link>
-                  <Link to="/for-patients" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">For Patients</Link>
-                  <Link to="/clinics" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">For Clinics</Link>
+                  <Link to="/about" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">{t('about.title')}</Link>
+                  <Link to="/for-patients" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">{t('forPatients.title')}</Link>
+                  <Link to="/clinics" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">{t('forClinics.title')}</Link>
                   <Link to="/vasco-ai" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">Vasco AI</Link>
-                  <Link to="/contact" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">Contact</Link>
+                  <Link to="/contact" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">{t('nav.contact')}</Link>
                 </nav>
               </div>
 
@@ -236,7 +237,7 @@ export default function SidebarPatient() {
                   onClick={() => { setSidebarMobileOpen(false); logout(); navigate('/home-v2'); }}
                   className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-600 hover:to-red-600 shadow-md shadow-rose-200/50 transition-all duration-200"
                 >
-                  <LogOut className="w-4 h-4" /> Logout
+                  <LogOut className="w-4 h-4" /> {t('common.logout')}
                 </button>
               </div>
             </div>

@@ -1,35 +1,17 @@
 import React from 'react';
 import { Stethoscope, Activity, MessageSquare, Video, Plane, Brain } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-// Core features (6 items)
-const CORE_ITEMS = [
-  {
-    title: 'Clinic Profiles and Professional Reviews',
-    desc: 'Professional Reviews provide expert opinions on clinics/hospitals and their facilities with photos, videos, and materials to help you make the best decision about your treatment.'
-  },
-  {
-    title: 'Medstream™',
-    desc: 'With Medstream, follow your favorite clinics, receive their latest updates, and engage with posts. Get personalized updates from clinics in your preferred region and specialization.'
-  },
-  {
-    title: 'Vasco AI',
-    desc: 'World-first artificial intelligence that provides symptom analysis and processes treatment requests, matching you with qualified doctors in your chosen location for your medical needs.'
-  },
-  {
-    title: 'One-Click Medical Tourism Program',
-    desc: 'Arrange your complete medical journey with one click - flights, accommodation, transport, and treatment - with transparent total pricing.'
-  },
-  {
-    title: 'Telehealth and Messaging with Real-Time Translation',
-    desc: 'Communicate with your doctor or patients instantly online in your native language. No more language barriers through real-time translation technology.'
-  },
-  {
-    title: 'Integrated CRM',
-    desc: 'Complete clinic/hospital management system with specialized access levels for different staff roles, seamlessly integrating your medical tourism and regular operations.'
-  },
-];
-
-export default function CoreBoxes({ items = CORE_ITEMS }) {
+export default function CoreBoxes() {
+  const { t } = useTranslation();
+  const items = [
+    { title: t('home.coreBox1Title'), desc: t('home.coreBox1Desc') },
+    { title: t('home.coreBox2Title'), desc: t('home.coreBox2Desc') },
+    { title: t('home.coreBox3Title'), desc: t('home.coreBox3Desc') },
+    { title: t('home.coreBox4Title'), desc: t('home.coreBox4Desc') },
+    { title: t('home.coreBox5Title'), desc: t('home.coreBox5Desc') },
+    { title: t('home.coreBox6Title'), desc: t('home.coreBox6Desc') },
+  ];
   const ICONS = [Stethoscope, Activity, Brain, Plane, Video, MessageSquare];
   const PALETTE = [
     { bg: 'bg-teal-100', fg: 'text-teal-700' },
