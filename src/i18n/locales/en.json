@@ -567,7 +567,11 @@
     "analytics": "Analytics",
     "analyticsDesc": "Help us understand how visitors interact with our website.",
     "marketing": "Marketing",
-    "marketingDesc": "Used to deliver relevant advertisements."
+    "marketingDesc": "Used to deliver relevant advertisements.",
+    "manageSettings": "Manage your cookie settings",
+    "alwaysActive": "Always Active",
+    "privacyMatters": "Your Privacy Matters",
+    "bannerText": "We use cookies for essential functionality, analytics, and personalized content. Under the GDPR, you control your data."
   },
   "profile": {
     "title": "Profile",

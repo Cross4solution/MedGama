@@ -567,7 +567,11 @@
     "analytics": "Analitik",
     "analyticsDesc": "Ziyaretçilerin web sitemizle nasıl etkileşime girdiğini anlamamıza yardımcı olur.",
     "marketing": "Pazarlama",
-    "marketingDesc": "İlgili reklamları sunmak için kullanılır."
+    "marketingDesc": "İlgili reklamları sunmak için kullanılır.",
+    "manageSettings": "Çerez ayarlarınızı yönetin",
+    "alwaysActive": "Her Zaman Aktif",
+    "privacyMatters": "Gizliliğiniz Önemlidir",
+    "bannerText": "Temel işlevsellik, analitik ve kişisel içerik için çerezler kullanıyoruz. GDPR kapsamında verilerinizi siz kontrol edersiniz."
   },
   "profile": {
     "title": "Profil",
