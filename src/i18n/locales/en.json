@@ -482,12 +482,26 @@
   },
   "telehealthPage": {
     "title": "Telehealth",
-    "subtitle": "Connect with doctors from anywhere",
+    "subtitle": "Online consultation and telemedicine management",
     "startVideoCall": "Start Video Call",
     "scheduleCall": "Schedule a Call",
     "howItWorks": "How It Works",
     "benefits": "Benefits",
-    "availableDoctors": "Available Doctors"
+    "availableDoctors": "Available Doctors",
+    "totalSessions": "Total Sessions",
+    "allTime": "All time",
+    "scheduled": "Scheduled",
+    "finished": "Finished",
+    "canceled": "Canceled",
+    "history": "History",
+    "upcomingAppointments": "Upcoming Appointments",
+    "pastAppointments": "Past Appointments",
+    "join": "Join",
+    "cancellationNotice": "Cancellation allowed until 4 hours before",
+    "cancelAppointment": "Cancel Appointment",
+    "cancelConfirmText": "Your online telehealth appointment will be canceled.",
+    "keep": "Keep",
+    "confirmCancel": "Confirm Cancel"
   },
   "sidebar": {
     "home": "Home",

@@ -241,7 +241,7 @@ export function AuthProvider({ children }) {
     formatCurrency: (usd) => formatCurrency(usd, country),
     sidebarMobileOpen,
     setSidebarMobileOpen,
-  }), [user, country, sidebarMobileOpen]);
+  }), [user, token, country, sidebarMobileOpen]);
 
   // If we have a token (from fallback) but no user yet, try to fetch current user once
   useEffect(() => {

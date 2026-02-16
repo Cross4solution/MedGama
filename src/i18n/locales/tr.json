@@ -482,12 +482,26 @@
   },
   "telehealthPage": {
     "title": "Telesağlık",
-    "subtitle": "Her yerden doktorlarla bağlantı kurun",
+    "subtitle": "Online konsültasyon ve telemedicine yönetimi",
     "startVideoCall": "Görüntülü Arama Başlat",
     "scheduleCall": "Arama Planla",
     "howItWorks": "Nasıl Çalışır",
     "benefits": "Avantajlar",
-    "availableDoctors": "Müsait Doktorlar"
+    "availableDoctors": "Müsait Doktorlar",
+    "totalSessions": "Toplam Seans",
+    "allTime": "Tüm zamanlar",
+    "scheduled": "Planlanmış",
+    "finished": "Tamamlanmış",
+    "canceled": "İptal Edilmiş",
+    "history": "Geçmiş",
+    "upcomingAppointments": "Yaklaşan Randevular",
+    "pastAppointments": "Geçmiş Randevular",
+    "join": "Katıl",
+    "cancellationNotice": "İptal en geç 4 saat öncesine kadar yapılabilir",
+    "cancelAppointment": "Randevuyu İptal Et",
+    "cancelConfirmText": "Online telesağlık randevunuz iptal edilecektir.",
+    "keep": "Koru",
+    "confirmCancel": "İptali Onayla"
   },
   "sidebar": {
     "home": "Ana Sayfa",
