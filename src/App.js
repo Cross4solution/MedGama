@@ -39,6 +39,14 @@ const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRights
 // CRM Pages
 const CRMLayout = React.lazy(() => import('./components/crm/CRMLayout'));
 const CRMDashboard = React.lazy(() => import('./pages/crm/CRMDashboard'));
+const CRMAppointments = React.lazy(() => import('./pages/crm/CRMAppointments'));
+const CRMPatients = React.lazy(() => import('./pages/crm/CRMPatients'));
+const CRMMessages = React.lazy(() => import('./pages/crm/CRMMessages'));
+const CRMRevenue = React.lazy(() => import('./pages/crm/CRMRevenue'));
+const CRMPrescriptions = React.lazy(() => import('./pages/crm/CRMPrescriptions'));
+const CRMReports = React.lazy(() => import('./pages/crm/CRMReports'));
+const CRMDocuments = React.lazy(() => import('./pages/crm/CRMDocuments'));
+const CRMSettings = React.lazy(() => import('./pages/crm/CRMSettings'));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -194,7 +202,15 @@ function AppContent() {
         <Route path="/post/:id" element={<PostDetail />} />
         {/* CRM Routes */}
         <Route path="/crm" element={<CRMLayout><CRMDashboard /></CRMLayout>} />
-        <Route path="/crm/*" element={<CRMLayout><CRMDashboard /></CRMLayout>} />
+        <Route path="/crm/appointments" element={<CRMLayout><CRMAppointments /></CRMLayout>} />
+        <Route path="/crm/patients" element={<CRMLayout><CRMPatients /></CRMLayout>} />
+        <Route path="/crm/messages" element={<CRMLayout><CRMMessages /></CRMLayout>} />
+        <Route path="/crm/revenue" element={<CRMLayout><CRMRevenue /></CRMLayout>} />
+        <Route path="/crm/prescriptions" element={<CRMLayout><CRMPrescriptions /></CRMLayout>} />
+        <Route path="/crm/reports" element={<CRMLayout><CRMReports /></CRMLayout>} />
+        <Route path="/crm/documents" element={<CRMLayout><CRMDocuments /></CRMLayout>} />
+        <Route path="/crm/settings" element={<CRMLayout><CRMSettings /></CRMLayout>} />
+        <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
         </Routes>
         </Suspense>
       </div>
