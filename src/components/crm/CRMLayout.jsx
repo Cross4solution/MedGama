@@ -20,6 +20,7 @@ import {
   PieChart,
   HelpCircle,
   Shield,
+  Plug,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -40,6 +41,7 @@ const NAV_SECTIONS = [
       { label: 'Prescriptions', icon: ClipboardList, path: '/crm/prescriptions' },
       { label: 'Reports', icon: PieChart, path: '/crm/reports' },
       { label: 'Documents', icon: FileText, path: '/crm/documents' },
+      { label: 'Integrations', icon: Plug, path: '/crm/integrations' },
     ],
   },
   {
