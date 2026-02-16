@@ -2,9 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false); // legacy (mobile menu removed)
   const [isScrolled, setIsScrolled] = useState(false);
@@ -69,13 +71,13 @@ const Header = () => {
           {/* Logoya daha da yakın menü */}
           <nav className="hidden md:flex items-center space-x-8 ml-auto mr-28">
             <Link to="/home-v2" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
-              Homepage
+              {t('nav.home')}
             </Link>
             <Link to="/vasco-ai" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
               Vasco AI
             </Link>
             <Link to="/about" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
-              About MedGama
+              {t('nav.about')}
             </Link>
           </nav>
 
@@ -92,13 +94,13 @@ const Header = () => {
                       onClick={() => setLoginOpen((p) => !p)}
                       className="text-sm font-semibold text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all"
                     >
-                      Login
+                      {t('common.login')}
                       <svg className="w-4 h-4 ml-1.5 inline-block text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
                     </button>
                     {loginOpen && (
                       <div role="menu" className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 p-2 space-y-1">
                         <div className="px-2 pt-1 pb-1">
-                          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Sign in as</p>
+                          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('nav.signIn')}</p>
                         </div>
                         <button
                           type="button"
@@ -107,7 +109,7 @@ const Header = () => {
                           className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 hover:border-emerald-300 transition-all"
                         >
                           <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600"><User className="w-[18px] h-[18px]" /></span>
-                          <span className="font-semibold">Patient</span>
+                          <span className="font-semibold">{t('common.patient')}</span>
                         </button>
                         <button
                           type="button"
@@ -116,7 +118,7 @@ const Header = () => {
                           className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-blue-50 border border-blue-200 text-blue-800 hover:bg-blue-100 hover:border-blue-300 transition-all"
                         >
                           <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-blue-100 text-blue-600"><Stethoscope className="w-[18px] h-[18px]" /></span>
-                          <span className="font-semibold">Doctor</span>
+                          <span className="font-semibold">{t('common.doctor')}</span>
                         </button>
                         <button
                           type="button"
@@ -125,7 +127,7 @@ const Header = () => {
                           className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-violet-50 border border-violet-200 text-violet-800 hover:bg-violet-100 hover:border-violet-300 transition-all"
                         >
                           <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-violet-100 text-violet-600"><Hospital className="w-[18px] h-[18px]" /></span>
-                          <span className="font-semibold">Clinic</span>
+                          <span className="font-semibold">{t('common.clinic')}</span>
                         </button>
                         <div className="my-1 border-t border-gray-100" />
                         <button
@@ -140,7 +142,7 @@ const Header = () => {
                       </div>
                     )}
                   </div>
-                  <Link to="/register" className="text-sm font-semibold bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 shadow-sm hover:shadow transition-all">Register</Link>
+                  <Link to="/register" className="text-sm font-semibold bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 shadow-sm hover:shadow transition-all">{t('common.register')}</Link>
                 </>
               ) : (
                 <>
@@ -192,11 +194,11 @@ const Header = () => {
       <div className="fixed inset-0 z-[60] flex items-center justify-center">
         <div className="absolute inset-0 bg-black/40" onClick={()=>setConfirmLogoutOpen(false)} />
         <div role="dialog" aria-modal="true" className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-sm w-[90%] p-5">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">Log out?</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('common.logout')}?</h3>
           <p className="text-sm text-gray-600 mb-4">You are about to log out of your account. Are you sure?</p>
           <div className="flex justify-end gap-2">
-            <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
-            <button onClick={()=>{ setConfirmLogoutOpen(false); logout(); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">log out</button>
+            <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">{t('common.cancel')}</button>
+            <button onClick={()=>{ setConfirmLogoutOpen(false); logout(); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">{t('common.logout')}</button>
           </div>
         </div>
       </div>
@@ -218,32 +220,32 @@ const Header = () => {
                     className="col-span-2 px-3 py-2 rounded-lg border text-sm font-semibold text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2"
                   >
                     <User className="w-4 h-4" />
-                    <span>Login</span>
+                    <span>{t('common.login')}</span>
                   </button>
-                  <Link to="/register" onClick={closeMenu} className="col-span-2 text-center px-3 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700">Register</Link>
+                  <Link to="/register" onClick={closeMenu} className="col-span-2 text-center px-3 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700">{t('common.register')}</Link>
                 </>
               ) : (
                 <>
                   <Link to="/login" onClick={closeMenu} className="col-span-2 px-3 py-2 rounded-lg border text-sm font-semibold text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2">
                     <User className="w-4 h-4" />
-                    <span>Patient Login</span>
+                    <span>{t('nav.patientLogin')}</span>
                   </Link>
                   <Link to="/doctor-login" onClick={closeMenu} className="col-span-1 px-3 py-2 rounded-lg border text-sm font-medium text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2">
                     <Stethoscope className="w-4 h-4" />
-                    <span>Doctor</span>
+                    <span>{t('common.doctor')}</span>
                   </Link>
                   <Link to="/clinic-login" onClick={closeMenu} className="col-span-1 px-3 py-2 rounded-lg border text-sm font-medium text-gray-800 hover:bg-gray-50 flex items-center justify-center gap-2">
                     <Hospital className="w-4 h-4" />
-                    <span>Clinic</span>
+                    <span>{t('common.clinic')}</span>
                   </Link>
-                  <Link to="/register" onClick={closeMenu} className="col-span-2 text-center px-3 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700">Register</Link>
+                  <Link to="/register" onClick={closeMenu} className="col-span-2 text-center px-3 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700">{t('common.register')}</Link>
                 </>
               )}
             </div>
             <div className="p-2">
               <Link to="/home-v2" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Home className="w-4 h-4" />
-                <span>Homepage</span>
+                <span>{t('nav.home')}</span>
               </Link>
               <Link to="/vasco-ai" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Cpu className="w-4 h-4" />
@@ -251,7 +253,7 @@ const Header = () => {
               </Link>
               <Link to="/about" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Info className="w-4 h-4" />
-                <span>About MedGama</span>
+                <span>{t('nav.about')}</span>
               </Link>
               {/* Contact removed */}
             </div>
@@ -347,7 +349,7 @@ const Header = () => {
                     onClick={() => { closeMenu(); logout(); }}
                     className="w-full flex items-center justify-center gap-2 mt-2 px-3 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-600 hover:to-red-600 shadow-md shadow-rose-200/50 transition-all duration-200"
                   >
-                    Logout
+                    {t('common.logout')}
                   </button>
                 </div>
               </nav>

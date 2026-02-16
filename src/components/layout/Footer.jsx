@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function Footer() {
+  const { t } = useTranslation();
   const year = new Date().getFullYear();
 
   const quickLinks = [
@@ -23,10 +25,10 @@ export default function Footer() {
   ];
 
   const legalLinks = [
-    { label: 'Privacy Policy', href: '/privacy-policy' },
-    { label: 'Cookie Policy', href: '/cookie-policy' },
-    { label: 'Terms of Service', href: '/terms-of-service' },
-    { label: 'Data Rights (GDPR)', href: '/data-rights' },
+    { label: t('footer.privacyPolicy'), href: '/privacy-policy' },
+    { label: t('footer.cookiePolicy'), href: '/cookie-policy' },
+    { label: t('footer.termsOfService'), href: '/terms-of-service' },
+    { label: t('footer.dataRights') + ' (GDPR)', href: '/data-rights' },
   ];
 
   return (
@@ -59,7 +61,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Quick Links</h3>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">{t('footer.services')}</h3>
             <ul className="space-y-2.5">
               {quickLinks.map((l) => (
                 <li key={l.label}>
@@ -71,7 +73,7 @@ export default function Footer() {
 
           {/* Social */}
           <div>
-            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Connect</h3>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">{t('footer.contact')}</h3>
             <ul className="space-y-2.5">
               {socialLinks.map((s) => (
                 <li key={s.label}>
@@ -86,7 +88,7 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Legal</h3>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">{t('footer.legal')}</h3>
             <ul className="space-y-2.5">
               {legalLinks.map((l) => (
                 <li key={l.label}>
@@ -99,7 +101,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-10 pt-6 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span className="text-xs text-white/50">© {year} MedGama. All rights reserved.</span>
+          <span className="text-xs text-white/50">© {year} MedGama. {t('footer.allRightsReserved')}</span>
           <div className="flex items-center gap-4 text-xs text-white/50">
             <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy</a>
             <span className="text-white/30">·</span>
