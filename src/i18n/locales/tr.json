@@ -581,7 +581,10 @@
     "tab_degerlendirmeler": "Değerlendirmeler",
     "tab_galeri": "Galeri",
     "tab_before-after": "Öncesi & Sonrası Fotoğraflar",
-    "tab_konum": "Konum"
+    "tab_konum": "Konum",
+    "onlineConsultation": "Çevrimiçi Konsultasyon",
+    "bookAppointment": "Randevu Al",
+    "sendMessage": "Mesaj Gönder"
   },
   "profile": {
     "title": "Profil",

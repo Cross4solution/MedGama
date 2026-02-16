@@ -581,7 +581,10 @@
     "tab_degerlendirmeler": "Reviews",
     "tab_galeri": "Gallery",
     "tab_before-after": "Before & After Photos",
-    "tab_konum": "Location"
+    "tab_konum": "Location",
+    "onlineConsultation": "Online Consultation",
+    "bookAppointment": "Book Appointment",
+    "sendMessage": "Send Message"
   },
   "profile": {
     "title": "Profile",
