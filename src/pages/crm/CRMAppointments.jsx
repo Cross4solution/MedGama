@@ -113,25 +113,25 @@ const CRMAppointments = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Appointments</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage and schedule patient appointments</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.appointments.title')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t('crm.appointments.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowNewModal(true)}
           className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md"
         >
           <Plus className="w-4 h-4" />
-          New Appointment
+          {t('crm.appointments.newAppointment')}
         </button>
       </div>
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Total', value: stats.total, color: 'text-gray-900', bg: 'bg-gray-50 border-gray-200' },
-          { label: 'Upcoming', value: stats.upcoming, color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
-          { label: 'Completed', value: stats.completed, color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
-          { label: 'Cancelled', value: stats.cancelled, color: 'text-red-600', bg: 'bg-red-50 border-red-200' },
+          { label: t('common.total'), value: stats.total, color: 'text-gray-900', bg: 'bg-gray-50 border-gray-200' },
+          { label: t('crm.appointments.upcoming'), value: stats.upcoming, color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
+          { label: t('common.completed'), value: stats.completed, color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
+          { label: t('crm.appointments.cancelled'), value: stats.cancelled, color: 'text-red-600', bg: 'bg-red-50 border-red-200' },
         ].map((s) => (
           <div key={s.label} className={`rounded-xl border px-4 py-3 ${s.bg}`}>
             <p className={`text-lg sm:text-xl font-bold ${s.color}`}>{s.value}</p>
@@ -147,17 +147,17 @@ const CRMAppointments = () => {
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="flex bg-gray-100 rounded-lg p-0.5">
               <button onClick={() => setView('list')} className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${view === 'list' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                List
+                {t('crm.appointments.listView')}
               </button>
               <button onClick={() => setView('calendar')} className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${view === 'calendar' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                Calendar
+                {t('crm.appointments.calendarView')}
               </button>
             </div>
             <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2 flex-1 max-w-xs">
               <Search className="w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search patient..."
+                placeholder={t('crm.patients.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full"
@@ -168,14 +168,14 @@ const CRMAppointments = () => {
           {/* Filters */}
           <div className="flex items-center gap-2 overflow-x-auto">
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-              <option value="all">All Status</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="in-progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="all">{t('common.all')} {t('common.status')}</option>
+              <option value="upcoming">{t('crm.appointments.upcoming')}</option>
+              <option value="in-progress">{t('crm.appointments.inProgress')}</option>
+              <option value="completed">{t('common.completed')}</option>
+              <option value="cancelled">{t('crm.appointments.cancelled')}</option>
             </select>
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-              <option value="all">All Types</option>
+              <option value="all">{t('common.all')} {t('common.type')}</option>
               {APPOINTMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
@@ -187,17 +187,17 @@ const CRMAppointments = () => {
             <table className="w-full min-w-[700px]">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Patient</th>
-                  <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Date & Time</th>
-                  <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Type</th>
-                  <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Method</th>
-                  <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Status</th>
-                  <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Actions</th>
+                  <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.patient')}</th>
+                  <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.date')} & {t('common.time')}</th>
+                  <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.type')}</th>
+                  <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.revenue.method')}</th>
+                  <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.status')}</th>
+                  <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filtered.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-12 text-gray-400 text-sm">No appointments found</td></tr>
+                  <tr><td colSpan={6} className="text-center py-12 text-gray-400 text-sm">{t('crm.dashboard.noAppointments')}</td></tr>
                 ) : (
                   filtered.map((apt) => (
                     <tr key={apt.id} className={`hover:bg-gray-50/50 transition-colors group ${apt.status === 'cancelled' ? 'opacity-50' : ''}`}>
@@ -319,7 +319,7 @@ const CRMAppointments = () => {
                 <div className="w-9 h-9 rounded-xl bg-teal-50 flex items-center justify-center">
                   <Plus className="w-4.5 h-4.5 text-teal-600" />
                 </div>
-                <h2 className="text-base font-bold text-gray-900">New Appointment</h2>
+                <h2 className="text-base font-bold text-gray-900">{t('crm.appointments.newAppointment')}</h2>
               </div>
               <button onClick={() => setShowNewModal(false)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600">
                 <X className="w-4 h-4" />
@@ -327,67 +327,67 @@ const CRMAppointments = () => {
             </div>
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Patient Name *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.patient')} {t('common.name')} *</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input type="text" value={newForm.patient} onChange={(e) => setNewForm({...newForm, patient: e.target.value})}
-                    className="w-full h-10 pl-9 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Patient full name" />
+                    className="w-full h-10 pl-9 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder={t('crm.patients.fullName')} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Email</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.email')}</label>
                   <input type="email" value={newForm.email} onChange={(e) => setNewForm({...newForm, email: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="email@example.com" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Phone</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.phone')}</label>
                   <input type="tel" value={newForm.phone} onChange={(e) => setNewForm({...newForm, phone: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="+90 5XX XXX XXXX" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Date *</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.date')} *</label>
                   <input type="date" value={newForm.date} onChange={(e) => setNewForm({...newForm, date: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Time *</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.time')} *</label>
                   <select value={newForm.time} onChange={(e) => setNewForm({...newForm, time: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white">
-                    <option value="">Select time</option>
+                    <option value="">{t('crm.appointments.selectTime')}</option>
                     {TIME_SLOTS.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Type</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.type')}</label>
                   <select value={newForm.type} onChange={(e) => setNewForm({...newForm, type: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white">
                     {APPOINTMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Method</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.revenue.method')}</label>
                   <select value={newForm.method} onChange={(e) => setNewForm({...newForm, method: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white">
-                    <option value="in-person">In-Person</option>
-                    <option value="video">Video Call</option>
-                    <option value="phone">Phone Call</option>
+                    <option value="in-person">{t('crm.appointments.inPerson')}</option>
+                    <option value="video">{t('crm.appointments.videoCall')}</option>
+                    <option value="phone">{t('common.phone')}</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Notes</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.notes')}</label>
                 <textarea value={newForm.notes} onChange={(e) => setNewForm({...newForm, notes: e.target.value})}
                   rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none" placeholder="Additional notes..." />
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
-              <button onClick={() => setShowNewModal(false)} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-              <button className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">Create Appointment</button>
+              <button onClick={() => setShowNewModal(false)} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors">{t('common.cancel')}</button>
+              <button className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">{t('crm.appointments.newAppointment')}</button>
             </div>
           </div>
         </div>
@@ -398,7 +398,7 @@ const CRMAppointments = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="text-base font-bold text-gray-900">Appointment Details</h2>
+              <h2 className="text-base font-bold text-gray-900">{t('crm.appointments.appointmentDetails')}</h2>
               <button onClick={() => setShowDetailModal(false)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600">
                 <X className="w-4 h-4" />
               </button>
@@ -415,12 +415,12 @@ const CRMAppointments = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: 'Date', value: selectedAppointment.date },
-                  { label: 'Time', value: `${selectedAppointment.time} – ${selectedAppointment.endTime}` },
-                  { label: 'Type', value: selectedAppointment.type },
-                  { label: 'Method', value: selectedAppointment.method === 'in-person' ? 'In-Person' : selectedAppointment.method },
-                  { label: 'Email', value: selectedAppointment.email },
-                  { label: 'Phone', value: selectedAppointment.phone },
+                  { label: t('common.date'), value: selectedAppointment.date },
+                  { label: t('common.time'), value: `${selectedAppointment.time} – ${selectedAppointment.endTime}` },
+                  { label: t('common.type'), value: selectedAppointment.type },
+                  { label: t('crm.revenue.method'), value: selectedAppointment.method === 'in-person' ? t('crm.appointments.inPerson') : selectedAppointment.method },
+                  { label: t('common.email'), value: selectedAppointment.email },
+                  { label: t('common.phone'), value: selectedAppointment.phone },
                 ].map((item) => (
                   <div key={item.label}>
                     <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{item.label}</p>
@@ -429,20 +429,20 @@ const CRMAppointments = () => {
                 ))}
               </div>
               <div>
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Status</p>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('common.status')}</p>
                 <StatusBadge status={selectedAppointment.status} />
               </div>
               {selectedAppointment.notes && (
                 <div>
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Notes</p>
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('common.notes')}</p>
                   <p className="text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">{selectedAppointment.notes}</p>
                 </div>
               )}
             </div>
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
-              <button className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-colors">Cancel Appointment</button>
-              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Reschedule</button>
-              <button className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">Start Session</button>
+              <button className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-colors">{t('common.cancel')}</button>
+              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">{t('crm.appointments.scheduled')}</button>
+              <button className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">{t('crm.appointments.inProgress')}</button>
             </div>
           </div>
         </div>

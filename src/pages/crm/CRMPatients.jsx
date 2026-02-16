@@ -71,17 +71,17 @@ const CRMPatients = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Patients</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage patient records and medical history</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.patients.title')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t('crm.patients.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setShowAddModal(true)} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md">
             <Plus className="w-4 h-4" />
-            Add Patient
+            {t('crm.patients.addPatient')}
           </button>
           <button className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
             <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Export</span>
+            <span className="hidden sm:inline">{t('common.export')}</span>
           </button>
         </div>
       </div>
@@ -89,10 +89,10 @@ const CRMPatients = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Total Patients', value: stats.total, bg: 'bg-violet-50 border-violet-200', color: 'text-violet-700' },
-          { label: 'Active', value: stats.active, bg: 'bg-emerald-50 border-emerald-200', color: 'text-emerald-700' },
-          { label: 'Critical', value: stats.critical, bg: 'bg-red-50 border-red-200', color: 'text-red-700' },
-          { label: 'New This Month', value: stats.newPatients, bg: 'bg-blue-50 border-blue-200', color: 'text-blue-700' },
+          { label: t('crm.patients.totalPatients'), value: stats.total, bg: 'bg-violet-50 border-violet-200', color: 'text-violet-700' },
+          { label: t('crm.patients.active'), value: stats.active, bg: 'bg-emerald-50 border-emerald-200', color: 'text-emerald-700' },
+          { label: t('crm.patients.critical'), value: stats.critical, bg: 'bg-red-50 border-red-200', color: 'text-red-700' },
+          { label: t('crm.patients.newThisMonth'), value: stats.newPatients, bg: 'bg-blue-50 border-blue-200', color: 'text-blue-700' },
         ].map((s) => (
           <div key={s.label} className={`rounded-xl border px-4 py-3 ${s.bg}`}>
             <p className={`text-lg sm:text-xl font-bold ${s.color}`}>{s.value}</p>
@@ -107,14 +107,14 @@ const CRMPatients = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <Search className="w-4 h-4 text-gray-400" />
-            <input type="text" placeholder="Search by name, email or phone..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+            <input type="text" placeholder={t('crm.patients.searchPlaceholder')} value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
               className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
           </div>
           <div className="flex items-center gap-2">
             {['all', 'active', 'critical', 'new', 'inactive'].map((s) => (
               <button key={s} onClick={() => { setStatusFilter(s); setCurrentPage(1); }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${statusFilter === s ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
-                {s === 'all' ? 'All' : s}
+                {s === 'all' ? t('common.all') : s}
               </button>
             ))}
           </div>
@@ -125,18 +125,18 @@ const CRMPatients = () => {
           <table className="w-full min-w-[800px]">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Patient</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Contact</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Blood</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Conditions</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Last Visit</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Status</th>
-                <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Actions</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.patient')}</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.contact')}</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.bloodType')}</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.conditions')}</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.patients.lastVisit')}</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.status')}</th>
+                <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {paginated.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-12 text-gray-400 text-sm">No patients found</td></tr>
+                <tr><td colSpan={7} className="text-center py-12 text-gray-400 text-sm">{t('common.noResults')}</td></tr>
               ) : (
                 paginated.map((p) => (
                   <tr key={p.id} className="hover:bg-gray-50/50 transition-colors group">
@@ -172,7 +172,7 @@ const CRMPatients = () => {
                     </td>
                     <td className="px-3 py-3.5">
                       <p className="text-xs text-gray-700">{p.lastVisit}</p>
-                      <p className="text-[10px] text-gray-400">{p.totalVisits} visits</p>
+                      <p className="text-[10px] text-gray-400">{p.totalVisits} {t('crm.patients.visits')}</p>
                     </td>
                     <td className="px-3 py-3.5"><PatientStatusBadge status={p.status} /></td>
                     <td className="px-5 py-3.5 text-right">
@@ -209,7 +209,7 @@ const CRMPatients = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="text-base font-bold text-gray-900">Patient Profile</h2>
+              <h2 className="text-base font-bold text-gray-900">{t('crm.patients.patientProfile')}</h2>
               <button onClick={() => setSelectedPatient(null)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
             </div>
             <div className="px-6 py-5 space-y-5">
@@ -232,16 +232,16 @@ const CRMPatients = () => {
               {/* Info Grid */}
               <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                 {[
-                  { label: 'Date of Birth', value: selectedPatient.dob },
-                  { label: 'Age / Gender', value: `${selectedPatient.age}y / ${selectedPatient.gender === 'F' ? 'Female' : 'Male'}` },
-                  { label: 'Blood Type', value: selectedPatient.bloodType },
-                  { label: 'Insurance', value: selectedPatient.insurance || 'None' },
-                  { label: 'Email', value: selectedPatient.email },
-                  { label: 'Phone', value: selectedPatient.phone },
-                  { label: 'Location', value: `${selectedPatient.city}, ${selectedPatient.country}` },
-                  { label: 'Registered', value: selectedPatient.registeredAt },
-                  { label: 'Total Visits', value: selectedPatient.totalVisits },
-                  { label: 'Last Visit', value: selectedPatient.lastVisit },
+                  { label: t('crm.patients.dateOfBirth'), value: selectedPatient.dob },
+                  { label: t('crm.patients.ageGender'), value: `${selectedPatient.age}y / ${selectedPatient.gender === 'F' ? t('crm.patients.female') : t('crm.patients.male')}` },
+                  { label: t('crm.patients.bloodType'), value: selectedPatient.bloodType },
+                  { label: t('crm.patients.insurance'), value: selectedPatient.insurance || 'None' },
+                  { label: t('common.email'), value: selectedPatient.email },
+                  { label: t('common.phone'), value: selectedPatient.phone },
+                  { label: t('crm.patients.location'), value: `${selectedPatient.city}, ${selectedPatient.country}` },
+                  { label: t('crm.patients.registered'), value: selectedPatient.registeredAt },
+                  { label: t('crm.patients.totalVisits'), value: selectedPatient.totalVisits },
+                  { label: t('crm.patients.lastVisit'), value: selectedPatient.lastVisit },
                 ].map((item) => (
                   <div key={item.label}>
                     <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{item.label}</p>
@@ -252,9 +252,9 @@ const CRMPatients = () => {
 
               {/* Conditions */}
               <div>
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Medical Conditions</p>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('crm.patients.medicalConditions')}</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {selectedPatient.conditions.length === 0 ? <span className="text-xs text-gray-400">No known conditions</span> :
+                  {selectedPatient.conditions.length === 0 ? <span className="text-xs text-gray-400">{t('crm.patients.noKnownConditions')}</span> :
                     selectedPatient.conditions.map((c) => (
                       <span key={c} className="text-xs font-medium bg-amber-50 text-amber-700 px-2 py-1 rounded-lg border border-amber-200">{c}</span>
                     ))
@@ -264,9 +264,9 @@ const CRMPatients = () => {
 
               {/* Allergies */}
               <div>
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Allergies</p>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('crm.patients.allergies')}</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {selectedPatient.allergies.length === 0 ? <span className="text-xs text-gray-400">No known allergies</span> :
+                  {selectedPatient.allergies.length === 0 ? <span className="text-xs text-gray-400">{t('crm.patients.noKnownAllergies')}</span> :
                     selectedPatient.allergies.map((a) => (
                       <span key={a} className="text-xs font-medium bg-red-50 text-red-700 px-2 py-1 rounded-lg border border-red-200 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />{a}
@@ -277,9 +277,9 @@ const CRMPatients = () => {
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
-              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Medical History</button>
-              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Prescriptions</button>
-              <button className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">Book Appointment</button>
+              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">{t('crm.patients.medicalHistory')}</button>
+              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">{t('crm.sidebar.prescriptions')}</button>
+              <button className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">{t('crm.patients.bookAppointment')}</button>
             </div>
           </div>
         </div>
@@ -292,44 +292,44 @@ const CRMPatients = () => {
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-teal-50 flex items-center justify-center"><Plus className="w-4.5 h-4.5 text-teal-600" /></div>
-                <h2 className="text-base font-bold text-gray-900">Add New Patient</h2>
+                <h2 className="text-base font-bold text-gray-900">{t('crm.patients.addNewPatient')}</h2>
               </div>
               <button onClick={() => setShowAddModal(false)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
             </div>
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Full Name *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patients.fullName')} *</label>
                 <input type="text" value={newPatient.name} onChange={(e) => setNewPatient({...newPatient, name: e.target.value})}
-                  className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Patient full name" />
+                  className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder={t('crm.patients.fullName')} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Email</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.email')}</label>
                   <input type="email" value={newPatient.email} onChange={(e) => setNewPatient({...newPatient, email: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="email@example.com" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Phone *</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.phone')} *</label>
                   <input type="tel" value={newPatient.phone} onChange={(e) => setNewPatient({...newPatient, phone: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="+90 5XX XXX XXXX" />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Date of Birth</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patients.dateOfBirth')}</label>
                   <input type="date" value={newPatient.dob} onChange={(e) => setNewPatient({...newPatient, dob: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Gender</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patients.gender')}</label>
                   <select value={newPatient.gender} onChange={(e) => setNewPatient({...newPatient, gender: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
+                    <option value="M">{t('crm.patients.male')}</option>
+                    <option value="F">{t('crm.patients.female')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Blood Type</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patients.bloodType')}</label>
                   <select value={newPatient.bloodType} onChange={(e) => setNewPatient({...newPatient, bloodType: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
                     <option value="">Select</option>
@@ -339,35 +339,35 @@ const CRMPatients = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Country</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patients.country')}</label>
                   <input type="text" value={newPatient.country} onChange={(e) => setNewPatient({...newPatient, country: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Turkey" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">City</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patients.city')}</label>
                   <input type="text" value={newPatient.city} onChange={(e) => setNewPatient({...newPatient, city: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Istanbul" />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Insurance</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patients.insurance')}</label>
                 <input type="text" value={newPatient.insurance} onChange={(e) => setNewPatient({...newPatient, insurance: e.target.value})}
                   className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Insurance provider" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Known Conditions</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patients.knownConditions')}</label>
                 <input type="text" value={newPatient.conditions} onChange={(e) => setNewPatient({...newPatient, conditions: e.target.value})}
                   className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="e.g. Diabetes, Hypertension (comma-separated)" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Allergies</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patients.allergies')}</label>
                 <input type="text" value={newPatient.allergies} onChange={(e) => setNewPatient({...newPatient, allergies: e.target.value})}
                   className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="e.g. Penicillin, Latex (comma-separated)" />
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
-              <button onClick={() => setShowAddModal(false)} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-              <button className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">Add Patient</button>
+              <button onClick={() => setShowAddModal(false)} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors">{t('common.cancel')}</button>
+              <button className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">{t('crm.patients.addPatient')}</button>
             </div>
           </div>
         </div>
