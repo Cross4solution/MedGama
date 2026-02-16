@@ -142,7 +142,14 @@
     "optionalUnsubscribe": "İsteğe bağlı — istediğiniz zaman abonelikten çıkabilirsiniz",
     "creating": "Oluşturuluyor…",
     "alreadyHaveAccount": "Zaten hesabınız var mı?",
-    "logIn": "Giriş yap"
+    "logIn": "Giriş yap",
+    "loginSubtitle": "Hesabınıza giriş yapın ve sağlık yolculuğunuza devam edin",
+    "or": "veya",
+    "passwordReset": "Şifre Sıfırlama",
+    "passwordResetDesc": "Kayıtlı e-postanızı girin, size şifre sıfırlama bağlantısı gönderelim.",
+    "resetLinkNotice": "Şifrenizi sıfırlamak için size bir bağlantı göndereceğiz.",
+    "sendResetLink": "Şifre Sıfırlama Bağlantısı Gönder",
+    "backToLogin": "Girişe dön"
   },
   "footer": {
     "aboutUs": "Hakkımızda",

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Heart, Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const LoginForm = ({ 
   formData, 
@@ -12,6 +13,7 @@ const LoginForm = ({
   setCurrentPage,
   googleId = 'googleBtn'
 }) => {
+  const { t } = useTranslation();
   const { applyApiAuth, fetchCurrentUser } = useAuth();
   const tokenClientRef = useRef(null);
   useEffect(() => {
@@ -102,12 +104,12 @@ const LoginForm = ({
           <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
           <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedGama</span>
         </div>
-        <p className="text-sm sm:text-base text-gray-600">Log in to your account and continue your health journey</p>
+        <p className="text-sm sm:text-base text-gray-600">{t('auth.loginSubtitle')}</p>
       </div>
       <div className="space-y-3 sm:space-y-6 flex flex-col items-center">
         <div className="w-full">
           <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-            Email
+            {t('common.email')}
           </label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
@@ -126,7 +128,7 @@ const LoginForm = ({
         </div>
         <div className="w-full">
           <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-            Password
+            {t('common.password')}
           </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
@@ -156,14 +158,14 @@ const LoginForm = ({
               type="checkbox"
               className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
-            <span className="text-xs sm:text-sm text-gray-600">Remember me</span>
+            <span className="text-xs sm:text-sm text-gray-600">{t('auth.rememberMe')}</span>
           </label>
           <button
             type="button"
             onClick={() => setCurrentPage('forgot-password')}
             className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium"
           >
-            Forgot password
+            {t('auth.forgotPassword')}
           </button>
         </div>
         <button
@@ -171,31 +173,27 @@ const LoginForm = ({
           onClick={handleSubmit}
           className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-sm sm:text-base shadow-sm hover:shadow-md"
         >
-          Login
+          {t('common.login')}
         </button>
         <p className="text-[11px] text-gray-400 text-center leading-relaxed px-2">
-          By logging in, you agree to our{' '}
-          <a href="/terms-of-service" className="text-blue-500 hover:text-blue-600 underline underline-offset-2">Terms of Service</a>{' '}
-          and{' '}
-          <a href="/privacy-policy" className="text-blue-500 hover:text-blue-600 underline underline-offset-2">Privacy Policy</a>.
-          Your data is processed in accordance with GDPR and KVKK regulations.
+          {t('auth.gdprNotice')}
         </p>
         <div className="relative my-6 w-full">
           <div className="relative flex justify-center text-sm">
-            <span className="text-gray-500">or</span>
+            <span className="text-gray-500">{t('auth.or')}</span>
           </div>
         </div>
         <div className="w-full">
           <div id={googleId} className="w-full flex items-center justify-center"></div>
         </div>
         <p className="text-center text-sm text-gray-600">
-          Don't have an account?{' '}
+          {t('auth.dontHaveAccount')}{' '}
           <button
             type="button"
             onClick={() => setCurrentPage('register')}
             className="text-blue-600 hover:text-blue-700 font-semibold"
           >
-            Sign up
+            {t('auth.signUp')}
           </button>
         </p>
       </div>

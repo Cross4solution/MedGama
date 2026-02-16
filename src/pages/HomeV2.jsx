@@ -40,7 +40,7 @@ export default function HomeV2() {
         <>
       {/* Hero / Slogan */}
       <section className="relative overflow-hidden">
-          <div className="relative">
+          <div className="relative overflow-hidden">
             {/* Background layer with a lighter blur (reduced for clarity) */}
             <div
               className="absolute inset-0 bg-cover bg-center filter blur-[0.5px] md:blur-[1px] brightness-95 md:brightness-100"

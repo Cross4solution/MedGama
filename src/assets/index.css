@@ -16,7 +16,7 @@ body {
 /* Global custom properties */
 :root {
   /* Keep in sync with Sidebar width (Tailwind w-52 ≈ 13rem) */
-  --sidebar-width: 13rem;
+  --sidebar-width: 12rem;
 }
 @tailwind base;
 @tailwind components;

@@ -161,7 +161,7 @@ function AppContent() {
   
   const isDoctorChat = String(location.pathname || '').startsWith('/doctor-chat');
   return (
-    <div className={hasSidebar ? "lg:pl-52" : ""}>
+    <div className={hasSidebar ? "lg:pl-[12rem]" : ""}>
       {/* Global Header - auth sayfalarında gizle */}
       {showHeader && <Header />}
       

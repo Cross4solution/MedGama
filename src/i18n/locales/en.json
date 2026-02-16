@@ -142,7 +142,14 @@
     "optionalUnsubscribe": "Optional — you can unsubscribe at any time",
     "creating": "Creating…",
     "alreadyHaveAccount": "Already have an account?",
-    "logIn": "Log in"
+    "logIn": "Log in",
+    "loginSubtitle": "Log in to your account and continue your health journey",
+    "or": "or",
+    "passwordReset": "Password Reset",
+    "passwordResetDesc": "Enter your registered email and we'll send you a password reset link.",
+    "resetLinkNotice": "We'll email you a link to reset your password.",
+    "sendResetLink": "Send Password Reset Link",
+    "backToLogin": "Back to login"
   },
   "footer": {
     "aboutUs": "About Us",
