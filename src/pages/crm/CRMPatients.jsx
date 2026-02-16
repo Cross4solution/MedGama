@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Users, Search, Plus, Filter, Eye, Edit3, Trash2, X, User, Mail, Phone,
   MapPin, Calendar, ChevronLeft, ChevronRight, FileText, Activity,
@@ -34,6 +35,7 @@ const PatientStatusBadge = ({ status }) => {
 
 const CRMPatients = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -177,7 +179,7 @@ const CRMPatients = () => {
                     <td className="px-3 py-3.5"><PatientStatusBadge status={p.status} /></td>
                     <td className="px-5 py-3.5 text-right">
                       <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => setSelectedPatient(p)} className="w-7 h-7 rounded-lg hover:bg-blue-50 flex items-center justify-center text-gray-400 hover:text-blue-600" title="View"><Eye className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => navigate(`/crm/patient-360?id=P${String(p.id).padStart(3,'0')}`)} className="w-7 h-7 rounded-lg hover:bg-teal-50 flex items-center justify-center text-gray-400 hover:text-teal-600" title="Patient 360"><Eye className="w-3.5 h-3.5" /></button>
                         <button className="w-7 h-7 rounded-lg hover:bg-amber-50 flex items-center justify-center text-gray-400 hover:text-amber-600" title="Edit"><Edit3 className="w-3.5 h-3.5" /></button>
                         <button className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-600" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>

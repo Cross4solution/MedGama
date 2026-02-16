@@ -22,6 +22,7 @@ import {
   Shield,
   Plug,
   CalendarClock,
+  Receipt,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +35,7 @@ const getNavSections = (t) => [
       { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments' },
       { label: t('crm.sidebar.smartCalendar'), icon: CalendarClock, path: '/crm/calendar' },
       { label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients' },
+      { label: t('crm.sidebar.examination'), icon: Stethoscope, path: '/crm/examination' },
       { label: t('crm.sidebar.messages'), icon: MessageSquare, path: '/crm/messages', badge: 3 },
     ],
   },
@@ -41,6 +43,7 @@ const getNavSections = (t) => [
     title: t('crm.sidebar.management'),
     items: [
       { label: t('crm.sidebar.revenue'), icon: DollarSign, path: '/crm/revenue' },
+      { label: t('crm.sidebar.billing'), icon: Receipt, path: '/crm/billing' },
       { label: t('crm.sidebar.prescriptions'), icon: ClipboardList, path: '/crm/prescriptions' },
       { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports' },
       { label: t('crm.sidebar.documents'), icon: FileText, path: '/crm/documents' },
