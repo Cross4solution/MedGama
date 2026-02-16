@@ -316,7 +316,6 @@ const CRMPatient360 = () => {
   const tabs = [
     { key: 'timeline', label: t('crm.patient360.timeline', 'Timeline'), icon: Clock },
     { key: 'files', label: t('crm.patient360.medicalFiles', 'Medical Files'), icon: FileText },
-    { key: 'consent', label: t('crm.patient360.eConsent', 'E-Consent'), icon: PenTool },
   ];
 
   return (
@@ -492,31 +491,13 @@ const CRMPatient360 = () => {
             {/* ─── TAB: Medical Files ─── */}
             {activeTab === 'files' && (
               <div className="p-5 space-y-4">
-                {/* Drag & Drop Upload Area */}
-                <div
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  onClick={() => fileInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-2xl px-6 py-8 text-center cursor-pointer transition-all ${
-                    dragOver
-                      ? 'border-teal-400 bg-teal-50/50 scale-[1.01]'
-                      : 'border-gray-200 hover:border-teal-300 hover:bg-gray-50/50'
-                  }`}
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                  <div className={`w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center ${dragOver ? 'bg-teal-100' : 'bg-gray-100'}`}>
-                    <Upload className={`w-5 h-5 ${dragOver ? 'text-teal-600' : 'text-gray-400'}`} />
+                {/* Upload Area — Coming Soon */}
+                <div className="border-2 border-dashed rounded-2xl px-6 py-6 text-center border-gray-200 bg-gray-50/30 opacity-60">
+                  <div className="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center bg-gray-100">
+                    <Upload className="w-5 h-5 text-gray-400" />
                   </div>
-                  <p className="text-sm font-semibold text-gray-700">{t('crm.patient360.dragDropFiles', 'Drag & drop files here')}</p>
-                  <p className="text-xs text-gray-400 mt-1">{t('crm.patient360.orClickToUpload', 'or click to browse')} · PDF, JPG, PNG, DOCX (max 25MB)</p>
+                  <p className="text-sm font-semibold text-gray-500">{t('crm.patient360.dragDropFiles', 'Drag & drop files here')}</p>
+                  <p className="text-xs text-amber-600 font-medium mt-1">Coming Soon — Phase 2</p>
                 </div>
 
                 {/* File List */}
@@ -545,9 +526,6 @@ const CRMPatient360 = () => {
                             <button className="w-7 h-7 rounded-lg hover:bg-teal-50 flex items-center justify-center text-gray-400 hover:text-teal-600" title="Download">
                               <Download className="w-3.5 h-3.5" />
                             </button>
-                            <button onClick={() => removeFile(file.id)} className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-600" title="Delete">
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
                           </div>
                         </div>
                       );
@@ -557,142 +535,6 @@ const CRMPatient360 = () => {
               </div>
             )}
 
-            {/* ─── TAB: E-Consent Form ─── */}
-            {activeTab === 'consent' && (
-              <div className="p-5 space-y-5">
-                {consentSigned ? (
-                  /* Signed State */
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle2 className="w-8 h-8 text-emerald-500" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">{t('crm.patient360.consentSigned', 'Consent Form Signed')}</h3>
-                    <p className="text-sm text-gray-500 mb-4">{t('crm.patient360.consentSignedDesc', 'The patient has signed the consent form digitally.')}</p>
-                    <div className="bg-gray-50 rounded-xl px-5 py-4 max-w-sm mx-auto text-left space-y-2">
-                      <p className="text-xs text-gray-500"><span className="font-semibold text-gray-700">{t('common.patient')}:</span> {patient.name}</p>
-                      <p className="text-xs text-gray-500"><span className="font-semibold text-gray-700">{t('crm.patient360.procedure', 'Procedure')}:</span> {consentFormData.procedureName || 'General Consent'}</p>
-                      <p className="text-xs text-gray-500"><span className="font-semibold text-gray-700">{t('common.date')}:</span> {new Date().toISOString().slice(0, 10)}</p>
-                      <p className="text-xs text-gray-500"><span className="font-semibold text-gray-700">{t('common.time')}:</span> {new Date().toLocaleTimeString()}</p>
-                    </div>
-                    <button
-                      onClick={() => { setConsentSigned(false); clearSignature(); }}
-                      className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-                    >
-                      <FilePlus className="w-4 h-4" />
-                      {t('crm.patient360.newConsent', 'New Consent Form')}
-                    </button>
-                  </div>
-                ) : (
-                  /* Form State */
-                  <>
-                    <div>
-                      <h3 className="text-sm font-bold text-gray-900 mb-1">{t('crm.patient360.eConsentForm', 'Electronic Consent Form')}</h3>
-                      <p className="text-xs text-gray-500">{t('crm.patient360.eConsentDesc', 'Patient can review and sign the consent form digitally on a tablet or screen.')}</p>
-                    </div>
-
-                    {/* Procedure Info */}
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patient360.procedureName', 'Procedure Name')} *</label>
-                        <input
-                          type="text"
-                          value={consentFormData.procedureName}
-                          onChange={(e) => setConsentFormData({ ...consentFormData, procedureName: e.target.value })}
-                          className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                          placeholder={t('crm.patient360.procedureNamePlaceholder', 'e.g. Endoscopy, Blood Draw, MRI Scan')}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patient360.procedureDescription', 'Procedure Description')}</label>
-                        <textarea
-                          value={consentFormData.procedureDesc}
-                          onChange={(e) => setConsentFormData({ ...consentFormData, procedureDesc: e.target.value })}
-                          rows={3}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
-                          placeholder={t('crm.patient360.procedureDescPlaceholder', 'Describe the procedure to be performed...')}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.patient360.risksComplications', 'Risks & Complications')}</label>
-                        <textarea
-                          value={consentFormData.risks}
-                          onChange={(e) => setConsentFormData({ ...consentFormData, risks: e.target.value })}
-                          rows={2}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
-                          placeholder={t('crm.patient360.risksPlaceholder', 'List potential risks and complications...')}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Consent Text */}
-                    <div className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
-                      <p className="text-xs text-gray-600 leading-relaxed">
-                        {t('crm.patient360.consentText', `I, ${patient.name}, hereby consent to the above-described procedure. I have been informed about the nature, purpose, risks, and alternatives. I understand that no guarantees have been made regarding the results. I voluntarily consent to this procedure and authorize the medical team to proceed.`)}
-                      </p>
-                    </div>
-
-                    {/* Agreement Checkbox */}
-                    <label className="flex items-start gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={consentFormData.agreedTerms}
-                        onChange={(e) => setConsentFormData({ ...consentFormData, agreedTerms: e.target.checked })}
-                        className="mt-0.5 w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
-                      />
-                      <span className="text-xs text-gray-700 leading-relaxed">
-                        {t('crm.patient360.agreeConsent', 'I have read and understood the above information. I voluntarily give my consent for the described procedure.')}
-                      </span>
-                    </label>
-
-                    {/* Signature Pad */}
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="text-xs font-medium text-gray-700">{t('crm.patient360.patientSignature', 'Patient Signature')} *</label>
-                        <button
-                          onClick={clearSignature}
-                          className="text-[11px] text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
-                        >
-                          <RotateCcw className="w-3 h-3" />
-                          {t('crm.patient360.clearSignature', 'Clear')}
-                        </button>
-                      </div>
-                      <div className="border-2 border-dashed border-gray-200 rounded-xl overflow-hidden bg-white">
-                        <canvas
-                          ref={canvasRef}
-                          className="w-full h-32 cursor-crosshair touch-none"
-                          onMouseDown={startDrawing}
-                          onMouseMove={draw}
-                          onMouseUp={stopDrawing}
-                          onMouseLeave={stopDrawing}
-                          onTouchStart={startDrawing}
-                          onTouchMove={draw}
-                          onTouchEnd={stopDrawing}
-                        />
-                      </div>
-                      <p className="text-[10px] text-gray-400 mt-1.5 text-center">{t('crm.patient360.signatureHint', 'Draw your signature above using mouse or touch')}</p>
-                    </div>
-
-                    {/* Submit */}
-                    <div className="flex items-center justify-end gap-2 pt-2">
-                      <button
-                        onClick={() => { setConsentFormData({ procedureName: '', procedureDesc: '', risks: '', agreedTerms: false }); clearSignature(); }}
-                        className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-                      >
-                        {t('common.cancel')}
-                      </button>
-                      <button
-                        onClick={handleSignConsent}
-                        disabled={!consentFormData.agreedTerms || !consentFormData.procedureName}
-                        className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
-                      >
-                        <PenTool className="w-4 h-4" />
-                        {t('crm.patient360.signConsent', 'Sign & Submit Consent')}
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>

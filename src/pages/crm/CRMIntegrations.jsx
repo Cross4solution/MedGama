@@ -3,7 +3,7 @@ import {
   Plug, Settings, RefreshCw, CheckCircle2, XCircle, AlertTriangle, Clock,
   ChevronRight, ExternalLink, Key, Shield, Activity, Wifi, WifiOff,
   FileText, CreditCard, Stethoscope, Building2, Pill, Receipt,
-  Eye, EyeOff, Save, TestTube, History, X, Info,
+  Eye, EyeOff, Save, TestTube, History, X, Info, Lock,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -173,7 +173,7 @@ const CRMIntegrations = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.integrations.title')}</h1>
           <p className="text-sm text-gray-500 mt-0.5">{t('crm.integrations.subtitle')}</p>
         </div>
-        <button className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
+        <button disabled className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-400 rounded-xl text-sm font-medium cursor-not-allowed opacity-60">
           <RefreshCw className="w-4 h-4" />
           {t('crm.integrations.syncAll')}
         </button>
@@ -204,6 +204,17 @@ const CRMIntegrations = () => {
         </div>
       </div>
 
+      {/* Phase 2 Notice */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
+        <Lock className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-xs font-semibold text-amber-800">Coming Soon — Phase 2</p>
+          <p className="text-[11px] text-amber-600 leading-relaxed mt-0.5">
+            Integration connections will be available in the next release. Configuration panels are shown for preview purposes only.
+          </p>
+        </div>
+      </div>
+
       {/* GDPR/KVKK Notice */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-start gap-3">
         <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
@@ -220,13 +231,13 @@ const CRMIntegrations = () => {
         {INTEGRATIONS.map((integration) => (
           <div
             key={integration.id}
-            className={`bg-white rounded-2xl border shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer ${
-              integration.status === 'disconnected' ? 'border-red-200/60' :
-              integration.status === 'warning' ? 'border-amber-200/60' :
+            className={`relative bg-white rounded-2xl border shadow-sm overflow-hidden transition-shadow opacity-75 ${
               'border-gray-200/60'
             }`}
-            onClick={() => handleOpenDetail(integration)}
           >
+            <div className="absolute top-3 right-12 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-bold uppercase z-10">
+              <Lock className="w-2.5 h-2.5" /> Coming Soon
+            </div>
             <div className="flex items-center gap-4 px-5 py-4">
               {/* Icon */}
               <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${integration.color} flex items-center justify-center text-white shadow-sm flex-shrink-0`}>
@@ -268,223 +279,6 @@ const CRMIntegrations = () => {
           </div>
         ))}
       </div>
-
-      {/* ─── Detail Modal ─── */}
-      {selectedIntegration && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${selectedIntegration.color} flex items-center justify-center text-white`}>
-                  <selectedIntegration.icon className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-gray-900">{selectedIntegration.name}</h2>
-                  <p className="text-xs text-gray-500">{selectedIntegration.provider}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <StatusIndicator status={selectedIntegration.status} />
-                <button onClick={() => setSelectedIntegration(null)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex border-b border-gray-100 px-6">
-              {[
-                { key: 'overview', label: t('crm.integrations.overview') },
-                { key: 'credentials', label: t('crm.integrations.credentials') },
-                { key: 'logs', label: t('crm.integrations.syncLogs') },
-              ].map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveDetailTab(tab.key)}
-                  className={`px-4 py-3 text-xs font-semibold border-b-2 transition-colors ${
-                    activeDetailTab === tab.key
-                      ? 'border-teal-500 text-teal-700'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Tab Content */}
-            <div className="px-6 py-5">
-              {/* Overview Tab */}
-              {activeDetailTab === 'overview' && (
-                <div className="space-y-5">
-                  <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('common.description')}</p>
-                    <p className="text-sm text-gray-600 leading-relaxed">{selectedIntegration.description}</p>
-                  </div>
-
-                  <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('crm.integrations.features')}</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {selectedIntegration.features.map((f, i) => (
-                        <div key={i} className="flex items-center gap-2 text-xs text-gray-600">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-teal-500 flex-shrink-0" />
-                          {f}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {selectedIntegration.lastSync && (
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
-                        <p className="text-xs text-gray-400 font-medium">{t('crm.integrations.lastSync')}</p>
-                        <p className="text-sm font-semibold text-gray-900 mt-0.5">{selectedIntegration.lastSync}</p>
-                      </div>
-                      <div className="bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
-                        <p className="text-xs text-gray-400 font-medium">{t('crm.integrations.totalRecords')}</p>
-                        <p className="text-sm font-semibold text-gray-900 mt-0.5">{selectedIntegration.syncCount.toLocaleString()}</p>
-                      </div>
-                      <div className="bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
-                        <p className="text-xs text-gray-400 font-medium">{t('common.status')}</p>
-                        <p className={`text-sm font-semibold mt-0.5 capitalize ${
-                          selectedIntegration.status === 'connected' ? 'text-emerald-600' :
-                          selectedIntegration.status === 'warning' ? 'text-amber-600' : 'text-red-600'
-                        }`}>{selectedIntegration.status}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Credentials Tab */}
-              {activeDetailTab === 'credentials' && (
-                <div className="space-y-4">
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                    <p className="text-[11px] text-amber-700">{t('crm.integrations.credentialsNotice')}</p>
-                  </div>
-
-                  {selectedIntegration.fields.map((field) => (
-                    <div key={field.key}>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                        {field.label}
-                        {field.required && <span className="text-red-500 ml-0.5">*</span>}
-                      </label>
-                      {field.type === 'select' ? (
-                        <select
-                          defaultValue={field.value}
-                          className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                        >
-                          {field.value === '' && <option value="">Select...</option>}
-                          {(field.options || []).map((opt) => (
-                            <option key={opt} value={opt}>{opt}</option>
-                          ))}
-                        </select>
-                      ) : field.type === 'file' ? (
-                        <div className="flex items-center gap-2">
-                          <input type="text" readOnly value={field.value || 'No file selected'} className="flex-1 h-10 px-3 border border-gray-300 rounded-xl text-sm bg-gray-50 text-gray-600" />
-                          <button className="px-3 h-10 border border-gray-300 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50">Browse</button>
-                        </div>
-                      ) : (
-                        <div className="relative">
-                          <input
-                            type={field.type === 'password' && !showPasswords[field.key] ? 'password' : 'text'}
-                            defaultValue={field.value}
-                            className="w-full h-10 px-3 pr-10 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                            placeholder={field.label}
-                          />
-                          {field.type === 'password' && (
-                            <button
-                              type="button"
-                              onClick={() => togglePassword(field.key)}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                              {showPasswords[field.key] ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Sync Logs Tab */}
-              {activeDetailTab === 'logs' && (
-                <div className="space-y-3">
-                  {selectedIntegration.status === 'disconnected' ? (
-                    <div className="flex flex-col items-center justify-center py-8 text-gray-400">
-                      <WifiOff className="w-8 h-8 mb-2 opacity-40" />
-                      <p className="text-sm font-medium">{t('crm.integrations.noSyncHistory')}</p>
-                      <p className="text-xs mt-1">{t('crm.integrations.connectToStart')}</p>
-                    </div>
-                  ) : (
-                    <>
-                      {[
-                        { time: '14:32', status: 'success', message: 'Full sync completed — 12 records updated', records: 12 },
-                        { time: '14:00', status: 'success', message: 'Incremental sync — 3 new records', records: 3 },
-                        { time: '13:30', status: 'success', message: 'Incremental sync — no changes', records: 0 },
-                        { time: '13:00', status: selectedIntegration.status === 'warning' ? 'error' : 'success', message: selectedIntegration.status === 'warning' ? 'Connection timeout — retrying...' : 'Incremental sync — 1 record updated', records: selectedIntegration.status === 'warning' ? 0 : 1 },
-                        { time: '12:30', status: 'success', message: 'Incremental sync — 5 records updated', records: 5 },
-                        { time: '12:00', status: 'success', message: 'Scheduled sync completed', records: 8 },
-                      ].map((log, i) => (
-                        <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                            log.status === 'success' ? 'bg-emerald-100' : 'bg-red-100'
-                          }`}>
-                            {log.status === 'success' ? (
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                            ) : (
-                              <XCircle className="w-3 h-3 text-red-600" />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs text-gray-700">{log.message}</p>
-                            <p className="text-[10px] text-gray-400 mt-0.5">Today at {log.time} · {log.records} records</p>
-                          </div>
-                        </div>
-                      ))}
-                      <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 mt-2">
-                        <History className="w-3.5 h-3.5" /> {t('crm.integrations.viewFullHistory')}
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
-              <div>
-                {selectedIntegration.status === 'connected' && (
-                  <button className="text-xs font-medium text-red-600 hover:text-red-700 flex items-center gap-1">
-                    <WifiOff className="w-3.5 h-3.5" /> {t('crm.integrations.disconnect')}
-                  </button>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                {selectedIntegration.status !== 'disconnected' && (
-                  <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-1.5">
-                    <TestTube className="w-3.5 h-3.5" /> {t('crm.integrations.testConnection')}
-                  </button>
-                )}
-                {selectedIntegration.status !== 'disconnected' && (
-                  <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-1.5">
-                    <RefreshCw className="w-3.5 h-3.5" /> {t('crm.integrations.syncNow')}
-                  </button>
-                )}
-                {activeDetailTab === 'credentials' && (
-                  <button className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm flex items-center gap-1.5">
-                    <Save className="w-3.5 h-3.5" />
-                    {selectedIntegration.status === 'disconnected' ? t('crm.integrations.connect') : t('common.save')}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
