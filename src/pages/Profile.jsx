@@ -147,8 +147,8 @@ export default function Profile() {
   if (!user) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-10">
-        <h1 className="text-xl font-semibold text-gray-900">Profile</h1>
-        <p className="mt-2 text-gray-600">Please sign in.</p>
+        <h1 className="text-xl font-semibold text-gray-900">{t('profile.title')}</h1>
+        <p className="mt-2 text-gray-600">{t('profile.pleaseSignIn')}</p>
       </div>
     );
   }
@@ -210,8 +210,8 @@ export default function Profile() {
             <Settings className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">Settings</h1>
-            <p className="text-[11px] text-gray-400 font-medium">Manage your account, security and preferences.</p>
+            <h1 className="text-lg font-bold text-gray-900">{t('profile.settings')}</h1>
+            <p className="text-[11px] text-gray-400 font-medium">{t('profile.settingsDesc')}</p>
           </div>
         </div>
 
@@ -220,16 +220,16 @@ export default function Profile() {
         <aside>
           <div className="sticky top-24 rounded-2xl border border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-lg shadow-gray-200/40 overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
-              <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Settings</div>
+              <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('profile.settings')}</div>
             </div>
             <div className="p-2 space-y-0.5">
-              <NavItem id="account" icon={User} title="Account" desc="Profile, country and appearance" />
-              <NavItem id="security" icon={Shield} title="Security" desc="Password" />
-              <NavItem id="notifications" icon={Bell} title="Notifications" desc="Patient notifications" />
+              <NavItem id="account" icon={User} title={t('profile.account')} desc={t('profile.accountDesc')} />
+              <NavItem id="security" icon={Shield} title={t('profile.security')} desc={t('profile.securityDesc')} />
+              <NavItem id="notifications" icon={Bell} title={t('profile.notifications')} desc={t('profile.notificationsDesc')} />
               {user?.role === 'patient' && (
-                <NavItem id="medical" icon={HeartPulse} title="Medical History" desc="Diseases & meds" />
+                <NavItem id="medical" icon={HeartPulse} title={t('profile.medicalHistory')} desc={t('profile.medicalHistoryDesc')} />
               )}
-              <NavItem id="privacy" icon={Cookie} title="Privacy & Data" desc="GDPR rights & cookies" />
+              <NavItem id="privacy" icon={Cookie} title={t('profile.privacyData')} desc={t('profile.privacyDataDesc')} />
             </div>
           </div>
         </aside>
@@ -241,7 +241,7 @@ export default function Profile() {
               <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
                 <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-teal-500 to-emerald-500" />
-                  Profile
+                  {t('profile.profileSection')}
                 </h2>
                 <div className="flex items-center gap-5">
                   <div className="relative group">
@@ -259,7 +259,7 @@ export default function Profile() {
                     </button>
                   </div>
                   <div className="flex-1">
-                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Profile photo</label>
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('profile.profilePhoto')}</label>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -281,18 +281,18 @@ export default function Profile() {
                         className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-200"
                       >
                         <Upload className="w-3.5 h-3.5" />
-                        Choose file
+                        {t('profile.chooseFile')}
                       </button>
-                      <span className="text-xs text-gray-400 truncate max-w-[200px]">{avatarFileName || 'No file selected'}</span>
+                      <span className="text-xs text-gray-400 truncate max-w-[200px]">{avatarFileName || t('profile.noFileSelected')}</span>
                     </div>
-                    <p className="text-[11px] text-gray-400 mt-1.5">Choose an image file to set your profile picture.</p>
+                    <p className="text-[11px] text-gray-400 mt-1.5">{t('profile.chooseImageDesc')}</p>
                   </div>
                 </div>
               </div>
 
               <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Name</label>
+                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('common.name')}</label>
                   <input
                     type="text"
                     value={name}
@@ -301,10 +301,10 @@ export default function Profile() {
                     className="w-full border border-gray-200 rounded-xl px-3 text-sm h-10 hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
                     placeholder="Your name"
                   />
-                  <p className="mt-1 text-[11px] text-gray-400">{Math.max(0, 30 - (name?.length || 0))} characters left</p>
+                  <p className="mt-1 text-[11px] text-gray-400">{Math.max(0, 30 - (name?.length || 0))} {t('profile.charactersLeft')}</p>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Country</label>
+                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('crm.patients.country')}</label>
                   <CountryCombobox
                     options={countriesEurope}
                     value={countryName}
@@ -337,7 +337,7 @@ export default function Profile() {
               </div>
 
               <div className="flex justify-end">
-                <button type="submit" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">Save</button>
+                <button type="submit" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">{t('common.save')}</button>
               </div>
             </form>
           )}
@@ -347,11 +347,11 @@ export default function Profile() {
               <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
                 <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-purple-500 to-violet-500" />
-                  Password
+                  {t('common.password')}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Current Password</label>
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('profile.currentPassword')}</label>
                     <div className="relative">
                       <input
                         type={showOldPwd ? 'text' : 'password'}
@@ -370,7 +370,7 @@ export default function Profile() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">New Password</label>
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('profile.newPassword')}</label>
                     <div className="relative">
                       <input
                         type={showNewPwd ? 'text' : 'password'}
@@ -389,7 +389,7 @@ export default function Profile() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Repeat New</label>
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('profile.repeatNew')}</label>
                     <div className="relative">
                       <input
                         type={showNewPwd2 ? 'text' : 'password'}
@@ -410,7 +410,7 @@ export default function Profile() {
                 </div>
               </div>
               <div className="flex justify-end">
-                <button type="submit" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">Save</button>
+                <button type="submit" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">{t('common.save')}</button>
               </div>
             </form>
           )}
@@ -420,7 +420,7 @@ export default function Profile() {
               <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
                 <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-amber-500 to-orange-500" />
-                  Patient Notifications
+                  {t('profile.patientNotifications')}
                 </h2>
                 <PatientNotify />
               </div>
@@ -433,9 +433,9 @@ export default function Profile() {
             <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
               <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-rose-500 to-pink-500" />
-                Medical History
+                {t('profile.medicalHistory')}
               </h2>
-              <p className="text-sm text-gray-600 mb-3">Current Medical Conditions (e.g., Hypertension, Diabetes, Asthma)</p>
+              <p className="text-sm text-gray-600 mb-3">{t('profile.medicalConditionsDesc')}</p>
               
               {/* Inline tags + input wrapper */}
               <div className="relative">
@@ -509,7 +509,7 @@ export default function Profile() {
               <p className="text-xs text-gray-500 mt-1.5">Press <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">Enter</kbd> or <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">,</kbd> to add</p>
               
               <div className="flex justify-end mt-4">
-                <button onClick={saveMedical} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">Save</button>
+                <button onClick={saveMedical} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">{t('common.save')}</button>
               </div>
             </div>
           )}
@@ -520,15 +520,15 @@ export default function Profile() {
               <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
                 <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-teal-500 to-emerald-500" />
-                  Cookie Preferences
+                  {t('profile.cookiePreferences')}
                 </h2>
-                <p className="text-xs text-gray-500 mb-3">Manage which cookies you allow. Necessary cookies are always active.</p>
+                <p className="text-xs text-gray-500 mb-3">{t('profile.cookiePreferencesDesc')}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                   {[
-                    { key: 'necessary', label: 'Necessary', always: true },
-                    { key: 'functional', label: 'Functional' },
-                    { key: 'analytics', label: 'Analytics' },
-                    { key: 'marketing', label: 'Marketing' },
+                    { key: 'necessary', label: t('cookie.necessary'), always: true },
+                    { key: 'functional', label: t('cookie.functional') },
+                    { key: 'analytics', label: t('cookie.analytics') },
+                    { key: 'marketing', label: t('cookie.marketing') },
                   ].map((cat) => (
                     <div key={cat.key} className="flex items-center gap-2 text-xs">
                       <span className={`w-2 h-2 rounded-full ${cat.always || consent[cat.key] ? 'bg-green-500' : 'bg-gray-300'}`} />
@@ -544,10 +544,10 @@ export default function Profile() {
                 )}
                 <div className="flex flex-wrap gap-2">
                   <button onClick={openCookieSettings} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-all">
-                    <Settings className="w-3.5 h-3.5" /> Manage Cookies
+                    <Settings className="w-3.5 h-3.5" /> {t('profile.manageCookies')}
                   </button>
                   <button onClick={resetConsent} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all">
-                    Reset Preferences
+                    {t('profile.resetPreferences')}
                   </button>
                 </div>
               </div>
@@ -556,9 +556,9 @@ export default function Profile() {
               <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
                 <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-blue-500 to-indigo-500" />
-                  Your Data (GDPR Art. 20)
+                  {t('profile.yourData')}
                 </h2>
-                <p className="text-xs text-gray-500 mb-3">Download a copy of all your personal data in machine-readable JSON format.</p>
+                <p className="text-xs text-gray-500 mb-3">{t('profile.yourDataDesc')}</p>
                 <button
                   onClick={() => {
                     const exportData = {
@@ -588,7 +588,7 @@ export default function Profile() {
                   }}
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all"
                 >
-                  <Download className="w-3.5 h-3.5" /> Download My Data
+                  <Download className="w-3.5 h-3.5" /> {t('profile.downloadMyData')}
                 </button>
               </div>
 
@@ -596,18 +596,18 @@ export default function Profile() {
               <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
                 <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-purple-500 to-violet-500" />
-                  Privacy Rights
+                  {t('profile.privacyRights')}
                 </h2>
-                <p className="text-xs text-gray-500 mb-3">Under the GDPR, you have the right to access, rectify, delete, restrict, and port your data.</p>
+                <p className="text-xs text-gray-500 mb-3">{t('profile.privacyRightsDesc')}</p>
                 <div className="flex flex-wrap gap-2">
                   <Link to="/data-rights" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 transition-all">
-                    <Shield className="w-3.5 h-3.5" /> All Privacy Rights <ExternalLink className="w-3 h-3" />
+                    <Shield className="w-3.5 h-3.5" /> {t('profile.allPrivacyRights')} <ExternalLink className="w-3 h-3" />
                   </Link>
                   <Link to="/privacy-policy" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all">
-                    Privacy Policy <ExternalLink className="w-3 h-3" />
+                    {t('footer.privacyPolicy')} <ExternalLink className="w-3 h-3" />
                   </Link>
                   <Link to="/cookie-policy" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all">
-                    Cookie Policy <ExternalLink className="w-3 h-3" />
+                    {t('footer.cookiePolicy')} <ExternalLink className="w-3 h-3" />
                   </Link>
                 </div>
               </div>
@@ -616,9 +616,9 @@ export default function Profile() {
               <div className="rounded-2xl border border-rose-200/60 bg-rose-50/30 p-5 shadow-sm">
                 <h2 className="text-sm font-bold text-rose-900 mb-2 flex items-center gap-2">
                   <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-rose-500 to-red-500" />
-                  Delete Account & Data
+                  {t('profile.deleteAccountData')}
                 </h2>
-                <p className="text-xs text-rose-700/70 mb-3">Permanently delete your account and all associated data. This action cannot be undone. Server-side data will be deleted within 30 days per GDPR Art. 17.</p>
+                <p className="text-xs text-rose-700/70 mb-3">{t('profile.deleteAccountDesc')}</p>
                 <button
                   onClick={() => {
                     if (window.confirm('Are you sure you want to delete your account and all data? This action cannot be undone.')) {
@@ -637,7 +637,7 @@ export default function Profile() {
                   }}
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-rose-300 bg-rose-100 text-rose-700 hover:bg-rose-200 transition-all"
                 >
-                  <Trash2 className="w-3.5 h-3.5" /> Delete My Account
+                  <Trash2 className="w-3.5 h-3.5" /> {t('profile.deleteMyAccount')}
                 </button>
               </div>
             </div>
