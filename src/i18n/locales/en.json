@@ -183,7 +183,8 @@
       "documents": "Documents",
       "integrations": "Integrations",
       "settings": "Settings",
-      "helpSupport": "Help & Support"
+      "helpSupport": "Help & Support",
+      "smartCalendar": "Smart Calendar"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -230,6 +231,35 @@
       "selectPatient": "Select Patient",
       "selectType": "Select Type",
       "appointmentNotes": "Appointment Notes"
+    },
+    "calendar": {
+      "title": "Smart Calendar",
+      "subtitle": "Manage all operations from a single calendar",
+      "todayAppointments": "Today's Appointments",
+      "weeklySurgeries": "Weekly Surgeries",
+      "platformBookings": "Platform Bookings",
+      "manualEntries": "Manual Entries",
+      "legend": "Legend",
+      "examination": "Examination",
+      "surgery": "Surgery",
+      "checkup": "Check-up",
+      "consultation": "Consultation",
+      "followUp": "Follow-up",
+      "allSources": "All Sources",
+      "platformSource": "Med-Gama Platform",
+      "manualSource": "Manual Entry",
+      "externalSource": "External",
+      "syncSource": "Source",
+      "source_platform": "Med-Gama",
+      "source_manual": "Manual",
+      "source_external": "External",
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "dragHint": "Drag & drop to reschedule appointments",
+      "goToPatient": "Go to Patient",
+      "confirmed": "Confirmed",
+      "yearsOld": "years old"
     },
     "patients": {
       "title": "Patients",

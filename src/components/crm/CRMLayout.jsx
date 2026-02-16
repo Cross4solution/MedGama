@@ -21,6 +21,7 @@ import {
   HelpCircle,
   Shield,
   Plug,
+  CalendarClock,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +32,7 @@ const getNavSections = (t) => [
     items: [
       { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm' },
       { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments' },
+      { label: t('crm.sidebar.smartCalendar'), icon: CalendarClock, path: '/crm/calendar' },
       { label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients' },
       { label: t('crm.sidebar.messages'), icon: MessageSquare, path: '/crm/messages', badge: 3 },
     ],

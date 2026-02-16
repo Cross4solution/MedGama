@@ -183,7 +183,8 @@
       "documents": "Dökümanlar",
       "integrations": "Entegrasyonlar",
       "settings": "Ayarlar",
-      "helpSupport": "Yardım & Destek"
+      "helpSupport": "Yardım & Destek",
+      "smartCalendar": "Akıllı Takvim"
     },
     "dashboard": {
       "title": "Kontrol Paneli",
@@ -230,6 +231,35 @@
       "selectPatient": "Hasta Seçin",
       "selectType": "Tür Seçin",
       "appointmentNotes": "Randevu Notları"
+    },
+    "calendar": {
+      "title": "Akıllı Takvim",
+      "subtitle": "Tüm operasyonları tek bir takvimden yönetin",
+      "todayAppointments": "Bugünkü Randevular",
+      "weeklySurgeries": "Haftalık Ameliyatlar",
+      "platformBookings": "Platform Rezervasyonları",
+      "manualEntries": "Manuel Girişler",
+      "legend": "Açıklama",
+      "examination": "Muayene",
+      "surgery": "Ameliyat",
+      "checkup": "Kontrol",
+      "consultation": "Konsültasyon",
+      "followUp": "Takip",
+      "allSources": "Tüm Kaynaklar",
+      "platformSource": "Med-Gama Platformu",
+      "manualSource": "Manuel Giriş",
+      "externalSource": "Harici",
+      "syncSource": "Kaynak",
+      "source_platform": "Med-Gama",
+      "source_manual": "Manuel",
+      "source_external": "Harici",
+      "day": "Gün",
+      "week": "Hafta",
+      "month": "Ay",
+      "dragHint": "Randevuları yeniden planlamak için sürükleyip bırakın",
+      "goToPatient": "Hastaya Git",
+      "confirmed": "Onaylandı",
+      "yearsOld": "yaşında"
     },
     "patients": {
       "title": "Hastalar",

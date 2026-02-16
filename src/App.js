@@ -49,6 +49,7 @@ const CRMReports = React.lazy(() => import('./pages/crm/CRMReports'));
 const CRMDocuments = React.lazy(() => import('./pages/crm/CRMDocuments'));
 const CRMSettings = React.lazy(() => import('./pages/crm/CRMSettings'));
 const CRMIntegrations = React.lazy(() => import('./pages/crm/CRMIntegrations'));
+const CRMSmartCalendar = React.lazy(() => import('./pages/crm/CRMSmartCalendar'));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -205,6 +206,7 @@ function AppContent() {
         {/* CRM Routes */}
         <Route path="/crm" element={<CRMLayout><CRMDashboard /></CRMLayout>} />
         <Route path="/crm/appointments" element={<CRMLayout><CRMAppointments /></CRMLayout>} />
+        <Route path="/crm/calendar" element={<CRMLayout><CRMSmartCalendar /></CRMLayout>} />
         <Route path="/crm/patients" element={<CRMLayout><CRMPatients /></CRMLayout>} />
         <Route path="/crm/messages" element={<CRMLayout><CRMMessages /></CRMLayout>} />
         <Route path="/crm/revenue" element={<CRMLayout><CRMRevenue /></CRMLayout>} />
