@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff, Phone } from 'lucide-react';
 import PhoneVerification from '../components/auth/PhoneVerification';
+import { useTranslation } from 'react-i18next';
 
 const DoctorLogin = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const DoctorLogin = () => {
   const [error, setError] = useState('');
   const [showPhoneVerification, setShowPhoneVerification] = useState(false);
   const [pendingLoginData, setPendingLoginData] = useState(null);
+  const { t } = useTranslation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -124,10 +126,10 @@ const DoctorLogin = () => {
   };
 
   const features = [
-    { icon: Users, text: 'Patient management and tracking' },
-    { icon: Calendar, text: 'Smart appointment system' },
-    { icon: Video, text: 'Integrated telehealth solution' },
-    { icon: Plane, text: 'Medical tourism management' },
+    { icon: Users, text: t('auth.featurePatientMgmt') },
+    { icon: Calendar, text: t('auth.featureAppointment') },
+    { icon: Video, text: t('auth.featureTelehealth') },
+    { icon: Plane, text: t('auth.featureTourism') },
   ];
 
   const stats = [
@@ -158,7 +160,7 @@ const DoctorLogin = () => {
               <PhoneVerification
                 onVerified={handlePhoneVerified}
                 onSkip={handlePhoneSkip}
-                title="Doctor Phone Verification"
+                title={t('auth.doctorPhoneVerification')}
               />
             </div>
           </div>
@@ -182,8 +184,8 @@ const DoctorLogin = () => {
               <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 border border-white/20">
                 <Stethoscope className="w-10 h-10" />
               </div>
-              <h2 className="text-4xl font-bold mb-4 leading-tight">Welcome to<br />Doctor Portal</h2>
-              <p className="text-base text-teal-100/90 mb-10 leading-relaxed">Manage your patients, track appointments, and control telehealth services from a single platform.</p>
+              <h2 className="text-4xl font-bold mb-4 leading-tight">{t('auth.welcomeDoctorPortal')}</h2>
+              <p className="text-base text-teal-100/90 mb-10 leading-relaxed">{t('auth.doctorPortalDesc')}</p>
               <div className="space-y-5">
                 {features.map((f, i) => (
                   <div key={i} className="flex items-center gap-4">
@@ -195,8 +197,8 @@ const DoctorLogin = () => {
                 ))}
               </div>
               <div className="flex items-center gap-4 mt-10 text-white/60 text-xs">
-                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> SSL Secure</span>
-                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> HIPAA Compliant</span>
+                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> {t('auth.sslSecure')}</span>
+                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> {t('auth.hipaaCompliant')}</span>
               </div>
             </div>
           </div>
@@ -209,18 +211,18 @@ const DoctorLogin = () => {
                   <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
                   <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedGama</span>
                 </div>
-                <h1 className="text-lg font-bold text-gray-900 mb-0.5">Doctor Sign In</h1>
-                <p className="text-xs text-gray-500">Access the doctor portal</p>
+                <h1 className="text-lg font-bold text-gray-900 mb-0.5">{t('auth.doctorSignIn')}</h1>
+                <p className="text-xs text-gray-500">{t('auth.accessDoctorPortal')}</p>
               </div>
               <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
-                  <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                  <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.emailAddress')}</label>
                   <input id="email" name="email" type="email" value={formData.email} onChange={handleChange}
                          className="w-full h-10 px-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors text-sm"
                          placeholder="doctor@example.com" required />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Password</label>
+                  <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
                   <div className="relative">
                     <input id="password" name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange}
                            className="w-full h-10 px-3 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors text-sm"
@@ -234,44 +236,42 @@ const DoctorLogin = () => {
                 <div className="flex items-center justify-between text-xs">
                   <label className="inline-flex items-center gap-1.5 text-gray-500">
                     <input type="checkbox" className="rounded border-gray-300 text-teal-600 focus:ring-teal-500 w-3.5 h-3.5" />
-                    Remember me
+                    {t('auth.rememberMe')}
                   </label>
-                  <a href="#" className="text-teal-600 hover:text-teal-700 font-medium">Forgot password?</a>
+                  <a href="#" className="text-teal-600 hover:text-teal-700 font-medium">{t('auth.forgotPassword')}</a>
                 </div>
                 {error && <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-xl text-xs">{error}</div>}
                 <button type="submit" disabled={loading}
                         className="w-full bg-teal-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all disabled:opacity-50">
-                  {loading ? 'Signing in...' : 'Sign In'}
+                  {loading ? t('auth.signingIn') : t('auth.signIn')}
                 </button>
                 <p className="text-[11px] text-gray-400 text-center leading-relaxed px-1">
-                  By signing in, you agree to our{' '}
-                  <a href="/terms-of-service" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">Terms of Service</a>{' '}
-                  and{' '}
-                  <a href="/privacy-policy" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">Privacy Policy</a>.
-                  Your data is processed in accordance with GDPR and KVKK regulations.
+                  {t('auth.gdprNotice').split(t('auth.termsOfService'))[0]}
+                  <a href="/terms-of-service" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">{t('auth.termsOfService')}</a>{' '}
+                  <a href="/privacy-policy" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">{t('auth.privacyPolicy')}</a>
                 </p>
                 <div id="googleBtnDoctor" className="w-full flex items-center justify-center"></div>
                 <button type="button"
                         onClick={() => { login({ id: 'doc-demo-1', role: 'doctor', name: 'Demo Doctor' }); navigate('/crm', { replace: true }); }}
                         className="w-full bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 border border-gray-200 transition-colors">
-                  Try Demo (Doctor)
+                  {t('auth.tryDemoDoctor')}
                 </button>
               </form>
               <div className="mt-4 text-center text-xs text-gray-500">
-                Don't have an account?{' '}
-                <a href="/register" className="text-teal-600 hover:text-teal-700 font-semibold">Sign up</a>
+                {t('auth.dontHaveAccount')}{' '}
+                <a href="/register" className="text-teal-600 hover:text-teal-700 font-semibold">{t('auth.signUp')}</a>
               </div>
               <div className="mt-2 text-center text-xs text-gray-400">
-                <a href="/clinic-login" className="hover:text-gray-600 transition-colors">Clinic Login</a>
+                <a href="/clinic-login" className="hover:text-gray-600 transition-colors">{t('nav.clinicLogin')}</a>
                 <span className="mx-2">·</span>
-                <a href="/login" className="hover:text-gray-600 transition-colors">Patient Login</a>
+                <a href="/login" className="hover:text-gray-600 transition-colors">{t('nav.patientLogin')}</a>
               </div>
             </div>
             {/* Mobile info */}
             <div className="lg:hidden w-full px-2 mt-4 mb-4">
               <div className="flex items-center gap-6 justify-center text-white/70 text-xs">
-                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> SSL Secure</span>
-                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> HIPAA Compliant</span>
+                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> {t('auth.sslSecure')}</span>
+                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> {t('auth.hipaaCompliant')}</span>
               </div>
             </div>
           </div>

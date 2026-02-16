@@ -5,6 +5,8 @@ import {
   Monitor, Smartphone, LogOut, Trash2, ChevronRight, Building2,
   Stethoscope, Calendar, CreditCard,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { LANGUAGES } from '../../i18n';
 
 const TABS = [
   { key: 'profile', label: 'Profile', icon: User },
@@ -16,6 +18,7 @@ const TABS = [
 ];
 
 const CRMSettings = () => {
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('profile');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -135,18 +138,16 @@ const CRMSettings = () => {
                   <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
                     <Globe className="w-3.5 h-3.5 text-gray-400" /> Preferred Language
                   </label>
-                  <select value={profile.language} onChange={(e) => setProfile({...profile, language: e.target.value})}
+                  <select value={profile.language} onChange={(e) => {
+                    setProfile({...profile, language: e.target.value});
+                    i18n.changeLanguage(e.target.value);
+                    try { localStorage.setItem('preferred_language', e.target.value); } catch {}
+                    document.documentElement.dir = LANGUAGES.find(l => l.code === e.target.value)?.dir || 'ltr';
+                  }}
                     className="w-full sm:w-64 h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                    <option value="en">🇬🇧 English</option>
-                    <option value="tr">🇹🇷 Türkçe</option>
-                    <option value="de">🇩🇪 Deutsch</option>
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="ar">🇸🇦 العربية</option>
-                    <option value="ru">🇷🇺 Русский</option>
-                    <option value="es">🇪🇸 Español</option>
-                    <option value="nl">🇳🇱 Nederlands</option>
-                    <option value="it">🇮🇹 Italiano</option>
-                    <option value="pt">🇵🇹 Português</option>
+                    {LANGUAGES.map((lang) => (
+                      <option key={lang.code} value={lang.code}>{lang.flag} {lang.label}</option>
+                    ))}
                   </select>
                   <p className="mt-1 text-[11px] text-gray-400">Sets the language for CRM interface and patient communications.</p>
                 </div>

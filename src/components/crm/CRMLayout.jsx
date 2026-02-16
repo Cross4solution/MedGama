@@ -23,32 +23,33 @@ import {
   Plug,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
-const NAV_SECTIONS = [
+const getNavSections = (t) => [
   {
-    title: 'Main',
+    title: t('crm.sidebar.main'),
     items: [
-      { label: 'Dashboard', icon: LayoutDashboard, path: '/crm' },
-      { label: 'Appointments', icon: CalendarDays, path: '/crm/appointments' },
-      { label: 'Patients', icon: Users, path: '/crm/patients' },
-      { label: 'Messages', icon: MessageSquare, path: '/crm/messages', badge: 3 },
+      { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm' },
+      { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments' },
+      { label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients' },
+      { label: t('crm.sidebar.messages'), icon: MessageSquare, path: '/crm/messages', badge: 3 },
     ],
   },
   {
-    title: 'Management',
+    title: t('crm.sidebar.management'),
     items: [
-      { label: 'Revenue', icon: DollarSign, path: '/crm/revenue' },
-      { label: 'Prescriptions', icon: ClipboardList, path: '/crm/prescriptions' },
-      { label: 'Reports', icon: PieChart, path: '/crm/reports' },
-      { label: 'Documents', icon: FileText, path: '/crm/documents' },
-      { label: 'Integrations', icon: Plug, path: '/crm/integrations' },
+      { label: t('crm.sidebar.revenue'), icon: DollarSign, path: '/crm/revenue' },
+      { label: t('crm.sidebar.prescriptions'), icon: ClipboardList, path: '/crm/prescriptions' },
+      { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports' },
+      { label: t('crm.sidebar.documents'), icon: FileText, path: '/crm/documents' },
+      { label: t('crm.sidebar.integrations'), icon: Plug, path: '/crm/integrations' },
     ],
   },
   {
-    title: 'System',
+    title: t('crm.sidebar.system'),
     items: [
-      { label: 'Settings', icon: Settings, path: '/crm/settings' },
-      { label: 'Help & Support', icon: HelpCircle, path: '/crm/help' },
+      { label: t('crm.sidebar.settings'), icon: Settings, path: '/crm/settings' },
+      { label: t('crm.sidebar.helpSupport'), icon: HelpCircle, path: '/crm/help' },
     ],
   },
 ];
@@ -59,6 +60,8 @@ const CRMLayout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
+  const NAV_SECTIONS = getNavSections(t);
 
   const isActive = (path) => {
     if (path === '/crm') return location.pathname === '/crm';

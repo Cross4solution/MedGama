@@ -5,6 +5,8 @@ import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
 import { User, Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { LANGUAGES } from '../i18n';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { Link } from 'react-router-dom';
 import PatientNotify from '../components/notifications/PatientNotify';
@@ -12,6 +14,7 @@ import PatientNotify from '../components/notifications/PatientNotify';
 export default function Profile() {
   const { user, country, login, logout } = useAuth();
   const { openSettings: openCookieSettings, consent, consentTimestamp, resetConsent } = useCookieConsent();
+  const { t, i18n } = useTranslation();
   const [active, setActive] = useState('account');
 
   // Account state
@@ -26,9 +29,14 @@ export default function Profile() {
   const [countryName, setCountryName] = useState(initialCountryName);
   const fileInputRef = useRef(null);
   const [avatarFileName, setAvatarFileName] = useState('');
-  const [preferredLanguage, setPreferredLanguage] = useState(() => {
-    try { return localStorage.getItem('preferred_language') || 'en'; } catch { return 'en'; }
-  });
+  const [preferredLanguage, setPreferredLanguage] = useState(() => i18n.language || 'en');
+
+  const handleLanguageChange = (lang) => {
+    setPreferredLanguage(lang);
+    i18n.changeLanguage(lang);
+    try { localStorage.setItem('preferred_language', lang); } catch {}
+    document.documentElement.dir = LANGUAGES.find(l => l.code === lang)?.dir || 'ltr';
+  };
 
   // Mock preferences (persist localStorage)
   const loadPrefs = () => {
@@ -313,25 +321,18 @@ export default function Profile() {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
-                    <span className="flex items-center gap-1.5"><Globe className="w-3 h-3" /> Preferred Language</span>
+                    <span className="flex items-center gap-1.5"><Globe className="w-3 h-3" /> {t('profile.preferredLanguage')}</span>
                   </label>
                   <select
                     value={preferredLanguage}
-                    onChange={(e) => setPreferredLanguage(e.target.value)}
+                    onChange={(e) => handleLanguageChange(e.target.value)}
                     className="w-full md:w-64 border border-gray-200 rounded-xl px-3 text-sm h-10 bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
                   >
-                    <option value="en">🇬🇧 English</option>
-                    <option value="tr">🇹🇷 Türkçe</option>
-                    <option value="de">🇩🇪 Deutsch</option>
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="ar">🇸🇦 العربية</option>
-                    <option value="ru">🇷🇺 Русский</option>
-                    <option value="es">🇪🇸 Español</option>
-                    <option value="nl">🇳🇱 Nederlands</option>
-                    <option value="it">🇮🇹 Italiano</option>
-                    <option value="pt">🇵🇹 Português</option>
+                    {LANGUAGES.map((lang) => (
+                      <option key={lang.code} value={lang.code}>{lang.flag} {lang.label}</option>
+                    ))}
                   </select>
-                  <p className="mt-1 text-[11px] text-gray-400">This sets your preferred language for the platform interface and communications.</p>
+                  <p className="mt-1 text-[11px] text-gray-400">{t('profile.languageDesc')}</p>
                 </div>
               </div>
 

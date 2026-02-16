@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Building2, Users, Calendar, Video, Shield, Lock, Eye, EyeOff, Phone } from 'lucide-react';
 import PhoneVerification from '../components/auth/PhoneVerification';
+import { useTranslation } from 'react-i18next';
 
 const ClinicLogin = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const ClinicLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [showPhoneVerification, setShowPhoneVerification] = useState(false);
+  const { t } = useTranslation();
 
   // If user is already logged in (doctor/clinic), skip login form
   useEffect(() => {
@@ -46,9 +48,9 @@ const ClinicLogin = () => {
   };
 
   const features = [
-    { icon: Users, text: 'Manage sales reps and leads' },
-    { icon: Calendar, text: 'Coordinate appointments' },
-    { icon: Video, text: 'Telehealth scheduling' },
+    { icon: Users, text: t('auth.featureManageReps') },
+    { icon: Calendar, text: t('auth.featureCoordinate') },
+    { icon: Video, text: t('auth.featureTelehealthSchedule') },
   ];
 
   const handlePhoneVerified = (verifiedPhone) => {
@@ -70,7 +72,7 @@ const ClinicLogin = () => {
               <PhoneVerification
                 onVerified={handlePhoneVerified}
                 onSkip={handlePhoneSkip}
-                title="Clinic Phone Verification"
+                title={t('auth.clinicPhoneVerification')}
               />
             </div>
           </div>
@@ -94,8 +96,8 @@ const ClinicLogin = () => {
               <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 border border-white/20">
                 <Building2 className="w-10 h-10" />
               </div>
-              <h2 className="text-4xl font-bold mb-4 leading-tight">Welcome to<br />Clinic Portal</h2>
-              <p className="text-base text-teal-100/90 mb-10 leading-relaxed">Operate your clinic workflows and coordinate teams efficiently from a single platform.</p>
+              <h2 className="text-4xl font-bold mb-4 leading-tight">{t('auth.welcomeClinicPortal')}</h2>
+              <p className="text-base text-teal-100/90 mb-10 leading-relaxed">{t('auth.clinicPortalDesc')}</p>
               <div className="space-y-5">
                 {features.map((f, i) => (
                   <div key={i} className="flex items-center gap-4">
@@ -107,8 +109,8 @@ const ClinicLogin = () => {
                 ))}
               </div>
               <div className="flex items-center gap-4 mt-10 text-white/60 text-xs">
-                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> SSL Secure</span>
-                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> HIPAA Compliant</span>
+                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> {t('auth.sslSecure')}</span>
+                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> {t('auth.hipaaCompliant')}</span>
               </div>
             </div>
           </div>
@@ -121,18 +123,18 @@ const ClinicLogin = () => {
                   <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
                   <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedGama</span>
                 </div>
-                <h1 className="text-lg font-bold text-gray-900 mb-0.5">Clinic Sign In</h1>
-                <p className="text-xs text-gray-500">Access the clinic management tools</p>
+                <h1 className="text-lg font-bold text-gray-900 mb-0.5">{t('auth.clinicSignIn')}</h1>
+                <p className="text-xs text-gray-500">{t('auth.accessClinicPortal')}</p>
               </div>
               <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
-                  <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                  <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.emailAddress')}</label>
                   <input id="email" name="email" type="email" value={formData.email} onChange={handleChange}
                          className="w-full h-10 px-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors text-sm"
                          placeholder="clinic@example.com" required />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Password</label>
+                  <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
                   <div className="relative">
                     <input id="password" name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleChange}
                            className="w-full h-10 px-3 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors text-sm"
@@ -146,43 +148,41 @@ const ClinicLogin = () => {
                 <div className="flex items-center justify-between text-xs">
                   <label className="inline-flex items-center gap-1.5 text-gray-500">
                     <input type="checkbox" className="rounded border-gray-300 text-teal-600 focus:ring-teal-500 w-3.5 h-3.5" />
-                    Remember me
+                    {t('auth.rememberMe')}
                   </label>
-                  <a href="#" className="text-teal-600 hover:text-teal-700 font-medium">Forgot password?</a>
+                  <a href="#" className="text-teal-600 hover:text-teal-700 font-medium">{t('auth.forgotPassword')}</a>
                 </div>
                 {error && <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-xl text-xs">{error}</div>}
                 <button type="submit" disabled={loading}
                         className="w-full bg-teal-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all disabled:opacity-50">
-                  {loading ? 'Signing in...' : 'Sign In'}
+                  {loading ? t('auth.signingIn') : t('auth.signIn')}
                 </button>
                 <p className="text-[11px] text-gray-400 text-center leading-relaxed px-1">
-                  By signing in, you agree to our{' '}
-                  <a href="/terms-of-service" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">Terms of Service</a>{' '}
-                  and{' '}
-                  <a href="/privacy-policy" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">Privacy Policy</a>.
-                  Your data is processed in accordance with GDPR and KVKK regulations.
+                  {t('auth.gdprNotice').split(t('auth.termsOfService'))[0]}
+                  <a href="/terms-of-service" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">{t('auth.termsOfService')}</a>{' '}
+                  <a href="/privacy-policy" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">{t('auth.privacyPolicy')}</a>
                 </p>
                 <button type="button"
                         onClick={() => { login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }); navigate('/crm', { replace: true }); }}
                         className="w-full bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 border border-gray-200 transition-colors">
-                  Try Demo (Clinic)
+                  {t('auth.tryDemoClinic')}
                 </button>
               </form>
               <div className="mt-4 text-center text-xs text-gray-500">
-                Don't have an account?{' '}
-                <a href="/register" className="text-teal-600 hover:text-teal-700 font-semibold">Sign up</a>
+                {t('auth.dontHaveAccount')}{' '}
+                <a href="/register" className="text-teal-600 hover:text-teal-700 font-semibold">{t('auth.signUp')}</a>
               </div>
               <div className="mt-2 text-center text-xs text-gray-400">
-                <a href="/doctor-login" className="hover:text-gray-600 transition-colors">Doctor Login</a>
+                <a href="/doctor-login" className="hover:text-gray-600 transition-colors">{t('nav.doctorLogin')}</a>
                 <span className="mx-2">·</span>
-                <a href="/login" className="hover:text-gray-600 transition-colors">Patient Login</a>
+                <a href="/login" className="hover:text-gray-600 transition-colors">{t('nav.patientLogin')}</a>
               </div>
             </div>
             {/* Mobile info */}
             <div className="lg:hidden w-full px-2 mt-4 mb-4">
               <div className="flex items-center gap-6 justify-center text-white/70 text-xs">
-                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> SSL Secure</span>
-                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> HIPAA Compliant</span>
+                <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> {t('auth.sslSecure')}</span>
+                <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> {t('auth.hipaaCompliant')}</span>
               </div>
             </div>
           </div>

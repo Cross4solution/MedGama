@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType 
 import SidebarPatient from './components/SidebarPatient';
 import { useAuth } from './context/AuthContext';
 import CookieBanner from './components/CookieBanner';
+import './i18n';
 import { Footer, Header } from './components/layout';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';

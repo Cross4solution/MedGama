@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Phone, Shield, CheckCircle2, AlertCircle, RefreshCw, ArrowRight, Loader2 } from 'lucide-react';
 import { sendOTP, verifyOTP, isValidTurkishPhone, normalizePhone } from '../../services/netgsm';
+import { useTranslation } from 'react-i18next';
 
 /**
  * PhoneVerification — reusable OTP component for Doctor & Clinic login flows.
@@ -15,6 +16,7 @@ const OTP_LENGTH = 6;
 const RESEND_COOLDOWN = 120; // seconds
 
 const PhoneVerification = ({ onVerified, onSkip, className = '', title }) => {
+  const { t } = useTranslation();
   const [step, setStep] = useState('phone'); // phone | otp | verified
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
@@ -145,12 +147,12 @@ const PhoneVerification = ({ onVerified, onSkip, className = '', title }) => {
             <div className="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center mx-auto mb-3">
               <Phone className="w-6 h-6 text-teal-600" />
             </div>
-            <h3 className="text-base font-bold text-gray-900">{title || 'Phone Verification'}</h3>
-            <p className="text-xs text-gray-500 mt-1">Enter your mobile number to receive a verification code via SMS</p>
+            <h3 className="text-base font-bold text-gray-900">{title || t('auth.phoneVerification')}</h3>
+            <p className="text-xs text-gray-500 mt-1">{t('auth.enterMobileNumber')}</p>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">Mobile Number</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('auth.mobileNumber')}</label>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1.5 px-3 h-10 bg-gray-50 border border-gray-300 rounded-xl text-sm text-gray-600 flex-shrink-0">
                 <img src="https://flagcdn.com/24x18/tr.png" alt="TR" className="w-5 h-3.5 object-cover rounded-sm" />
@@ -181,12 +183,11 @@ const PhoneVerification = ({ onVerified, onSkip, className = '', title }) => {
             className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all disabled:opacity-50"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
-            {loading ? 'Sending...' : 'Send Verification Code'}
+            {loading ? t('auth.sending') : t('auth.sendVerificationCode')}
           </button>
 
           <p className="text-[10px] text-gray-400 text-center leading-relaxed">
-            SMS will be sent via <strong>NETGSM</strong>. Standard message rates may apply.
-            By continuing, you consent to receiving verification SMS.
+            {t('auth.smsNotice')}
           </p>
 
           {onSkip && (
@@ -195,7 +196,7 @@ const PhoneVerification = ({ onVerified, onSkip, className = '', title }) => {
               onClick={onSkip}
               className="w-full text-xs text-gray-400 hover:text-gray-600 py-1 transition-colors"
             >
-              Skip for now
+              {t('auth.skipForNow')}
             </button>
           )}
         </>
@@ -208,9 +209,9 @@ const PhoneVerification = ({ onVerified, onSkip, className = '', title }) => {
             <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-3">
               <Shield className="w-6 h-6 text-blue-600" />
             </div>
-            <h3 className="text-base font-bold text-gray-900">Enter Verification Code</h3>
+            <h3 className="text-base font-bold text-gray-900">{t('auth.enterVerificationCode')}</h3>
             <p className="text-xs text-gray-500 mt-1">
-              We sent a 6-digit code to <strong className="text-gray-700">{normalizePhone(phone)}</strong>
+              {t('auth.weSentCode')} <strong className="text-gray-700">{normalizePhone(phone)}</strong>
             </p>
           </div>
 
@@ -248,7 +249,7 @@ const PhoneVerification = ({ onVerified, onSkip, className = '', title }) => {
             className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all disabled:opacity-50"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-            {loading ? 'Verifying...' : 'Verify Code'}
+            {loading ? t('auth.verifying') : t('auth.verifyCode')}
           </button>
 
           {/* Resend & Timer */}
@@ -258,10 +259,10 @@ const PhoneVerification = ({ onVerified, onSkip, className = '', title }) => {
               onClick={() => { setStep('phone'); setError(''); }}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
-              ← Change number
+              {t('auth.changeNumber')}
             </button>
             {countdown > 0 ? (
-              <span className="text-gray-400">Resend in <strong className="text-gray-600">{formatCountdown(countdown)}</strong></span>
+              <span className="text-gray-400">{t('auth.resendIn')} <strong className="text-gray-600">{formatCountdown(countdown)}</strong></span>
             ) : (
               <button
                 type="button"
@@ -269,7 +270,7 @@ const PhoneVerification = ({ onVerified, onSkip, className = '', title }) => {
                 disabled={loading}
                 className="text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1 transition-colors"
               >
-                <RefreshCw className="w-3 h-3" /> Resend Code
+                <RefreshCw className="w-3 h-3" /> {t('auth.resendCode')}
               </button>
             )}
           </div>
@@ -282,8 +283,8 @@ const PhoneVerification = ({ onVerified, onSkip, className = '', title }) => {
           <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-3 ring-4 ring-emerald-100">
             <CheckCircle2 className="w-7 h-7 text-emerald-600" />
           </div>
-          <h3 className="text-base font-bold text-gray-900">Phone Verified!</h3>
-          <p className="text-xs text-gray-500 mt-1">Your phone number has been successfully verified.</p>
+          <h3 className="text-base font-bold text-gray-900">{t('auth.phoneVerified')}</h3>
+          <p className="text-xs text-gray-500 mt-1">{t('auth.phoneVerifiedDesc')}</p>
           <p className="text-sm font-semibold text-emerald-600 mt-2">{normalizePhone(phone)}</p>
         </div>
       )}
