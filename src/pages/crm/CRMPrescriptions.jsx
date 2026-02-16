@@ -47,19 +47,19 @@ const CRMPrescriptions = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Prescriptions</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Create and manage patient prescriptions</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.prescriptions.title')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t('crm.prescriptions.subtitle')}</p>
         </div>
         <button onClick={() => setShowNewModal(true)} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md">
-          <Plus className="w-4 h-4" /> New Prescription
+          <Plus className="w-4 h-4" /> {t('crm.prescriptions.newPrescription')}
         </button>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Total', value: stats.total, bg: 'bg-gray-50 border-gray-200', color: 'text-gray-900' },
-          { label: 'Active', value: stats.active, bg: 'bg-emerald-50 border-emerald-200', color: 'text-emerald-700' },
-          { label: 'Expired', value: stats.expired, bg: 'bg-red-50 border-red-200', color: 'text-red-600' },
+          { label: t('common.total'), value: stats.total, bg: 'bg-gray-50 border-gray-200', color: 'text-gray-900' },
+          { label: t('crm.prescriptions.active'), value: stats.active, bg: 'bg-emerald-50 border-emerald-200', color: 'text-emerald-700' },
+          { label: t('crm.prescriptions.expired'), value: stats.expired, bg: 'bg-red-50 border-red-200', color: 'text-red-600' },
         ].map((s) => (
           <div key={s.label} className={`rounded-xl border px-4 py-3 ${s.bg}`}>
             <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
@@ -72,13 +72,13 @@ const CRMPrescriptions = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <Search className="w-4 h-4 text-gray-400" />
-            <input type="text" placeholder="Search patient or diagnosis..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+            <input type="text" placeholder={t('crm.prescriptions.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
           </div>
           <div className="flex items-center gap-1.5">
             {['all', 'active', 'expired'].map((s) => (
               <button key={s} onClick={() => setStatusFilter(s)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${statusFilter === s ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'text-gray-500 hover:bg-gray-50'}`}>{s === 'all' ? 'All' : s}</button>
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${statusFilter === s ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'text-gray-500 hover:bg-gray-50'}`}>{s === 'all' ? t('common.all') : s}</button>
             ))}
           </div>
         </div>
@@ -87,7 +87,7 @@ const CRMPrescriptions = () => {
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-gray-400">
               <ClipboardList className="w-10 h-10 mb-2 opacity-40" />
-              <p className="text-sm font-medium">No prescriptions found</p>
+              <p className="text-sm font-medium">{t('common.noResults')}</p>
             </div>
           ) : (
             filtered.map((rx) => (
@@ -130,7 +130,7 @@ const CRMPrescriptions = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="text-base font-bold text-gray-900">Prescription Details</h2>
+              <h2 className="text-base font-bold text-gray-900">{t('crm.prescriptions.prescriptionDetails')}</h2>
               <button onClick={() => setSelectedRx(null)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400"><X className="w-4 h-4" /></button>
             </div>
             <div className="px-6 py-5 space-y-4">
@@ -142,18 +142,18 @@ const CRMPrescriptions = () => {
                 <PrescriptionStatusBadge status={selectedRx.status} />
               </div>
               <div>
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Diagnosis</p>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('crm.prescriptions.diagnosis')}</p>
                 <p className="text-sm font-medium text-gray-800">{selectedRx.diagnosis}</p>
               </div>
               <div>
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Medications</p>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('crm.prescriptions.medications')}</p>
                 <div className="space-y-2">
                   {selectedRx.medications.map((m, i) => (
                     <div key={i} className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-100">
                       <p className="text-sm font-semibold text-gray-900 flex items-center gap-1.5"><Pill className="w-3.5 h-3.5 text-teal-500" />{m.name}</p>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-[11px] text-gray-500">Dosage: <strong className="text-gray-700">{m.dosage}</strong></span>
-                        <span className="text-[11px] text-gray-500">Duration: <strong className="text-gray-700">{m.duration}</strong></span>
+                        <span className="text-[11px] text-gray-500">{t('crm.prescriptions.dosage')}: <strong className="text-gray-700">{m.dosage}</strong></span>
+                        <span className="text-[11px] text-gray-500">{t('crm.prescriptions.duration')}: <strong className="text-gray-700">{m.duration}</strong></span>
                       </div>
                     </div>
                   ))}
@@ -161,16 +161,16 @@ const CRMPrescriptions = () => {
               </div>
               {selectedRx.notes && (
                 <div>
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Notes</p>
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('common.notes')}</p>
                   <p className="text-sm text-gray-600 bg-amber-50 rounded-xl px-3 py-2 border border-amber-100">{selectedRx.notes}</p>
                 </div>
               )}
             </div>
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
-              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-1.5"><Printer className="w-3.5 h-3.5" /> Print</button>
-              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-1.5"><Copy className="w-3.5 h-3.5" /> Duplicate</button>
+              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-1.5"><Printer className="w-3.5 h-3.5" /> {t('common.print')}</button>
+              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-1.5"><Copy className="w-3.5 h-3.5" /> {t('crm.prescriptions.duplicate')}</button>
               {selectedRx.status === 'expired' && (
-                <button className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">Renew Prescription</button>
+                <button className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">{t('crm.prescriptions.renewPrescription')}</button>
               )}
             </div>
           </div>
@@ -182,16 +182,16 @@ const CRMPrescriptions = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="text-base font-bold text-gray-900">New Prescription</h2>
+              <h2 className="text-base font-bold text-gray-900">{t('crm.prescriptions.newPrescription')}</h2>
               <button onClick={() => setShowNewModal(false)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400"><X className="w-4 h-4" /></button>
             </div>
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Patient *</label>
-                <input type="text" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Search or select patient" />
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.patient')} *</label>
+                <input type="text" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder={t('crm.patients.searchPlaceholder')} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Diagnosis *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.prescriptions.diagnosis')} *</label>
                 <input type="text" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="e.g. Type 2 Diabetes" />
               </div>
               <div className="border border-gray-200 rounded-xl p-4 space-y-3">
@@ -202,15 +202,15 @@ const CRMPrescriptions = () => {
                   <input type="text" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Duration (e.g. 30 days)" />
                 </div>
               </div>
-              <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add Another Medication</button>
+              <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('crm.prescriptions.addMedication')}</button>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Notes</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.notes')}</label>
                 <textarea rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none" placeholder="Additional instructions..." />
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
-              <button onClick={() => setShowNewModal(false)} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl">Cancel</button>
-              <button className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">Create Prescription</button>
+              <button onClick={() => setShowNewModal(false)} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl">{t('common.cancel')}</button>
+              <button className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">{t('crm.prescriptions.newPrescription')}</button>
             </div>
           </div>
         </div>

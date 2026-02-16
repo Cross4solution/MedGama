@@ -274,7 +274,9 @@
       "subtitle": "Hasta reçetelerini oluşturun ve yönetin",
       "newPrescription": "Yeni Reçete",
       "expired": "Süresi Dolmuş",
+      "active": "Aktif",
       "draft": "Taslak",
+      "searchPlaceholder": "Hasta veya tanı ara...",
       "diagnosis": "Tanı",
       "medications": "İlaçlar",
       "dosage": "Dozaj",
@@ -311,7 +313,10 @@
       "clickToUpload": "Yüklemek için tıklayın veya sürükleyip bırakın",
       "fileTypes": "PDF, DOCX, XLSX, JPG, PNG 25MB'a kadar",
       "category": "Kategori",
-      "linkToPatient": "Hastaya bağla"
+      "linkToPatient": "Hastaya bağla",
+      "optional": "isteğe bağlı",
+      "searchDocuments": "Döküman ara...",
+      "upload": "Yükle"
     },
     "integrations": {
       "title": "Entegrasyonlar",

@@ -274,7 +274,9 @@
       "subtitle": "Create and manage patient prescriptions",
       "newPrescription": "New Prescription",
       "expired": "Expired",
+      "active": "Active",
       "draft": "Draft",
+      "searchPlaceholder": "Search patient or diagnosis...",
       "diagnosis": "Diagnosis",
       "medications": "Medications",
       "dosage": "Dosage",
@@ -311,7 +313,10 @@
       "clickToUpload": "Click to upload or drag and drop",
       "fileTypes": "PDF, DOCX, XLSX, JPG, PNG up to 25MB",
       "category": "Category",
-      "linkToPatient": "Link to patient"
+      "linkToPatient": "Link to patient",
+      "optional": "optional",
+      "searchDocuments": "Search documents...",
+      "upload": "Upload"
     },
     "integrations": {
       "title": "Integrations",

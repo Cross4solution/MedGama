@@ -95,12 +95,12 @@ const CRMMessages = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Messages</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{totalUnread} unread messages</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.messages.title')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{totalUnread} {t('crm.messages.unreadMessages')}</p>
         </div>
         <button className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
           <Plus className="w-4 h-4" />
-          New Message
+          {t('crm.messages.newMessage')}
         </button>
       </div>
 
@@ -112,16 +112,16 @@ const CRMMessages = () => {
           <div className="p-3 border-b border-gray-100 space-y-2">
             <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2">
               <Search className="w-4 h-4 text-gray-400" />
-              <input type="text" placeholder="Search conversations..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+              <input type="text" placeholder={t('crm.messages.searchConversations')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
             </div>
             <div className="flex items-center gap-1 overflow-x-auto">
               {[
-                { key: 'all', label: 'All' },
-                { key: 'unread', label: `Unread (${totalUnread})` },
-                { key: 'starred', label: 'Starred' },
-                { key: 'patient', label: 'Patients' },
-                { key: 'staff', label: 'Staff' },
+                { key: 'all', label: t('common.all') },
+                { key: 'unread', label: `${t('crm.messages.unreadMessages')} (${totalUnread})` },
+                { key: 'starred', label: t('crm.messages.starred') },
+                { key: 'patient', label: t('crm.sidebar.patients') },
+                { key: 'staff', label: t('crm.messages.staff') },
               ].map((f) => (
                 <button key={f.key} onClick={() => setFilterType(f.key)}
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-medium whitespace-nowrap transition-colors ${
@@ -138,7 +138,7 @@ const CRMMessages = () => {
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                 <MessageSquare className="w-8 h-8 mb-2 opacity-40" />
-                <p className="text-sm">No conversations found</p>
+                <p className="text-sm">{t('crm.messages.noConversations')}</p>
               </div>
             ) : (
               filtered.map((conv) => (
@@ -190,8 +190,8 @@ const CRMMessages = () => {
           {!activeChat ? (
             <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
               <MessageSquare className="w-12 h-12 mb-3 opacity-30" />
-              <p className="text-sm font-medium">Select a conversation</p>
-              <p className="text-xs mt-1">Choose from your existing conversations or start a new one</p>
+              <p className="text-sm font-medium">{t('crm.messages.selectConversation')}</p>
+              <p className="text-xs mt-1">{t('crm.messages.selectConversationDesc')}</p>
             </div>
           ) : (
             <>
@@ -213,7 +213,7 @@ const CRMMessages = () => {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900">{activeChat.name}</p>
-                    <p className="text-[11px] text-gray-400">{activeChat.online ? 'Online' : 'Offline'} · {activeChat.type}</p>
+                    <p className="text-[11px] text-gray-400">{activeChat.online ? t('crm.messages.online') : t('crm.messages.offline')} · {activeChat.type}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -260,7 +260,7 @@ const CRMMessages = () => {
                       rows={1}
                       value={messageText}
                       onChange={(e) => setMessageText(e.target.value)}
-                      placeholder="Type a message..."
+                      placeholder={t('crm.messages.typeMessage')}
                       className="w-full px-4 py-2.5 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none resize-none"
                       onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); setMessageText(''); } }}
                     />

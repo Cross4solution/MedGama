@@ -42,8 +42,8 @@ const CRMReports = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Reports & Analytics</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Comprehensive insights into your practice performance</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.reports.title')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t('crm.reports.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex bg-gray-100 rounded-lg p-0.5">
@@ -52,7 +52,7 @@ const CRMReports = () => {
             ))}
           </div>
           <button className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50">
-            <Download className="w-4 h-4" /> Export
+            <Download className="w-4 h-4" /> {t('common.export')}
           </button>
         </div>
       </div>
@@ -73,7 +73,7 @@ const CRMReports = () => {
 
       {/* Report Cards Grid */}
       <div>
-        <h2 className="text-sm font-bold text-gray-900 mb-3">Available Reports</h2>
+        <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.reports.availableReports')}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {REPORT_CARDS.map((r) => (
             <div key={r.title} className={`bg-white rounded-2xl border border-gray-200/60 p-5 hover:shadow-md transition-shadow cursor-pointer group`}>
@@ -101,9 +101,9 @@ const CRMReports = () => {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <PieChart className="w-4 h-4 text-gray-400" />
-            <h2 className="text-sm font-bold text-gray-900">Top Diagnoses This Month</h2>
+            <h2 className="text-sm font-bold text-gray-900">{t('crm.reports.topDiagnoses')}</h2>
           </div>
-          <span className="text-xs text-gray-400">{TOP_DIAGNOSES.reduce((s, d) => s + d.count, 0)} total cases</span>
+          <span className="text-xs text-gray-400">{TOP_DIAGNOSES.reduce((s, d) => s + d.count, 0)} {t('crm.reports.totalCases')}</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {TOP_DIAGNOSES.map((d, i) => (

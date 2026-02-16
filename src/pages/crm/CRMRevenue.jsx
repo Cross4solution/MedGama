@@ -87,8 +87,8 @@ const CRMRevenue = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Revenue & Finance</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Track income, payments and financial reports</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.revenue.title')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t('crm.revenue.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex bg-gray-100 rounded-lg p-0.5">
@@ -98,7 +98,7 @@ const CRMRevenue = () => {
           </div>
           <button className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
             <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Export</span>
+            <span className="hidden sm:inline">{t('common.export')}</span>
           </button>
         </div>
       </div>
@@ -106,10 +106,10 @@ const CRMRevenue = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
-          { label: 'Total Revenue', value: `€${(stats.total / 1000).toFixed(1)}k`, change: '+18%', trend: 'up', icon: DollarSign, bg: 'bg-emerald-50', iconColor: 'text-emerald-600', border: 'border-emerald-100' },
-          { label: 'Collected', value: `€${(stats.paid / 1000).toFixed(1)}k`, change: '+12%', trend: 'up', icon: CreditCard, bg: 'bg-blue-50', iconColor: 'text-blue-600', border: 'border-blue-100' },
-          { label: 'Pending', value: `€${stats.pending}`, change: '2 invoices', trend: 'neutral', icon: Receipt, bg: 'bg-amber-50', iconColor: 'text-amber-600', border: 'border-amber-100' },
-          { label: 'Overdue', value: `€${stats.overdue}`, change: '1 invoice', trend: 'down', icon: Banknote, bg: 'bg-red-50', iconColor: 'text-red-600', border: 'border-red-100' },
+          { label: t('crm.revenue.totalRevenue'), value: `€${(stats.total / 1000).toFixed(1)}k`, change: '+18%', trend: 'up', icon: DollarSign, bg: 'bg-emerald-50', iconColor: 'text-emerald-600', border: 'border-emerald-100' },
+          { label: t('crm.revenue.collected'), value: `€${(stats.paid / 1000).toFixed(1)}k`, change: '+12%', trend: 'up', icon: CreditCard, bg: 'bg-blue-50', iconColor: 'text-blue-600', border: 'border-blue-100' },
+          { label: t('common.pending'), value: `€${stats.pending}`, change: '2 invoices', trend: 'neutral', icon: Receipt, bg: 'bg-amber-50', iconColor: 'text-amber-600', border: 'border-amber-100' },
+          { label: t('crm.revenue.overdue'), value: `€${stats.overdue}`, change: '1 invoice', trend: 'down', icon: Banknote, bg: 'bg-red-50', iconColor: 'text-red-600', border: 'border-red-100' },
         ].map((s) => (
           <div key={s.label} className={`bg-white rounded-2xl border ${s.border} p-4 sm:p-5 hover:shadow-md transition-shadow`}>
             <div className="flex items-start justify-between mb-3">
@@ -133,7 +133,7 @@ const CRMRevenue = () => {
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-gray-400" />
-              <h2 className="text-sm font-bold text-gray-900">Monthly Revenue</h2>
+              <h2 className="text-sm font-bold text-gray-900">{t('crm.revenue.monthlyRevenue')}</h2>
             </div>
             <span className="text-xs font-semibold text-emerald-600">€{MONTHLY_DATA.reduce((s, d) => s + d.revenue, 0).toLocaleString()}</span>
           </div>
@@ -156,7 +156,7 @@ const CRMRevenue = () => {
         <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
           <div className="flex items-center gap-2 mb-5">
             <PieChart className="w-4 h-4 text-gray-400" />
-            <h2 className="text-sm font-bold text-gray-900">Revenue by Type</h2>
+            <h2 className="text-sm font-bold text-gray-900">{t('crm.revenue.revenueByType')}</h2>
           </div>
           <div className="space-y-3">
             {REVENUE_BY_TYPE.map((r) => (
@@ -177,7 +177,7 @@ const CRMRevenue = () => {
       {/* Transactions Table */}
       <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-bold text-gray-900">Recent Transactions</h2>
+          <h2 className="text-sm font-bold text-gray-900">{t('crm.revenue.recentTransactions')}</h2>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-1.5 max-w-xs">
               <Search className="w-3.5 h-3.5 text-gray-400" />
@@ -186,11 +186,11 @@ const CRMRevenue = () => {
             </div>
             <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
               className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600">
-              <option value="all">All Status</option>
-              <option value="paid">Paid</option>
-              <option value="pending">Pending</option>
-              <option value="overdue">Overdue</option>
-              <option value="refunded">Refunded</option>
+              <option value="all">{t('crm.revenue.allStatus')}</option>
+              <option value="paid">{t('crm.revenue.paid')}</option>
+              <option value="pending">{t('common.pending')}</option>
+              <option value="overdue">{t('crm.revenue.overdue')}</option>
+              <option value="refunded">{t('crm.revenue.refunded')}</option>
             </select>
           </div>
         </div>
@@ -199,13 +199,13 @@ const CRMRevenue = () => {
           <table className="w-full min-w-[650px]">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Invoice</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Patient</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Type</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Date</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Method</th>
-                <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">Amount</th>
-                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">Status</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('crm.revenue.invoice')}</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.patient')}</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.type')}</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.date')}</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.revenue.method')}</th>
+                <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.amount')}</th>
+                <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">

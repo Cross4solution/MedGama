@@ -52,11 +52,11 @@ const CRMDocuments = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Documents</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage patient documents, reports and files</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.documents.title')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t('crm.documents.subtitle')}</p>
         </div>
         <button onClick={() => setShowUploadModal(true)} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md">
-          <Upload className="w-4 h-4" /> Upload Document
+          <Upload className="w-4 h-4" /> {t('crm.documents.uploadDocument')}
         </button>
       </div>
 
@@ -64,15 +64,15 @@ const CRMDocuments = () => {
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white rounded-xl border border-gray-200/60 px-4 py-3">
           <p className="text-lg font-bold text-gray-900">{stats.total}</p>
-          <p className="text-[11px] text-gray-500">Total Documents</p>
+          <p className="text-[11px] text-gray-500">{t('crm.documents.totalDocuments')}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200/60 px-4 py-3">
           <p className="text-lg font-bold text-gray-900">{stats.totalSize}</p>
-          <p className="text-[11px] text-gray-500">Storage Used</p>
+          <p className="text-[11px] text-gray-500">{t('crm.documents.storageUsed')}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200/60 px-4 py-3">
           <p className="text-lg font-bold text-gray-900">{stats.categories}</p>
-          <p className="text-[11px] text-gray-500">Categories</p>
+          <p className="text-[11px] text-gray-500">{t('crm.documents.categories')}</p>
         </div>
       </div>
 
@@ -81,7 +81,7 @@ const CRMDocuments = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <Search className="w-4 h-4 text-gray-400" />
-            <input type="text" placeholder="Search documents..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+            <input type="text" placeholder={t('crm.documents.searchDocuments')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
           </div>
           <div className="flex items-center gap-1.5 overflow-x-auto">
@@ -100,7 +100,7 @@ const CRMDocuments = () => {
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-gray-400">
               <FolderOpen className="w-10 h-10 mb-2 opacity-40" />
-              <p className="text-sm font-medium">No documents found</p>
+              <p className="text-sm font-medium">{t('common.noResults')}</p>
             </div>
           ) : (
             filtered.map((doc) => (
@@ -139,29 +139,29 @@ const CRMDocuments = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="text-base font-bold text-gray-900">Upload Document</h2>
+              <h2 className="text-base font-bold text-gray-900">{t('crm.documents.uploadDocument')}</h2>
               <button onClick={() => setShowUploadModal(false)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400"><X className="w-4 h-4" /></button>
             </div>
             <div className="px-6 py-5 space-y-4">
               <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-teal-400 hover:bg-teal-50/20 transition-colors cursor-pointer">
                 <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-700">Click to upload or drag and drop</p>
-                <p className="text-xs text-gray-400 mt-1">PDF, DOCX, XLSX, JPG, PNG up to 25MB</p>
+                <p className="text-sm font-medium text-gray-700">{t('crm.documents.clickToUpload')}</p>
+                <p className="text-xs text-gray-400 mt-1">PDF, DOCX, XLSX, JPG, PNG (max 25MB)</p>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Category</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.documents.category')}</label>
                 <select className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
                   {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Patient (optional)</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.patient')} ({t('crm.documents.optional')})</label>
                 <input type="text" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Link to patient" />
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
-              <button onClick={() => setShowUploadModal(false)} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl">Cancel</button>
-              <button className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">Upload</button>
+              <button onClick={() => setShowUploadModal(false)} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl">{t('common.cancel')}</button>
+              <button className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">{t('crm.documents.upload')}</button>
             </div>
           </div>
         </div>
