@@ -4,7 +4,7 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
-import { User, Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink } from 'lucide-react';
+import { User, Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink, Globe } from 'lucide-react';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { Link } from 'react-router-dom';
 import PatientNotify from '../components/notifications/PatientNotify';
@@ -26,6 +26,9 @@ export default function Profile() {
   const [countryName, setCountryName] = useState(initialCountryName);
   const fileInputRef = useRef(null);
   const [avatarFileName, setAvatarFileName] = useState('');
+  const [preferredLanguage, setPreferredLanguage] = useState(() => {
+    try { return localStorage.getItem('preferred_language') || 'en'; } catch { return 'en'; }
+  });
 
   // Mock preferences (persist localStorage)
   const loadPrefs = () => {
@@ -145,9 +148,10 @@ export default function Profile() {
   const saveAccount = (e) => {
     e.preventDefault();
     const limitedName = (name || '').slice(0, 30).trim();
-    const updated = { ...user, name: limitedName || user.name, avatar: avatar.trim() || undefined };
+    const updated = { ...user, name: limitedName || user.name, avatar: avatar.trim() || undefined, preferredLanguage };
     const codeLower = countryCodes[countryName] || null;
     const codeUpper = codeLower ? codeLower.toUpperCase() : country;
+    try { localStorage.setItem('preferred_language', preferredLanguage); } catch {}
     login(updated, codeUpper);
   };
 
@@ -306,6 +310,28 @@ export default function Profile() {
                       } catch { return null; }
                     }}
                   />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                    <span className="flex items-center gap-1.5"><Globe className="w-3 h-3" /> Preferred Language</span>
+                  </label>
+                  <select
+                    value={preferredLanguage}
+                    onChange={(e) => setPreferredLanguage(e.target.value)}
+                    className="w-full md:w-64 border border-gray-200 rounded-xl px-3 text-sm h-10 bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
+                  >
+                    <option value="en">🇬🇧 English</option>
+                    <option value="tr">🇹🇷 Türkçe</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                    <option value="ru">🇷🇺 Русский</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="nl">🇳🇱 Nederlands</option>
+                    <option value="it">🇮🇹 Italiano</option>
+                    <option value="pt">🇵🇹 Português</option>
+                  </select>
+                  <p className="mt-1 text-[11px] text-gray-400">This sets your preferred language for the platform interface and communications.</p>
                 </div>
               </div>
 

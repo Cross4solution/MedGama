@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Building2, Users, Calendar, Video, Shield, Lock, Eye, EyeOff } from 'lucide-react';
+import { Building2, Users, Calendar, Video, Shield, Lock, Eye, EyeOff, Phone } from 'lucide-react';
+import PhoneVerification from '../components/auth/PhoneVerification';
 
 const ClinicLogin = () => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const ClinicLogin = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
 
   // If user is already logged in (doctor/clinic), skip login form
   useEffect(() => {
@@ -37,10 +39,10 @@ const ClinicLogin = () => {
       setLoading(false);
       return;
     }
-    // Demo auth: set role and redirect to explore
+    // After successful login, require phone verification
     login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' });
     setLoading(false);
-    navigate('/explore', { replace: true });
+    setShowPhoneVerification(true);
   };
 
   const features = [
@@ -48,6 +50,34 @@ const ClinicLogin = () => {
     { icon: Calendar, text: 'Coordinate appointments' },
     { icon: Video, text: 'Telehealth scheduling' },
   ];
+
+  const handlePhoneVerified = (verifiedPhone) => {
+    navigate('/crm', { replace: true });
+  };
+
+  const handlePhoneSkip = () => {
+    navigate('/crm', { replace: true });
+  };
+
+  // Phone verification screen
+  if (showPhoneVerification) {
+    return (
+      <div className="min-h-screen w-full flex relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800" />
+        <div className="relative z-10 flex w-full min-h-screen items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-2xl">
+              <PhoneVerification
+                onVerified={handlePhoneVerified}
+                onSkip={handlePhoneSkip}
+                title="Clinic Phone Verification"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex relative overflow-hidden">

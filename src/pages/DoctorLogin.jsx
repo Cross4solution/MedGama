@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff } from 'lucide-react';
+import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff, Phone } from 'lucide-react';
+import PhoneVerification from '../components/auth/PhoneVerification';
 
 const DoctorLogin = () => {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ const DoctorLogin = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
+  const [pendingLoginData, setPendingLoginData] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -107,7 +110,10 @@ const DoctorLogin = () => {
       const res = await login(formData.email, formData.password);
       const apiUser = res?.data?.user;
       const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
-      navigate(isDoctor ? '/explore' : '/home-v2', { replace: true });
+      // After successful login, require phone verification
+      setPendingLoginData({ user: apiUser, isDoctor });
+      setShowPhoneVerification(true);
+      return;
     } catch (err) {
       if (err?.status === 401) setError(err?.data?.message || 'Invalid credentials');
       else if (err?.status === 422) setError(err?.data?.message || 'Validation error');
@@ -129,6 +135,37 @@ const DoctorLogin = () => {
     { value: '50K+', label: 'Patients' },
     { value: '98%', label: 'Satisfaction' },
   ];
+
+  const handlePhoneVerified = (verifiedPhone) => {
+    // Phone verified — proceed to CRM/dashboard
+    const dest = pendingLoginData?.isDoctor ? '/crm' : '/home-v2';
+    navigate(dest, { replace: true });
+  };
+
+  const handlePhoneSkip = () => {
+    const dest = pendingLoginData?.isDoctor ? '/crm' : '/home-v2';
+    navigate(dest, { replace: true });
+  };
+
+  // Phone verification screen
+  if (showPhoneVerification) {
+    return (
+      <div className="min-h-screen w-full flex relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800" />
+        <div className="relative z-10 flex w-full min-h-screen items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-2xl">
+              <PhoneVerification
+                onVerified={handlePhoneVerified}
+                onSkip={handlePhoneSkip}
+                title="Doctor Phone Verification"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex relative overflow-hidden">

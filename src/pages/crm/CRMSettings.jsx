@@ -132,14 +132,23 @@ const CRMSettings = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Language</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 text-gray-400" /> Preferred Language
+                  </label>
                   <select value={profile.language} onChange={(e) => setProfile({...profile, language: e.target.value})}
-                    className="w-full sm:w-48 h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                    <option value="en">English</option>
-                    <option value="tr">Turkish</option>
-                    <option value="de">German</option>
-                    <option value="ar">Arabic</option>
+                    className="w-full sm:w-64 h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="tr">🇹🇷 Türkçe</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                    <option value="ru">🇷🇺 Русский</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="nl">🇳🇱 Nederlands</option>
+                    <option value="it">🇮🇹 Italiano</option>
+                    <option value="pt">🇵🇹 Português</option>
                   </select>
+                  <p className="mt-1 text-[11px] text-gray-400">Sets the language for CRM interface and patient communications.</p>
                 </div>
               </div>
               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex justify-end">
