@@ -94,9 +94,9 @@ const RegisterForm = ({
   return (
   <div className="w-full max-w-md mx-auto">
          <div className="text-center mb-1">
-           <div className="flex items-center justify-center gap-2 mb-0.5">
-             <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 object-contain" />
-             <span className="text-lg font-extrabold tracking-tight text-gray-900">MedGama</span>
+           <div className="flex items-center justify-center gap-2 sm:gap-3 mb-0.5">
+             <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
+             <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedGama</span>
            </div>
            <h1 className="text-lg font-bold text-gray-900 mb-0.5">Create an Account</h1>
            <p className="text-xs text-gray-500">Sign up to start your health journey</p>

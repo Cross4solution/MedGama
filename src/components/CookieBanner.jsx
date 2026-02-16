@@ -236,13 +236,13 @@ const CookieBanner = () => {
       {/* Backdrop overlay */}
       <div className="absolute inset-0 -top-screen" />
       <div className="bg-gray-900/95 backdrop-blur-md border-t border-gray-700/50 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-col md:flex-row md:items-center gap-2.5 md:gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex flex-col md:flex-row md:items-center gap-3 md:gap-5">
           {/* Icon + text */}
-          <div className="flex items-center gap-2.5 flex-1 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
-              <Shield className="w-4 h-4 text-teal-400" />
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-teal-500/20 flex items-center justify-center flex-shrink-0">
+              <Shield className="w-5 h-5 text-teal-400" />
             </div>
-            <p className="text-xs text-gray-300 leading-snug">
+            <p className="text-sm text-gray-300 leading-relaxed">
               <span className="text-white font-semibold">Your Privacy Matters</span>{' · '}
               We use cookies for essential functionality, analytics, and personalized content. Under the <strong className="text-white">GDPR</strong>, you control your data.{' '}
               <Link to="/cookie-policy" className="text-teal-400 hover:text-teal-300 font-medium underline underline-offset-2">Cookie Policy</Link>
@@ -252,26 +252,26 @@ const CookieBanner = () => {
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2.5 flex-shrink-0">
             <button
               onClick={openSettings}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 border border-gray-500 text-gray-300 rounded-lg hover:bg-gray-800 hover:text-white transition-all text-xs font-medium"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 border border-gray-500 text-gray-300 rounded-xl hover:bg-gray-800 hover:text-white transition-all text-sm font-medium"
             >
-              <Settings className="w-3.5 h-3.5" />
+              <Settings className="w-4 h-4" />
               Customize
             </button>
             <button
               onClick={declineAll}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 border border-gray-500 text-gray-300 rounded-lg hover:bg-gray-800 hover:text-white transition-all text-xs font-medium"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 border border-gray-500 text-gray-300 rounded-xl hover:bg-gray-800 hover:text-white transition-all text-sm font-medium"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
               Reject All
             </button>
             <button
               onClick={acceptAll}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-all text-xs font-semibold shadow-sm"
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all text-sm font-semibold shadow-sm"
             >
-              <Check className="w-3.5 h-3.5" />
+              <Check className="w-4 h-4" />
               Accept All
             </button>
           </div>
