@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, MapPin, Stethoscope, Clock } from 'lucide-react';
 import Badge from 'components/Badge';
+import { useTranslation } from 'react-i18next';
 
 function Rating({ value, reviewCount }) {
   return (
@@ -50,6 +51,7 @@ function getTagVariant(tag) {
 }
 
 export default function ClinicCard({ clinic, isFavorite, onToggleFavorite, onView }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-300 overflow-hidden">
       <div className="flex flex-col md:flex-row">
@@ -106,7 +108,7 @@ export default function ClinicCard({ clinic, isFavorite, onToggleFavorite, onVie
 
           <div className="flex items-center justify-end">
             <button onClick={() => onView?.(clinic)} className="bg-[#1C6A83] text-white px-4 py-2 rounded-xl hover:bg-[#155a6f] transition-all duration-200 shadow-sm hover:shadow-md">
-              View
+              {t('common.view')}
             </button>
           </div>
         </div>

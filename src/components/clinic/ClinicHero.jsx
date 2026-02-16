@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapPin, Star, Heart, Minus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ClinicHero({
   image,
@@ -10,12 +11,11 @@ export default function ClinicHero({
   badgeNode,
   isFavorite,
   onToggleFavorite,
-  // Yeni: takip durumu ve toggler
   isFollowing,
   onToggleFollow,
-  // Geriye dönük uyumluluk: onFollow hala gelebilir
   onFollow,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6 mt-4">
       <div className="relative h-56 md:h-72">
@@ -62,12 +62,12 @@ export default function ClinicHero({
               {isFollowing ? (
                 <>
                   <Minus className="w-4 h-4 flex-shrink-0" />
-                  <span>Unfollow</span>
+                  <span>{t('common.unfollow')}</span>
                 </>
               ) : (
                 <>
                   <img src="/images/icon/plus-svgrepo-com.svg" alt="Plus" className="w-4 h-4 flex-shrink-0 brightness-0 invert" />
-                  <span>Follow</span>
+                  <span>{t('common.follow')}</span>
                 </>
               )}
             </button>

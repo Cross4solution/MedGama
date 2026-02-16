@@ -48,6 +48,11 @@
     "notes": "Notes",
     "patient": "Patient",
     "doctor": "Doctor",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "city": "City",
+    "specialty": "Specialty",
+    "priceRange": "Price Range",
     "clinic": "Clinic",
     "menu": "Menu",
     "links": "Links"

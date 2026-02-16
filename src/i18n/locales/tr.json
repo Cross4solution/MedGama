@@ -48,6 +48,11 @@
     "notes": "Notlar",
     "patient": "Hasta",
     "doctor": "Doktor",
+    "follow": "Takip Et",
+    "unfollow": "Takibi Bırak",
+    "city": "Şehir",
+    "specialty": "Uzmanlık",
+    "priceRange": "Fiyat Aralığı",
     "clinic": "Klinik",
     "menu": "Menü",
     "links": "Bağlantılar"
