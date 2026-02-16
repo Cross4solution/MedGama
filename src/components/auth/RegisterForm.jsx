@@ -18,6 +18,7 @@ import PhoneNumberInput from '../forms/PhoneNumberInput';
 import { listCountriesAll, getFlagCode } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox';
 import MedicalHistoryTags from './MedicalHistoryTags';
+import { useTranslation } from 'react-i18next';
 // getFlagCode imported above with listCountriesAll
 
 /**
@@ -63,6 +64,7 @@ const RegisterForm = ({
   setShowPrivacyPopup,
   submitting = false,
 }) => {
+  const { t } = useTranslation();
   // Multi-step state
   const [step, setStep] = useState(1); // 1 -> basic, 2 -> details
   const [localErrors, setLocalErrors] = useState({});
@@ -98,18 +100,18 @@ const RegisterForm = ({
              <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
              <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedGama</span>
            </div>
-           <h1 className="text-lg font-bold text-gray-900 mb-0.5">Create an Account</h1>
-           <p className="text-xs text-gray-500">Sign up to start your health journey</p>
+           <h1 className="text-lg font-bold text-gray-900 mb-0.5">{t('auth.createAccount')}</h1>
+           <p className="text-xs text-gray-500">{t('auth.signUpSubtitle')}</p>
          </div>
          <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3 flex flex-col items-center">
            {step === 1 && (
            <>
            <div className="w-full max-w-md mb-2">
-             <label className="block text-xs font-medium text-gray-500 mb-2 text-left">Register as</label>
+             <label className="block text-xs font-medium text-gray-500 mb-2 text-left">{t('auth.registerAs')}</label>
              <div className="inline-flex w-full rounded-xl bg-gray-100 p-1 gap-1">
                {[
-                 { key: 'patient', label: 'Patient', Icon: User },
-                 { key: 'doctor', label: 'Doctor', Icon: Stethoscope },
+                 { key: 'patient', label: t('common.patient'), Icon: User },
+                 { key: 'doctor', label: t('common.doctor'), Icon: Stethoscope },
                ].map((opt) => {
                  const isActive = (fd.role ?? 'patient') === opt.key;
                  return (
@@ -133,7 +135,7 @@ const RegisterForm = ({
             <div className="grid grid-cols-1 gap-1 w-full max-w-md">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">
-            First Name
+            {t('auth.firstName')}
           </label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -152,7 +154,7 @@ const RegisterForm = ({
         </div>
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">
-            Last Name
+            {t('auth.lastName')}
           </label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -173,7 +175,7 @@ const RegisterForm = ({
              <div className="grid grid-cols-1 gap-1 w-full max-w-2xl mb-2 sm:mb-3">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">
-            Email Address
+            {t('auth.emailAddress')}
           </label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -192,7 +194,7 @@ const RegisterForm = ({
         </div>
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">
-            Password
+            {t('common.password')}
           </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -218,7 +220,7 @@ const RegisterForm = ({
         </div>
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">
-            Confirm Password
+            {t('auth.confirmPassword')}
           </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -251,7 +253,7 @@ const RegisterForm = ({
                 onClick={handleNext}
                 className="inline-flex items-center gap-2 bg-blue-600 text-white py-2 sm:py-2 px-5 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md mt-2 sm:mt-3"
               >
-                Next
+                {t('common.next')}
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </button>
             </div>
@@ -263,7 +265,7 @@ const RegisterForm = ({
         <div className="grid grid-cols-1 gap-2.5 w-full max-w-md">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1 text-left">
-              Country
+              {t('crm.patients.country')}
             </label>
             <div className="relative">
               <MapPin className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-20" />
@@ -288,7 +290,7 @@ const RegisterForm = ({
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1 text-left">Phone Number</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1 text-left">{t('auth.phoneNumber')}</label>
             <PhoneNumberInput
               value={fd.phone ?? ''}
               countryName={fd.country ?? ''}
@@ -299,7 +301,7 @@ const RegisterForm = ({
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1 text-left">
-              Date of Birth
+              {t('auth.dateOfBirth')}
             </label>
             <div
               className="relative date-with-icon cursor-pointer"
@@ -319,7 +321,7 @@ const RegisterForm = ({
           {(fd.role ?? 'patient') === 'patient' && (
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1 text-left">
-                Medical History <span className="font-normal text-gray-400">(chronic diseases, allergies, medications)</span>
+                {t('profile.medicalHistory')} <span className="font-normal text-gray-400">({t('auth.medicalHistoryHint')})</span>
               </label>
               <MedicalHistoryTags
                 value={fd.medicalHistory ?? ''}
@@ -341,13 +343,13 @@ const RegisterForm = ({
             />
             <span className="text-sm text-gray-600 text-left leading-relaxed">
               <span className="text-red-500">*</span>{' '}
-              I have read and agree to the{' '}
+              {t('auth.agreeToTerms')}{' '}
               <button
                 type="button"
                 onClick={() => setShowTermsPopup(true)}
                 className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
               >
-                Terms of Use
+                {t('auth.termsOfUse')}
               </button>
             </span>
           </label>
@@ -364,13 +366,13 @@ const RegisterForm = ({
             />
             <span className="text-sm text-gray-600 text-left leading-relaxed">
               <span className="text-red-500">*</span>{' '}
-              I have read and consent to the processing of my personal data as described in the{' '}
+              {t('auth.agreeToPrivacy')}{' '}
               <button
                 type="button"
                 onClick={() => setShowPrivacyPopup(true)}
                 className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
               >
-                Privacy Policy
+                {t('footer.privacyPolicy')}
               </button>
             </span>
           </label>
@@ -388,7 +390,7 @@ const RegisterForm = ({
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5 flex-shrink-0"
                 />
                 <span className="text-sm text-gray-500 text-left leading-relaxed">
-                  I explicitly consent to the processing of my health data (medical history, conditions, allergies) for care coordination purposes. <span className="text-gray-400 text-xs">(Optional — GDPR Art. 9)</span>
+                  {t('auth.healthDataConsent')} <span className="text-gray-400 text-xs">({t('auth.optionalGDPR9')})</span>
                 </span>
               </label>
             </>
@@ -404,7 +406,7 @@ const RegisterForm = ({
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5 flex-shrink-0"
             />
             <span className="text-sm text-gray-500 text-left leading-relaxed">
-              I would like to receive emails about health tips, new services, and special offers. <span className="text-gray-400 text-xs">(Optional — you can unsubscribe at any time)</span>
+              {t('auth.marketingConsent')} <span className="text-gray-400 text-xs">({t('auth.optionalUnsubscribe')})</span>
             </span>
           </label>
         </div>
@@ -412,26 +414,26 @@ const RegisterForm = ({
         <div className="w-full max-w-md flex items-center justify-between gap-3 mt-4 mb-2">
           <button onClick={handleBack} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-            Back
+            {t('common.back')}
           </button>
           <button
             type="submit"
             disabled={submitting}
             className={`inline-flex items-center gap-2 py-2.5 px-6 rounded-xl focus:ring-4 transition-all duration-200 font-semibold text-sm shadow-sm hover:shadow-md ${submitting ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-teal-600 text-white hover:bg-teal-700 focus:ring-teal-200'}`}
           >
-            {submitting ? 'Creating…' : 'Create Account'}
+            {submitting ? t('auth.creating') : t('auth.createAccount')}
           </button>
         </div>
         </>
       )}
       <p className="mt-0 text-center text-sm sm:text-base text-gray-600">
-        Already have an account?{' '}
+        {t('auth.alreadyHaveAccount')}{' '}
         <button
           type="button"
           onClick={() => setCurrentPage('login')}
           className="text-blue-600 hover:text-blue-700 font-semibold"
         >
-          Log in
+          {t('auth.logIn')}
         </button>
       </p>
     </form>
