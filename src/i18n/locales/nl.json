@@ -48,7 +48,15 @@
     "notes": "Notities",
     "patient": "Patiënt",
     "doctor": "Arts",
-    "clinic": "Kliniek"
+    "follow": "Volgen",
+    "unfollow": "Ontvolgen",
+    "city": "Stad",
+    "specialty": "Specialiteit",
+    "priceRange": "Prijsklasse",
+    "apply": "Toepassen",
+    "clinic": "Kliniek",
+    "menu": "Menu",
+    "links": "Links"
   },
   "nav": {
     "home": "Home",

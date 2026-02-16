@@ -48,7 +48,15 @@
     "notes": "Notas",
     "patient": "Paciente",
     "doctor": "Médico",
-    "clinic": "Clínica"
+    "follow": "Seguir",
+    "unfollow": "Dejar de seguir",
+    "city": "Ciudad",
+    "specialty": "Especialidad",
+    "priceRange": "Rango de precios",
+    "apply": "Aplicar",
+    "clinic": "Clínica",
+    "menu": "Menú",
+    "links": "Enlaces"
   },
   "nav": {
     "home": "Inicio",
