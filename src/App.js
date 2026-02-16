@@ -36,6 +36,10 @@ const DoctorsDepartments = React.lazy(() => import('./pages/DoctorsDepartments.j
 const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage'));
 const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRightsPage'));
 
+// CRM Pages
+const CRMLayout = React.lazy(() => import('./components/crm/CRMLayout'));
+const CRMDashboard = React.lazy(() => import('./pages/crm/CRMDashboard'));
+
 // Minimal loading fallback
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -47,8 +51,8 @@ function AppContent() {
   const location = useLocation();
   const navType = useNavigationType();
   const { user } = useAuth();
-  // Show sidebar for all logged-in users (including patients)
-  const hasSidebar = !!user;
+  // Show sidebar for all logged-in users (including patients), but not on CRM pages
+  const hasSidebar = !!user && !location.pathname.startsWith('/crm');
   
   // Opsiyonel tekerlek kaydırma override'ı: varsayılan AÇIK (azıcık yavaş ve akıcı)
   // Scroll override: tek kaynaktan (config/scroll.js)
@@ -124,11 +128,12 @@ function AppContent() {
     }
   }, [location.pathname, navType]);
   
-  // Auth sayfalarında header ve cookie banner'ı gizle
+  // Auth ve CRM sayfalarında header ve cookie banner'ı gizle
   const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login'];
   const isAuthPage = hideOnAuthPages.includes(location.pathname);
-  const showCookieBanner = !isAuthPage;
-  const showHeader = !isAuthPage;
+  const isCRMPage = location.pathname.startsWith('/crm');
+  const showCookieBanner = !isAuthPage && !isCRMPage;
+  const showHeader = !isAuthPage && !isCRMPage;
   
   // Sayfa türüne göre padding ayarı
   const pagesWithOwnContainer = [
@@ -187,6 +192,9 @@ function AppContent() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
         <Route path="/post/:id" element={<PostDetail />} />
+        {/* CRM Routes */}
+        <Route path="/crm" element={<CRMLayout><CRMDashboard /></CRMLayout>} />
+        <Route path="/crm/*" element={<CRMLayout><CRMDashboard /></CRMLayout>} />
         </Routes>
         </Suspense>
       </div>

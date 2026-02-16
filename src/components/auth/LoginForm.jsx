@@ -173,6 +173,13 @@ const LoginForm = ({
         >
           Login
         </button>
+        <p className="text-[11px] text-gray-400 text-center leading-relaxed px-2">
+          By logging in, you agree to our{' '}
+          <a href="/terms-of-service" className="text-blue-500 hover:text-blue-600 underline underline-offset-2">Terms of Service</a>{' '}
+          and{' '}
+          <a href="/privacy-policy" className="text-blue-500 hover:text-blue-600 underline underline-offset-2">Privacy Policy</a>.
+          Your data is processed in accordance with GDPR and KVKK regulations.
+        </p>
         <div className="relative my-6 w-full">
           <div className="relative flex justify-center text-sm">
             <span className="text-gray-500">or</span>

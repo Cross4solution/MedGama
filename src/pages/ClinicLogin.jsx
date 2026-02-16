@@ -125,8 +125,15 @@ const ClinicLogin = () => {
                         className="w-full bg-teal-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all disabled:opacity-50">
                   {loading ? 'Signing in...' : 'Sign In'}
                 </button>
+                <p className="text-[11px] text-gray-400 text-center leading-relaxed px-1">
+                  By signing in, you agree to our{' '}
+                  <a href="/terms-of-service" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">Terms of Service</a>{' '}
+                  and{' '}
+                  <a href="/privacy-policy" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">Privacy Policy</a>.
+                  Your data is processed in accordance with GDPR and KVKK regulations.
+                </p>
                 <button type="button"
-                        onClick={() => { login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }); navigate('/explore', { replace: true }); }}
+                        onClick={() => { login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }); navigate('/crm', { replace: true }); }}
                         className="w-full bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 border border-gray-200 transition-colors">
                   Try Demo (Clinic)
                 </button>
