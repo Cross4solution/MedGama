@@ -18,6 +18,7 @@ import PhoneNumberInput from '../forms/PhoneNumberInput';
 import { listCountriesAll, getFlagCode } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox';
 import MedicalHistoryTags from './MedicalHistoryTags';
+import DateOfBirthPicker from '../forms/DateOfBirthPicker';
 import { useTranslation } from 'react-i18next';
 // getFlagCode imported above with listCountriesAll
 
@@ -303,20 +304,10 @@ const RegisterForm = ({
             <label className="block text-xs font-medium text-gray-700 mb-1 text-left">
               {t('auth.dateOfBirth')}
             </label>
-            <div
-              className="relative date-with-icon cursor-pointer"
-              onClick={() => dobRef.current?.showPicker?.()}
-            >
-              <Calendar className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                ref={dobRef}
-                type="date"
-                name="birthDate"
-                value={fd.birthDate ?? ''}
-                onChange={handleInputChange}
-                className="w-full h-11 pl-10 pr-4 border border-gray-300 rounded-xl hover:border-gray-400 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all text-left text-sm bg-white"
-              />
-            </div>
+            <DateOfBirthPicker
+              value={fd.birthDate ?? ''}
+              onChange={(iso) => handleInputChange({ target: { name: 'birthDate', value: iso } })}
+            />
           </div>
           {(fd.role ?? 'patient') === 'patient' && (
             <div>
