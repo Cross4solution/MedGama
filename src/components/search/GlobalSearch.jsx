@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
-import { clinicAPI } from '../../lib/api';
+import { clinicAPI, doctorAPI } from '../../lib/api';
 
 const PLACEHOLDER_HINTS = [
   'Search clinics or doctors',
@@ -85,20 +85,21 @@ export default function GlobalSearch() {
   const [apiResults, setApiResults] = useState([]);
   const debounceRef = useRef(null);
 
-  // Debounced API search
+  // Debounced API search — clinics + doctors in parallel
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     const q = (query || '').trim();
     if (!q) { setApiResults([]); return; }
     debounceRef.current = setTimeout(() => {
-      clinicAPI.list({ search: q, per_page: 8 }).then((res) => {
-        const list = res?.data || [];
-        if (list.length) {
-          setApiResults(list.map((c) => ({ type: 'Klinik', name: c.fullname || c.name, id: c.id, codename: c.codename })));
-        } else {
-          setApiResults([]);
-        }
-      }).catch(() => setApiResults([]));
+      Promise.all([
+        clinicAPI.list({ name: q, per_page: 5 }).catch(() => ({ data: [] })),
+        doctorAPI.list({ search: q, per_page: 5 }).catch(() => ({ data: [] })),
+      ]).then(([clinicRes, doctorRes]) => {
+        const clinics = (clinicRes?.data || []).map((c) => ({ type: 'Klinik', name: c.fullname || c.name, id: c.id, codename: c.codename }));
+        const doctors = (doctorRes?.data || []).map((d) => ({ type: 'Doktor', name: d.fullname || d.name, id: d.id }));
+        const merged = [...clinics, ...doctors];
+        setApiResults(merged.length ? merged : []);
+      });
     }, 300);
     return () => clearTimeout(debounceRef.current);
   }, [query]);
