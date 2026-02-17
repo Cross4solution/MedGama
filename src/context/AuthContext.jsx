@@ -94,7 +94,7 @@ export function AuthProvider({ children }) {
     setUser(userWithRole);
     setToken(access);
     try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
-    return { data: { user: userWithRole, access_token: access } };
+    return { data: { user: userWithRole, access_token: access }, requires_email_verification: !!res?.requires_email_verification };
   };
 
   const applyApiAuth = (res) => {
@@ -262,6 +262,7 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => ({
     user,
+    setUser,
     token,
     country,
     setCountry,
