@@ -1,5 +1,7 @@
-import React, { useRef, useState } from 'react';
-import { Save, Building2, MapPin, Info, Image as ImageIcon, Upload, Plus, X, DollarSign, Images, Package, Star, Stethoscope, Activity, Brain, Scissors, Link as LinkIcon } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Save, Building2, MapPin, Info, Image as ImageIcon, Upload, Plus, X, DollarSign, Images, Package, Star, Stethoscope, Activity, Brain, Scissors, Link as LinkIcon, Loader2, CheckCircle2 } from 'lucide-react';
+import { clinicAPI } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 function TagEditor({ label, value = [], onChange, placeholder }) {
   const [text, setText] = useState('');
@@ -116,7 +118,10 @@ function StarRow({ value = 0 }) {
 }
 
 export default function ClinicProfileEdit() {
+  const { user } = useAuth();
   const [tab, setTab] = useState('overview');
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [form, setForm] = useState({
     // Hero & basics
     heroImage: '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
@@ -221,11 +226,46 @@ export default function ClinicProfileEdit() {
   const updatePackage = (id, patch) => setPackages((prev) => prev.map((p) => p.id === id ? { ...p, ...patch } : p));
   const removePackage = (id) => setPackages((prev) => prev.filter((p) => p.id !== id));
 
+  // Load clinic data from API on mount
+  useEffect(() => {
+    if (!user?.clinic_id) return;
+    clinicAPI.getByCodename(user.clinic_id).then(res => {
+      const c = res?.clinic || res;
+      if (c) {
+        setForm(prev => ({
+          ...prev,
+          name: c.fullname || c.name || prev.name,
+          location: c.address || prev.location,
+          aboutP1: c.biography || prev.aboutP1,
+          logo: c.avatar || prev.logo,
+        }));
+        if (c.address) setAddress(c.address);
+        if (c.website) setMapUrl(c.website);
+      }
+    }).catch(() => {});
+  }, [user?.clinic_id]);
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    // TODO: API entegrasyonu
-    setTimeout(() => setSaving(false), 800);
+    setSaveError('');
+    setSaveSuccess(false);
+    try {
+      if (user?.clinic_id) {
+        await clinicAPI.update(user.clinic_id, {
+          fullname: form.name,
+          address: address,
+          biography: form.aboutP1 + (form.aboutP2 ? '\n\n' + form.aboutP2 : ''),
+          website: mapUrl || undefined,
+        });
+      }
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      setSaveError(err?.message || 'Failed to save clinic profile.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -522,10 +562,14 @@ export default function ClinicProfileEdit() {
             )}
 
             {tab !== 'reviews' && (
-              <div className="flex justify-end">
-                <button type="submit" disabled={saving} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 disabled:opacity-60">
-                  <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save'}
-                </button>
+              <div className="space-y-3">
+                {saveError && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-xl text-sm">{saveError}</div>}
+                {saveSuccess && <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-2.5 rounded-xl text-sm inline-flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Profile saved successfully!</div>}
+                <div className="flex justify-end">
+                  <button type="submit" disabled={saving} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 disabled:opacity-60">
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {saving ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
               </div>
             )}
           </form>
