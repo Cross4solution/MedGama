@@ -9,13 +9,51 @@ import ActiveFilterChips from 'components/timeline/ActiveFilterChips';
 import TimelineCard from 'components/timeline/TimelineCard';
 import SkeletonCard from 'components/timeline/SkeletonCard';
 import SPECIALTIES from '../data/specialties';
+import { medStreamAPI } from '../lib/api';
 
 // Basit mock feed üretici: guest için random, user için follow-first + location mix simülasyonu
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
 function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you' }) {
-  // Kaynak data
+  // API'den gelen postlar
+  const [apiPosts, setApiPosts] = useState([]);
+  const [apiLoaded, setApiLoaded] = useState(false);
+
+  useEffect(() => {
+    medStreamAPI.posts({ per_page: 50 }).then((res) => {
+      const list = res?.data || [];
+      if (list.length) {
+        setApiPosts(list.map((p) => ({
+          id: p.id,
+          type: 'doctor_update',
+          title: p.author?.fullname || 'Doctor',
+          subtitle: '',
+          city: '',
+          img: p.media_url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+          text: p.content || '',
+          likes: p.engagementCounter?.like_count || 0,
+          comments: p.engagementCounter?.comment_count || 0,
+          specialty: '',
+          countryCode: '',
+          actor: {
+            id: p.author_id,
+            role: p.author?.role_id || 'doctor',
+            name: p.author?.fullname || 'Doctor',
+            title: '',
+            avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+          },
+          socialContext: '',
+          timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
+          visibility: 'public',
+          media: p.media_url ? [{ url: p.media_url }] : [{ url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' }],
+        })));
+      }
+      setApiLoaded(true);
+    }).catch(() => setApiLoaded(true));
+  }, []);
+
+  // Kaynak data — mock fallback
   const base = useMemo(() => {
     const specialties = SPECIALTIES;
     const clinics = ['Anadolu Health Center','Memorial','Ege University','Acibadem','Medicana','Florence Nightingale'];
@@ -83,8 +121,11 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     return items;
   }, []);
 
+  // API verileri varsa onları kullan, yoksa mock
+  const source = apiLoaded && apiPosts.length > 0 ? apiPosts : base;
+
   const filtered = useMemo(() => {
-    let list = base;
+    let list = source;
     // Ülke adı -> ülke koduna çeviri (countryCodes)
     const codeLower = countryName ? (countryCodes[countryName] || '').toLowerCase() : '';
     if (codeLower) list = list.filter(x => (x.countryCode || '').toLowerCase() === codeLower);
@@ -111,7 +152,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
       list = [...list]; // latest tab zaten reverse ediyor
     }
     return list;
-  }, [base, countryName, specialtyFilter, textQuery, mode, sort, tab]);
+  }, [source, countryName, specialtyFilter, textQuery, mode, sort, tab]);
 
   const paged = useMemo(() => {
     const start = 0;

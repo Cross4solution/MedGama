@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toEnglishTimestamp } from '../utils/i18n';
 import { Star, MessageCircle, Heart, Clock, Image as ImageIcon, Folder, Share2 } from 'lucide-react';
 import { generateExploreStyleItems } from 'components/timeline/feedMock';
 import Badge from './Badge';
 import TimelineCard from 'components/timeline/TimelineCard';
+import { medStreamAPI } from '../lib/api';
 
 // TimelinePreview: Şık hover efektli timeline kartları önizlemesi
 // Kullanım: <TimelinePreview items={demoItems} columns={3} />
@@ -13,9 +14,40 @@ import TimelineCard from 'components/timeline/TimelineCard';
 // - columns: grid kolon sayısı (md breakpoint)
 export default function TimelinePreview({ items = [], columns = 3, limit = 6, onViewAll }) {
   const navigate = useNavigate();
+  const [apiPosts, setApiPosts] = useState([]);
+
+  useEffect(() => {
+    medStreamAPI.posts({ per_page: limit || 8 }).then((res) => {
+      const list = res?.data || [];
+      if (list.length) {
+        setApiPosts(list.map((p) => ({
+          id: p.id,
+          type: 'doctor_update',
+          title: p.author?.fullname || 'Doctor',
+          subtitle: '',
+          city: '',
+          img: p.media_url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+          text: p.content || '',
+          likes: p.engagementCounter?.like_count || 0,
+          comments: p.engagementCounter?.comment_count || 0,
+          actor: {
+            id: p.author_id,
+            role: p.author?.role_id || 'doctor',
+            name: p.author?.fullname || 'Doctor',
+            title: '',
+            avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+          },
+          timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
+          visibility: 'public',
+          media: p.media_url ? [{ url: p.media_url }] : [{ url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' }],
+        })));
+      }
+    }).catch(() => {});
+  }, [limit]);
+
   // Explore-style ortak veri: doğrudan TimelineCard ile uyumlu
   const defaults = useMemo(() => generateExploreStyleItems(limit ?? 6), [limit]);
-  const data = items.length ? items : defaults;
+  const data = apiPosts.length ? apiPosts : (items.length ? items : defaults);
   const scrollRef = useRef(null);
 
   // Restore scroll to last clicked post if exists, else keep position

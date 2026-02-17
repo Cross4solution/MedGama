@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { authAPI } from '../lib/api';
 import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
@@ -51,6 +52,7 @@ export default function Profile() {
   const [showOldPwd, setShowOldPwd] = useState(false);
   const [showNewPwd, setShowNewPwd] = useState(false);
   const [showNewPwd2, setShowNewPwd2] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Notifications & Privacy prefs available via loadPrefs() when needed
 
@@ -153,24 +155,34 @@ export default function Profile() {
     );
   }
 
-  const saveAccount = (e) => {
+  const saveAccount = async (e) => {
     e.preventDefault();
     const limitedName = (name || '').slice(0, 30).trim();
-    const updated = { ...user, name: limitedName || user.name, avatar: avatar.trim() || undefined, preferredLanguage };
     const codeLower = countryCodes[countryName] || null;
     const codeUpper = codeLower ? codeLower.toUpperCase() : country;
     try { localStorage.setItem('preferred_language', preferredLanguage); } catch {}
+    setSaving(true);
+    try {
+      await authAPI.updateProfile({ fullname: limitedName || user.name, avatar: avatar.trim() || undefined });
+    } catch {}
+    const updated = { ...user, name: limitedName || user.name, avatar: avatar.trim() || undefined, preferredLanguage };
     login(updated, codeUpper);
+    setSaving(false);
   };
 
-  const saveSecurity = (e) => {
+  const saveSecurity = async (e) => {
     e.preventDefault();
     if (newPwd.length < 6) return alert('Yeni şifre en az 6 karakter olmalı.');
     if (newPwd !== newPwd2) return alert('Yeni şifreler eşleşmiyor.');
-    const next = { ...loadPrefs() };
-    savePrefs(next);
+    setSaving(true);
+    try {
+      await authAPI.updateProfile({ password: newPwd });
+      alert('Password updated successfully.');
+    } catch (err) {
+      alert(err?.message || 'Failed to update password.');
+    }
     setOldPwd(''); setNewPwd(''); setNewPwd2('');
-    alert('Güvenlik ayarları kaydedildi. (Demo)');
+    setSaving(false);
   };
 
 
