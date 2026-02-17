@@ -66,6 +66,12 @@ export const clinicAPI = {
   staff: (id, params) => api.get(`/clinics/${id}/staff`, { params }),
 };
 
+// ── Doctor Service ──
+export const doctorAPI = {
+  list: (params) => api.get('/doctors', { params }),
+  get: (id) => api.get(`/doctors/${id}`),
+};
+
 // ── Appointment Service ──
 export const appointmentAPI = {
   list: (params) => api.get('/appointments', { params }),

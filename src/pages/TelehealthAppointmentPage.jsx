@@ -1,14 +1,17 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import PhoneNumberInput from '../components/forms/PhoneNumberInput';
 import { listCountriesAll } from '../utils/geo';
-import { Calendar } from 'lucide-react';
+import { Calendar, Loader2, CheckCircle2 } from 'lucide-react';
+import { doctorAPI, appointmentAPI, calendarSlotAPI } from '../lib/api';
 
 export default function TelehealthAppointmentPage() {
-  const { formatCurrency, country } = useAuth();
+  const { formatCurrency, country, user } = useAuth();
+  const navigate = useNavigate();
 
-  const [selectedDoctor, setSelectedDoctor] = useState('Dr. Ahmet Yılmaz');
-  const [selectedDate, setSelectedDate] = useState('2025-01-21'); // ISO (yyyy-mm-dd)
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedTime, setSelectedTime] = useState('09:00');
   const [patientInfo, setPatientInfo] = useState({
     fullName: '',
@@ -18,6 +21,16 @@ export default function TelehealthAppointmentPage() {
     symptoms: ''
   });
   const [paymentMethod, setPaymentMethod] = useState('credit');
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  // Doctors from API
+  const [doctors, setDoctors] = useState([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(true);
+
+  // Available slots from API
+  const [availableSlots, setAvailableSlots] = useState([]);
 
   // Countries for PhoneNumberInput (loaded async)
   const [allCountries, setAllCountries] = useState([]);
@@ -25,55 +38,104 @@ export default function TelehealthAppointmentPage() {
     listCountriesAll({ excludeIslands: true, excludeNoCities: true }).then(setAllCountries);
   }, []);
 
+  // Auto-fill patient info from logged-in user
+  useEffect(() => {
+    if (user) {
+      setPatientInfo(prev => ({
+        ...prev,
+        fullName: prev.fullName || user.fullname || user.name || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.mobile || '',
+      }));
+    }
+  }, [user]);
+
+  // Fetch doctors from API
+  useEffect(() => {
+    setLoadingDoctors(true);
+    doctorAPI.list({ per_page: 50 }).then(res => {
+      const list = res?.data || [];
+      setDoctors(list.map(d => ({
+        id: d.id,
+        name: d.fullname,
+        avatar: d.avatar || '/images/caroline-lm-uqved8dypum-unsplash_720.jpg',
+        specialty: 'Doctor',
+        is_verified: d.is_verified,
+      })));
+      if (list.length > 0 && !selectedDoctor) setSelectedDoctor(list[0].id);
+    }).catch(() => {}).finally(() => setLoadingDoctors(false));
+  }, []);
+
+  // Fetch available slots when doctor or date changes
+  useEffect(() => {
+    if (!selectedDoctor || !selectedDate) return;
+    calendarSlotAPI.list({ doctor_id: selectedDoctor, date: selectedDate, available: 1 }).then(res => {
+      const list = res?.data || [];
+      setAvailableSlots(list);
+    }).catch(() => setAvailableSlots([]));
+  }, [selectedDoctor, selectedDate]);
+
   // Refs for date pickers (appointment date and DOB)
   const apptDateRef = useRef(null);
   const dobRef = useRef(null);
 
-  const doctors = useMemo(() => ([
-    {
-      name: 'Dr. Ahmet Yılmaz',
-      specialty: 'Cardiologist',
-      experience: '15 years experience',
-      rating: 4.8,
-      reviews: 342,
-      priceUSD: 200,
-      image: '/images/caroline-lm-uqved8dypum-unsplash_720.jpg',
-    },
-    {
-      name: 'Dr. Elif Demir',
-      specialty: 'Internal Medicine Specialist',
-      experience: '12 years experience',
-      rating: 4.7,
-      reviews: 289,
-      priceUSD: 180,
-      image: '/images/caroline-lm-uqved8dypum-unsplash_720.jpg',
-    }
-  ]), []);
-
-  const timeSlots = [
+  // Fallback time slots if no API slots
+  const defaultTimeSlots = [
     '09:00','09:30','10:00','10:30','11:00','11:30',
     '14:00','14:30','15:00','15:30','16:00','16:30'
   ];
+  const timeSlots = availableSlots.length > 0
+    ? availableSlots.map(s => s.start_time?.slice(0, 5) || s.start_time)
+    : defaultTimeSlots;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const payload = {
-      doctor: selectedDoctor,
-      date: selectedDate,
-      time: selectedTime,
-      patient: patientInfo,
-      payment: paymentMethod,
-      country,
-    };
-    // TODO: Backend integration
-    // console.log('Appointment payload:', payload);
-    alert('Your appointment has been created successfully!');
+    if (!user) { setError('Please login to create an appointment.'); return; }
+    if (!selectedDoctor) { setError('Please select a doctor.'); return; }
+    setSubmitting(true);
+    setError('');
+    try {
+      const slot = availableSlots.find(s => (s.start_time?.slice(0, 5) || s.start_time) === selectedTime);
+      await appointmentAPI.create({
+        patient_id: user.id,
+        doctor_id: selectedDoctor,
+        appointment_type: 'online',
+        appointment_date: selectedDate,
+        appointment_time: selectedTime,
+        slot_id: slot?.id || undefined,
+        confirmation_note: patientInfo.symptoms || undefined,
+      });
+      setSuccess(true);
+    } catch (err) {
+      const msg = err?.errors?.appointment_date?.[0] || err?.errors?.doctor_id?.[0] || err?.message || 'Failed to create appointment.';
+      setError(msg);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const doctorPrice = (name) => {
-    const d = doctors.find((x) => x.name === name);
-    return d ? formatCurrency(d.priceUSD) : formatCurrency(0);
-  };
+  const selectedDoctorObj = doctors.find(d => d.id === selectedDoctor);
+
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="bg-white rounded-2xl shadow-xl border p-8 max-w-md w-full text-center">
+          <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">Appointment Created!</h1>
+          <p className="text-sm text-gray-500 mb-2">Your appointment has been successfully booked.</p>
+          <p className="text-sm text-gray-600 mb-6">
+            <strong>{selectedDoctorObj?.name}</strong> — {selectedDate} at {selectedTime}
+          </p>
+          <p className="text-xs text-gray-400 mb-6">A session link will be sent to your email before the appointment.</p>
+          <button onClick={() => navigate('/home-v2')} className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 transition-all">
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -84,23 +146,22 @@ export default function TelehealthAppointmentPage() {
           {/* Left Column - Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Clinic / Fee */}
+              {/* Clinic / Info */}
               <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
                 <div className="flex items-start sm:items-center gap-3 sm:gap-4">
                   <img
-                    src={doctors[0].image}
-                    alt="Clinic image"
+                    src={selectedDoctorObj?.avatar || '/images/caroline-lm-uqved8dypum-unsplash_720.jpg'}
+                    alt="Doctor"
                     className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover flex-shrink-0"
                   />
                   <div className="min-w-0">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate">Anadolu Sağlık Merkezi</h3>
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate">{selectedDoctorObj?.name || 'Select a Doctor'}</h3>
                     <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-600 gap-1 sm:gap-0">
-                      <span>Istanbul, Turkey</span>
-                      <span className="ml-2 sm:ml-4">4.8 (342 reviews)</span>
+                      <span>{selectedDoctorObj?.specialty || 'Online Consultation'}</span>
                     </div>
                     <div className="mt-2">
                       <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {doctorPrice(selectedDoctor)} Consultation Fee
+                        Online Telehealth
                       </span>
                     </div>
                   </div>
@@ -113,39 +174,44 @@ export default function TelehealthAppointmentPage() {
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Doctor Selection</label>
-                  <div className="space-y-3">
-                    {doctors.map((doctor) => (
-                      <div
-                        key={doctor.name}
-                        className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${selectedDoctor === doctor.name ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}
-                        onClick={() => setSelectedDoctor(doctor.name)}
-                      >
-                        <div className="flex items-start gap-3 sm:gap-4">
-                          <input
-                            type="radio"
-                            name="doctor"
-                            value={doctor.name}
-                            checked={selectedDoctor === doctor.name}
-                            onChange={(e) => setSelectedDoctor(e.target.value)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-1 flex-shrink-0"
-                          />
-                          <img
-                            src={doctor.image}
-                            alt={doctor.name}
-                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5">
+                  {loadingDoctors ? (
+                    <div className="flex items-center justify-center py-8 text-gray-400">
+                      <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading doctors...
+                    </div>
+                  ) : doctors.length === 0 ? (
+                    <p className="text-sm text-gray-500 py-4">No doctors available at the moment.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {doctors.map((doctor) => (
+                        <div
+                          key={doctor.id}
+                          className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${selectedDoctor === doctor.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}
+                          onClick={() => setSelectedDoctor(doctor.id)}
+                        >
+                          <div className="flex items-start gap-3 sm:gap-4">
+                            <input
+                              type="radio"
+                              name="doctor"
+                              value={doctor.id}
+                              checked={selectedDoctor === doctor.id}
+                              onChange={() => setSelectedDoctor(doctor.id)}
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-1 flex-shrink-0"
+                            />
+                            <img
+                              src={doctor.avatar}
+                              alt={doctor.name}
+                              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
                               <h4 className="font-medium text-gray-900 truncate text-sm sm:text-base">{doctor.name}</h4>
-                              <span className="text-blue-600 font-semibold text-sm">{formatCurrency(doctor.priceUSD)}</span>
+                              <p className="text-xs sm:text-sm text-gray-600 truncate">{doctor.specialty}</p>
+                              {doctor.is_verified && <span className="text-xs text-emerald-600 font-medium">✓ Verified</span>}
                             </div>
-                            <p className="text-xs sm:text-sm text-gray-600 truncate">{doctor.specialty} • {doctor.experience}</p>
-                            <div className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">Rating: {doctor.rating} ({doctor.reviews} reviews)</div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Date & Time */}
@@ -286,10 +352,18 @@ export default function TelehealthAppointmentPage() {
                 </div>
               </div>
 
+              {/* Error */}
+              {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">{error}</div>}
+
               {/* Submit */}
               <div className="flex justify-end">
-                <button type="submit" className="px-5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700">
-                  Create Appointment
+                <button
+                  type="submit"
+                  disabled={submitting || !selectedDoctor}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm transition-all"
+                >
+                  {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {submitting ? 'Creating...' : 'Create Appointment'}
                 </button>
               </div>
             </form>
@@ -300,10 +374,10 @@ export default function TelehealthAppointmentPage() {
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <h3 className="text-base font-semibold text-gray-900 mb-3">Summary</h3>
               <ul className="text-sm text-gray-700 space-y-1">
-                <li><span className="text-gray-500">Doctor:</span> {selectedDoctor}</li>
+                <li><span className="text-gray-500">Doctor:</span> {selectedDoctorObj?.name || '—'}</li>
                 <li><span className="text-gray-500">Date:</span> {selectedDate}</li>
                 <li><span className="text-gray-500">Time:</span> {selectedTime}</li>
-                <li><span className="text-gray-500">Fee:</span> {doctorPrice(selectedDoctor)}</li>
+                <li><span className="text-gray-500">Type:</span> Online Telehealth</li>
               </ul>
             </div>
             <div className="bg-blue-50 border border-blue-100 text-blue-900 rounded-lg p-4 text-sm flex justify-center items-center">
