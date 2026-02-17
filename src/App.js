@@ -29,6 +29,7 @@ const ContactPage = React.lazy(() => import('./pages/ContactPage'));
 const DoctorLogin = React.lazy(() => import('./pages/DoctorLogin'));
 const ClinicLogin = React.lazy(() => import('./pages/ClinicLogin'));
 const VerifyEmailPage = React.lazy(() => import('./pages/VerifyEmailPage'));
+const ForgotPasswordPage = React.lazy(() => import('./pages/ForgotPasswordPage'));
 const Notifications = React.lazy(() => import('./pages/Notifications'));
 const Profile = React.lazy(() => import('./pages/Profile'));
 const PostDetail = React.lazy(() => import('./pages/PostDetail'));
@@ -139,7 +140,7 @@ function AppContent() {
   }, [location.pathname, navType]);
   
   // Auth ve CRM sayfalarında header ve cookie banner'ı gizle
-  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/verify-email'];
+  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/verify-email', '/forgot-password'];
   const isAuthPage = hideOnAuthPages.includes(location.pathname);
   const isCRMPage = location.pathname.startsWith('/crm');
   const showCookieBanner = !isAuthPage && !isCRMPage;
@@ -191,6 +192,7 @@ function AppContent() {
         <Route path="/login" element={<AuthPages />} />
         <Route path="/register" element={<AuthPages />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/for-patients" element={<ForPatientsPage />} />
         <Route path="/for-clinics" element={<ForClinicsPage />} />
