@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('fullname');
             $table->string('avatar')->nullable();
             $table->string('role_id')->default('tenantUser'); // superAdmin, saasAdmin, tenantOwner, tenantAdmin, tenantUser, patient, doctor, clinicOwner
-            $table->string('mobile');
+            $table->string('mobile')->nullable();
             $table->boolean('mobile_verified')->default(false);
             $table->boolean('email_verified')->default(false);
             $table->integer('city_id')->nullable()->index();
