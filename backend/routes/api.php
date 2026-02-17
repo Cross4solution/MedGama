@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\DigitalAnamnesisController;
 use App\Http\Controllers\Api\CrmController;
 use App\Http\Controllers\Api\MedStreamController;
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\DoctorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,6 +81,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/clinics/{id}', [ClinicController::class, 'update']);
     Route::get('/clinics/{id}/staff', [ClinicController::class, 'staff']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Doctor Routes (Public)
+|--------------------------------------------------------------------------
+*/
+Route::get('/doctors', [DoctorController::class, 'index']);
+Route::get('/doctors/{id}', [DoctorController::class, 'show']);
 
 /*
 |--------------------------------------------------------------------------
