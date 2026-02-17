@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import LeafletMap from 'components/map/LeafletMap';
 import {
   Award,
@@ -20,17 +21,24 @@ import {
 import Tabs from 'components/tabs/Tabs';
 
 const DoctorProfilePage = () => {
+  const { id: doctorId } = useParams();
   const [activeTab, setActiveTab] = useState('genel-bakis');
   const [isFollowing, setIsFollowing] = useState(false);
+  const [apiDoctor, setApiDoctor] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    if (doctorId) {
+      import('../lib/api').then(({ clinicAPI }) => {
+        clinicAPI.staff(doctorId).catch(() => null);
+      }).catch(() => {});
+    }
+  }, [doctorId]);
 
-  const [doctorName] = useState('Dr. Ayşe Yılmaz');
-  const [doctorTitle] = useState('Kardiyoloji Uzmanı');
-  const [doctorLocation] = useState('Istanbul, Turkey');
-  const [heroImage] = useState('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800');
+  const [doctorName] = useState(apiDoctor?.fullname || 'Dr. Ayşe Yılmaz');
+  const [doctorTitle] = useState(apiDoctor?.specialty || 'Kardiyoloji Uzmanı');
+  const [doctorLocation] = useState(apiDoctor?.address || 'Istanbul, Turkey');
+  const [heroImage] = useState(apiDoctor?.avatar || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800');
 
   const [aboutTitle] = useState('Hakkımda');
   const [aboutP1] = useState("1998 yılında İstanbul Üniversitesi Tıp Fakültesi'nden mezun oldum ve kardiyoloji alanında uzmanlık eğitimimi tamamladım.\n15 yılı aşkın süredir kardiyoloji alanında hizmet veriyorum.");
