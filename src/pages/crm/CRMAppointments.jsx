@@ -1,10 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   CalendarDays, Clock, Plus, Search, Filter, ChevronLeft, ChevronRight,
   Video, Phone, MapPin, MoreVertical, X, User, Mail, FileText,
-  CheckCircle2, XCircle, AlertCircle, Edit3, Trash2, Eye,
+  CheckCircle2, XCircle, AlertCircle, Edit3, Trash2, Eye, Loader2,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import { appointmentAPI } from '../../lib/api';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -51,6 +53,7 @@ const MethodIcon = ({ method, size = 'sm' }) => {
 // ─── Main Component ──────────────────────────────────────────
 const CRMAppointments = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [view, setView] = useState('list'); // list | calendar
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [calendarMonth, setCalendarMonth] = useState(new Date());
@@ -60,21 +63,84 @@ const CRMAppointments = () => {
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [apiAppointments, setApiAppointments] = useState(null);
+  const [creating, setCreating] = useState(false);
+
+  // Fetch appointments from API
+  useEffect(() => {
+    appointmentAPI.list({ per_page: 100 }).then(res => {
+      const list = res?.data || [];
+      if (list.length > 0) {
+        setApiAppointments(list.map(a => ({
+          id: a.id,
+          date: a.appointment_date,
+          time: a.appointment_time || '09:00',
+          endTime: '',
+          patient: a.patient?.fullname || 'Patient',
+          email: a.patient?.email || '',
+          phone: a.patient?.mobile || '',
+          age: '',
+          gender: '',
+          type: a.appointment_type === 'online' ? 'Video Call' : 'Check-up',
+          status: a.status || 'upcoming',
+          method: a.appointment_type === 'online' ? 'video' : 'in-person',
+          notes: a.confirmation_note || a.doctor_note || '',
+          doctor: a.doctor?.fullname || '',
+        })));
+      }
+    }).catch(() => {});
+  }, []);
+
+  const allAppointments = apiAppointments || MOCK_APPOINTMENTS;
 
   // New appointment form
   const [newForm, setNewForm] = useState({
     patient: '', email: '', phone: '', date: '', time: '', endTime: '', type: 'Check-up', method: 'in-person', notes: '',
   });
 
+  const handleCreateAppointment = async () => {
+    if (!newForm.date || !newForm.time) return;
+    setCreating(true);
+    try {
+      await appointmentAPI.create({
+        patient_id: user?.id,
+        doctor_id: user?.id,
+        appointment_type: newForm.method === 'video' ? 'online' : 'inPerson',
+        appointment_date: newForm.date,
+        appointment_time: newForm.time,
+        confirmation_note: newForm.notes || undefined,
+      });
+      setShowNewModal(false);
+      setNewForm({ patient: '', email: '', phone: '', date: '', time: '', endTime: '', type: 'Check-up', method: 'in-person', notes: '' });
+      // Refresh list
+      appointmentAPI.list({ per_page: 100 }).then(res => {
+        const list = res?.data || [];
+        if (list.length > 0) {
+          setApiAppointments(list.map(a => ({
+            id: a.id, date: a.appointment_date, time: a.appointment_time || '09:00', endTime: '',
+            patient: a.patient?.fullname || 'Patient', email: a.patient?.email || '', phone: a.patient?.mobile || '',
+            age: '', gender: '', type: a.appointment_type === 'online' ? 'Video Call' : 'Check-up',
+            status: a.status || 'upcoming', method: a.appointment_type === 'online' ? 'video' : 'in-person',
+            notes: a.confirmation_note || a.doctor_note || '', doctor: a.doctor?.fullname || '',
+          })));
+        }
+      }).catch(() => {});
+    } catch (err) {
+      // silently fail, keep modal open
+    } finally {
+      setCreating(false);
+    }
+  };
+
   // Filter appointments
   const filtered = useMemo(() => {
-    return MOCK_APPOINTMENTS.filter((a) => {
+    return allAppointments.filter((a) => {
       if (statusFilter !== 'all' && a.status !== statusFilter) return false;
       if (typeFilter !== 'all' && a.type !== typeFilter) return false;
       if (searchQuery && !a.patient.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       return true;
     });
-  }, [statusFilter, typeFilter, searchQuery]);
+  }, [statusFilter, typeFilter, searchQuery, allAppointments]);
 
   // Calendar helpers
   const calendarDays = useMemo(() => {
@@ -387,7 +453,14 @@ const CRMAppointments = () => {
             </div>
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
               <button onClick={() => setShowNewModal(false)} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors">{t('common.cancel')}</button>
-              <button className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">{t('crm.appointments.newAppointment')}</button>
+              <button
+                onClick={handleCreateAppointment}
+                disabled={creating || !newForm.date || !newForm.time}
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {creating && <Loader2 className="w-4 h-4 animate-spin" />}
+                {creating ? 'Creating...' : t('crm.appointments.newAppointment')}
+              </button>
             </div>
           </div>
         </div>

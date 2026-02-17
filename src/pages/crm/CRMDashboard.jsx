@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { appointmentAPI } from '../../lib/api';
 import {
   CalendarDays,
   Clock,
@@ -118,11 +119,35 @@ const CRMDashboard = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [appointmentFilter, setAppointmentFilter] = useState('all');
+  const [apiAppointments, setApiAppointments] = useState(null);
+
+  useEffect(() => {
+    appointmentAPI.list({ per_page: 50 }).then(res => {
+      const list = res?.data || [];
+      if (list.length > 0) {
+        setApiAppointments(list.map(a => ({
+          id: a.id,
+          date: a.appointment_date,
+          time: a.appointment_time || '09:00',
+          endTime: '',
+          patient: a.patient?.fullname || 'Patient',
+          age: '',
+          type: a.appointment_type === 'online' ? 'Video Call' : 'In-Person',
+          status: a.status || 'upcoming',
+          method: a.appointment_type === 'online' ? 'video' : 'in-person',
+          notes: a.confirmation_note || a.doctor_note || '',
+          doctor: a.doctor?.fullname || '',
+        })));
+      }
+    }).catch(() => {});
+  }, []);
+
+  const appointments = apiAppointments || MOCK_APPOINTMENTS;
 
   const filteredAppointments = useMemo(() => {
-    if (appointmentFilter === 'all') return MOCK_APPOINTMENTS;
-    return MOCK_APPOINTMENTS.filter((a) => a.status === appointmentFilter);
-  }, [appointmentFilter]);
+    if (appointmentFilter === 'all') return appointments;
+    return appointments.filter((a) => a.status === appointmentFilter);
+  }, [appointmentFilter, appointments]);
 
   const maxRevenue = Math.max(...WEEKLY_REVENUE.map((d) => d.amount), 1);
   const todayIndex = TODAY.getDay() === 0 ? 6 : TODAY.getDay() - 1; // Mon=0
