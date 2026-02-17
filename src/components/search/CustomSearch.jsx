@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { listCountriesAll, loadPreferredAdminOrCities, getFlagCode, listTurkeyProvinces } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox.jsx';
 import CityCombobox from '../forms/CityCombobox.jsx';
@@ -6,6 +7,7 @@ import { catalogAPI } from '../../lib/api';
 import { useTranslation } from 'react-i18next';
 
 export default function CustomSearch() {
+  const navigate = useNavigate();
   const { i18n } = useTranslation();
   const lang = i18n.language || 'en';
   const [country, setCountry] = useState('');
@@ -62,7 +64,13 @@ export default function CustomSearch() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    // TODO: integrate with search API
+    const params = new URLSearchParams();
+    if (country) params.set('country', country);
+    if (city) params.set('city', city);
+    if (specialty) params.set('specialty', specialty.replace(/,\s*$/, '').trim());
+    if (symptom) params.set('symptom', symptom.replace(/,\s*$/, '').trim());
+    const qs = params.toString();
+    navigate(qs ? `/clinics?${qs}` : '/clinics');
   };
 
   // Dış API ile ülke listesi/flag kodu alma kaldırıldı; veriler utils/geo içinden geliyor.
