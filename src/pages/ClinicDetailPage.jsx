@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 import Badge from '../components/Badge';
 import ClinicHero from '../components/clinic/ClinicHero';
@@ -7,6 +8,7 @@ import ContactActions from '../components/clinic/ContactActions';
 import PriceRangeList from '../components/pricing/PriceRangeList';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { clinicAPI } from '../lib/api';
 
 // Tab Components
 import OverviewTab from '../components/clinic/tabs/OverviewTab';
@@ -33,10 +35,18 @@ import {
 const ClinicDetailPage = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const { id: clinicParam } = useParams();
+  const [apiClinic, setApiClinic] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    if (clinicParam) {
+      clinicAPI.getByCodename(clinicParam).then((res) => {
+        const c = res?.clinic || res?.data || res;
+        if (c && c.id) setApiClinic(c);
+      }).catch(() => {});
+    }
+  }, [clinicParam]);
 
   // UI State
   const [activeTab, setActiveTab] = useState('genel-bakis');
@@ -120,9 +130,9 @@ const ClinicDetailPage = () => {
           <div className="flex-1 min-w-0">
             {/* Hero Section */}
             <ClinicHero
-              image={clinicInfo.heroImage}
-              name={clinicInfo.name}
-              location={clinicInfo.location}
+              image={apiClinic?.avatar || clinicInfo.heroImage}
+              name={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
+              location={apiClinic?.address || clinicInfo.location}
               rating={clinicInfo.rating}
               reviews={clinicInfo.reviewCount}
               badgeNode={null}

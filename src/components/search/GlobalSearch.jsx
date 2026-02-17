@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { clinicAPI } from '../../lib/api';
 
 const PLACEHOLDER_HINTS = [
   'Search clinics or doctors',
@@ -77,20 +78,30 @@ export default function GlobalSearch() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const clinics = [
-    'Acıbadem Sağlık Grubu',
-    'Acibadem International',
-    'SmileCare Clinic',
-    'AestheticPlus',
-    'Vision Center',
-    'OrthoLife',
-  ];
-  const doctors = [
-    'Dr. Ahmet Yılmaz',
-    'Dr. Mehmet Demir',
-    'Dr. Elif Kaya',
-    'Dr. Ayşe Yılmaz',
-  ];
+  // Fallback static data
+  const staticClinics = ['Acıbadem Sağlık Grubu', 'Acibadem International', 'SmileCare Clinic', 'AestheticPlus', 'Vision Center', 'OrthoLife'];
+  const staticDoctors = ['Dr. Ahmet Yılmaz', 'Dr. Mehmet Demir', 'Dr. Elif Kaya', 'Dr. Ayşe Yılmaz'];
+
+  const [apiResults, setApiResults] = useState([]);
+  const debounceRef = useRef(null);
+
+  // Debounced API search
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const q = (query || '').trim();
+    if (!q) { setApiResults([]); return; }
+    debounceRef.current = setTimeout(() => {
+      clinicAPI.list({ search: q, per_page: 8 }).then((res) => {
+        const list = res?.data || [];
+        if (list.length) {
+          setApiResults(list.map((c) => ({ type: 'Klinik', name: c.fullname || c.name, id: c.id, codename: c.codename })));
+        } else {
+          setApiResults([]);
+        }
+      }).catch(() => setApiResults([]));
+    }, 300);
+    return () => clearTimeout(debounceRef.current);
+  }, [query]);
 
   const normalize = (s) => s
     .toLowerCase()
@@ -99,12 +110,15 @@ export default function GlobalSearch() {
     .trim();
 
   const results = useMemo(() => {
+    // API sonuçları varsa onları kullan
+    if (apiResults.length > 0) return apiResults;
+    // Fallback: statik veri
     const q = normalize(query);
     if (!q) return [];
     const tokens = q.split(/\s+/).filter(Boolean);
     const items = [
-      ...clinics.map((c) => ({ type: 'Klinik', name: c })),
-      ...doctors.map((d) => ({ type: 'Doktor', name: d })),
+      ...staticClinics.map((c) => ({ type: 'Klinik', name: c })),
+      ...staticDoctors.map((d) => ({ type: 'Doktor', name: d })),
     ];
     return items
       .filter((i) => {
@@ -112,7 +126,7 @@ export default function GlobalSearch() {
         return tokens.every((t) => nameN.includes(t));
       })
       .slice(0, 8);
-  }, [query]);
+  }, [query, apiResults]);
 
 
   const onSelect = (name) => {
