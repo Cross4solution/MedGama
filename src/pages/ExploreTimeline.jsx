@@ -221,6 +221,47 @@ export default function ExploreTimeline() {
     return () => urls.forEach(u => { try { URL.revokeObjectURL(u); } catch {} });
   }, [composerVideos]);
 
+  const [composerPosting, setComposerPosting] = useState(false);
+
+  async function handleComposerPost() {
+    if (composerPosting) return;
+    const trimmed = composerText.trim();
+    if (!trimmed && !hasMedia) return;
+    setComposerPosting(true);
+    try {
+      const postType = composerVideoUrls.length > 0 ? 'video' : composerPhotoUrls.length > 0 ? 'image' : 'text';
+      const payload = { post_type: postType, content: trimmed || undefined };
+      const res = await medStreamAPI.createPost(payload);
+      const p = res?.post || res;
+      if (p) {
+        const newItem = {
+          id: p.id || 'local-' + Date.now(),
+          type: 'doctor_update',
+          title: p.author?.fullname || user?.name || 'Doctor',
+          subtitle: '',
+          city: '',
+          img: p.media_url || (composerPhotoUrls[0] || '/images/petr-magera-huwm7malj18-unsplash_720.jpg'),
+          text: p.content || trimmed,
+          likes: 0,
+          comments: 0,
+          specialty: '',
+          countryCode: '',
+          actor: { id: p.author_id || user?.id, role: user?.role || 'doctor', name: p.author?.fullname || user?.name || 'Doctor', title: '', avatarUrl: user?.avatar || '/images/portrait-candid-male-doctor_720.jpg' },
+          socialContext: '',
+          timeAgo: 'Just now',
+          visibility: 'public',
+          media: p.media_url ? [{ url: p.media_url }] : composerPhotoUrls.length ? [{ url: composerPhotoUrls[0] }] : [],
+        };
+        setPage(1); // refresh feed
+      }
+    } catch (err) {
+      console.error('[ExploreTimeline] Post failed:', err?.response?.status, err?.response?.data || err?.message);
+    } finally {
+      setComposerPosting(false);
+      setIsComposerOpen(false);
+    }
+  }
+
   // Cleanup composer state when modal closes
   useEffect(() => {
     if (!isComposerOpen) {
@@ -568,7 +609,7 @@ export default function ExploreTimeline() {
                   </div>
                 </div>
                 <div className="mt-3">
-                  <button disabled={!composerText && !hasMedia} className={`w-full py-2.5 rounded-xl text-white font-semibold transition-all duration-200 ${(!composerText && !hasMedia) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-sm hover:shadow-md'}`}>Post</button>
+                  <button onClick={handleComposerPost} disabled={(!composerText && !hasMedia) || composerPosting} className={`w-full py-2.5 rounded-xl text-white font-semibold transition-all duration-200 ${((!composerText && !hasMedia) || composerPosting) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-sm hover:shadow-md'}`}>{composerPosting ? 'Posting...' : 'Post'}</button>
                 </div>
               </div>
             </div>
