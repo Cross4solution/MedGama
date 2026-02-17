@@ -102,8 +102,14 @@ const AuthPages = () => {
         const res = await login(formData.email, formData.password);
         notify({ type: 'success', message: res?.message || 'Login successful' });
         const apiUser = res?.data?.user;
-        const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
-        navigate(isDoctor ? '/explore' : '/home-v2');
+        const role = apiUser?.role || apiUser?.role_id || 'patient';
+        if (role === 'doctor' || role === 'clinicOwner') {
+          navigate('/crm');
+        } else if (role === 'superAdmin' || role === 'saasAdmin') {
+          navigate('/crm');
+        } else {
+          navigate('/home-v2');
+        }
       } else if (currentPage === 'register') {
         if (formData.role === 'clinic') {
           notify({ type: 'info', message: 'Clinic registration will be available soon. Please sign in via clinic portal.' });
@@ -112,7 +118,14 @@ const AuthPages = () => {
           return;
         }
         const doRegister = formData.role === 'doctor' ? registerDoctor : register;
-        const res = await doRegister(formData.email, formData.password, formData.confirmPassword);
+        const res = await doRegister({
+          email: formData.email,
+          password: formData.password,
+          fullname: `${formData.firstName} ${formData.lastName}`.trim() || formData.email,
+          mobile: `${formData.phoneCode}${formData.phone}`.replace(/\s/g, '') || '+900000000000',
+          city_id: formData.city ? parseInt(formData.city) : undefined,
+          date_of_birth: formData.birthDate || undefined,
+        });
         try {
           if ((formData.role || 'patient') === 'patient' && formData.email) {
             const key = `patient_profile_extra_${formData.email}`;
