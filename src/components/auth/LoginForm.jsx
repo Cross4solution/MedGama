@@ -162,7 +162,7 @@ const LoginForm = ({
           </label>
           <button
             type="button"
-            onClick={() => setCurrentPage('forgot-password')}
+            onClick={() => window.location.href = '/forgot-password'}
             className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium"
           >
             {t('auth.forgotPassword')}

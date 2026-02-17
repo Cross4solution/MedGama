@@ -236,7 +236,7 @@ const DoctorLogin = () => {
                     <input type="checkbox" className="rounded border-gray-300 text-teal-600 focus:ring-teal-500 w-3.5 h-3.5" />
                     {t('auth.rememberMe')}
                   </label>
-                  <a href="#" className="text-teal-600 hover:text-teal-700 font-medium">{t('auth.forgotPassword')}</a>
+                  <a href="/forgot-password" className="text-teal-600 hover:text-teal-700 font-medium">{t('auth.forgotPassword')}</a>
                 </div>
                 {error && <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-xl text-xs">{error}</div>}
                 <button type="submit" disabled={loading}

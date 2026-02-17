@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use App\Mail\VerificationCodeMail;
+use App\Mail\PasswordResetMail;
 
 class AuthController extends Controller
 {
@@ -63,10 +65,7 @@ class AuthController extends Controller
 
         // Send verification email
         try {
-            Mail::raw("Your MedGama verification code is: {$verificationCode}", function ($message) use ($user) {
-                $message->to($user->email)
-                    ->subject('MedGama - Email Verification Code');
-            });
+            Mail::to($user->email)->send(new VerificationCodeMail($verificationCode, $user->fullname));
         } catch (\Throwable $e) {
             // Log but don't block registration if mail fails
             \Log::warning('Verification email failed: ' . $e->getMessage());
@@ -208,10 +207,7 @@ class AuthController extends Controller
         $user->update(['email_verification_code' => $code]);
 
         try {
-            Mail::raw("Your MedGama verification code is: {$code}", function ($message) use ($user) {
-                $message->to($user->email)
-                    ->subject('MedGama - Email Verification Code');
-            });
+            Mail::to($user->email)->send(new VerificationCodeMail($code, $user->fullname));
         } catch (\Throwable $e) {
             \Log::warning('Resend verification email failed: ' . $e->getMessage());
         }
@@ -240,8 +236,26 @@ class AuthController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        // TODO: Send password reset code via email/SMS
-        return response()->json(['message' => 'Password reset code sent.']);
+        $user = User::where('email', $request->email)->where('is_active', true)->first();
+
+        // Always return success to prevent email enumeration
+        if (!$user) {
+            return response()->json(['message' => 'If this email exists, a reset code has been sent.']);
+        }
+
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $user->update([
+            'password_reset_code' => $code,
+            'password_reset_expires_at' => now()->addMinutes(15),
+        ]);
+
+        try {
+            Mail::to($user->email)->send(new PasswordResetMail($code, $user->fullname));
+        } catch (\Throwable $e) {
+            \Log::warning('Password reset email failed: ' . $e->getMessage());
+        }
+
+        return response()->json(['message' => 'If this email exists, a reset code has been sent.']);
     }
 
     /**
@@ -251,18 +265,29 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'code' => 'required|string',
-            'password' => 'required|string|min:6|confirmed',
+            'code' => 'required|string|size:6',
+            'password' => 'required|string|min:6',
         ]);
 
-        // TODO: Verify reset code
         $user = User::where('email', $request->email)->where('is_active', true)->first();
 
         if (!$user) {
             throw ValidationException::withMessages(['email' => ['User not found.']]);
         }
 
-        $user->update(['password' => $request->password]);
+        if (!$user->password_reset_code || $user->password_reset_code !== $request->code) {
+            throw ValidationException::withMessages(['code' => ['Invalid reset code.']]);
+        }
+
+        if ($user->password_reset_expires_at && now()->gt($user->password_reset_expires_at)) {
+            throw ValidationException::withMessages(['code' => ['Reset code has expired. Please request a new one.']]);
+        }
+
+        $user->update([
+            'password' => $request->password,
+            'password_reset_code' => null,
+            'password_reset_expires_at' => null,
+        ]);
 
         return response()->json(['message' => 'Password reset successfully.']);
     }
