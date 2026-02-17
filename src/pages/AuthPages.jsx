@@ -114,7 +114,7 @@ const AuthPages = () => {
           email: formData.email,
           password: formData.password,
           fullname: `${formData.firstName} ${formData.lastName}`.trim() || formData.email,
-          mobile: `${formData.phoneCode}${formData.phone}`.replace(/\s/g, '') || '+900000000000',
+          mobile: formData.phone ? `${formData.phoneCode}${formData.phone}`.replace(/\s/g, '') : undefined,
           city_id: formData.city ? parseInt(formData.city) : undefined,
           date_of_birth: formData.birthDate || undefined,
         });
@@ -125,8 +125,8 @@ const AuthPages = () => {
             localStorage.setItem(key, JSON.stringify(extras));
           }
         } catch {}
-        notify({ type: 'success', message: res?.message || 'Registration successful. Please login.' });
-        navigate('/login');
+        notify({ type: 'success', message: res?.message || 'Registration successful!' });
+        navigate('/home-v2');
       } else {
         notify({ type: 'info', message: 'Password reset link sent if the email exists.' });
       }
