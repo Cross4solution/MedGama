@@ -2,8 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { listCountriesAll, loadPreferredAdminOrCities, getFlagCode, listTurkeyProvinces } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox.jsx';
 import CityCombobox from '../forms/CityCombobox.jsx';
+import { catalogAPI } from '../../lib/api';
+import { useTranslation } from 'react-i18next';
 
 export default function CustomSearch() {
+  const { i18n } = useTranslation();
+  const lang = i18n.language || 'en';
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
   const [specialty, setSpecialty] = useState('');
@@ -34,9 +38,25 @@ export default function CustomSearch() {
   useEffect(() => {
     listCountriesAll({ excludeIslands: true, excludeNoCities: true }).then(setCountries);
   }, []);
-  const specialties = ['ENT', 'Cardiology', 'Orthopedics', 'Dermatology', 'Ophthalmology', 'Plastic Surgery', 'Dentistry', 'Neurology', 'Gastroenterology'];
+  // Catalog API'den uzmanlık ve semptom verileri
+  const [specialties, setSpecialties] = useState(['ENT', 'Cardiology', 'Orthopedics', 'Dermatology', 'Ophthalmology', 'Plastic Surgery', 'Dentistry', 'Neurology', 'Gastroenterology']);
+  const [symptoms, setSymptoms] = useState(['Nasal congestion', 'Headache', 'Low back pain', 'Nausea', 'Toothache', 'Blurred vision', 'Acne', 'Varicose veins', 'Tinnitus']);
   const procedures = ['Rhinoplasty', 'Hip Replacement', 'Hair Transplant', 'Knee Replacement', 'LASIK', 'Dental Implant', 'Root Canal', 'Cataract Surgery'];
-  const symptoms = ['Nasal congestion', 'Headache', 'Low back pain', 'Nausea', 'Toothache', 'Blurred vision', 'Acne', 'Varicose veins', 'Tinnitus'];
+
+  useEffect(() => {
+    catalogAPI.specialties().then((res) => {
+      const list = res?.specialties || res?.data || [];
+      if (list.length) {
+        setSpecialties(list.map((s) => s.translations?.[lang] || s.translations?.en || s.code));
+      }
+    }).catch(() => {});
+    catalogAPI.symptoms().then((res) => {
+      const list = res?.symptoms || res?.data || [];
+      if (list.length) {
+        setSymptoms(list.map((s) => s.translations?.[lang] || s.translations?.en || s.symptom));
+      }
+    }).catch(() => {});
+  }, [lang]);
 
   const canSearch = useMemo(() => !!(country || city || specialty || symptom), [country, city, specialty, symptom]);
 
