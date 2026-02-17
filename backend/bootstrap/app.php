@@ -16,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
 
-        $middleware->statefulApi();
+        // Token-based auth (Bearer) — no CSRF needed for API routes
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
