@@ -34,6 +34,17 @@ export function AuthProvider({ children }) {
   const meUnavailableRef = React.useRef(false);
   const loggedOutRef = React.useRef(false);
 
+  // Listen for auth:logout events from API interceptor (401)
+  useEffect(() => {
+    const handleForceLogout = () => {
+      setUser(null);
+      setToken(null);
+      loggedOutRef.current = true;
+    };
+    window.addEventListener('auth:logout', handleForceLogout);
+    return () => window.removeEventListener('auth:logout', handleForceLogout);
+  }, []);
+
   useEffect(() => {
     try {
       // If user explicitly logged out, don't auto-hydrate from tokens
@@ -70,16 +81,19 @@ export function AuthProvider({ children }) {
       return { success: true, message: 'Demo login', data: { user: emailOrUser } };
     }
     const res = await endpoints.login({ email: emailOrUser, password });
-    // Accept both flat and nested API shapes
+    // Accept both flat and nested API shapes (Laravel returns { user, token })
     const apiUser = res?.user ?? res?.data?.user ?? null;
-    const access = res?.access_token ?? res?.data?.access_token ?? null;
+    const access = res?.token ?? res?.access_token ?? res?.data?.access_token ?? res?.data?.token ?? null;
     if (!apiUser || !access) {
       throw { status: 401, message: 'Invalid credentials', data: res };
     }
-    const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
-    const userWithRole = { ...apiUser, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+    // Map role_id to role for frontend compatibility
+    const role = apiUser?.role_id || apiUser?.role || 'patient';
+    const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
+    const userWithRole = { ...apiUser, role, name };
     setUser(userWithRole);
     setToken(access);
+    try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
     return { data: { user: userWithRole, access_token: access } };
   };
 
@@ -165,12 +179,32 @@ export function AuthProvider({ children }) {
       return userWithRole;
     } catch { return null; }
   };
-  const register = async (email, password, password_confirmation) => {
-    const res = await endpoints.userRegister({ email, password, password_confirmation });
+  const register = async (payload) => {
+    const res = await endpoints.userRegister(payload);
+    const apiUser = res?.user ?? null;
+    const access = res?.token ?? res?.access_token ?? null;
+    if (apiUser && access) {
+      const role = apiUser?.role_id || apiUser?.role || 'patient';
+      const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
+      const userWithRole = { ...apiUser, role, name };
+      setUser(userWithRole);
+      setToken(access);
+      try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
+    }
     return res;
   };
-  const registerDoctor = async (email, password, password_confirmation) => {
-    const res = await endpoints.doctorRegister({ email, password, password_confirmation });
+  const registerDoctor = async (payload) => {
+    const res = await endpoints.doctorRegister(payload);
+    const apiUser = res?.user ?? null;
+    const access = res?.token ?? res?.access_token ?? null;
+    if (apiUser && access) {
+      const role = apiUser?.role_id || apiUser?.role || 'doctor';
+      const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
+      const userWithRole = { ...apiUser, role, name };
+      setUser(userWithRole);
+      setToken(access);
+      try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
+    }
     return res;
   };
   const demoLogin = (role = 'patient') => {
