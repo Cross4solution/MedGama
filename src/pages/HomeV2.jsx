@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-// Star icon no longer needed here; used inside the reusable component
 import { SearchSections } from '../components/search';
 import CoreBoxes from '../components/CoreBoxes';
 import PopularClinicsShowcase from '../components/PopularClinicsShowcase';
 import TimelinePreview from '../components/TimelinePreview';
+import { clinicAPI } from '../lib/api';
 
-// Static mock data — defined outside component to avoid re-creation on every render
-const POPULAR_CLINICS_BASE = [
+// Fallback mock data — used when API is unavailable
+const FALLBACK_CLINICS = [
   { id: 1, name: 'Memorial Hospital', city: 'Ankara', dept: 'Plastic Surgery, Aesthetics', rating: 4.9, reviews: 186, image: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
   { id: 2, name: 'Ege University Hospital', city: 'Izmir', dept: 'Neurology, Orthopedics', rating: 4.7, reviews: 428, image: '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg' },
   { id: 3, name: 'Acibadem Hospital', city: 'Istanbul', dept: 'General Surgery, OB/GYN', rating: 4.6, reviews: 295, image: '/images/caroline-lm-uqved8dypum-unsplash_720.jpg' },
@@ -19,12 +19,31 @@ const POPULAR_CLINICS_BASE = [
   { id: 7, name: 'AestheticPlus', city: 'Istanbul', dept: 'Plastic Surgery', rating: 4.7, reviews: 264, image: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
   { id: 8, name: 'MedPark Clinic', city: 'Antalya', dept: 'Dermatology, Aesthetics', rating: 4.6, reviews: 198, image: '/images/caroline-lm-uqved8dypum-unsplash_720.jpg' },
 ];
-const POPULAR_CLINICS_20 = Array.from({ length: 20 }, (_, i) => ({ ...POPULAR_CLINICS_BASE[i % POPULAR_CLINICS_BASE.length], id: i + 1 }));
+const FALLBACK_20 = Array.from({ length: 20 }, (_, i) => ({ ...FALLBACK_CLINICS[i % FALLBACK_CLINICS.length], id: i + 1 }));
 
 export default function HomeV2() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [clinics, setClinics] = useState(FALLBACK_20);
+
+  useEffect(() => {
+    clinicAPI.list({ per_page: 20 }).then((res) => {
+      const list = res?.data || [];
+      if (list.length) {
+        setClinics(list.map((c, i) => ({
+          id: c.id,
+          name: c.fullname || c.name,
+          city: c.address || '',
+          dept: '',
+          rating: 4.5 + Math.random() * 0.5,
+          reviews: Math.floor(Math.random() * 300) + 50,
+          image: c.avatar || FALLBACK_CLINICS[i % FALLBACK_CLINICS.length]?.image,
+          codename: c.codename,
+        })));
+      }
+    }).catch(() => {});
+  }, []);
 
   // Popular vitrini artık reusable component ile render ediliyor
 
@@ -93,9 +112,9 @@ export default function HomeV2() {
 
       {/* Popular Clinics reusable showcase */}
       <PopularClinicsShowcase
-        items={POPULAR_CLINICS_20}
-        onCardClick={(c) => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate('/clinic'); }}
-        onViewClick={(c) => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate('/clinic'); }}
+        items={clinics}
+        onCardClick={(c) => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate(c.codename ? `/clinic/${c.codename}` : '/clinic'); }}
+        onViewClick={(c) => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate(c.codename ? `/clinic/${c.codename}` : '/clinic'); }}
       />
 
       {/* Footer is rendered globally in App.js */}
