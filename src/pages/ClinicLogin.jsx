@@ -43,7 +43,7 @@ const ClinicLogin = () => {
     }
     try {
       await login(formData.email, formData.password);
-      setShowPhoneVerification(true);
+      navigate('/crm', { replace: true });
     } catch (err) {
       if (err?.status === 401) setError(err?.data?.message || 'Invalid credentials');
       else if (err?.status === 422) setError(err?.data?.message || 'Validation error');
