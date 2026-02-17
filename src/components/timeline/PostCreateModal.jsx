@@ -94,33 +94,52 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
     setVideos(arr => arr.filter((_, i) => i !== idx));
   };
 
+  const [posting, setPosting] = useState(false);
+
   if (!open) return null;
 
   const avatar = '/images/portrait-candid-male-doctor_720.jpg';
   const displayName = user?.name || 'Guest';
   const specialty = user?.specialty || user?.dept || 'Doctor';
 
-  const [posting, setPosting] = useState(false);
-
   async function handlePost() {
+    console.log('[PostCreateModal] handlePost called, posting:', posting, 'canPost:', text.trim() || photoUrls.length > 0 || videoUrls.length > 0);
     if (posting) return;
     setPosting(true);
     try {
-      const postType = videoUrls.length > 0 ? 'video' : photoUrls.length > 0 ? 'image' : 'text';
+      const hasVideo = videoUrls.length > 0;
+      const hasPhoto = photoUrls.length > 0;
+      const postType = hasVideo ? 'video' : hasPhoto ? 'image' : 'text';
+      const mediaUrl = hasVideo ? videoUrls[0] : hasPhoto ? photoUrls[0] : undefined;
       const payload = {
         post_type: postType,
         content: text.trim() || undefined,
-        media_url: undefined, // TODO: implement file upload to get URL
+        ...(mediaUrl && !mediaUrl.startsWith('blob:') ? { media_url: mediaUrl } : {}),
       };
+      console.log('[PostCreateModal] Creating post:', payload);
       const res = await medStreamAPI.createPost(payload);
+      console.log('[PostCreateModal] Post created:', res);
       onPost?.(res?.post || res);
     } catch (err) {
-      // Fallback: still pass local data
-      onPost?.({ text, createdAt: new Date().toISOString(), author: user });
+      console.error('[PostCreateModal] Post creation failed:', err?.response?.status, err?.response?.data || err?.message);
+      // Fallback: still pass local data so UI updates
+      onPost?.({
+        id: 'local-' + Date.now(),
+        text,
+        content: text,
+        post_type: 'text',
+        createdAt: new Date().toISOString(),
+        author: user,
+        media_url: photoUrls[0] || videoUrls[0] || undefined,
+      });
     } finally {
       setPosting(false);
       onClose?.();
       setText('');
+      setPhotos([]);
+      setVideos([]);
+      setPhotoUrls([]);
+      setVideoUrls([]);
     }
   }
 
