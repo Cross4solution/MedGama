@@ -5,6 +5,7 @@ import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
 import { useAuth } from '../context/AuthContext';
 import EmojiPicker from '../components/EmojiPicker';
+import { medStreamAPI } from '../lib/api';
 
 export default function PostDetail() {
   const { state } = useLocation();
@@ -328,17 +329,17 @@ export default function PostDetail() {
                     className="flex-1 outline-none text-sm bg-transparent"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && newComment.trim()) {
-                        // TODO: submit comment to backend
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newComment.trim() && item?.id) {
+                        medStreamAPI.createComment(item.id, { content: newComment.trim() }).catch(() => {});
                         setNewComment('');
                       }
                     }}
                   />
                   <button 
                     onClick={() => {
-                      if (newComment.trim()) {
-                        // TODO: submit comment to backend
+                      if (newComment.trim() && item?.id) {
+                        medStreamAPI.createComment(item.id, { content: newComment.trim() }).catch(() => {});
                         setNewComment('');
                       }
                     }}

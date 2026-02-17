@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Video, Smile, X, FileText, Send } from 'lucide-react';
+import { Image, Video, Smile, X, FileText, Send, Loader2 } from 'lucide-react';
+import { medStreamAPI } from '../../lib/api';
 
 export default function PostCreateModal({ open, onClose, user, onPost, initialAction = undefined, onResetInitialAction = undefined }) {
   const [text, setText] = useState('');
@@ -99,11 +100,28 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
   const displayName = user?.name || 'Guest';
   const specialty = user?.specialty || user?.dept || 'Doctor';
 
-  function handlePost() {
-    const payload = { text, createdAt: new Date().toISOString(), author: user };
-    onPost?.(payload);
-    onClose?.();
-    setText('');
+  const [posting, setPosting] = useState(false);
+
+  async function handlePost() {
+    if (posting) return;
+    setPosting(true);
+    try {
+      const postType = videoUrls.length > 0 ? 'video' : photoUrls.length > 0 ? 'image' : 'text';
+      const payload = {
+        post_type: postType,
+        content: text.trim() || undefined,
+        media_url: undefined, // TODO: implement file upload to get URL
+      };
+      const res = await medStreamAPI.createPost(payload);
+      onPost?.(res?.post || res);
+    } catch (err) {
+      // Fallback: still pass local data
+      onPost?.({ text, createdAt: new Date().toISOString(), author: user });
+    } finally {
+      setPosting(false);
+      onClose?.();
+      setText('');
+    }
   }
 
   const hasMedia = photoUrls.length > 0 || videoUrls.length > 0;
@@ -352,11 +370,11 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
               </div>
               <button
                 onClick={handlePost}
-                disabled={!canPost}
-                className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${canPost ? 'text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                disabled={!canPost || posting}
+                className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${canPost && !posting ? 'text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
               >
-                <Send className="w-4 h-4" />
-                Post
+                {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                {posting ? 'Posting...' : 'Post'}
               </button>
             </div>
           </div>

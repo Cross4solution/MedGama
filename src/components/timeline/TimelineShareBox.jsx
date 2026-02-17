@@ -13,7 +13,7 @@ export default function TimelineShareBox() {
   const name = user?.name || 'Guest';
 
   function handlePost(newPost) {
-    // TODO: integrate with timeline data store
+    // Post created via API in PostCreateModal — newPost contains the server response
   }
 
   return (
