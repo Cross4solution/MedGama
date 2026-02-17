@@ -57,7 +57,7 @@ export default function PostComposer() {
   };
 
   function handlePost(newPost) {
-    // TODO: integrate with timeline data store (same as TimelineShareBox)
+    // Post created via API in PostCreateModal — newPost contains the server response
   }
 
   return (

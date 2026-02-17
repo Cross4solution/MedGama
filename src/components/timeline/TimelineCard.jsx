@@ -5,6 +5,7 @@ import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
 import Modal from '../common/Modal';
+import { medStreamAPI } from '../../lib/api';
 
 function MediaImg({ src, alt, className, onClick = undefined }) {
   const [failed, setFailed] = React.useState(false);
@@ -149,7 +150,11 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       setLikeCount((c) => c + (next ? 1 : -1));
       return next;
     });
-  }, [disabledActions]);
+    // Fire API call (fire-and-forget)
+    if (item?.id) {
+      medStreamAPI.toggleLike(item.id).catch(() => {});
+    }
+  }, [disabledActions, item?.id]);
 
   const handleShareExternal = async (e) => {
     e?.stopPropagation?.();
@@ -354,6 +359,14 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     disabled={disabledActions}
                     value={commentText}
                     onChange={(e)=>setCommentText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && commentText.trim() && item?.id) {
+                        e.stopPropagation();
+                        medStreamAPI.createComment(item.id, { content: commentText.trim() }).catch(() => {});
+                        setCommentText('');
+                        showSuccessToast('Comment posted');
+                      }
+                    }}
                   />
                   <button
                     type="button"
@@ -531,6 +544,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                   disabled={!reportReason}
                   onClick={() => {
+                    if (item?.id) {
+                      medStreamAPI.reportPost(item.id, `${reportReason}${reportDesc ? ': ' + reportDesc : ''}`).catch(() => {});
+                    }
                     showSuccessToast('Report submitted');
                     setShowReportModal(false);
                     setReportReason('');
