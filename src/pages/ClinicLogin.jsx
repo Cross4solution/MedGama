@@ -41,10 +41,16 @@ const ClinicLogin = () => {
       setLoading(false);
       return;
     }
-    // After successful login, require phone verification
-    login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' });
-    setLoading(false);
-    setShowPhoneVerification(true);
+    try {
+      await login(formData.email, formData.password);
+      setShowPhoneVerification(true);
+    } catch (err) {
+      if (err?.status === 401) setError(err?.data?.message || 'Invalid credentials');
+      else if (err?.status === 422) setError(err?.data?.message || 'Validation error');
+      else setError(err?.message || 'Unexpected error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const features = [

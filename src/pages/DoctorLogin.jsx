@@ -111,9 +111,8 @@ const DoctorLogin = () => {
     try {
       const res = await login(formData.email, formData.password);
       const apiUser = res?.data?.user;
-      const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
       // After successful login, require phone verification
-      setPendingLoginData({ user: apiUser, isDoctor });
+      setPendingLoginData({ user: apiUser });
       setShowPhoneVerification(true);
       return;
     } catch (err) {
