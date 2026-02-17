@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users, Search, Plus, Filter, Eye, Edit3, Trash2, X, User, Mail, Phone,
@@ -6,6 +6,8 @@ import {
   AlertCircle, Heart, MoreVertical, Download,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import { clinicAPI } from '../../lib/api';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const MOCK_PATIENTS = [
@@ -35,6 +37,7 @@ const PatientStatusBadge = ({ status }) => {
 
 const CRMPatients = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -42,31 +45,63 @@ const CRMPatients = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 8;
+  const [apiPatients, setApiPatients] = useState(null);
+
+  useEffect(() => {
+    if (!user?.clinic_id) return;
+    clinicAPI.staff(user.clinic_id, { per_page: 100 }).then(res => {
+      const list = res?.data || [];
+      const patients = list.filter(u => u.role_id === 'patient');
+      if (patients.length > 0) {
+        setApiPatients(patients.map(p => ({
+          id: p.id,
+          name: p.fullname || 'Patient',
+          email: p.email || '',
+          phone: '',
+          age: '',
+          gender: '',
+          dob: '',
+          bloodType: '',
+          country: '',
+          city: '',
+          status: p.is_verified ? 'active' : 'new',
+          lastVisit: '',
+          totalVisits: 0,
+          conditions: [],
+          allergies: [],
+          insurance: '',
+          registeredAt: '',
+        })));
+      }
+    }).catch(() => {});
+  }, [user?.clinic_id]);
+
+  const allPatients = apiPatients || MOCK_PATIENTS;
 
   const [newPatient, setNewPatient] = useState({
     name: '', email: '', phone: '', dob: '', gender: 'M', bloodType: '', country: '', city: '', insurance: '', conditions: '', allergies: '',
   });
 
   const filtered = useMemo(() => {
-    return MOCK_PATIENTS.filter((p) => {
+    return allPatients.filter((p) => {
       if (statusFilter !== 'all' && p.status !== statusFilter) return false;
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
-        return p.name.toLowerCase().includes(q) || p.email.toLowerCase().includes(q) || p.phone.includes(q);
+        return p.name.toLowerCase().includes(q) || (p.email || '').toLowerCase().includes(q) || (p.phone || '').includes(q);
       }
       return true;
     });
-  }, [searchQuery, statusFilter]);
+  }, [searchQuery, statusFilter, allPatients]);
 
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
 
   const stats = useMemo(() => ({
-    total: MOCK_PATIENTS.length,
-    active: MOCK_PATIENTS.filter(p => p.status === 'active').length,
-    critical: MOCK_PATIENTS.filter(p => p.status === 'critical').length,
-    newPatients: MOCK_PATIENTS.filter(p => p.status === 'new').length,
-  }), []);
+    total: allPatients.length,
+    active: allPatients.filter(p => p.status === 'active').length,
+    critical: allPatients.filter(p => p.status === 'critical').length,
+    newPatients: allPatients.filter(p => p.status === 'new').length,
+  }), [allPatients]);
 
   return (
     <div className="space-y-6">
