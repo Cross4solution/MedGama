@@ -100,8 +100,13 @@ const AuthPages = () => {
       setSubmitting(true);
       if (currentPage === 'login') {
         const res = await login(formData.email, formData.password);
-        notify({ type: 'success', message: res?.message || 'Login successful' });
-        navigate('/home-v2');
+        if (res?.requires_email_verification) {
+          notify({ type: 'info', message: 'Please verify your email address.' });
+          navigate('/verify-email');
+        } else {
+          notify({ type: 'success', message: 'Login successful' });
+          navigate('/home-v2');
+        }
       } else if (currentPage === 'register') {
         if (formData.role === 'clinic') {
           notify({ type: 'info', message: 'Clinic registration will be available soon. Please sign in via clinic portal.' });
@@ -125,8 +130,8 @@ const AuthPages = () => {
             localStorage.setItem(key, JSON.stringify(extras));
           }
         } catch {}
-        notify({ type: 'success', message: res?.message || 'Registration successful!' });
-        navigate('/home-v2');
+        notify({ type: 'success', message: 'Registration successful! Please verify your email.' });
+        navigate('/verify-email');
       } else {
         notify({ type: 'info', message: 'Password reset link sent if the email exists.' });
       }

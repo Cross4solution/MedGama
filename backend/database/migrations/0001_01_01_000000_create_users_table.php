@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('mobile')->nullable();
             $table->boolean('mobile_verified')->default(false);
             $table->boolean('email_verified')->default(false);
+            $table->string('email_verification_code', 6)->nullable();
             $table->integer('city_id')->nullable()->index();
             $table->integer('country_id')->nullable()->index();
             $table->date('date_of_birth')->nullable();

@@ -109,8 +109,12 @@ const DoctorLogin = () => {
       return;
     }
     try {
-      await login(formData.email, formData.password);
-      navigate('/home-v2', { replace: true });
+      const res = await login(formData.email, formData.password);
+      if (res?.requires_email_verification) {
+        navigate('/verify-email', { replace: true });
+      } else {
+        navigate('/home-v2', { replace: true });
+      }
       return;
     } catch (err) {
       if (err?.status === 401) setError(err?.data?.message || 'Invalid credentials');
