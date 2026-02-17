@@ -110,7 +110,7 @@ const DoctorLogin = () => {
     }
     try {
       await login(formData.email, formData.password);
-      navigate('/crm', { replace: true });
+      navigate('/home-v2', { replace: true });
       return;
     } catch (err) {
       if (err?.status === 401) setError(err?.data?.message || 'Invalid credentials');

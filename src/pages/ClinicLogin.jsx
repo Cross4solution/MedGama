@@ -43,7 +43,7 @@ const ClinicLogin = () => {
     }
     try {
       await login(formData.email, formData.password);
-      navigate('/crm', { replace: true });
+      navigate('/home-v2', { replace: true });
     } catch (err) {
       if (err?.status === 401) setError(err?.data?.message || 'Invalid credentials');
       else if (err?.status === 422) setError(err?.data?.message || 'Validation error');

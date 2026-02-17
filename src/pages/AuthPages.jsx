@@ -101,15 +101,7 @@ const AuthPages = () => {
       if (currentPage === 'login') {
         const res = await login(formData.email, formData.password);
         notify({ type: 'success', message: res?.message || 'Login successful' });
-        const apiUser = res?.data?.user;
-        const role = apiUser?.role || apiUser?.role_id || 'patient';
-        if (role === 'doctor' || role === 'clinicOwner') {
-          navigate('/crm');
-        } else if (role === 'superAdmin' || role === 'saasAdmin') {
-          navigate('/crm');
-        } else {
-          navigate('/home-v2');
-        }
+        navigate('/home-v2');
       } else if (currentPage === 'register') {
         if (formData.role === 'clinic') {
           notify({ type: 'info', message: 'Clinic registration will be available soon. Please sign in via clinic portal.' });
