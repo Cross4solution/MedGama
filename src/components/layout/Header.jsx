@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 const Header = () => {
-  const { user, sidebarMobileOpen, setSidebarMobileOpen, logout } = useAuth();
+  const { user, sidebarMobileOpen, setSidebarMobileOpen, logout, hydrated } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false); // legacy (mobile menu removed)
@@ -84,7 +84,7 @@ const Header = () => {
           {/* Right cluster: actions (desktop) + mobile trigger */}
           <div className="flex items-center justify-end gap-2">
             <div className="hidden md:flex items-center space-x-3">
-              {!user ? (
+              {!hydrated ? null : !user ? (
                 <>
                   <div className="relative" ref={loginRef}>
                     <button
@@ -161,8 +161,7 @@ const Header = () => {
               )}
             </div>
             {/* Mobile trigger */}
-            {/* Mobile: remove patient shortcuts */}
-            {user ? (
+            {!hydrated ? null : user ? (
               <button
                 onClick={toggleMenu}
                 aria-label={isMenuOpen ? 'Close profile menu' : 'Open profile menu'}

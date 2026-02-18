@@ -14,30 +14,40 @@ function TimelineFilterSidebar({
   specialtyOptions = [],
   user,
 }) {
+  // Use local state for search (debounced), but apply country/specialty instantly
   const [localQuery, setLocalQuery] = useState(initialQuery);
-  const [localCountryName, setLocalCountryName] = useState(initialCountryName);
-  const [localSpecialty, setLocalSpecialty] = useState(initialSpecialty);
 
-  // Update local states when props change
+  // Update local query when prop changes
   useEffect(() => {
     setLocalQuery(initialQuery);
   }, [initialQuery]);
-  
-  useEffect(() => {
-    setLocalCountryName(initialCountryName);
-  }, [initialCountryName]);
-  
-  useEffect(() => {
-    setLocalSpecialty(initialSpecialty);
-  }, [initialSpecialty]);
 
-  const handleApplyFilters = () => {
-    if (onQueryChange) onQueryChange(localQuery);
-    if (onCountryChange) onCountryChange(localCountryName);
-    if (onSpecialtyChange) onSpecialtyChange(localSpecialty);
+  // Debounce search query — apply after 400ms of no typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (onQueryChange && localQuery !== initialQuery) {
+        onQueryChange(localQuery);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [localQuery]);
+
+  const handleCountryChange = (val) => {
+    if (onCountryChange) onCountryChange(val);
   };
 
-  const hasActiveFilters = !!(localQuery || localCountryName || localSpecialty);
+  const handleSpecialtyChange = (val) => {
+    if (onSpecialtyChange) onSpecialtyChange(val);
+  };
+
+  const handleClearAll = () => {
+    setLocalQuery('');
+    if (onQueryChange) onQueryChange('');
+    if (onCountryChange) onCountryChange('');
+    if (onSpecialtyChange) onSpecialtyChange('');
+  };
+
+  const hasActiveFilters = !!(localQuery || initialCountryName || initialSpecialty);
 
   return (
     <aside className="order-1 lg:order-1 lg:sticky lg:top-24 h-max">
@@ -72,8 +82,8 @@ function TimelineFilterSidebar({
                 <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Country</label>
                 <CountryCombobox
                   options={countryOptions}
-                  value={localCountryName}
-                  onChange={setLocalCountryName}
+                  value={initialCountryName}
+                  onChange={handleCountryChange}
                   placeholder="All"
                   triggerClassName="w-full h-10 border border-gray-200 rounded-xl px-3 text-sm bg-gray-50/50 text-left hover:bg-white hover:border-gray-300 transition-all"
                   getFlagUrl={(name) => {
@@ -88,8 +98,8 @@ function TimelineFilterSidebar({
                 <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Specialization</label>
                 <SelectCombobox
                   options={specialtyOptions}
-                  value={localSpecialty}
-                  onChange={setLocalSpecialty}
+                  value={initialSpecialty}
+                  onChange={handleSpecialtyChange}
                   placeholder="All"
                   hideChevron
                   triggerClassName="w-full h-10 pl-3 pr-3 py-2 border border-gray-200 rounded-xl text-sm bg-gray-50/50 text-left hover:bg-white hover:border-gray-300 transition-all"
@@ -104,8 +114,8 @@ function TimelineFilterSidebar({
               <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Country</label>
               <CountryCombobox
                 options={countryOptions}
-                value={localCountryName}
-                onChange={setLocalCountryName}
+                value={initialCountryName}
+                onChange={handleCountryChange}
                 placeholder="All countries"
                 triggerClassName="w-full h-10 border border-gray-200 rounded-xl px-3 text-sm bg-gray-50/50 text-left hover:bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
                 getFlagUrl={(name) => {
@@ -121,8 +131,8 @@ function TimelineFilterSidebar({
               <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Specialization</label>
               <SelectCombobox
                 options={specialtyOptions}
-                value={localSpecialty}
-                onChange={setLocalSpecialty}
+                value={initialSpecialty}
+                onChange={handleSpecialtyChange}
                 placeholder="All"
                 hideChevron
                 triggerClassName="w-full h-10 pl-3 pr-3 py-2 border border-gray-200 rounded-xl text-sm bg-gray-50/50 text-left hover:bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
@@ -131,19 +141,17 @@ function TimelineFilterSidebar({
           </div>
         </div>
 
-        {/* Apply Filters Button */}
-        <div className="px-5 pb-5">
-          <button
-            onClick={handleApplyFilters}
-            className={`w-full py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-md ${
-              hasActiveFilters
-                ? 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 hover:shadow-lg hover:-translate-y-0.5 focus:ring-4 focus:ring-teal-200'
-                : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 focus:ring-4 focus:ring-teal-200'
-            }`}
-          >
-            Apply Filters
-          </button>
-        </div>
+        {/* Clear All Filters */}
+        {hasActiveFilters && (
+          <div className="px-5 pb-5">
+            <button
+              onClick={handleClearAll}
+              className="w-full py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+            >
+              Clear All Filters
+            </button>
+          </div>
+        )}
       </div>
     </aside>
   );

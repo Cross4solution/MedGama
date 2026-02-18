@@ -34,6 +34,7 @@ export function AuthProvider({ children }) {
   const meUnavailableRef = React.useRef(false);
   const loggedOutRef = React.useRef(false);
   const hydratedRef = React.useRef(false);
+  const [hydrated, setHydrated] = useState(false);
 
   // Listen for auth:logout events from API interceptor (401)
   useEffect(() => {
@@ -53,6 +54,7 @@ export function AuthProvider({ children }) {
       if (localStorage.getItem('auth_logout') === '1') {
         loggedOutRef.current = true;
         hydratedRef.current = true;
+        setHydrated(true);
         return;
       }
       const saved = localStorage.getItem('auth_state');
@@ -63,6 +65,7 @@ export function AuthProvider({ children }) {
           setToken(parsed.token);
           setCountry(parsed.country || 'TR');
           hydratedRef.current = true;
+          setHydrated(true);
           return;
         }
       }
@@ -74,6 +77,7 @@ export function AuthProvider({ children }) {
       }
     } catch {}
     hydratedRef.current = true;
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
@@ -287,7 +291,8 @@ export function AuthProvider({ children }) {
     formatCurrency: (usd) => formatCurrency(usd, country),
     sidebarMobileOpen,
     setSidebarMobileOpen,
-  }), [user, token, country, sidebarMobileOpen]);
+    hydrated,
+  }), [user, token, country, sidebarMobileOpen, hydrated]);
 
   // If we have a token (from fallback) but no user yet, try to fetch current user once
   useEffect(() => {
