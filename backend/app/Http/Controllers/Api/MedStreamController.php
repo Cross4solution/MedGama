@@ -9,6 +9,7 @@ use App\Models\MedStreamLike;
 use App\Models\MedStreamBookmark;
 use App\Models\MedStreamReport;
 use App\Models\MedStreamEngagementCounter;
+use App\Services\MediaOptimizer;
 use Illuminate\Http\Request;
 
 class MedStreamController extends Controller
@@ -58,19 +59,39 @@ class MedStreamController extends Controller
             'papers.*'   => 'file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,csv|max:20480',  // 20 MB
         ]);
 
-        // Handle file uploads — store first file as media_url, rest as JSON in content metadata
+        // Handle file uploads with optimization (resize, compress, thumbnails)
         $mediaUrl = $validated['media_url'] ?? null;
         $uploadedFiles = [];
 
-        foreach (['photos', 'videos', 'papers'] as $field) {
-            if ($request->hasFile($field)) {
-                foreach ($request->file($field) as $file) {
-                    $path = $file->store('medstream/' . $field, 'public');
-                    $url = asset('storage/' . $path);
-                    $uploadedFiles[] = ['url' => $url, 'type' => $field, 'name' => $file->getClientOriginalName()];
-                    if (!$mediaUrl) {
-                        $mediaUrl = $url;
-                    }
+        // Process photos — resize to 3 variants (thumb 400px, medium 1200px, original 2048px) + WebP
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $file) {
+                $result = MediaOptimizer::processImage($file);
+                $uploadedFiles[] = $result;
+                if (!$mediaUrl) {
+                    $mediaUrl = $result['medium'] ?? $result['original'];
+                }
+            }
+        }
+
+        // Process videos — compress with FFmpeg if available + extract thumbnail
+        if ($request->hasFile('videos')) {
+            foreach ($request->file('videos') as $file) {
+                $result = MediaOptimizer::processVideo($file);
+                $uploadedFiles[] = $result;
+                if (!$mediaUrl) {
+                    $mediaUrl = $result['thumb'] ?? $result['original'];
+                }
+            }
+        }
+
+        // Process documents — store as-is with metadata
+        if ($request->hasFile('papers')) {
+            foreach ($request->file('papers') as $file) {
+                $result = MediaOptimizer::processDocument($file);
+                $uploadedFiles[] = $result;
+                if (!$mediaUrl) {
+                    $mediaUrl = $result['original'];
                 }
             }
         }
