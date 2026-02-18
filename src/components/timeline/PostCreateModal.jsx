@@ -105,7 +105,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
 
   if (!open) return null;
 
-  const avatar = '/images/default/default-avatar.svg';
+  const avatar = user?.avatar || '/images/default/default-avatar.svg';
   const displayName = user?.name || 'Guest';
   const specialty = user?.specialty || user?.dept || 'Doctor';
 

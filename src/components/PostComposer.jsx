@@ -17,7 +17,7 @@ export default function PostComposer() {
   const videoRef = React.useRef(null);
   const emojiBtnRef = React.useRef(null);
   const emojiPanelRef = React.useRef(null);
-  const avatar = '/images/default/default-avatar.svg';
+  const avatar = user?.avatar || '/images/default/default-avatar.svg';
   const name = user?.name || 'Guest';
 
   // Kategorilere ayrılmış emoji listesi

@@ -191,7 +191,7 @@ function MediaItem({ m, alt, className, onClick = undefined }) {
 }
 
 function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
-  const avatarUrl = item.avatar || '/images/portrait-candid-male-doctor_720.jpg';
+  const avatarUrl = item.avatar || '/images/default/default-avatar.svg';
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
   const [expanded, setExpanded] = useState(false);
@@ -227,7 +227,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
         author_id: c.author_id || c.author?.id,
         name: c.author?.fullname || 'User',
         title: '',
-        avatar: c.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+        avatar: c.author?.avatar || '/images/default/default-avatar.svg',
         text: c.content || '',
         time: c.created_at ? new Date(c.created_at).toLocaleDateString() : '',
       })));
@@ -277,7 +277,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       id: 'reply-' + Date.now(),
       name: item?.actor?.name || 'You',
       title: item?.actor?.title || '',
-      avatar: item?.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg',
+      avatar: item?.actor?.avatarUrl || '/images/default/default-avatar.svg',
       text,
       time: 'Just now',
     };
