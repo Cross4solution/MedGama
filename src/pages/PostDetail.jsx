@@ -310,6 +310,17 @@ export default function PostDetail() {
         avatar: c.author?.avatar || '/images/default/default-avatar.svg',
         text: c.content || '',
         time: c.created_at ? new Date(c.created_at).toLocaleDateString() : '',
+        parent_id: c.parent_id || null,
+        replies: (c.replies || []).map(r => ({
+          id: r.id,
+          author_id: r.author_id || r.author?.id,
+          name: r.author?.fullname || 'User',
+          avatar: r.author?.avatar || '/images/default/default-avatar.svg',
+          text: r.content || '',
+          time: r.created_at ? new Date(r.created_at).toLocaleDateString() : '',
+          parent_id: r.parent_id || c.id,
+          replies: [],
+        })),
       })));
       setDetailCommentsLoaded(true);
     }).catch(() => setDetailCommentsLoaded(true));
@@ -324,6 +335,8 @@ export default function PostDetail() {
       avatar: user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg',
       text,
       time: 'Just now',
+      parent_id: null,
+      replies: [],
     }]);
     medStreamAPI.createComment(item.id, { content: text }).catch(() => {});
     setNewComment('');
@@ -331,17 +344,42 @@ export default function PostDetail() {
 
   const submitDetailReply = () => {
     const text = replyText.trim();
+    const parentId = replyTo;
     if (!text || !item?.id) return;
-    setLocalDetailComments(prev => [...prev, {
+    const newReply = {
       id: 'dr-' + Date.now(),
+      author_id: user?.id,
       name: user?.name || item?.actor?.name || 'You',
       avatar: user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg',
       text,
       time: 'Just now',
-    }]);
-    medStreamAPI.createComment(item.id, { content: text }).catch(() => {});
+      parent_id: parentId,
+      replies: [],
+    };
+    // Add reply nested under parent
+    const addedToApi = addDetailReplyToParent(setApiDetailComments, parentId, newReply);
+    if (!addedToApi) {
+      addDetailReplyToParent(setLocalDetailComments, parentId, newReply);
+    }
+    medStreamAPI.createComment(item.id, { content: text, parent_id: parentId }).catch(() => {});
     setReplyTo('');
     setReplyText('');
+  };
+
+  // Helper: add a reply nested under its parent comment
+  const addDetailReplyToParent = (setter, parentId, reply) => {
+    let found = false;
+    setter(prev => {
+      const next = prev.map(c => {
+        if (c.id === parentId) {
+          found = true;
+          return { ...c, replies: [...(c.replies || []), reply] };
+        }
+        return c;
+      });
+      return next;
+    });
+    return found;
   };
 
   return (
@@ -609,6 +647,25 @@ export default function PostDetail() {
                                 <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400 pl-2">
                                   <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
                                 </div>
+                                {/* Nested replies */}
+                                {Array.isArray(c.replies) && c.replies.length > 0 && (
+                                  <div className="mt-2 ml-2 pl-3 border-l-2 border-gray-100 space-y-2">
+                                    {c.replies.map((r) => (
+                                      <div key={r.id} className="flex items-start gap-2">
+                                        <img src={r.avatar} alt={r.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
+                                        <div className="flex-1 min-w-0">
+                                          <div className="bg-gray-50/60 rounded-lg px-3 py-2">
+                                            <div className="flex items-baseline justify-between gap-2">
+                                              <span className="text-[12px] font-semibold text-gray-900">{r.name}</span>
+                                              <span className="text-[10px] text-gray-400 flex-shrink-0">{r.time}</span>
+                                            </div>
+                                            <p className="text-[12px] text-gray-700 leading-relaxed mt-0.5">{r.text}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                                 {replyTo === c.id && (
                                   <div className="mt-2 ml-2 pl-3 border-l-2 border-teal-200">
                                     <div className="flex items-center gap-2">

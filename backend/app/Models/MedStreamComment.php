@@ -14,8 +14,18 @@ class MedStreamComment extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'post_id', 'author_id', 'content', 'is_hidden',
+        'post_id', 'author_id', 'parent_id', 'content', 'is_hidden',
     ];
+
+    public function parent()
+    {
+        return $this->belongsTo(MedStreamComment::class, 'parent_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(MedStreamComment::class, 'parent_id')->active()->where('is_hidden', false);
+    }
 
     protected function casts(): array
     {

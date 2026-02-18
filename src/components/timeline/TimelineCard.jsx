@@ -260,6 +260,18 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
         avatar: c.author?.avatar || '/images/default/default-avatar.svg',
         text: c.content || '',
         time: c.created_at ? new Date(c.created_at).toLocaleDateString() : '',
+        parent_id: c.parent_id || null,
+        replies: (c.replies || []).map(r => ({
+          id: r.id,
+          author_id: r.author_id || r.author?.id,
+          name: r.author?.fullname || 'User',
+          title: '',
+          avatar: r.author?.avatar || '/images/default/default-avatar.svg',
+          text: r.content || '',
+          time: r.created_at ? new Date(r.created_at).toLocaleDateString() : '',
+          parent_id: r.parent_id || c.id,
+          replies: [],
+        })),
       })));
       setCommentsLoaded(true);
     }).catch(() => setCommentsLoaded(true));
@@ -302,8 +314,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const submitReply = (e) => {
     e?.stopPropagation?.();
     const text = replyText.trim();
+    const parentId = replyTo;
     if (!text) { setReplyTo(''); setReplyText(''); return; }
-    const newComment = {
+    const newReply = {
       id: 'reply-' + Date.now(),
       author_id: authUser?.id,
       name: authUser?.name || 'You',
@@ -311,16 +324,37 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       avatar: authUser?.avatar || '/images/default/default-avatar.svg',
       text,
       time: 'Just now',
+      parent_id: parentId,
+      replies: [],
     };
-    setLocalComments(prev => [...prev, newComment]);
+    // Add reply nested under parent in apiComments or localComments
+    const addedToApi = addReplyToParent(setApiComments, parentId, newReply);
+    if (!addedToApi) {
+      addReplyToParent(setLocalComments, parentId, newReply);
+    }
     setCommentCount(c => c + 1);
-    setVisibleCommentCount(v => v + 1);
-    // Fire API call
+    // Fire API call with parent_id
     if (item?.id) {
-      medStreamAPI.createComment(item.id, { content: text }).catch((err) => console.warn('Reply failed:', err));
+      medStreamAPI.createComment(item.id, { content: text, parent_id: parentId }).catch((err) => console.warn('Reply failed:', err));
     }
     setReplyTo('');
     setReplyText('');
+  };
+
+  // Helper: add a reply nested under its parent comment
+  const addReplyToParent = (setter, parentId, reply) => {
+    let found = false;
+    setter(prev => {
+      const next = prev.map(c => {
+        if (c.id === parentId) {
+          found = true;
+          return { ...c, replies: [...(c.replies || []), reply] };
+        }
+        return c;
+      });
+      return next;
+    });
+    return found;
   };
 
   const truncate = (text, max = 120) => {
@@ -671,7 +705,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         e.stopPropagation();
                         const newComment = commentText.trim();
                         medStreamAPI.createComment(item.id, { content: newComment }).catch((err) => console.warn('Comment failed:', err));
-                        setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now' }]);
+                        setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
                         setCommentCount(c => c + 1);
                         setVisibleCommentCount(v => v + 1);
                         setCommentText('');
@@ -698,7 +732,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                           if (!commentText.trim() || !item?.id) return;
                           const newComment = commentText.trim();
                           medStreamAPI.createComment(item.id, { content: newComment }).catch((err) => console.warn('Comment failed:', err));
-                          setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now' }]);
+                          setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
                           setCommentCount(c => c + 1);
                           setVisibleCommentCount(v => v + 1);
                           setCommentText('');
@@ -748,6 +782,23 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                               <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
                                 <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
                               </div>
+                              {/* Nested replies */}
+                              {Array.isArray(c.replies) && c.replies.length > 0 && (
+                                <div className="mt-2 ml-2 pl-3 border-l-2 border-gray-100 space-y-2">
+                                  {c.replies.map((r) => (
+                                    <div key={r.id} className="flex items-start gap-2">
+                                      <AvatarImg src={r.avatar} alt={r.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-baseline justify-between gap-2">
+                                          <span className="text-[12px] font-semibold text-[rgba(0,0,0,0.9)]">{r.name}</span>
+                                          <span className="text-[10px] text-gray-400 flex-shrink-0">{r.time}</span>
+                                        </div>
+                                        <p className="text-[12px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-0.5">{r.text}</p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                               {replyTo === c.id && (
                                 <div className="mt-1.5 ml-2 pl-3 border-l-2 border-teal-200">
                                   <div className="flex items-center gap-2">

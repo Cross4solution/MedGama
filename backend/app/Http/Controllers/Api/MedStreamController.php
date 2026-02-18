@@ -260,7 +260,8 @@ class MedStreamController extends Controller
         $comments = MedStreamComment::active()
             ->where('post_id', $postId)
             ->where('is_hidden', false)
-            ->with('author:id,fullname,avatar')
+            ->whereNull('parent_id')
+            ->with(['author:id,fullname,avatar', 'replies' => fn($q) => $q->with('author:id,fullname,avatar')->orderBy('created_at')])
             ->orderByDesc('created_at')
             ->paginate($request->per_page ?? 20);
 
@@ -271,6 +272,7 @@ class MedStreamController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|string|max:2000',
+            'parent_id' => 'sometimes|nullable|uuid|exists:med_stream_comments,id',
         ]);
 
         $post = MedStreamPost::with('author:id,fullname')->findOrFail($postId);
@@ -278,6 +280,7 @@ class MedStreamController extends Controller
         $comment = MedStreamComment::create([
             'post_id' => $postId,
             'author_id' => $request->user()->id,
+            'parent_id' => $validated['parent_id'] ?? null,
             'content' => $validated['content'],
         ]);
 

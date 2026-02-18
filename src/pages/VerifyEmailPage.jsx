@@ -77,10 +77,8 @@ export default function VerifyEmailPage() {
       if (res?.user && setUser) {
         setUser({ ...user, ...res.user, email_verified: true });
       }
-      // Redirect doctors to onboarding, others to home
-      const role = res?.user?.role_id || user?.role_id || user?.role;
-      const dest = role === 'doctor' ? '/doctor-onboarding' : '/home-v2';
-      setTimeout(() => navigate(dest, { replace: true }), 1500);
+      // Redirect to home — onboarding modal will auto-show for doctors
+      setTimeout(() => navigate('/home-v2', { replace: true }), 1500);
     } catch (err) {
       setError(err?.errors?.code?.[0] || err?.message || 'Invalid code. Please try again.');
     } finally {
