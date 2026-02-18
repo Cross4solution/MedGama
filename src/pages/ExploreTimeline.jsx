@@ -187,29 +187,33 @@ export default function ExploreTimeline() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loadMoreRef = useRef(null);
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
+  const PLACEHOLDER_IMG = '/images/petr-magera-huwm7malj18-unsplash_720.jpg';
+  const sanitizeBlobUrls = (post) => {
+    const clean = { ...post };
+    if (clean.img && clean.img.startsWith('blob:')) clean.img = PLACEHOLDER_IMG;
+    if (Array.isArray(clean.media)) {
+      clean.media = clean.media
+        .filter(m => m.url && !m.url.startsWith('blob:'));
+    }
+    delete clean._uploading;
+    delete clean._uploadFailed;
+    return clean;
+  };
+
   const [localPosts, setLocalPosts] = useState(() => {
     try {
       const saved = sessionStorage.getItem('explore_local_posts');
       if (!saved) return [];
-      // Filter out posts with blob: URLs (invalid after refresh)
-      const parsed = JSON.parse(saved);
-      return parsed.filter(p => {
-        const hasBlob = (p.img && p.img.startsWith('blob:')) ||
-          (Array.isArray(p.media) && p.media.some(m => m.url && m.url.startsWith('blob:')));
-        return !hasBlob && !p._uploading;
-      });
+      return JSON.parse(saved).filter(p => !p._uploading);
     } catch { return []; }
   });
 
-  // Persist localPosts to sessionStorage — skip blob-URL and uploading posts
+  // Persist localPosts to sessionStorage — sanitize blob URLs, skip uploading
   useEffect(() => {
     try {
-      const persistable = localPosts.filter(p => {
-        if (p._uploading) return false;
-        if (p.img && p.img.startsWith('blob:')) return false;
-        if (Array.isArray(p.media) && p.media.some(m => m.url && m.url.startsWith('blob:'))) return false;
-        return true;
-      });
+      const persistable = localPosts
+        .filter(p => !p._uploading)
+        .map(sanitizeBlobUrls);
       if (persistable.length > 0) {
         sessionStorage.setItem('explore_local_posts', JSON.stringify(persistable));
       } else {

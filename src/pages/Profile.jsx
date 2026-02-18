@@ -58,7 +58,7 @@ export default function Profile() {
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, type, message });
-    setTimeout(() => setToast(t => ({ ...t, show: false })), 3000);
+    setTimeout(() => setToast(t => ({ ...t, show: false })), 5000);
   };
 
   // Notifications & Privacy prefs available via loadPrefs() when needed
@@ -223,17 +223,31 @@ export default function Profile() {
 
   const saveSecurity = async (e) => {
     e.preventDefault();
-    if (!oldPwd) return showToast('Please enter your current password.', 'error');
-    if (newPwd.length < 6) return showToast('New password must be at least 6 characters.', 'error');
-    if (newPwd !== newPwd2) return showToast('New passwords do not match.', 'error');
+    if (!oldPwd) { showToast('Please enter your current password.', 'error'); return; }
+    if (newPwd.length < 6) { showToast('New password must be at least 6 characters.', 'error'); return; }
+    if (newPwd !== newPwd2) { showToast('New passwords do not match.', 'error'); return; }
     setSaving(true);
     try {
+      // Try dedicated password endpoint first
       await authAPI.changePassword({ current_password: oldPwd, password: newPwd, password_confirmation: newPwd2 });
-      showToast('Password updated successfully');
+      showToast('Password updated successfully ✓');
+      setOldPwd(''); setNewPwd(''); setNewPwd2('');
     } catch (err) {
-      showToast(err?.message || 'Failed to update password.', 'error');
+      // If dedicated endpoint doesn't exist (404), fallback to updateProfile
+      if (err?.status === 404) {
+        try {
+          await authAPI.updateProfile({ current_password: oldPwd, password: newPwd, password_confirmation: newPwd2 });
+          showToast('Password updated successfully ✓');
+          setOldPwd(''); setNewPwd(''); setNewPwd2('');
+        } catch (err2) {
+          const msg = err2?.data?.message || err2?.message || 'Failed to update password.';
+          showToast(msg, 'error');
+        }
+      } else {
+        const msg = err?.data?.message || err?.message || 'Failed to update password.';
+        showToast(msg, 'error');
+      }
     }
-    setOldPwd(''); setNewPwd(''); setNewPwd2('');
     setSaving(false);
   };
 
@@ -269,10 +283,11 @@ export default function Profile() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50/60 to-white">
       {/* Toast notification */}
       {toast.show && (
-        <div className={`fixed top-24 right-6 z-50 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium transition-all duration-300 animate-in slide-in-from-right ${
-          toast.type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+        <div className={`fixed top-20 right-6 z-50 px-5 py-3.5 rounded-xl shadow-2xl border text-sm font-semibold transition-all duration-300 flex items-center gap-3 ${
+          toast.type === 'error' ? 'bg-rose-50 border-rose-300 text-rose-800' : 'bg-emerald-50 border-emerald-300 text-emerald-800'
         }`}>
-          {toast.message}
+          <span>{toast.message}</span>
+          <button onClick={() => setToast(t => ({ ...t, show: false }))} className="text-current opacity-50 hover:opacity-100 text-xs ml-1">✕</button>
         </div>
       )}
       <div className="max-w-6xl mx-auto px-4 py-6">
