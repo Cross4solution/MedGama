@@ -122,7 +122,8 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
   }, []);
 
   // API verileri varsa onları kullan, yoksa mock — injected posts always on top
-  const baseSource = apiLoaded && apiPosts.length > 0 ? apiPosts : base;
+  // Don't show mock data while API is still loading (prevents flash on navigation)
+  const baseSource = !apiLoaded ? [] : (apiPosts.length > 0 ? apiPosts : base);
   const source = injectedPosts.length > 0 ? [...injectedPosts, ...baseSource] : baseSource;
 
   const filtered = useMemo(() => {
@@ -186,7 +187,23 @@ export default function ExploreTimeline() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loadMoreRef = useRef(null);
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
-  const [localPosts, setLocalPosts] = useState([]);
+  const [localPosts, setLocalPosts] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('explore_local_posts');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+
+  // Persist localPosts to sessionStorage
+  useEffect(() => {
+    try {
+      if (localPosts.length > 0) {
+        sessionStorage.setItem('explore_local_posts', JSON.stringify(localPosts));
+      } else {
+        sessionStorage.removeItem('explore_local_posts');
+      }
+    } catch {}
+  }, [localPosts]);
 
   // Composer state
   const [isComposerOpen, setIsComposerOpen] = useState(false);
@@ -490,7 +507,7 @@ export default function ExploreTimeline() {
 
           {/* Feed (RIGHT) */}
           <section className="order-1 lg:order-2">
-            <div className="max-w-[555px] mx-auto lg:mx-0">
+            <div className="max-w-[555px] mx-auto lg:mx-0 lg:ml-6">
               {/* Composer (doctors/clinics only) */}
               {(() => {
                 const isDoctor = !!(user && (user.role === 'doctor' || (user?.specialty || user?.hospital || user?.access)));
