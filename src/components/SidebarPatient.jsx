@@ -92,8 +92,6 @@ export default function SidebarPatient() {
       </Link>
     );
   };
-  const initial = (user?.name || 'U')[0]?.toUpperCase();
-
   return (
     <>
       {/* Desktop Sidebar */}
@@ -103,9 +101,7 @@ export default function SidebarPatient() {
             {/* Header / Profile */}
             <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-teal-200/50">
-                  {initial}
-                </div>
+                <img src={user?.avatar || '/images/default/default-avatar.svg'} alt={user?.name} className="w-10 h-10 rounded-xl object-cover shadow-md" />
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-bold text-gray-900 truncate">{user?.name}</div>
                   <div className="text-[11px] text-gray-500 font-medium truncate">{roleLabel}</div>
@@ -174,9 +170,7 @@ export default function SidebarPatient() {
               {/* Mobile Header */}
               <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-teal-200/50">
-                    {initial}
-                  </div>
+                  <img src={user?.avatar || '/images/default/default-avatar.svg'} alt={user?.name} className="w-10 h-10 rounded-xl object-cover shadow-md" />
                   <div className="min-w-0">
                     <div className="text-sm font-bold text-gray-900 truncate">{user?.name}</div>
                     <div className="text-[11px] text-gray-500 font-medium truncate">{roleLabel}</div>
