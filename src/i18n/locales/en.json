@@ -810,6 +810,18 @@
     "medicalConditions": "Current Medical Conditions",
     "medicalConditionsDesc": "e.g., Hypertension, Diabetes, Asthma",
     "typeCondition": "Type condition and press Enter...",
-    "pressEnter": "Press Enter or , to add"
+    "pressEnter": "Press Enter or , to add",
+    "notificationPreferences": "Notification Preferences",
+    "emailNotifications": "Email Notifications",
+    "emailNotificationsDesc": "Receive updates via email",
+    "smsNotifications": "SMS Notifications",
+    "smsNotificationsDesc": "Receive SMS alerts",
+    "pushNotifications": "Push Notifications",
+    "pushNotificationsDesc": "Browser push notifications",
+    "appointmentReminders": "Appointment Reminders",
+    "appointmentRemindersDesc": "Reminders before appointments",
+    "marketingMessages": "Marketing Messages",
+    "marketingMessagesDesc": "Promotional offers & news",
+    "savePreferences": "Save Preferences"
   }
 }

@@ -489,6 +489,18 @@
     "medicalConditions": "Aktuelle medizinische Zustände",
     "medicalConditionsDesc": "z.B. Bluthochdruck, Diabetes, Asthma",
     "typeCondition": "Zustand eingeben und Enter drücken...",
-    "pressEnter": "Enter oder , zum Hinzufügen drücken"
+    "pressEnter": "Enter oder , zum Hinzufügen drücken",
+    "notificationPreferences": "Benachrichtigungseinstellungen",
+    "emailNotifications": "E-Mail-Benachrichtigungen",
+    "emailNotificationsDesc": "Updates per E-Mail erhalten",
+    "smsNotifications": "SMS-Benachrichtigungen",
+    "smsNotificationsDesc": "SMS-Benachrichtigungen erhalten",
+    "pushNotifications": "Push-Benachrichtigungen",
+    "pushNotificationsDesc": "Browser-Push-Benachrichtigungen",
+    "appointmentReminders": "Terminerinnerungen",
+    "appointmentRemindersDesc": "Erinnerungen vor Terminen",
+    "marketingMessages": "Marketing-Nachrichten",
+    "marketingMessagesDesc": "Werbeangebote und Neuigkeiten",
+    "savePreferences": "Einstellungen speichern"
   }
 }

@@ -39,11 +39,11 @@ function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
   };
 
   const toggleItems = [
-    { key: 'email_notifications', label: t('profile.emailNotifications'), desc: 'Receive updates via email' },
-    { key: 'sms_notifications', label: t('profile.smsNotifications'), desc: 'Receive SMS alerts' },
-    { key: 'push_notifications', label: t('profile.pushNotifications'), desc: 'Browser push notifications' },
-    { key: 'appointment_reminders', label: t('profile.appointmentReminders'), desc: 'Reminders before appointments' },
-    { key: 'marketing_messages', label: t('profile.marketingMessages'), desc: 'Promotional offers & news' },
+    { key: 'email_notifications', label: t('profile.emailNotifications'), desc: t('profile.emailNotificationsDesc') },
+    { key: 'sms_notifications', label: t('profile.smsNotifications'), desc: t('profile.smsNotificationsDesc') },
+    { key: 'push_notifications', label: t('profile.pushNotifications'), desc: t('profile.pushNotificationsDesc') },
+    { key: 'appointment_reminders', label: t('profile.appointmentReminders'), desc: t('profile.appointmentRemindersDesc') },
+    { key: 'marketing_messages', label: t('profile.marketingMessages'), desc: t('profile.marketingMessagesDesc') },
   ];
 
   return (

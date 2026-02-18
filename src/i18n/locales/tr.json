@@ -810,6 +810,18 @@
     "medicalConditions": "Mevcut Tıbbi Durumlar",
     "medicalConditionsDesc": "ör. Hipertansiyon, Diyabet, Astım",
     "typeCondition": "Durum yazın ve Enter'a basın...",
-    "pressEnter": "Eklemek için Enter veya , tuşuna basın"
+    "pressEnter": "Eklemek için Enter veya , tuşuna basın",
+    "notificationPreferences": "Bildirim Tercihleri",
+    "emailNotifications": "E-posta Bildirimleri",
+    "emailNotificationsDesc": "E-posta ile güncellemeler alın",
+    "smsNotifications": "SMS Bildirimleri",
+    "smsNotificationsDesc": "SMS uyarıları alın",
+    "pushNotifications": "Anlık Bildirimler",
+    "pushNotificationsDesc": "Tarayıcı anlık bildirimleri",
+    "appointmentReminders": "Randevu Hatırlatmaları",
+    "appointmentRemindersDesc": "Randevulardan önce hatırlatma",
+    "marketingMessages": "Pazarlama Mesajları",
+    "marketingMessagesDesc": "Promosyon teklifleri ve haberler",
+    "savePreferences": "Tercihleri Kaydet"
   }
 }
