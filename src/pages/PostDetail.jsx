@@ -46,8 +46,8 @@ export default function PostDetail() {
           subtitle: '',
           text: p.content || '',
           img: p.media_url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
-          likes: p.engagementCounter?.like_count || 0,
-          comments: p.engagementCounter?.comment_count || 0,
+          likes: (p.engagement_counter || p.engagementCounter)?.like_count || 0,
+          comments: (p.engagement_counter || p.engagementCounter)?.comment_count || 0,
           actor: {
             id: p.author_id,
             role: p.author?.role_id || 'doctor',

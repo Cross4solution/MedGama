@@ -127,7 +127,26 @@ class MedStreamController extends Controller
             'media_url' => $mediaUrl,
         ];
 
-        $post = MedStreamPost::create($postData);
+        try {
+            $post = MedStreamPost::create($postData);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Auto-fix: if post_type constraint fails, update it and retry
+            if (str_contains($e->getMessage(), 'post_type_check') || str_contains($e->getMessage(), 'check constraint')) {
+                try {
+                    $driver = \DB::connection()->getDriverName();
+                    if ($driver === 'pgsql') {
+                        \DB::statement("ALTER TABLE med_stream_posts DROP CONSTRAINT IF EXISTS med_stream_posts_post_type_check");
+                        \DB::statement("ALTER TABLE med_stream_posts ADD CONSTRAINT med_stream_posts_post_type_check CHECK (post_type::text = ANY (ARRAY['text','image','video','document','mixed']))");
+                    }
+                    $post = MedStreamPost::create($postData);
+                } catch (\Throwable $retryErr) {
+                    \Log::error('MedStream storePost retry failed', ['error' => $retryErr->getMessage()]);
+                    return response()->json(['message' => 'Failed to create post. Please contact support.'], 500);
+                }
+            } else {
+                throw $e;
+            }
+        }
 
         // Create engagement counter
         MedStreamEngagementCounter::create([

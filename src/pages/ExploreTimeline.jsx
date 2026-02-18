@@ -25,31 +25,34 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     medStreamAPI.posts({ per_page: 50 }).then((res) => {
       const list = res?.data || [];
       if (list.length) {
-        setApiPosts(list.map((p) => ({
-          id: p.id,
-          type: 'doctor_update',
-          title: p.author?.fullname || 'Doctor',
-          subtitle: '',
-          city: '',
-          img: p.media_url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
-          text: p.content || '',
-          likes: p.engagementCounter?.like_count || 0,
-          comments: p.engagementCounter?.comment_count || 0,
-          specialty: '',
-          countryCode: '',
-          actor: {
-            id: p.author_id,
-            role: p.author?.role_id || 'doctor',
-            name: p.author?.fullname || 'Doctor',
-            title: '',
-            avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
-          },
-          socialContext: '',
-          timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
-          visibility: 'public',
-          media: p.media_url ? [{ url: p.media_url }] : [{ url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' }],
-          is_liked: !!p.is_liked,
-        })));
+        setApiPosts(list.map((p) => {
+          const ec = p.engagement_counter || p.engagementCounter || {};
+          return {
+            id: p.id,
+            type: 'doctor_update',
+            title: p.author?.fullname || 'Doctor',
+            subtitle: '',
+            city: '',
+            img: p.media_url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+            text: p.content || '',
+            likes: ec.like_count || 0,
+            comments: ec.comment_count || 0,
+            specialty: '',
+            countryCode: '',
+            actor: {
+              id: p.author_id,
+              role: p.author?.role_id || 'doctor',
+              name: p.author?.fullname || 'Doctor',
+              title: '',
+              avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+            },
+            socialContext: '',
+            timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
+            visibility: 'public',
+            media: p.media_url ? [{ url: p.media_url }] : [{ url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' }],
+            is_liked: !!p.is_liked,
+          };
+        }));
       }
       setApiLoaded(true);
     }).catch(() => setApiLoaded(true));
@@ -385,21 +388,9 @@ export default function ExploreTimeline() {
         onProgress: (pct) => setUploadProgress(pct),
       });
 
-      // Replace optimistic post with server version
-      const serverPost = res?.data || res;
-      if (serverPost?.id) {
-        const serverMedia = serverPost.media_url ? [{ url: serverPost.media_url }] : (serverPost.media || []);
-        setLocalPosts(prev => prev.map(p => p.id === localId ? {
-          ...optimisticPost,
-          id: serverPost.id,
-          img: serverPost.media_url || optimisticPost.img,
-          media: serverMedia.length > 0 ? serverMedia : optimisticPost.media,
-          _uploading: false,
-        } : p));
-      } else {
-        // API returned OK but no structured post — just mark as done
-        setLocalPosts(prev => prev.map(p => p.id === localId ? { ...p, _uploading: false } : p));
-      }
+      // Upload succeeded — remove optimistic local post entirely.
+      // Feed refresh below will bring the real server version with proper URLs.
+      setLocalPosts(prev => prev.filter(p => p.id !== localId));
 
       // Refresh feed to get full server data
       setFeedRefreshKey(k => k + 1);
