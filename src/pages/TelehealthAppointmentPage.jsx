@@ -246,13 +246,25 @@ export default function TelehealthAppointmentPage() {
           <p className="text-sm text-gray-500 mb-6">{isDoctor ? `Appointment for ${patientInfo.fullName || 'the patient'} has been successfully created.` : 'Your telehealth appointment has been successfully booked.'}</p>
 
           <div className="bg-gray-50 rounded-2xl p-5 mb-6 text-left space-y-3">
+            {isDoctor && (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <User className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 font-medium">Patient</p>
+                  <p className="text-sm font-semibold text-gray-900">{patientInfo.fullName || '—'}</p>
+                  {patientInfo.email && <p className="text-[11px] text-gray-400">{patientInfo.email}</p>}
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center flex-shrink-0">
                 <Stethoscope className="w-5 h-5 text-teal-600" />
               </div>
               <div>
                 <p className="text-xs text-gray-400 font-medium">Doctor</p>
-                <p className="text-sm font-semibold text-gray-900">{isDoctor ? `Dr. ${user?.fullname || user?.name}` : (selectedDoctorObj?.name || '—')}</p>
+                <p className="text-sm font-semibold text-gray-900">{isDoctor ? (user?.fullname || user?.name || '—') : (selectedDoctorObj?.name || '—')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -771,7 +783,7 @@ export default function TelehealthAppointmentPage() {
                       )}
                       <div>
                         <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Doctor</p>
-                        <p className="text-sm font-bold text-gray-900">{isDoctor ? `Dr. ${user?.fullname || user?.name}` : (selectedDoctorObj?.name || '—')}</p>
+                        <p className="text-sm font-bold text-gray-900">{isDoctor ? (user?.fullname || user?.name || '—') : (selectedDoctorObj?.name || '—')}</p>
                         {!isDoctor && <p className="text-xs text-gray-500">{selectedDoctorObj?.specialty}</p>}
                       </div>
                     </div>
@@ -910,7 +922,7 @@ export default function TelehealthAppointmentPage() {
                       <Stethoscope className="w-5 h-5 text-teal-600" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-gray-900 truncate">Dr. {user?.fullname || user?.name}</p>
+                      <p className="text-xs font-bold text-gray-900 truncate">{user?.fullname || user?.name}</p>
                       <p className="text-[11px] text-teal-600 font-medium">You (Doctor)</p>
                     </div>
                   </div>
