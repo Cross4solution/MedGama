@@ -39,7 +39,14 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
           },
           timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
           visibility: 'public',
-          media: p.media_url ? [{ url: p.media_url }] : [{ url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' }],
+          media: (() => {
+            if (Array.isArray(p.media) && p.media.length > 0) {
+              return p.media.map(m => ({ url: m.medium || m.original || m.url, thumb: m.thumb, name: m.name, type: m.type || p.post_type || 'image' }));
+            }
+            if (!p.media_url) return [{ url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' }];
+            const mType = (p.post_type === 'video') ? 'video' : (p.post_type === 'document') ? 'document' : 'image';
+            return [{ url: p.media_url, type: mType }];
+          })(),
         })));
       }
     }).catch(() => {});

@@ -337,8 +337,8 @@ export default function PostDetail() {
         {/* ── Left: Image / Media column ── */}
         <div className="relative flex items-center justify-center bg-gray-950 overflow-hidden select-none flex-shrink-0 lg:h-screen" style={{ height: heroHeightPx ? `${heroHeightPx}px` : undefined, transition: 'height 0.12s ease-out' }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
 
-          {/* Subtle blurred bg */}
-          {mediaList.length > 0 && (
+          {/* Subtle blurred bg — only for images */}
+          {mediaList.length > 0 && getMediaType(mediaList[imgIndex]) === 'image' && (
             <img src={mediaList[imgIndex]?.url} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover blur-3xl scale-125 opacity-30" />
           )}
 
