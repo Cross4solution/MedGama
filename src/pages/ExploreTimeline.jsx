@@ -406,9 +406,13 @@ export default function ExploreTimeline() {
       console.error('[ExploreTimeline] Post upload failed:', err?.status, err?.message);
       let errorMsg = err?.message || 'Upload failed. Post saved locally.';
       if (err?.status === 413) {
-        errorMsg = 'File too large for server. Please reduce video/image size and try again. (Max: video 50MB, photo 10MB)';
+        errorMsg = 'Your file exceeds the upload limit. Try compressing it or choosing a smaller file.';
       } else if (err?.status === 422) {
-        errorMsg = err?.data?.message || 'Invalid file format. Please check your files.';
+        errorMsg = err?.data?.message || 'This file type is not supported. Please use JPG, PNG, MP4, PDF, or Office documents.';
+      } else if (err?.status === 403) {
+        errorMsg = 'You don\'t have permission to create posts. Please check your account.';
+      } else if (err?.message?.includes('Network')) {
+        errorMsg = 'Connection lost. Please check your internet and try again.';
       }
       setUploadError(errorMsg);
       // Mark optimistic post as failed but keep it visible
@@ -677,9 +681,20 @@ export default function ExploreTimeline() {
                 </div>
               )}
               {uploadError && !composerPosting && (
-                <div className="mb-3 rounded-xl border border-rose-200 bg-rose-50/80 p-3 flex items-center justify-between">
-                  <p className="text-sm text-rose-700">{uploadError}</p>
-                  <button onClick={() => setUploadError('')} className="text-xs font-medium text-rose-500 hover:text-rose-700 ml-3">Dismiss</button>
+                <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50/90 p-4 shadow-sm">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg className="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-amber-900">Upload couldn't be completed</p>
+                      <p className="text-[13px] text-amber-700 mt-0.5 leading-relaxed">{uploadError}</p>
+                      <p className="text-[11px] text-amber-500 mt-1.5">Your post text has been saved. You can try again from the composer.</p>
+                    </div>
+                    <button onClick={() => setUploadError('')} className="w-7 h-7 rounded-full hover:bg-amber-100 flex items-center justify-center text-amber-400 hover:text-amber-600 transition-colors flex-shrink-0">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                    </button>
+                  </div>
                 </div>
               )}
               <div className="space-y-4">
