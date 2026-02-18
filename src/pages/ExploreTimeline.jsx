@@ -195,25 +195,43 @@ export default function ExploreTimeline() {
   const [composerVideos, setComposerVideos] = useState([]);
   const [composerPhotoUrls, setComposerPhotoUrls] = useState([]);
   const [composerVideoUrls, setComposerVideoUrls] = useState([]);
-  const hasMedia = composerPhotos.length > 0 || composerVideos.length > 0;
+  const [composerPapers, setComposerPapers] = useState([]);
+  const [composerPaperNames, setComposerPaperNames] = useState([]);
+  const hasMedia = composerPhotos.length > 0 || composerVideos.length > 0 || composerPapers.length > 0;
   const imageInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const paperInputRef = useRef(null);
   // Emoji picker state
   const [showEmojiInline, setShowEmojiInline] = useState(false);
   const [showEmojiModal, setShowEmojiModal] = useState(false);
+  const [emojiCategory, setEmojiCategory] = useState(0);
   const emojiAnchorModalRef = useRef(null);
-  const EMOJI_LIST = [
-    '😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊',
-    '🥰','😍','🤩','😘','😗','😚','😙','😋','😛','😜','🤪','😝',
-    '🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄',
-    '😬','🤥','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧',
-    '🥵','🥶','🥴','😵','🤯','🤠','🥳','😎','🤓','🧐','😕','😟'
+  const emojiModalRef = useRef(null);
+  const EMOJI_CATEGORIES = [
+    { icon: '😀', emojis: ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','🥰','😍','🤩','😘','😗','😚','😙','😋','😛','😜','🤪','😝','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','😎','🤓','🧐','😕','😟'] },
+    { icon: '👋', emojis: ['👋','👏','🙌','🤝','👍','👎','✊','🤛','🤜','🤞','✌️','🤟','🤘','👌','🤌','🤏','👈','👉','👆','👇','☝️','✋','🤚','🖐️','🖖','👐','💪','🦾','🙏','✍️','🤳','💅'] },
+    { icon: '❤️', emojis: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','♥️','🫶','🫀','💋','💌','💐','🌹','🌷','🌸','🌺','🌻','🌼','💮'] },
+    { icon: '🏆', emojis: ['🏆','🥇','🥈','🥉','🏅','🎖️','⭐','🌟','💫','✨','🔥','💯','🎯','🚀','💡','📈','📊','🧠','💎','👑','🎓','📚','🔬','🩺','💊','🏥','⚕️','🧬','🔭','📝','✅','🎗️'] },
+    { icon: '🎉', emojis: ['🎉','🎊','🎈','🎁','🎀','🎂','🍰','🥂','🍾','🎶','🎵','🎤','🎧','🎬','📸','🎨','🎭','🎪','🎡','🎢','🎠','🌈','☀️','🌙','⭐','🌍','🏖️','🏔️','🌊','🍀','🦋','🕊️'] },
   ];
+  const EMOJI_LIST = EMOJI_CATEGORIES[emojiCategory]?.emojis || EMOJI_CATEGORIES[0].emojis;
 
   const insertEmoji = (e) => {
     setComposerText((t) => (t ? t + ' ' + e : e));
   };
+
+  // BUG5: Close emoji picker when clicking outside
+  useEffect(() => {
+    if (!showEmojiModal) return;
+    const handler = (e) => {
+      if (emojiModalRef.current && !emojiModalRef.current.contains(e.target) &&
+          emojiAnchorModalRef.current && !emojiAnchorModalRef.current.contains(e.target)) {
+        setShowEmojiModal(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showEmojiModal]);
 
   // Build preview URLs for composer photos/videos
   useEffect(() => {
@@ -286,8 +304,11 @@ export default function ExploreTimeline() {
     if (!isComposerOpen) {
       setComposerPhotos([]);
       setComposerVideos([]);
+      setComposerPapers([]);
+      setComposerPaperNames([]);
       setComposerText('');
       setShowEmojiModal(false);
+      setEmojiCategory(0);
     }
   }, [isComposerOpen]);
 
@@ -425,7 +446,22 @@ export default function ExploreTimeline() {
           }
           try { e.target.value = ''; } catch {}
         }} />
-        <input ref={paperInputRef} type="file" accept="application/pdf" className="hidden" onChange={(e)=>{ try { e.target.value = ''; } catch {} }} />
+        <input ref={paperInputRef} type="file" accept="application/pdf,.doc,.docx" multiple className="hidden" onChange={(e)=>{
+          const files = Array.from(e?.target?.files || []);
+          if (files.length) {
+            setComposerPapers(prev => {
+              const merged = [...prev];
+              files.forEach(f => { if (!merged.some(p => p.name === f.name && p.size === f.size)) merged.push(f); });
+              return merged;
+            });
+            setComposerPaperNames(prev => {
+              const names = [...prev];
+              files.forEach(f => { if (!names.includes(f.name)) names.push(f.name); });
+              return names;
+            });
+          }
+          try { e.target.value = ''; } catch {}
+        }} />
         {/* Başlık + Sekmeler + Sıralama */}
         <div className="mb-2">
           <TimelineControls
@@ -551,8 +587,8 @@ export default function ExploreTimeline() {
                 <div className="px-4 sm:px-5 pb-2">
                   <div className="rounded-xl border border-gray-200/80 bg-gray-50/50 p-2.5">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Attachments ({composerPhotoUrls.length + composerVideoUrls.length})</span>
-                      <button type="button" onClick={()=>{ setComposerPhotos([]); setComposerVideos([]); }} className="text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors">Remove all</button>
+                      <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Attachments ({composerPhotoUrls.length + composerVideoUrls.length + composerPapers.length})</span>
+                      <button type="button" onClick={()=>{ setComposerPhotos([]); setComposerVideos([]); setComposerPapers([]); setComposerPaperNames([]); }} className="text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors">Remove all</button>
                     </div>
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                       {composerPhotoUrls.map((src, i) => (
@@ -574,6 +610,15 @@ export default function ExploreTimeline() {
                               <div className="w-0 h-0 border-t-[4px] border-t-transparent border-l-[7px] border-l-white border-b-[4px] border-b-transparent ml-0.5" />
                             </div>
                           </div>
+                        </div>
+                      ))}
+                      {composerPaperNames.map((name, i) => (
+                        <div key={`cpaper${i}`} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200/60 shadow-sm bg-indigo-50 flex flex-col items-center justify-center p-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-indigo-500 mb-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                          <span className="text-[9px] font-medium text-indigo-700 text-center leading-tight line-clamp-2 px-1">{name}</span>
+                          <button type="button" onClick={()=>{ setComposerPapers(arr=>arr.filter((_,idx)=>idx!==i)); setComposerPaperNames(arr=>arr.filter((_,idx)=>idx!==i)); }} className="absolute top-1 right-1 w-5 h-5 bg-black/50 backdrop-blur-sm text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70">
+                            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                          </button>
                         </div>
                       ))}
                       <button type="button" onClick={()=>imageInputRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 bg-white hover:bg-teal-50/30 flex flex-col items-center justify-center gap-0.5 transition-all group">
@@ -607,18 +652,18 @@ export default function ExploreTimeline() {
                       </button>
                     </div>
                     {showEmojiModal && (
-                      <div className="mt-3 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl shadow-lg w-full max-h-[300px] overflow-hidden">
+                      <div ref={emojiModalRef} className="mt-3 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl shadow-lg w-full max-h-[300px] overflow-hidden">
                         <div className="flex border-b border-gray-200 bg-white rounded-t-xl">
-                          {['😀','👋','❤️','🏆','🎉'].map((icon, idx)=>(
-                            <button key={idx} className={`flex-1 px-2 py-2 text-center transition-all duration-200 ${idx===0?'bg-blue-500 text-white border-b-2 border-blue-500':'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}`} title="Category">
-                              <div className="text-lg">{icon}</div>
+                          {EMOJI_CATEGORIES.map((cat, idx)=>(
+                            <button key={idx} type="button" onClick={()=>setEmojiCategory(idx)} className={`flex-1 px-2 py-2 text-center transition-all duration-200 ${emojiCategory===idx?'bg-blue-500 text-white border-b-2 border-blue-500':'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}`} title="Category">
+                              <div className="text-lg">{cat.icon}</div>
                             </button>
                           ))}
                         </div>
                         <div className="p-3 max-h-[220px] overflow-y-auto">
                           <div className="grid grid-cols-6 gap-1">
                             {EMOJI_LIST.map((em, i)=> (
-                              <button key={`me-inline-${i}`} type="button" onClick={()=>{ insertEmoji(em); }} className="hover:bg-blue-100 hover:scale-110 rounded-lg p-1 text-center transition-all duration-200 transform hover:shadow-md" title={em}>
+                              <button key={`me-${emojiCategory}-${i}`} type="button" onClick={()=>{ insertEmoji(em); }} className="hover:bg-blue-100 hover:scale-110 rounded-lg p-1 text-center transition-all duration-200 transform hover:shadow-md" title={em}>
                                 <span className="text-lg">{em}</span>
                               </button>
                             ))}

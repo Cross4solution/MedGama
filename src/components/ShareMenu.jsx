@@ -34,8 +34,13 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
       if (!btn) return;
       const rect = btn.getBoundingClientRect();
       const w = 256;
+      const menuH = 320;
       const gutter = 8;
-      const top = Math.min(window.innerHeight - gutter, rect.bottom + gutter);
+      // If menu would go below viewport, open above the button
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const top = spaceBelow < menuH + gutter
+        ? Math.max(gutter, rect.top - menuH - gutter)
+        : rect.bottom + gutter;
       const left = Math.max(gutter, Math.min(window.innerWidth - w - gutter, rect.left));
       setPos({ top, left, width: w });
     } catch {}
