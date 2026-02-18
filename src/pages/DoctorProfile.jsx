@@ -131,15 +131,22 @@ const DoctorProfilePage = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-12 relative z-10 mb-6">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-xl font-bold text-gray-900">{doctorName}</h1>
-                <CheckCircle className="w-5 h-5 text-teal-500" />
-              </div>
-              <p className="text-sm text-teal-600 font-medium mb-1.5">{doctorTitle}</p>
-              <div className="flex items-center gap-3 text-xs text-gray-500">
-                <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gray-400" />{doctorLocation}</span>
-                <span className="flex items-center gap-1"><Stethoscope className="w-3.5 h-3.5 text-gray-400" />15+ Years</span>
+            <div className="flex items-center gap-4">
+              <img
+                src={heroImage}
+                alt={doctorName}
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-4 ring-teal-100 shadow-sm flex-shrink-0"
+              />
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-xl font-bold text-gray-900">{doctorName}</h1>
+                  <CheckCircle className="w-5 h-5 text-teal-500" />
+                </div>
+                <p className="text-sm text-teal-600 font-medium mb-1.5">{doctorTitle}</p>
+                <div className="flex items-center gap-3 text-xs text-gray-500">
+                  <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gray-400" />{doctorLocation}</span>
+                  <span className="flex items-center gap-1"><Stethoscope className="w-3.5 h-3.5 text-gray-400" />15+ Years</span>
+                </div>
               </div>
             </div>
             <button

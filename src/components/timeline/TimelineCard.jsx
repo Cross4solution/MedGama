@@ -113,7 +113,7 @@ function MediaItem({ m, alt, className, onClick = undefined }) {
 }
 
 function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
-  const avatarUrl = item.avatar || '/images/portrait-candid-male-doctor_720.jpg';
+  const avatarUrl = item.avatar || '/images/default/default-avatar.svg';
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [showCommentsPreview, setShowCommentsPreview] = useState(false);
@@ -134,6 +134,27 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const [toastText, setToastText] = useState('');
   const toastTimerRef = useRef(null);
   const [localComments, setLocalComments] = useState([]);
+  const [apiComments, setApiComments] = useState([]);
+  const [commentsLoaded, setCommentsLoaded] = useState(false);
+  const [visibleCommentCount, setVisibleCommentCount] = useState(3);
+
+  // Fetch comments from API when comment section opens
+  useEffect(() => {
+    if (!showCommentsPreview || commentsLoaded || !item?.id) return;
+    medStreamAPI.comments(item.id, { per_page: 50 }).then(res => {
+      const list = res?.data || [];
+      setApiComments(list.map(c => ({
+        id: c.id,
+        author_id: c.author_id || c.author?.id,
+        name: c.author?.fullname || 'User',
+        title: '',
+        avatar: c.author?.avatar || '/images/default/default-avatar.svg',
+        text: c.content || '',
+        time: c.created_at ? new Date(c.created_at).toLocaleDateString() : '',
+      })));
+      setCommentsLoaded(true);
+    }).catch(() => setCommentsLoaded(true));
+  }, [showCommentsPreview, commentsLoaded, item?.id]);
 
   // Dışarı tıklayınca "Daha fazla" menüsünü kapat
   useEffect(() => {
@@ -177,7 +198,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       id: 'reply-' + Date.now(),
       name: item?.actor?.name || 'You',
       title: item?.actor?.title || '',
-      avatar: item?.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg',
+      avatar: item?.actor?.avatarUrl || '/images/default/default-avatar.svg',
       text,
       time: 'Just now',
     };
