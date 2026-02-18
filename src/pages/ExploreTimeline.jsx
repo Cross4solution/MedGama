@@ -190,15 +190,28 @@ export default function ExploreTimeline() {
   const [localPosts, setLocalPosts] = useState(() => {
     try {
       const saved = sessionStorage.getItem('explore_local_posts');
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+      // Filter out posts with blob: URLs (invalid after refresh)
+      const parsed = JSON.parse(saved);
+      return parsed.filter(p => {
+        const hasBlob = (p.img && p.img.startsWith('blob:')) ||
+          (Array.isArray(p.media) && p.media.some(m => m.url && m.url.startsWith('blob:')));
+        return !hasBlob && !p._uploading;
+      });
     } catch { return []; }
   });
 
-  // Persist localPosts to sessionStorage
+  // Persist localPosts to sessionStorage — skip blob-URL and uploading posts
   useEffect(() => {
     try {
-      if (localPosts.length > 0) {
-        sessionStorage.setItem('explore_local_posts', JSON.stringify(localPosts));
+      const persistable = localPosts.filter(p => {
+        if (p._uploading) return false;
+        if (p.img && p.img.startsWith('blob:')) return false;
+        if (Array.isArray(p.media) && p.media.some(m => m.url && m.url.startsWith('blob:'))) return false;
+        return true;
+      });
+      if (persistable.length > 0) {
+        sessionStorage.setItem('explore_local_posts', JSON.stringify(persistable));
       } else {
         sessionStorage.removeItem('explore_local_posts');
       }
@@ -281,16 +294,20 @@ export default function ExploreTimeline() {
       : composerPapers.length > 0 ? 'document'
       : 'text';
 
-    // Build optimistic local post with local preview URLs
+    // Build optimistic local post with ALL local preview URLs
     const localId = 'local-' + Date.now();
-    const previewUrl = composerPhotoUrls[0] || composerVideoUrls[0] || null;
+    const allMedia = [
+      ...composerPhotoUrls.map(url => ({ url, type: 'image' })),
+      ...composerVideoUrls.map(url => ({ url, type: 'video' })),
+    ];
+    const coverImg = allMedia[0]?.url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg';
     const optimisticPost = {
       id: localId,
       type: 'doctor_update',
       title: user?.name || 'Doctor',
       subtitle: '',
       city: '',
-      img: previewUrl || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+      img: coverImg,
       text: trimmed,
       likes: 0,
       comments: 0,
@@ -306,7 +323,7 @@ export default function ExploreTimeline() {
       socialContext: '',
       timeAgo: 'Just now',
       visibility: 'public',
-      media: previewUrl ? [{ url: previewUrl }] : [],
+      media: allMedia.length > 0 ? allMedia : [],
       _uploading: true,
     };
 

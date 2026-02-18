@@ -170,7 +170,7 @@ function AppContent() {
       {hasSidebar && <SidebarPatient />}
       
       {/* Main content with proper spacing for header (no extra padding on doctor chat) */}
-      <div className={showHeader ? (isDoctorChat ? "" : (hasOwnContainer ? "pt-20" : "pt-16")) : ""}>
+      <div className={showHeader ? (isDoctorChat ? "" : (hasOwnContainer ? "pt-14" : "pt-12")) : ""}>
         <Suspense fallback={<PageLoader />}>
         <Routes>
         <Route path="/" element={<HomeV2 />} />
