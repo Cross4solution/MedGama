@@ -317,12 +317,12 @@ const DoctorChatPage = () => {
         </div>
 
         <div className="flex-1 overflow-hidden min-h-0">
-          <div className={`max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-2 h-full overflow-hidden min-h-0`}>
+          <div className="max-w-7xl mx-auto px-0 sm:px-3 lg:px-4 py-0 sm:py-2 h-full overflow-hidden min-h-0 flex flex-col">
         {/* Mobile: Threads list or Chat view */}
-        <div className="lg:hidden h-full overflow-hidden flex flex-col min-h-0">
+        <div className="lg:hidden flex-1 flex flex-col min-h-0 overflow-hidden">
           {!mobileChatOpen ? (
-            <div>
-              <div className="mb-2">
+            <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-shrink-0 px-3 pt-2 pb-1">
                 <label className="block text-xs text-gray-500 mb-1">Channel</label>
                 <select
                   value={channelFilter}
@@ -334,75 +334,77 @@ const DoctorChatPage = () => {
                   ))}
                 </select>
               </div>
-              <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
-                {mobilePaginatedThreads.map((t, idx)=> (
-                  <button
-                    key={t.id}
-                    className={`w-full text-left px-4 py-3.5 hover:bg-gray-50/60 transition-colors ${idx > 0 ? 'border-t border-gray-100' : ''} ${activeThreadId === t.id ? 'bg-teal-50/40' : ''}`}
-                    onClick={()=>handleSelectThread(t.id)}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="relative flex-shrink-0">
-                        <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-sm" loading="lazy" />
-                        <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${t.online ? 'bg-emerald-500' : 'bg-gray-300'} rounded-full border-2 border-white`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <h4 className="text-[13px] font-semibold text-gray-900 truncate">{t.name}</h4>
-                          <span className="text-[10px] text-gray-400 font-medium flex-shrink-0 ml-2">{t.when}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 mb-1">
-                          {t.tags?.slice(0,2).map(tag => {
-                            const isUrgent = tag.toLowerCase().includes('urgent');
-                            return (
-                              <span key={tag} className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${isUrgent ? 'bg-rose-50 text-rose-600 border border-rose-200/80' : 'bg-gray-100/80 text-gray-500 border border-gray-200/60'}`}>{tag}</span>
-                            );
-                          })}
-                        </div>
-                        <p className="text-xs text-gray-500 truncate leading-relaxed">{t.last}</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-              
-              {/* Mobile Pagination */}
-              {mobileTotalPages > 1 && (
-                <div className="mt-4 flex justify-center">
-                  <div className="flex items-center space-x-1">
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 pb-2">
+                <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
+                  {mobilePaginatedThreads.map((t, idx)=> (
                     <button
-                      disabled={mobileCurrentPage === 1}
-                      onClick={() => handleMobilePageChange(mobileCurrentPage - 1)}
-                      className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      key={t.id}
+                      className={`w-full text-left px-4 py-3.5 hover:bg-gray-50/60 transition-colors ${idx > 0 ? 'border-t border-gray-100' : ''} ${activeThreadId === t.id ? 'bg-teal-50/40' : ''}`}
+                      onClick={()=>handleSelectThread(t.id)}
                     >
-                      ‹
+                      <div className="flex items-start gap-3">
+                        <div className="relative flex-shrink-0">
+                          <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-sm" loading="lazy" />
+                          <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${t.online ? 'bg-emerald-500' : 'bg-gray-300'} rounded-full border-2 border-white`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <h4 className="text-[13px] font-semibold text-gray-900 truncate">{t.name}</h4>
+                            <span className="text-[10px] text-gray-400 font-medium flex-shrink-0 ml-2">{t.when}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 mb-1">
+                            {t.tags?.slice(0,2).map(tag => {
+                              const isUrgent = tag.toLowerCase().includes('urgent');
+                              return (
+                                <span key={tag} className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${isUrgent ? 'bg-rose-50 text-rose-600 border border-rose-200/80' : 'bg-gray-100/80 text-gray-500 border border-gray-200/60'}`}>{tag}</span>
+                              );
+                            })}
+                          </div>
+                          <p className="text-xs text-gray-500 truncate leading-relaxed">{t.last}</p>
+                        </div>
+                      </div>
                     </button>
-                    {Array.from({ length: mobileTotalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => handleMobilePageChange(page)}
-                        className={`px-3 py-2 text-sm rounded ${
-                          page === mobileCurrentPage 
-                            ? 'bg-blue-600 text-white' 
-                            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
-                    <button
-                      disabled={mobileCurrentPage === mobileTotalPages}
-                      onClick={() => handleMobilePageChange(mobileCurrentPage + 1)}
-                      className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      ›
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              )}
+              
+                {/* Mobile Pagination */}
+                {mobileTotalPages > 1 && (
+                  <div className="mt-3 pb-2 flex justify-center">
+                    <div className="flex items-center space-x-1">
+                      <button
+                        disabled={mobileCurrentPage === 1}
+                        onClick={() => handleMobilePageChange(mobileCurrentPage - 1)}
+                        className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        ‹
+                      </button>
+                      {Array.from({ length: mobileTotalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                          key={page}
+                          onClick={() => handleMobilePageChange(page)}
+                          className={`px-3 py-2 text-sm rounded ${
+                            page === mobileCurrentPage 
+                              ? 'bg-teal-600 text-white' 
+                              : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      ))}
+                      <button
+                        disabled={mobileCurrentPage === mobileTotalPages}
+                        onClick={() => handleMobilePageChange(mobileCurrentPage + 1)}
+                        className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        ›
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 flex-1 flex flex-col overflow-hidden min-h-0">
+            <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-white sm:rounded-2xl sm:border sm:border-gray-200/60 sm:shadow-lg sm:shadow-gray-200/30">
               <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} />
               <ChatMessageList
                 messages={messages}
