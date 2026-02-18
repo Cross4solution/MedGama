@@ -62,7 +62,7 @@ class AuthController extends Controller
             'date_of_birth' => $validated['date_of_birth'] ?? null,
             'gender' => $validated['gender'] ?? null,
             'clinic_id' => $clinicId,
-            'avatar' => 'https://gravatar.com/avatar/' . md5(strtolower($validated['email'])) . '?s=200&d=identicon',
+            'avatar' => null,
             'email_verified' => false,
             'email_verification_code' => $verificationCode,
         ]);
