@@ -20,7 +20,7 @@ class User extends Authenticatable
         'email', 'password', 'fullname', 'avatar', 'role_id', 'mobile',
         'mobile_verified', 'email_verified', 'email_verification_code',
         'password_reset_code', 'password_reset_expires_at',
-        'city_id', 'country_id',
+        'city_id', 'country_id', 'country', 'preferred_language',
         'date_of_birth', 'gender', 'is_verified', 'last_login', 'clinic_id',
         'medical_history', 'notification_preferences',
     ];

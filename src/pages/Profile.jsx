@@ -10,7 +10,79 @@ import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../i18n';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { Link } from 'react-router-dom';
-import PatientNotify from '../components/notifications/PatientNotify';
+function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
+  const [prefs, setPrefs] = React.useState({
+    email_notifications: true,
+    sms_notifications: false,
+    push_notifications: true,
+    appointment_reminders: true,
+    marketing_messages: false,
+  });
+  const [loaded, setLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    authAPI.getNotificationPrefs().then(res => {
+      const p = res?.preferences || res?.data?.preferences;
+      if (p && typeof p === 'object') setPrefs(prev => ({ ...prev, ...p }));
+    }).catch(() => {}).finally(() => setLoaded(true));
+  }, []);
+
+  const savePrefs = async () => {
+    setSaving(true);
+    try {
+      await authAPI.updateNotificationPrefs(prefs);
+      showToast(t('profile.savePreferences') + ' ✓');
+    } catch {
+      showToast('Failed to save preferences', 'error');
+    }
+    setSaving(false);
+  };
+
+  const toggleItems = [
+    { key: 'email_notifications', label: t('profile.emailNotifications'), desc: 'Receive updates via email' },
+    { key: 'sms_notifications', label: t('profile.smsNotifications'), desc: 'Receive SMS alerts' },
+    { key: 'push_notifications', label: t('profile.pushNotifications'), desc: 'Browser push notifications' },
+    { key: 'appointment_reminders', label: t('profile.appointmentReminders'), desc: 'Reminders before appointments' },
+    { key: 'marketing_messages', label: t('profile.marketingMessages'), desc: 'Promotional offers & news' },
+  ];
+
+  return (
+    <div className="space-y-5">
+      <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
+        <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-amber-500 to-orange-500" />
+          {t('profile.notificationPreferences')}
+        </h2>
+        {!loaded ? (
+          <div className="py-6 text-center text-sm text-gray-400">Loading...</div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {toggleItems.map(item => (
+              <div key={item.key} className="flex items-center justify-between py-3.5 first:pt-0 last:pb-0">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{item.label}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{item.desc}</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={!!prefs[item.key]}
+                  onClick={() => setPrefs(p => ({ ...p, [item.key]: !p[item.key] }))}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${prefs[item.key] ? 'bg-teal-500' : 'bg-gray-200'}`}
+                >
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${prefs[item.key] ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="flex justify-end">
+        <button onClick={savePrefs} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? 'Saving...' : t('profile.savePreferences')}</button>
+      </div>
+    </div>
+  );
+}
 
 export default function Profile() {
   const { user, country, updateUser, logout } = useAuth();
@@ -503,15 +575,7 @@ export default function Profile() {
           )}
 
           {active === 'notifications' && (
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
-                <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-amber-500 to-orange-500" />
-                  {t('profile.patientNotifications')}
-                </h2>
-                <PatientNotify />
-              </div>
-            </div>
+            <NotificationPrefsPanel saving={saving} setSaving={setSaving} showToast={showToast} t={t} />
           )}
 
           
