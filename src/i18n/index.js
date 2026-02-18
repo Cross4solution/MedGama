@@ -26,6 +26,14 @@ const resources = {
   pt: { translation: pt },
 };
 
+// One-time migration: clear stale auto-detected language so default becomes English
+try {
+  if (!localStorage.getItem('preferred_language_manual')) {
+    localStorage.removeItem('preferred_language');
+    localStorage.removeItem('i18nextLng');
+  }
+} catch {}
+
 const manualPreferenceDetector = {
   name: 'manualPreference',
   lookup() {
