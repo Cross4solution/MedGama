@@ -14,7 +14,7 @@ class MedStreamPost extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'author_id', 'clinic_id', 'post_type', 'content', 'media_url', 'is_hidden',
+        'author_id', 'clinic_id', 'post_type', 'content', 'media_url', 'media', 'is_hidden',
     ];
 
     protected function casts(): array
@@ -22,6 +22,7 @@ class MedStreamPost extends Model
         return [
             'is_hidden' => 'boolean',
             'is_active' => 'boolean',
+            'media'     => 'array',
         ];
     }
 

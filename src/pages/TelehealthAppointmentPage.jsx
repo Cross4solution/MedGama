@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import PhoneNumberInput from '../components/forms/PhoneNumberInput';
@@ -108,7 +108,6 @@ export default function TelehealthAppointmentPage() {
     }).catch(() => setAvailableSlots([])).finally(() => setLoadingSlots(false));
   }, [selectedDoctor, selectedDate]);
 
-  const dobRef = useRef(null);
 
   const defaultTimeSlots = useMemo(() => ({
     morning: ['09:00','09:30','10:00','10:30','11:00','11:30'],
@@ -167,15 +166,32 @@ export default function TelehealthAppointmentPage() {
     setError('');
     try {
       const slot = availableSlots.find(s => (s.start_time?.slice(0, 5) || s.start_time) === selectedTime);
-      await appointmentAPI.create({
-        patient_id: user.id,
-        doctor_id: selectedDoctor,
+
+      const payload = {
+        doctor_id: isDoctor ? user.id : selectedDoctor,
         appointment_type: appointmentType,
         appointment_date: selectedDate,
         appointment_time: selectedTime,
         slot_id: slot?.id || undefined,
         confirmation_note: patientInfo.symptoms || undefined,
-      });
+      };
+
+      if (isDoctor) {
+        payload.patient_name = patientInfo.fullName;
+        payload.patient_email = patientInfo.email;
+        payload.patient_phone = patientInfo.phone || undefined;
+        // Convert dd.mm.yyyy to yyyy-mm-dd for backend
+        if (patientInfo.birthDate && patientInfo.birthDate.includes('.')) {
+          const [dd, mm, yyyy] = patientInfo.birthDate.split('.');
+          if (dd && mm && yyyy && yyyy.length === 4) {
+            payload.patient_dob = `${yyyy}-${mm}-${dd}`;
+          }
+        }
+      } else {
+        payload.patient_id = user.id;
+      }
+
+      await appointmentAPI.create(payload);
       setSuccess(true);
     } catch (err) {
       const msg = err?.errors?.appointment_date?.[0] || err?.errors?.doctor_id?.[0] || err?.message || 'Failed to create appointment.';
@@ -652,16 +668,24 @@ export default function TelehealthAppointmentPage() {
                       </div>
                       <div>
                         <label className="block text-xs font-semibold text-gray-600 mb-1.5">{isDoctor ? 'Patient Date of Birth' : 'Date of Birth'}</label>
-                        <div
-                          className="relative date-with-icon cursor-pointer"
-                          onClick={() => dobRef.current?.showPicker?.()}
-                        >
+                        <div className="relative">
                           <Calendar className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                           <input
-                            ref={dobRef}
-                            type="date"
+                            type="text"
+                            placeholder="dd.mm.yyyy"
                             value={patientInfo.birthDate}
-                            onChange={(e) => setPatientInfo({ ...patientInfo, birthDate: e.target.value })}
+                            onChange={(e) => {
+                              let v = e.target.value.replace(/[^0-9.]/g, '');
+                              const digits = v.replace(/\./g, '');
+                              if (digits.length >= 3 && !v.includes('.')) {
+                                v = digits.slice(0, 2) + '.' + digits.slice(2);
+                              }
+                              if (digits.length >= 5) {
+                                v = digits.slice(0, 2) + '.' + digits.slice(2, 4) + '.' + digits.slice(4, 8);
+                              }
+                              setPatientInfo({ ...patientInfo, birthDate: v });
+                            }}
+                            maxLength={10}
                             className="w-full h-11 pl-10 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all bg-white"
                           />
                         </div>

@@ -135,6 +135,7 @@ class MedStreamController extends Controller
             'post_type' => $validated['post_type'],
             'content'   => $validated['content'] ?? null,
             'media_url' => $mediaUrl,
+            'media'     => !empty($uploadedFiles) ? $uploadedFiles : null,
         ];
 
         try {
@@ -165,10 +166,9 @@ class MedStreamController extends Controller
             'comment_count' => 0,
         ]);
 
-        $postResponse = $post->load('author:id,fullname,avatar')->toArray();
-        $postResponse['media'] = $uploadedFiles;
+        $post->load('author:id,fullname,avatar');
 
-        return response()->json(['post' => $postResponse], 201);
+        return response()->json(['post' => $post], 201);
     }
 
     public function updatePost(Request $request, string $id)
