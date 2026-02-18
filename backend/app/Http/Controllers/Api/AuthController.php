@@ -166,6 +166,28 @@ class AuthController extends Controller
     }
 
     /**
+     * POST /api/auth/profile/avatar
+     */
+    public function uploadAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|file|image|max:5120', // 5MB max
+        ]);
+
+        $file = $request->file('avatar');
+        $path = $file->store('avatars', 'public');
+        $url = asset('storage/' . $path);
+
+        $request->user()->update(['avatar' => $url]);
+
+        return response()->json([
+            'avatar_url' => $url,
+            'url' => $url,
+            'user' => $request->user()->fresh(),
+        ]);
+    }
+
+    /**
      * PUT /api/auth/profile/password
      */
     public function changePassword(Request $request)

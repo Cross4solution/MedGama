@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import PatientNotify from '../components/notifications/PatientNotify';
 
 export default function Profile() {
-  const { user, country, login, logout } = useAuth();
+  const { user, country, updateUser, logout } = useAuth();
   const { openSettings: openCookieSettings, consent, consentTimestamp, resetConsent } = useCookieConsent();
   const { t, i18n } = useTranslation();
   const [active, setActive] = useState('account');
@@ -216,8 +216,7 @@ export default function Profile() {
     } catch (err) {
       showToast(err?.message || 'Failed to update profile', 'error');
     }
-    const updated = { ...user, name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage };
-    login(updated, codeUpper);
+    updateUser({ name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage }, codeUpper);
     setSaving(false);
   };
 
