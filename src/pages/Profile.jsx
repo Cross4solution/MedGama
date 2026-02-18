@@ -647,20 +647,32 @@ export default function Profile() {
                 </h2>
                 <p className="text-xs text-gray-500 mb-3">{t('profile.yourDataDesc')}</p>
                 <button
-                  onClick={() => {
-                    const exportData = {
+                  onClick={async () => {
+                    setSaving(true);
+                    let exportData = {
                       exportDate: new Date().toISOString(),
                       gdprExport: true,
                       userData: { name: user?.name, email: user?.email, role: user?.role, id: user?.id },
                       cookieConsent: consent,
                       consentTimestamp,
                     };
+                    // Try to fetch full export from backend
+                    try {
+                      const res = await fetch((process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api') + '/auth/profile/data-export', {
+                        headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${JSON.parse(localStorage.getItem('auth_state') || '{}').token}` },
+                      });
+                      if (res.ok) {
+                        const serverExport = await res.json();
+                        exportData = { ...exportData, ...serverExport };
+                      }
+                    } catch {}
+                    // Merge local data
                     try {
                       const prefs = localStorage.getItem('profile_prefs');
                       if (prefs) exportData.preferences = JSON.parse(prefs);
                       if (user?.email) {
                         const med = localStorage.getItem(`patient_profile_extra_${user.email}`);
-                        if (med) exportData.medicalData = JSON.parse(med);
+                        if (med) exportData.localMedicalData = JSON.parse(med);
                       }
                     } catch {}
                     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -672,10 +684,13 @@ export default function Profile() {
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
+                    setSaving(false);
+                    showToast('Data exported successfully');
                   }}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all"
+                  disabled={saving}
+                  className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  <Download className="w-3.5 h-3.5" /> {t('profile.downloadMyData')}
+                  <Download className="w-3.5 h-3.5" /> {saving ? 'Exporting...' : t('profile.downloadMyData')}
                 </button>
               </div>
 

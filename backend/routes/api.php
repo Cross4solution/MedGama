@@ -35,6 +35,12 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::post('/profile/avatar', [AuthController::class, 'uploadAvatar']);
     Route::put('/profile/password', [AuthController::class, 'changePassword']);
+    Route::delete('/profile', [AuthController::class, 'deleteAccount']);
+    Route::get('/profile/data-export', [AuthController::class, 'dataExport']);
+    Route::get('/profile/medical-history', [AuthController::class, 'getMedicalHistory']);
+    Route::put('/profile/medical-history', [AuthController::class, 'updateMedicalHistory']);
+    Route::get('/profile/notification-preferences', [AuthController::class, 'getNotificationPrefs']);
+    Route::put('/profile/notification-preferences', [AuthController::class, 'updateNotificationPrefs']);
     Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
     Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
     Route::post('/verify-mobile', [AuthController::class, 'verifyMobile']);
