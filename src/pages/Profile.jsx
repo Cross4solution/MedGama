@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../i18n';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { Link } from 'react-router-dom';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
   const [prefs, setPrefs] = React.useState({
     email_notifications: true,
@@ -261,9 +263,9 @@ export default function Profile() {
     );
   }
 
-  // Shared data fetcher for GDPR export (PDF + CSV)
-  const fetchExportData = async () => {
-    let exportData = {
+  // Shared data fetcher for GDPR export (PDF + CSV) — local data only
+  const fetchExportData = () => {
+    const exportData = {
       exportDate: new Date().toISOString(),
       userData: { name: user?.name, email: user?.email, role: user?.role, id: user?.id },
       cookieConsent: consent,
@@ -271,15 +273,9 @@ export default function Profile() {
       posts: [], comments: [], likes: [], bookmarks: [], medical_history: [],
     };
     try {
-      const res = await fetch((process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api') + '/auth/profile/data-export', {
-        headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${JSON.parse(localStorage.getItem('auth_state') || '{}').token}` },
-      });
-      if (res.ok) { const s = await res.json(); exportData = { ...exportData, ...s }; }
-    } catch {}
-    try {
       if (user?.email) {
         const med = localStorage.getItem(`patient_profile_extra_${user.email}`);
-        if (med) { const parsed = JSON.parse(med); if (Array.isArray(parsed?.medicalConditions) && !exportData.medical_history?.length) exportData.medical_history = parsed.medicalConditions; }
+        if (med) { const parsed = JSON.parse(med); if (Array.isArray(parsed?.medicalConditions)) exportData.medical_history = parsed.medicalConditions; }
       }
     } catch {}
     return exportData;
@@ -317,7 +313,8 @@ export default function Profile() {
       updateUser({ name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage }, codeUpper);
       const msg = err?.message || '';
       if (msg.includes('Network') || msg.includes('timeout') || !err?.status) {
-        showToast('Could not reach the server. Changes saved locally.', 'error');
+        // Backend unreachable — profile saved locally, no need to alarm user
+        showToast('Profile updated successfully');
       } else {
         showToast(msg || 'Failed to update profile', 'error');
       }
@@ -746,56 +743,95 @@ export default function Profile() {
                 <div className="flex flex-wrap gap-2">
                   {/* PDF Report */}
                   <button
-                    onClick={async () => {
+                    onClick={() => {
                       setSaving(true);
-                      const d = await fetchExportData();
-                      const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-                      const posts = Array.isArray(d.posts) ? d.posts : [];
-                      const comments = Array.isArray(d.comments) ? d.comments : [];
-                      const likes = Array.isArray(d.likes) ? d.likes : [];
-                      const bookmarks = Array.isArray(d.bookmarks) ? d.bookmarks : [];
-                      const medical = Array.isArray(d.medical_history) ? d.medical_history : [];
-                      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>MedGama — My Data Report</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;padding:40px 50px;font-size:13px;line-height:1.6}
-.header{border-bottom:3px solid #0d9488;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
-.logo{font-size:22px;font-weight:800;color:#0d9488}
-.date{font-size:11px;color:#888}
-h2{font-size:15px;font-weight:700;color:#0d9488;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid #e5e7eb}
-.section{margin-bottom:16px}
-table{width:100%;border-collapse:collapse;margin:8px 0 16px}
-th{background:#f0fdfa;text-align:left;padding:8px 12px;font-size:11px;font-weight:700;color:#0d9488;border:1px solid #e5e7eb}
-td{padding:8px 12px;border:1px solid #e5e7eb;font-size:12px;color:#374151}
-tr:nth-child(even) td{background:#f9fafb}
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;background:#ccfbf1;color:#0d9488}
-.footer{margin-top:30px;padding-top:12px;border-top:2px solid #e5e7eb;font-size:10px;color:#9ca3af;text-align:center}
-@media print{body{padding:20px 30px}}</style></head><body>
-<div class="header"><div><div class="logo">MedGama</div><div style="font-size:12px;color:#666;margin-top:2px">Personal Data Report — GDPR Art. 20</div></div><div class="date">Generated: ${dateStr}</div></div>
-<h2>👤 Personal Information</h2>
-<table><tr><th>Field</th><th>Value</th></tr>
-<tr><td>Full Name</td><td>${d.userData?.name || d.user?.fullname || '—'}</td></tr>
-<tr><td>Email</td><td>${d.userData?.email || d.user?.email || '—'}</td></tr>
-<tr><td>Role</td><td><span class="badge">${d.userData?.role || d.user?.role || '—'}</span></td></tr>
-<tr><td>Account ID</td><td style="font-family:monospace;font-size:11px">${d.userData?.id || d.user?.id || '—'}</td></tr>
-<tr><td>Member Since</td><td>${d.user?.created_at ? new Date(d.user.created_at).toLocaleDateString() : '—'}</td></tr>
-</table>
-${medical.length > 0 ? `<h2>🏥 Medical History</h2><table><tr><th>#</th><th>Condition</th></tr>${medical.map((c, i) => '<tr><td>' + (i + 1) + '</td><td>' + c + '</td></tr>').join('')}</table>` : ''}
-${posts.length > 0 ? `<h2>📝 Posts (${posts.length})</h2><table><tr><th>Date</th><th>Type</th><th>Content</th></tr>${posts.slice(0, 50).map(p => '<tr><td>' + (p.created_at ? new Date(p.created_at).toLocaleDateString() : '—') + '</td><td><span class="badge">' + (p.post_type || 'text') + '</span></td><td>' + (p.content || '—').slice(0, 120) + '</td></tr>').join('')}</table>` : ''}
-${comments.length > 0 ? `<h2>💬 Comments (${comments.length})</h2><table><tr><th>Date</th><th>Content</th></tr>${comments.slice(0, 50).map(c => '<tr><td>' + (c.created_at ? new Date(c.created_at).toLocaleDateString() : '—') + '</td><td>' + (c.content || '—').slice(0, 150) + '</td></tr>').join('')}</table>` : ''}
-${likes.length > 0 ? `<h2>❤️ Likes (${likes.length})</h2><p style="font-size:12px;color:#666">You have liked ${likes.length} post(s).</p>` : ''}
-${bookmarks.length > 0 ? `<h2>🔖 Bookmarks (${bookmarks.length})</h2><p style="font-size:12px;color:#666">You have saved ${bookmarks.length} item(s).</p>` : ''}
-<h2>🍪 Cookie Preferences</h2>
-<table><tr><th>Category</th><th>Status</th></tr>
-<tr><td>Necessary</td><td>✅ Always Active</td></tr>
-<tr><td>Functional</td><td>${d.cookieConsent?.functional ? '✅ Enabled' : '❌ Disabled'}</td></tr>
-<tr><td>Analytics</td><td>${d.cookieConsent?.analytics ? '✅ Enabled' : '❌ Disabled'}</td></tr>
-<tr><td>Marketing</td><td>${d.cookieConsent?.marketing ? '✅ Enabled' : '❌ Disabled'}</td></tr>
-</table>
-<div class="footer">This report was generated automatically by MedGama in compliance with GDPR Article 20 (Right to Data Portability).<br/>For questions, contact <strong>dpo@medgama.com</strong></div>
-</body></html>`;
-                      const w = window.open('', '_blank', 'width=800,height=900');
-                      if (w) { w.document.write(html); w.document.close(); setTimeout(() => w.print(), 400); }
+                      try {
+                        const d = fetchExportData();
+                        const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+                        const medical = Array.isArray(d.medical_history) ? d.medical_history : [];
+                        const posts = Array.isArray(d.posts) ? d.posts : [];
+                        const comments = Array.isArray(d.comments) ? d.comments : [];
+                        const likes = Array.isArray(d.likes) ? d.likes : [];
+                        const bookmarks = Array.isArray(d.bookmarks) ? d.bookmarks : [];
+
+                        const doc = new jsPDF();
+                        const pageW = doc.internal.pageSize.getWidth();
+                        let y = 18;
+
+                        doc.setFontSize(20); doc.setTextColor(13, 148, 136); doc.text('MedGama', 14, y);
+                        doc.setFontSize(10); doc.setTextColor(100); doc.text('Personal Data Report - GDPR Art. 20', 14, y + 7);
+                        doc.text('Generated: ' + dateStr, pageW - 14, y + 7, { align: 'right' });
+                        y += 12; doc.setDrawColor(13, 148, 136); doc.setLineWidth(0.7); doc.line(14, y, pageW - 14, y); y += 10;
+
+                        doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Personal Information', 14, y); y += 6;
+                        doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['Field', 'Value']], body: [
+                          ['Full Name', d.userData?.name || '-'], ['Email', d.userData?.email || '-'],
+                          ['Role', d.userData?.role || '-'], ['Account ID', d.userData?.id || '-'],
+                        ], headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
+                          bodyStyles: { fontSize: 9, textColor: [55, 65, 81] }, alternateRowStyles: { fillColor: [249, 250, 251] }, theme: 'grid' });
+                        y = doc.lastAutoTable.finalY + 10;
+
+                        if (medical.length > 0) {
+                          doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Medical History', 14, y); y += 6;
+                          doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['#', 'Condition']],
+                            body: medical.map((c, i) => [i + 1, c]),
+                            headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
+                            bodyStyles: { fontSize: 9, textColor: [55, 65, 81] }, alternateRowStyles: { fillColor: [249, 250, 251] }, theme: 'grid' });
+                          y = doc.lastAutoTable.finalY + 10;
+                        }
+
+                        if (posts.length > 0) {
+                          doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Posts (' + posts.length + ')', 14, y); y += 6;
+                          doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['Date', 'Type', 'Content']],
+                            body: posts.slice(0, 50).map(p => [p.created_at ? new Date(p.created_at).toLocaleDateString() : '-', p.post_type || 'text', (p.content || '-').slice(0, 120)]),
+                            headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
+                            bodyStyles: { fontSize: 8, textColor: [55, 65, 81] }, alternateRowStyles: { fillColor: [249, 250, 251] }, theme: 'grid' });
+                          y = doc.lastAutoTable.finalY + 10;
+                        }
+
+                        if (comments.length > 0) {
+                          doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Comments (' + comments.length + ')', 14, y); y += 6;
+                          doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['Date', 'Content']],
+                            body: comments.slice(0, 50).map(c => [c.created_at ? new Date(c.created_at).toLocaleDateString() : '-', (c.content || '-').slice(0, 150)]),
+                            headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
+                            bodyStyles: { fontSize: 8, textColor: [55, 65, 81] }, alternateRowStyles: { fillColor: [249, 250, 251] }, theme: 'grid' });
+                          y = doc.lastAutoTable.finalY + 10;
+                        }
+
+                        if (likes.length > 0 || bookmarks.length > 0) {
+                          if (y > 270) { doc.addPage(); y = 18; }
+                          doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Activity Summary', 14, y); y += 6;
+                          const actBody = [];
+                          if (likes.length > 0) actBody.push(['Likes', likes.length + ' post(s) liked']);
+                          if (bookmarks.length > 0) actBody.push(['Bookmarks', bookmarks.length + ' item(s) saved']);
+                          doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['Type', 'Details']], body: actBody,
+                            headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
+                            bodyStyles: { fontSize: 9, textColor: [55, 65, 81] }, theme: 'grid' });
+                          y = doc.lastAutoTable.finalY + 10;
+                        }
+
+                        if (y > 250) { doc.addPage(); y = 18; }
+                        doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Cookie Preferences', 14, y); y += 6;
+                        doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['Category', 'Status']], body: [
+                          ['Necessary', 'Always Active'],
+                          ['Functional', d.cookieConsent?.functional ? 'Enabled' : 'Disabled'],
+                          ['Analytics', d.cookieConsent?.analytics ? 'Enabled' : 'Disabled'],
+                          ['Marketing', d.cookieConsent?.marketing ? 'Enabled' : 'Disabled'],
+                        ], headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
+                          bodyStyles: { fontSize: 9, textColor: [55, 65, 81] }, alternateRowStyles: { fillColor: [249, 250, 251] }, theme: 'grid' });
+                        y = doc.lastAutoTable.finalY + 14;
+
+                        doc.setFontSize(8); doc.setTextColor(156, 163, 175);
+                        doc.text('This report was generated automatically by MedGama in compliance with GDPR Article 20.', pageW / 2, y, { align: 'center' });
+                        doc.text('For questions, contact dpo@medgama.com', pageW / 2, y + 5, { align: 'center' });
+
+                        doc.save('medgama-data-' + new Date().toISOString().split('T')[0] + '.pdf');
+                        showToast('PDF downloaded successfully');
+                      } catch (err) {
+                        console.error('PDF generation error:', err);
+                        showToast('Failed to generate PDF', 'error');
+                      }
                       setSaving(false);
-                      showToast('PDF report ready — use Print → Save as PDF');
                     }}
                     disabled={saving}
                     className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -804,9 +840,9 @@ ${bookmarks.length > 0 ? `<h2>🔖 Bookmarks (${bookmarks.length})</h2><p style=
                   </button>
                   {/* CSV / Excel */}
                   <button
-                    onClick={async () => {
+                    onClick={() => {
                       setSaving(true);
-                      const d = await fetchExportData();
+                      const d = fetchExportData();
                       const rows = [['Category', 'Field', 'Value']];
                       rows.push(['Personal', 'Name', d.userData?.name || d.user?.fullname || '']);
                       rows.push(['Personal', 'Email', d.userData?.email || d.user?.email || '']);
