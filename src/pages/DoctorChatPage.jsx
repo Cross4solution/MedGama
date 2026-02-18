@@ -158,8 +158,7 @@ const DoctorChatPage = () => {
     try {
       const res = await messageAPI.messages(convId, { per_page: 100 });
       const data = res?.data || [];
-      // API returns newest first — reverse for display
-      const mapped = data.reverse().map(m => apiMsgToLocal(m, currentUserId));
+      const mapped = data.map(m => apiMsgToLocal(m, currentUserId));
       setMessages(mapped);
       // Mark as read
       messageAPI.markRead(convId).catch(() => {});
