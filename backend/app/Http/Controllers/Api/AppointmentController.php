@@ -7,10 +7,9 @@ use App\Models\Appointment;
 use App\Models\CalendarSlot;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\AppointmentBookedMail;
-use App\Mail\AppointmentConfirmedMail;
-use App\Mail\AppointmentCancelledMail;
+use App\Notifications\AppointmentBookedNotification;
+use App\Notifications\AppointmentConfirmedNotification;
+use App\Notifications\AppointmentCancelledNotification;
 
 class AppointmentController extends Controller
 {
@@ -86,22 +85,28 @@ class AppointmentController extends Controller
         }
 
         $appointment = Appointment::create($validated);
+        $appointment->load(['patient', 'doctor']);
 
-        // Send appointmentBooked notification to patient
+        // Notify patient (database + mail)
         try {
-            $patient = User::find($validated['patient_id']);
-            $doctor = User::find($validated['doctor_id']);
-            if ($patient?->email) {
-                Mail::to($patient->email)->send(new AppointmentBookedMail(
-                    $patient->fullname ?? 'Patient',
-                    $doctor->fullname ?? 'Doctor',
-                    $validated['appointment_date'],
-                    $validated['appointment_time'],
-                    $validated['appointment_type'] ?? 'online',
-                ));
+            if ($appointment->patient) {
+                $appointment->patient->notify(
+                    new AppointmentBookedNotification($appointment, 'patient')
+                );
             }
         } catch (\Throwable $e) {
-            \Log::warning('Appointment booked email failed: ' . $e->getMessage());
+            \Log::warning('Appointment booked patient notification failed: ' . $e->getMessage());
+        }
+
+        // Notify doctor (database + mail)
+        try {
+            if ($appointment->doctor) {
+                $appointment->doctor->notify(
+                    new AppointmentBookedNotification($appointment, 'doctor')
+                );
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Appointment booked doctor notification failed: ' . $e->getMessage());
         }
 
         return response()->json([
@@ -125,34 +130,41 @@ class AppointmentController extends Controller
 
         $oldStatus = $appointment->status;
         $appointment->update($validated);
+        $appointment->load(['patient', 'doctor']);
 
         // If cancelled, release the slot
         if (isset($validated['status']) && $validated['status'] === 'cancelled' && $appointment->slot_id) {
             CalendarSlot::where('id', $appointment->slot_id)->update(['is_available' => true]);
         }
 
-        // Send notification emails on status change
+        // Send notifications on status change
         if (isset($validated['status']) && $validated['status'] !== $oldStatus) {
-            try {
-                $patient = $appointment->patient ?? User::find($appointment->patient_id);
-                $doctor = $appointment->doctor ?? User::find($appointment->doctor_id);
-                $pName = $patient->fullname ?? 'Patient';
-                $dName = $doctor->fullname ?? 'Doctor';
-                $date = $appointment->appointment_date;
-                $time = $appointment->appointment_time;
+            $cancelledBy = $request->user()?->isDoctor() ? 'doctor' : ($request->user()?->isPatient() ? 'patient' : 'system');
 
-                if ($validated['status'] === 'confirmed' && $patient?->email) {
-                    Mail::to($patient->email)->send(new AppointmentConfirmedMail(
-                        $pName, $dName, $date, $time,
-                        $appointment->video_conference_link,
-                    ));
-                } elseif ($validated['status'] === 'cancelled' && $patient?->email) {
-                    Mail::to($patient->email)->send(new AppointmentCancelledMail(
-                        $pName, $dName, $date, $time,
-                    ));
+            try {
+                if ($validated['status'] === 'confirmed') {
+                    // Notify patient that appointment is confirmed
+                    if ($appointment->patient) {
+                        $appointment->patient->notify(
+                            new AppointmentConfirmedNotification($appointment)
+                        );
+                    }
+                } elseif ($validated['status'] === 'cancelled') {
+                    // Notify patient
+                    if ($appointment->patient) {
+                        $appointment->patient->notify(
+                            new AppointmentCancelledNotification($appointment, 'patient', $cancelledBy)
+                        );
+                    }
+                    // Notify doctor
+                    if ($appointment->doctor) {
+                        $appointment->doctor->notify(
+                            new AppointmentCancelledNotification($appointment, 'doctor', $cancelledBy)
+                        );
+                    }
                 }
             } catch (\Throwable $e) {
-                \Log::warning('Appointment status email failed: ' . $e->getMessage());
+                \Log::warning('Appointment status notification failed: ' . $e->getMessage());
             }
         }
 

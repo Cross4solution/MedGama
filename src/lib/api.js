@@ -252,6 +252,16 @@ export const catalogAPI = {
   updateSymptom: (id, payload) => api.put(`/catalog/symptoms/${id}`, payload),
 };
 
+// ── Notification Service ──
+export const notificationAPI = {
+  list: (params) => api.get('/notifications', { params }),
+  unreadCount: () => api.get('/notifications/unread-count'),
+  markAsRead: (id) => api.put(`/notifications/${id}/read`),
+  markAllAsRead: () => api.put('/notifications/read-all'),
+  delete: (id) => api.delete(`/notifications/${id}`),
+  deleteAll: () => api.delete('/notifications'),
+};
+
 // ── Legacy compat (for existing code that imports { endpoints }) ──
 export const endpoints = {
   login: (payload) => authAPI.login(payload),
