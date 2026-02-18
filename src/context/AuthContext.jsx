@@ -88,6 +88,12 @@ export function AuthProvider({ children }) {
     }
   }, [user, token, country]);
 
+  // Update user fields without touching token (for profile edits)
+  const updateUser = (updatedFields, newCountry) => {
+    setUser(prev => ({ ...prev, ...updatedFields }));
+    if (newCountry) setCountry(newCountry);
+  };
+
   const login = async (emailOrUser, password) => {
     // Backward-compatible demo login: if first arg is an object, treat it as user
     if (emailOrUser && typeof emailOrUser === 'object') {
@@ -282,6 +288,7 @@ export function AuthProvider({ children }) {
     country,
     setCountry,
     login,
+    updateUser,
     applyApiAuth,
     fetchCurrentUser,
     demoLogin,
