@@ -55,6 +55,22 @@ export const authAPI = {
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
   updateProfile: (payload) => api.put('/auth/profile', payload),
+  // Avatar upload (multipart/form-data)
+  uploadAvatar: (file) => {
+    const fd = new FormData();
+    fd.append('avatar', file);
+    return api.post('/auth/profile/avatar', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
+  // Password change with current_password verification
+  changePassword: (payload) => api.put('/auth/profile/password', payload),
+  // Medical history
+  getMedicalHistory: () => api.get('/auth/profile/medical-history'),
+  updateMedicalHistory: (payload) => api.put('/auth/profile/medical-history', payload),
+  // Notification preferences
+  getNotificationPrefs: () => api.get('/auth/profile/notification-preferences'),
+  updateNotificationPrefs: (payload) => api.put('/auth/profile/notification-preferences', payload),
+  // Account deletion
+  deleteAccount: (payload) => api.delete('/auth/profile', { data: payload }),
   verifyEmail: (code) => api.post('/auth/verify-email', { code }),
   resendVerification: () => api.post('/auth/resend-verification'),
   verifyMobile: (code) => api.post('/auth/verify-mobile', { code }),

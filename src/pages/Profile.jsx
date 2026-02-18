@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../lib/api';
 import countriesEurope from '../data/countriesEurope';
@@ -53,6 +53,13 @@ export default function Profile() {
   const [showNewPwd, setShowNewPwd] = useState(false);
   const [showNewPwd2, setShowNewPwd2] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState({ show: false, type: 'success', message: '' });
+  const avatarFileRef = useRef(null); // actual File object for upload
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, type, message });
+    setTimeout(() => setToast(t => ({ ...t, show: false })), 3000);
+  };
 
   // Notifications & Privacy prefs available via loadPrefs() when needed
 
@@ -79,23 +86,39 @@ export default function Profile() {
       )
     : [];
   
-  React.useEffect(() => {
-    try {
-      if (user?.role === 'patient' && user?.email) {
-        const key = `patient_profile_extra_${user.email}`;
-        const raw = localStorage.getItem(key);
-        if (raw) {
-          const obj = JSON.parse(raw);
-          // Backward compatibility: convert string to array
-          if (obj && typeof obj.medicalHistory === 'string' && obj.medicalHistory) {
-            const converted = obj.medicalHistory.split(',').map(s => s.trim()).filter(Boolean);
-            setMedicalConditions(converted);
-          } else if (obj && Array.isArray(obj.medicalConditions)) {
-            setMedicalConditions(obj.medicalConditions);
+  useEffect(() => {
+    let cancelled = false;
+    const loadMedical = async () => {
+      // Try API first
+      if (user?.role === 'patient') {
+        try {
+          const res = await authAPI.getMedicalHistory();
+          const conditions = res?.conditions || res?.data?.conditions;
+          if (!cancelled && Array.isArray(conditions) && conditions.length > 0) {
+            setMedicalConditions(conditions);
+            return;
+          }
+        } catch {}
+      }
+      // Fallback to localStorage
+      try {
+        if (user?.email) {
+          const key = `patient_profile_extra_${user.email}`;
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            const obj = JSON.parse(raw);
+            if (obj && typeof obj.medicalHistory === 'string' && obj.medicalHistory) {
+              const converted = obj.medicalHistory.split(',').map(s => s.trim()).filter(Boolean);
+              if (!cancelled) setMedicalConditions(converted);
+            } else if (obj && Array.isArray(obj.medicalConditions)) {
+              if (!cancelled) setMedicalConditions(obj.medicalConditions);
+            }
           }
         }
-      }
-    } catch {}
+      } catch {}
+    };
+    loadMedical();
+    return () => { cancelled = true; };
   }, [user?.email, user?.role]);
 
   const addCondition = (text) => {
@@ -132,18 +155,27 @@ export default function Profile() {
     setMedicalConditions([]);
   };
 
-  const saveMedical = (e) => {
+  const saveMedical = async (e) => {
     e?.preventDefault?.();
+    setSaving(true);
     try {
-      if (user?.role === 'patient' && user?.email) {
+      await authAPI.updateMedicalHistory({ conditions: medicalConditions });
+      showToast('Medical conditions saved');
+    } catch (err) {
+      console.warn('[Profile] Medical history API failed, saving locally:', err?.message);
+      showToast('Saved locally (server unavailable)', 'error');
+    }
+    // Always persist locally as fallback
+    try {
+      if (user?.email) {
         const key = `patient_profile_extra_${user.email}`;
         const raw = localStorage.getItem(key);
         const prev = raw ? JSON.parse(raw) : {};
         const next = { ...prev, medicalConditions };
         localStorage.setItem(key, JSON.stringify(next));
-        alert('Medical conditions saved. (Demo)');
       }
     } catch {}
+    setSaving(false);
   };
 
   if (!user) {
@@ -162,24 +194,44 @@ export default function Profile() {
     const codeUpper = codeLower ? codeLower.toUpperCase() : country;
     try { localStorage.setItem('preferred_language', preferredLanguage); } catch {}
     setSaving(true);
+    let avatarUrl = avatar;
     try {
-      await authAPI.updateProfile({ fullname: limitedName || user.name, avatar: avatar.trim() || undefined });
-    } catch {}
-    const updated = { ...user, name: limitedName || user.name, avatar: avatar.trim() || undefined, preferredLanguage };
+      // Upload avatar file if changed
+      if (avatarFileRef.current) {
+        try {
+          const res = await authAPI.uploadAvatar(avatarFileRef.current);
+          avatarUrl = res?.avatar_url || res?.url || avatarUrl;
+          avatarFileRef.current = null;
+        } catch (err) {
+          console.warn('[Profile] Avatar upload failed, using local preview:', err?.message);
+        }
+      }
+      // Update profile fields
+      await authAPI.updateProfile({
+        fullname: limitedName || user.name,
+        country: codeUpper,
+        preferred_language: preferredLanguage,
+      });
+      showToast('Profile updated successfully');
+    } catch (err) {
+      showToast(err?.message || 'Failed to update profile', 'error');
+    }
+    const updated = { ...user, name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage };
     login(updated, codeUpper);
     setSaving(false);
   };
 
   const saveSecurity = async (e) => {
     e.preventDefault();
-    if (newPwd.length < 6) return alert('Yeni şifre en az 6 karakter olmalı.');
-    if (newPwd !== newPwd2) return alert('Yeni şifreler eşleşmiyor.');
+    if (!oldPwd) return showToast('Please enter your current password.', 'error');
+    if (newPwd.length < 6) return showToast('New password must be at least 6 characters.', 'error');
+    if (newPwd !== newPwd2) return showToast('New passwords do not match.', 'error');
     setSaving(true);
     try {
-      await authAPI.updateProfile({ password: newPwd });
-      alert('Password updated successfully.');
+      await authAPI.changePassword({ current_password: oldPwd, password: newPwd, password_confirmation: newPwd2 });
+      showToast('Password updated successfully');
     } catch (err) {
-      alert(err?.message || 'Failed to update password.');
+      showToast(err?.message || 'Failed to update password.', 'error');
     }
     setOldPwd(''); setNewPwd(''); setNewPwd2('');
     setSaving(false);
@@ -215,6 +267,14 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50/60 to-white">
+      {/* Toast notification */}
+      {toast.show && (
+        <div className={`fixed top-24 right-6 z-50 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium transition-all duration-300 animate-in slide-in-from-right ${
+          toast.type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+        }`}>
+          {toast.message}
+        </div>
+      )}
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* Page Header */}
         <div className="flex items-center gap-3 mb-6">
@@ -280,6 +340,7 @@ export default function Profile() {
                         const file = e.target.files && e.target.files[0];
                         if (!file) return;
                         setAvatarFileName(file.name);
+                        avatarFileRef.current = file;
                         const reader = new FileReader();
                         reader.onload = (ev) => setAvatar(String(ev.target?.result || ''));
                         reader.readAsDataURL(file);
@@ -349,7 +410,7 @@ export default function Profile() {
               </div>
 
               <div className="flex justify-end">
-                <button type="submit" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">{t('common.save')}</button>
+                <button type="submit" disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? 'Saving...' : t('common.save')}</button>
               </div>
             </form>
           )}
@@ -422,7 +483,7 @@ export default function Profile() {
                 </div>
               </div>
               <div className="flex justify-end">
-                <button type="submit" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">{t('common.save')}</button>
+                <button type="submit" disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? 'Saving...' : t('common.save')}</button>
               </div>
             </form>
           )}
@@ -521,7 +582,7 @@ export default function Profile() {
               <p className="text-xs text-gray-500 mt-1.5">Press <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">Enter</kbd> or <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">,</kbd> to add</p>
               
               <div className="flex justify-end mt-4">
-                <button onClick={saveMedical} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">{t('common.save')}</button>
+                <button onClick={saveMedical} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? 'Saving...' : t('common.save')}</button>
               </div>
             </div>
           )}
@@ -632,8 +693,13 @@ export default function Profile() {
                 </h2>
                 <p className="text-xs text-rose-700/70 mb-3">{t('profile.deleteAccountDesc')}</p>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (window.confirm('Are you sure you want to delete your account and all data? This action cannot be undone.')) {
+                      try {
+                        await authAPI.deleteAccount({ confirm: true });
+                      } catch (err) {
+                        console.warn('[Profile] Delete account API failed:', err?.message);
+                      }
                       try {
                         const keysToRemove = [];
                         for (let i = 0; i < localStorage.length; i++) {
