@@ -26,8 +26,24 @@ const resources = {
   pt: { translation: pt },
 };
 
+const manualPreferenceDetector = {
+  name: 'manualPreference',
+  lookup() {
+    try {
+      const lang = localStorage.getItem('preferred_language');
+      const isManual = localStorage.getItem('preferred_language_manual') === '1';
+      return isManual && lang ? lang : 'en';
+    } catch {
+      return 'en';
+    }
+  },
+};
+
+const customDetector = new LanguageDetector();
+customDetector.addDetector(manualPreferenceDetector);
+
 i18n
-  .use(LanguageDetector)
+  .use(customDetector)
   .use(initReactI18next)
   .init({
     resources,
@@ -37,9 +53,8 @@ i18n
     },
     detection: {
       // Keep platform default in English.
-      // If user explicitly selects a language, it is read from localStorage.
-      order: ['localStorage'],
-      lookupLocalStorage: 'preferred_language',
+      // Only honor stored language when user selected it manually.
+      order: ['manualPreference'],
       caches: ['localStorage'],
     },
     react: {

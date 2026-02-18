@@ -112,6 +112,7 @@ export default function Profile() {
     setPreferredLanguage(lang);
     i18n.changeLanguage(lang);
     try { localStorage.setItem('preferred_language', lang); } catch {}
+    try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
     document.documentElement.dir = LANGUAGES.find(l => l.code === lang)?.dir || 'ltr';
   };
 
@@ -306,7 +307,10 @@ export default function Profile() {
     const limitedName = (name || '').slice(0, 30).trim();
     const codeLower = countryCodes[countryName] || null;
     const codeUpper = codeLower ? codeLower.toUpperCase() : country;
-    try { localStorage.setItem('preferred_language', preferredLanguage); } catch {}
+    try {
+      localStorage.setItem('preferred_language', preferredLanguage);
+      localStorage.setItem('preferred_language_manual', '1');
+    } catch {}
     setSaving(true);
     let avatarUrl = avatar;
     try {

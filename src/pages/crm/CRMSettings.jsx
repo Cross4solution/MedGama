@@ -142,6 +142,7 @@ const CRMSettings = () => {
                     setProfile({...profile, language: e.target.value});
                     i18n.changeLanguage(e.target.value);
                     try { localStorage.setItem('preferred_language', e.target.value); } catch {}
+                    try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
                     document.documentElement.dir = LANGUAGES.find(l => l.code === e.target.value)?.dir || 'ltr';
                   }}
                     className="w-full sm:w-64 h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
