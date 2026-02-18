@@ -284,6 +284,7 @@ export default function PostDetail() {
   const [apiDetailComments, setApiDetailComments] = React.useState([]);
   const [detailCommentsLoaded, setDetailCommentsLoaded] = React.useState(false);
   const [localDetailComments, setLocalDetailComments] = React.useState([]);
+  const [visibleDetailCommentCount, setVisibleDetailCommentCount] = React.useState(3);
 
   // Fetch comments from API
   React.useEffect(() => {
@@ -583,35 +584,53 @@ export default function PostDetail() {
                       <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
                     </div>
                   )}
-                  {[...apiDetailComments, ...localDetailComments].map((c) => (
-                    <div key={c.id} className="py-2.5">
-                      <div className="flex items-start gap-2.5">
-                        <img src={c.avatar} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <div className="bg-gray-50/80 rounded-xl px-3.5 py-2.5">
-                            <div className="flex items-baseline justify-between gap-2">
-                              <span className="text-[13px] font-semibold text-gray-900">{c.name}</span>
-                              <span className="text-[11px] text-gray-400 flex-shrink-0">{c.time}</span>
-                            </div>
-                            <p className="text-[13px] text-gray-700 leading-relaxed mt-0.5">{c.text}</p>
-                          </div>
-                          <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400 pl-2">
-                            <button type="button" className="font-semibold hover:text-gray-600 transition-colors">Like</button>
-                            <span className="text-gray-200">|</span>
-                            <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(`@${c.name} `); }}>Reply</button>
-                          </div>
-                          {replyTo === c.id && (
-                            <div className="mt-2 ml-2 pl-3 border-l-2 border-teal-200">
-                              <div className="flex items-center gap-2">
-                                <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder="Write a reply..." className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
-                                <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>Post</button>
+                  {(() => {
+                    const allDetailComments = [...apiDetailComments, ...localDetailComments];
+                    const visibleComments = allDetailComments.slice(0, visibleDetailCommentCount);
+                    const remainingCount = allDetailComments.length - visibleDetailCommentCount;
+                    return (
+                      <>
+                        {visibleComments.map((c) => (
+                          <div key={c.id} className="py-2.5">
+                            <div className="flex items-start gap-2.5">
+                              <img src={c.avatar} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <div className="bg-gray-50/80 rounded-xl px-3.5 py-2.5">
+                                  <div className="flex items-baseline justify-between gap-2">
+                                    <span className="text-[13px] font-semibold text-gray-900">{c.name}</span>
+                                    <span className="text-[11px] text-gray-400 flex-shrink-0">{c.time}</span>
+                                  </div>
+                                  <p className="text-[13px] text-gray-700 leading-relaxed mt-0.5">{c.text}</p>
+                                </div>
+                                <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400 pl-2">
+                                  <button type="button" className="font-semibold hover:text-gray-600 transition-colors">Like</button>
+                                  <span className="text-gray-200">|</span>
+                                  <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(`@${c.name} `); }}>Reply</button>
+                                </div>
+                                {replyTo === c.id && (
+                                  <div className="mt-2 ml-2 pl-3 border-l-2 border-teal-200">
+                                    <div className="flex items-center gap-2">
+                                      <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder="Write a reply..." className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
+                                      <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>Post</button>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                          </div>
+                        ))}
+                        {remainingCount > 0 && (
+                          <button
+                            type="button"
+                            className="w-full py-2.5 text-[13px] font-semibold text-teal-600 hover:text-teal-700 hover:bg-teal-50/50 rounded-lg transition-colors"
+                            onClick={() => setVisibleDetailCommentCount(prev => prev + 3)}
+                          >
+                            Daha fazla yorum yükle ({remainingCount})
+                          </button>
+                        )}
+                      </>
+                    );
+                  })()}
                   {detailCommentsLoaded && apiDetailComments.length === 0 && localDetailComments.length === 0 && (
                     <p className="py-3 text-center text-xs text-gray-400">No comments yet. Be the first!</p>
                   )}
