@@ -6,7 +6,7 @@ function ActiveFilterChips({ items = [] }) {
   return (
     <div className="mb-4 flex flex-wrap items-center gap-2">
       {items.map((chip, idx) => (
-        <span key={idx} className="inline-flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full bg-teal-50 border border-teal-200/60 text-teal-800 text-xs font-medium shadow-sm">
+        <span key={idx} className="inline-flex items-center gap-1 pl-2 pr-1.5 py-0.5 rounded-full bg-teal-50 border border-teal-200/60 text-teal-800 text-[11px] font-medium shadow-sm">
           {chip.label}
           {chip.onClear && (
             <button onClick={chip.onClear} className="ml-0.5 p-0.5 rounded-full hover:bg-teal-100 text-teal-500 hover:text-teal-700 transition-colors" aria-label="clear">

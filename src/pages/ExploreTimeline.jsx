@@ -362,7 +362,47 @@ export default function ExploreTimeline() {
         onProgress: (pct) => setUploadProgress(pct),
       });
 
-      // Upload succeeded — close composer and refresh feed
+      // Upload succeeded — build a feed-compatible item from the API response
+      const p = res?.post || res;
+      if (p?.id) {
+        const ec = p.engagement_counter || p.engagementCounter || {};
+        const newItem = {
+          id: p.id,
+          type: 'doctor_update',
+          title: p.author?.fullname || user?.name || 'Doctor',
+          subtitle: '',
+          city: '',
+          img: p.media_url || PLACEHOLDER_IMG,
+          text: p.content || '',
+          likes: ec.like_count || 0,
+          comments: ec.comment_count || 0,
+          specialty: '',
+          countryCode: '',
+          actor: {
+            id: p.author_id || user?.id,
+            role: p.author?.role_id || user?.role || 'doctor',
+            name: p.author?.fullname || user?.name || 'Doctor',
+            title: '',
+            avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+          },
+          socialContext: '',
+          timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
+          visibility: 'public',
+          media: (() => {
+            if (Array.isArray(p.media) && p.media.length > 0) {
+              return p.media.map(m => ({ url: m.medium || m.original || m.url, thumb: m.thumb, name: m.name, type: m.type || p.post_type || 'image' }));
+            }
+            if (!p.media_url) return [];
+            const mType = (p.post_type === 'video') ? 'video' : (p.post_type === 'document') ? 'document' : 'image';
+            return [{ url: p.media_url, type: mType }];
+          })(),
+          is_liked: false,
+          is_bookmarked: false,
+        };
+        setLocalPosts(prev => [newItem, ...prev.filter(x => x.id !== newItem.id)]);
+      }
+
+      // Close composer and refresh feed from API too
       setIsComposerOpen(false);
       setFeedRefreshKey(k => k + 1);
     } catch (err) {
