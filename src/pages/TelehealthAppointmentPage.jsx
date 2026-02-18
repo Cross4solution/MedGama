@@ -11,16 +11,25 @@ import {
 } from 'lucide-react';
 import { doctorAPI, appointmentAPI, calendarSlotAPI } from '../lib/api';
 
-const STEPS = [
+const STEPS_PATIENT = [
   { key: 'doctor', label: 'Doctor', icon: Stethoscope },
   { key: 'datetime', label: 'Date & Time', icon: CalendarDays },
   { key: 'info', label: 'Your Info', icon: User },
   { key: 'review', label: 'Confirm', icon: CheckCircle2 },
 ];
 
+const STEPS_DOCTOR = [
+  { key: 'datetime', label: 'Date & Time', icon: CalendarDays },
+  { key: 'info', label: 'Patient Info', icon: User },
+  { key: 'review', label: 'Confirm', icon: CheckCircle2 },
+];
+
 export default function TelehealthAppointmentPage() {
   const { formatCurrency, country, user } = useAuth();
   const navigate = useNavigate();
+
+  const isDoctor = user?.role_id === 'doctor' || user?.role_id === 'clinicOwner';
+  const STEPS = isDoctor ? STEPS_DOCTOR : STEPS_PATIENT;
 
   const [step, setStep] = useState(0);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -55,8 +64,9 @@ export default function TelehealthAppointmentPage() {
     return new Date(d.getFullYear(), d.getMonth(), 1);
   });
 
+  // Auto-fill only for patients (not doctors — doctors enter patient info manually)
   useEffect(() => {
-    if (user) {
+    if (user && !isDoctor) {
       setPatientInfo(prev => ({
         ...prev,
         fullName: prev.fullName || user.fullname || user.name || '',
@@ -64,7 +74,14 @@ export default function TelehealthAppointmentPage() {
         phone: prev.phone || user.mobile || '',
       }));
     }
-  }, [user]);
+  }, [user, isDoctor]);
+
+  // If doctor, auto-select themselves and skip doctor step
+  useEffect(() => {
+    if (isDoctor && user?.id) {
+      setSelectedDoctor(user.id);
+    }
+  }, [isDoctor, user]);
 
   useEffect(() => {
     setLoadingDoctors(true);
@@ -169,13 +186,14 @@ export default function TelehealthAppointmentPage() {
   };
 
   const selectedDoctorObj = doctors.find(d => d.id === selectedDoctor);
+  const currentStepKey = STEPS[step]?.key;
 
   const canProceed = () => {
-    switch (step) {
-      case 0: return !!selectedDoctor;
-      case 1: return !!selectedDate && !!selectedTime;
-      case 2: return !!patientInfo.fullName && !!patientInfo.email;
-      case 3: return true;
+    switch (currentStepKey) {
+      case 'doctor': return !!selectedDoctor;
+      case 'datetime': return !!selectedDate && !!selectedTime;
+      case 'info': return !!patientInfo.fullName && !!patientInfo.email;
+      case 'review': return true;
       default: return false;
     }
   };
@@ -544,17 +562,25 @@ export default function TelehealthAppointmentPage() {
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <User className="w-4 h-4 text-teal-600" />
-                    Personal Information
+                    {isDoctor ? 'Patient Information' : 'Personal Information'}
                   </h3>
+                  {isDoctor && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 flex items-start gap-2">
+                      <Info className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <p className="text-[11px] text-amber-700 leading-relaxed">
+                        Enter the patient's details for this appointment. The patient will receive a confirmation email at the provided address.
+                      </p>
+                    </div>
+                  )}
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Full Name *</label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">{isDoctor ? 'Patient Name' : 'Full Name'} *</label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                           <input
                             type="text"
-                            placeholder="Your full name"
+                            placeholder={isDoctor ? "Patient's full name" : 'Your full name'}
                             value={patientInfo.fullName}
                             onChange={(e) => setPatientInfo({ ...patientInfo, fullName: e.target.value })}
                             className="w-full h-11 pl-10 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
@@ -563,12 +589,12 @@ export default function TelehealthAppointmentPage() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Email *</label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">{isDoctor ? 'Patient Email' : 'Email'} *</label>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                           <input
                             type="email"
-                            placeholder="example@email.com"
+                            placeholder={isDoctor ? "patient@email.com" : 'example@email.com'}
                             value={patientInfo.email}
                             onChange={(e) => setPatientInfo({ ...patientInfo, email: e.target.value })}
                             className="w-full h-11 pl-10 pr-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
@@ -579,7 +605,7 @@ export default function TelehealthAppointmentPage() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Phone</label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">{isDoctor ? 'Patient Phone' : 'Phone'}</label>
                         <PhoneNumberInput
                           value={patientInfo.phone}
                           countryName={country || ''}
@@ -588,7 +614,7 @@ export default function TelehealthAppointmentPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Date of Birth</label>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">{isDoctor ? 'Patient Date of Birth' : 'Date of Birth'}</label>
                         <div
                           className="relative date-with-icon cursor-pointer"
                           onClick={() => dobRef.current?.showPicker?.()}
@@ -614,14 +640,14 @@ export default function TelehealthAppointmentPage() {
                   </h3>
                   <textarea
                     rows={4}
-                    placeholder="Please describe your symptoms, medical history, or any notes for the doctor..."
+                    placeholder={isDoctor ? "Describe the patient's symptoms, reason for visit, or clinical notes..." : 'Please describe your symptoms, medical history, or any notes for the doctor...'}
                     value={patientInfo.symptoms}
                     onChange={(e) => setPatientInfo({ ...patientInfo, symptoms: e.target.value })}
                     className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none"
                   />
                   <p className="text-[11px] text-gray-400 mt-2 flex items-center gap-1">
                     <Shield className="w-3 h-3" />
-                    Your information is encrypted and protected under GDPR regulations.
+                    {isDoctor ? 'Patient data is encrypted and protected under GDPR regulations.' : 'Your information is encrypted and protected under GDPR regulations.'}
                   </p>
                 </div>
 
