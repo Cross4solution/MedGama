@@ -34,6 +34,7 @@ const Notifications = React.lazy(() => import('./pages/Notifications'));
 const Profile = React.lazy(() => import('./pages/Profile'));
 const PostDetail = React.lazy(() => import('./pages/PostDetail'));
 const DoctorProfilePage = React.lazy(() => import('./pages/DoctorProfile.jsx'));
+const DoctorOnboarding = React.lazy(() => import('./pages/DoctorOnboarding.jsx'));
 const ClinicProfileEdit = React.lazy(() => import('./pages/ClinicProfileEdit.jsx'));
 const DoctorsDepartments = React.lazy(() => import('./pages/DoctorsDepartments.jsx'));
 const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage'));
@@ -209,6 +210,7 @@ function AppContent() {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
+        <Route path="/doctor-onboarding" element={<DoctorOnboarding />} />
         <Route path="/post/:id" element={<PostDetail />} />
         {/* CRM Routes */}
         <Route path="/crm" element={<CRMLayout><CRMDashboard /></CRMLayout>} />

@@ -123,8 +123,15 @@ class AuthController extends Controller
             ]);
         }
 
+        $userData = $user->toArray();
+        // For doctors, include onboarding status
+        if ($user->role_id === 'doctor') {
+            $profile = $user->doctorProfile;
+            $userData['onboarding_completed'] = $profile ? (bool) $profile->onboarding_completed : false;
+        }
+
         return response()->json([
-            'user' => $user,
+            'user' => $userData,
             'token' => $token,
         ]);
     }
@@ -146,7 +153,14 @@ class AuthController extends Controller
     {
         $user = $request->user()->load('clinic');
 
-        return response()->json(['user' => $user]);
+        $extra = [];
+        // For doctors, include onboarding status
+        if ($user->role_id === 'doctor') {
+            $profile = $user->doctorProfile;
+            $extra['onboarding_completed'] = $profile ? (bool) $profile->onboarding_completed : false;
+        }
+
+        return response()->json(['user' => array_merge($user->toArray(), $extra)]);
     }
 
     /**

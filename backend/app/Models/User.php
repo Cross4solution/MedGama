@@ -106,6 +106,11 @@ class User extends Authenticatable
         return $this->hasMany(CrmTag::class, 'patient_id');
     }
 
+    public function doctorProfile()
+    {
+        return $this->hasOne(DoctorProfile::class);
+    }
+
     public function medStreamPosts()
     {
         return $this->hasMany(MedStreamPost::class, 'author_id');

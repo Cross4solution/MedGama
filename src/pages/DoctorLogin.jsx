@@ -113,7 +113,13 @@ const DoctorLogin = () => {
       if (res?.requires_email_verification) {
         navigate('/verify-email', { replace: true });
       } else {
-        navigate('/explore', { replace: true });
+        // Check if doctor needs onboarding
+        const u = res?.data?.user;
+        if (u?.role_id === 'doctor' && u?.onboarding_completed === false) {
+          navigate('/doctor-onboarding', { replace: true });
+        } else {
+          navigate('/crm', { replace: true });
+        }
       }
       return;
     } catch (err) {

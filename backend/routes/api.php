@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\CrmController;
 use App\Http\Controllers\Api\MedStreamController;
 use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\DoctorController;
+use App\Http\Controllers\Api\DoctorProfileController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\MediaStreamController;
@@ -100,6 +101,18 @@ Route::middleware('auth:sanctum')->group(function () {
 */
 Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/doctors/{id}', [DoctorController::class, 'show']);
+
+/*
+|--------------------------------------------------------------------------
+| Doctor Profile (Protected — own profile management + onboarding)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('doctor-profile')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', [DoctorProfileController::class, 'show']);
+    Route::put('/', [DoctorProfileController::class, 'update']);
+    Route::put('/onboarding', [DoctorProfileController::class, 'updateOnboarding']);
+    Route::post('/gallery', [DoctorProfileController::class, 'uploadGallery']);
+});
 
 /*
 |--------------------------------------------------------------------------

@@ -95,6 +95,14 @@ export const doctorAPI = {
   get: (id) => api.get(`/doctors/${id}`),
 };
 
+// ── Doctor Profile (own profile management + onboarding) ──
+export const doctorProfileAPI = {
+  get: () => api.get('/doctor-profile'),
+  update: (data) => api.put('/doctor-profile', data),
+  updateOnboarding: (data) => api.put('/doctor-profile/onboarding', data),
+  uploadGallery: (formData) => api.post('/doctor-profile/gallery', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+};
+
 // ── Appointment Service ──
 export const appointmentAPI = {
   list: (params) => api.get('/appointments', { params }),
