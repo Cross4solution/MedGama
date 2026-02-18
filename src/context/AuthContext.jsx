@@ -61,6 +61,9 @@ export function AuthProvider({ children }) {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.user && parsed.token) {
+          const av = parsed.user?.avatar;
+          const isPlaceholder = typeof av === 'string' && (av.includes('gravatar.com') || av.includes('identicon') || av.includes('ui-avatars.com'));
+          if (isPlaceholder || !av) parsed.user.avatar = '/images/default/default-avatar.svg';
           setUser(parsed.user);
           setToken(parsed.token);
           setCountry(parsed.country || 'TR');
@@ -94,6 +97,15 @@ export function AuthProvider({ children }) {
     if (newCountry) setCountry(newCountry);
   };
 
+  const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
+  const normalizeAvatar = (url) => {
+    if (!url) return DEFAULT_AVATAR;
+    if (typeof url !== 'string') return DEFAULT_AVATAR;
+    const lower = url.toLowerCase();
+    if (lower.includes('gravatar.com') || lower.includes('identicon') || lower.includes('ui-avatars.com')) return DEFAULT_AVATAR;
+    return url;
+  };
+
   const login = async (emailOrUser, password) => {
     // Backward-compatible demo login: if first arg is an object, treat it as user
     if (emailOrUser && typeof emailOrUser === 'object') {
@@ -111,7 +123,7 @@ export function AuthProvider({ children }) {
     // Map role_id to role for frontend compatibility
     const role = apiUser?.role_id || apiUser?.role || 'patient';
     const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
-    const userWithRole = { ...apiUser, role, name };
+    const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
     setUser(userWithRole);
     setToken(access);
     try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
@@ -132,7 +144,7 @@ export function AuthProvider({ children }) {
       if (!apiUser || !access) return null;
       const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
       const name = apiUser?.name || [apiUser?.fname, apiUser?.lname].filter(Boolean).join(' ').trim() || apiUser?.email || 'User';
-      const userWithRole = { ...apiUser, name, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+      const userWithRole = { ...apiUser, name, avatar: normalizeAvatar(apiUser?.avatar), role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
       setUser(userWithRole);
       setToken(access);
       try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country })); } catch {}
@@ -193,7 +205,7 @@ export function AuthProvider({ children }) {
         return null;
       }
       const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
-      const userWithRole = { ...apiUser, role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+      const userWithRole = { ...apiUser, avatar: normalizeAvatar(apiUser?.avatar), role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
       setUser(userWithRole);
       setToken(tk);
       try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country })); } catch {}
@@ -207,7 +219,7 @@ export function AuthProvider({ children }) {
     if (apiUser && access) {
       const role = apiUser?.role_id || apiUser?.role || 'patient';
       const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
-      const userWithRole = { ...apiUser, role, name };
+      const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
       setUser(userWithRole);
       setToken(access);
       try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
@@ -221,7 +233,7 @@ export function AuthProvider({ children }) {
     if (apiUser && access) {
       const role = apiUser?.role_id || apiUser?.role || 'doctor';
       const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
-      const userWithRole = { ...apiUser, role, name };
+      const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
       setUser(userWithRole);
       setToken(access);
       try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
