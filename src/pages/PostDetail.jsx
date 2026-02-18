@@ -20,11 +20,56 @@ export default function PostDetail() {
   const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
   const emojiReplyRef = React.useRef(null);
 
-  // ExploreTimeline/TimelineCard üzerinden gelen state öncelikli
-  const item = state?.item;
+  // ExploreTimeline/TimelineCard üzerinden gelen state öncelikli, fallback to API
+  const [apiItem, setApiItem] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+
+  // Check if state item has valid (non-blob) media
+  const stateItem = state?.item;
+  const stateHasBlob = stateItem && (
+    (stateItem.img && stateItem.img.startsWith('blob:')) ||
+    (Array.isArray(stateItem.media) && stateItem.media.some(m => m.url && m.url.startsWith('blob:')))
+  );
+
+  // Fetch from API if no state item or has blob URLs
+  React.useEffect(() => {
+    if (!id) return;
+    if (stateItem && !stateHasBlob) return; // state is valid, no need to fetch
+    setLoading(true);
+    medStreamAPI.getPost(id).then(res => {
+      const p = res?.post || res?.data?.post || res;
+      if (p?.id) {
+        setApiItem({
+          id: p.id,
+          type: 'doctor_update',
+          title: p.author?.fullname || 'Doctor',
+          subtitle: '',
+          text: p.content || '',
+          img: p.media_url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+          likes: p.engagementCounter?.like_count || 0,
+          comments: p.engagementCounter?.comment_count || 0,
+          actor: {
+            id: p.author_id,
+            role: p.author?.role_id || 'doctor',
+            name: p.author?.fullname || 'Doctor',
+            title: '',
+            avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+          },
+          timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
+          visibility: 'public',
+          media: p.media_url ? [{ url: p.media_url }] : [],
+          specialty: '',
+        });
+      }
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, [id, stateItem, stateHasBlob]);
+
+  const item = (stateItem && !stateHasBlob) ? stateItem : (apiItem || stateItem);
 
   // Image gallery state
-  const mediaList = Array.isArray(item?.media) && item.media.length > 0 ? item.media : (item?.img ? [{ url: item.img }] : []);
+  const mediaList = Array.isArray(item?.media) && item?.media.length > 0
+    ? item.media.filter(m => m.url && !m.url.startsWith('blob:'))
+    : (item?.img && !item.img.startsWith('blob:') ? [{ url: item.img }] : []);
   const [imgIndex, setImgIndex] = React.useState(0);
   const [heroHeightPx, setHeroHeightPx] = React.useState(0);
   const [heroOpacity, setHeroOpacity] = React.useState(1);
@@ -40,14 +85,17 @@ export default function PostDetail() {
   const [liked, setLiked] = React.useState(false);
   const [likeCount, setLikeCount] = React.useState(Number(item?.engagement?.likes) || Number(item?.likes) || 0);
 
+  const likedRef = React.useRef(false);
   const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
-    setLiked((prev) => {
-      const next = !prev;
-      setLikeCount((c) => c + (next ? 1 : -1));
-      return next;
-    });
-  }, []);
+    const next = !likedRef.current;
+    likedRef.current = next;
+    setLiked(next);
+    setLikeCount((c) => c + (next ? 1 : -1));
+    if (item?.id) {
+      medStreamAPI.toggleLike(item.id).catch(() => {});
+    }
+  }, [item?.id]);
 
   const goPrev = () => setImgIndex((i) => (i - 1 + mediaList.length) % mediaList.length);
   const goNext = () => setImgIndex((i) => (i + 1) % mediaList.length);
