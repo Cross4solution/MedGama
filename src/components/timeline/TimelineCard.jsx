@@ -178,6 +178,25 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const [toastText, setToastText] = useState('');
   const toastTimerRef = useRef(null);
   const [localComments, setLocalComments] = useState([]);
+  const [apiComments, setApiComments] = useState([]);
+  const [commentsLoaded, setCommentsLoaded] = useState(false);
+
+  // Fetch comments from API when comment section opens
+  useEffect(() => {
+    if (!showCommentsPreview || commentsLoaded || !item?.id) return;
+    medStreamAPI.comments(item.id, { per_page: 50 }).then(res => {
+      const list = res?.data || [];
+      setApiComments(list.map(c => ({
+        id: c.id,
+        name: c.author?.fullname || 'User',
+        title: '',
+        avatar: c.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+        text: c.content || '',
+        time: c.created_at ? new Date(c.created_at).toLocaleDateString() : '',
+      })));
+      setCommentsLoaded(true);
+    }).catch(() => setCommentsLoaded(true));
+  }, [showCommentsPreview, commentsLoaded, item?.id]);
 
   // Dışarı tıklayınca "Daha fazla" menüsünü kapat
   useEffect(() => {
@@ -554,94 +573,14 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 </div>
               </div>
 
-              {/* Threaded comments — LinkedIn style */}
+              {/* Comments from API + locally submitted */}
               <div className="mt-3 divide-y divide-gray-100">
-                {/* Comment 1 */}
-                <div className="py-2.5 first:pt-0">
-                  <div className="flex items-start gap-2">
-                    <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Ayça Karaman" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <div className="min-w-0">
-                          <span className="text-[13px] font-semibold text-[rgba(0,0,0,0.9)] leading-tight">Ayça Karaman</span>
-                          <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">Cardiologist · Memorial Hospital</p>
-                        </div>
-                        <span className="text-[11px] text-gray-400 flex-shrink-0">4d</span>
-                      </div>
-                      <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">Congrats! 🎉</p>
-                      <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
-                        <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); }}>Like</button>
-                        <span className="text-gray-300 mx-0.5">·</span>
-                        <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1' ? '' : 'c1'); setReplyText(prev => (prev && replyTo==='c1') ? prev : '@Ayça Karaman '); }}>Reply</button>
-                      </div>
-
-                      {/* Reply thread */}
-                      <div className="mt-2 ml-1">
-                        <div className="flex items-start gap-2">
-                          <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Cem Arslan" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-baseline justify-between gap-2">
-                              <div className="min-w-0">
-                                <span className="text-[12px] font-semibold text-[rgba(0,0,0,0.9)] leading-tight">Dr. Cem Arslan</span>
-                                <p className="text-[10px] text-[rgba(0,0,0,0.6)] leading-tight truncate">Orthopedic Surgeon</p>
-                              </div>
-                              <span className="text-[10px] text-gray-400 flex-shrink-0">3d</span>
-                            </div>
-                            <p className="text-[12px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-0.5"><span className="font-semibold text-[#0a66c2]">@Ayça Karaman</span> Thanks 🙏</p>
-                            <div className="mt-1 flex items-center gap-1 text-[10px] text-gray-500">
-                              <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Like</button>
-                              <span className="text-gray-300 mx-0.5">·</span>
-                              <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1r1' ? '' : 'c1r1'); setReplyText(prev => (prev && replyTo==='c1r1') ? prev : '@Dr. Cem Arslan '); }}>Reply</button>
-                            </div>
-                          </div>
-                        </div>
-                        {replyTo === 'c1r1' && (
-                          <div className="mt-2 ml-9 flex items-center gap-1.5">
-                            <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} onKeyDown={(e)=>{ if(e.key==='Enter') submitReply(e); }} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none bg-gray-50/50 hover:bg-white focus:bg-white focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
-                            {replyText.trim() && <button type="button" className="p-1.5 rounded-full bg-teal-500/90 hover:bg-teal-600 text-white shadow-sm transition-all duration-200" onClick={submitReply}><Send className="w-3 h-3" strokeWidth={2.2} /></button>}
-                          </div>
-                        )}
-                      </div>
-                      {replyTo === 'c1' && (
-                        <div className="mt-2 flex items-center gap-1.5">
-                          <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} onKeyDown={(e)=>{ if(e.key==='Enter') submitReply(e); }} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none bg-gray-50/50 hover:bg-white focus:bg-white focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
-                          {replyText.trim() && <button type="button" className="p-1.5 rounded-full bg-teal-500/90 hover:bg-teal-600 text-white shadow-sm transition-all duration-200" onClick={submitReply}><Send className="w-3 h-3" strokeWidth={2.2} /></button>}
-                        </div>
-                      )}
-                    </div>
+                {!commentsLoaded && (
+                  <div className="py-4 flex justify-center">
+                    <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
                   </div>
-                </div>
-
-                {/* Comment 2 */}
-                <div className="py-2.5">
-                  <div className="flex items-start gap-2">
-                    <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Efe Yılmaz" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <div className="min-w-0">
-                          <span className="text-[13px] font-semibold text-[rgba(0,0,0,0.9)] leading-tight">Efe Yılmaz</span>
-                          <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">Dermatologist · Acibadem</p>
-                        </div>
-                        <span className="text-[11px] text-gray-400 flex-shrink-0">3w</span>
-                      </div>
-                      <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">Well done 👏</p>
-                      <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
-                        <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Like</button>
-                        <span className="text-gray-300 mx-0.5">·</span>
-                        <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c2' ? '' : 'c2'); setReplyText(prev => (prev && replyTo==='c2') ? prev : '@Efe Yılmaz '); }}>Reply</button>
-                      </div>
-                      {replyTo === 'c2' && (
-                        <div className="mt-2 flex items-center gap-1.5">
-                          <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} onKeyDown={(e)=>{ if(e.key==='Enter') submitReply(e); }} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none bg-gray-50/50 hover:bg-white focus:bg-white focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
-                          {replyText.trim() && <button type="button" className="p-1.5 rounded-full bg-teal-500/90 hover:bg-teal-600 text-white shadow-sm transition-all duration-200" onClick={submitReply}><Send className="w-3 h-3" strokeWidth={2.2} /></button>}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* User-submitted comments */}
-                {localComments.map((c) => (
+                )}
+                {[...apiComments, ...localComments].map((c) => (
                   <div key={c.id} className="py-2.5">
                     <div className="flex items-start gap-2">
                       <AvatarImg src={c.avatar} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
@@ -649,7 +588,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         <div className="flex items-baseline justify-between gap-2">
                           <div className="min-w-0">
                             <span className="text-[13px] font-semibold text-[rgba(0,0,0,0.9)]">{c.name}</span>
-                            <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">{c.title}</p>
+                            {c.title && <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">{c.title}</p>}
                           </div>
                           <span className="text-[11px] text-gray-400 flex-shrink-0">{c.time}</span>
                         </div>
@@ -663,6 +602,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     </div>
                   </div>
                 ))}
+                {commentsLoaded && apiComments.length === 0 && localComments.length === 0 && (
+                  <p className="py-3 text-center text-xs text-gray-400">No comments yet. Be the first!</p>
+                )}
               </div>
             </div>
           )}

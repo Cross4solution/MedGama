@@ -100,9 +100,9 @@ const DoctorChatPage = () => {
   const threadsPerPage = 8;
 
   // API state
-  const [threads, setThreads] = useState(MOCK_THREADS);
-  const [activeThreadId, setActiveThreadId] = useState(MOCK_THREADS[0]?.id || null);
-  const [messages, setMessages] = useState(getMockMessages('zeynep'));
+  const [threads, setThreads] = useState([]);
+  const [activeThreadId, setActiveThreadId] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [isApiMode, setIsApiMode] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [loadingConvs, setLoadingConvs] = useState(true);
