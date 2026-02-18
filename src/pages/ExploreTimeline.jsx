@@ -15,7 +15,7 @@ import { medStreamAPI } from '../lib/api';
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
-function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you', refreshKey = 0 }) {
+function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you', refreshKey = 0, injectedPosts = [] }) {
   // API'den gelen postlar
   const [apiPosts, setApiPosts] = useState([]);
   const [apiLoaded, setApiLoaded] = useState(false);
@@ -121,11 +121,16 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     return items;
   }, []);
 
-  // API verileri varsa onları kullan, yoksa mock
-  const source = apiLoaded && apiPosts.length > 0 ? apiPosts : base;
+  // API verileri varsa onları kullan, yoksa mock — injected posts always on top
+  const baseSource = apiLoaded && apiPosts.length > 0 ? apiPosts : base;
+  const source = injectedPosts.length > 0 ? [...injectedPosts, ...baseSource] : baseSource;
 
   const filtered = useMemo(() => {
-    let list = source;
+    // Separate injected (local) posts from the rest — they always stay on top
+    const injectedIds = new Set(injectedPosts.map(p => p.id));
+    const pinned = source.filter(x => injectedIds.has(x.id));
+    let list = source.filter(x => !injectedIds.has(x.id));
+
     // Ülke adı -> ülke koduna çeviri (countryCodes)
     const codeLower = countryName ? (countryCodes[countryName] || '').toLowerCase() : '';
     if (codeLower) list = list.filter(x => (x.countryCode || '').toLowerCase() === codeLower);
@@ -142,17 +147,17 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
         list = [...followed, ...others];
       }
     } else if (tab === 'latest') {
-      // basitçe diziyi tersle (yeni içerik üstte)
       list = [...list].reverse();
     }
     // Sıralama
     if (sort === 'top') {
       list = [...list].sort((a,b) => (b.likes + b.comments) - (a.likes + a.comments));
     } else if (sort === 'recent') {
-      list = [...list]; // latest tab zaten reverse ediyor
+      list = [...list];
     }
-    return list;
-  }, [source, countryName, specialtyFilter, textQuery, mode, sort, tab]);
+    // Pinned (injected) posts always first
+    return [...pinned, ...list];
+  }, [source, injectedPosts, countryName, specialtyFilter, textQuery, mode, sort, tab]);
 
   const paged = useMemo(() => {
     const start = 0;
@@ -181,6 +186,7 @@ export default function ExploreTimeline() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loadMoreRef = useRef(null);
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
+  const [localPosts, setLocalPosts] = useState([]);
 
   // Composer state
   const [isComposerOpen, setIsComposerOpen] = useState(false);
@@ -229,23 +235,49 @@ export default function ExploreTimeline() {
     const trimmed = composerText.trim();
     if (!trimmed && !hasMedia) return;
     setComposerPosting(true);
+
+    // Build optimistic local post immediately
+    const localId = 'local-' + Date.now();
+    const mediaUrl = composerPhotoUrls[0] || composerVideoUrls[0] || null;
+    const newPost = {
+      id: localId,
+      type: 'doctor_update',
+      title: user?.name || 'Doctor',
+      subtitle: '',
+      city: '',
+      img: mediaUrl || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+      text: trimmed,
+      likes: 0,
+      comments: 0,
+      specialty: '',
+      countryCode: '',
+      actor: {
+        id: user?.id || 'unknown',
+        role: user?.role || 'doctor',
+        name: user?.name || 'Doctor',
+        title: '',
+        avatarUrl: user?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+      },
+      socialContext: '',
+      timeAgo: 'Just now',
+      visibility: 'public',
+      media: mediaUrl ? [{ url: mediaUrl }] : [],
+    };
+
+    // Inject into feed immediately (optimistic)
+    setLocalPosts(prev => [newPost, ...prev]);
+    setIsComposerOpen(false);
+    setComposerPosting(false);
+
+    // Try API in background
     try {
       const postType = composerVideoUrls.length > 0 ? 'video' : composerPhotoUrls.length > 0 ? 'image' : 'text';
       const payload = { post_type: postType, content: trimmed || undefined };
-      const res = await medStreamAPI.createPost(payload);
-      console.log('[ExploreTimeline] Post created successfully:', res);
-      // Refresh feed to show new post
+      await medStreamAPI.createPost(payload);
+      // If API succeeds, refresh feed to get server version
       setFeedRefreshKey(k => k + 1);
-      setSort('recent');
-      setTab('latest');
     } catch (err) {
-      const status = err?.status || err?.response?.status;
-      const msg = err?.message || err?.response?.data?.message || 'Unknown error';
-      console.error('[ExploreTimeline] Post failed:', status, msg);
-      alert(`Post gönderilemedi: ${status ? `HTTP ${status} — ` : ''}${msg}`);
-    } finally {
-      setComposerPosting(false);
-      setIsComposerOpen(false);
+      console.error('[ExploreTimeline] Post API failed (local post still visible):', err?.status, err?.message);
     }
   }
 
@@ -271,6 +303,7 @@ export default function ExploreTimeline() {
     sort,
     tab,
     refreshKey: feedRefreshKey,
+    injectedPosts: localPosts,
   });
 
   // seçenekler
