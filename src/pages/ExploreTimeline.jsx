@@ -10,6 +10,7 @@ import TimelineCard from 'components/timeline/TimelineCard';
 import SkeletonCard from 'components/timeline/SkeletonCard';
 import SPECIALTIES from '../data/specialties';
 import { medStreamAPI } from '../lib/api';
+import { resizeImages } from '../utils/imageResize';
 
 // Basit mock feed üretici: guest için random, user için follow-first + location mix simülasyonu
 
@@ -363,7 +364,8 @@ export default function ExploreTimeline() {
     };
 
     // Grab file references before composer closes and state resets
-    const photosToUpload = [...composerPhotos];
+    // Client-side resize photos before upload (max 2048px, WebP, ~80% quality)
+    const photosToUpload = await resizeImages([...composerPhotos]);
     const videosToUpload = [...composerVideos];
     const papersToUpload = [...composerPapers];
 
