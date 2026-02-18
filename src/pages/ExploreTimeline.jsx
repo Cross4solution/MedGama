@@ -215,6 +215,8 @@ export default function ExploreTimeline() {
   const [composerPapers, setComposerPapers] = useState([]);
   const [composerPaperNames, setComposerPaperNames] = useState([]);
   const hasMedia = composerPhotos.length > 0 || composerVideos.length > 0 || composerPapers.length > 0;
+  const [uploadProgress, setUploadProgress] = useState(0); // 0-100
+  const [uploadError, setUploadError] = useState('');
   const imageInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const paperInputRef = useRef(null);
@@ -270,17 +272,25 @@ export default function ExploreTimeline() {
     const trimmed = composerText.trim();
     if (!trimmed && !hasMedia) return;
     setComposerPosting(true);
+    setUploadProgress(0);
+    setUploadError('');
 
-    // Build optimistic local post immediately
+    // Determine post type
+    const postType = composerVideos.length > 0 ? 'video'
+      : composerPhotos.length > 0 ? 'image'
+      : composerPapers.length > 0 ? 'document'
+      : 'text';
+
+    // Build optimistic local post with local preview URLs
     const localId = 'local-' + Date.now();
-    const mediaUrl = composerPhotoUrls[0] || composerVideoUrls[0] || null;
-    const newPost = {
+    const previewUrl = composerPhotoUrls[0] || composerVideoUrls[0] || null;
+    const optimisticPost = {
       id: localId,
       type: 'doctor_update',
       title: user?.name || 'Doctor',
       subtitle: '',
       city: '',
-      img: mediaUrl || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+      img: previewUrl || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
       text: trimmed,
       likes: 0,
       comments: 0,
@@ -296,24 +306,56 @@ export default function ExploreTimeline() {
       socialContext: '',
       timeAgo: 'Just now',
       visibility: 'public',
-      media: mediaUrl ? [{ url: mediaUrl }] : [],
+      media: previewUrl ? [{ url: previewUrl }] : [],
+      _uploading: true,
     };
 
-    // Inject into feed immediately (optimistic)
-    setLocalPosts(prev => [newPost, ...prev]);
-    setIsComposerOpen(false);
-    setComposerPosting(false);
+    // Grab file references before composer closes and state resets
+    const photosToUpload = [...composerPhotos];
+    const videosToUpload = [...composerVideos];
+    const papersToUpload = [...composerPapers];
 
-    // Try API in background
+    // Show optimistic post in feed immediately
+    setLocalPosts(prev => [optimisticPost, ...prev]);
+    setIsComposerOpen(false);
+
+    // Upload to backend with real files
     try {
-      const postType = composerVideoUrls.length > 0 ? 'video' : composerPhotoUrls.length > 0 ? 'image' : 'text';
-      const payload = { post_type: postType, content: trimmed || undefined };
-      await medStreamAPI.createPost(payload);
-      // If API succeeds, refresh feed to get server version
+      const res = await medStreamAPI.createPost({
+        content: trimmed || undefined,
+        post_type: postType,
+        photos: photosToUpload,
+        videos: videosToUpload,
+        papers: papersToUpload,
+        onProgress: (pct) => setUploadProgress(pct),
+      });
+
+      // Replace optimistic post with server version
+      const serverPost = res?.data || res;
+      if (serverPost?.id) {
+        const serverMedia = serverPost.media_url ? [{ url: serverPost.media_url }] : (serverPost.media || []);
+        setLocalPosts(prev => prev.map(p => p.id === localId ? {
+          ...optimisticPost,
+          id: serverPost.id,
+          img: serverPost.media_url || optimisticPost.img,
+          media: serverMedia.length > 0 ? serverMedia : optimisticPost.media,
+          _uploading: false,
+        } : p));
+      } else {
+        // API returned OK but no structured post — just mark as done
+        setLocalPosts(prev => prev.map(p => p.id === localId ? { ...p, _uploading: false } : p));
+      }
+
+      // Refresh feed to get full server data
       setFeedRefreshKey(k => k + 1);
     } catch (err) {
-      console.error('[ExploreTimeline] Post API failed (local post still visible):', err?.status, err?.message);
+      console.error('[ExploreTimeline] Post upload failed:', err?.status, err?.message);
+      setUploadError(err?.message || 'Upload failed. Post saved locally.');
+      // Mark optimistic post as failed but keep it visible
+      setLocalPosts(prev => prev.map(p => p.id === localId ? { ...p, _uploading: false, _uploadFailed: true } : p));
     }
+    setComposerPosting(false);
+    setUploadProgress(0);
   }
 
   // Cleanup composer state when modal closes
@@ -557,6 +599,29 @@ export default function ExploreTimeline() {
                   query && { label: `Search: “${query}”`, onClear: () => setQuery('') },
                 ].filter(Boolean)}
               />
+              {/* Upload progress / error banners */}
+              {composerPosting && (
+                <div className="mb-3 rounded-xl border border-teal-200 bg-teal-50/80 p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-teal-800">Uploading your post...</p>
+                      {uploadProgress > 0 && (
+                        <div className="mt-1.5 w-full bg-teal-200 rounded-full h-1.5 overflow-hidden">
+                          <div className="bg-teal-600 h-1.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-xs font-semibold text-teal-600 tabular-nums">{uploadProgress > 0 ? `${uploadProgress}%` : ''}</span>
+                  </div>
+                </div>
+              )}
+              {uploadError && !composerPosting && (
+                <div className="mb-3 rounded-xl border border-rose-200 bg-rose-50/80 p-3 flex items-center justify-between">
+                  <p className="text-sm text-rose-700">{uploadError}</p>
+                  <button onClick={() => setUploadError('')} className="text-xs font-medium text-rose-500 hover:text-rose-700 ml-3">Dismiss</button>
+                </div>
+              )}
               <div className="space-y-4">
                 {items.map((it) => (
                   <TimelineCard key={it.id} item={it} disabledActions={disabledActions} view={'list'} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
@@ -691,8 +756,18 @@ export default function ExploreTimeline() {
                     )}
                   </div>
                 </div>
-                <div className="mt-3">
-                  <button onClick={handleComposerPost} disabled={(!composerText && !hasMedia) || composerPosting} className={`w-full py-2.5 rounded-xl text-white font-semibold transition-all duration-200 ${((!composerText && !hasMedia) || composerPosting) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-sm hover:shadow-md'}`}>{composerPosting ? 'Posting...' : 'Post'}</button>
+                <div className="mt-3 space-y-2">
+                  {composerPosting && uploadProgress > 0 && (
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div className="bg-gradient-to-r from-teal-500 to-emerald-500 h-2 rounded-full transition-all duration-300 ease-out" style={{ width: `${uploadProgress}%` }} />
+                    </div>
+                  )}
+                  {composerPosting && (
+                    <p className="text-xs text-gray-500 text-center">
+                      {uploadProgress > 0 ? `Uploading... ${uploadProgress}%` : 'Preparing upload...'}
+                    </p>
+                  )}
+                  <button onClick={handleComposerPost} disabled={(!composerText && !hasMedia) || composerPosting} className={`w-full py-2.5 rounded-xl text-white font-semibold transition-all duration-200 ${((!composerText && !hasMedia) || composerPosting) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-sm hover:shadow-md'}`}>{composerPosting ? 'Uploading...' : 'Post'}</button>
                 </div>
               </div>
             </div>
