@@ -145,7 +145,7 @@ function VideoPreview({ m, className }) {
 
   if (playing) {
     return (
-      <div className="relative bg-black flex items-center justify-center aspect-video w-full">
+      <div className="relative bg-black flex items-center justify-center aspect-video w-full" onClick={(e) => e.stopPropagation()}>
         <video
           ref={videoRef}
           src={videoSrc}
@@ -153,7 +153,11 @@ function VideoPreview({ m, className }) {
           autoPlay
           playsInline
           className="w-full h-full object-contain"
+          style={{ pointerEvents: 'auto' }}
           poster={m.thumb || undefined}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
         />
       </div>
     );
