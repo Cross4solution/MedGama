@@ -70,7 +70,10 @@ class Conversation extends Model
 
     public function latestMessage()
     {
-        return $this->hasOne(Message::class)->latestOfMany();
+        return $this->hasOne(Message::class)
+            ->where('is_active', true)
+            ->orderByDesc('created_at')
+            ->limit(1);
     }
 
     public function clinic()

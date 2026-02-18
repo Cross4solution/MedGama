@@ -1,82 +1,195 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import ThreadsSidebar from 'components/chat/ThreadsSidebar';
 import ChatHeader from 'components/chat/ChatHeader';
 import ChatMessageList from 'components/chat/ChatMessageList';
 import ChatInput from 'components/chat/ChatInput';
+import { messageAPI } from '../lib/api';
+
+// ── Helpers ──
+
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'now';
+  if (mins < 60) return `${mins}min`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d`;
+}
+
+function formatTime(dateStr) {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+
+/**
+ * Convert API conversation to thread format used by ThreadsSidebar.
+ */
+function convToThread(conv, currentUserId) {
+  const other = conv.participants?.find(p => p.id !== currentUserId);
+  const name = conv.type === 'group'
+    ? (conv.title || conv.participants?.map(p => p.fullname).join(', ') || 'Group')
+    : (other?.fullname || 'Unknown');
+  const avatar = other?.avatar || '/images/portrait-candid-male-doctor_720.jpg';
+  const last = conv.latest_message?.body || '';
+  const when = timeAgo(conv.latest_message?.created_at || conv.updated_at);
+  const tags = [];
+  if (conv.unread_count > 0) tags.push(`${conv.unread_count} new`);
+
+  return {
+    id: conv.id,
+    name,
+    channel: 'Chat',
+    online: false,
+    last,
+    when,
+    avatar,
+    tags,
+    _raw: conv,
+  };
+}
+
+/**
+ * Convert API message to the format used by ChatMessage component.
+ */
+function apiMsgToLocal(msg, currentUserId) {
+  return {
+    id: msg.id,
+    sender: msg.sender_id === currentUserId ? 'doctor' : 'patient',
+    text: msg.body || '',
+    time: formatTime(msg.created_at),
+    status: 'sent',
+    attachments: msg.attachments || [],
+    _raw: msg,
+  };
+}
+
+// ── Mock data (fallback when not authenticated or no conversations) ──
+
+const MOCK_THREADS = [
+  { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Friday would be more convenient for me...', when: '15min', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Urgent'] },
+  { id: 'ali', name: 'Ali Yılmaz', channel: 'Facebook', online: false, last: 'Youre welcome, have a good day', when: '2 hours', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15min', 'Preliminary Evaluation'] },
+  { id: 'selin', name: 'Selin Acar', channel: 'Web Form', online: true, last: 'Yes, I did. We can see each other tomorrow.', when: '1 day', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Preliminary Evaluation'] },
+  { id: 'ayse', name: 'Ayşe Demir', channel: 'Chat', online: false, last: 'Of course, what time suits you?', when: '2 day', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Date'] },
+  { id: 'mehmet', name: 'Mehmet Özkan', channel: 'WhatsApp', online: false, last: 'I can call to help you.', when: '3 day', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15min', 'Information'] },
+];
+
+function getMockMessages(id) {
+  if (id === 'zeynep') {
+    return [
+      { id: 1, sender: 'patient', text: 'Hello! How can I help you? You can share your questions about your health condition.', time: '10:30' },
+      { id: 2, sender: 'doctor', text: 'Hello doctor. I have been feeling chest pain for the last few days. It increases especially when I take a deep breath. Is this normal?', time: '10:32' },
+      { id: 3, sender: 'patient', text: 'These symptoms can have various causes. Could you provide more details?\n\n When did the pain start?\n Is it constant or intermittent?\n Do you have any other symptoms?', time: '10:35' },
+    ];
+  }
+  return [
+    { id: 1, sender: 'patient', text: `Hello, I am ${id}. I have a question.`, time: '10:10' },
+    { id: 2, sender: 'doctor', text: 'Sure, please share details.', time: '10:12' },
+  ];
+}
+
+// ── Component ──
 
 const DoctorChatPage = () => {
   const [message, setMessage] = useState('');
   const [channelFilter, setChannelFilter] = useState('All');
-  const [mobileChatOpen, setMobileChatOpen] = useState(false); // mobile: list -> chat
+  const [mobileChatOpen, setMobileChatOpen] = useState(false);
   const [mobileCurrentPage, setMobileCurrentPage] = useState(1);
   const threadsPerPage = 8;
-  // Thread list (mock)
-  const threads = useMemo(() => {
-    const baseThreads = [
-      { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Friday would be more convenient for me...', when: '15min', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Urgent'] },
-      { id: 'ali', name: 'Ali Yılmaz', channel: 'Facebook', online: false, last: 'Youre welcome, have a good day', when: '2 hours', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15min', 'Preliminary Evaluation'] },
-      { id: 'selin', name: 'Selin Acar', channel: 'Web Form', online: true, last: 'Yes, I did. We can see each other tomorrow.', when: '1 day', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Preliminary Evaluation'] },
-      { id: 'ayse', name: 'Ayşe Demir', channel: 'Chat', online: false, last: 'Of course, what time suits you?', when: '2 day', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Date'] },
-      { id: 'mehmet', name: 'Mehmet Özkan', channel: 'WhatsApp', online: false, last: 'I can call to help you.', when: '3 day', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15min', 'Information'] },
-    ];
 
-    // Additional threads for pagination
-    const additionalThreads = [];
-    const names = ['Ahmet Yilmaz', 'Fatma Kaya', 'Mustafa Demir', 'Elif Ozkan', 'Can Sahin', 'Zeynep Arslan', 'Burak Aletik', 'Seda Yildiz', 'Emre Korkmaz', 'Gulay Aydin', 'Hakan Yormaz', 'Pinar Yasar', 'Serkan Dogan', 'Merve Koc', 'Tolga At', 'Deniz Soluk', 'Cem Demir', 'Sibel Kaya', 'Oguz Demir', 'Nur Rizkan'];
-    const channels = ['WhatsApp', 'Facebook', 'Web Form', 'Chat', 'Instagram'];
-    const lastMessages = [
-      'Hello, how are you?',
-      'Id like to make an appointment',
-      'Are my results ready?',
-      'Thank you',
-      'Are you available tomorrow?',
-      'There is an emergency',
-      'I want to get information',
-      'follow-up appointment',
-      'Prescription renewal',
-      'I want to ask a question'
-    ];
-    const tags = [
-      ['SLA >15min', 'Urgent'],
-      ['SLA >15min', 'Preliminary Evaluation'],
-      ['SLA >15min', 'Date'],
-      ['SLA >15min', 'Information'],
-      ['SLA >15min', 'Control']
-    ];
+  // API state
+  const [threads, setThreads] = useState(MOCK_THREADS);
+  const [activeThreadId, setActiveThreadId] = useState(MOCK_THREADS[0]?.id || null);
+  const [messages, setMessages] = useState(getMockMessages('zeynep'));
+  const [isApiMode, setIsApiMode] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [loadingConvs, setLoadingConvs] = useState(true);
+  const [loadingMsgs, setLoadingMsgs] = useState(false);
+  const [sending, setSending] = useState(false);
+  const pollRef = useRef(null);
 
-    for (let i = 0; i < 20; i++) {
-      additionalThreads.push({
-        id: `thread_${i}`,
-        name: names[i],
-        channel: channels[i % channels.length],
-        online: Math.random() > 0.5,
-        last: lastMessages[i % lastMessages.length],
-        when: `${i + 1} day`,
-        avatar: i % 2 === 0 ? '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg' : '/images/portrait-candid-male-doctor_720.jpg',
-        tags: tags[i % tags.length]
-      });
-    }
-
-    return [...baseThreads, ...additionalThreads];
+  // Get current user ID from auth state
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('auth_state');
+      if (saved) {
+        const { user } = JSON.parse(saved);
+        if (user?.id) setCurrentUserId(user.id);
+      }
+    } catch {}
   }, []);
 
-  // Per-thread sample messages
-  const getInitialMessages = (id) => {
-    if (id === 'zeynep') {
-      return [
-        { id: 1, sender: 'patient', text: 'Hello! How can I help you? You can share your questions about your health condition.', time: '10:30' },
-        { id: 2, sender: 'doctor', text: 'Hello doctor. I have been feeling chest pain for the last few days. It increases especially when I take a deep breath. Is this normal?', time: '10:32' },
-        { id: 3, sender: 'patient', text: 'These symptoms can have various causes. Could you provide more details?\n\n When did the pain start?\n Is it constant or intermittent?\n Do you have any other symptoms?', time: '10:35' },
-      ];
+  // Fetch conversations from API
+  const fetchConversations = useCallback(async () => {
+    try {
+      const res = await messageAPI.conversations({ per_page: 50 });
+      const data = res?.data || [];
+      if (data.length > 0 && currentUserId) {
+        const apiThreads = data.map(c => convToThread(c, currentUserId));
+        setThreads(apiThreads);
+        setIsApiMode(true);
+        // If no active thread or active thread not in list, select first
+        if (!activeThreadId || !apiThreads.find(t => t.id === activeThreadId)) {
+          setActiveThreadId(apiThreads[0].id);
+        }
+      } else {
+        // No API conversations — use mock data
+        setThreads(MOCK_THREADS);
+        setIsApiMode(false);
+      }
+    } catch {
+      // API failed — use mock data
+      setThreads(MOCK_THREADS);
+      setIsApiMode(false);
     }
-    return [
-      { id: 1, sender: 'patient', text: `Hello, I am ${id}. I have a question.`, time: '10:10' },
-      { id: 2, sender: 'doctor', text: 'Sure, please share details.', time: '10:12' },
-    ];
-  };
+    setLoadingConvs(false);
+  }, [currentUserId, activeThreadId]);
 
-  const [activeThreadId, setActiveThreadId] = useState('zeynep');
-  const [messages, setMessages] = useState(getInitialMessages('zeynep'));
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
+
+  // Fetch messages for active conversation
+  const fetchMessages = useCallback(async (convId) => {
+    if (!convId || !isApiMode) return;
+    setLoadingMsgs(true);
+    try {
+      const res = await messageAPI.messages(convId, { per_page: 100 });
+      const data = res?.data || [];
+      // API returns newest first — reverse for display
+      const mapped = data.reverse().map(m => apiMsgToLocal(m, currentUserId));
+      setMessages(mapped);
+      // Mark as read
+      messageAPI.markRead(convId).catch(() => {});
+    } catch {
+      setMessages([]);
+    }
+    setLoadingMsgs(false);
+  }, [isApiMode, currentUserId]);
+
+  // When active thread changes, fetch messages
+  useEffect(() => {
+    if (isApiMode && activeThreadId) {
+      fetchMessages(activeThreadId);
+    } else if (!isApiMode && activeThreadId) {
+      setMessages(getMockMessages(activeThreadId));
+    }
+  }, [activeThreadId, isApiMode, fetchMessages]);
+
+  // Polling: refresh conversations and messages every 10s
+  useEffect(() => {
+    if (!isApiMode) return;
+    pollRef.current = setInterval(() => {
+      fetchConversations();
+      if (activeThreadId) {
+        fetchMessages(activeThreadId);
+      }
+    }, 10000);
+    return () => clearInterval(pollRef.current);
+  }, [isApiMode, activeThreadId, fetchConversations, fetchMessages]);
+
   const activeContact = useMemo(() => threads.find(t => t.id === activeThreadId), [threads, activeThreadId]);
 
   // Apply channel filter to thread list
@@ -94,15 +207,42 @@ const DoctorChatPage = () => {
     setMobileCurrentPage(page);
   };
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
+  const handleSendMessage = async () => {
+    const text = message.trim();
+    if (!text || sending) return;
+
+    if (isApiMode && activeThreadId) {
+      // Optimistic: add message to UI immediately
+      const optimistic = {
+        id: 'opt-' + Date.now(),
+        sender: 'doctor',
+        text,
+        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        status: 'sending',
+      };
+      setMessages(prev => [...prev, optimistic]);
+      setMessage('');
+      setSending(true);
+
+      try {
+        const res = await messageAPI.sendMessage(activeThreadId, { body: text });
+        // Replace optimistic with real message
+        const real = apiMsgToLocal(res.message, currentUserId);
+        setMessages(prev => prev.map(m => m.id === optimistic.id ? real : m));
+      } catch {
+        // Mark as failed
+        setMessages(prev => prev.map(m => m.id === optimistic.id ? { ...m, status: 'failed' } : m));
+      }
+      setSending(false);
+    } else {
+      // Mock mode
       const newMessage = {
         id: messages.length + 1,
-        sender: 'patient',
-        text: message,
-        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+        sender: 'doctor',
+        text,
+        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       };
-      setMessages([...messages, newMessage]);
+      setMessages(prev => [...prev, newMessage]);
       setMessage('');
     }
   };
@@ -110,15 +250,32 @@ const DoctorChatPage = () => {
   const handleSelectThread = (id) => {
     if (id === activeThreadId) return;
     setActiveThreadId(id);
-    setMessages(getInitialMessages(id));
+    if (!isApiMode) {
+      setMessages(getMockMessages(id));
+    }
     // Mobile: open chat view
     setMobileChatOpen(true);
   };
 
   const handleChannelChange = (value) => {
     setChannelFilter(value);
-    setMobileCurrentPage(1); // Reset pagination when filter changes
+    setMobileCurrentPage(1);
   };
+
+  // Get current user info for header
+  const currentUserInfo = useMemo(() => {
+    try {
+      const saved = localStorage.getItem('auth_state');
+      if (saved) {
+        const { user } = JSON.parse(saved);
+        return user;
+      }
+    } catch {}
+    return null;
+  }, []);
+
+  const headerName = currentUserInfo?.fullname || 'Dr. Mehmet Özkan';
+  const headerAvatar = currentUserInfo?.avatar || '/images/portrait-candid-male-doctor_720.jpg';
 
   return (
     <div className="min-h-[calc(100vh-5rem)] w-full flex flex-col bg-gradient-to-b from-gray-50/60 to-white pb-4">
@@ -129,19 +286,23 @@ const DoctorChatPage = () => {
             <div className="flex items-center gap-3">
               <div className="relative flex-shrink-0">
                 <img
-                  src="/images/portrait-candid-male-doctor_720.jpg"
-                  alt="Dr. Mehmet Özkan"
+                  src={headerAvatar}
+                  alt={headerName}
                   className="w-11 h-11 rounded-xl object-cover ring-2 ring-white shadow-md"
                   style={{ objectPosition: 'center 20%' }}
                 />
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white bg-emerald-500" />
               </div>
               <div>
-                <h1 className="text-sm font-bold text-gray-900 leading-tight">Dr. Mehmet Özkan</h1>
+                <h1 className="text-sm font-bold text-gray-900 leading-tight">{headerName}</h1>
                 <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-medium mt-0.5">
-                  <span>Cardiologist</span>
-                  <span className="text-gray-300">·</span>
-                  <span>Anadolu Health Center</span>
+                  <span>Messages</span>
+                  {isApiMode && (
+                    <>
+                      <span className="text-gray-300">·</span>
+                      <span className="text-teal-600">{threads.length} conversations</span>
+                    </>
+                  )}
                   <span className="ml-1 inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-md text-[10px] font-semibold border border-emerald-100/80">Online</span>
                 </div>
               </div>
@@ -240,7 +401,7 @@ const DoctorChatPage = () => {
               <ChatMessageList
                 messages={messages}
                 leftAvatar={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
-                rightAvatar={'/images/portrait-candid-male-doctor_720.jpg'}
+                rightAvatar={headerAvatar}
               />
               <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} />
             </div>
@@ -270,7 +431,7 @@ const DoctorChatPage = () => {
                   <ChatMessageList
                     messages={messages}
                     leftAvatar={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
-                    rightAvatar={'/images/portrait-candid-male-doctor_720.jpg'}
+                    rightAvatar={headerAvatar}
                   />
 
                   {/* Message Input */}
@@ -285,7 +446,6 @@ const DoctorChatPage = () => {
       </div>
     </div>
   );
-}
-;
+};
 
 export default DoctorChatPage;

@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\MedStreamController;
 use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -220,4 +221,18 @@ Route::prefix('messages')->middleware('auth:sanctum')->group(function () {
     // Search & unread count
     Route::get('/search', [MessageController::class, 'search']);
     Route::get('/unread-count', [MessageController::class, 'unreadCount']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Notifications (Protected)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('notifications')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', [NotificationController::class, 'index']);
+    Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::put('/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::put('/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/{id}', [NotificationController::class, 'destroy']);
+    Route::delete('/', [NotificationController::class, 'destroyAll']);
 });
