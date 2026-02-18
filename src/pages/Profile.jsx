@@ -259,6 +259,30 @@ export default function Profile() {
     );
   }
 
+  // Shared data fetcher for GDPR export (PDF + CSV)
+  const fetchExportData = async () => {
+    let exportData = {
+      exportDate: new Date().toISOString(),
+      userData: { name: user?.name, email: user?.email, role: user?.role, id: user?.id },
+      cookieConsent: consent,
+      consentTimestamp,
+      posts: [], comments: [], likes: [], bookmarks: [], medical_history: [],
+    };
+    try {
+      const res = await fetch((process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api') + '/auth/profile/data-export', {
+        headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${JSON.parse(localStorage.getItem('auth_state') || '{}').token}` },
+      });
+      if (res.ok) { const s = await res.json(); exportData = { ...exportData, ...s }; }
+    } catch {}
+    try {
+      if (user?.email) {
+        const med = localStorage.getItem(`patient_profile_extra_${user.email}`);
+        if (med) { const parsed = JSON.parse(med); if (Array.isArray(parsed?.medicalConditions) && !exportData.medical_history?.length) exportData.medical_history = parsed.medicalConditions; }
+      }
+    } catch {}
+    return exportData;
+  };
+
   const saveAccount = async (e) => {
     e.preventDefault();
     const limitedName = (name || '').slice(0, 30).trim();
@@ -709,53 +733,100 @@ export default function Profile() {
                   <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-blue-500 to-indigo-500" />
                   {t('profile.yourData')}
                 </h2>
-                <p className="text-xs text-gray-500 mb-3">{t('profile.yourDataDesc')}</p>
-                <button
-                  onClick={async () => {
-                    setSaving(true);
-                    let exportData = {
-                      exportDate: new Date().toISOString(),
-                      gdprExport: true,
-                      userData: { name: user?.name, email: user?.email, role: user?.role, id: user?.id },
-                      cookieConsent: consent,
-                      consentTimestamp,
-                    };
-                    // Try to fetch full export from backend
-                    try {
-                      const res = await fetch((process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api') + '/auth/profile/data-export', {
-                        headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${JSON.parse(localStorage.getItem('auth_state') || '{}').token}` },
-                      });
-                      if (res.ok) {
-                        const serverExport = await res.json();
-                        exportData = { ...exportData, ...serverExport };
-                      }
-                    } catch {}
-                    // Merge local data
-                    try {
-                      const prefs = localStorage.getItem('profile_prefs');
-                      if (prefs) exportData.preferences = JSON.parse(prefs);
-                      if (user?.email) {
-                        const med = localStorage.getItem(`patient_profile_extra_${user.email}`);
-                        if (med) exportData.localMedicalData = JSON.parse(med);
-                      }
-                    } catch {}
-                    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `medgama-data-${new Date().toISOString().split('T')[0]}.json`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    setSaving(false);
-                    showToast('Data exported successfully');
-                  }}
-                  disabled={saving}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  <Download className="w-3.5 h-3.5" /> {saving ? 'Exporting...' : t('profile.downloadMyData')}
-                </button>
+                <p className="text-xs text-gray-500 mb-4">{t('profile.yourDataDesc')}</p>
+                <div className="flex flex-wrap gap-2">
+                  {/* PDF Report */}
+                  <button
+                    onClick={async () => {
+                      setSaving(true);
+                      const d = await fetchExportData();
+                      const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+                      const posts = Array.isArray(d.posts) ? d.posts : [];
+                      const comments = Array.isArray(d.comments) ? d.comments : [];
+                      const likes = Array.isArray(d.likes) ? d.likes : [];
+                      const bookmarks = Array.isArray(d.bookmarks) ? d.bookmarks : [];
+                      const medical = Array.isArray(d.medical_history) ? d.medical_history : [];
+                      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>MedGama — My Data Report</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;padding:40px 50px;font-size:13px;line-height:1.6}
+.header{border-bottom:3px solid #0d9488;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end}
+.logo{font-size:22px;font-weight:800;color:#0d9488}
+.date{font-size:11px;color:#888}
+h2{font-size:15px;font-weight:700;color:#0d9488;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid #e5e7eb}
+.section{margin-bottom:16px}
+table{width:100%;border-collapse:collapse;margin:8px 0 16px}
+th{background:#f0fdfa;text-align:left;padding:8px 12px;font-size:11px;font-weight:700;color:#0d9488;border:1px solid #e5e7eb}
+td{padding:8px 12px;border:1px solid #e5e7eb;font-size:12px;color:#374151}
+tr:nth-child(even) td{background:#f9fafb}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;background:#ccfbf1;color:#0d9488}
+.footer{margin-top:30px;padding-top:12px;border-top:2px solid #e5e7eb;font-size:10px;color:#9ca3af;text-align:center}
+@media print{body{padding:20px 30px}}</style></head><body>
+<div class="header"><div><div class="logo">MedGama</div><div style="font-size:12px;color:#666;margin-top:2px">Personal Data Report — GDPR Art. 20</div></div><div class="date">Generated: ${dateStr}</div></div>
+<h2>👤 Personal Information</h2>
+<table><tr><th>Field</th><th>Value</th></tr>
+<tr><td>Full Name</td><td>${d.userData?.name || d.user?.fullname || '—'}</td></tr>
+<tr><td>Email</td><td>${d.userData?.email || d.user?.email || '—'}</td></tr>
+<tr><td>Role</td><td><span class="badge">${d.userData?.role || d.user?.role || '—'}</span></td></tr>
+<tr><td>Account ID</td><td style="font-family:monospace;font-size:11px">${d.userData?.id || d.user?.id || '—'}</td></tr>
+<tr><td>Member Since</td><td>${d.user?.created_at ? new Date(d.user.created_at).toLocaleDateString() : '—'}</td></tr>
+</table>
+${medical.length > 0 ? `<h2>🏥 Medical History</h2><table><tr><th>#</th><th>Condition</th></tr>${medical.map((c, i) => '<tr><td>' + (i + 1) + '</td><td>' + c + '</td></tr>').join('')}</table>` : ''}
+${posts.length > 0 ? `<h2>📝 Posts (${posts.length})</h2><table><tr><th>Date</th><th>Type</th><th>Content</th></tr>${posts.slice(0, 50).map(p => '<tr><td>' + (p.created_at ? new Date(p.created_at).toLocaleDateString() : '—') + '</td><td><span class="badge">' + (p.post_type || 'text') + '</span></td><td>' + (p.content || '—').slice(0, 120) + '</td></tr>').join('')}</table>` : ''}
+${comments.length > 0 ? `<h2>💬 Comments (${comments.length})</h2><table><tr><th>Date</th><th>Content</th></tr>${comments.slice(0, 50).map(c => '<tr><td>' + (c.created_at ? new Date(c.created_at).toLocaleDateString() : '—') + '</td><td>' + (c.content || '—').slice(0, 150) + '</td></tr>').join('')}</table>` : ''}
+${likes.length > 0 ? `<h2>❤️ Likes (${likes.length})</h2><p style="font-size:12px;color:#666">You have liked ${likes.length} post(s).</p>` : ''}
+${bookmarks.length > 0 ? `<h2>🔖 Bookmarks (${bookmarks.length})</h2><p style="font-size:12px;color:#666">You have saved ${bookmarks.length} item(s).</p>` : ''}
+<h2>🍪 Cookie Preferences</h2>
+<table><tr><th>Category</th><th>Status</th></tr>
+<tr><td>Necessary</td><td>✅ Always Active</td></tr>
+<tr><td>Functional</td><td>${d.cookieConsent?.functional ? '✅ Enabled' : '❌ Disabled'}</td></tr>
+<tr><td>Analytics</td><td>${d.cookieConsent?.analytics ? '✅ Enabled' : '❌ Disabled'}</td></tr>
+<tr><td>Marketing</td><td>${d.cookieConsent?.marketing ? '✅ Enabled' : '❌ Disabled'}</td></tr>
+</table>
+<div class="footer">This report was generated automatically by MedGama in compliance with GDPR Article 20 (Right to Data Portability).<br/>For questions, contact <strong>dpo@medgama.com</strong></div>
+</body></html>`;
+                      const w = window.open('', '_blank', 'width=800,height=900');
+                      if (w) { w.document.write(html); w.document.close(); setTimeout(() => w.print(), 400); }
+                      setSaving(false);
+                      showToast('PDF report ready — use Print → Save as PDF');
+                    }}
+                    disabled={saving}
+                    className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <Download className="w-3.5 h-3.5" /> {saving ? 'Preparing...' : 'PDF Report'}
+                  </button>
+                  {/* CSV / Excel */}
+                  <button
+                    onClick={async () => {
+                      setSaving(true);
+                      const d = await fetchExportData();
+                      const rows = [['Category', 'Field', 'Value']];
+                      rows.push(['Personal', 'Name', d.userData?.name || d.user?.fullname || '']);
+                      rows.push(['Personal', 'Email', d.userData?.email || d.user?.email || '']);
+                      rows.push(['Personal', 'Role', d.userData?.role || d.user?.role || '']);
+                      rows.push(['Personal', 'Account ID', d.userData?.id || d.user?.id || '']);
+                      rows.push(['Personal', 'Member Since', d.user?.created_at ? new Date(d.user.created_at).toLocaleDateString() : '']);
+                      rows.push(['Cookies', 'Functional', d.cookieConsent?.functional ? 'Enabled' : 'Disabled']);
+                      rows.push(['Cookies', 'Analytics', d.cookieConsent?.analytics ? 'Enabled' : 'Disabled']);
+                      rows.push(['Cookies', 'Marketing', d.cookieConsent?.marketing ? 'Enabled' : 'Disabled']);
+                      const medical = Array.isArray(d.medical_history) ? d.medical_history : [];
+                      medical.forEach((c, i) => rows.push(['Medical', 'Condition ' + (i + 1), c]));
+                      const posts = Array.isArray(d.posts) ? d.posts : [];
+                      posts.forEach(p => rows.push(['Post', p.created_at ? new Date(p.created_at).toLocaleDateString() : '', (p.content || '').slice(0, 200).replace(/"/g, '""')]));
+                      const comments = Array.isArray(d.comments) ? d.comments : [];
+                      comments.forEach(c => rows.push(['Comment', c.created_at ? new Date(c.created_at).toLocaleDateString() : '', (c.content || '').slice(0, 200).replace(/"/g, '""')]));
+                      const csv = '\uFEFF' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+                      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a'); a.href = url; a.download = `medgama-data-${new Date().toISOString().split('T')[0]}.csv`;
+                      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+                      setSaving(false);
+                      showToast('CSV exported — open with Excel or Google Sheets');
+                    }}
+                    disabled={saving}
+                    className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <Download className="w-3.5 h-3.5" /> {saving ? 'Preparing...' : 'Excel / CSV'}
+                  </button>
+                </div>
               </div>
 
               {/* More Rights */}
