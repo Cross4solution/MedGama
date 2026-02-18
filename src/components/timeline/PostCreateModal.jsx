@@ -109,17 +109,15 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
     setPosting(true);
     setPostError('');
     try {
-      const hasVideo = videoUrls.length > 0;
-      const hasPhoto = photoUrls.length > 0;
+      const hasVideo = videos.length > 0;
+      const hasPhoto = photos.length > 0;
       const postType = hasVideo ? 'video' : hasPhoto ? 'image' : 'text';
-      const mediaUrl = hasVideo ? videoUrls[0] : hasPhoto ? photoUrls[0] : undefined;
-      const payload = {
-        post_type: postType,
+      const res = await medStreamAPI.createPost({
         content: text.trim() || undefined,
-        ...(mediaUrl && !mediaUrl.startsWith('blob:') ? { media_url: mediaUrl } : {}),
-      };
-      console.log('[PostCreateModal] Creating post:', payload);
-      const res = await medStreamAPI.createPost(payload);
+        post_type: postType,
+        photos: photos,
+        videos: videos,
+      });
       console.log('[PostCreateModal] Post created:', res);
       onPost?.(res?.post || res);
       // Success — close modal and reset
