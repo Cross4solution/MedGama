@@ -69,6 +69,8 @@ export const authAPI = {
   // Notification preferences
   getNotificationPrefs: () => api.get('/auth/profile/notification-preferences'),
   updateNotificationPrefs: (payload) => api.put('/auth/profile/notification-preferences', payload),
+  // GDPR data export (Art. 20)
+  dataExport: () => api.get('/auth/profile/data-export'),
   // Account deletion
   deleteAccount: (payload) => api.delete('/auth/profile', { data: payload }),
   verifyEmail: (code) => api.post('/auth/verify-email', { code }),

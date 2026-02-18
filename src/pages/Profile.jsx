@@ -263,8 +263,28 @@ export default function Profile() {
     );
   }
 
-  // Shared data fetcher for GDPR export (PDF + CSV) — local data only
-  const fetchExportData = () => {
+  // Shared data fetcher for GDPR export (PDF + CSV) — tries backend first, localStorage fallback
+  const fetchExportData = async () => {
+    // Try backend API first (has posts, comments, likes, bookmarks, medical history)
+    try {
+      const res = await authAPI.dataExport();
+      if (res && typeof res === 'object') {
+        return {
+          exportDate: res.export_date || new Date().toISOString(),
+          userData: res.user ? { name: res.user.fullname, email: res.user.email, role: res.user.role, id: res.user.id, created_at: res.user.created_at } : { name: user?.name, email: user?.email, role: user?.role, id: user?.id },
+          cookieConsent: consent,
+          consentTimestamp,
+          posts: Array.isArray(res.posts) ? res.posts : [],
+          comments: Array.isArray(res.comments) ? res.comments : [],
+          likes: Array.isArray(res.likes) ? res.likes : [],
+          bookmarks: Array.isArray(res.bookmarks) ? res.bookmarks : [],
+          medical_history: Array.isArray(res.medical_history) ? res.medical_history : [],
+        };
+      }
+    } catch (err) {
+      console.warn('[Profile] Data export API failed, using local data:', err?.message);
+    }
+    // Fallback: local data only
     const exportData = {
       exportDate: new Date().toISOString(),
       userData: { name: user?.name, email: user?.email, role: user?.role, id: user?.id },
@@ -743,10 +763,10 @@ export default function Profile() {
                 <div className="flex flex-wrap gap-2">
                   {/* PDF Report */}
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       setSaving(true);
                       try {
-                        const d = fetchExportData();
+                        const d = await fetchExportData();
                         const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
                         const medical = Array.isArray(d.medical_history) ? d.medical_history : [];
                         const posts = Array.isArray(d.posts) ? d.posts : [];
@@ -840,9 +860,9 @@ export default function Profile() {
                   </button>
                   {/* CSV / Excel */}
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       setSaving(true);
-                      const d = fetchExportData();
+                      const d = await fetchExportData();
                       const rows = [['Category', 'Field', 'Value']];
                       rows.push(['Personal', 'Name', d.userData?.name || d.user?.fullname || '']);
                       rows.push(['Personal', 'Email', d.userData?.email || d.user?.email || '']);
