@@ -11,7 +11,7 @@ import { LANGUAGES } from '../i18n';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { Link } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
   const [prefs, setPrefs] = React.useState({
     email_notifications: true,
@@ -784,7 +784,7 @@ export default function Profile() {
                         y += 12; doc.setDrawColor(13, 148, 136); doc.setLineWidth(0.7); doc.line(14, y, pageW - 14, y); y += 10;
 
                         doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Personal Information', 14, y); y += 6;
-                        doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['Field', 'Value']], body: [
+                        autoTable(doc, { startY: y, margin: { left: 14, right: 14 }, head: [['Field', 'Value']], body: [
                           ['Full Name', d.userData?.name || '-'], ['Email', d.userData?.email || '-'],
                           ['Role', d.userData?.role || '-'], ['Account ID', d.userData?.id || '-'],
                         ], headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
@@ -793,7 +793,7 @@ export default function Profile() {
 
                         if (medical.length > 0) {
                           doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Medical History', 14, y); y += 6;
-                          doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['#', 'Condition']],
+                          autoTable(doc, { startY: y, margin: { left: 14, right: 14 }, head: [['#', 'Condition']],
                             body: medical.map((c, i) => [i + 1, c]),
                             headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
                             bodyStyles: { fontSize: 9, textColor: [55, 65, 81] }, alternateRowStyles: { fillColor: [249, 250, 251] }, theme: 'grid' });
@@ -802,7 +802,7 @@ export default function Profile() {
 
                         if (posts.length > 0) {
                           doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Posts (' + posts.length + ')', 14, y); y += 6;
-                          doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['Date', 'Type', 'Content']],
+                          autoTable(doc, { startY: y, margin: { left: 14, right: 14 }, head: [['Date', 'Type', 'Content']],
                             body: posts.slice(0, 50).map(p => [p.created_at ? new Date(p.created_at).toLocaleDateString() : '-', p.post_type || 'text', (p.content || '-').slice(0, 120)]),
                             headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
                             bodyStyles: { fontSize: 8, textColor: [55, 65, 81] }, alternateRowStyles: { fillColor: [249, 250, 251] }, theme: 'grid' });
@@ -811,7 +811,7 @@ export default function Profile() {
 
                         if (comments.length > 0) {
                           doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Comments (' + comments.length + ')', 14, y); y += 6;
-                          doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['Date', 'Content']],
+                          autoTable(doc, { startY: y, margin: { left: 14, right: 14 }, head: [['Date', 'Content']],
                             body: comments.slice(0, 50).map(c => [c.created_at ? new Date(c.created_at).toLocaleDateString() : '-', (c.content || '-').slice(0, 150)]),
                             headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
                             bodyStyles: { fontSize: 8, textColor: [55, 65, 81] }, alternateRowStyles: { fillColor: [249, 250, 251] }, theme: 'grid' });
@@ -824,7 +824,7 @@ export default function Profile() {
                           const actBody = [];
                           if (likes.length > 0) actBody.push(['Likes', likes.length + ' post(s) liked']);
                           if (bookmarks.length > 0) actBody.push(['Bookmarks', bookmarks.length + ' item(s) saved']);
-                          doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['Type', 'Details']], body: actBody,
+                          autoTable(doc, { startY: y, margin: { left: 14, right: 14 }, head: [['Type', 'Details']], body: actBody,
                             headStyles: { fillColor: [240, 253, 250], textColor: [13, 148, 136], fontStyle: 'bold', fontSize: 9 },
                             bodyStyles: { fontSize: 9, textColor: [55, 65, 81] }, theme: 'grid' });
                           y = doc.lastAutoTable.finalY + 10;
@@ -832,7 +832,7 @@ export default function Profile() {
 
                         if (y > 250) { doc.addPage(); y = 18; }
                         doc.setFontSize(13); doc.setTextColor(13, 148, 136); doc.text('Cookie Preferences', 14, y); y += 6;
-                        doc.autoTable({ startY: y, margin: { left: 14, right: 14 }, head: [['Category', 'Status']], body: [
+                        autoTable(doc, { startY: y, margin: { left: 14, right: 14 }, head: [['Category', 'Status']], body: [
                           ['Necessary', 'Always Active'],
                           ['Functional', d.cookieConsent?.functional ? 'Enabled' : 'Disabled'],
                           ['Analytics', d.cookieConsent?.analytics ? 'Enabled' : 'Disabled'],
