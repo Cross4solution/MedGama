@@ -46,7 +46,7 @@ const ClinicLogin = () => {
       if (res?.requires_email_verification) {
         navigate('/verify-email', { replace: true });
       } else {
-        navigate('/home-v2', { replace: true });
+        navigate('/explore', { replace: true });
       }
     } catch (err) {
       if (err?.status === 401) setError(err?.data?.message || 'Invalid credentials');
@@ -64,11 +64,11 @@ const ClinicLogin = () => {
   ];
 
   const handlePhoneVerified = (verifiedPhone) => {
-    navigate('/crm', { replace: true });
+    navigate('/explore', { replace: true });
   };
 
   const handlePhoneSkip = () => {
-    navigate('/crm', { replace: true });
+    navigate('/explore', { replace: true });
   };
 
   // Phone verification screen
@@ -173,7 +173,7 @@ const ClinicLogin = () => {
                   <a href="/privacy-policy" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">{t('auth.privacyPolicy')}</a>
                 </p>
                 <button type="button"
-                        onClick={() => { login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }); navigate('/crm', { replace: true }); }}
+                        onClick={() => { login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }); navigate('/explore', { replace: true }); }}
                         className="w-full bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 border border-gray-200 transition-colors">
                   {t('auth.tryDemoClinic')}
                 </button>

@@ -509,30 +509,30 @@ const Header = () => {
             const roleLabel = String(role).charAt(0).toUpperCase() + String(role).slice(1);
             // Mirror mobile dropdown with SidebarPatient menu for patients
             const patientItems = [
-              { to: '/home-v2', label: 'Home', icon: Home },
               { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },
-              { to: '/profile', label: 'Settings', icon: Settings },
+              { to: '/notifications', label: 'Notifications', icon: Bell },
+              { to: '/profile', label: 'Profile', icon: User },
             ];
             const doctorItems = [
-              { to: '/profile', label: 'Profile', icon: User },
               { to: '/explore', label: 'Medstream', icon: Video },
-              { to: '/notifications', label: 'Notifications', icon: Bell },
-              { to: '/home-v2', label: 'Homepage', icon: Home },
-              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
+              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },
-              { to: '/crm', label: 'CRM', icon: ArrowUpRight },
+              { to: '/notifications', label: 'Notifications', icon: Bell },
+              { to: '/profile', label: 'Profile', icon: User },
             ];
             const clinicItems = [
-              { to: '/clinic', label: 'Profile', icon: User },
               { to: '/explore', label: 'Medstream', icon: Video },
-              { to: '/notifications', label: 'Notifications', icon: Bell },
-              { to: '/home-v2', label: 'Homepage', icon: Home },
+              { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
-              { to: '/crm', label: 'CRM', icon: ArrowUpRight },
+              { to: '/telehealth', label: 'Telehealth', icon: Monitor },
+              { to: '/notifications', label: 'Notifications', icon: Bell },
+              { to: '/profile', label: 'Profile', icon: User },
             ];
+            const showCRM = role === 'doctor' || role === 'clinic' || role === 'clinicOwner';
             const items = role === 'clinic' ? clinicItems : (role === 'doctor' ? doctorItems : patientItems);
             return (
               <nav>
@@ -579,8 +579,26 @@ const Header = () => {
                     );
                   })}
                 </div>
+                {/* CRM — separate platform button */}
+                {showCRM && (
+                  <div className="px-3 pt-2">
+                    <Link
+                      to="/crm"
+                      onClick={closeMenu}
+                      className="flex items-center justify-between w-full px-3.5 py-3 rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-lg shadow-slate-300/30 hover:from-slate-700 hover:to-slate-800 transition-all duration-200 group"
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 group-hover:bg-white/20 transition-colors">
+                          <LayoutDashboard className="w-3.5 h-3.5 text-white/90" />
+                        </span>
+                        <span className="text-[13px] font-semibold">CRM Dashboard</span>
+                      </span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-white/50 group-hover:text-white/80 transition-colors" />
+                    </Link>
+                  </div>
+                )}
                 {/* Logout */}
-                <div className="px-3 pb-3 pt-1 border-t border-gray-100">
+                <div className="px-3 pb-3 pt-2 border-t border-gray-100 mt-2">
                   <button
                     onClick={() => { closeMenu(); logout(); }}
                     className="w-full flex items-center justify-center gap-2 mt-2 px-3 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-600 hover:to-red-600 shadow-md shadow-rose-200/50 transition-all duration-200"
