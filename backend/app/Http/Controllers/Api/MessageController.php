@@ -271,7 +271,7 @@ class MessageController extends Controller
             'type' => 'in:text,image,file,video,audio',
             'reply_to_id' => 'nullable|uuid|exists:messages,id',
             'attachments' => 'nullable|array|max:10',
-            'attachments.*' => 'file|max:20480', // 20MB per file
+            'attachments.*' => 'file|max:51200', // 50MB per file
         ]);
 
         $user = $request->user();
@@ -312,14 +312,26 @@ class MessageController extends Controller
         if ($hasAttachments) {
             foreach ($request->file('attachments') as $file) {
                 $originalName = $file->getClientOriginalName();
-                $path = $file->store('messages/' . $conversation->id, 'public');
+                $mime = $file->getMimeType();
+                $isImage = str_starts_with($mime, 'image/') && !str_contains($mime, 'svg');
+                $dir = 'messages/' . $conversation->id;
+                $thumbPath = null;
+
+                if ($isImage) {
+                    // Optimize image: resize if too large, compress, create thumbnail
+                    $path = $this->optimizeAndStoreImage($file, $dir);
+                    $thumbPath = $this->createThumbnail($file, $dir);
+                } else {
+                    $path = $file->store($dir, 'public');
+                }
 
                 MessageAttachment::create([
                     'message_id' => $message->id,
                     'file_name' => $originalName,
                     'file_path' => $path,
-                    'file_type' => $file->getMimeType(),
-                    'file_size' => $file->getSize(),
+                    'file_type' => $mime,
+                    'file_size' => Storage::disk('public')->size($path),
+                    'thumb_path' => $thumbPath,
                 ]);
             }
         }

@@ -61,8 +61,11 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'patient_id' => 'required|uuid|exists:users,id',
+        $user = $request->user();
+        $isDoctor = in_array($user->role_id, ['doctor', 'clinicOwner']);
+
+        // Different validation rules for doctor vs patient
+        $rules = [
             'doctor_id' => 'required|uuid|exists:users,id',
             'clinic_id' => 'sometimes|uuid|exists:clinics,id',
             'appointment_type' => 'required|in:inPerson,online',
@@ -70,21 +73,60 @@ class AppointmentController extends Controller
             'appointment_date' => 'required|date|after_or_equal:today',
             'appointment_time' => 'required|string',
             'confirmation_note' => 'sometimes|string|max:500',
-        ]);
+        ];
 
-        $validated['status'] = 'pending';
-        $validated['created_by'] = $request->user()->id;
+        if ($isDoctor) {
+            // Doctor creating appointment for a patient
+            $rules['patient_id'] = 'sometimes|uuid|exists:users,id';
+            $rules['patient_name'] = 'required|string|max:255';
+            $rules['patient_email'] = 'required|email|max:255';
+            $rules['patient_phone'] = 'sometimes|string|max:50';
+            $rules['patient_dob'] = 'sometimes|date';
+        } else {
+            // Patient booking for themselves
+            $rules['patient_id'] = 'required|uuid|exists:users,id';
+        }
+
+        $validated = $request->validate($rules);
+
+        // If doctor is creating: find or create patient by email
+        if ($isDoctor && empty($validated['patient_id'])) {
+            $patient = User::where('email', $validated['patient_email'])->first();
+
+            if (!$patient) {
+                // Create a lightweight patient record
+                $patient = User::create([
+                    'email' => $validated['patient_email'],
+                    'fullname' => $validated['patient_name'],
+                    'mobile' => $validated['patient_phone'] ?? null,
+                    'date_of_birth' => $validated['patient_dob'] ?? null,
+                    'role_id' => 'patient',
+                    'password' => bcrypt(\Str::random(32)), // temporary password
+                ]);
+            }
+
+            $validated['patient_id'] = $patient->id;
+        }
+
+        // Remove extra fields not in appointments table
+        $appointmentData = collect($validated)->only([
+            'patient_id', 'doctor_id', 'clinic_id', 'appointment_type',
+            'slot_id', 'appointment_date', 'appointment_time', 'confirmation_note',
+        ])->toArray();
+
+        $appointmentData['status'] = 'pending';
+        $appointmentData['created_by'] = $user->id;
 
         // Mark slot as unavailable if provided
-        if (!empty($validated['slot_id'])) {
-            $slot = CalendarSlot::active()->findOrFail($validated['slot_id']);
+        if (!empty($appointmentData['slot_id'])) {
+            $slot = CalendarSlot::active()->findOrFail($appointmentData['slot_id']);
             if (!$slot->is_available) {
                 return response()->json(['message' => 'This time slot is no longer available.'], 422);
             }
             $slot->update(['is_available' => false]);
         }
 
-        $appointment = Appointment::create($validated);
+        $appointment = Appointment::create($appointmentData);
         $appointment->load(['patient', 'doctor']);
 
         // Notify patient (database + mail)
