@@ -284,10 +284,41 @@ export default function ExploreTimeline() {
 
   const [composerPosting, setComposerPosting] = useState(false);
 
+  // File size limits (bytes)
+  const MAX_PHOTO_SIZE = 10 * 1024 * 1024;   // 10 MB
+  const MAX_VIDEO_SIZE = 100 * 1024 * 1024;   // 100 MB
+  const MAX_PAPER_SIZE = 20 * 1024 * 1024;    // 20 MB
+
+  const formatSize = (bytes) => {
+    if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / 1024).toFixed(0)} KB`;
+  };
+
   async function handleComposerPost() {
     if (composerPosting) return;
     const trimmed = composerText.trim();
     if (!trimmed && !hasMedia) return;
+
+    // Validate file sizes before upload
+    for (const f of composerPhotos) {
+      if (f.size > MAX_PHOTO_SIZE) {
+        setUploadError(`Photo "${f.name}" is too large (${formatSize(f.size)}). Max: 10 MB.`);
+        return;
+      }
+    }
+    for (const f of composerVideos) {
+      if (f.size > MAX_VIDEO_SIZE) {
+        setUploadError(`Video "${f.name}" is too large (${formatSize(f.size)}). Max: 100 MB.`);
+        return;
+      }
+    }
+    for (const f of composerPapers) {
+      if (f.size > MAX_PAPER_SIZE) {
+        setUploadError(`File "${f.name}" is too large (${formatSize(f.size)}). Max: 20 MB.`);
+        return;
+      }
+    }
+
     setComposerPosting(true);
     setUploadProgress(0);
     setUploadError('');
@@ -371,7 +402,13 @@ export default function ExploreTimeline() {
       setFeedRefreshKey(k => k + 1);
     } catch (err) {
       console.error('[ExploreTimeline] Post upload failed:', err?.status, err?.message);
-      setUploadError(err?.message || 'Upload failed. Post saved locally.');
+      let errorMsg = err?.message || 'Upload failed. Post saved locally.';
+      if (err?.status === 413) {
+        errorMsg = 'File too large for server. Please reduce video/image size and try again. (Max: video 50MB, photo 10MB)';
+      } else if (err?.status === 422) {
+        errorMsg = err?.data?.message || 'Invalid file format. Please check your files.';
+      }
+      setUploadError(errorMsg);
       // Mark optimistic post as failed but keep it visible
       setLocalPosts(prev => prev.map(p => p.id === localId ? { ...p, _uploading: false, _uploadFailed: true } : p));
     }
