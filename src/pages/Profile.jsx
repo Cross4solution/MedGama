@@ -401,7 +401,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50/60 to-white">
+    <div className="min-h-screen">
       {/* Toast notification */}
       {toast.show && (
         <div className={`fixed top-20 right-6 z-50 px-5 py-3.5 rounded-xl shadow-2xl border text-sm font-semibold transition-all duration-300 flex items-center gap-3 ${

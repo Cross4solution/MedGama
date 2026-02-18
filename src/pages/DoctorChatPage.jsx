@@ -301,7 +301,7 @@ const DoctorChatPage = () => {
 
   if (loadingConvs) {
     return (
-      <div className="h-[calc(100vh-5rem)] w-full flex items-center justify-center bg-gradient-to-b from-gray-50/60 to-white">
+      <div className="h-[calc(100vh-5rem)] w-full flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-3 border-teal-200 border-t-teal-600 rounded-full animate-spin" />
           <span className="text-sm text-gray-400 font-medium">Loading messages...</span>
@@ -311,7 +311,7 @@ const DoctorChatPage = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-5rem)] w-full flex flex-col bg-gradient-to-b from-gray-50/60 to-white overflow-hidden">
+    <div className="h-[calc(100vh-5rem)] w-full flex flex-col overflow-hidden">
       <div className="flex-1 flex flex-col min-h-0">
         {/* Doctor Info Header */}
         <div className="bg-white/95 backdrop-blur-sm border-b border-gray-100 flex-shrink-0">

@@ -26,6 +26,7 @@ export default function SidebarPatient() {
   const roleLabel = role === 'doctor' ? t('common.doctor') : role === 'clinic' ? t('common.clinic') : role === 'admin' ? 'Admin' : t('common.patient');
 
   const patientItems = [
+    { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
@@ -36,6 +37,7 @@ export default function SidebarPatient() {
 
   // Requested order: Medstream -> Appointments -> Messages -> Telehealth -> Notifications -> Profile
   const doctorItems = [
+    { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
@@ -45,6 +47,7 @@ export default function SidebarPatient() {
   ];
 
   const clinicItems = [
+    { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
@@ -98,21 +101,10 @@ export default function SidebarPatient() {
       <aside className={`hidden lg:block fixed left-0 w-[12rem] top-[4.5rem] z-40 h-[calc(100vh-4.5rem)]`}>
         <div className="h-full pt-0 pb-2 pl-0">
           <div className="h-full rounded-br-2xl border-r border-b border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-lg shadow-gray-200/40 flex flex-col overflow-hidden">
-            {/* Header / Profile */}
-            <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
-              <div className="flex items-center gap-3">
-                <img src={user?.avatar || '/images/default/default-avatar.svg'} alt={user?.name} className="w-10 h-10 rounded-xl object-cover shadow-md" />
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-bold text-gray-900 truncate">{user?.name}</div>
-                  <div className="text-[11px] text-gray-500 font-medium truncate">{roleLabel}</div>
-                </div>
-              </div>
-            </div>
-
             {/* Navigation */}
             <div className="flex-1 overflow-y-auto py-3">
               <div className="px-3">
-                <div className="mb-3 px-3 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu') || 'Menu'}</div>
+                <div className="mb-3 px-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu') || 'Menu'}</div>
                 <nav className="space-y-1">
                   {items.map((it, idx) => (
                     <NavItem key={`${it.to || it.href || it.label || 'item'}-${idx}`} {...it} />
@@ -167,20 +159,9 @@ export default function SidebarPatient() {
           {/* Panel: full height, below header */}
           <div className="fixed left-0 top-0 bottom-0 w-3/4 max-w-[16rem] z-[80]">
             <div className="h-full bg-white shadow-2xl flex flex-col border-r border-gray-200/60">
-              {/* Mobile Header */}
-              <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
-                <div className="flex items-center gap-3">
-                  <img src={user?.avatar || '/images/default/default-avatar.svg'} alt={user?.name} className="w-10 h-10 rounded-xl object-cover shadow-md" />
-                  <div className="min-w-0">
-                    <div className="text-sm font-bold text-gray-900 truncate">{user?.name}</div>
-                    <div className="text-[11px] text-gray-500 font-medium truncate">{roleLabel}</div>
-                  </div>
-                </div>
-              </div>
-
               {/* Mobile Nav */}
               <div className="px-3 py-3 flex-1 overflow-y-auto">
-                <div className="mb-2 px-3 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu') || 'Menu'}</div>
+                <div className="mb-2 px-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu') || 'Menu'}</div>
                 <nav className="space-y-1">
                   {items.map((it) => {
                     const active = it.to ? pathname === it.to : false;

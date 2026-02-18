@@ -122,7 +122,7 @@ const TelehealthPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50/60 to-white">
+    <div className="min-h-screen">
       <div className="flex-1">
         <div className="px-4 pt-3 pb-4 sm:px-6 sm:pt-4 sm:pb-6">
           {/* Page Header */}

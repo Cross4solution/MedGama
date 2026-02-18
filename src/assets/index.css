@@ -10,7 +10,7 @@ html.no-scroll {
 
 /* Ensure body background matches app default and under fixed header spacing is consistent */
 body {
-  background-color: #ffffff; /* white background */
+  background-color: #f4f2ee; /* warm light gray background like LinkedIn */
 }
 
 /* Global custom properties */

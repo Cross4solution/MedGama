@@ -390,7 +390,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
   return (
     <article
-      className={`group rounded-lg border border-gray-200/80 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-200 overflow-hidden`}
+      className={`group rounded-xl border border-gray-300/60 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden`}
     >
       {view === 'list' ? (
         <div className="flex flex-col">
