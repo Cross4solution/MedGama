@@ -190,15 +190,28 @@ export default function ExploreTimeline() {
   const [localPosts, setLocalPosts] = useState(() => {
     try {
       const saved = sessionStorage.getItem('explore_local_posts');
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+      // Filter out posts with blob: URLs (invalid after refresh)
+      const parsed = JSON.parse(saved);
+      return parsed.filter(p => {
+        const hasBlob = (p.img && p.img.startsWith('blob:')) ||
+          (Array.isArray(p.media) && p.media.some(m => m.url && m.url.startsWith('blob:')));
+        return !hasBlob && !p._uploading;
+      });
     } catch { return []; }
   });
 
-  // Persist localPosts to sessionStorage
+  // Persist localPosts to sessionStorage — skip blob-URL and uploading posts
   useEffect(() => {
     try {
-      if (localPosts.length > 0) {
-        sessionStorage.setItem('explore_local_posts', JSON.stringify(localPosts));
+      const persistable = localPosts.filter(p => {
+        if (p._uploading) return false;
+        if (p.img && p.img.startsWith('blob:')) return false;
+        if (Array.isArray(p.media) && p.media.some(m => m.url && m.url.startsWith('blob:'))) return false;
+        return true;
+      });
+      if (persistable.length > 0) {
+        sessionStorage.setItem('explore_local_posts', JSON.stringify(persistable));
       } else {
         sessionStorage.removeItem('explore_local_posts');
       }
