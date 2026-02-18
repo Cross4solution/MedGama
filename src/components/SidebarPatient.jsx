@@ -41,7 +41,7 @@ export default function SidebarPatient() {
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
-    { to: '/clinic-login', label: 'CRM', icon: ArrowUpRight },
+    { to: '/crm', label: 'CRM', icon: ArrowUpRight },
   ];
 
   // Clinic-specific menu (Profile → Medstream → Notifications → Messages → Departments and Doctors → CRM)
@@ -51,7 +51,7 @@ export default function SidebarPatient() {
     { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/doctors-departments', label: t('nav.departments'), icon: Building2 },
-    { to: '/clinic-login', label: 'CRM', icon: ArrowUpRight },
+    { to: '/crm', label: 'CRM', icon: ArrowUpRight },
   ];
 
   const items = role === 'patient' ? patientItems : (role === 'clinic' ? clinicItems : doctorItems);
