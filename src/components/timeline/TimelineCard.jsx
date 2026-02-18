@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2 } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
@@ -131,10 +131,21 @@ function DocumentPreview({ m, className, onClick }) {
   );
 }
 
+function toStreamUrl(url) {
+  if (!url || typeof url !== 'string') return url;
+  const marker = '/storage/';
+  const idx = url.indexOf(marker);
+  if (idx === -1) return url;
+  const base = url.substring(0, idx);
+  const storagePath = url.substring(idx + marker.length);
+  return `${base}/api/media/stream/${storagePath}`;
+}
+
 function VideoPreview({ m, className }) {
   const [playing, setPlaying] = useState(false);
   const videoRef = useRef(null);
-  const videoSrc = m.original || m.url;
+  const rawSrc = m.original || m.url;
+  const videoSrc = toStreamUrl(rawSrc);
 
   const handlePlay = (e) => {
     e?.stopPropagation?.();
@@ -145,19 +156,30 @@ function VideoPreview({ m, className }) {
 
   if (playing) {
     return (
-      <div className="relative bg-black flex items-center justify-center aspect-video w-full" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="relative bg-black flex items-center justify-center aspect-video w-full"
+        style={{ zIndex: 10, overflow: 'visible' }}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+      >
         <video
           ref={videoRef}
           src={videoSrc}
           controls
           autoPlay
           playsInline
+          preload="auto"
           className="w-full h-full object-contain"
-          style={{ pointerEvents: 'auto' }}
+          style={{ pointerEvents: 'auto', position: 'relative', zIndex: 11 }}
           poster={m.thumb || undefined}
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
           onTouchStart={(e) => e.stopPropagation()}
+          onInput={(e) => e.stopPropagation()}
+          onChange={(e) => e.stopPropagation()}
         />
       </div>
     );
@@ -211,6 +233,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportDesc, setReportDesc] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleted, setDeleted] = useState(false);
   const moreMenuRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const [showToast, setShowToast] = useState(false);
@@ -392,6 +417,23 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     }
   };
 
+  const handleDelete = async () => {
+    if (!item?.id) return;
+    setDeleting(true);
+    try {
+      await medStreamAPI.deletePost(item.id);
+      setDeleted(true);
+      setShowDeleteConfirm(false);
+      showSuccessToast('Post deleted');
+    } catch {
+      showSuccessToast('Failed to delete post');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  if (deleted) return null;
+
   return (
     <article
       className={`group rounded-xl border border-gray-300/60 bg-white shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden`}
@@ -422,6 +464,16 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 </button>
                 {showMoreMenu && (
                   <div className="absolute right-0 top-8 z-20 w-44 bg-white border rounded-lg shadow-md py-1 text-sm" onClick={(e)=>e.stopPropagation()}>
+                    {authUser?.id && (item?.author_id === authUser.id || item?.actor?.id === authUser.id) && (
+                      <button
+                        type="button"
+                        className="w-full px-3 py-2 hover:bg-red-50 text-red-600 inline-flex items-center gap-2"
+                        onClick={() => { setShowDeleteConfirm(true); setShowMoreMenu(false); }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span className="font-medium">Delete</span>
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="w-full px-3 py-2 hover:bg-red-50 text-red-600 inline-flex items-center gap-2"
@@ -785,6 +837,29 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   placeholder="Briefly describe the issue..."
                   className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none resize-none"
                 />
+              </div>
+            </div>
+          </Modal>
+          {/* Delete Confirmation Modal */}
+          <Modal open={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} title="Delete Post">
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">Are you sure you want to delete this post? This action cannot be undone.</p>
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
+                  disabled={deleting}
+                  onClick={handleDelete}
+                >
+                  {deleting ? 'Deleting...' : 'Delete'}
+                </button>
               </div>
             </div>
           </Modal>

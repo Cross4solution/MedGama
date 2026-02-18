@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\MediaStreamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -236,3 +237,11 @@ Route::prefix('notifications')->middleware('auth:sanctum')->group(function () {
     Route::delete('/{id}', [NotificationController::class, 'destroy']);
     Route::delete('/', [NotificationController::class, 'destroyAll']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Media Stream (Public — supports Range/seek for video)
+|--------------------------------------------------------------------------
+*/
+Route::get('/media/stream/{path}', [MediaStreamController::class, 'stream'])
+    ->where('path', '.*');

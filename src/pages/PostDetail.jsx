@@ -7,6 +7,16 @@ import { useAuth } from '../context/AuthContext';
 import EmojiPicker from '../components/EmojiPicker';
 import { medStreamAPI } from '../lib/api';
 
+function toStreamUrl(url) {
+  if (!url || typeof url !== 'string') return url;
+  const marker = '/storage/';
+  const idx = url.indexOf(marker);
+  if (idx === -1) return url;
+  const base = url.substring(0, idx);
+  const storagePath = url.substring(idx + marker.length);
+  return `${base}/api/media/stream/${storagePath}`;
+}
+
 function getMediaType(m) {
   if (m.type === 'video' || /\.(mp4|webm|mov|avi)$/i.test(m.url || '')) return 'video';
   if (m.type === 'document' || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.url || '') || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.name || '')) return 'document';

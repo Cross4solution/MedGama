@@ -199,9 +199,58 @@ class MedStreamController extends Controller
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 
-        $post->update(['is_active' => false]);
+        // Delete media files from disk
+        $this->deletePostMedia($post);
+
+        // Soft-delete related records
+        MedStreamComment::where('post_id', $id)->update(['is_active' => false]);
+        MedStreamLike::where('post_id', $id)->update(['is_active' => false]);
+        MedStreamReport::where('post_id', $id)->update(['is_active' => false]);
+        MedStreamEngagementCounter::where('post_id', $id)->delete();
+
+        // Soft-delete the post
+        $post->update(['is_active' => false, 'is_hidden' => true]);
 
         return response()->json(['message' => 'Post deleted.']);
+    }
+
+    /**
+     * Delete all media files associated with a post from disk.
+     */
+    private function deletePostMedia(MedStreamPost $post): void
+    {
+        try {
+            $mediaItems = $post->media;
+            if (!is_array($mediaItems) || empty($mediaItems)) return;
+
+            foreach ($mediaItems as $item) {
+                // Each item may have: original, medium, thumb URLs
+                foreach (['original', 'medium', 'thumb'] as $variant) {
+                    $url = $item[$variant] ?? null;
+                    if (!$url || !is_string($url)) continue;
+
+                    // Extract storage path from URL (e.g. .../storage/medstream/photos/uuid_thumb.webp)
+                    $storagePath = $this->urlToStoragePath($url);
+                    if ($storagePath && \Storage::disk('public')->exists($storagePath)) {
+                        \Storage::disk('public')->delete($storagePath);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Failed to delete post media files', ['post_id' => $post->id, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Convert a public asset URL to a storage-relative path.
+     * e.g. "http://localhost/storage/medstream/photos/abc.webp" → "medstream/photos/abc.webp"
+     */
+    private function urlToStoragePath(string $url): ?string
+    {
+        $marker = '/storage/';
+        $pos = strpos($url, $marker);
+        if ($pos === false) return null;
+        return substr($url, $pos + strlen($marker));
     }
 
     // ── Comments ──
