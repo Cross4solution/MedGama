@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle } from 'lucide-react';
+import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { notificationAPI } from '../../lib/api';
 
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout, hydrated } = useAuth();
@@ -16,8 +17,115 @@ const Header = () => {
   const profileRef = useRef(null);
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const [mobileLoginExpanded, setMobileLoginExpanded] = useState(false);
-  // Removed profile dropdown (only avatar + username shown)
   const { pathname } = useLocation();
+
+  // ── Notification state ──
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [notifLoading, setNotifLoading] = useState(false);
+
+  const fetchUnreadCount = useCallback(async () => {
+    if (!user) return;
+    try {
+      const res = await notificationAPI.unreadCount();
+      setUnreadCount(res?.data?.unread_count ?? res?.data?.count ?? 0);
+    } catch { /* silent */ }
+  }, [user]);
+
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return;
+    setNotifLoading(true);
+    try {
+      const res = await notificationAPI.list({ per_page: 15 });
+      setNotifications(res?.data?.data || res?.data || []);
+    } catch { /* silent */ }
+    setNotifLoading(false);
+  }, [user]);
+
+  // Poll unread count every 30s
+  useEffect(() => {
+    if (!user) return;
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [user, fetchUnreadCount]);
+
+  // Fetch full list when dropdown opens
+  useEffect(() => {
+    if (notifOpen) fetchNotifications();
+  }, [notifOpen, fetchNotifications]);
+
+  // Close notif dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleMarkRead = async (id) => {
+    try {
+      await notificationAPI.markAsRead(id);
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch { /* silent */ }
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await notificationAPI.markAllAsRead();
+      setNotifications(prev => prev.map(n => ({ ...n, read_at: n.read_at || new Date().toISOString() })));
+      setUnreadCount(0);
+    } catch { /* silent */ }
+  };
+
+  const handleDeleteNotif = async (id) => {
+    try {
+      await notificationAPI.delete(id);
+      setNotifications(prev => prev.filter(n => n.id !== id));
+      fetchUnreadCount();
+    } catch { /* silent */ }
+  };
+
+  const getNotifIcon = (type) => {
+    if (!type) return Bell;
+    if (type.includes('Booked')) return CalendarClock;
+    if (type.includes('Confirmed')) return Check;
+    if (type.includes('Cancelled')) return X;
+    if (type.includes('Reminder')) return Clock;
+    return Bell;
+  };
+
+  const getNotifColor = (type) => {
+    if (!type) return 'bg-gray-100 text-gray-500';
+    if (type.includes('Booked')) return 'bg-blue-100 text-blue-600';
+    if (type.includes('Confirmed')) return 'bg-emerald-100 text-emerald-600';
+    if (type.includes('Cancelled')) return 'bg-red-100 text-red-600';
+    if (type.includes('Reminder')) return 'bg-amber-100 text-amber-600';
+    return 'bg-gray-100 text-gray-500';
+  };
+
+  const timeAgo = (dateStr) => {
+    if (!dateStr) return '';
+    const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+    return new Date(dateStr).toLocaleDateString();
+  };
+
+  const handleNotifClick = (notif) => {
+    if (!notif.read_at) handleMarkRead(notif.id);
+    setNotifOpen(false);
+    const data = notif.data || {};
+    if (data.appointment_id) {
+      navigate(user?.role === 'patient' ? '/telehealth' : '/crm/appointments');
+    }
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -146,8 +254,114 @@ const Header = () => {
                 </>
               ) : (
                 <>
+                  {/* Notification Bell */}
+                  <div className="relative" ref={notifRef}>
+                    <button
+                      onClick={() => setNotifOpen(p => !p)}
+                      className="relative p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                      title="Notifications"
+                    >
+                      <Bell className="w-5 h-5" />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 shadow-sm">
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                        </span>
+                      )}
+                    </button>
+
+                    {/* Notification Dropdown */}
+                    {notifOpen && (
+                      <div className="absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                        {/* Header */}
+                        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
+                          <div>
+                            <h3 className="text-sm font-bold text-gray-900">Notifications</h3>
+                            {unreadCount > 0 && <p className="text-[11px] text-gray-400">{unreadCount} unread</p>}
+                          </div>
+                          {unreadCount > 0 && (
+                            <button
+                              onClick={handleMarkAllRead}
+                              className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-teal-50 transition-colors"
+                            >
+                              <CheckCheck className="w-3.5 h-3.5" />
+                              Mark all read
+                            </button>
+                          )}
+                        </div>
+
+                        {/* List */}
+                        <div className="max-h-[400px] overflow-y-auto">
+                          {notifLoading ? (
+                            <div className="flex items-center justify-center py-10">
+                              <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+                            </div>
+                          ) : notifications.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                              <BellOff className="w-8 h-8 mb-2 text-gray-300" />
+                              <p className="text-sm font-medium">No notifications yet</p>
+                              <p className="text-[11px]">You'll see appointment updates here</p>
+                            </div>
+                          ) : (
+                            notifications.map((notif) => {
+                              const NIcon = getNotifIcon(notif.type);
+                              const iconColor = getNotifColor(notif.type);
+                              const isUnread = !notif.read_at;
+                              const data = notif.data || {};
+                              return (
+                                <div
+                                  key={notif.id}
+                                  onClick={() => handleNotifClick(notif)}
+                                  className={`flex items-start gap-3 px-4 py-3 cursor-pointer transition-colors border-b border-gray-50 last:border-0 ${
+                                    isUnread ? 'bg-teal-50/30 hover:bg-teal-50/60' : 'hover:bg-gray-50'
+                                  }`}
+                                >
+                                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${iconColor}`}>
+                                    <NIcon className="w-4 h-4" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className={`text-[13px] leading-snug ${isUnread ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
+                                      {data.title || data.message || notif.type?.split('\\').pop()?.replace('Notification', '') || 'Notification'}
+                                    </p>
+                                    {data.body && (
+                                      <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-2">{data.body}</p>
+                                    )}
+                                    <p className="text-[10px] text-gray-400 mt-1">{timeAgo(notif.created_at)}</p>
+                                  </div>
+                                  <div className="flex items-center gap-1 flex-shrink-0 mt-1">
+                                    {isUnread && (
+                                      <div className="w-2 h-2 rounded-full bg-teal-500" title="Unread" />
+                                    )}
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); handleDeleteNotif(notif.id); }}
+                                      className="p-1 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                                      title="Delete"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+
+                        {/* Footer */}
+                        {notifications.length > 0 && (
+                          <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50/50">
+                            <button
+                              onClick={() => { setNotifOpen(false); navigate('/notifications'); }}
+                              className="w-full text-center text-[12px] font-semibold text-teal-600 hover:text-teal-700 py-1 rounded-lg hover:bg-teal-50 transition-colors"
+                            >
+                              View all notifications
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Avatar + Name */}
                   <div className="relative" ref={profileRef}>
-                    {/* Static avatar + name for all roles (no dropdown) */}
                     <div className="flex items-center gap-2 px-1.5 py-1 rounded-lg border border-transparent" title={user.name}>
                       <img
                         src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
@@ -162,18 +376,33 @@ const Header = () => {
             </div>
             {/* Mobile trigger */}
             {!hydrated ? null : user ? (
-              <button
-                onClick={toggleMenu}
-                aria-label={isMenuOpen ? 'Close profile menu' : 'Open profile menu'}
-                className="md:hidden p-0.5 rounded-full border border-gray-200 overflow-hidden"
-                title={user.name}
-              >
-                <img
-                  src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
-                  alt={user.name}
-                  className="w-7 h-7 rounded-full object-cover"
-                />
-              </button>
+              <div className="flex items-center gap-1 md:hidden">
+                {/* Mobile notification bell */}
+                <button
+                  onClick={() => setNotifOpen(p => !p)}
+                  className="relative p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                  title="Notifications"
+                >
+                  <Bell className="w-4.5 h-4.5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold px-0.5 shadow-sm">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={toggleMenu}
+                  aria-label={isMenuOpen ? 'Close profile menu' : 'Open profile menu'}
+                  className="p-0.5 rounded-full border border-gray-200 overflow-hidden"
+                  title={user.name}
+                >
+                  <img
+                    src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                    alt={user.name}
+                    className="w-7 h-7 rounded-full object-cover"
+                  />
+                </button>
+              </div>
             ) : (
               <button
                 onClick={toggleMenu}
