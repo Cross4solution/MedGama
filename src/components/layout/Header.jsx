@@ -287,6 +287,7 @@ const Header = () => {
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },
+              { to: '/crm', label: 'CRM', icon: ArrowUpRight },
             ];
             const clinicItems = [
               { to: '/clinic', label: 'Profile', icon: User },
@@ -294,7 +295,7 @@ const Header = () => {
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/home-v2', label: 'Homepage', icon: Home },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
-              { to: '/clinic-login', label: 'CRM', icon: ArrowUpRight },
+              { to: '/crm', label: 'CRM', icon: ArrowUpRight },
             ];
             const items = role === 'clinic' ? clinicItems : (role === 'doctor' ? doctorItems : patientItems);
             return (
