@@ -227,7 +227,7 @@ export default function TelehealthAppointmentPage() {
             <CheckCircle2 className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Appointment Confirmed!</h1>
-          <p className="text-sm text-gray-500 mb-6">Your telehealth appointment has been successfully booked.</p>
+          <p className="text-sm text-gray-500 mb-6">{isDoctor ? `Appointment for ${patientInfo.fullName || 'the patient'} has been successfully created.` : 'Your telehealth appointment has been successfully booked.'}</p>
 
           <div className="bg-gray-50 rounded-2xl p-5 mb-6 text-left space-y-3">
             <div className="flex items-center gap-3">
@@ -236,7 +236,7 @@ export default function TelehealthAppointmentPage() {
               </div>
               <div>
                 <p className="text-xs text-gray-400 font-medium">Doctor</p>
-                <p className="text-sm font-semibold text-gray-900">{selectedDoctorObj?.name}</p>
+                <p className="text-sm font-semibold text-gray-900">{isDoctor ? `Dr. ${user?.fullname || user?.name}` : (selectedDoctorObj?.name || '—')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -262,16 +262,16 @@ export default function TelehealthAppointmentPage() {
           <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-6">
             <p className="text-xs text-blue-700 flex items-center gap-1.5 justify-center">
               <Info className="w-3.5 h-3.5" />
-              A session link will be sent to your email before the appointment.
+              {isDoctor ? `A confirmation email has been sent to ${patientInfo.email || 'the patient'}.` : 'A session link will be sent to your email before the appointment.'}
             </p>
           </div>
 
           <div className="flex gap-3">
-            <button onClick={() => navigate('/telehealth')} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-all">
-              My Appointments
+            <button onClick={() => navigate(isDoctor ? '/crm/appointments' : '/telehealth')} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-all">
+              {isDoctor ? 'View Appointments' : 'My Appointments'}
             </button>
-            <button onClick={() => navigate('/home-v2')} className="flex-1 bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:from-teal-700 hover:to-emerald-700 transition-all shadow-md shadow-teal-200/50">
-              Back to Home
+            <button onClick={() => navigate(isDoctor ? '/crm' : '/home-v2')} className="flex-1 bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:from-teal-700 hover:to-emerald-700 transition-all shadow-md shadow-teal-200/50">
+              {isDoctor ? 'Back to Dashboard' : 'Back to Home'}
             </button>
           </div>
         </div>
@@ -290,8 +290,8 @@ export default function TelehealthAppointmentPage() {
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Book Appointment</h1>
-            <p className="text-xs sm:text-sm text-gray-400 font-medium">Schedule your telehealth consultation</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{isDoctor ? 'Create Appointment' : 'Book Appointment'}</h1>
+            <p className="text-xs sm:text-sm text-gray-400 font-medium">{isDoctor ? 'Schedule an appointment for your patient' : 'Schedule your telehealth consultation'}</p>
           </div>
         </div>
 
@@ -337,8 +337,8 @@ export default function TelehealthAppointmentPage() {
           {/* Main Content */}
           <div className="lg:col-span-2">
 
-            {/* Step 0: Doctor Selection */}
-            {step === 0 && (
+            {/* Step: Doctor Selection (patients only) */}
+            {currentStepKey === 'doctor' && (
               <div className="space-y-4">
                 {/* Appointment Type Toggle */}
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
@@ -441,9 +441,46 @@ export default function TelehealthAppointmentPage() {
               </div>
             )}
 
-            {/* Step 1: Date & Time */}
-            {step === 1 && (
+            {/* Step: Date & Time */}
+            {currentStepKey === 'datetime' && (
               <div className="space-y-4">
+                {/* Appointment Type Toggle — shown here for doctors (patients see it in doctor step) */}
+                {isDoctor && (
+                  <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+                    <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                      <Video className="w-4 h-4 text-teal-600" />
+                      Appointment Type
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { key: 'online', label: 'Online Telehealth', desc: 'Video consultation', icon: Video, color: 'teal' },
+                        { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic', icon: Building2, color: 'blue' },
+                      ].map(opt => (
+                        <button
+                          key={opt.key}
+                          onClick={() => setAppointmentType(opt.key)}
+                          className={`relative p-4 rounded-xl border-2 text-left transition-all duration-200 ${
+                            appointmentType === opt.key
+                              ? opt.color === 'teal'
+                                ? 'border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100/50'
+                                : 'border-blue-500 bg-blue-50/50 shadow-md shadow-blue-100/50'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'
+                          }`}
+                        >
+                          {appointmentType === opt.key && (
+                            <div className={`absolute top-2.5 right-2.5 w-5 h-5 rounded-full flex items-center justify-center ${opt.color === 'teal' ? 'bg-teal-500' : 'bg-blue-500'}`}>
+                              <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                            </div>
+                          )}
+                          <opt.icon className={`w-6 h-6 mb-2 ${appointmentType === opt.key ? (opt.color === 'teal' ? 'text-teal-600' : 'text-blue-600') : 'text-gray-400'}`} />
+                          <p className={`text-sm font-bold ${appointmentType === opt.key ? 'text-gray-900' : 'text-gray-600'}`}>{opt.label}</p>
+                          <p className="text-[11px] text-gray-400 mt-0.5">{opt.desc}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Calendar */}
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -556,8 +593,8 @@ export default function TelehealthAppointmentPage() {
               </div>
             )}
 
-            {/* Step 2: Patient Information */}
-            {step === 2 && (
+            {/* Step: Patient Information */}
+            {currentStepKey === 'info' && (
               <div className="space-y-4">
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -682,8 +719,8 @@ export default function TelehealthAppointmentPage() {
               </div>
             )}
 
-            {/* Step 3: Review & Confirm */}
-            {step === 3 && (
+            {/* Step: Review & Confirm */}
+            {currentStepKey === 'review' && (
               <div className="space-y-4">
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
                   <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-teal-50/50 to-emerald-50/30">
@@ -697,15 +734,21 @@ export default function TelehealthAppointmentPage() {
                   <div className="p-5 space-y-5">
                     {/* Doctor */}
                     <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                      <img
-                        src={selectedDoctorObj?.avatar || '/images/caroline-lm-uqved8dypum-unsplash_720.jpg'}
-                        alt={selectedDoctorObj?.name}
-                        className="w-14 h-14 rounded-xl object-cover border-2 border-white shadow-sm"
-                      />
+                      {isDoctor ? (
+                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-100 to-emerald-100 flex items-center justify-center border-2 border-white shadow-sm">
+                          <Stethoscope className="w-6 h-6 text-teal-600" />
+                        </div>
+                      ) : (
+                        <img
+                          src={selectedDoctorObj?.avatar || '/images/caroline-lm-uqved8dypum-unsplash_720.jpg'}
+                          alt={selectedDoctorObj?.name}
+                          className="w-14 h-14 rounded-xl object-cover border-2 border-white shadow-sm"
+                        />
+                      )}
                       <div>
                         <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Doctor</p>
-                        <p className="text-sm font-bold text-gray-900">{selectedDoctorObj?.name || '—'}</p>
-                        <p className="text-xs text-gray-500">{selectedDoctorObj?.specialty}</p>
+                        <p className="text-sm font-bold text-gray-900">{isDoctor ? `Dr. ${user?.fullname || user?.name}` : (selectedDoctorObj?.name || '—')}</p>
+                        {!isDoctor && <p className="text-xs text-gray-500">{selectedDoctorObj?.specialty}</p>}
                       </div>
                     </div>
 
@@ -816,7 +859,7 @@ export default function TelehealthAppointmentPage() {
                 }`}
               >
                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                {step === STEPS.length - 1
+                {currentStepKey === 'review'
                   ? (submitting ? 'Confirming...' : 'Confirm Appointment')
                   : 'Continue'
                 }
@@ -837,7 +880,17 @@ export default function TelehealthAppointmentPage() {
               </div>
               <div className="p-5 space-y-4">
                 {/* Doctor */}
-                {selectedDoctorObj ? (
+                {isDoctor ? (
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-teal-100 to-emerald-100 flex items-center justify-center border border-teal-200">
+                      <Stethoscope className="w-5 h-5 text-teal-600" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-gray-900 truncate">Dr. {user?.fullname || user?.name}</p>
+                      <p className="text-[11px] text-teal-600 font-medium">You (Doctor)</p>
+                    </div>
+                  </div>
+                ) : selectedDoctorObj ? (
                   <div className="flex items-center gap-3">
                     <img
                       src={selectedDoctorObj.avatar}
@@ -903,7 +956,7 @@ export default function TelehealthAppointmentPage() {
               <div className="px-5 py-3 bg-gradient-to-r from-teal-50 to-emerald-50 border-t border-teal-100">
                 <p className="text-[11px] text-teal-700 flex items-center gap-1.5 leading-relaxed">
                   <Heart className="w-3.5 h-3.5 flex-shrink-0 text-teal-500" />
-                  Session link will be sent to your email before the appointment.
+                  {isDoctor ? 'A confirmation will be sent to the patient\'s email.' : 'Session link will be sent to your email before the appointment.'}
                 </p>
               </div>
             </div>
