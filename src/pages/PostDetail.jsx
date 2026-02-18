@@ -232,62 +232,99 @@ export default function PostDetail() {
   };
   const onMouseUpPan = () => setIsPanning(false);
 
+  const actorSubtitle = item?.actor?.title || item?.specialty || 'Healthcare';
+  const timeLabel = item?.timeAgo || '';
+
+  // Local comments state for this detail view
+  const [localDetailComments, setLocalDetailComments] = React.useState([]);
+  const submitDetailComment = () => {
+    const text = newComment.trim();
+    if (!text || !item?.id) return;
+    setLocalDetailComments(prev => [...prev, {
+      id: 'dc-' + Date.now(),
+      name: user?.name || item?.actor?.name || 'You',
+      avatar: user?.avatar || item?.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg',
+      text,
+      time: 'Just now',
+    }]);
+    medStreamAPI.createComment(item.id, { content: text }).catch(() => {});
+    setNewComment('');
+  };
+
+  const submitDetailReply = () => {
+    const text = replyText.trim();
+    if (!text || !item?.id) return;
+    setLocalDetailComments(prev => [...prev, {
+      id: 'dr-' + Date.now(),
+      name: user?.name || item?.actor?.name || 'You',
+      avatar: user?.avatar || item?.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg',
+      text,
+      time: 'Just now',
+    }]);
+    medStreamAPI.createComment(item.id, { content: text }).catch(() => {});
+    setReplyTo('');
+    setReplyText('');
+  };
+
   return (
-    !item ? (
+    loading && !item ? (
+      <div className="fixed inset-0 bg-black/60 z-[90] flex items-center justify-center">
+        <div className="w-10 h-10 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+      </div>
+    ) : !item ? (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-3xl mx-auto px-4 py-16 text-center text-gray-600">
-          <button onClick={() => navigate(-1)} className="mb-6 inline-flex items-center text-sm text-gray-600 hover:text-gray-900">← Geri</button>
-          <div className="rounded-2xl border bg-white p-8">Post bulunamadı. Lütfen Explore Timeline üzerinden bir karta tıklayın.</div>
+          <button onClick={() => navigate(-1)} className="mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+            <ChevronLeft className="w-4 h-4" /> Back
+          </button>
+          <div className="rounded-2xl border bg-white p-10 shadow-sm">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+              <MessageCircle className="w-6 h-6 text-gray-400" />
+            </div>
+            <p className="text-gray-500 text-sm">Post not found. Please go back and try again.</p>
+          </div>
         </div>
       </div>
     ) : (
-    <div className="fixed inset-0 bg-black/50 z-[90]">
-      <div className="absolute inset-0 flex flex-col lg:grid lg:grid-cols-[minmax(260px,1fr)_minmax(360px,560px)] overflow-y-hidden lg:overflow-y-visible overscroll-y-none touch-pan-y bg-transparent">
-        {/* Left: Image column */}
-        <div className="flex flex-col bg-transparent lg:min-h-0">
-          <div className="relative flex items-center justify-center bg-transparent overflow-hidden select-none sticky top-0 z-10 flex-shrink-0 lg:h-screen" style={{ height: heroHeightPx ? `${heroHeightPx}px` : undefined, transition: 'height 0.12s ease-out', opacity: heroOpacity, willChange: 'height' }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-          {/* Blurred background using the same image */}
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-[90]">
+      <div className="absolute inset-0 flex flex-col lg:grid lg:grid-cols-[1fr_minmax(380px,480px)] overflow-hidden">
+
+        {/* ── Left: Image / Media column ── */}
+        <div className="relative flex items-center justify-center bg-gray-950 overflow-hidden select-none flex-shrink-0 lg:h-screen" style={{ height: heroHeightPx ? `${heroHeightPx}px` : undefined, transition: 'height 0.12s ease-out' }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+
+          {/* Subtle blurred bg */}
           {mediaList.length > 0 && (
-            <>
-              <img
-                src={mediaList[imgIndex]?.url}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-60"
-              />
-              <div className="absolute inset-0 bg-black/20" />
-            </>
+            <img src={mediaList[imgIndex]?.url} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover blur-3xl scale-125 opacity-30" />
           )}
-          <button
-            onClick={() => navigate(-1)}
-            className="absolute top-4 left-4 z-10 text-white/80 hover:text-white"
-            aria-label="Kapat"
-          >
-            <X className="w-6 h-6" />
+
+          {/* Close button */}
+          <button onClick={() => navigate(-1)} className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white/90 hover:text-white flex items-center justify-center transition-all" aria-label="Close">
+            <X className="w-5 h-5" />
           </button>
+
+          {/* Image counter badge */}
+          {mediaList.length > 1 && (
+            <div className="absolute top-4 right-4 z-20 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white/90 text-xs font-medium tabular-nums">
+              {imgIndex + 1} / {mediaList.length}
+            </div>
+          )}
+
+          {/* Navigation arrows */}
           {mediaList.length > 1 && (
             <>
-              <button
-                type="button"
-                onClick={goPrev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center"
-                aria-label="Önceki görsel"
-              >
-                <ChevronLeft className="w-6 h-6" />
+              <button type="button" onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-all" aria-label="Previous">
+                <ChevronLeft className="w-5 h-5" />
               </button>
-              <button
-                type="button"
-                onClick={goNext}
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 h-10 w-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center"
-                aria-label="Sonraki görsel"
-              >
-                <ChevronRight className="w-6 h-6" />
+              <button type="button" onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-all" aria-label="Next">
+                <ChevronRight className="w-5 h-5" />
               </button>
             </>
           )}
+
+          {/* Main image */}
           {mediaList.length > 0 ? (
             <div
-              className="relative flex items-center justify-center overflow-hidden bg-transparent rounded-md w-full h-full md:w-[92vw] md:h-[70vh] lg:w-[82vw] xl:w-[75vw] max-w-[1280px] mx-auto"
+              className="relative flex items-center justify-center w-full h-full overflow-hidden"
               onWheel={onWheelZoom}
               onDoubleClick={onDoubleClickZoom}
               onMouseDown={onMouseDownPan}
@@ -298,186 +335,234 @@ export default function PostDetail() {
               <img
                 src={mediaList[imgIndex]?.url}
                 alt={item.title}
-                className={`max-w-none select-none ${zoom === 1 ? 'cursor-zoom-in' : 'cursor-grab active:cursor-grabbing'}`}
+                className={`max-w-full max-h-full select-none object-contain ${zoom === 1 ? 'cursor-zoom-in' : 'cursor-grab active:cursor-grabbing'}`}
                 style={{
-                  width: 'auto',
-                  height: '100%',
-                  objectFit: 'contain',
                   transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${zoom})`,
                   transformOrigin: 'center center',
                   willChange: 'transform',
+                  transition: isPanning ? 'none' : 'transform 0.15s ease-out',
                 }}
                 draggable={false}
-                onError={() => {
-                  // Image error handling - fallback div will be shown automatically
-                }}
               />
             </div>
-          ) : null}
-          {/* Broken image fallback - always visible when no media or image fails */}
-          <div className={`${mediaList.length === 0 ? 'flex' : 'hidden'} flex-col items-center justify-center text-white/60 text-center p-8`}>
-            <div className="w-16 h-16 mb-4 rounded-lg bg-white/10 flex items-center justify-center">
-              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <p className="text-sm">Görsel yüklenemedi</p>
-          </div>
-        </div>
-        </div>
-
-        {/* Right: Content panel */}
-        <div ref={containerRef} className="bg-white flex-1 relative z-0 overflow-y-auto min-h-0 lg:h-full lg:overflow-y-auto" style={{ height: heroHeightPx ? `calc(100vh - ${heroHeightPx}px)` : undefined }}>
-          {/* Header */}
-          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3 sticky top-0 z-10 bg-white/95 backdrop-blur-sm">
-            <img src={item.actor?.avatarUrl || item.avatar || '/images/portrait-candid-male-doctor_720.jpg'} alt={item.title} className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-100" />
-            <div className="min-w-0">
-              <h1 className="text-sm font-bold text-gray-900 truncate" title={item.title}>{item.actor?.name || item.title}</h1>
-              {item.specialty && (
-                <span className="block text-xs text-gray-500 font-medium mt-0.5">{item.specialty}</span>
-              )}
-            </div>
-          </div>
-
-          {/* Text */}
-          <div className="px-5 py-4">
-            <p className="text-sm leading-relaxed text-gray-700 whitespace-pre-wrap">{item.text}</p>
-          </div>
-
-          {/* Action bar */}
-          <div className="px-4 py-2 border-t border-b border-gray-100 grid grid-cols-3 gap-1 justify-items-center">
-            <button
-              type="button"
-              className={`w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm transition-colors ${liked ? 'text-blue-600 bg-blue-50/50' : 'text-gray-600 hover:bg-gray-50'} font-medium`}
-              onClick={handleLike}
-            >
-              <ThumbsUp className={`w-4 h-4 ${liked ? '' : ''}`} strokeWidth={liked ? 2.5 : 1.8} fill={liked ? '#2563eb' : 'none'} />
-              <span>Like</span>
-            </button>
-            <button
-              type="button"
-              className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm text-gray-600 hover:bg-gray-50 font-medium transition-colors"
-              onClick={(e) => { e?.stopPropagation?.(); setShowComments(v => !v); }}
-            >
-              <MessageCircle className="w-4 h-4" strokeWidth={1.8} />
-              <span>Comments</span>
-            </button>
-            <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-sm" />
-          </div>
-
-          {/* Comments */}
-          {showComments && (
-            <div className="px-5 py-4 bg-gray-50/50 relative min-h-0 transform-gpu overflow-x-hidden">
-              {/* New comment input */}
-              <div className="flex items-start gap-2.5 mb-5">
-                <img src={item.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg'} alt="Your avatar" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
-                <div className="flex-1 border border-gray-200 rounded-xl px-3.5 py-2.5 flex items-center gap-2 bg-white hover:border-gray-300 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-400 transition-all">
-                  <input 
-                    placeholder="Write a comment…" 
-                    className="flex-1 outline-none text-sm bg-transparent"
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && newComment.trim() && item?.id) {
-                        medStreamAPI.createComment(item.id, { content: newComment.trim() }).catch(() => {});
-                        setNewComment('');
-                      }
-                    }}
-                  />
-                  <button 
-                    onClick={() => {
-                      if (newComment.trim() && item?.id) {
-                        medStreamAPI.createComment(item.id, { content: newComment.trim() }).catch(() => {});
-                        setNewComment('');
-                      }
-                    }}
-                    disabled={!newComment.trim()}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-                      newComment.trim() 
-                        ? 'bg-teal-600 text-white hover:bg-teal-700' 
-                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    Send
-                  </button>
-                </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center text-white/40 text-center p-8">
+              <div className="w-20 h-20 mb-5 rounded-2xl bg-white/5 flex items-center justify-center">
+                <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                </svg>
               </div>
-
-              {/* Threaded comments */}
-              <div className="space-y-4 text-sm">
-                {/* Parent */}
-                <div className="flex items-start gap-2.5">
-                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Zehra Korkmaz" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
-                  <div className="flex-1 min-w-0">
-                    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-100">
-                      <div className="flex items-center justify-between gap-2 mb-0.5">
-                        <span className="text-sm font-semibold text-gray-900">Zehra Korkmaz</span>
-                        <span className="text-[11px] text-gray-400">1 week</span>
-                      </div>
-                    </div>
-
-                    {/* Reply thread */}
-                    <div className="mt-2.5 ml-4 pl-3 border-l-2 border-gray-200">
-                      <div className="flex items-start gap-2.5">
-                        <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Bora Eren" className="w-7 h-7 rounded-full object-cover ring-1 ring-gray-200" />
-                        <div className="flex-1 min-w-0">
-                          <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-100">
-                            <div className="flex items-center justify-between gap-2 mb-0.5">
-                              <span className="text-sm font-semibold text-gray-900">Dr. Bora Eren</span>
-                              <span className="text-[11px] text-gray-400">1 week</span>
-                            </div>
-                            <p className="text-sm text-gray-700 leading-relaxed"><span className="font-semibold text-teal-700">@Zehra Korkmaz</span> glad it helped 🙏</p>
-                          </div>
-                          <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-1">
-                            <button type="button" className="font-medium hover:text-gray-600 transition-colors">Reply</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Another parent */}
-                <div className="flex items-start gap-2.5">
-                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Onur Demirtaş" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
-                  <div className="flex-1 min-w-0">
-                    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-gray-100">
-                      <div className="flex items-center justify-between gap-2 mb-0.5">
-                        <span className="text-sm font-semibold text-gray-900">Onur Demirtaş</span>
-                        <span className="text-[11px] text-gray-400">5 days</span>
-                      </div>
-                      <p className="text-sm text-gray-700 leading-relaxed">Great update 👏</p>
-                    </div>
-                    <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-1">
-                      <button type="button" className="font-medium hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === 'pd_c2' ? '' : 'pd_c2'); setReplyText(prev => (prev && replyTo==='pd_c2') ? prev : '@Onur Demirtaş '); }}>Reply</button>
-                    </div>
-                    {replyTo === 'pd_c2' && (
-                      <div className="mt-2">
-                        <div className="relative border border-gray-200 rounded-xl p-1.5 flex items-center gap-2 bg-white">
-                          <input
-                            autoFocus
-                            value={replyText}
-                            onChange={(e)=>setReplyText(e.target.value)}
-                            placeholder="Write your reply…"
-                            className="flex-1 min-w-0 outline-none px-2.5 py-1.5 text-sm rounded-lg"
-                          />
-                          <button type="button" className="px-3 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700 transition-colors" onClick={()=>{ setReplyTo(''); setReplyText(''); }}>
-                            Reply
-                          </button>
-                          {showEmojiPicker && (
-                            <div ref={emojiReplyRef} className="absolute left-0 top-full mt-1 z-20" onClick={(e)=>e.stopPropagation()}>
-                              <EmojiPicker onSelect={(em)=>{ setReplyText(t => (t ? t + ' ' : '') + em); setShowEmojiPicker(false); }} />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <p className="text-sm font-medium">No media available</p>
             </div>
           )}
-          
+
+          {/* Dot indicators */}
+          {mediaList.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
+              {mediaList.slice(0, 8).map((_, i) => (
+                <button key={i} type="button" onClick={() => setImgIndex(i)} className={`w-2 h-2 rounded-full transition-all ${i === imgIndex ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/60'}`} />
+              ))}
+              {mediaList.length > 8 && <span className="text-white/40 text-[10px] ml-1">+{mediaList.length - 8}</span>}
+            </div>
+          )}
+        </div>
+
+        {/* ── Right: Content panel ── */}
+        <div ref={containerRef} className="bg-white flex-1 flex flex-col min-h-0 lg:h-screen overflow-hidden" style={{ height: heroHeightPx ? `calc(100vh - ${heroHeightPx}px)` : undefined }}>
+
+          {/* Header — sticky */}
+          <div className="px-5 py-3.5 border-b border-gray-100/80 flex items-center gap-3 bg-white/95 backdrop-blur-sm flex-shrink-0">
+            <img src={item.actor?.avatarUrl || item.avatar || '/images/portrait-candid-male-doctor_720.jpg'} alt={item.actor?.name || item.title} className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-100/80 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-[15px] font-semibold text-gray-900 truncate leading-tight">{item.actor?.name || item.title}</h1>
+              <p className="text-xs text-gray-500 truncate mt-0.5 leading-tight">{actorSubtitle}</p>
+            </div>
+            {timeLabel && (
+              <span className="text-[11px] text-gray-400 flex-shrink-0 font-medium">{timeLabel}</span>
+            )}
+            {/* Close on mobile */}
+            <button onClick={() => navigate(-1)} className="lg:hidden w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto overscroll-contain">
+
+            {/* Post text */}
+            <div className="px-5 py-4">
+              <p className="text-[15px] leading-[1.6] text-gray-800 whitespace-pre-wrap">{item.text}</p>
+            </div>
+
+            {/* Engagement counts */}
+            <div className="px-5 pb-2 flex items-center justify-between text-xs text-gray-500">
+              <div className="flex items-center gap-1.5">
+                <span className="inline-flex items-center justify-center w-[18px] h-[18px] rounded-full bg-blue-500 text-white">
+                  <ThumbsUp className="w-[10px] h-[10px]" />
+                </span>
+                <span className="font-medium tabular-nums">{likeCount}</span>
+              </div>
+              <button type="button" onClick={() => setShowComments(v => !v)} className="hover:text-gray-700 hover:underline transition-colors">
+                {item.comments || 0} comments
+              </button>
+            </div>
+
+            {/* Action bar */}
+            <div className="mx-5 py-1 border-t border-b border-gray-100 grid grid-cols-3 gap-0.5">
+              <button
+                type="button"
+                className={`inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-[13px] font-medium transition-all ${liked ? 'text-blue-600 bg-blue-50/60' : 'text-gray-600 hover:bg-gray-50'}`}
+                onClick={handleLike}
+              >
+                <ThumbsUp className="w-[16px] h-[16px]" strokeWidth={liked ? 2.4 : 1.7} fill={liked ? 'currentColor' : 'none'} />
+                Like
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-[13px] text-gray-600 hover:bg-gray-50 font-medium transition-all"
+                onClick={() => setShowComments(v => !v)}
+              >
+                <MessageCircle className="w-[16px] h-[16px]" strokeWidth={1.7} />
+                Comment
+              </button>
+              <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-[13px]" />
+            </div>
+
+            {/* Comments section */}
+            {showComments && (
+              <div className="px-5 pt-4 pb-6">
+
+                {/* New comment input */}
+                <div className="flex items-start gap-2.5 mb-5">
+                  <img src={user?.avatar || item?.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg'} alt="You" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 flex items-center gap-2 border border-gray-200 rounded-full px-4 py-2 bg-gray-50/50 hover:bg-white hover:border-gray-300 focus-within:bg-white focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-500/10 transition-all">
+                    <input
+                      placeholder="Add a comment..."
+                      className="flex-1 outline-none text-sm bg-transparent placeholder:text-gray-400"
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') submitDetailComment(); }}
+                    />
+                    <button
+                      onClick={submitDetailComment}
+                      disabled={!newComment.trim()}
+                      className={`text-xs font-semibold px-3 py-1 rounded-full transition-all ${
+                        newComment.trim()
+                          ? 'text-teal-600 hover:bg-teal-50'
+                          : 'text-gray-300 cursor-not-allowed'
+                      }`}
+                    >
+                      Post
+                    </button>
+                  </div>
+                </div>
+
+                {/* Comment threads */}
+                <div className="space-y-1">
+
+                  {/* Comment 1 with reply */}
+                  <div className="py-2.5">
+                    <div className="flex items-start gap-2.5">
+                      <img src="/images/portrait-candid-male-doctor_720.jpg" alt="Zehra Korkmaz" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="bg-gray-50/80 rounded-xl px-3.5 py-2.5">
+                          <div className="flex items-baseline justify-between gap-2">
+                            <span className="text-[13px] font-semibold text-gray-900">Zehra Korkmaz</span>
+                            <span className="text-[11px] text-gray-400 flex-shrink-0">1w</span>
+                          </div>
+                          <p className="text-[13px] text-gray-700 leading-relaxed mt-0.5">Excellent work, very informative!</p>
+                        </div>
+                        <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400 pl-2">
+                          <button type="button" className="font-semibold hover:text-gray-600 transition-colors">Like</button>
+                          <span className="text-gray-200">|</span>
+                          <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === 'pd_c1' ? '' : 'pd_c1'); setReplyText('@Zehra Korkmaz '); }}>Reply</button>
+                        </div>
+
+                        {/* Nested reply */}
+                        <div className="mt-2.5 ml-2 pl-3 border-l-2 border-gray-100">
+                          <div className="flex items-start gap-2">
+                            <img src="/images/portrait-candid-male-doctor_720.jpg" alt="Dr. Bora Eren" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <div className="bg-gray-50/80 rounded-xl px-3 py-2">
+                                <div className="flex items-baseline justify-between gap-2">
+                                  <span className="text-[12px] font-semibold text-gray-900">Dr. Bora Eren</span>
+                                  <span className="text-[10px] text-gray-400 flex-shrink-0">1w</span>
+                                </div>
+                                <p className="text-[12px] text-gray-700 leading-relaxed mt-0.5"><span className="font-semibold text-teal-600">@Zehra Korkmaz</span> glad it helped 🙏</p>
+                              </div>
+                              <div className="mt-1 flex items-center gap-3 text-[10px] text-gray-400 pl-2">
+                                <button type="button" className="font-semibold hover:text-gray-600 transition-colors">Like</button>
+                                <span className="text-gray-200">|</span>
+                                <button type="button" className="font-semibold hover:text-gray-600 transition-colors">Reply</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Reply input for c1 */}
+                        {replyTo === 'pd_c1' && (
+                          <div className="mt-2 ml-2 pl-3 border-l-2 border-teal-200">
+                            <div className="flex items-center gap-2">
+                              <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder="Write a reply..." className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
+                              <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>Post</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Comment 2 */}
+                  <div className="py-2.5">
+                    <div className="flex items-start gap-2.5">
+                      <img src="/images/portrait-candid-male-doctor_720.jpg" alt="Onur Demirtaş" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="bg-gray-50/80 rounded-xl px-3.5 py-2.5">
+                          <div className="flex items-baseline justify-between gap-2">
+                            <span className="text-[13px] font-semibold text-gray-900">Onur Demirtaş</span>
+                            <span className="text-[11px] text-gray-400 flex-shrink-0">5d</span>
+                          </div>
+                          <p className="text-[13px] text-gray-700 leading-relaxed mt-0.5">Great update 👏</p>
+                        </div>
+                        <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400 pl-2">
+                          <button type="button" className="font-semibold hover:text-gray-600 transition-colors">Like</button>
+                          <span className="text-gray-200">|</span>
+                          <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === 'pd_c2' ? '' : 'pd_c2'); setReplyText('@Onur Demirtaş '); }}>Reply</button>
+                        </div>
+
+                        {replyTo === 'pd_c2' && (
+                          <div className="mt-2 ml-2 pl-3 border-l-2 border-teal-200">
+                            <div className="flex items-center gap-2">
+                              <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder="Write a reply..." className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
+                              <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>Post</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* User-submitted comments */}
+                  {localDetailComments.map((c) => (
+                    <div key={c.id} className="py-2.5">
+                      <div className="flex items-start gap-2.5">
+                        <img src={c.avatar} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="bg-teal-50/50 rounded-xl px-3.5 py-2.5 ring-1 ring-teal-100/50">
+                            <div className="flex items-baseline justify-between gap-2">
+                              <span className="text-[13px] font-semibold text-gray-900">{c.name}</span>
+                              <span className="text-[11px] text-gray-400 flex-shrink-0">{c.time}</span>
+                            </div>
+                            <p className="text-[13px] text-gray-700 leading-relaxed mt-0.5">{c.text}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
