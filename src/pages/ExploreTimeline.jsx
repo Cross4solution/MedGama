@@ -47,7 +47,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
               role: p.author?.role_id || 'doctor',
               name: p.author?.fullname || 'Doctor',
               title: '',
-              avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+              avatarUrl: p.author?.avatar || '/images/default/default-avatar.svg',
             },
             socialContext: '',
             created_at: p.created_at || null,
@@ -129,7 +129,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
           role: isDoctor ? 'doctor' : 'clinic',
           name: isDoctor ? ("Dr. " + ['Ahmet','Ayşe','Mehmet','Elif','Can'][i%5]) : cl,
           title: sp,
-          avatarUrl: '/images/portrait-candid-male-doctor_720.jpg',
+          avatarUrl: '/images/default/default-avatar.svg',
         },
         socialContext: i % 5 === 0 ? 'MedGama bunu beğendi' : (i % 7 === 0 ? 'Bir bağlantın bunu beğendi' : ''),
         timeAgo: (1 + (i % 6)) + ' gün',
@@ -641,7 +641,7 @@ export default function ExploreTimeline() {
                   <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 ring-2 ring-teal-100 ring-offset-1">
-                        <img alt="Guest" loading="lazy" className="w-full h-full object-cover object-center" src="/images/portrait-candid-male-doctor_720.jpg" />
+                        <img alt="Guest" loading="lazy" className="w-full h-full object-cover object-center" src="/images/default/default-avatar.svg" />
                       </div>
                       <button type="button" onClick={()=>setIsComposerOpen(true)} className="flex-1 text-left px-4 py-3 bg-gray-50/80 rounded-xl border border-gray-200/60 focus:outline-none focus:ring-2 focus:ring-teal-500/30 text-gray-500 hover:bg-gray-100/80 hover:border-gray-300/60 transition-all duration-200 text-sm">
                         Make a Post...
@@ -750,7 +750,7 @@ export default function ExploreTimeline() {
               </div>
               <div className="px-4 sm:px-5 pt-4">
                 <div className="flex items-center gap-3">
-                  <img alt="Guest" loading="lazy" className="w-10 h-10 rounded-full object-cover border" src="/images/portrait-candid-male-doctor_720.jpg" />
+                  <img alt="Guest" loading="lazy" className="w-10 h-10 rounded-full object-cover border" src="/images/default/default-avatar.svg" />
                   <div>
                     <div className="text-sm font-medium text-gray-900">{user?.name || 'Guest'}</div>
                     <span className="inline-flex items-center gap-1 text-xs text-teal-800 bg-teal-50 border border-teal-100 px-2 py-1 rounded-md">{user?.role === 'clinic' ? 'Clinic' : 'Doctor'}</span>

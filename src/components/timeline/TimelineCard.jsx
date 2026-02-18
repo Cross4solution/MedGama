@@ -8,7 +8,7 @@ import Modal from '../common/Modal';
 import { medStreamAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 
-const DEFAULT_AVATAR = '/images/portrait-candid-male-doctor_720.jpg';
+const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
 function AvatarImg({ src, alt, className }) {
   const [failed, setFailed] = React.useState(false);

@@ -454,7 +454,7 @@ export default function Profile() {
                 <div className="flex items-center gap-5">
                   <div className="relative group">
                     <img
-                      src={avatar || user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                      src={avatar || user.avatar || '/images/default/default-avatar.svg'}
                       alt={user.name}
                       className="w-16 h-16 rounded-xl object-cover ring-2 ring-white shadow-md"
                     />
