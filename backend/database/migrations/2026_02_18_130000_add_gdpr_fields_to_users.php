@@ -9,6 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            if (!Schema::hasColumn('users', 'country')) {
+                $table->string('country', 5)->nullable()->after('country_id');
+            }
+            if (!Schema::hasColumn('users', 'preferred_language')) {
+                $table->string('preferred_language', 10)->nullable()->after('country');
+            }
             if (!Schema::hasColumn('users', 'medical_history')) {
                 $table->jsonb('medical_history')->nullable()->after('clinic_id');
             }
@@ -21,7 +27,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['medical_history', 'notification_preferences']);
+            $table->dropColumn(['country', 'preferred_language', 'medical_history', 'notification_preferences']);
         });
     }
 };
