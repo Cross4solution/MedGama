@@ -166,6 +166,30 @@ class AuthController extends Controller
     }
 
     /**
+     * PUT /api/auth/profile/password
+     */
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:6',
+            'password_confirmation' => 'required|string|same:password',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['Current password is incorrect.'],
+            ]);
+        }
+
+        $user->update(['password' => $request->password]);
+
+        return response()->json(['message' => 'Password updated successfully.']);
+    }
+
+    /**
      * POST /api/auth/verify-email
      */
     public function verifyEmail(Request $request)
