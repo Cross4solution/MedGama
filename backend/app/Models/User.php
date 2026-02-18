@@ -116,6 +116,18 @@ class User extends Authenticatable
         return $this->hasMany(MedStreamBookmark::class, 'user_id');
     }
 
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class, 'conversation_participants')
+            ->withPivot(['role', 'last_read_at', 'is_muted', 'is_archived', 'is_active'])
+            ->withTimestamps();
+    }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
     // ── Helpers ──
 
     public function isAdmin(): bool

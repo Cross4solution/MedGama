@@ -195,6 +195,45 @@ export const medStreamAPI = {
   updateReport: (id, payload) => api.put(`/medstream/reports/${id}`, payload),
 };
 
+// ── Messaging Service ──
+export const messageAPI = {
+  // Conversations
+  conversations: (params) => api.get('/messages/conversations', { params }),
+  createConversation: (payload) => api.post('/messages/conversations', payload),
+  getConversation: (id) => api.get(`/messages/conversations/${id}`),
+  updateConversation: (id, payload) => api.put(`/messages/conversations/${id}`, payload),
+  deleteConversation: (id) => api.delete(`/messages/conversations/${id}`),
+
+  // Messages within a conversation
+  messages: (conversationId, params) => api.get(`/messages/conversations/${conversationId}/messages`, { params }),
+  sendMessage: (conversationId, { body, type, reply_to_id, attachments } = {}) => {
+    const hasFiles = attachments && attachments.length > 0;
+    if (!hasFiles) {
+      return api.post(`/messages/conversations/${conversationId}/messages`, { body, type, reply_to_id });
+    }
+    const fd = new FormData();
+    if (body) fd.append('body', body);
+    if (type) fd.append('type', type);
+    if (reply_to_id) fd.append('reply_to_id', reply_to_id);
+    attachments.forEach((file, i) => fd.append(`attachments[${i}]`, file));
+    return api.post(`/messages/conversations/${conversationId}/messages`, fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000,
+    });
+  },
+
+  // Mark conversation as read
+  markRead: (conversationId) => api.post(`/messages/conversations/${conversationId}/read`),
+
+  // Single message operations
+  updateMessage: (messageId, payload) => api.put(`/messages/${messageId}`, payload),
+  deleteMessage: (messageId) => api.delete(`/messages/${messageId}`),
+
+  // Search & unread count
+  search: (params) => api.get('/messages/search', { params }),
+  unreadCount: () => api.get('/messages/unread-count'),
+};
+
 // ── Catalog Service (Public) ──
 export const catalogAPI = {
   specialties: (params) => api.get('/catalog/specialties', { params }),
