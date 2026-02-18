@@ -143,14 +143,14 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const headerPad = compact ? 'px-3 pt-2.5' : 'px-3 pt-3';
   const headerGap = compact ? 'gap-2' : 'gap-3';
 
+  const likedRef = useRef(false);
   const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
     if (disabledActions) return;
-    setLiked((prev) => {
-      const next = !prev;
-      setLikeCount((c) => c + (next ? 1 : -1));
-      return next;
-    });
+    const next = !likedRef.current;
+    likedRef.current = next;
+    setLiked(next);
+    setLikeCount((c) => c + (next ? 1 : -1));
     // Fire API call (fire-and-forget)
     if (item?.id) {
       medStreamAPI.toggleLike(item.id).catch(() => {});
