@@ -7,11 +7,13 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
   const [showEmoji, setShowEmoji] = useState(false);
   const [photos, setPhotos] = useState([]);
   const [videos, setVideos] = useState([]);
+  const [papers, setPapers] = useState([]);
   const [photoUrls, setPhotoUrls] = useState([]);
   const [videoUrls, setVideoUrls] = useState([]);
   const dialogRef = useRef(null);
   const photoRef = useRef(null);
   const videoRef = useRef(null);
+  const paperRef = useRef(null);
   const [viewer, setViewer] = useState(null); // { type: 'photo'|'video', url: string }
 
   // Kategorilere ayrılmış emoji listesi
@@ -43,6 +45,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
       setShowEmoji(false);
       setPhotos([]);
       setVideos([]);
+      setPapers([]);
       // Cleanup URLs when modal closes
       try {
         photoUrls.forEach(u => URL.revokeObjectURL(u));
@@ -93,6 +96,9 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
   const removeVideoAt = (idx) => {
     setVideos(arr => arr.filter((_, i) => i !== idx));
   };
+  const removePaperAt = (idx) => {
+    setPapers(arr => arr.filter((_, i) => i !== idx));
+  };
 
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState('');
@@ -111,12 +117,14 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
     try {
       const hasVideo = videos.length > 0;
       const hasPhoto = photos.length > 0;
-      const postType = hasVideo ? 'video' : hasPhoto ? 'image' : 'text';
+      const hasPaper = papers.length > 0;
+      const postType = hasVideo ? 'video' : hasPhoto ? 'image' : hasPaper ? 'document' : 'text';
       const res = await medStreamAPI.createPost({
         content: text.trim() || undefined,
-        post_type: postType,
+        post_type: (hasPhoto && hasPaper) || (hasVideo && hasPaper) ? 'mixed' : postType,
         photos: photos,
         videos: videos,
+        papers: papers,
       });
       console.log('[PostCreateModal] Post created:', res);
       onPost?.(res?.post || res);
@@ -126,6 +134,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
       setText('');
       setPhotos([]);
       setVideos([]);
+      setPapers([]);
       setPhotoUrls([]);
       setVideoUrls([]);
     } catch (err) {
@@ -144,7 +153,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
     }
   }
 
-  const hasMedia = photoUrls.length > 0 || videoUrls.length > 0;
+  const hasMedia = photoUrls.length > 0 || videoUrls.length > 0 || papers.length > 0;
   const canPost = text.trim() || hasMedia;
 
   return (
@@ -206,11 +215,11 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                 <div className="rounded-xl border border-gray-200/80 bg-gray-50/50 p-3">
                   <div className="flex items-center justify-between mb-2.5">
                     <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                      Attachments ({photoUrls.length + videoUrls.length})
+                      Attachments ({photoUrls.length + videoUrls.length + papers.length})
                     </span>
                     <button
                       type="button"
-                      onClick={() => { setPhotos([]); setVideos([]); }}
+                      onClick={() => { setPhotos([]); setVideos([]); setPapers([]); }}
                       className="text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors"
                     >
                       Remove all
@@ -261,6 +270,27 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                         </span>
                       </div>
                     ))}
+                    {/* Document previews */}
+                    {papers.map((file, i) => {
+                      const ext = (file.name?.split('.').pop() || 'file').toUpperCase();
+                      return (
+                        <div key={`d${i}`} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200/60 shadow-sm bg-gradient-to-br from-violet-50 to-gray-50 flex flex-col items-center justify-center gap-1.5 p-2">
+                          <button
+                            type="button"
+                            aria-label="Remove document"
+                            onClick={() => removePaperAt(i)}
+                            className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/50 backdrop-blur-sm text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/70"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                          <div className="w-9 h-9 rounded-xl bg-violet-500 flex items-center justify-center shadow-sm">
+                            <FileText className="w-4.5 h-4.5 text-white" />
+                          </div>
+                          <span className="text-[9px] font-medium text-gray-600 truncate w-full text-center px-1">{file.name?.slice(0, 14) || 'Document'}</span>
+                          <span className="text-[8px] font-bold text-violet-600 bg-violet-100 px-1.5 py-0.5 rounded-full">{ext}</span>
+                        </div>
+                      );
+                    })}
                     {/* Add more button */}
                     <button
                       type="button"
@@ -307,6 +337,26 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
               onChange={(e)=> {
                 const newFiles = Array.from(e.target.files || []);
                 setVideos(prev => {
+                  const merged = [...prev];
+                  newFiles.forEach(f => {
+                    if (!merged.some(p => p.name === f.name && p.size === f.size)) {
+                      merged.push(f);
+                    }
+                  });
+                  return merged;
+                });
+                try { e.target.value = ''; } catch {}
+              }}
+            />
+            <input
+              ref={paperRef}
+              type="file"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.txt"
+              multiple
+              className="hidden"
+              onChange={(e)=> {
+                const newFiles = Array.from(e.target.files || []);
+                setPapers(prev => {
                   const merged = [...prev];
                   newFiles.forEach(f => {
                     if (!merged.some(p => p.name === f.name && p.size === f.size)) {
@@ -384,7 +434,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                 <button onClick={()=>setShowEmoji((v)=>!v)} className={`p-2 rounded-xl transition-colors ${showEmoji ? 'bg-amber-50' : 'hover:bg-amber-50'}`} aria-label="Emoji" title="Emoji">
                   <Smile className="w-5 h-5 text-amber-600" />
                 </button>
-                <button className="p-2 rounded-xl hover:bg-violet-50 transition-colors group" aria-label="Research paper" title="Research Paper">
+                <button onClick={()=>paperRef.current?.click()} className="p-2 rounded-xl hover:bg-violet-50 transition-colors group" aria-label="Research paper" title="Document">
                   <FileText className="w-5 h-5 text-violet-600" />
                 </button>
               </div>
