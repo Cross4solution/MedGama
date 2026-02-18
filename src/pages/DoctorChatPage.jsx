@@ -283,6 +283,17 @@ const DoctorChatPage = () => {
   const headerName = currentUserInfo?.fullname || 'Dr. Mehmet Özkan';
   const headerAvatar = currentUserInfo?.avatar || '/images/portrait-candid-male-doctor_720.jpg';
 
+  if (loadingConvs) {
+    return (
+      <div className="h-[calc(100vh-5rem)] w-full flex items-center justify-center bg-gradient-to-b from-gray-50/60 to-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-3 border-teal-200 border-t-teal-600 rounded-full animate-spin" />
+          <span className="text-sm text-gray-400 font-medium">Loading messages...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-[calc(100vh-5rem)] w-full flex flex-col bg-gradient-to-b from-gray-50/60 to-white overflow-hidden">
       <div className="flex-1 flex flex-col min-h-0">

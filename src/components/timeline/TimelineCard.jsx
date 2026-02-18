@@ -180,6 +180,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const [localComments, setLocalComments] = useState([]);
   const [apiComments, setApiComments] = useState([]);
   const [commentsLoaded, setCommentsLoaded] = useState(false);
+  const [visibleCommentCount, setVisibleCommentCount] = useState(3);
 
   // Fetch comments from API when comment section opens
   useEffect(() => {
@@ -580,28 +581,46 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
                   </div>
                 )}
-                {[...apiComments, ...localComments].map((c) => (
-                  <div key={c.id} className="py-2.5">
-                    <div className="flex items-start gap-2">
-                      <AvatarImg src={c.avatar} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-baseline justify-between gap-2">
-                          <div className="min-w-0">
-                            <span className="text-[13px] font-semibold text-[rgba(0,0,0,0.9)]">{c.name}</span>
-                            {c.title && <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">{c.title}</p>}
+                {(() => {
+                  const allComments = [...apiComments, ...localComments];
+                  const visibleComments = allComments.slice(0, visibleCommentCount);
+                  const remainingCount = allComments.length - visibleCommentCount;
+                  return (
+                    <>
+                      {visibleComments.map((c) => (
+                        <div key={c.id} className="py-2.5">
+                          <div className="flex items-start gap-2">
+                            <AvatarImg src={c.avatar} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-baseline justify-between gap-2">
+                                <div className="min-w-0">
+                                  <span className="text-[13px] font-semibold text-[rgba(0,0,0,0.9)]">{c.name}</span>
+                                  {c.title && <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">{c.title}</p>}
+                                </div>
+                                <span className="text-[11px] text-gray-400 flex-shrink-0">{c.time}</span>
+                              </div>
+                              <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">{c.text}</p>
+                              <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
+                                <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Like</button>
+                                <span className="text-gray-300 mx-0.5">·</span>
+                                <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Reply</button>
+                              </div>
+                            </div>
                           </div>
-                          <span className="text-[11px] text-gray-400 flex-shrink-0">{c.time}</span>
                         </div>
-                        <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">{c.text}</p>
-                        <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
-                          <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Like</button>
-                          <span className="text-gray-300 mx-0.5">·</span>
-                          <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Reply</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                      ))}
+                      {remainingCount > 0 && (
+                        <button
+                          type="button"
+                          className="w-full py-2.5 text-[13px] font-semibold text-teal-600 hover:text-teal-700 hover:bg-teal-50/50 rounded-lg transition-colors"
+                          onClick={(e) => { e.stopPropagation(); setVisibleCommentCount(prev => prev + 3); }}
+                        >
+                          Daha fazla yorum yükle ({remainingCount})
+                        </button>
+                      )}
+                    </>
+                  );
+                })()}
                 {commentsLoaded && apiComments.length === 0 && localComments.length === 0 && (
                   <p className="py-3 text-center text-xs text-gray-400">No comments yet. Be the first!</p>
                 )}
