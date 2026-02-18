@@ -314,9 +314,10 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     };
     setLocalComments(prev => [...prev, newComment]);
     setCommentCount(c => c + 1);
+    setVisibleCommentCount(v => v + 1);
     // Fire API call
     if (item?.id) {
-      medStreamAPI.createComment(item.id, { content: text }).catch(() => {});
+      medStreamAPI.createComment(item.id, { content: text }).catch((err) => console.warn('Reply failed:', err));
     }
     setReplyTo('');
     setReplyText('');
@@ -669,9 +670,10 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                       if (e.key === 'Enter' && commentText.trim() && item?.id) {
                         e.stopPropagation();
                         const newComment = commentText.trim();
-                        medStreamAPI.createComment(item.id, { content: newComment }).catch(() => {});
+                        medStreamAPI.createComment(item.id, { content: newComment }).catch((err) => console.warn('Comment failed:', err));
                         setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now' }]);
                         setCommentCount(c => c + 1);
+                        setVisibleCommentCount(v => v + 1);
                         setCommentText('');
                         showSuccessToast('Comment posted');
                       }
@@ -695,9 +697,10 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                           e.stopPropagation();
                           if (!commentText.trim() || !item?.id) return;
                           const newComment = commentText.trim();
-                          medStreamAPI.createComment(item.id, { content: newComment }).catch(() => {});
+                          medStreamAPI.createComment(item.id, { content: newComment }).catch((err) => console.warn('Comment failed:', err));
                           setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now' }]);
                           setCommentCount(c => c + 1);
+                          setVisibleCommentCount(v => v + 1);
                           setCommentText('');
                           showSuccessToast('Comment posted');
                         }}
