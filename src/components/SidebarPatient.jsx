@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight } from 'lucide-react';
+import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, ArrowUpRight } from 'lucide-react';
 
 // Custom chat icon using public SVG (accepts className via props)
 const ChatRoundIcon = (props) => (
@@ -123,7 +123,20 @@ export default function SidebarPatient() {
                   ))}
                 </nav>
                 {showCRM && (
-                  <NavItem to="/crm" icon={LayoutDashboard} label="CRM Dashboard" />
+                  <a
+                    href="/crm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 text-gray-600 hover:bg-gray-50/80 hover:text-gray-900"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100/80 group-hover:bg-gray-200/60 transition-colors">
+                        <LayoutDashboard className="w-3.5 h-3.5 text-gray-500 group-hover:text-gray-700" />
+                      </span>
+                      CRM
+                    </span>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
+                  </a>
                 )}
               </div>
             </div>
@@ -220,23 +233,23 @@ export default function SidebarPatient() {
                   })}
                 </nav>
 
-                {showCRM && (() => {
-                  const crmActive = pathname === '/crm' || pathname.startsWith('/crm/');
-                  return (
-                    <Link
-                      to="/crm"
-                      onClick={() => setSidebarMobileOpen(false)}
-                      className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${crmActive ? 'bg-gradient-to-r from-teal-50 to-emerald-50/60 text-teal-700 shadow-sm ring-1 ring-teal-100' : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-900'}`}
-                    >
-                      <span className="flex items-center gap-2.5">
-                        <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${crmActive ? 'bg-teal-100/80' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
-                          <LayoutDashboard className={`w-3.5 h-3.5 ${crmActive ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
-                        </span>
-                        CRM Dashboard
+                {showCRM && (
+                  <a
+                    href="/crm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setSidebarMobileOpen(false)}
+                    className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 text-gray-600 hover:bg-gray-50/80 hover:text-gray-900"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100/80 group-hover:bg-gray-200/60 transition-colors">
+                        <LayoutDashboard className="w-3.5 h-3.5 text-gray-500 group-hover:text-gray-700" />
                       </span>
-                    </Link>
-                  );
-                })()}
+                      CRM
+                    </span>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
+                  </a>
+                )}
 
                 {/* Divider */}
                 <div className="my-4 border-t border-gray-100" />

@@ -582,18 +582,21 @@ const Header = () => {
                 {/* CRM */}
                 {showCRM && (
                   <div className="px-2">
-                    <Link
-                      to="/crm"
+                    <a
+                      href="/crm"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       onClick={closeMenu}
-                      className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${pathname.startsWith('/crm') ? 'bg-gradient-to-r from-teal-50 to-emerald-50/60 text-teal-700 shadow-sm ring-1 ring-teal-100' : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-900'}`}
+                      className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 text-gray-600 hover:bg-gray-50/80 hover:text-gray-900"
                     >
                       <span className="flex items-center gap-2.5">
-                        <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${pathname.startsWith('/crm') ? 'bg-teal-100/80' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
-                          <LayoutDashboard className={`w-3.5 h-3.5 ${pathname.startsWith('/crm') ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
+                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100/80 group-hover:bg-gray-200/60 transition-colors">
+                          <LayoutDashboard className="w-3.5 h-3.5 text-gray-500 group-hover:text-gray-700" />
                         </span>
-                        CRM Dashboard
+                        CRM
                       </span>
-                    </Link>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
+                    </a>
                   </div>
                 )}
                 {/* Logout */}

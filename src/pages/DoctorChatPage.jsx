@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import { ChevronLeft } from 'lucide-react';
 import ThreadsSidebar from 'components/chat/ThreadsSidebar';
 import ChatHeader from 'components/chat/ChatHeader';
 import ChatMessageList from 'components/chat/ChatMessageList';
@@ -431,13 +432,31 @@ const DoctorChatPage = () => {
             </div>
           ) : (
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-white sm:rounded-2xl sm:border sm:border-gray-200/60 sm:shadow-lg sm:shadow-gray-200/30">
-              <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} />
-              <ChatMessageList
-                messages={messages}
-                leftAvatar={activeContact?.avatar || '/images/default/default-avatar.svg'}
-                rightAvatar={headerAvatar}
-              />
-              <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} sending={sending} />
+              {activeThreadId && activeContact ? (
+                <>
+                  <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} />
+                  <ChatMessageList
+                    messages={messages}
+                    leftAvatar={activeContact?.avatar || '/images/default/default-avatar.svg'}
+                    rightAvatar={headerAvatar}
+                  />
+                  <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} sending={sending} />
+                </>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
+                  <button onClick={()=>setMobileChatOpen(false)} className="absolute top-3 left-3 p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-1">No conversations yet</h3>
+                  <p className="text-xs text-gray-400 max-w-xs">When patients send you a message, their conversations will appear here.</p>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -458,18 +477,33 @@ const DoctorChatPage = () => {
               {/* Chat Area (expanded) */}
               <div className="flex-1 min-h-0">
                 <div className="bg-white rounded-2xl shadow-lg shadow-gray-200/30 border border-gray-200/60 h-full flex flex-col min-h-0">
-                  {/* Chat Header */}
-                  <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} />
+                  {activeThreadId && activeContact ? (
+                    <>
+                      {/* Chat Header */}
+                      <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} />
 
-                  {/* Messages */}
-                  <ChatMessageList
-                    messages={messages}
-                    leftAvatar={activeContact?.avatar || '/images/default/default-avatar.svg'}
-                    rightAvatar={headerAvatar}
-                  />
+                      {/* Messages */}
+                      <ChatMessageList
+                        messages={messages}
+                        leftAvatar={activeContact?.avatar || '/images/default/default-avatar.svg'}
+                        rightAvatar={headerAvatar}
+                      />
 
-                  {/* Message Input */}
-                  <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} sending={sending} />
+                      {/* Message Input */}
+                      <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} sending={sending} />
+                    </>
+                  ) : (
+                    <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
+                      <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                        <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-sm font-semibold text-gray-700 mb-1">No conversations yet</h3>
+                      <p className="text-xs text-gray-400 max-w-xs">When patients send you a message, their conversations will appear here.</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
