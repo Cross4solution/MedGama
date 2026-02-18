@@ -350,7 +350,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           )}
 
           {/* Social counts */}
-          <div className="px-3 pt-1.5 mt-1 text-xs text-gray-500 flex items-center justify-between">
+          <div className="px-3 pt-2 pb-2 mt-1 text-xs text-gray-500 flex items-center justify-between">
             <div className="inline-flex items-center gap-1">
               <span className={`inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 text-white`}>
                 <ThumbsUp className="w-[9px] h-[9px]" />
