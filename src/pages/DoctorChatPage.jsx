@@ -32,7 +32,7 @@ function convToThread(conv, currentUserId) {
   const name = conv.type === 'group'
     ? (conv.title || conv.participants?.map(p => p.fullname).join(', ') || 'Group')
     : (other?.fullname || 'Unknown');
-  const avatar = other?.avatar || '/images/portrait-candid-male-doctor_720.jpg';
+  const avatar = other?.avatar || '/images/default/default-avatar.svg';
   const last = conv.latest_message?.body || '';
   const when = timeAgo(conv.latest_message?.created_at || conv.updated_at);
   const tags = [];
@@ -70,10 +70,10 @@ function apiMsgToLocal(msg, currentUserId) {
 
 const MOCK_THREADS = [
   { id: 'zeynep', name: 'Zeynep Kaya', channel: 'WhatsApp', online: true, last: 'Friday would be more convenient for me...', when: '15min', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Urgent'] },
-  { id: 'ali', name: 'Ali Yılmaz', channel: 'Facebook', online: false, last: 'Youre welcome, have a good day', when: '2 hours', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15min', 'Preliminary Evaluation'] },
+  { id: 'ali', name: 'Ali Yılmaz', channel: 'Facebook', online: false, last: 'Youre welcome, have a good day', when: '2 hours', avatar: '/images/default/default-avatar.svg', tags: ['SLA >15min', 'Preliminary Evaluation'] },
   { id: 'selin', name: 'Selin Acar', channel: 'Web Form', online: true, last: 'Yes, I did. We can see each other tomorrow.', when: '1 day', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Preliminary Evaluation'] },
   { id: 'ayse', name: 'Ayşe Demir', channel: 'Chat', online: false, last: 'Of course, what time suits you?', when: '2 day', avatar: '/images/stylish-good-looking-ambitious-smiling-brunette-woman-with-curly-hairstyle-cross-hands-chest-confident-professional-pose-smiling-standing-casually-summer-outfit-talking-friend-white-wall_720.jpg', tags: ['SLA >5min', 'Date'] },
-  { id: 'mehmet', name: 'Mehmet Özkan', channel: 'WhatsApp', online: false, last: 'I can call to help you.', when: '3 day', avatar: '/images/portrait-candid-male-doctor_720.jpg', tags: ['SLA >15min', 'Information'] },
+  { id: 'mehmet', name: 'Mehmet Özkan', channel: 'WhatsApp', online: false, last: 'I can call to help you.', when: '3 day', avatar: '/images/default/default-avatar.svg', tags: ['SLA >15min', 'Information'] },
 ];
 
 function getMockMessages(id) {
@@ -281,7 +281,7 @@ const DoctorChatPage = () => {
   }, []);
 
   const headerName = currentUserInfo?.fullname || 'Dr. Mehmet Özkan';
-  const headerAvatar = currentUserInfo?.avatar || '/images/portrait-candid-male-doctor_720.jpg';
+  const headerAvatar = currentUserInfo?.avatar || '/images/default/default-avatar.svg';
 
   return (
     <div className="h-[calc(100vh-5rem)] w-full flex flex-col bg-gradient-to-b from-gray-50/60 to-white overflow-hidden">
@@ -408,7 +408,7 @@ const DoctorChatPage = () => {
               <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} />
               <ChatMessageList
                 messages={messages}
-                leftAvatar={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                leftAvatar={activeContact?.avatar || '/images/default/default-avatar.svg'}
                 rightAvatar={headerAvatar}
               />
               <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} sending={sending} />
@@ -438,7 +438,7 @@ const DoctorChatPage = () => {
                   {/* Messages */}
                   <ChatMessageList
                     messages={messages}
-                    leftAvatar={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                    leftAvatar={activeContact?.avatar || '/images/default/default-avatar.svg'}
                     rightAvatar={headerAvatar}
                   />
 

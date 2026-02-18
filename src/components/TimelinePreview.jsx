@@ -35,7 +35,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
             role: p.author?.role_id || 'doctor',
             name: p.author?.fullname || 'Doctor',
             title: '',
-            avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+            avatarUrl: p.author?.avatar || '/images/default/default-avatar.svg',
           },
           timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
           visibility: 'public',

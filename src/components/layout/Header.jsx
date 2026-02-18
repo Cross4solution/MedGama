@@ -364,7 +364,7 @@ const Header = () => {
                   <div className="relative" ref={profileRef}>
                     <div className="flex items-center gap-2 px-1.5 py-1 rounded-lg border border-transparent" title={user.name}>
                       <img
-                        src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                        src={user.avatar || '/images/default/default-avatar.svg'}
                         alt={user.name}
                         className="w-7 h-7 rounded-full object-cover border border-gray-200"
                       />
@@ -397,7 +397,7 @@ const Header = () => {
                   title={user.name}
                 >
                   <img
-                    src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
+                    src={user.avatar || '/images/default/default-avatar.svg'}
                     alt={user.name}
                     className="w-7 h-7 rounded-full object-cover"
                   />

@@ -6,6 +6,23 @@ import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
 import Modal from '../common/Modal';
 import { medStreamAPI } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
+
+const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
+
+function AvatarImg({ src, alt, className }) {
+  const [failed, setFailed] = React.useState(false);
+  const imgSrc = failed || !src ? DEFAULT_AVATAR : src;
+  return (
+    <img
+      src={imgSrc}
+      alt={alt}
+      loading="lazy"
+      className={className}
+      onError={() => { if (!failed) setFailed(true); }}
+    />
+  );
+}
 
 function MediaImg({ src, alt, className, onClick = undefined }) {
   const [failed, setFailed] = React.useState(false);

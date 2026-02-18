@@ -38,6 +38,8 @@ export default function PostDetail() {
   const isPatient = user?.role === 'patient';
   const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
   const emojiReplyRef = React.useRef(null);
+  const [apiDetailComments, setApiDetailComments] = React.useState([]);
+  const [detailCommentsLoaded, setDetailCommentsLoaded] = React.useState(false);
 
   // ExploreTimeline/TimelineCard üzerinden gelen state öncelikli, fallback to API
   const [apiItem, setApiItem] = React.useState(null);
@@ -72,7 +74,7 @@ export default function PostDetail() {
             role: p.author?.role_id || 'doctor',
             name: p.author?.fullname || 'Doctor',
             title: '',
-            avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+            avatarUrl: p.author?.avatar || '/images/default/default-avatar.svg',
           },
           timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
           visibility: 'public',
@@ -282,13 +284,32 @@ export default function PostDetail() {
 
   // Local comments state for this detail view
   const [localDetailComments, setLocalDetailComments] = React.useState([]);
+  const [visibleDetailCommentCount, setVisibleDetailCommentCount] = React.useState(3);
+
+  // Fetch comments from API
+  React.useEffect(() => {
+    const postId = item?.id || id;
+    if (!postId || detailCommentsLoaded) return;
+    medStreamAPI.comments(postId, { per_page: 50 }).then(res => {
+      const list = res?.data || [];
+      setApiDetailComments(list.map(c => ({
+        id: c.id,
+        author_id: c.author_id || c.author?.id,
+        name: c.author?.fullname || 'User',
+        avatar: c.author?.avatar || '/images/default/default-avatar.svg',
+        text: c.content || '',
+        time: c.created_at ? new Date(c.created_at).toLocaleDateString() : '',
+      })));
+      setDetailCommentsLoaded(true);
+    }).catch(() => setDetailCommentsLoaded(true));
+  }, [item?.id, id, detailCommentsLoaded]);
   const submitDetailComment = () => {
     const text = newComment.trim();
     if (!text || !item?.id) return;
     setLocalDetailComments(prev => [...prev, {
       id: 'dc-' + Date.now(),
       name: user?.name || item?.actor?.name || 'You',
-      avatar: user?.avatar || item?.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg',
+      avatar: user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg',
       text,
       time: 'Just now',
     }]);
@@ -302,7 +323,7 @@ export default function PostDetail() {
     setLocalDetailComments(prev => [...prev, {
       id: 'dr-' + Date.now(),
       name: user?.name || item?.actor?.name || 'You',
-      avatar: user?.avatar || item?.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg',
+      avatar: user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg',
       text,
       time: 'Just now',
     }]);
@@ -460,7 +481,7 @@ export default function PostDetail() {
 
           {/* Header — sticky */}
           <div className="px-5 py-3.5 border-b border-gray-100/80 flex items-center gap-3 bg-white/95 backdrop-blur-sm flex-shrink-0">
-            <img src={item.actor?.avatarUrl || item.avatar || '/images/portrait-candid-male-doctor_720.jpg'} alt={item.actor?.name || item.title} className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-100/80 flex-shrink-0" />
+            <img src={item.actor?.avatarUrl || item.avatar || '/images/default/default-avatar.svg'} alt={item.actor?.name || item.title} className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-100/80 flex-shrink-0" />
             <div className="min-w-0 flex-1">
               <h1 className="text-[15px] font-semibold text-gray-900 truncate leading-tight">{item.actor?.name || item.title}</h1>
               <p className="text-xs text-gray-500 truncate mt-0.5 leading-tight">{actorSubtitle}</p>
@@ -534,7 +555,7 @@ export default function PostDetail() {
 
                 {/* New comment input */}
                 <div className="flex items-start gap-2.5 mb-5">
-                  <img src={user?.avatar || item?.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg'} alt="You" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200 flex-shrink-0 mt-0.5" />
+                  <img src={user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg'} alt="You" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200 flex-shrink-0 mt-0.5" />
                   <div className="flex-1 flex items-center gap-2 border border-gray-200 rounded-full px-4 py-2 bg-gray-50/50 hover:bg-white hover:border-gray-300 focus-within:bg-white focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-500/10 transition-all">
                     <input
                       placeholder="Add a comment..."
