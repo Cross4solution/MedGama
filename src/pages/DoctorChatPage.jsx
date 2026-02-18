@@ -4,6 +4,7 @@ import ChatHeader from 'components/chat/ChatHeader';
 import ChatMessageList from 'components/chat/ChatMessageList';
 import ChatInput from 'components/chat/ChatInput';
 import { messageAPI } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 // ── Helpers ──
 
@@ -93,6 +94,7 @@ function getMockMessages(id) {
 // ── Component ──
 
 const DoctorChatPage = () => {
+  const { user, hydrated } = useAuth();
   const [message, setMessage] = useState('');
   const [channelFilter, setChannelFilter] = useState('All');
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
@@ -104,52 +106,65 @@ const DoctorChatPage = () => {
   const [activeThreadId, setActiveThreadId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isApiMode, setIsApiMode] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState(null);
   const [loadingConvs, setLoadingConvs] = useState(true);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
   const [sending, setSending] = useState(false);
   const pollRef = useRef(null);
 
-  // Get current user ID from auth state
-  useEffect(() => {
+  const currentUserId = user?.id || null;
+  const hasStoredToken = useMemo(() => {
     try {
-      const saved = localStorage.getItem('auth_state');
-      if (saved) {
-        const { user } = JSON.parse(saved);
-        if (user?.id) setCurrentUserId(user.id);
-      }
-    } catch {}
+      const fromState = JSON.parse(localStorage.getItem('auth_state') || '{}')?.token;
+      return !!(fromState || localStorage.getItem('access_token') || localStorage.getItem('google_access_token'));
+    } catch {
+      return false;
+    }
   }, []);
 
   // Fetch conversations from API
   const fetchConversations = useCallback(async () => {
+    // Wait until auth hydration settles to avoid brief mock UI flash
+    if (!hydrated) return;
+    if (!currentUserId) {
+      // If we likely have a signed-in session, wait for user resolution instead of showing mock data
+      if (hasStoredToken) return;
+      // Guest mode fallback
+      setThreads(MOCK_THREADS);
+      setIsApiMode(false);
+      setLoadingConvs(false);
+      return;
+    }
+
     try {
       const res = await messageAPI.conversations({ per_page: 50 });
       const data = res?.data || [];
-      if (data.length > 0 && currentUserId) {
-        const apiThreads = data.map(c => convToThread(c, currentUserId));
-        setThreads(apiThreads);
-        setIsApiMode(true);
-        // If no active thread or active thread not in list, select first
+      const apiThreads = Array.isArray(data) ? data.map(c => convToThread(c, currentUserId)) : [];
+      setThreads(apiThreads);
+      setIsApiMode(true);
+
+      // If no active thread or active thread not in list, select first if present
+      if (apiThreads.length > 0) {
         if (!activeThreadId || !apiThreads.find(t => t.id === activeThreadId)) {
           setActiveThreadId(apiThreads[0].id);
         }
       } else {
-        // No API conversations — use mock data
-        setThreads(MOCK_THREADS);
-        setIsApiMode(false);
+        setActiveThreadId(null);
+        setMessages([]);
       }
     } catch {
-      // API failed — use mock data
-      setThreads(MOCK_THREADS);
-      setIsApiMode(false);
+      // API failed for authenticated user: keep clean empty state instead of flashing mock design
+      setThreads([]);
+      setIsApiMode(true);
+      setActiveThreadId(null);
+      setMessages([]);
     }
     setLoadingConvs(false);
-  }, [currentUserId, activeThreadId]);
+  }, [hydrated, currentUserId, hasStoredToken, activeThreadId]);
 
   useEffect(() => {
+    if (!hydrated) return;
     fetchConversations();
-  }, [fetchConversations]);
+  }, [hydrated, fetchConversations]);
 
   // Fetch messages for active conversation
   const fetchMessages = useCallback(async (convId) => {
