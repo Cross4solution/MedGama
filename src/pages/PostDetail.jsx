@@ -357,29 +357,19 @@ export default function PostDetail() {
       replies: [],
     };
     // Add reply nested under parent
-    const addedToApi = addDetailReplyToParent(setApiDetailComments, parentId, newReply);
-    if (!addedToApi) {
-      addDetailReplyToParent(setLocalDetailComments, parentId, newReply);
+    const inApi = apiDetailComments.some(c => c.id === parentId);
+    if (inApi) {
+      setApiDetailComments(prev => prev.map(c =>
+        c.id === parentId ? { ...c, replies: [...(c.replies || []), newReply] } : c
+      ));
+    } else {
+      setLocalDetailComments(prev => prev.map(c =>
+        c.id === parentId ? { ...c, replies: [...(c.replies || []), newReply] } : c
+      ));
     }
     medStreamAPI.createComment(item.id, { content: text, parent_id: parentId }).catch(() => {});
     setReplyTo('');
     setReplyText('');
-  };
-
-  // Helper: add a reply nested under its parent comment
-  const addDetailReplyToParent = (setter, parentId, reply) => {
-    let found = false;
-    setter(prev => {
-      const next = prev.map(c => {
-        if (c.id === parentId) {
-          found = true;
-          return { ...c, replies: [...(c.replies || []), reply] };
-        }
-        return c;
-      });
-      return next;
-    });
-    return found;
   };
 
   return (

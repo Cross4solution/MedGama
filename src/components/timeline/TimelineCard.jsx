@@ -328,9 +328,15 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       replies: [],
     };
     // Add reply nested under parent in apiComments or localComments
-    const addedToApi = addReplyToParent(setApiComments, parentId, newReply);
-    if (!addedToApi) {
-      addReplyToParent(setLocalComments, parentId, newReply);
+    const inApi = apiComments.some(c => c.id === parentId);
+    if (inApi) {
+      setApiComments(prev => prev.map(c =>
+        c.id === parentId ? { ...c, replies: [...(c.replies || []), newReply] } : c
+      ));
+    } else {
+      setLocalComments(prev => prev.map(c =>
+        c.id === parentId ? { ...c, replies: [...(c.replies || []), newReply] } : c
+      ));
     }
     setCommentCount(c => c + 1);
     // Fire API call with parent_id
@@ -339,22 +345,6 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     }
     setReplyTo('');
     setReplyText('');
-  };
-
-  // Helper: add a reply nested under its parent comment
-  const addReplyToParent = (setter, parentId, reply) => {
-    let found = false;
-    setter(prev => {
-      const next = prev.map(c => {
-        if (c.id === parentId) {
-          found = true;
-          return { ...c, replies: [...(c.replies || []), reply] };
-        }
-        return c;
-      });
-      return next;
-    });
-    return found;
   };
 
   const truncate = (text, max = 120) => {
