@@ -138,7 +138,7 @@ export default function PostDetail() {
     const next = !likedRef.current;
     likedRef.current = next;
     setLiked(next);
-    setLikeCount((c) => c + (next ? 1 : -1));
+    setLikeCount((c) => Math.max(0, c + (next ? 1 : -1)));
     if (item?.id) {
       medStreamAPI.toggleLike(item.id).catch(() => {});
     }

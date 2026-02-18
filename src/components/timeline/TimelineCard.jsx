@@ -353,7 +353,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     const next = !likedRef.current;
     likedRef.current = next;
     setLiked(next);
-    setLikeCount((c) => c + (next ? 1 : -1));
+    setLikeCount((c) => Math.max(0, c + (next ? 1 : -1)));
     // Fire API call (fire-and-forget)
     if (item?.id) {
       medStreamAPI.toggleLike(item.id).catch(() => {});
