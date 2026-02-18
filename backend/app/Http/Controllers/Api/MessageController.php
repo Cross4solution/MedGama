@@ -521,6 +521,92 @@ class MessageController extends Controller
         ];
     }
 
+    /**
+     * Optimize and store an uploaded image: resize if too large, convert to WebP, compress.
+     */
+    private function optimizeAndStoreImage($file, string $dir): string
+    {
+        $maxWidth = 1920;
+        $maxHeight = 1920;
+        $quality = 82;
+
+        $image = @imagecreatefromstring(file_get_contents($file->getRealPath()));
+        if (!$image) {
+            // GD can't process — store as-is
+            return $file->store($dir, 'public');
+        }
+
+        $origW = imagesx($image);
+        $origH = imagesy($image);
+
+        // Resize if exceeds max dimensions
+        if ($origW > $maxWidth || $origH > $maxHeight) {
+            $ratio = min($maxWidth / $origW, $maxHeight / $origH);
+            $newW = (int) round($origW * $ratio);
+            $newH = (int) round($origH * $ratio);
+            $resized = imagecreatetruecolor($newW, $newH);
+            // Preserve transparency for PNG
+            imagealphablending($resized, false);
+            imagesavealpha($resized, true);
+            imagecopyresampled($resized, $image, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+            imagedestroy($image);
+            $image = $resized;
+        }
+
+        // Save as WebP
+        $filename = Str::uuid() . '.webp';
+        $storagePath = $dir . '/' . $filename;
+        $fullPath = Storage::disk('public')->path($storagePath);
+
+        // Ensure directory exists
+        $dirPath = dirname($fullPath);
+        if (!is_dir($dirPath)) {
+            mkdir($dirPath, 0755, true);
+        }
+
+        imagewebp($image, $fullPath, $quality);
+        imagedestroy($image);
+
+        return $storagePath;
+    }
+
+    /**
+     * Create a small thumbnail (200px) for image preview.
+     */
+    private function createThumbnail($file, string $dir): ?string
+    {
+        $thumbSize = 200;
+
+        $image = @imagecreatefromstring(file_get_contents($file->getRealPath()));
+        if (!$image) return null;
+
+        $origW = imagesx($image);
+        $origH = imagesy($image);
+        $ratio = min($thumbSize / $origW, $thumbSize / $origH);
+        $newW = max(1, (int) round($origW * $ratio));
+        $newH = max(1, (int) round($origH * $ratio));
+
+        $thumb = imagecreatetruecolor($newW, $newH);
+        imagealphablending($thumb, false);
+        imagesavealpha($thumb, true);
+        imagecopyresampled($thumb, $image, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+        imagedestroy($image);
+
+        $filename = Str::uuid() . '_thumb.webp';
+        $storagePath = $dir . '/' . $filename;
+        $fullPath = Storage::disk('public')->path($storagePath);
+
+        $dirPath = dirname($fullPath);
+        if (!is_dir($dirPath)) {
+            mkdir($dirPath, 0755, true);
+        }
+
+        imagewebp($thumb, $fullPath, 60);
+        imagedestroy($thumb);
+
+        return $storagePath;
+    }
+
     private function formatMessage(Message $msg, string $userId): array
     {
         return [

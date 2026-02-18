@@ -207,25 +207,31 @@ const DoctorChatPage = () => {
     setMobileCurrentPage(page);
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (attachments) => {
     const text = message.trim();
-    if (!text || sending) return;
+    const hasFiles = attachments && attachments.length > 0;
+    if (!text && !hasFiles) return;
+    if (sending) return;
 
     if (isApiMode && activeThreadId) {
       // Optimistic: add message to UI immediately
       const optimistic = {
         id: 'opt-' + Date.now(),
         sender: 'doctor',
-        text,
+        text: text || (hasFiles ? `📎 ${attachments.length} file${attachments.length > 1 ? 's' : ''}` : ''),
         time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
         status: 'sending',
+        attachments: [],
       };
       setMessages(prev => [...prev, optimistic]);
       setMessage('');
       setSending(true);
 
       try {
-        const res = await messageAPI.sendMessage(activeThreadId, { body: text });
+        const res = await messageAPI.sendMessage(activeThreadId, {
+          body: text || undefined,
+          attachments: hasFiles ? attachments : undefined,
+        });
         // Replace optimistic with real message
         const real = apiMsgToLocal(res.message, currentUserId);
         setMessages(prev => prev.map(m => m.id === optimistic.id ? real : m));
@@ -239,8 +245,9 @@ const DoctorChatPage = () => {
       const newMessage = {
         id: messages.length + 1,
         sender: 'doctor',
-        text,
+        text: text || (hasFiles ? `📎 ${attachments.length} file${attachments.length > 1 ? 's' : ''}` : ''),
         time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        attachments: [],
       };
       setMessages(prev => [...prev, newMessage]);
       setMessage('');
@@ -403,7 +410,7 @@ const DoctorChatPage = () => {
                 leftAvatar={activeContact?.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
                 rightAvatar={headerAvatar}
               />
-              <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} />
+              <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} sending={sending} />
             </div>
           )}
         </div>
@@ -435,7 +442,7 @@ const DoctorChatPage = () => {
                   />
 
                   {/* Message Input */}
-                  <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} />
+                  <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} sending={sending} />
                 </div>
               </div>
 

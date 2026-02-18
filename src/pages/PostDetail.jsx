@@ -1,11 +1,30 @@
 import React from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, Bookmark } from 'lucide-react';
+import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, Bookmark, FileText, Play, Download } from 'lucide-react';
 import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
 import { useAuth } from '../context/AuthContext';
 import EmojiPicker from '../components/EmojiPicker';
 import { medStreamAPI } from '../lib/api';
+
+function getMediaType(m) {
+  if (m.type === 'video' || /\.(mp4|webm|mov|avi)$/i.test(m.url || '')) return 'video';
+  if (m.type === 'document' || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.url || '') || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.name || '')) return 'document';
+  return 'image';
+}
+
+function getFileExt(m) {
+  const name = m.name || m.url || '';
+  const match = name.match(/\.([a-zA-Z0-9]+)(\?|$)/);
+  return match ? match[1].toUpperCase() : 'FILE';
+}
+
+function getFileName(m) {
+  if (m.name) return m.name;
+  try { return decodeURIComponent((m.url || '').split('/').pop().split('?')[0]); } catch { return 'Document'; }
+}
+
+const EXT_COLORS = { PDF: 'bg-red-500', DOC: 'bg-blue-500', DOCX: 'bg-blue-500', XLS: 'bg-green-600', XLSX: 'bg-green-600', PPT: 'bg-orange-500', PPTX: 'bg-orange-500', CSV: 'bg-emerald-500' };
 
 export default function PostDetail() {
   const { state } = useLocation();
@@ -57,7 +76,14 @@ export default function PostDetail() {
           },
           timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
           visibility: 'public',
-          media: p.media_url ? [{ url: p.media_url }] : [],
+          media: (() => {
+            if (Array.isArray(p.media) && p.media.length > 0) {
+              return p.media.map(m => ({ url: m.medium || m.original || m.url, thumb: m.thumb, name: m.name, type: m.type || p.post_type || 'image' }));
+            }
+            if (!p.media_url) return [];
+            const mType = (p.post_type === 'video') ? 'video' : (p.post_type === 'document') ? 'document' : 'image';
+            return [{ url: p.media_url, type: mType }];
+          })(),
           specialty: '',
           is_liked: !!p.is_liked,
           is_bookmarked: !!p.is_bookmarked,
@@ -341,30 +367,73 @@ export default function PostDetail() {
           )}
 
           {/* Main image */}
-          {mediaList.length > 0 ? (
-            <div
-              className="relative flex items-center justify-center w-full h-full overflow-hidden"
-              onWheel={onWheelZoom}
-              onDoubleClick={onDoubleClickZoom}
-              onMouseDown={onMouseDownPan}
-              onMouseMove={onMouseMovePan}
-              onMouseUp={onMouseUpPan}
-              onMouseLeave={onMouseUpPan}
-            >
-              <img
-                src={mediaList[imgIndex]?.url}
-                alt={item.title}
-                className={`max-w-full max-h-full select-none object-contain ${zoom === 1 ? 'cursor-zoom-in' : 'cursor-grab active:cursor-grabbing'}`}
-                style={{
-                  transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${zoom})`,
-                  transformOrigin: 'center center',
-                  willChange: 'transform',
-                  transition: isPanning ? 'none' : 'transform 0.15s ease-out',
-                }}
-                draggable={false}
-              />
-            </div>
-          ) : (
+          {mediaList.length > 0 ? (() => {
+            const currentMedia = mediaList[imgIndex];
+            const mType = getMediaType(currentMedia);
+
+            if (mType === 'document') {
+              const ext = getFileExt(currentMedia);
+              const name = getFileName(currentMedia);
+              const color = EXT_COLORS[ext] || 'bg-gray-500';
+              const downloadUrl = currentMedia.original || currentMedia.url;
+              return (
+                <div className="relative flex flex-col items-center justify-center w-full h-full p-8">
+                  <div className={`w-24 h-24 rounded-3xl ${color} flex items-center justify-center shadow-2xl mb-6`}>
+                    <FileText className="w-12 h-12 text-white" />
+                  </div>
+                  <p className="text-white/90 text-lg font-semibold text-center max-w-[320px] truncate mb-2">{name}</p>
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold text-white ${color} mb-6`}>{ext}</span>
+                  <a
+                    href={downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white text-sm font-medium transition-all"
+                  >
+                    <Download className="w-4 h-4" />
+                    Open / Download
+                  </a>
+                </div>
+              );
+            }
+
+            if (mType === 'video') {
+              return (
+                <div className="relative flex items-center justify-center w-full h-full">
+                  <video
+                    src={currentMedia.original || currentMedia.url}
+                    controls
+                    className="max-w-full max-h-full"
+                    poster={currentMedia.thumb || undefined}
+                  />
+                </div>
+              );
+            }
+
+            return (
+              <div
+                className="relative flex items-center justify-center w-full h-full overflow-hidden"
+                onWheel={onWheelZoom}
+                onDoubleClick={onDoubleClickZoom}
+                onMouseDown={onMouseDownPan}
+                onMouseMove={onMouseMovePan}
+                onMouseUp={onMouseUpPan}
+                onMouseLeave={onMouseUpPan}
+              >
+                <img
+                  src={currentMedia?.url}
+                  alt={item.title}
+                  className={`max-w-full max-h-full select-none object-contain ${zoom === 1 ? 'cursor-zoom-in' : 'cursor-grab active:cursor-grabbing'}`}
+                  style={{
+                    transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${zoom})`,
+                    transformOrigin: 'center center',
+                    willChange: 'transform',
+                    transition: isPanning ? 'none' : 'transform 0.15s ease-out',
+                  }}
+                  draggable={false}
+                />
+              </div>
+            );
+          })() : (
             <div className="flex flex-col items-center justify-center text-white/40 text-center p-8">
               <div className="w-20 h-20 mb-5 rounded-2xl bg-white/5 flex items-center justify-center">
                 <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
