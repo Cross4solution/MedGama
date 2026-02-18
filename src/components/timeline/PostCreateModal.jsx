@@ -95,6 +95,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
   };
 
   const [posting, setPosting] = useState(false);
+  const [postError, setPostError] = useState('');
 
   if (!open) return null;
 
@@ -106,6 +107,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
     console.log('[PostCreateModal] handlePost called, posting:', posting, 'canPost:', text.trim() || photoUrls.length > 0 || videoUrls.length > 0);
     if (posting) return;
     setPosting(true);
+    setPostError('');
     try {
       const hasVideo = videoUrls.length > 0;
       const hasPhoto = photoUrls.length > 0;
@@ -120,19 +122,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
       const res = await medStreamAPI.createPost(payload);
       console.log('[PostCreateModal] Post created:', res);
       onPost?.(res?.post || res);
-    } catch (err) {
-      console.error('[PostCreateModal] Post creation failed:', err?.response?.status, err?.response?.data || err?.message);
-      // Fallback: still pass local data so UI updates
-      onPost?.({
-        id: 'local-' + Date.now(),
-        text,
-        content: text,
-        post_type: 'text',
-        createdAt: new Date().toISOString(),
-        author: user,
-        media_url: photoUrls[0] || videoUrls[0] || undefined,
-      });
-    } finally {
+      // Success — close modal and reset
       setPosting(false);
       onClose?.();
       setText('');
@@ -140,6 +130,19 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
       setVideos([]);
       setPhotoUrls([]);
       setVideoUrls([]);
+    } catch (err) {
+      console.error('[PostCreateModal] Post creation failed:', err?.response?.status, err?.response?.data || err?.message);
+      let errorMsg = err?.response?.data?.message || err?.message || 'Upload failed. Please try again.';
+      if (err?.response?.status === 413) {
+        errorMsg = 'Your file exceeds the upload limit. Try compressing it or choosing a smaller file.';
+      } else if (err?.response?.status === 422) {
+        errorMsg = 'This file type is not supported. Please use JPG, PNG, MP4, PDF, or Office documents.';
+      } else if (err?.message?.includes('Network')) {
+        errorMsg = 'Connection lost. Please check your internet and try again.';
+      }
+      // Keep modal open — show error so user can fix and retry
+      setPostError(errorMsg);
+      setPosting(false);
     }
   }
 
@@ -396,6 +399,22 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                 {posting ? 'Posting...' : 'Post'}
               </button>
             </div>
+            {postError && !posting && (
+              <div className="mx-5 mb-3 rounded-xl border border-red-200 bg-red-50/90 p-3">
+                <div className="flex items-start gap-2.5">
+                  <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-red-800">Upload failed</p>
+                    <p className="text-[13px] text-red-600 mt-0.5 leading-relaxed">{postError}</p>
+                  </div>
+                  <button onClick={() => setPostError('')} className="w-6 h-6 rounded-full hover:bg-red-100 flex items-center justify-center text-red-400 hover:text-red-600 transition-colors flex-shrink-0">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,19 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
 import Modal from '../common/Modal';
 import { medStreamAPI } from '../../lib/api';
 
+const DEFAULT_AVATAR = '/images/portrait-candid-male-doctor_720.jpg';
+
+function AvatarImg({ src, alt, className }) {
+  const [failed, setFailed] = React.useState(false);
+  const imgSrc = failed || !src ? DEFAULT_AVATAR : src;
+  return (
+    <img
+      src={imgSrc}
+      alt={alt}
+      loading="lazy"
+      className={className}
+      onError={() => { if (!failed) setFailed(true); }}
+    />
+  );
+}
+
 function MediaImg({ src, alt, className, onClick = undefined }) {
   const [failed, setFailed] = React.useState(false);
   if (failed) {
     return (
-      <div className={`${className} bg-gray-100 flex items-center justify-center`} onClick={onClick} role={onClick ? 'button' : undefined}>
-        <div className="flex flex-col items-center gap-1.5 text-gray-300">
-          <ImageOff className="w-8 h-8" />
+      <div className={`${className} bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center`} onClick={onClick} role={onClick ? 'button' : undefined}>
+        <div className="flex flex-col items-center gap-2 text-gray-400">
+          <div className="w-12 h-12 rounded-full bg-gray-200/80 flex items-center justify-center">
+            <ImageOff className="w-6 h-6" />
+          </div>
           <span className="text-xs font-medium">Image unavailable</span>
         </div>
       </div>
@@ -43,26 +61,69 @@ function getFileExt(m) {
   return match ? match[1].toUpperCase() : 'FILE';
 }
 
+function isUUID(str) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(str);
+}
+
 function getFileName(m) {
   if (m.name) return m.name;
-  try { return decodeURIComponent((m.url || '').split('/').pop().split('?')[0]); } catch { return 'Document'; }
+  try {
+    const raw = decodeURIComponent((m.url || '').split('/').pop().split('?')[0]);
+    // If filename is a UUID (backend-generated), show a friendly name instead
+    const nameWithoutExt = raw.replace(/\.[^.]+$/, '');
+    if (isUUID(nameWithoutExt)) {
+      const ext = getFileExt(m);
+      return `Document.${ext.toLowerCase()}`;
+    }
+    return raw;
+  } catch { return 'Document'; }
 }
 
 const EXT_COLORS = { PDF: 'bg-red-500', DOC: 'bg-blue-500', DOCX: 'bg-blue-500', XLS: 'bg-green-600', XLSX: 'bg-green-600', PPT: 'bg-orange-500', PPTX: 'bg-orange-500', CSV: 'bg-emerald-500' };
+
+const EXT_TEXT_COLORS = { PDF: 'text-red-600', DOC: 'text-blue-600', DOCX: 'text-blue-600', XLS: 'text-green-700', XLSX: 'text-green-700', PPT: 'text-orange-600', PPTX: 'text-orange-600', CSV: 'text-emerald-600' };
+const EXT_BG_LIGHT = { PDF: 'bg-red-50', DOC: 'bg-blue-50', DOCX: 'bg-blue-50', XLS: 'bg-green-50', XLSX: 'bg-green-50', PPT: 'bg-orange-50', PPTX: 'bg-orange-50', CSV: 'bg-emerald-50' };
+const EXT_BORDER = { PDF: 'border-red-200', DOC: 'border-blue-200', DOCX: 'border-blue-200', XLS: 'border-green-200', XLSX: 'border-green-200', PPT: 'border-orange-200', PPTX: 'border-orange-200', CSV: 'border-emerald-200' };
 
 function DocumentPreview({ m, className, onClick }) {
   const ext = getFileExt(m);
   const name = getFileName(m);
   const color = EXT_COLORS[ext] || 'bg-gray-500';
+  const textColor = EXT_TEXT_COLORS[ext] || 'text-gray-600';
+  const bgLight = EXT_BG_LIGHT[ext] || 'bg-gray-50';
+  const borderColor = EXT_BORDER[ext] || 'border-gray-200';
+  const fileUrl = m.url;
+
+  const handleDownload = (e) => {
+    e.stopPropagation();
+    if (fileUrl) window.open(fileUrl, '_blank');
+  };
+
   return (
-    <div className={`${className} bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center cursor-pointer hover:from-gray-100 hover:to-gray-200 transition-colors`} onClick={onClick}>
-      <div className="flex flex-col items-center gap-2.5 px-4 text-center max-w-[200px]">
-        <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center shadow-lg`}>
-          <FileText className="w-7 h-7 text-white" />
-        </div>
-        <div>
-          <p className="text-xs font-semibold text-gray-700 truncate max-w-[180px]">{name}</p>
-          <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white ${color}`}>{ext}</span>
+    <div className={`${className} flex items-center justify-center p-4`} onClick={onClick}>
+      <div className={`w-full max-w-md rounded-xl border ${borderColor} ${bgLight} p-4 hover:shadow-md transition-all duration-200 cursor-pointer`}>
+        <div className="flex items-center gap-3.5">
+          <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center shadow-sm flex-shrink-0`}>
+            <FileText className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-800 truncate" title={name}>{name}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${textColor} ${bgLight} border ${borderColor}`}>{ext}</span>
+              <span className="text-[11px] text-gray-400">Attachment</span>
+            </div>
+          </div>
+          {fileUrl && (
+            <button
+              type="button"
+              onClick={handleDownload}
+              className="w-9 h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0 shadow-sm"
+              aria-label="Download file"
+              title="Open file"
+            >
+              <Download className="w-4 h-4 text-gray-600" />
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -281,7 +342,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           <div className={`flex items-start justify-between ${headerPad}`}>
             <div className={`flex items-start ${headerGap} min-w-0`}>
               <Link to={actorLink} onClick={(e)=>e.stopPropagation()}>
-                <img src={actorAvatar} alt={actorName} loading="lazy" className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
+                <AvatarImg src={actorAvatar} alt={actorName} className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
               </Link>
               <div className="min-w-0">
               {/* socialContext (e.g., liked by N) removed per design */}
@@ -436,7 +497,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             <div className="px-3 pb-3 mt-0 border-t border-gray-100 pt-2.5 relative min-h-0 transform-gpu overflow-x-hidden">
               {/* New comment input */}
               <div className="flex items-center gap-2">
-                <img src={actorAvatar} alt="Your avatar" loading="lazy" className="w-6 h-6 rounded-full object-cover" />
+                <AvatarImg src={actorAvatar} alt="Your avatar" className="w-6 h-6 rounded-full object-cover" />
                 <div className="relative flex-1">
                   <input
                     placeholder={disabledActions ? 'Sign in to comment…' : 'Add a comment…'}
@@ -583,7 +644,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 {localComments.map((c) => (
                   <div key={c.id} className="py-2.5">
                     <div className="flex items-start gap-2">
-                      <img src={c.avatar} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                      <AvatarImg src={c.avatar} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-baseline justify-between gap-2">
                           <div className="min-w-0">
@@ -715,7 +776,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           </div>
           <div className="p-5">
             <div className="flex items-center gap-3">
-              <img src={avatarUrl} alt={item.title} loading="lazy" className={`${compact ? 'w-10 h-10' : 'w-12 h-12'} rounded-full object-cover border`} />
+              <AvatarImg src={avatarUrl} alt={item.title} className={`${compact ? 'w-10 h-10' : 'w-12 h-12'} rounded-full object-cover border`} />
               <div className="min-w-0">
                 <h3 className={`font-semibold text-gray-900 truncate ${compact ? 'text-base' : 'text-lg'}`} title={item.title}>{item.title}</h3>
                 <p className="text-xs text-gray-600 flex items-center gap-1 mt-0.5">
