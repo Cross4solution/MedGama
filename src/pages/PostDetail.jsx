@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp } from 'lucide-react';
+import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, Bookmark } from 'lucide-react';
 import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
 import { useAuth } from '../context/AuthContext';
@@ -60,6 +60,7 @@ export default function PostDetail() {
           media: p.media_url ? [{ url: p.media_url }] : [],
           specialty: '',
           is_liked: !!p.is_liked,
+          is_bookmarked: !!p.is_bookmarked,
         });
       }
     }).catch(() => {}).finally(() => setLoading(false));
@@ -85,10 +86,11 @@ export default function PostDetail() {
   // Action bar local state (match TimelineCard)
   const [liked, setLiked] = React.useState(!!item?.is_liked);
   const [likeCount, setLikeCount] = React.useState(Number(item?.engagement?.likes) || Number(item?.likes) || 0);
+  const [bookmarked, setBookmarked] = React.useState(!!item?.is_bookmarked);
 
   const likedRef = React.useRef(!!item?.is_liked);
 
-  // Sync liked state when item changes (e.g. after API fetch)
+  // Sync liked/bookmarked state when item changes (e.g. after API fetch)
   React.useEffect(() => {
     if (item?.is_liked !== undefined) {
       const val = !!item.is_liked;
@@ -98,7 +100,10 @@ export default function PostDetail() {
     if (item?.likes !== undefined || item?.engagement?.likes !== undefined) {
       setLikeCount(Number(item?.engagement?.likes) || Number(item?.likes) || 0);
     }
-  }, [item?.id, item?.is_liked]);
+    if (item?.is_bookmarked !== undefined) {
+      setBookmarked(!!item.is_bookmarked);
+    }
+  }, [item?.id, item?.is_liked, item?.is_bookmarked]);
 
   const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
@@ -422,7 +427,7 @@ export default function PostDetail() {
             </div>
 
             {/* Action bar */}
-            <div className="mx-5 py-1 border-t border-b border-gray-100 grid grid-cols-3 gap-0.5">
+            <div className="mx-5 py-1 border-t border-b border-gray-100 grid grid-cols-4 gap-0.5">
               <button
                 type="button"
                 className={`inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-[13px] font-medium transition-all ${liked ? 'text-blue-600 bg-blue-50/60' : 'text-gray-600 hover:bg-gray-50'}`}
@@ -440,6 +445,18 @@ export default function PostDetail() {
                 Comment
               </button>
               <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-[13px]" />
+              <button
+                type="button"
+                className={`inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-[13px] font-medium transition-all ${bookmarked ? 'text-teal-600 bg-teal-50/60' : 'text-gray-600 hover:bg-gray-50'}`}
+                onClick={() => {
+                  if (!item?.id) return;
+                  setBookmarked(b => !b);
+                  medStreamAPI.toggleBookmark({ bookmarked_type: 'post', target_id: item.id }).catch(() => setBookmarked(b => !b));
+                }}
+              >
+                <Bookmark className="w-[16px] h-[16px]" strokeWidth={1.7} fill={bookmarked ? 'currentColor' : 'none'} />
+                Save
+              </button>
             </div>
 
             {/* Comments section */}

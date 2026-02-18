@@ -38,6 +38,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const [showCommentsPreview, setShowCommentsPreview] = useState(false);
   const [liked, setLiked] = useState(!!item?.is_liked);
   const [likeCount, setLikeCount] = useState(Number(item?.likes) || 0);
+  const [bookmarked, setBookmarked] = useState(!!item?.is_bookmarked);
   const [commentText, setCommentText] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
   const [replyTo, setReplyTo] = useState(''); // hangi yorumun altında yanıt alanı açık
@@ -676,8 +677,13 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.6} />
                 </button>
                 <ShareMenu title="Share" url={shareUrl} showNative={false} />
-                <button type="button" aria-label="Save" className="p-1.5 rounded-full transition text-gray-500 hover:bg-gray-100 hover:text-teal-600" onClick={(e)=>e.stopPropagation()}>
-                  <Bookmark className="w-3.5 h-3.5" />
+                <button type="button" aria-label="Save" className={`p-1.5 rounded-full transition ${bookmarked ? 'text-teal-600 bg-teal-50' : 'text-gray-500 hover:bg-gray-100 hover:text-teal-600'}`} onClick={(e)=>{
+                  e.stopPropagation();
+                  if (!item?.id) return;
+                  setBookmarked(b => !b);
+                  medStreamAPI.toggleBookmark({ bookmarked_type: 'post', target_id: item.id }).catch(() => setBookmarked(b => !b));
+                }}>
+                  <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : ''}`} />
                 </button>
               </div>
             </div>

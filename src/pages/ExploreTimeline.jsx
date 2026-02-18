@@ -51,6 +51,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
             visibility: 'public',
             media: p.media_url ? [{ url: p.media_url }] : [{ url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' }],
             is_liked: !!p.is_liked,
+            is_bookmarked: !!p.is_bookmarked,
           };
         }));
       }

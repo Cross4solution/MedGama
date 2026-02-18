@@ -28,7 +28,7 @@ class MedStreamController extends Controller
             ->orderByDesc('created_at')
             ->paginate($request->per_page ?? 20);
 
-        // Append is_liked for authenticated user
+        // Append is_liked + is_bookmarked for authenticated user
         if ($userId) {
             $postIds = $posts->pluck('id')->toArray();
             $likedPostIds = MedStreamLike::where('user_id', $userId)
@@ -36,9 +36,16 @@ class MedStreamController extends Controller
                 ->whereIn('post_id', $postIds)
                 ->pluck('post_id')
                 ->toArray();
+            $bookmarkedPostIds = MedStreamBookmark::where('user_id', $userId)
+                ->where('is_active', true)
+                ->where('bookmarked_type', 'post')
+                ->whereIn('target_id', $postIds)
+                ->pluck('target_id')
+                ->toArray();
 
-            $posts->getCollection()->transform(function ($post) use ($likedPostIds) {
+            $posts->getCollection()->transform(function ($post) use ($likedPostIds, $bookmarkedPostIds) {
                 $post->is_liked = in_array($post->id, $likedPostIds);
+                $post->is_bookmarked = in_array($post->id, $bookmarkedPostIds);
                 return $post;
             });
         }
@@ -52,10 +59,13 @@ class MedStreamController extends Controller
             ->with(['author:id,fullname,avatar,role_id', 'clinic:id,fullname,avatar', 'engagementCounter', 'comments' => fn($q) => $q->active()->where('is_hidden', false)->with('author:id,fullname,avatar')->latest()->limit(20)])
             ->findOrFail($id);
 
-        // Append is_liked for authenticated user
+        // Append is_liked + is_bookmarked for authenticated user
         $userId = $request->user()?->id;
         $post->is_liked = $userId
             ? MedStreamLike::where('user_id', $userId)->where('post_id', $id)->where('is_active', true)->exists()
+            : false;
+        $post->is_bookmarked = $userId
+            ? MedStreamBookmark::where('user_id', $userId)->where('bookmarked_type', 'post')->where('target_id', $id)->where('is_active', true)->exists()
             : false;
 
         return response()->json(['post' => $post]);
