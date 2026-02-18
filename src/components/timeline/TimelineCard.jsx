@@ -131,16 +131,50 @@ function DocumentPreview({ m, className, onClick }) {
 }
 
 function VideoPreview({ m, className, onClick }) {
-  const thumb = m.thumb || m.url;
-  const isThumbImage = thumb && !thumb.endsWith('.mp4') && !thumb.endsWith('.webm') && !thumb.endsWith('.mov');
+  const [playing, setPlaying] = useState(false);
+  const videoRef = useRef(null);
+  const videoSrc = m.original || m.url;
+
+  const handlePlay = (e) => {
+    e?.stopPropagation?.();
+    e?.preventDefault?.();
+    setPlaying(true);
+    setTimeout(() => videoRef.current?.play?.(), 50);
+  };
+
+  if (playing) {
+    return (
+      <div className={`${className} relative bg-black flex items-center justify-center`}>
+        <video
+          ref={videoRef}
+          src={videoSrc}
+          controls
+          autoPlay
+          playsInline
+          className="w-full h-full object-contain"
+          poster={m.thumb || undefined}
+        />
+      </div>
+    );
+  }
+
+  const thumb = m.thumb;
+  const hasThumb = thumb && !thumb.endsWith('.mp4') && !thumb.endsWith('.webm') && !thumb.endsWith('.mov');
   return (
-    <div className={`${className} relative bg-gray-900 flex items-center justify-center cursor-pointer group`} onClick={onClick}>
-      {isThumbImage ? (
-        <img src={thumb} alt="Video" loading="lazy" className="w-full h-full object-cover opacity-80" onError={(e) => { e.target.style.display = 'none'; }} />
+    <div className={`${className} relative bg-black flex items-center justify-center cursor-pointer group`} onClick={handlePlay}>
+      {hasThumb ? (
+        <img src={thumb} alt="Video" loading="lazy" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
       ) : (
-        <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900" />
+        <video
+          src={videoSrc}
+          muted
+          preload="metadata"
+          playsInline
+          className="w-full h-full object-cover pointer-events-none"
+          onLoadedData={(e) => { e.target.currentTime = 0.5; }}
+        />
       )}
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 flex items-center justify-center bg-black/10">
         <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
           <Play className="w-6 h-6 text-gray-800 ml-0.5" fill="currentColor" />
         </div>
@@ -152,7 +186,7 @@ function VideoPreview({ m, className, onClick }) {
 function MediaItem({ m, alt, className, onClick = undefined }) {
   const type = getMediaType(m);
   if (type === 'document') return <DocumentPreview m={m} className={className} onClick={onClick} />;
-  if (type === 'video') return <VideoPreview m={m} className={className} onClick={onClick} />;
+  if (type === 'video') return <VideoPreview m={m} className={className} />;
   return <MediaImg src={m.url} alt={alt} className={className} onClick={onClick} />;
 }
 
