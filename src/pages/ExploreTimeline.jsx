@@ -236,8 +236,13 @@ export default function ExploreTimeline() {
       console.log('[ExploreTimeline] Post created successfully:', res);
       // Refresh feed to show new post
       setFeedRefreshKey(k => k + 1);
+      setSort('recent');
+      setTab('latest');
     } catch (err) {
-      console.error('[ExploreTimeline] Post failed:', err?.response?.status, err?.response?.data || err?.message);
+      const status = err?.status || err?.response?.status;
+      const msg = err?.message || err?.response?.data?.message || 'Unknown error';
+      console.error('[ExploreTimeline] Post failed:', status, msg);
+      alert(`Post gönderilemedi: ${status ? `HTTP ${status} — ` : ''}${msg}`);
     } finally {
       setComposerPosting(false);
       setIsComposerOpen(false);
