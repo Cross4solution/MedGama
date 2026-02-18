@@ -210,7 +210,7 @@ export default function ExploreTimeline() {
     try {
       const saved = sessionStorage.getItem('explore_local_posts');
       if (!saved) return [];
-      return JSON.parse(saved).filter(p => !p._uploading);
+      return JSON.parse(saved).filter(p => !p._uploading && !p._uploadFailed);
     } catch { return []; }
   });
 
@@ -218,7 +218,7 @@ export default function ExploreTimeline() {
   useEffect(() => {
     try {
       const persistable = localPosts
-        .filter(p => !p._uploading)
+        .filter(p => !p._uploading && !p._uploadFailed)
         .map(sanitizeBlobUrls);
       if (persistable.length > 0) {
         sessionStorage.setItem('explore_local_posts', JSON.stringify(persistable));
@@ -683,7 +683,7 @@ export default function ExploreTimeline() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-amber-900">Upload couldn't be completed</p>
                       <p className="text-[13px] text-amber-700 mt-0.5 leading-relaxed">{uploadError}</p>
-                      <p className="text-[11px] text-amber-500 mt-1.5">Your post text has been saved. You can try again from the composer.</p>
+                      <p className="text-[11px] text-amber-500 mt-1.5">Your post was not published. Please try again with a smaller file.</p>
                     </div>
                     <button onClick={() => setUploadError('')} className="w-7 h-7 rounded-full hover:bg-amber-100 flex items-center justify-center text-amber-400 hover:text-amber-600 transition-colors flex-shrink-0">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
