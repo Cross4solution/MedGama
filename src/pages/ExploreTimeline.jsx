@@ -15,7 +15,7 @@ import { medStreamAPI } from '../lib/api';
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
-function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you' }) {
+function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you', refreshKey = 0 }) {
   // API'den gelen postlar
   const [apiPosts, setApiPosts] = useState([]);
   const [apiLoaded, setApiLoaded] = useState(false);
@@ -51,7 +51,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
       }
       setApiLoaded(true);
     }).catch(() => setApiLoaded(true));
-  }, []);
+  }, [refreshKey]);
 
   // Kaynak data — mock fallback
   const base = useMemo(() => {
@@ -180,6 +180,7 @@ export default function ExploreTimeline() {
   const [tab, setTab] = useState('for-you'); // for-you | latest
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loadMoreRef = useRef(null);
+  const [feedRefreshKey, setFeedRefreshKey] = useState(0);
 
   // Composer state
   const [isComposerOpen, setIsComposerOpen] = useState(false);
@@ -232,28 +233,9 @@ export default function ExploreTimeline() {
       const postType = composerVideoUrls.length > 0 ? 'video' : composerPhotoUrls.length > 0 ? 'image' : 'text';
       const payload = { post_type: postType, content: trimmed || undefined };
       const res = await medStreamAPI.createPost(payload);
-      const p = res?.post || res;
-      if (p) {
-        const newItem = {
-          id: p.id || 'local-' + Date.now(),
-          type: 'doctor_update',
-          title: p.author?.fullname || user?.name || 'Doctor',
-          subtitle: '',
-          city: '',
-          img: p.media_url || (composerPhotoUrls[0] || '/images/petr-magera-huwm7malj18-unsplash_720.jpg'),
-          text: p.content || trimmed,
-          likes: 0,
-          comments: 0,
-          specialty: '',
-          countryCode: '',
-          actor: { id: p.author_id || user?.id, role: user?.role || 'doctor', name: p.author?.fullname || user?.name || 'Doctor', title: '', avatarUrl: user?.avatar || '/images/portrait-candid-male-doctor_720.jpg' },
-          socialContext: '',
-          timeAgo: 'Just now',
-          visibility: 'public',
-          media: p.media_url ? [{ url: p.media_url }] : composerPhotoUrls.length ? [{ url: composerPhotoUrls[0] }] : [],
-        };
-        setPage(1); // refresh feed
-      }
+      console.log('[ExploreTimeline] Post created successfully:', res);
+      // Refresh feed to show new post
+      setFeedRefreshKey(k => k + 1);
     } catch (err) {
       console.error('[ExploreTimeline] Post failed:', err?.response?.status, err?.response?.data || err?.message);
     } finally {
@@ -283,6 +265,7 @@ export default function ExploreTimeline() {
     pageSize: 12,
     sort,
     tab,
+    refreshKey: feedRefreshKey,
   });
 
   // seçenekler
