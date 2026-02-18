@@ -454,7 +454,7 @@ export default function ExploreTimeline() {
 
           {/* Feed (RIGHT) */}
           <section className="order-1 lg:order-2">
-            <div className="max-w-[44rem] mx-auto lg:ml-8 lg:mr-auto">
+            <div className="max-w-[555px] mx-auto">
               {/* Composer (doctors/clinics only) */}
               {(() => {
                 const isDoctor = !!(user && (user.role === 'doctor' || (user?.specialty || user?.hospital || user?.access)));

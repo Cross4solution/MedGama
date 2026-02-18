@@ -134,9 +134,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   // Compact mode helpers
   const avatarSize = compact ? 'w-10 h-10' : 'w-12 h-12';
   const nameText = compact ? 'text-sm md:text-[15px] leading-5' : 'text-[15px] md:text-base';
-  const singleImgMaxH = compact ? 'max-h-[340px]' : 'max-h-[480px]';
-  const grid2H = compact ? 'h-[168px]' : 'h-[220px]';
-  const grid3LeftH = compact ? 'h-[280px]' : 'h-[330px]';
+  const singleImgMaxH = compact ? 'max-h-[340px]' : 'max-h-[400px]';
+  const grid2H = compact ? 'h-[168px]' : 'h-[200px]';
+  const grid3LeftH = compact ? 'h-[280px]' : 'h-[300px]';
   const grid3SmallH = compact ? 'h-[136px]' : 'h-[164px]';
   const grid4H = compact ? 'h-[168px]' : 'h-[200px]';
   const headerPad = compact ? 'px-3 pt-2.5' : 'px-3 pt-3';
@@ -186,7 +186,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
   return (
     <article
-      className={`group rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden`}
+      className={`group rounded-lg border border-gray-200/80 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-200 overflow-hidden`}
     >
       {view === 'list' ? (
         <div className="flex flex-col">
