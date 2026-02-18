@@ -9,7 +9,7 @@ export default function TimelineShareBox() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
 
-  const avatar = '/images/portrait-candid-male-doctor_720.jpg';
+  const avatar = user?.avatar || '/images/default/default-avatar.svg';
   const name = user?.name || 'Guest';
 
   function handlePost(newPost) {
