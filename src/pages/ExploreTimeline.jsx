@@ -48,6 +48,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
               avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
             },
             socialContext: '',
+            created_at: p.created_at || null,
             timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
             visibility: 'public',
             media: (() => {
@@ -168,9 +169,15 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     }
     // Sıralama
     if (sort === 'top') {
-      list = [...list].sort((a,b) => (b.likes + b.comments) - (a.likes + a.comments));
+      // Engagement score: likes * 1 + comments * 2
+      list = [...list].sort((a,b) => ((b.likes || 0) + (b.comments || 0) * 2) - ((a.likes || 0) + (a.comments || 0) * 2));
     } else if (sort === 'recent') {
-      list = [...list];
+      // Most Recent: created_at DESC
+      list = [...list].sort((a, b) => {
+        const da = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const db = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return db - da;
+      });
     }
     // Pinned (injected) posts always first
     return [...pinned, ...list];
@@ -386,6 +393,7 @@ export default function ExploreTimeline() {
             avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
           },
           socialContext: '',
+          created_at: p.created_at || new Date().toISOString(),
           timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
           visibility: 'public',
           media: (() => {
