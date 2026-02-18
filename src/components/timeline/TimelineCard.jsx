@@ -462,48 +462,72 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             <div className="mt-2.5">
               {media.length === 1 && (
                 <div className="relative">
-                  <button
-                    type="button"
-                    onClick={goToPost}
-                    className="block w-full text-left"
-                  >
-                    <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
-                  </button>
+                  {getMediaType(media[0]) === 'video' ? (
+                    <div className="block w-full">
+                      <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={goToPost}
+                      className="block w-full text-left"
+                    >
+                      <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
+                    </button>
+                  )}
                 </div>
               )}
               {media.length === 2 && (
                 <div className="grid grid-cols-2 gap-2">
                   {media.slice(0,2).map((m, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={goToPost}
-                      className="block w-full text-left"
-                    >
-                      <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid2H} object-cover`} />
-                    </button>
-                  ))}
-                </div>
-              )}
-              {media.length === 3 && (
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={goToPost}
-                    className="block w-full text-left"
-                  >
-                    <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${grid3LeftH} object-cover col-span-1`} />
-                  </button>
-                  <div className="grid grid-rows-2 gap-2">
-                    {media.slice(1,3).map((m, i) => (
+                    getMediaType(m) === 'video' ? (
+                      <div key={i} className="block w-full">
+                        <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid2H} object-cover`} />
+                      </div>
+                    ) : (
                       <button
                         key={i}
                         type="button"
                         onClick={goToPost}
                         className="block w-full text-left"
                       >
-                        <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid3SmallH} object-cover`} />
+                        <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid2H} object-cover`} />
                       </button>
+                    )
+                  ))}
+                </div>
+              )}
+              {media.length === 3 && (
+                <div className="grid grid-cols-2 gap-2">
+                  {getMediaType(media[0]) === 'video' ? (
+                    <div className="block w-full">
+                      <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${grid3LeftH} object-cover col-span-1`} />
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={goToPost}
+                      className="block w-full text-left"
+                    >
+                      <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${grid3LeftH} object-cover col-span-1`} />
+                    </button>
+                  )}
+                  <div className="grid grid-rows-2 gap-2">
+                    {media.slice(1,3).map((m, i) => (
+                      getMediaType(m) === 'video' ? (
+                        <div key={i} className="block w-full">
+                          <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid3SmallH} object-cover`} />
+                        </div>
+                      ) : (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={goToPost}
+                          className="block w-full text-left"
+                        >
+                          <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid3SmallH} object-cover`} />
+                        </button>
+                      )
                     ))}
                   </div>
                 </div>
@@ -512,13 +536,19 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 <div className="grid grid-cols-2 gap-2">
                   {media.slice(0,4).map((m, i) => (
                     <div key={i} className="relative">
-                      <button
-                        type="button"
-                        onClick={goToPost}
-                        className="block w-full text-left"
-                      >
-                        <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid4H} object-cover`} />
-                      </button>
+                      {getMediaType(m) === 'video' ? (
+                        <div className="block w-full">
+                          <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid4H} object-cover`} />
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={goToPost}
+                          className="block w-full text-left"
+                        >
+                          <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid4H} object-cover`} />
+                        </button>
+                      )}
                       {i === 3 && media.length > 4 && (
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                           <span className="text-white text-2xl font-semibold">+{media.length - 3}</span>

@@ -579,21 +579,20 @@ const Header = () => {
                     );
                   })}
                 </div>
-                {/* CRM — separate platform button */}
+                {/* CRM */}
                 {showCRM && (
-                  <div className="px-3 pt-2">
+                  <div className="px-2">
                     <Link
                       to="/crm"
                       onClick={closeMenu}
-                      className="flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:border-slate-300 transition-all duration-200 group"
+                      className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${pathname.startsWith('/crm') ? 'bg-gradient-to-r from-teal-50 to-emerald-50/60 text-teal-700 shadow-sm ring-1 ring-teal-100' : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-900'}`}
                     >
                       <span className="flex items-center gap-2.5">
-                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-slate-200/90 group-hover:border-slate-300 transition-colors">
-                          <LayoutDashboard className="w-3.5 h-3.5 text-slate-600" />
+                        <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${pathname.startsWith('/crm') ? 'bg-teal-100/80' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
+                          <LayoutDashboard className={`w-3.5 h-3.5 ${pathname.startsWith('/crm') ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
                         </span>
-                        <span className="text-[13px] font-semibold">CRM Platform</span>
+                        CRM Dashboard
                       </span>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-colors" />
                     </Link>
                   </div>
                 )}
