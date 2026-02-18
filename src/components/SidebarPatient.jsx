@@ -126,15 +126,15 @@ export default function SidebarPatient() {
                   <div className="mt-2">
                     <Link
                       to="/crm"
-                      className="group flex items-center justify-between w-full px-3.5 py-3 rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-lg shadow-slate-300/30 hover:from-slate-700 hover:to-slate-800 transition-all duration-200"
+                      className="group flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:border-slate-300 transition-all duration-200"
                     >
                       <span className="flex items-center gap-2.5">
-                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 group-hover:bg-white/20 transition-colors">
-                          <LayoutDashboard className="w-3.5 h-3.5 text-white/90" />
+                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-slate-200/90 group-hover:border-slate-300 transition-colors">
+                          <LayoutDashboard className="w-3.5 h-3.5 text-slate-600" />
                         </span>
-                        <span className="text-[13px] font-semibold">CRM Dashboard</span>
+                        <span className="text-[13px] font-semibold">CRM Platform</span>
                       </span>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-white/50 group-hover:text-white/80 transition-colors" />
+                      <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-colors" />
                     </Link>
                   </div>
                 )}
@@ -238,15 +238,15 @@ export default function SidebarPatient() {
                     <Link
                       to="/crm"
                       onClick={() => setSidebarMobileOpen(false)}
-                      className="group flex items-center justify-between w-full px-3.5 py-3 rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-lg shadow-slate-300/30 hover:from-slate-700 hover:to-slate-800 transition-all duration-200"
+                      className="group flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:border-slate-300 transition-all duration-200"
                     >
                       <span className="flex items-center gap-2.5">
-                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 group-hover:bg-white/20 transition-colors">
-                          <LayoutDashboard className="w-3.5 h-3.5 text-white/90" />
+                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-slate-200/90 group-hover:border-slate-300 transition-colors">
+                          <LayoutDashboard className="w-3.5 h-3.5 text-slate-600" />
                         </span>
-                        <span className="text-[13px] font-semibold">CRM Dashboard</span>
+                        <span className="text-[13px] font-semibold">CRM Platform</span>
                       </span>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-white/50 group-hover:text-white/80 transition-colors" />
+                      <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-colors" />
                     </Link>
                   </div>
                 )}

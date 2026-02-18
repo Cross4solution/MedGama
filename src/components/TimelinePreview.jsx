@@ -113,13 +113,13 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
         </div>
         <div className="rounded-2xl border border-gray-200 bg-gray-50/50 overflow-hidden">
           {/* Scrollable feed area */}
-          <div ref={scrollRef} className="h-[86vh] overflow-y-auto px-3 pt-4 pb-4">
-            <div className="space-y-4">
+          <div ref={scrollRef} className="h-[72vh] overflow-y-auto px-2.5 pt-3 pb-3">
+            <div className="space-y-3">
               {data.slice(0, 8).map((item) => (
                 <div
                   key={item.id}
                   id={`post-${item.id}`}
-                  className="max-w-2xl mx-auto"
+                  className="max-w-xl mx-auto"
                   onClick={() => { try { sessionStorage.setItem('lastPostId', String(item.id)); } catch {} }}
                 >
                   <TimelineCard item={item} disabledActions={false} view={'list'} compact={true} />
