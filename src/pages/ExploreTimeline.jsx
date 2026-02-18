@@ -17,7 +17,7 @@ import { resizeImages } from '../utils/imageResize';
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
-function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you', refreshKey = 0, injectedPosts = [] }) {
+function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you', refreshKey = 0, injectedPosts = [], onApiRefresh }) {
   // API'den gelen postlar
   const [apiPosts, setApiPosts] = useState([]);
   const [apiLoaded, setApiLoaded] = useState(false);
@@ -26,6 +26,8 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     medStreamAPI.posts({ per_page: 50 }).then((res) => {
       const list = res?.data || [];
       if (list.length) {
+        const apiIds = list.map(p => p.id);
+        onApiRefresh?.(apiIds);
         setApiPosts(list.map((p) => {
           const ec = p.engagement_counter || p.engagementCounter || {};
           return {
@@ -460,6 +462,10 @@ export default function ExploreTimeline() {
     tab,
     refreshKey: feedRefreshKey,
     injectedPosts: localPosts,
+    onApiRefresh: (apiIds) => {
+      // Remove localPosts that are now in API results to prevent duplicates/jumps
+      setLocalPosts(prev => prev.filter(p => !apiIds.includes(p.id)));
+    },
   });
 
   // seçenekler
