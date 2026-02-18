@@ -315,7 +315,7 @@ class MedStreamController extends Controller
         if ($existing) {
             if ($existing->is_active) {
                 $existing->update(['is_active' => false]);
-                MedStreamEngagementCounter::where('post_id', $postId)->decrement('like_count');
+                MedStreamEngagementCounter::where('post_id', $postId)->where('like_count', '>', 0)->decrement('like_count');
                 return response()->json(['liked' => false]);
             } else {
                 $existing->update(['is_active' => true]);

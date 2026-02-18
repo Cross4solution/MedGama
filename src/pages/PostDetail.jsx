@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, Bookmark, FileText, Play, Download } from 'lucide-react';
+import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, FileText, Play, Download } from 'lucide-react';
 import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
 import { useAuth } from '../context/AuthContext';
@@ -76,7 +76,7 @@ export default function PostDetail() {
           title: p.author?.fullname || 'Doctor',
           subtitle: '',
           text: p.content || '',
-          img: p.media_url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+          img: p.media_url || '',
           likes: (p.engagement_counter || p.engagementCounter)?.like_count || 0,
           comments: (p.engagement_counter || p.engagementCounter)?.comment_count || 0,
           actor: {
@@ -109,8 +109,9 @@ export default function PostDetail() {
   // Image gallery state
   const mediaList = Array.isArray(item?.media) && item?.media.length > 0
     ? item.media.filter(m => m.url && !m.url.startsWith('blob:'))
-    : (item?.img && !item.img.startsWith('blob:') ? [{ url: item.img }] : []);
-  const [imgIndex, setImgIndex] = React.useState(0);
+    : [];
+  const initialMediaIndex = state?.mediaIndex || 0;
+  const [imgIndex, setImgIndex] = React.useState(initialMediaIndex);
   const [heroHeightPx, setHeroHeightPx] = React.useState(0);
   const [heroOpacity, setHeroOpacity] = React.useState(1);
   const [heroShiftPx, setHeroShiftPx] = React.useState(0);
@@ -531,7 +532,7 @@ export default function PostDetail() {
             </div>
 
             {/* Action bar */}
-            <div className="mx-5 py-1 border-t border-b border-gray-100 grid grid-cols-4 gap-0.5">
+            <div className="mx-5 py-1 border-t border-b border-gray-100 grid grid-cols-3 gap-0.5">
               <button
                 type="button"
                 className={`inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-[13px] font-medium transition-all ${liked ? 'text-blue-600 bg-blue-50/60' : 'text-gray-600 hover:bg-gray-50'}`}
@@ -549,18 +550,6 @@ export default function PostDetail() {
                 Comment
               </button>
               <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-[13px]" />
-              <button
-                type="button"
-                className={`inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-[13px] font-medium transition-all ${bookmarked ? 'text-teal-600 bg-teal-50/60' : 'text-gray-600 hover:bg-gray-50'}`}
-                onClick={() => {
-                  if (!item?.id) return;
-                  setBookmarked(b => !b);
-                  medStreamAPI.toggleBookmark({ bookmarked_type: 'post', target_id: item.id }).catch(() => setBookmarked(b => !b));
-                }}
-              >
-                <Bookmark className="w-[16px] h-[16px]" strokeWidth={1.7} fill={bookmarked ? 'currentColor' : 'none'} />
-                Save
-              </button>
             </div>
 
             {/* Comments section */}
@@ -618,11 +607,7 @@ export default function PostDetail() {
                                   <p className="text-[13px] text-gray-700 leading-relaxed mt-0.5">{c.text}</p>
                                 </div>
                                 <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400 pl-2">
-                                  {(!user?.id || c.author_id !== user.id) && (
-                                    <><button type="button" className="font-semibold hover:text-gray-600 transition-colors">Like</button>
-                                    <span className="text-gray-200">|</span></>
-                                  )}
-                                  <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(`@${c.name} `); }}>Reply</button>
+                                  <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
                                 </div>
                                 {replyTo === c.id && (
                                   <div className="mt-2 ml-2 pl-3 border-l-2 border-teal-200">

@@ -139,12 +139,23 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
       setVideoUrls([]);
     } catch (err) {
       console.error('[PostCreateModal] Post creation failed:', err?.response?.status, err?.response?.data || err?.message);
-      let errorMsg = err?.response?.data?.message || err?.message || 'Upload failed. Please try again.';
-      if (err?.response?.status === 413) {
-        errorMsg = 'Your file exceeds the upload limit. Try compressing it or choosing a smaller file.';
-      } else if (err?.response?.status === 422) {
-        errorMsg = 'This file type is not supported. Please use JPG, PNG, MP4, PDF, or Office documents.';
-      } else if (err?.message?.includes('Network')) {
+      const rawMsg = err?.response?.data?.message || err?.data?.message || err?.message || '';
+      let errorMsg = rawMsg || 'Upload failed. Please try again.';
+      if (err?.response?.status === 413 || err?.status === 413) {
+        errorMsg = 'Your file exceeds the server upload limit. Please compress or choose a smaller file (max ~50 MB).';
+      } else if (err?.response?.status === 422 || err?.status === 422) {
+        // Parse Laravel validation errors for user-friendly messages
+        const errors = err?.response?.data?.errors || err?.data?.errors || err?.errors || {};
+        const firstKey = Object.keys(errors)[0];
+        const firstError = firstKey ? (Array.isArray(errors[firstKey]) ? errors[firstKey][0] : errors[firstKey]) : '';
+        if (firstError && firstError.includes('failed to upload')) {
+          errorMsg = 'File upload failed. The file may be too large (max 50 MB for videos, 10 MB for images, 20 MB for documents). Please try a smaller file.';
+        } else if (firstError && firstError.includes('mimetypes')) {
+          errorMsg = 'This file type is not supported. Please use JPG, PNG, MP4, PDF, or Office documents.';
+        } else {
+          errorMsg = firstError || 'This file type or size is not supported. Please try a different file.';
+        }
+      } else if ((err?.message || '').includes('Network') || rawMsg.includes('Network')) {
         errorMsg = 'Connection lost. Please check your internet and try again.';
       }
       // Keep modal open — show error so user can fix and retry
@@ -336,6 +347,14 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
               className="hidden"
               onChange={(e)=> {
                 const newFiles = Array.from(e.target.files || []);
+                const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50 MB
+                const oversized = newFiles.filter(f => f.size > MAX_VIDEO_SIZE);
+                if (oversized.length > 0) {
+                  const sizeMB = (oversized[0].size / (1024 * 1024)).toFixed(1);
+                  setPostError(`Video file is too large (${sizeMB} MB). Maximum allowed size is 50 MB. Please compress or choose a smaller file.`);
+                  try { e.target.value = ''; } catch {}
+                  return;
+                }
                 setVideos(prev => {
                   const merged = [...prev];
                   newFiles.forEach(f => {

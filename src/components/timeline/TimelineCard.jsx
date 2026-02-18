@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Share2, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2 } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
@@ -224,6 +224,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const [showCommentsPreview, setShowCommentsPreview] = useState(false);
   const [liked, setLiked] = useState(!!item?.is_liked);
   const [likeCount, setLikeCount] = useState(Number(item?.likes) || 0);
+  const [commentCount, setCommentCount] = useState(Number(item?.comments) || 0);
   const [bookmarked, setBookmarked] = useState(!!item?.is_bookmarked);
   const [commentText, setCommentText] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
@@ -304,13 +305,15 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     if (!text) { setReplyTo(''); setReplyText(''); return; }
     const newComment = {
       id: 'reply-' + Date.now(),
-      name: item?.actor?.name || 'You',
-      title: item?.actor?.title || '',
-      avatar: item?.actor?.avatarUrl || '/images/default/default-avatar.svg',
+      author_id: authUser?.id,
+      name: authUser?.name || 'You',
+      title: '',
+      avatar: authUser?.avatar || '/images/default/default-avatar.svg',
       text,
       time: 'Just now',
     };
     setLocalComments(prev => [...prev, newComment]);
+    setCommentCount(c => c + 1);
     // Fire API call
     if (item?.id) {
       medStreamAPI.createComment(item.id, { content: text }).catch(() => {});
@@ -336,7 +339,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const timeAgo = item?.timeAgo || '1 gün';
   const timeLabel = toEnglishTimestamp(timeAgo);
   const socialContext = item?.socialContext || (item?.likes ? `${Math.max(1, item.likes % 7)} kişi beğendi` : '');
-  const media = Array.isArray(item?.media) && item.media.length > 0 ? item.media : (item?.img ? [{ url: item.img, alt: item.title }] : []);
+  const media = Array.isArray(item?.media) && item.media.length > 0 ? item.media : [];
   const actorLink = item?.actor?.role === 'doctor'
     ? `/doctor/${encodeURIComponent(item?.actor?.id || 'unknown')}`
     : item?.actor?.role === 'patient'
@@ -355,13 +358,13 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     }
   })();
 
-  const goToPost = (e) => {
+  const goToPost = (e, mediaIndex) => {
     e?.stopPropagation?.();
     try {
       sessionStorage.setItem('lastPostId', String(item.id));
       sessionStorage.setItem('returnScroll', String(window.scrollY || 0));
     } catch {}
-    navigate(`/post/${encodeURIComponent(item.id)}`, { state: { item, prevScroll: (typeof window !== 'undefined' ? window.scrollY : 0) } });
+    navigate(`/post/${encodeURIComponent(item.id)}`, { state: { item, mediaIndex: mediaIndex || 0, prevScroll: (typeof window !== 'undefined' ? window.scrollY : 0) } });
   };
 
   // Compact mode helpers
@@ -474,14 +477,16 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         <span className="font-medium">Delete</span>
                       </button>
                     )}
-                    <button
-                      type="button"
-                      className="w-full px-3 py-2 hover:bg-red-50 text-red-600 inline-flex items-center gap-2"
-                      onClick={() => { setShowReportModal(true); setShowMoreMenu(false); }}
-                    >
-                      <AlertTriangle className="w-4 h-4" />
-                      <span className="font-medium">Report</span>
-                    </button>
+                    {!(authUser?.id && (item?.author_id === authUser.id || item?.actor?.id === authUser.id)) && (
+                      <button
+                        type="button"
+                        className="w-full px-3 py-2 hover:bg-red-50 text-red-600 inline-flex items-center gap-2"
+                        onClick={() => { setShowReportModal(true); setShowMoreMenu(false); }}
+                      >
+                        <AlertTriangle className="w-4 h-4" />
+                        <span className="font-medium">Report</span>
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -525,7 +530,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   ) : (
                     <button
                       type="button"
-                      onClick={goToPost}
+                      onClick={(e) => goToPost(e, 0)}
                       className="block w-full text-left"
                     >
                       <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
@@ -544,7 +549,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                       <button
                         key={i}
                         type="button"
-                        onClick={goToPost}
+                        onClick={(e) => goToPost(e, i)}
                         className="block w-full text-left"
                       >
                         <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid2H} object-cover`} />
@@ -562,7 +567,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   ) : (
                     <button
                       type="button"
-                      onClick={goToPost}
+                      onClick={(e) => goToPost(e, 0)}
                       className="block w-full text-left"
                     >
                       <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${grid3LeftH} object-cover col-span-1`} />
@@ -578,7 +583,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         <button
                           key={i}
                           type="button"
-                          onClick={goToPost}
+                          onClick={(e) => goToPost(e, i + 1)}
                           className="block w-full text-left"
                         >
                           <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid3SmallH} object-cover`} />
@@ -599,7 +604,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                       ) : (
                         <button
                           type="button"
-                          onClick={goToPost}
+                          onClick={(e) => goToPost(e, i)}
                           className="block w-full text-left"
                         >
                           <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid4H} object-cover`} />
@@ -630,7 +635,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               className="text-gray-400 hover:text-gray-600 hover:underline transition-colors"
               onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
             >
-              <span className="tabular-nums font-medium">{item.comments}</span> comments
+              <span className="tabular-nums font-medium">{commentCount}</span> comments
             </button>
           </div>
 
@@ -639,7 +644,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             <div className="px-3 pb-3 mt-0 border-t border-gray-100 pt-2.5 relative min-h-0 transform-gpu overflow-x-hidden">
               {/* New comment input */}
               <div className="flex items-center gap-2">
-                <AvatarImg src={actorAvatar} alt="Your avatar" className="w-6 h-6 rounded-full object-cover" />
+                <AvatarImg src={authUser?.avatar || '/images/default/default-avatar.svg'} alt="Your avatar" className="w-6 h-6 rounded-full object-cover" />
                 <div className="relative flex-1">
                   <input
                     placeholder={disabledActions ? 'Sign in to comment…' : 'Add a comment…'}
@@ -652,7 +657,8 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         e.stopPropagation();
                         const newComment = commentText.trim();
                         medStreamAPI.createComment(item.id, { content: newComment }).catch(() => {});
-                        setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: actorName, title: actorTitle, avatar: actorAvatar, text: newComment, time: 'Just now' }]);
+                        setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now' }]);
+                        setCommentCount(c => c + 1);
                         setCommentText('');
                         showSuccessToast('Comment posted');
                       }
@@ -677,7 +683,8 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                           if (!commentText.trim() || !item?.id) return;
                           const newComment = commentText.trim();
                           medStreamAPI.createComment(item.id, { content: newComment }).catch(() => {});
-                          setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: actorName, title: actorTitle, avatar: actorAvatar, text: newComment, time: 'Just now' }]);
+                          setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now' }]);
+                          setCommentCount(c => c + 1);
                           setCommentText('');
                           showSuccessToast('Comment posted');
                         }}
@@ -723,14 +730,16 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                               </div>
                               <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">{c.text}</p>
                               <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
-                                {(!authUser?.id || c.author_id !== authUser.id) && (
-                                  <>
-                                    <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Like</button>
-                                    <span className="text-gray-300 mx-0.5">·</span>
-                                  </>
-                                )}
-                                <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Reply</button>
+                                <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
                               </div>
+                              {replyTo === c.id && (
+                                <div className="mt-1.5 ml-2 pl-3 border-l-2 border-teal-200">
+                                  <div className="flex items-center gap-2">
+                                    <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitReply(e); }} placeholder="Write a reply..." className="flex-1 border border-gray-300 rounded-full px-3 py-1 text-[12px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" onClick={(e) => e.stopPropagation()} />
+                                    <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitReply}>Post</button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -912,14 +921,6 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.6} />
                 </button>
                 <ShareMenu title="Share" url={shareUrl} showNative={false} />
-                <button type="button" aria-label="Save" className={`p-1.5 rounded-full transition ${bookmarked ? 'text-teal-600 bg-teal-50' : 'text-gray-500 hover:bg-gray-100 hover:text-teal-600'}`} onClick={(e)=>{
-                  e.stopPropagation();
-                  if (!item?.id) return;
-                  setBookmarked(b => !b);
-                  medStreamAPI.toggleBookmark({ bookmarked_type: 'post', target_id: item.id }).catch(() => setBookmarked(b => !b));
-                }}>
-                  <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : ''}`} />
-                </button>
               </div>
             </div>
           </div>

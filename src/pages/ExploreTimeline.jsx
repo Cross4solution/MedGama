@@ -32,11 +32,12 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
           const ec = p.engagement_counter || p.engagementCounter || {};
           return {
             id: p.id,
+            author_id: p.author_id,
             type: 'doctor_update',
             title: p.author?.fullname || 'Doctor',
             subtitle: '',
             city: '',
-            img: p.media_url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+            img: p.media_url || '',
             text: p.content || '',
             likes: ec.like_count || 0,
             comments: ec.comment_count || 0,
