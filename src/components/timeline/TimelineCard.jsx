@@ -6,6 +6,7 @@ import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
 import Modal from '../common/Modal';
 import { medStreamAPI } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
 
 const DEFAULT_AVATAR = '/images/portrait-candid-male-doctor_720.jpg';
 
@@ -130,7 +131,7 @@ function DocumentPreview({ m, className, onClick }) {
   );
 }
 
-function VideoPreview({ m, className, onClick }) {
+function VideoPreview({ m, className }) {
   const [playing, setPlaying] = useState(false);
   const videoRef = useRef(null);
   const videoSrc = m.original || m.url;
@@ -163,7 +164,7 @@ function VideoPreview({ m, className, onClick }) {
   return (
     <div className={`${className} relative bg-black flex items-center justify-center cursor-pointer group`} onClick={handlePlay}>
       {hasThumb ? (
-        <img src={thumb} alt="Video" loading="lazy" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
+        <img src={thumb} alt="Video" loading="lazy" className="w-full h-full object-cover" />
       ) : (
         <video
           src={videoSrc}
@@ -171,7 +172,6 @@ function VideoPreview({ m, className, onClick }) {
           preload="metadata"
           playsInline
           className="w-full h-full object-cover pointer-events-none"
-          onLoadedData={(e) => { e.target.currentTime = 0.5; }}
         />
       )}
       <div className="absolute inset-0 flex items-center justify-center bg-black/10">
@@ -193,6 +193,7 @@ function MediaItem({ m, alt, className, onClick = undefined }) {
 function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
   const avatarUrl = item.avatar || '/images/portrait-candid-male-doctor_720.jpg';
   const navigate = useNavigate();
+  const { user: authUser } = useAuth();
   const [expanded, setExpanded] = useState(false);
   const [showCommentsPreview, setShowCommentsPreview] = useState(false);
   const [liked, setLiked] = useState(!!item?.is_liked);
@@ -223,6 +224,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       const list = res?.data || [];
       setApiComments(list.map(c => ({
         id: c.id,
+        author_id: c.author_id || c.author?.id,
         name: c.author?.fullname || 'User',
         title: '',
         avatar: c.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
@@ -564,7 +566,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         e.stopPropagation();
                         const newComment = commentText.trim();
                         medStreamAPI.createComment(item.id, { content: newComment }).catch(() => {});
-                        setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), name: actorName, title: actorTitle, avatar: actorAvatar, text: newComment, time: 'Just now' }]);
+                        setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: actorName, title: actorTitle, avatar: actorAvatar, text: newComment, time: 'Just now' }]);
                         setCommentText('');
                         showSuccessToast('Comment posted');
                       }
@@ -589,7 +591,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                           if (!commentText.trim() || !item?.id) return;
                           const newComment = commentText.trim();
                           medStreamAPI.createComment(item.id, { content: newComment }).catch(() => {});
-                          setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), name: actorName, title: actorTitle, avatar: actorAvatar, text: newComment, time: 'Just now' }]);
+                          setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: actorName, title: actorTitle, avatar: actorAvatar, text: newComment, time: 'Just now' }]);
                           setCommentText('');
                           showSuccessToast('Comment posted');
                         }}
@@ -635,8 +637,12 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                               </div>
                               <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">{c.text}</p>
                               <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
-                                <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Like</button>
-                                <span className="text-gray-300 mx-0.5">·</span>
+                                {(!authUser?.id || c.author_id !== authUser.id) && (
+                                  <>
+                                    <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Like</button>
+                                    <span className="text-gray-300 mx-0.5">·</span>
+                                  </>
+                                )}
                                 <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Reply</button>
                               </div>
                             </div>

@@ -92,6 +92,7 @@ const Header = () => {
 
   const getNotifIcon = (type) => {
     if (!type) return Bell;
+    if (type.includes('post_commented') || type.includes('comment')) return MessageCircle;
     if (type.includes('Booked')) return CalendarClock;
     if (type.includes('Confirmed')) return Check;
     if (type.includes('Cancelled')) return X;
@@ -101,6 +102,7 @@ const Header = () => {
 
   const getNotifColor = (type) => {
     if (!type) return 'bg-gray-100 text-gray-500';
+    if (type.includes('post_commented') || type.includes('comment')) return 'bg-teal-100 text-teal-600';
     if (type.includes('Booked')) return 'bg-blue-100 text-blue-600';
     if (type.includes('Confirmed')) return 'bg-emerald-100 text-emerald-600';
     if (type.includes('Cancelled')) return 'bg-red-100 text-red-600';
@@ -122,6 +124,10 @@ const Header = () => {
     if (!notif.read_at) handleMarkRead(notif.id);
     setNotifOpen(false);
     const data = notif.data || {};
+    if (data.post_id) {
+      navigate(`/post/${encodeURIComponent(data.post_id)}`);
+      return;
+    }
     if (data.appointment_id) {
       navigate(user?.role === 'patient' ? '/telehealth' : '/crm/appointments');
     }
@@ -303,8 +309,9 @@ const Header = () => {
                             </div>
                           ) : (
                             notifications.map((notif) => {
-                              const NIcon = getNotifIcon(notif.type);
-                              const iconColor = getNotifColor(notif.type);
+                              const notifType = String(notif?.data?.type || notif?.type || '');
+                              const NIcon = getNotifIcon(notifType);
+                              const iconColor = getNotifColor(notifType);
                               const isUnread = !notif.read_at;
                               const data = notif.data || {};
                               return (

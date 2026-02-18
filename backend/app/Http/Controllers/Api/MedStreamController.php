@@ -9,6 +9,7 @@ use App\Models\MedStreamLike;
 use App\Models\MedStreamBookmark;
 use App\Models\MedStreamReport;
 use App\Models\MedStreamEngagementCounter;
+use App\Notifications\PostCommentedNotification;
 use App\Services\MediaOptimizer;
 use Illuminate\Http\Request;
 
@@ -223,6 +224,8 @@ class MedStreamController extends Controller
             'content' => 'required|string|max:2000',
         ]);
 
+        $post = MedStreamPost::with('author:id,fullname')->findOrFail($postId);
+
         $comment = MedStreamComment::create([
             'post_id' => $postId,
             'author_id' => $request->user()->id,
@@ -231,6 +234,21 @@ class MedStreamController extends Controller
 
         // Increment comment counter
         MedStreamEngagementCounter::where('post_id', $postId)->increment('comment_count');
+
+        // Notify post owner (except when user comments on own post)
+        try {
+            if ($post->author && $post->author_id !== $request->user()->id) {
+                $post->author->notify(
+                    new PostCommentedNotification(
+                        $post,
+                        $comment,
+                        $request->user()->fullname ?? 'Someone'
+                    )
+                );
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Post comment notification failed: ' . $e->getMessage());
+        }
 
         return response()->json(['comment' => $comment->load('author:id,fullname,avatar')], 201);
     }

@@ -294,6 +294,7 @@ export default function PostDetail() {
       const list = res?.data || [];
       setApiDetailComments(list.map(c => ({
         id: c.id,
+        author_id: c.author_id || c.author?.id,
         name: c.author?.fullname || 'User',
         avatar: c.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
         text: c.content || '',
@@ -307,6 +308,7 @@ export default function PostDetail() {
     if (!text || !item?.id) return;
     setLocalDetailComments(prev => [...prev, {
       id: 'dc-' + Date.now(),
+      author_id: user?.id,
       name: user?.name || item?.actor?.name || 'You',
       avatar: user?.avatar || item?.actor?.avatarUrl || '/images/portrait-candid-male-doctor_720.jpg',
       text,
@@ -603,8 +605,10 @@ export default function PostDetail() {
                                   <p className="text-[13px] text-gray-700 leading-relaxed mt-0.5">{c.text}</p>
                                 </div>
                                 <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400 pl-2">
-                                  <button type="button" className="font-semibold hover:text-gray-600 transition-colors">Like</button>
-                                  <span className="text-gray-200">|</span>
+                                  {(!user?.id || c.author_id !== user.id) && (
+                                    <><button type="button" className="font-semibold hover:text-gray-600 transition-colors">Like</button>
+                                    <span className="text-gray-200">|</span></>
+                                  )}
                                   <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(`@${c.name} `); }}>Reply</button>
                                 </div>
                                 {replyTo === c.id && (
