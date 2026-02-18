@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\MedStreamPost;
+use App\Models\MedStreamComment;
+use App\Models\MedStreamLike;
+use App\Models\MedStreamBookmark;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -336,5 +340,131 @@ class AuthController extends Controller
         ]);
 
         return response()->json(['message' => 'Password reset successfully.']);
+    }
+
+    // ── GDPR & Privacy ──
+
+    /**
+     * DELETE /api/auth/profile — Account deletion (GDPR Art. 17)
+     */
+    public function deleteAccount(Request $request)
+    {
+        $user = $request->user();
+
+        // Soft-delete: deactivate account and anonymize PII
+        $user->update([
+            'is_active' => false,
+            'email' => 'deleted_' . $user->id . '@removed.medgama.com',
+            'fullname' => 'Deleted User',
+            'avatar' => null,
+            'mobile' => null,
+            'mobile_verified' => false,
+            'email_verified' => false,
+        ]);
+
+        // Revoke all tokens
+        $user->tokens()->delete();
+
+        // Soft-delete related data
+        MedStreamPost::where('author_id', $user->id)->update(['is_active' => false]);
+        MedStreamComment::where('author_id', $user->id)->update(['is_active' => false]);
+        MedStreamLike::where('user_id', $user->id)->update(['is_active' => false]);
+        MedStreamBookmark::where('user_id', $user->id)->update(['is_active' => false]);
+
+        \Log::info('GDPR: Account deleted (soft)', ['user_id' => $user->id]);
+
+        return response()->json(['message' => 'Account and data deleted successfully.']);
+    }
+
+    /**
+     * GET /api/auth/profile/data-export — GDPR data portability (Art. 20)
+     */
+    public function dataExport(Request $request)
+    {
+        $user = $request->user();
+
+        $export = [
+            'export_date' => now()->toISOString(),
+            'gdpr_export' => true,
+            'user' => [
+                'id' => $user->id,
+                'fullname' => $user->fullname,
+                'email' => $user->email,
+                'mobile' => $user->mobile,
+                'role' => $user->role_id,
+                'avatar' => $user->avatar,
+                'created_at' => $user->created_at,
+                'last_login' => $user->last_login,
+            ],
+            'posts' => $user->medStreamPosts()->select('id', 'content', 'post_type', 'media_url', 'created_at')->get(),
+            'comments' => MedStreamComment::where('author_id', $user->id)->select('id', 'post_id', 'content', 'created_at')->get(),
+            'likes' => MedStreamLike::where('user_id', $user->id)->where('is_active', true)->select('post_id', 'created_at')->get(),
+            'bookmarks' => $user->bookmarks()->where('is_active', true)->select('bookmarked_type', 'target_id', 'created_at')->get(),
+            'medical_history' => json_decode($user->medical_history ?? '[]', true),
+        ];
+
+        return response()->json($export);
+    }
+
+    /**
+     * GET /api/auth/profile/medical-history
+     */
+    public function getMedicalHistory(Request $request)
+    {
+        $user = $request->user();
+        $conditions = json_decode($user->medical_history ?? '[]', true);
+
+        return response()->json(['conditions' => $conditions]);
+    }
+
+    /**
+     * PUT /api/auth/profile/medical-history
+     */
+    public function updateMedicalHistory(Request $request)
+    {
+        $request->validate([
+            'conditions' => 'required|array',
+            'conditions.*' => 'string|max:255',
+        ]);
+
+        $request->user()->update([
+            'medical_history' => json_encode($request->conditions),
+        ]);
+
+        return response()->json(['message' => 'Medical history updated.', 'conditions' => $request->conditions]);
+    }
+
+    /**
+     * GET /api/auth/profile/notification-preferences
+     */
+    public function getNotificationPrefs(Request $request)
+    {
+        $user = $request->user();
+        $prefs = json_decode($user->notification_preferences ?? '{}', true);
+
+        return response()->json(['preferences' => $prefs]);
+    }
+
+    /**
+     * PUT /api/auth/profile/notification-preferences
+     */
+    public function updateNotificationPrefs(Request $request)
+    {
+        $request->validate([
+            'email_notifications' => 'sometimes|boolean',
+            'sms_notifications' => 'sometimes|boolean',
+            'push_notifications' => 'sometimes|boolean',
+            'appointment_reminders' => 'sometimes|boolean',
+            'marketing_messages' => 'sometimes|boolean',
+        ]);
+
+        $request->user()->update([
+            'notification_preferences' => json_encode($request->only([
+                'email_notifications', 'sms_notifications', 'push_notifications',
+                'appointment_reminders', 'marketing_messages',
+            ])),
+        ]);
+
+        return response()->json(['message' => 'Notification preferences updated.']);
     }
 }
