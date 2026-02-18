@@ -51,6 +51,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const [showToast, setShowToast] = useState(false);
   const [toastText, setToastText] = useState('');
   const toastTimerRef = useRef(null);
+  const [localComments, setLocalComments] = useState([]);
 
   // Dışarı tıklayınca "Daha fazla" menüsünü kapat
   useEffect(() => {
@@ -329,12 +330,12 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
           {/* Social counts */}
           <div className="px-3 pt-1.5 mt-1 text-xs text-gray-500 flex items-center justify-between">
-            <button type="button" onClick={handleLike} className="inline-flex items-center gap-1 hover:text-gray-700 transition-colors">
+            <div className="inline-flex items-center gap-1">
               <span className={`inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 text-white`}>
                 <ThumbsUp className="w-[9px] h-[9px]" />
               </span>
               <span className="tabular-nums font-medium">{likeCount}</span>
-            </button>
+            </div>
             <button
               type="button"
               className="text-gray-400 hover:text-gray-600 hover:underline transition-colors"
@@ -360,7 +361,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && commentText.trim() && item?.id) {
                         e.stopPropagation();
-                        medStreamAPI.createComment(item.id, { content: commentText.trim() }).catch(() => {});
+                        const newComment = commentText.trim();
+                        medStreamAPI.createComment(item.id, { content: newComment }).catch(() => {});
+                        setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), name: actorName, title: actorTitle, avatar: actorAvatar, text: newComment, time: 'Just now' }]);
                         setCommentText('');
                         showSuccessToast('Comment posted');
                       }
@@ -470,6 +473,30 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     </div>
                   </div>
                 </div>
+
+                {/* User-submitted comments */}
+                {localComments.map((c) => (
+                  <div key={c.id} className="py-2.5">
+                    <div className="flex items-start gap-2">
+                      <img src={c.avatar} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <div className="min-w-0">
+                            <span className="text-[13px] font-semibold text-[rgba(0,0,0,0.9)]">{c.name}</span>
+                            <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">{c.title}</p>
+                          </div>
+                          <span className="text-[11px] text-gray-400 flex-shrink-0">{c.time}</span>
+                        </div>
+                        <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">{c.text}</p>
+                        <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
+                          <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Like</button>
+                          <span className="text-gray-300 mx-0.5">·</span>
+                          <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Reply</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
