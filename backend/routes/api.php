@@ -33,6 +33,7 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
+    Route::put('/profile/password', [AuthController::class, 'changePassword']);
     Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
     Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
     Route::post('/verify-mobile', [AuthController::class, 'verifyMobile']);
