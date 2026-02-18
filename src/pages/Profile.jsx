@@ -310,11 +310,18 @@ export default function Profile() {
         country: codeUpper,
         preferred_language: preferredLanguage,
       });
+      updateUser({ name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage }, codeUpper);
       showToast('Profile updated successfully');
     } catch (err) {
-      showToast(err?.message || 'Failed to update profile', 'error');
+      // Still update local state so UI stays consistent (avatar preview etc.)
+      updateUser({ name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage }, codeUpper);
+      const msg = err?.message || '';
+      if (msg.includes('Network') || msg.includes('timeout') || !err?.status) {
+        showToast('Could not reach the server. Changes saved locally.', 'error');
+      } else {
+        showToast(msg || 'Failed to update profile', 'error');
+      }
     }
-    updateUser({ name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage }, codeUpper);
     setSaving(false);
   };
 
