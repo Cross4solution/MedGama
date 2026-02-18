@@ -26,37 +26,37 @@ export default function SidebarPatient() {
   const roleLabel = role === 'doctor' ? t('common.doctor') : role === 'clinic' ? t('common.clinic') : role === 'admin' ? 'Admin' : t('common.patient');
 
   const patientItems = [
-    { to: '/home-v2', label: t('sidebar.home'), icon: Home },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
-    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
-    { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
-    { to: '/profile', label: t('sidebar.profile'), icon: User },
-  ];
-
-  // Doctor-specific menu (Profile → Medstream → Notifications → Messages → Schedule → Telehealth → CRM)
-  const doctorItems = [
-    { to: '/profile', label: t('sidebar.profile'), icon: User },
-    { to: '/explore', label: t('sidebar.medstream'), icon: Video },
-    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
-    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
+    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
-    { to: '/crm', label: 'CRM', icon: ArrowUpRight },
+    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
+    { to: '/profile', label: t('sidebar.profile'), icon: User },
   ];
 
-  // Clinic-specific menu (Profile → Medstream → Notifications → Messages → Departments and Doctors → CRM)
-  const clinicItems = [
-    { to: '/clinic-edit', label: t('sidebar.profile'), icon: User },
+  // Requested order: Medstream -> Appointments -> Messages -> Telehealth -> Notifications -> Profile
+  const doctorItems = [
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
-    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
+    { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
-    { to: '/doctors-departments', label: t('nav.departments'), icon: Building2 },
-    { to: '/crm', label: 'CRM', icon: ArrowUpRight },
+    { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
+    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
+    { to: '/profile', label: t('sidebar.profile'), icon: User },
+  ];
+
+  const clinicItems = [
+    { to: '/explore', label: t('sidebar.medstream'), icon: Video },
+    { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
+    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
+    { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
+    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
+    { to: '/clinic-edit', label: t('sidebar.profile'), icon: User },
   ];
 
   const items = role === 'patient' ? patientItems : (role === 'clinic' ? clinicItems : doctorItems);
+  const showCRM = role === 'doctor' || role === 'clinic' || role === 'clinicOwner';
 
-  const NavItem = ({ to, href, icon: Icon, label, badge, external }) => {
+  const NavItem = ({ to = undefined, href = undefined, icon: Icon, label, badge = undefined, external = false }) => {
     const active = to ? (pathname === to || (to.includes('?') && pathname === to.split('?')[0])) : false;
     const baseClasses = `group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
       active
@@ -122,6 +122,22 @@ export default function SidebarPatient() {
                     <NavItem key={`${it.to || it.href || it.label || 'item'}-${idx}`} {...it} />
                   ))}
                 </nav>
+                {showCRM && (
+                  <div className="mt-2">
+                    <Link
+                      to="/crm"
+                      className="group flex items-center justify-between w-full px-3.5 py-3 rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-lg shadow-slate-300/30 hover:from-slate-700 hover:to-slate-800 transition-all duration-200"
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 group-hover:bg-white/20 transition-colors">
+                          <LayoutDashboard className="w-3.5 h-3.5 text-white/90" />
+                        </span>
+                        <span className="text-[13px] font-semibold">CRM Dashboard</span>
+                      </span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-white/50 group-hover:text-white/80 transition-colors" />
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -216,6 +232,24 @@ export default function SidebarPatient() {
                     );
                   })}
                 </nav>
+
+                {showCRM && (
+                  <div className="mt-2">
+                    <Link
+                      to="/crm"
+                      onClick={() => setSidebarMobileOpen(false)}
+                      className="group flex items-center justify-between w-full px-3.5 py-3 rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-lg shadow-slate-300/30 hover:from-slate-700 hover:to-slate-800 transition-all duration-200"
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 group-hover:bg-white/20 transition-colors">
+                          <LayoutDashboard className="w-3.5 h-3.5 text-white/90" />
+                        </span>
+                        <span className="text-[13px] font-semibold">CRM Dashboard</span>
+                      </span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-white/50 group-hover:text-white/80 transition-colors" />
+                    </Link>
+                  </div>
+                )}
 
                 {/* Divider */}
                 <div className="my-4 border-t border-gray-100" />
