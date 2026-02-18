@@ -60,9 +60,9 @@ export async function resizeImage(file, opts = {}) {
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, newW, newH);
 
-      // Try WebP first, fallback to JPEG
-      const outputType = supportsWebP() ? 'image/webp' : 'image/jpeg';
-      const ext = outputType === 'image/webp' ? '.webp' : '.jpg';
+      // Always use JPEG for maximum backend compatibility
+      const outputType = 'image/jpeg';
+      const ext = '.jpg';
 
       canvas.toBlob(
         (blob) => {

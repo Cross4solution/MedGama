@@ -408,8 +408,9 @@ export default function ExploreTimeline() {
         errorMsg = 'Connection lost. Please check your internet and try again.';
       }
       setUploadError(errorMsg);
-      // Mark optimistic post as failed but keep it visible
-      setLocalPosts(prev => prev.map(p => p.id === localId ? { ...p, _uploading: false, _uploadFailed: true } : p));
+      // Remove the optimistic post — it doesn't exist on server and blob URLs
+      // will break on page refresh anyway. Error banner tells user what happened.
+      setLocalPosts(prev => prev.filter(p => p.id !== localId));
     }
     setComposerPosting(false);
     setUploadProgress(0);

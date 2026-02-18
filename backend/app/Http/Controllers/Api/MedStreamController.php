@@ -85,7 +85,7 @@ class MedStreamController extends Controller
             'media_url'  => 'sometimes|string|url',
             'clinic_id'  => 'sometimes|uuid|exists:clinics,id',
             'photos'     => 'sometimes|array',
-            'photos.*'   => 'file|image|max:10240',                                      // 10 MB
+            'photos.*'   => 'file|mimes:jpg,jpeg,png,gif,bmp,webp,svg,heic,heif|max:10240', // 10 MB
             'videos'     => 'sometimes|array',
             'videos.*'   => 'file|mimetypes:video/mp4,video/quicktime,video/webm,video/avi|max:102400', // 100 MB
             'papers'     => 'sometimes|array',
