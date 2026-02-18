@@ -46,25 +46,56 @@ class MedStreamController extends Controller
         }
 
         $validated = $request->validate([
-            'post_type' => 'required|in:text,image,video',
-            'content' => 'sometimes|string',
-            'media_url' => 'sometimes|string|url',
-            'clinic_id' => 'sometimes|uuid|exists:clinics,id',
+            'post_type'  => 'required|in:text,image,video,document,mixed',
+            'content'    => 'sometimes|string',
+            'media_url'  => 'sometimes|string|url',
+            'clinic_id'  => 'sometimes|uuid|exists:clinics,id',
+            'photos'     => 'sometimes|array',
+            'photos.*'   => 'file|image|max:10240',                                      // 10 MB
+            'videos'     => 'sometimes|array',
+            'videos.*'   => 'file|mimetypes:video/mp4,video/quicktime,video/webm,video/avi|max:102400', // 100 MB
+            'papers'     => 'sometimes|array',
+            'papers.*'   => 'file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,csv|max:20480',  // 20 MB
         ]);
 
-        $validated['author_id'] = $user->id;
-        $validated['clinic_id'] = $validated['clinic_id'] ?? $user->clinic_id;
+        // Handle file uploads — store first file as media_url, rest as JSON in content metadata
+        $mediaUrl = $validated['media_url'] ?? null;
+        $uploadedFiles = [];
 
-        $post = MedStreamPost::create($validated);
+        foreach (['photos', 'videos', 'papers'] as $field) {
+            if ($request->hasFile($field)) {
+                foreach ($request->file($field) as $file) {
+                    $path = $file->store('medstream/' . $field, 'public');
+                    $url = asset('storage/' . $path);
+                    $uploadedFiles[] = ['url' => $url, 'type' => $field, 'name' => $file->getClientOriginalName()];
+                    if (!$mediaUrl) {
+                        $mediaUrl = $url;
+                    }
+                }
+            }
+        }
+
+        $postData = [
+            'author_id' => $user->id,
+            'clinic_id' => $validated['clinic_id'] ?? $user->clinic_id,
+            'post_type' => $validated['post_type'],
+            'content'   => $validated['content'] ?? null,
+            'media_url' => $mediaUrl,
+        ];
+
+        $post = MedStreamPost::create($postData);
 
         // Create engagement counter
         MedStreamEngagementCounter::create([
-            'post_id' => $post->id,
-            'like_count' => 0,
+            'post_id'       => $post->id,
+            'like_count'    => 0,
             'comment_count' => 0,
         ]);
 
-        return response()->json(['post' => $post->load('author:id,fullname,avatar')], 201);
+        $postResponse = $post->load('author:id,fullname,avatar')->toArray();
+        $postResponse['media'] = $uploadedFiles;
+
+        return response()->json(['post' => $postResponse], 201);
     }
 
     public function updatePost(Request $request, string $id)
