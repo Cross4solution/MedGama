@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { FileText, Film, Music, File, Download, X, ExternalLink } from 'lucide-react';
 
 function formatSize(bytes) {
@@ -26,16 +27,40 @@ function getAttachmentColor(type) {
 }
 
 function ImageLightbox({ src, alt, onClose }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={onClose}>
-      <button onClick={onClose} className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+  // Prevent body scroll while lightbox is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  const handleBackdropClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onClose();
+  };
+
+  return ReactDOM.createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={handleBackdropClick}>
+      <button
+        onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClose(); }}
+        className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-10"
+      >
         <X className="w-5 h-5" />
       </button>
-      <img src={src} alt={alt} className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl" onClick={(e) => e.stopPropagation()} />
-      <a href={src} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="absolute bottom-6 right-6 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm flex items-center gap-2 transition-colors">
+      <img src={src} alt={alt} className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }} />
+      <a href={src} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="absolute bottom-6 right-6 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm flex items-center gap-2 transition-colors z-10">
         <ExternalLink className="w-4 h-4" /> Open original
       </a>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -50,7 +75,7 @@ function AttachmentPreview({ attachment, isDoctor }) {
   if (isImage && url) {
     return (
       <>
-        <div className="mt-1.5 cursor-pointer" onClick={() => setLightbox(true)}>
+        <div className="mt-1.5 cursor-pointer" onClick={(e) => { e.stopPropagation(); setLightbox(true); }}>
           <img
             src={attachment.thumb_url || url}
             alt={attachment.file_name}
