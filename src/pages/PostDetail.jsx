@@ -432,8 +432,11 @@ export default function PostDetail() {
               return (
                 <div className="relative flex items-center justify-center w-full h-full">
                   <video
-                    src={currentMedia.original || currentMedia.url}
+                    src={toStreamUrl(currentMedia.original || currentMedia.url)}
                     controls
+                    autoPlay
+                    playsInline
+                    preload="auto"
                     className="max-w-full max-h-full"
                     poster={currentMedia.thumb || undefined}
                   />
