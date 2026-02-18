@@ -62,8 +62,8 @@ function AppContent() {
   const location = useLocation();
   const navType = useNavigationType();
   const { user } = useAuth();
-  // Show sidebar for all logged-in users (including patients), but not on CRM pages
-  const hasSidebar = !!user && !location.pathname.startsWith('/crm');
+  // Show sidebar for all logged-in users (including patients), but not on CRM or verify-email pages
+  const hasSidebar = !!user && !location.pathname.startsWith('/crm') && location.pathname !== '/verify-email';
   
   // Opsiyonel tekerlek kaydırma override'ı: varsayılan AÇIK (azıcık yavaş ve akıcı)
   // Scroll override: tek kaynaktan (config/scroll.js)
