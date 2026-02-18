@@ -123,10 +123,15 @@ function AppContent() {
         const val = sessionStorage.getItem('returnScroll');
         if (val != null) {
           const y = Number(val);
-          if (!Number.isNaN(y)) {
-            window.scrollTo({ top: y, behavior: 'auto' });
-          }
           sessionStorage.removeItem('returnScroll');
+          if (!Number.isNaN(y) && y > 0) {
+            // Delay restore so DOM has time to render content
+            requestAnimationFrame(() => {
+              window.scrollTo({ top: y, behavior: 'auto' });
+              // Double-check after a short delay (lazy-loaded content)
+              setTimeout(() => window.scrollTo({ top: y, behavior: 'auto' }), 150);
+            });
+          }
         }
       } catch {}
       return;
