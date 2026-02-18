@@ -87,6 +87,7 @@ export const clinicAPI = {
   create: (payload) => api.post('/clinics', payload),
   update: (id, payload) => api.put(`/clinics/${id}`, payload),
   staff: (id, params) => api.get(`/clinics/${id}/staff`, { params }),
+  createStaff: (id, payload) => api.post(`/clinics/${id}/staff`, payload),
 };
 
 // ── Doctor Service ──

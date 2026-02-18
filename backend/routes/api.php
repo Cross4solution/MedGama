@@ -92,6 +92,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/clinics', [ClinicController::class, 'store'])->middleware('role:superAdmin,saasAdmin');
     Route::put('/clinics/{id}', [ClinicController::class, 'update']);
     Route::get('/clinics/{id}/staff', [ClinicController::class, 'staff']);
+    Route::post('/clinics/{id}/staff', [ClinicController::class, 'createStaff']);
 });
 
 /*

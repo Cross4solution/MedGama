@@ -98,9 +98,72 @@ class ClinicController extends Controller
 
         $staff = User::active()
             ->where('clinic_id', $clinic->id)
-            ->select('id', 'fullname', 'email', 'avatar', 'role_id', 'is_verified')
-            ->paginate($request->per_page ?? 20);
+            ->with('doctorProfile:id,user_id,title,specialty,experience_years,onboarding_completed')
+            ->select('id', 'fullname', 'email', 'avatar', 'role_id', 'is_verified', 'clinic_id', 'created_at')
+            ->paginate($request->per_page ?? 50);
 
         return response()->json($staff);
+    }
+
+    /**
+     * POST /api/clinics/{id}/staff — Create a doctor under this clinic
+     */
+    public function createStaff(Request $request, string $id)
+    {
+        $clinic = Clinic::active()->findOrFail($id);
+
+        $user = $request->user();
+        if ($clinic->owner_id !== $user->id && !$user->isAdmin()) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
+
+        $validated = $request->validate([
+            'fullname'  => 'required|string|max:255',
+            'email'     => 'required|email|max:255',
+            'password'  => 'required|string|min:6|max:100',
+            'mobile'    => 'nullable|string|max:20',
+            // Doctor profile fields (optional)
+            'title'     => 'nullable|string|max:255',
+            'specialty' => 'nullable|string|max:255',
+            'bio'       => 'nullable|string|max:5000',
+            'experience_years' => 'nullable|string|max:50',
+        ]);
+
+        // Check if email already exists in this clinic
+        $exists = User::where('email', $validated['email'])->where('clinic_id', $clinic->id)->exists();
+        if ($exists) {
+            return response()->json(['message' => 'A user with this email already exists in this clinic.'], 422);
+        }
+
+        $doctor = User::create([
+            'fullname'       => $validated['fullname'],
+            'email'          => $validated['email'],
+            'password'       => bcrypt($validated['password']),
+            'mobile'         => $validated['mobile'] ?? null,
+            'role_id'        => 'doctor',
+            'clinic_id'      => $clinic->id,
+            'is_active'      => true,
+            'email_verified' => true, // Clinic-created accounts are pre-verified
+        ]);
+
+        // Create doctor profile if any profile fields provided
+        $profileFields = array_filter([
+            'title'            => $validated['title'] ?? null,
+            'specialty'        => $validated['specialty'] ?? null,
+            'bio'              => $validated['bio'] ?? null,
+            'experience_years' => $validated['experience_years'] ?? null,
+        ]);
+
+        if (!empty($profileFields)) {
+            $doctor->doctorProfile()->create(array_merge($profileFields, [
+                'onboarding_completed' => false,
+                'onboarding_step'      => 0,
+            ]));
+        }
+
+        return response()->json([
+            'doctor'  => $doctor->load('doctorProfile'),
+            'message' => 'Doctor account created successfully.',
+        ], 201);
     }
 }
