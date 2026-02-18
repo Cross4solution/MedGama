@@ -104,8 +104,13 @@ const AuthPages = () => {
           notify({ type: 'info', message: 'Please verify your email address.' });
           navigate('/verify-email');
         } else {
+          const u = res?.data?.user;
           notify({ type: 'success', message: 'Login successful' });
-          navigate('/home-v2');
+          if (u?.role_id === 'doctor' && u?.onboarding_completed === false) {
+            navigate('/doctor-onboarding', { replace: true });
+          } else {
+            navigate('/home-v2');
+          }
         }
       } else if (currentPage === 'register') {
         if (formData.role === 'clinic') {
