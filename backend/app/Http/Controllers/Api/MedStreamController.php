@@ -18,6 +18,8 @@ class MedStreamController extends Controller
 
     public function posts(Request $request)
     {
+        $userId = $request->user()?->id;
+
         $posts = MedStreamPost::visible()
             ->with(['author:id,fullname,avatar,role_id', 'clinic:id,fullname,avatar', 'engagementCounter'])
             ->when($request->author_id, fn($q, $v) => $q->where('author_id', $v))
@@ -26,14 +28,35 @@ class MedStreamController extends Controller
             ->orderByDesc('created_at')
             ->paginate($request->per_page ?? 20);
 
+        // Append is_liked for authenticated user
+        if ($userId) {
+            $postIds = $posts->pluck('id')->toArray();
+            $likedPostIds = MedStreamLike::where('user_id', $userId)
+                ->where('is_active', true)
+                ->whereIn('post_id', $postIds)
+                ->pluck('post_id')
+                ->toArray();
+
+            $posts->getCollection()->transform(function ($post) use ($likedPostIds) {
+                $post->is_liked = in_array($post->id, $likedPostIds);
+                return $post;
+            });
+        }
+
         return response()->json($posts);
     }
 
-    public function showPost(string $id)
+    public function showPost(string $id, Request $request)
     {
         $post = MedStreamPost::visible()
             ->with(['author:id,fullname,avatar,role_id', 'clinic:id,fullname,avatar', 'engagementCounter', 'comments' => fn($q) => $q->active()->where('is_hidden', false)->with('author:id,fullname,avatar')->latest()->limit(20)])
             ->findOrFail($id);
+
+        // Append is_liked for authenticated user
+        $userId = $request->user()?->id;
+        $post->is_liked = $userId
+            ? MedStreamLike::where('user_id', $userId)->where('post_id', $id)->where('is_active', true)->exists()
+            : false;
 
         return response()->json(['post' => $post]);
     }

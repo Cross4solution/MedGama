@@ -36,7 +36,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [showCommentsPreview, setShowCommentsPreview] = useState(false);
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(!!item?.is_liked);
   const [likeCount, setLikeCount] = useState(Number(item?.likes) || 0);
   const [commentText, setCommentText] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
@@ -164,7 +164,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const headerPad = compact ? 'px-3 pt-2.5' : 'px-3 pt-3';
   const headerGap = compact ? 'gap-2' : 'gap-3';
 
-  const likedRef = useRef(false);
+  const likedRef = useRef(!!item?.is_liked);
   const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
     if (disabledActions) return;

@@ -59,6 +59,7 @@ export default function PostDetail() {
           visibility: 'public',
           media: p.media_url ? [{ url: p.media_url }] : [],
           specialty: '',
+          is_liked: !!p.is_liked,
         });
       }
     }).catch(() => {}).finally(() => setLoading(false));
@@ -82,10 +83,23 @@ export default function PostDetail() {
   const panStartRef = React.useRef({ x: 0, y: 0 });
   const offsetStartRef = React.useRef({ x: 0, y: 0 });
   // Action bar local state (match TimelineCard)
-  const [liked, setLiked] = React.useState(false);
+  const [liked, setLiked] = React.useState(!!item?.is_liked);
   const [likeCount, setLikeCount] = React.useState(Number(item?.engagement?.likes) || Number(item?.likes) || 0);
 
-  const likedRef = React.useRef(false);
+  const likedRef = React.useRef(!!item?.is_liked);
+
+  // Sync liked state when item changes (e.g. after API fetch)
+  React.useEffect(() => {
+    if (item?.is_liked !== undefined) {
+      const val = !!item.is_liked;
+      setLiked(val);
+      likedRef.current = val;
+    }
+    if (item?.likes !== undefined || item?.engagement?.likes !== undefined) {
+      setLikeCount(Number(item?.engagement?.likes) || Number(item?.likes) || 0);
+    }
+  }, [item?.id, item?.is_liked]);
+
   const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
     const next = !likedRef.current;
