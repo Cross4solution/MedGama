@@ -403,7 +403,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     {commentText.trim() && (
                       <button
                         type="button"
-                        className="p-1 rounded-full bg-teal-600 hover:bg-teal-700 text-white transition-all"
+                        className="p-1.5 rounded-full bg-teal-500/90 hover:bg-teal-600 text-white shadow-sm hover:shadow transition-all duration-200 animate-[fadeIn_0.15s_ease-out]"
                         onClick={(e) => {
                           e.stopPropagation();
                           if (!commentText.trim() || !item?.id) return;
@@ -414,7 +414,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                           showSuccessToast('Comment posted');
                         }}
                       >
-                        <Send className="w-3.5 h-3.5" strokeWidth={2} />
+                        <Send className="w-3 h-3" strokeWidth={2.2} />
                       </button>
                     )}
                   </div>
@@ -470,16 +470,16 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                           </div>
                         </div>
                         {replyTo === 'c1r1' && (
-                          <div className="mt-2 ml-9 flex items-center gap-2">
-                            <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} onKeyDown={(e)=>{ if(e.key==='Enter') submitReply(e); }} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-300 rounded-full px-3 py-1.5 text-[12px] outline-none focus:border-gray-400" />
-                            <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700" onClick={submitReply}>Post</button>
+                          <div className="mt-2 ml-9 flex items-center gap-1.5">
+                            <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} onKeyDown={(e)=>{ if(e.key==='Enter') submitReply(e); }} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none bg-gray-50/50 hover:bg-white focus:bg-white focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
+                            {replyText.trim() && <button type="button" className="p-1.5 rounded-full bg-teal-500/90 hover:bg-teal-600 text-white shadow-sm transition-all duration-200" onClick={submitReply}><Send className="w-3 h-3" strokeWidth={2.2} /></button>}
                           </div>
                         )}
                       </div>
                       {replyTo === 'c1' && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} onKeyDown={(e)=>{ if(e.key==='Enter') submitReply(e); }} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-300 rounded-full px-3 py-1.5 text-[12px] outline-none focus:border-gray-400" />
-                          <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700" onClick={submitReply}>Post</button>
+                        <div className="mt-2 flex items-center gap-1.5">
+                          <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} onKeyDown={(e)=>{ if(e.key==='Enter') submitReply(e); }} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none bg-gray-50/50 hover:bg-white focus:bg-white focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
+                          {replyText.trim() && <button type="button" className="p-1.5 rounded-full bg-teal-500/90 hover:bg-teal-600 text-white shadow-sm transition-all duration-200" onClick={submitReply}><Send className="w-3 h-3" strokeWidth={2.2} /></button>}
                         </div>
                       )}
                     </div>
@@ -505,9 +505,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c2' ? '' : 'c2'); setReplyText(prev => (prev && replyTo==='c2') ? prev : '@Efe Yılmaz '); }}>Reply</button>
                       </div>
                       {replyTo === 'c2' && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} onKeyDown={(e)=>{ if(e.key==='Enter') submitReply(e); }} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-300 rounded-full px-3 py-1.5 text-[12px] outline-none focus:border-gray-400" />
-                          <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700" onClick={submitReply}>Post</button>
+                        <div className="mt-2 flex items-center gap-1.5">
+                          <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} onKeyDown={(e)=>{ if(e.key==='Enter') submitReply(e); }} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none bg-gray-50/50 hover:bg-white focus:bg-white focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
+                          {replyText.trim() && <button type="button" className="p-1.5 rounded-full bg-teal-500/90 hover:bg-teal-600 text-white shadow-sm transition-all duration-200" onClick={submitReply}><Send className="w-3 h-3" strokeWidth={2.2} /></button>}
                         </div>
                       )}
                     </div>
