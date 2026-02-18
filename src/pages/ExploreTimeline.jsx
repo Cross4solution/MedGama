@@ -410,8 +410,9 @@ export default function ExploreTimeline() {
         setLocalPosts(prev => [newItem, ...prev.filter(x => x.id !== newItem.id)]);
       }
 
-      // Close composer and refresh feed from API too
+      // Close composer, switch to Most Recent so new post is on top, refresh feed
       setIsComposerOpen(false);
+      setSort('recent');
       setFeedRefreshKey(k => k + 1);
     } catch (err) {
       console.error('[ExploreTimeline] Post upload failed:', err?.status, err?.message);
