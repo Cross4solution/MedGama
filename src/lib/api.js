@@ -28,10 +28,15 @@ api.interceptors.response.use(
     const status = error.response?.status;
     const data = error.response?.data;
 
-    // Auto-logout on 401
+    // Auto-logout on 401 only for auth-critical endpoints (login, me, etc.)
+    // Don't logout for regular API calls (medstream, appointments, etc.) — just fail silently
     if (status === 401) {
-      localStorage.removeItem('auth_state');
-      window.dispatchEvent(new CustomEvent('auth:logout'));
+      const url = error.config?.url || '';
+      const isAuthEndpoint = url.includes('/auth/') || url.includes('/me');
+      if (isAuthEndpoint) {
+        localStorage.removeItem('auth_state');
+        window.dispatchEvent(new CustomEvent('auth:logout'));
+      }
     }
 
     return Promise.reject({

@@ -33,13 +33,15 @@ export function AuthProvider({ children }) {
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
   const meUnavailableRef = React.useRef(false);
   const loggedOutRef = React.useRef(false);
+  const hydratedRef = React.useRef(false);
 
   // Listen for auth:logout events from API interceptor (401)
   useEffect(() => {
     const handleForceLogout = () => {
+      loggedOutRef.current = true;
       setUser(null);
       setToken(null);
-      loggedOutRef.current = true;
+      try { localStorage.removeItem('auth_state'); localStorage.setItem('auth_logout', '1'); } catch {}
     };
     window.addEventListener('auth:logout', handleForceLogout);
     return () => window.removeEventListener('auth:logout', handleForceLogout);
@@ -50,15 +52,19 @@ export function AuthProvider({ children }) {
       // If user explicitly logged out, don't auto-hydrate from tokens
       if (localStorage.getItem('auth_logout') === '1') {
         loggedOutRef.current = true;
+        hydratedRef.current = true;
         return;
       }
       const saved = localStorage.getItem('auth_state');
       if (saved) {
         const parsed = JSON.parse(saved);
-        setUser(parsed.user || null);
-        setToken(parsed.token || null);
-        setCountry(parsed.country || 'TR');
-        return;
+        if (parsed.user && parsed.token) {
+          setUser(parsed.user);
+          setToken(parsed.token);
+          setCountry(parsed.country || 'TR');
+          hydratedRef.current = true;
+          return;
+        }
       }
       // Fallback: if no auth_state, but we do have a token from Google/backend, keep the session
       const lsToken = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
@@ -67,10 +73,15 @@ export function AuthProvider({ children }) {
         // user will be fetched by the next effect via fetchCurrentUser
       }
     } catch {}
+    hydratedRef.current = true;
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('auth_state', JSON.stringify({ user, token, country }));
+    // Only persist to localStorage after initial hydration and when we have real data
+    if (!hydratedRef.current) return;
+    if (user && token) {
+      localStorage.setItem('auth_state', JSON.stringify({ user, token, country }));
+    }
   }, [user, token, country]);
 
   const login = async (emailOrUser, password) => {
