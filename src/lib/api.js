@@ -141,7 +141,46 @@ export const crmAPI = {
 export const medStreamAPI = {
   posts: (params) => api.get('/medstream/posts', { params }),
   getPost: (id) => api.get(`/medstream/posts/${id}`),
-  createPost: (payload) => api.post('/medstream/posts', payload),
+
+  /**
+   * Create a post with file uploads (photos, videos, papers).
+   * @param {Object} opts
+   * @param {string}   opts.content       - Post text
+   * @param {string}   opts.post_type     - 'text' | 'image' | 'video' | 'mixed'
+   * @param {File[]}   opts.photos        - Photo files
+   * @param {File[]}   opts.videos        - Video files
+   * @param {File[]}   opts.papers        - PDF/doc files
+   * @param {Function} opts.onProgress    - (percent: number) => void
+   * @returns {Promise}
+   */
+  createPost: ({ content, post_type, photos = [], videos = [], papers = [], onProgress } = {}) => {
+    const hasFiles = photos.length > 0 || videos.length > 0 || papers.length > 0;
+
+    // Text-only post — simple JSON
+    if (!hasFiles) {
+      return api.post('/medstream/posts', { content, post_type: post_type || 'text' });
+    }
+
+    // Build FormData for file upload
+    const fd = new FormData();
+    if (content) fd.append('content', content);
+    fd.append('post_type', post_type || 'mixed');
+
+    photos.forEach((file, i) => fd.append(`photos[${i}]`, file));
+    videos.forEach((file, i) => fd.append(`videos[${i}]`, file));
+    papers.forEach((file, i) => fd.append(`papers[${i}]`, file));
+
+    return api.post('/medstream/posts', fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 120000, // 2 min for large uploads
+      onUploadProgress: (e) => {
+        if (onProgress && e.total) {
+          onProgress(Math.round((e.loaded * 100) / e.total));
+        }
+      },
+    });
+  },
+
   updatePost: (id, payload) => api.put(`/medstream/posts/${id}`, payload),
   deletePost: (id) => api.delete(`/medstream/posts/${id}`),
   comments: (postId, params) => api.get(`/medstream/posts/${postId}/comments`, { params }),
