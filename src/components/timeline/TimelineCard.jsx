@@ -145,7 +145,7 @@ function VideoPreview({ m, className }) {
 
   if (playing) {
     return (
-      <div className={`${className} relative bg-black flex items-center justify-center`}>
+      <div className="relative bg-black flex items-center justify-center aspect-video w-full">
         <video
           ref={videoRef}
           src={videoSrc}
@@ -162,16 +162,16 @@ function VideoPreview({ m, className }) {
   const thumb = m.thumb;
   const hasThumb = thumb && !thumb.endsWith('.mp4') && !thumb.endsWith('.webm') && !thumb.endsWith('.mov');
   return (
-    <div className={`${className} relative bg-black flex items-center justify-center cursor-pointer group`} onClick={handlePlay}>
+    <div className="relative bg-black flex items-center justify-center cursor-pointer group aspect-video w-full" onClick={handlePlay}>
       {hasThumb ? (
-        <img src={thumb} alt="Video" loading="lazy" className="w-full h-full object-cover" />
+        <img src={thumb} alt="Video" loading="lazy" className="w-full h-full object-contain" />
       ) : (
         <video
           src={videoSrc}
           muted
           preload="metadata"
           playsInline
-          className="w-full h-full object-cover pointer-events-none"
+          className="w-full h-full object-contain pointer-events-none"
         />
       )}
       <div className="absolute inset-0 flex items-center justify-center bg-black/10">
