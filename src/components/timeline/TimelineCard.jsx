@@ -133,10 +133,10 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
   // Compact mode helpers
   const avatarSize = compact ? 'w-10 h-10' : 'w-12 h-12';
-  const nameText = compact ? 'text-sm md:text-[15px] leading-5' : 'text-[15px] md:text-base';
-  const singleImgMaxH = compact ? 'max-h-[340px]' : 'max-h-[480px]';
-  const grid2H = compact ? 'h-[168px]' : 'h-[220px]';
-  const grid3LeftH = compact ? 'h-[280px]' : 'h-[330px]';
+  const nameText = compact ? 'text-sm leading-5' : 'text-sm leading-5';
+  const singleImgMaxH = compact ? 'max-h-[340px]' : 'max-h-[400px]';
+  const grid2H = compact ? 'h-[168px]' : 'h-[200px]';
+  const grid3LeftH = compact ? 'h-[280px]' : 'h-[300px]';
   const grid3SmallH = compact ? 'h-[136px]' : 'h-[164px]';
   const grid4H = compact ? 'h-[168px]' : 'h-[200px]';
   const headerPad = compact ? 'px-3 pt-2.5' : 'px-3 pt-3';
@@ -186,7 +186,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
   return (
     <article
-      className={`group rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden`}
+      className={`group rounded-lg border border-gray-200/80 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-200 overflow-hidden`}
     >
       {view === 'list' ? (
         <div className="flex flex-col">
@@ -201,16 +201,14 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               <div className="flex items-center gap-1">
                 <Link to={actorLink} onClick={(e)=>e.stopPropagation()} className={`${nameText} font-semibold text-gray-900 truncate hover:underline`} title={actorName}>{actorName}</Link>
               </div>
-              <span
-                className={`${compact ? 'block mt-0 pb-0.5 text-sm leading-6 text-gray-600 font-medium break-words' : 'block mt-0 pb-0.5 text-sm leading-6 text-gray-600 font-medium break-words'}`}
-              >
+              <span className="block text-xs leading-4 text-[rgba(0,0,0,0.6)] font-normal break-words">
                 {actorTitle}
               </span>
               </div>
             </div>
             {!compact && (
               <div ref={moreMenuRef} className="flex items-center gap-1 text-gray-500 relative">
-                <span className="text-[11px] text-gray-400">{timeLabel}</span>
+                <span className="text-xs text-[rgba(0,0,0,0.6)]">{timeLabel}</span>
                 <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="More options" onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>
                   <MoreHorizontal className="w-5 h-5" />
                 </button>
@@ -232,22 +230,22 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
           {/* Text */}
           <div className="px-3 mt-2">
-            <p className="text-[15px] leading-6 text-gray-800">
+            <p className="text-sm leading-[1.43] text-[rgba(0,0,0,0.9)]">
               {displayText}
               {isTruncated && (
                 <button
                   type="button"
-                  className="ml-1 text-sm text-gray-600 hover:text-teal-700 underline"
+                  className="ml-1 text-sm text-gray-500 hover:text-blue-600 font-semibold no-underline hover:underline"
                   onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
                 >
-                  …see more
+                  ...see more
                 </button>
               )}
             </p>
             {expanded && (
               <button
                 type="button"
-                className="mt-1 text-xs text-gray-500 hover:text-teal-700 underline"
+                className="mt-1 text-xs text-gray-500 hover:text-blue-600 font-semibold no-underline hover:underline"
                 onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
               >
                 see less
@@ -330,16 +328,16 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           )}
 
           {/* Social counts */}
-          <div className="px-4 pt-2.5 mt-2 text-xs text-gray-500 flex items-center justify-between">
-            <button type="button" onClick={handleLike} className="inline-flex items-center gap-1.5 hover:text-gray-700 transition-colors">
-              <span className={`inline-flex items-center justify-center w-[18px] h-[18px] rounded-full ${liked ? 'bg-blue-500' : 'bg-blue-500'} text-white`}>
-                <ThumbsUp className="w-[10px] h-[10px]" />
+          <div className="px-3 pt-1.5 mt-1 text-xs text-gray-500 flex items-center justify-between">
+            <button type="button" onClick={handleLike} className="inline-flex items-center gap-1 hover:text-gray-700 transition-colors">
+              <span className={`inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 text-white`}>
+                <ThumbsUp className="w-[9px] h-[9px]" />
               </span>
               <span className="tabular-nums font-medium">{likeCount}</span>
             </button>
             <button
               type="button"
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-gray-600 hover:underline transition-colors"
               onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
             >
               <span className="tabular-nums font-medium">{item.comments}</span> comments
@@ -348,14 +346,14 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
           {/* Comments Preview */}
           {showCommentsPreview && (
-            <div className="px-4 pb-4 mt-0 border-t border-gray-100 pt-4 bg-gradient-to-b from-gray-50/80 to-gray-50/40 relative min-h-0 transform-gpu overflow-x-hidden">
+            <div className="px-3 pb-3 mt-0 border-t border-gray-100 pt-2.5 relative min-h-0 transform-gpu overflow-x-hidden">
               {/* New comment input */}
-              <div className="flex items-start gap-2.5">
-                <img src={actorAvatar} alt="Your avatar" loading="lazy" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200" />
+              <div className="flex items-center gap-2">
+                <img src={actorAvatar} alt="Your avatar" loading="lazy" className="w-6 h-6 rounded-full object-cover" />
                 <div className="relative flex-1">
                   <input
-                    placeholder={disabledActions ? 'Sign in to comment…' : 'Write a comment…'}
-                    className={`w-full border border-gray-200 rounded-xl pl-3.5 pr-10 py-2.5 text-sm transition-all ${disabledActions ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400'}`}
+                    placeholder={disabledActions ? 'Sign in to comment…' : 'Add a comment…'}
+                    className={`w-full border border-gray-300 rounded-full pl-3 pr-9 py-1.5 text-[13px] transition-all ${disabledActions ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-transparent hover:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:border-gray-400'}`}
                     disabled={disabledActions}
                     value={commentText}
                     onChange={(e)=>setCommentText(e.target.value)}
@@ -375,7 +373,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'}`}
                     onClick={(e)=>{ e.stopPropagation(); if (!disabledActions) setShowEmoji(v=>!v); }}
                   >
-                    <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-5 h-5 opacity-60" />
+                    <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-4 h-4 opacity-50" />
                   </button>
                   {showEmoji && !disabledActions && (
                     <div ref={emojiPickerRef} className="absolute left-0 top-full mt-1 z-20">
@@ -387,112 +385,89 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 </div>
               </div>
 
-              {/* Threaded comments (mock) */}
-              <div className="mt-4 space-y-3">
-                {/* Parent comment */}
-                <div className="flex items-start gap-2.5">
-                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Ayça Karaman" className="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm" />
-                  <div className="flex-1 min-w-0">
-                    <div className="bg-white rounded-2xl px-4 py-3 border border-gray-100 shadow-sm">
-                      <div className="flex items-center justify-between gap-2 mb-0.5">
-                        <span className="text-sm font-semibold text-gray-900">Ayça Karaman</span>
-                        <span className="text-[11px] text-gray-400">1 week</span>
+              {/* Threaded comments — LinkedIn style */}
+              <div className="mt-3 divide-y divide-gray-100">
+                {/* Comment 1 */}
+                <div className="py-2.5 first:pt-0">
+                  <div className="flex items-start gap-2">
+                    <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Ayça Karaman" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <div className="min-w-0">
+                          <span className="text-[13px] font-semibold text-[rgba(0,0,0,0.9)] leading-tight">Ayça Karaman</span>
+                          <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">Cardiologist · Memorial Hospital</p>
+                        </div>
+                        <span className="text-[11px] text-gray-400 flex-shrink-0">4d</span>
                       </div>
-                      <p className="text-sm text-gray-700 leading-relaxed">Congrats! 🎉</p>
-                    </div>
-                    <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-2">
-                      <button type="button" className="font-medium hover:text-gray-600 transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1' ? '' : 'c1'); setReplyText(prev => (prev && replyTo==='c1') ? prev : '@Ayça Karaman '); }}>Reply</button>
-                      <span className="text-gray-300">·</span>
-                      <span>1 reply</span>
-                    </div>
+                      <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">Congrats! 🎉</p>
+                      <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
+                        <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); }}>Like</button>
+                        <span className="text-gray-300 mx-0.5">·</span>
+                        <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1' ? '' : 'c1'); setReplyText(prev => (prev && replyTo==='c1') ? prev : '@Ayça Karaman '); }}>Reply</button>
+                      </div>
 
-                    {/* Reply */}
-                    <div className="mt-2 ml-5 pl-4 border-l-2 border-gray-200/80">
-                      <div className="flex items-start gap-2.5">
-                        <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Cem Arslan" className="w-7 h-7 rounded-full object-cover ring-2 ring-white shadow-sm" />
-                        <div className="flex-1 min-w-0">
-                          <div className="bg-white rounded-2xl px-4 py-3 border border-gray-100 shadow-sm">
-                            <div className="flex items-center justify-between gap-2 mb-0.5">
-                              <span className="text-sm font-semibold text-gray-900">Dr. Cem Arslan</span>
-                              <span className="text-[11px] text-gray-400">1 week</span>
+                      {/* Reply thread */}
+                      <div className="mt-2 ml-1">
+                        <div className="flex items-start gap-2">
+                          <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Dr. Cem Arslan" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-baseline justify-between gap-2">
+                              <div className="min-w-0">
+                                <span className="text-[12px] font-semibold text-[rgba(0,0,0,0.9)] leading-tight">Dr. Cem Arslan</span>
+                                <p className="text-[10px] text-[rgba(0,0,0,0.6)] leading-tight truncate">Orthopedic Surgeon</p>
+                              </div>
+                              <span className="text-[10px] text-gray-400 flex-shrink-0">3d</span>
                             </div>
-                            <p className="text-sm text-gray-700 leading-relaxed"><span className="font-semibold text-teal-600">@Ayça Karaman</span> Thanks 🙏</p>
-                          </div>
-                          <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-2">
-                            <button type="button" className="font-medium hover:text-gray-600 transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1r1' ? '' : 'c1r1'); setReplyText(prev => (prev && replyTo==='c1r1') ? prev : '@Dr. Cem Arslan '); }}>Reply</button>
-                            <span className="text-gray-300">·</span>
-                            <span>1 reply</span>
+                            <p className="text-[12px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-0.5"><span className="font-semibold text-[#0a66c2]">@Ayça Karaman</span> Thanks 🙏</p>
+                            <div className="mt-1 flex items-center gap-1 text-[10px] text-gray-500">
+                              <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Like</button>
+                              <span className="text-gray-300 mx-0.5">·</span>
+                              <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c1r1' ? '' : 'c1r1'); setReplyText(prev => (prev && replyTo==='c1r1') ? prev : '@Dr. Cem Arslan '); }}>Reply</button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      {replyTo === 'c1r1' && (
-                        <div className="mt-2 ml-10">
-                          <div className="border border-gray-200 rounded-xl p-1.5 flex items-center gap-2 bg-white">
-                            <input
-                              autoFocus
-                              value={replyText}
-                              onChange={(e)=>setReplyText(e.target.value)}
-                              placeholder="Write your reply…"
-                              className="flex-1 min-w-0 outline-none px-2.5 py-1.5 text-sm rounded-lg"
-                            />
-                            <button type="button" className="px-3 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700 transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>
-                              Reply
-                            </button>
+                        {replyTo === 'c1r1' && (
+                          <div className="mt-2 ml-9 flex items-center gap-2">
+                            <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-300 rounded-full px-3 py-1.5 text-[12px] outline-none focus:border-gray-400" />
+                            <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>Post</button>
                           </div>
+                        )}
+                      </div>
+                      {replyTo === 'c1' && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-300 rounded-full px-3 py-1.5 text-[12px] outline-none focus:border-gray-400" />
+                          <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>Post</button>
                         </div>
                       )}
                     </div>
-                    {replyTo === 'c1' && (
-                      <div className="mt-2">
-                        <div className="border border-gray-200 rounded-xl p-1.5 flex items-center gap-2 bg-white">
-                          <input
-                            autoFocus
-                            value={replyText}
-                            onChange={(e)=>setReplyText(e.target.value)}
-                            placeholder="Write your reply…"
-                            className="flex-1 min-w-0 outline-none px-2.5 py-1.5 text-sm rounded-lg"
-                          />
-                          <button type="button" className="px-3 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700 transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>
-                            Reply
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
 
-                {/* Another parent comment */}
-                <div className="flex items-start gap-2.5">
-                  <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Efe Yılmaz" className="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm" />
-                  <div className="flex-1 min-w-0">
-                    <div className="bg-white rounded-2xl px-4 py-3 border border-gray-100 shadow-sm">
-                      <div className="flex items-center justify-between gap-2 mb-0.5">
-                        <span className="text-sm font-semibold text-gray-900">Efe Yılmaz</span>
-                        <span className="text-[11px] text-gray-400">1 week</span>
-                      </div>
-                      <p className="text-sm text-gray-700 leading-relaxed">Well done 👏</p>
-                    </div>
-                    <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 pl-2">
-                      <button type="button" className="font-medium hover:text-gray-600 transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c2' ? '' : 'c2'); setReplyText(prev => (prev && replyTo==='c2') ? prev : '@Efe Yılmaz '); }}>Reply</button>
-                      <span className="text-gray-300">·</span>
-                      <span>1 reply</span>
-                    </div>
-                    {replyTo === 'c2' && (
-                      <div className="mt-2">
-                        <div className="border border-gray-200 rounded-xl p-1.5 flex items-center gap-2 bg-white">
-                          <input
-                            autoFocus
-                            value={replyText}
-                            onChange={(e)=>setReplyText(e.target.value)}
-                            placeholder="Write your reply…"
-                            className="flex-1 min-w-0 outline-none px-2.5 py-1.5 text-sm rounded-lg"
-                          />
-                          <button type="button" className="px-3 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700 transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>
-                            Reply
-                          </button>
+                {/* Comment 2 */}
+                <div className="py-2.5">
+                  <div className="flex items-start gap-2">
+                    <img src={'/images/portrait-candid-male-doctor_720.jpg'} alt="Efe Yılmaz" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <div className="min-w-0">
+                          <span className="text-[13px] font-semibold text-[rgba(0,0,0,0.9)] leading-tight">Efe Yılmaz</span>
+                          <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">Dermatologist · Acibadem</p>
                         </div>
+                        <span className="text-[11px] text-gray-400 flex-shrink-0">3w</span>
                       </div>
-                    )}
+                      <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">Well done 👏</p>
+                      <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
+                        <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>e.stopPropagation()}>Like</button>
+                        <span className="text-gray-300 mx-0.5">·</span>
+                        <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(prev => prev === 'c2' ? '' : 'c2'); setReplyText(prev => (prev && replyTo==='c2') ? prev : '@Efe Yılmaz '); }}>Reply</button>
+                      </div>
+                      {replyTo === 'c2' && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <input autoFocus value={replyText} onChange={(e)=>setReplyText(e.target.value)} placeholder="Add a reply…" className="flex-1 min-w-0 border border-gray-300 rounded-full px-3 py-1.5 text-[12px] outline-none focus:border-gray-400" />
+                          <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700" onClick={(e)=>{ e.stopPropagation(); setReplyTo(''); setReplyText(''); }}>Post</button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -502,10 +477,10 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           
 
           {/* Action bar */}
-          <div className="px-4 py-1.5 border-t border-gray-100 mt-2 grid grid-cols-3 gap-1 justify-items-center">
+          <div className="px-2 py-1 border-t border-gray-100 mt-1 grid grid-cols-3 gap-0.5 justify-items-center">
             <button
               type="button"
-              className={`w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[13px] transition-all ${liked ? 'text-teal-600 bg-teal-50/60 font-semibold' : 'text-gray-500 hover:bg-gray-50 font-medium'}`}
+              className={`w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-[13px] transition-all ${liked ? 'text-teal-600 bg-teal-50/60 font-semibold' : 'text-gray-600 hover:bg-gray-100 font-medium'}`}
               onClick={handleLike}
             >
               {liked ? (
@@ -517,7 +492,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             </button>
             <button
               type="button"
-              className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[13px] text-gray-500 hover:bg-gray-50 font-medium transition-all"
+              className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-[13px] text-gray-600 hover:bg-gray-100 font-medium transition-all"
               onClick={(e)=>{ e.stopPropagation(); if (disabledActions) return; setShowCommentsPreview(v=>!v); }}
             >
               <MessageCircle className="w-[15px] h-[15px]" strokeWidth={1.6} />
