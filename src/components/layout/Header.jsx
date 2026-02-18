@@ -48,42 +48,42 @@ const Header = () => {
 
   return (
     <>
-    <header className={`site-header fixed top-0 left-0 right-0 z-50 md:border-b border-gray-200 bg-white`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
+    <header className={`site-header fixed top-0 left-0 right-0 z-50 border-b border-gray-200/80 bg-white/95 backdrop-blur-sm`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5">
+        <div className="grid grid-cols-[auto,1fr,auto] items-center gap-3">
           {/* Logo */}
           {(() => {
             const logoTo = '/home-v2';
             return (
-              <Link to={logoTo} onClick={closeMenu} className="flex items-center space-x-2 sm:space-x-3 cursor-pointer select-none ml-9 sm:ml-9">
+              <Link to={logoTo} onClick={closeMenu} className="flex items-center space-x-2 cursor-pointer select-none ml-9 sm:ml-9">
                 <img
                   src="/images/logo/crm-logo.jpg"
                   alt="MedGama Logo"
-                  className="h-10 md:h-12 w-auto object-contain rounded"
+                  className="h-8 md:h-9 w-auto object-contain rounded"
                   loading="eager"
                   decoding="async"
                 />
-                <span className={`text-xl font-bold text-gray-900`}>MedGama</span>
+                <span className="text-[17px] font-bold text-gray-900 tracking-tight">MedGama</span>
               </Link>
             );
           })()}
 
           {/* Logoya daha da yakın menü */}
-          <nav className="hidden md:flex items-center space-x-8 ml-auto mr-28">
-            <Link to="/home-v2" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
+          <nav className="hidden md:flex items-center space-x-6 ml-auto mr-20">
+            <Link to="/home-v2" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               {t('nav.home')}
             </Link>
-            <Link to="/vasco-ai" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
+            <Link to="/vasco-ai" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               Vasco AI
             </Link>
-            <Link to="/about" className="text-gray-600 hover:text-blue-600 font-medium text-base transition-colors">
+            <Link to="/about" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               {t('nav.about')}
             </Link>
           </nav>
 
           {/* Right cluster: actions (desktop) + mobile trigger */}
           <div className="flex items-center justify-end gap-2">
-            <div className="hidden md:flex items-center space-x-3">
+            <div className="hidden md:flex items-center space-x-2.5">
               {!hydrated ? null : !user ? (
                 <>
                   <div className="relative" ref={loginRef}>
@@ -92,10 +92,10 @@ const Header = () => {
                       aria-haspopup="menu"
                       aria-expanded={loginOpen}
                       onClick={() => setLoginOpen((p) => !p)}
-                      className="text-sm font-semibold text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all"
+                      className="text-sm font-semibold text-gray-700 hover:text-gray-900 px-3.5 py-1.5 rounded-lg border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all"
                     >
                       {t('common.login')}
-                      <svg className="w-4 h-4 ml-1.5 inline-block text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
+                      <svg className="w-3.5 h-3.5 ml-1 inline-block text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
                     </button>
                     {loginOpen && (
                       <div role="menu" className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 p-2 space-y-1">
@@ -142,19 +142,19 @@ const Header = () => {
                       </div>
                     )}
                   </div>
-                  <Link to="/register" className="text-sm font-semibold bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 shadow-sm hover:shadow transition-all">{t('common.register')}</Link>
+                  <Link to="/register" className="text-sm font-semibold bg-teal-600 text-white px-3.5 py-1.5 rounded-lg hover:bg-teal-700 shadow-sm hover:shadow transition-all">{t('common.register')}</Link>
                 </>
               ) : (
                 <>
                   <div className="relative" ref={profileRef}>
                     {/* Static avatar + name for all roles (no dropdown) */}
-                    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-transparent" title={user.name}>
+                    <div className="flex items-center gap-2 px-1.5 py-1 rounded-lg border border-transparent" title={user.name}>
                       <img
                         src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
                         alt={user.name}
-                        className="w-8 h-8 rounded-full object-cover border"
+                        className="w-7 h-7 rounded-full object-cover border border-gray-200"
                       />
-                      <span className="text-sm text-gray-800 font-medium max-w-[160px] truncate">{user.name}</span>
+                      <span className="text-[13px] text-gray-700 font-medium max-w-[140px] truncate">{user.name}</span>
                     </div>
                   </div>
                 </>
@@ -165,23 +165,23 @@ const Header = () => {
               <button
                 onClick={toggleMenu}
                 aria-label={isMenuOpen ? 'Close profile menu' : 'Open profile menu'}
-                className="md:hidden p-1 rounded-full border border-gray-200 overflow-hidden"
+                className="md:hidden p-0.5 rounded-full border border-gray-200 overflow-hidden"
                 title={user.name}
               >
                 <img
                   src={user.avatar || '/images/portrait-candid-male-doctor_720.jpg'}
                   alt={user.name}
-                  className="w-8 h-8 rounded-full object-cover"
+                  className="w-7 h-7 rounded-full object-cover"
                 />
               </button>
             ) : (
               <button
                 onClick={toggleMenu}
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-                className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                className="md:hidden p-1.5 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
                 title="Menu"
               >
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             )}
           </div>
@@ -208,7 +208,7 @@ const Header = () => {
         {/* Backdrop */}
         <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px] md:hidden" onClick={closeMenu} />
         {/* Panel */}
-        <div className="fixed top-20 left-0 right-0 z-50 mx-4 max-w-md md:hidden overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ring-1 ring-black/5">
+        <div className="fixed top-14 left-0 right-0 z-50 mx-4 max-w-md md:hidden overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ring-1 ring-black/5">
           <nav className="divide-y divide-gray-100">
             <div className="p-4 grid grid-cols-2 gap-2">
               {!mobileLoginExpanded ? (
@@ -266,7 +266,7 @@ const Header = () => {
         {/* Backdrop */}
         <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px] md:hidden" onClick={closeMenu} />
         {/* Panel */}
-        <div className="fixed top-20 left-0 right-0 z-50 mx-4 max-w-md md:hidden overflow-hidden rounded-2xl border border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-2xl">
+        <div className="fixed top-14 left-0 right-0 z-50 mx-4 max-w-md md:hidden overflow-hidden rounded-2xl border border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-2xl">
           {(() => {
             const role = (user?.role || 'patient');
             const initial = (user?.name || 'U')[0]?.toUpperCase();

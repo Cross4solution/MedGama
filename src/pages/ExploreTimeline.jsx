@@ -281,16 +281,20 @@ export default function ExploreTimeline() {
       : composerPapers.length > 0 ? 'document'
       : 'text';
 
-    // Build optimistic local post with local preview URLs
+    // Build optimistic local post with ALL local preview URLs
     const localId = 'local-' + Date.now();
-    const previewUrl = composerPhotoUrls[0] || composerVideoUrls[0] || null;
+    const allMedia = [
+      ...composerPhotoUrls.map(url => ({ url, type: 'image' })),
+      ...composerVideoUrls.map(url => ({ url, type: 'video' })),
+    ];
+    const coverImg = allMedia[0]?.url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg';
     const optimisticPost = {
       id: localId,
       type: 'doctor_update',
       title: user?.name || 'Doctor',
       subtitle: '',
       city: '',
-      img: previewUrl || '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+      img: coverImg,
       text: trimmed,
       likes: 0,
       comments: 0,
@@ -306,7 +310,7 @@ export default function ExploreTimeline() {
       socialContext: '',
       timeAgo: 'Just now',
       visibility: 'public',
-      media: previewUrl ? [{ url: previewUrl }] : [],
+      media: allMedia.length > 0 ? allMedia : [],
       _uploading: true,
     };
 
