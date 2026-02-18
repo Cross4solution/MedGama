@@ -254,13 +254,13 @@ const DoctorChatPage = () => {
   };
 
   const handleSelectThread = (id) => {
+    // Mobile: always open chat view
+    setMobileChatOpen(true);
     if (id === activeThreadId) return;
     setActiveThreadId(id);
     if (!isApiMode) {
       setMessages(getMockMessages(id));
     }
-    // Mobile: open chat view
-    setMobileChatOpen(true);
   };
 
   const handleChannelChange = (value) => {
