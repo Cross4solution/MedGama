@@ -8,6 +8,7 @@ import TimelineControls from 'components/timeline/TimelineControls';
 import ActiveFilterChips from 'components/timeline/ActiveFilterChips';
 import TimelineCard from 'components/timeline/TimelineCard';
 import SkeletonCard from 'components/timeline/SkeletonCard';
+import VirtualizedFeed from 'components/timeline/VirtualizedFeed';
 import SPECIALTIES from '../data/specialties';
 import { medStreamAPI } from '../lib/api';
 import { resizeImages } from '../utils/imageResize';
@@ -700,12 +701,15 @@ export default function ExploreTimeline() {
                   </div>
                 </div>
               )}
-              <div className="space-y-4">
-                {items.map((it) => (
-                  <TimelineCard key={it.id} item={it} disabledActions={disabledActions} view={'list'} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
-                ))}
-                {isLoadingMore && [1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}
-              </div>
+              <VirtualizedFeed
+                items={items}
+                keyExtractor={(it) => it.id}
+                gap="1rem"
+                renderItem={(it) => (
+                  <TimelineCard item={it} disabledActions={disabledActions} view={'list'} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
+                )}
+              />
+              {isLoadingMore && <div className="space-y-4 mt-4">{[1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}</div>}
               <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
                 <p className="text-xs text-gray-400 font-medium">Showing <span className="text-gray-600 font-semibold">{items.length}</span> of <span className="text-gray-600 font-semibold">{total}</span></p>
                 {hasMore && (
