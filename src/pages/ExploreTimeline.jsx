@@ -345,50 +345,13 @@ export default function ExploreTimeline() {
       : composerPapers.length > 0 ? 'document'
       : 'text';
 
-    // Build optimistic local post with ALL local preview URLs
-    const localId = 'local-' + Date.now();
-    const allMedia = [
-      ...composerPhotoUrls.map(url => ({ url, type: 'image' })),
-      ...composerVideoUrls.map(url => ({ url, type: 'video' })),
-    ];
-    const coverImg = allMedia[0]?.url || '/images/petr-magera-huwm7malj18-unsplash_720.jpg';
-    const optimisticPost = {
-      id: localId,
-      type: 'doctor_update',
-      title: user?.name || 'Doctor',
-      subtitle: '',
-      city: '',
-      img: coverImg,
-      text: trimmed,
-      likes: 0,
-      comments: 0,
-      specialty: '',
-      countryCode: '',
-      actor: {
-        id: user?.id || 'unknown',
-        role: user?.role || 'doctor',
-        name: user?.name || 'Doctor',
-        title: '',
-        avatarUrl: user?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
-      },
-      socialContext: '',
-      timeAgo: 'Just now',
-      visibility: 'public',
-      media: allMedia.length > 0 ? allMedia : [],
-      _uploading: true,
-    };
-
-    // Grab file references before composer closes and state resets
+    // Grab file references before any state reset
     // Client-side resize photos before upload (max 2048px, WebP, ~80% quality)
     const photosToUpload = await resizeImages([...composerPhotos]);
     const videosToUpload = [...composerVideos];
     const papersToUpload = [...composerPapers];
 
-    // Show optimistic post in feed immediately
-    setLocalPosts(prev => [optimisticPost, ...prev]);
-    setIsComposerOpen(false);
-
-    // Upload to backend with real files
+    // Upload to backend FIRST — do NOT close composer or add to feed yet
     try {
       const res = await medStreamAPI.createPost({
         content: trimmed || undefined,
@@ -399,15 +362,12 @@ export default function ExploreTimeline() {
         onProgress: (pct) => setUploadProgress(pct),
       });
 
-      // Upload succeeded — remove optimistic local post entirely.
-      // Feed refresh below will bring the real server version with proper URLs.
-      setLocalPosts(prev => prev.filter(p => p.id !== localId));
-
-      // Refresh feed to get full server data
+      // Upload succeeded — close composer and refresh feed
+      setIsComposerOpen(false);
       setFeedRefreshKey(k => k + 1);
     } catch (err) {
       console.error('[ExploreTimeline] Post upload failed:', err?.status, err?.message);
-      let errorMsg = err?.message || 'Upload failed. Post saved locally.';
+      let errorMsg = err?.message || 'Upload failed. Please try again.';
       if (err?.status === 413) {
         errorMsg = 'Your file exceeds the upload limit. Try compressing it or choosing a smaller file.';
       } else if (err?.status === 422) {
@@ -417,10 +377,8 @@ export default function ExploreTimeline() {
       } else if (err?.message?.includes('Network')) {
         errorMsg = 'Connection lost. Please check your internet and try again.';
       }
+      // Keep composer open — show error inside composer so user can fix and retry
       setUploadError(errorMsg);
-      // Remove the optimistic post — it doesn't exist on server and blob URLs
-      // will break on page refresh anyway. Error banner tells user what happened.
-      setLocalPosts(prev => prev.filter(p => p.id !== localId));
     }
     setComposerPosting(false);
     setUploadProgress(0);
@@ -434,6 +392,7 @@ export default function ExploreTimeline() {
       setComposerPapers([]);
       setComposerPaperNames([]);
       setComposerText('');
+      setUploadError('');
       setShowEmojiModal(false);
       setEmojiCategory(0);
     }
@@ -839,6 +798,22 @@ export default function ExploreTimeline() {
                   </div>
                 </div>
                 <div className="mt-3 space-y-2">
+                  {uploadError && !composerPosting && (
+                    <div className="rounded-xl border border-red-200 bg-red-50/90 p-3">
+                      <div className="flex items-start gap-2.5">
+                        <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-red-800">Upload failed</p>
+                          <p className="text-[13px] text-red-600 mt-0.5 leading-relaxed">{uploadError}</p>
+                        </div>
+                        <button onClick={() => setUploadError('')} className="w-6 h-6 rounded-full hover:bg-red-100 flex items-center justify-center text-red-400 hover:text-red-600 transition-colors flex-shrink-0">
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   {composerPosting && uploadProgress > 0 && (
                     <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                       <div className="bg-gradient-to-r from-teal-500 to-emerald-500 h-2 rounded-full transition-all duration-300 ease-out" style={{ width: `${uploadProgress}%` }} />
