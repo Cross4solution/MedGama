@@ -340,13 +340,18 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const timeLabel = toEnglishTimestamp(timeAgo);
   const socialContext = item?.socialContext || (item?.likes ? `${Math.max(1, item.likes % 7)} kişi beğendi` : '');
   const media = Array.isArray(item?.media) && item.media.length > 0 ? item.media : [];
-  const actorLink = item?.actor?.role === 'doctor'
-    ? `/doctor/${encodeURIComponent(item?.actor?.id || 'unknown')}`
-    : item?.actor?.role === 'patient'
-      ? `/patient/${encodeURIComponent(item?.actor?.id || 'unknown')}`
-      : item?.actor?.role === 'clinic'
-        ? `/clinic/${encodeURIComponent(item?.actor?.id || 'unknown')}`
-        : (item?.type === 'clinic_update' ? '/clinic' : '/profile');
+  const actorLink = (() => {
+    const actorId = item?.actor?.id;
+    const actorRole = item?.actor?.role;
+    // If the post author is the current user, go to /profile
+    if (authUser?.id && actorId === authUser.id) return '/profile';
+    // Doctors have a public profile page
+    if (actorRole === 'doctor') return `/doctor/${encodeURIComponent(actorId || 'unknown')}`;
+    // Clinics
+    if (actorRole === 'clinic' || actorRole === 'clinicOwner') return `/clinic/${encodeURIComponent(actorId || 'unknown')}`;
+    // Other roles (patient etc.) — no public profile page exists
+    return null;
+  })();
   const titleLink = item?.specialty ? `/clinics?specialty=${encodeURIComponent(item.specialty)}` : actorLink;
 
   const shareUrl = (() => {
@@ -446,13 +451,21 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           {/* Header */}
           <div className={`flex items-start justify-between ${headerPad}`}>
             <div className={`flex items-start ${headerGap} min-w-0`}>
-              <Link to={actorLink} onClick={(e)=>e.stopPropagation()}>
+              {actorLink ? (
+                <Link to={actorLink} onClick={(e)=>e.stopPropagation()}>
+                  <AvatarImg src={actorAvatar} alt={actorName} className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
+                </Link>
+              ) : (
                 <AvatarImg src={actorAvatar} alt={actorName} className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
-              </Link>
+              )}
               <div className="min-w-0">
               {/* socialContext (e.g., liked by N) removed per design */}
               <div className="flex items-center gap-1">
-                <Link to={actorLink} onClick={(e)=>e.stopPropagation()} className={`${nameText} font-semibold text-gray-900 truncate hover:underline`} title={actorName}>{actorName}</Link>
+                {actorLink ? (
+                  <Link to={actorLink} onClick={(e)=>e.stopPropagation()} className={`${nameText} font-semibold text-gray-900 truncate hover:underline`} title={actorName}>{actorName}</Link>
+                ) : (
+                  <span className={`${nameText} font-semibold text-gray-900 truncate`} title={actorName}>{actorName}</span>
+                )}
               </div>
               <span className="block text-xs leading-4 text-[rgba(0,0,0,0.6)] font-normal break-words">
                 {actorTitle}
