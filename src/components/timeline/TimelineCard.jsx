@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Share2, Bookmark, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
@@ -29,6 +29,70 @@ function MediaImg({ src, alt, className, onClick = undefined }) {
       onClick={onClick}
     />
   );
+}
+
+function getMediaType(m) {
+  if (m.type === 'video' || /\.(mp4|webm|mov|avi)$/i.test(m.url || '')) return 'video';
+  if (m.type === 'document' || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.url || '') || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.name || '')) return 'document';
+  return 'image';
+}
+
+function getFileExt(m) {
+  const name = m.name || m.url || '';
+  const match = name.match(/\.([a-zA-Z0-9]+)$/);
+  return match ? match[1].toUpperCase() : 'FILE';
+}
+
+function getFileName(m) {
+  if (m.name) return m.name;
+  try { return decodeURIComponent((m.url || '').split('/').pop().split('?')[0]); } catch { return 'Document'; }
+}
+
+const EXT_COLORS = { PDF: 'bg-red-500', DOC: 'bg-blue-500', DOCX: 'bg-blue-500', XLS: 'bg-green-600', XLSX: 'bg-green-600', PPT: 'bg-orange-500', PPTX: 'bg-orange-500', CSV: 'bg-emerald-500' };
+
+function DocumentPreview({ m, className, onClick }) {
+  const ext = getFileExt(m);
+  const name = getFileName(m);
+  const color = EXT_COLORS[ext] || 'bg-gray-500';
+  return (
+    <div className={`${className} bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center cursor-pointer hover:from-gray-100 hover:to-gray-200 transition-colors`} onClick={onClick}>
+      <div className="flex flex-col items-center gap-2.5 px-4 text-center max-w-[200px]">
+        <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center shadow-lg`}>
+          <FileText className="w-7 h-7 text-white" />
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-gray-700 truncate max-w-[180px]">{name}</p>
+          <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white ${color}`}>{ext}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VideoPreview({ m, className, onClick }) {
+  const thumb = m.thumb || m.url;
+  const isThumbImage = thumb && !thumb.endsWith('.mp4') && !thumb.endsWith('.webm') && !thumb.endsWith('.mov');
+  return (
+    <div className={`${className} relative bg-gray-900 flex items-center justify-center cursor-pointer group`} onClick={onClick}>
+      {isThumbImage ? (
+        <img src={thumb} alt="Video" loading="lazy" className="w-full h-full object-cover opacity-80" onError={(e) => { e.target.style.display = 'none'; }} />
+      ) : (
+        <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900" />
+      )}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+          <Play className="w-6 h-6 text-gray-800 ml-0.5" fill="currentColor" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MediaItem({ m, alt, className, onClick = undefined }) {
+  const type = getMediaType(m);
+  if (type === 'document') return <DocumentPreview m={m} className={className} onClick={onClick} />;
+  if (type === 'video') return <VideoPreview m={m} className={className} onClick={onClick} />;
+  return <MediaImg src={m.url} alt={alt} className={className} onClick={onClick} />;
 }
 
 function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
@@ -286,7 +350,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     onClick={goToPost}
                     className="block w-full text-left"
                   >
-                    <MediaImg src={media[0].url} alt={media[0].alt || actorName} className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
+                    <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
                   </button>
                 </div>
               )}
@@ -299,7 +363,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                       onClick={goToPost}
                       className="block w-full text-left"
                     >
-                      <MediaImg src={m.url} alt={m.alt || actorName} className={`w-full ${grid2H} object-cover`} />
+                      <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid2H} object-cover`} />
                     </button>
                   ))}
                 </div>
@@ -311,7 +375,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     onClick={goToPost}
                     className="block w-full text-left"
                   >
-                    <MediaImg src={media[0].url} alt={media[0].alt || actorName} className={`w-full ${grid3LeftH} object-cover col-span-1`} />
+                    <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${grid3LeftH} object-cover col-span-1`} />
                   </button>
                   <div className="grid grid-rows-2 gap-2">
                     {media.slice(1,3).map((m, i) => (
@@ -321,7 +385,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         onClick={goToPost}
                         className="block w-full text-left"
                       >
-                        <MediaImg src={m.url} alt={m.alt || actorName} className={`w-full ${grid3SmallH} object-cover`} />
+                        <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid3SmallH} object-cover`} />
                       </button>
                     ))}
                   </div>
@@ -336,7 +400,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         onClick={goToPost}
                         className="block w-full text-left"
                       >
-                        <MediaImg src={m.url} alt={m.alt || actorName} className={`w-full ${grid4H} object-cover`} />
+                        <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid4H} object-cover`} />
                       </button>
                       {i === 3 && media.length > 4 && (
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">

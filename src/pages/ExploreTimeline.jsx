@@ -49,7 +49,16 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
             socialContext: '',
             timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
             visibility: 'public',
-            media: p.media_url ? [{ url: p.media_url }] : [{ url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' }],
+            media: (() => {
+              // If backend returned uploaded media array, use it
+              if (Array.isArray(p.media) && p.media.length > 0) {
+                return p.media.map(m => ({ url: m.medium || m.original || m.url, thumb: m.thumb, name: m.name, type: m.type || p.post_type || 'image' }));
+              }
+              if (!p.media_url) return [];
+              // Infer type from post_type
+              const mType = (p.post_type === 'video') ? 'video' : (p.post_type === 'document') ? 'document' : 'image';
+              return [{ url: p.media_url, type: mType }];
+            })(),
             is_liked: !!p.is_liked,
             is_bookmarked: !!p.is_bookmarked,
           };
@@ -140,8 +149,8 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
 
     // Ülke adı -> ülke koduna çeviri (countryCodes)
     const codeLower = countryName ? (countryCodes[countryName] || '').toLowerCase() : '';
-    if (codeLower) list = list.filter(x => (x.countryCode || '').toLowerCase() === codeLower);
-    if (specialtyFilter) list = list.filter(x => x.specialty === specialtyFilter);
+    if (codeLower) list = list.filter(x => !x.countryCode || (x.countryCode || '').toLowerCase() === codeLower);
+    if (specialtyFilter) list = list.filter(x => !x.specialty || x.specialty === specialtyFilter);
     if (textQuery) {
       const q = textQuery.toLowerCase();
       list = list.filter(x => (x.title + ' ' + x.subtitle + ' ' + x.text).toLowerCase().includes(q));
