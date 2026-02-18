@@ -89,6 +89,8 @@ export default function Profile() {
   const { openSettings: openCookieSettings, consent, consentTimestamp, resetConsent } = useCookieConsent();
   const { t, i18n } = useTranslation();
   const [active, setActive] = useState('account');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   // Account state
   const [name, setName] = useState(user?.name || '');
@@ -857,26 +859,7 @@ ${bookmarks.length > 0 ? `<h2>🔖 Bookmarks (${bookmarks.length})</h2><p style=
                 </h2>
                 <p className="text-xs text-rose-700/70 mb-3">{t('profile.deleteAccountDesc')}</p>
                 <button
-                  onClick={async () => {
-                    if (window.confirm('Are you sure you want to delete your account and all data? This action cannot be undone.')) {
-                      try {
-                        await authAPI.deleteAccount({ confirm: true });
-                      } catch (err) {
-                        console.warn('[Profile] Delete account API failed:', err?.message);
-                      }
-                      try {
-                        const keysToRemove = [];
-                        for (let i = 0; i < localStorage.length; i++) {
-                          const key = localStorage.key(i);
-                          if (key && key !== 'cookie_consent') keysToRemove.push(key);
-                        }
-                        keysToRemove.forEach((k) => localStorage.removeItem(k));
-                        sessionStorage.clear();
-                      } catch {}
-                      logout({ skipConfirmation: true });
-                      window.location.href = '/';
-                    }
-                  }}
+                  onClick={() => { setDeleteConfirmText(''); setShowDeleteModal(true); }}
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-rose-300 bg-rose-100 text-rose-700 hover:bg-rose-200 transition-all"
                 >
                   <Trash2 className="w-3.5 h-3.5" /> {t('profile.deleteMyAccount')}
@@ -889,6 +872,75 @@ ${bookmarks.length > 0 ? `<h2>🔖 Bookmarks (${bookmarks.length})</h2><p style=
         </section>
       </div>
     </div>
+
+    {/* Delete Account Confirmation Modal */}
+    {showDeleteModal && (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setShowDeleteModal(false)}>
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+        <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-[fadeIn_0.2s_ease-out]" onClick={e => e.stopPropagation()}>
+          {/* Warning icon */}
+          <div className="mx-auto w-14 h-14 rounded-full bg-rose-100 flex items-center justify-center mb-4">
+            <Trash2 className="w-7 h-7 text-rose-600" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 text-center mb-2">Delete Your Account?</h3>
+          <p className="text-sm text-gray-500 text-center mb-4 leading-relaxed">
+            This will <strong className="text-rose-600">permanently delete</strong> your account and all associated data including posts, comments, medical history, and personal information. This action <strong className="text-rose-600">cannot be undone</strong>.
+          </p>
+          {/* Confirmation input */}
+          <div className="mb-5">
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Type <span className="font-bold text-rose-600">DELETE</span> to confirm</label>
+            <input
+              type="text"
+              value={deleteConfirmText}
+              onChange={e => setDeleteConfirmText(e.target.value)}
+              placeholder="DELETE"
+              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-center font-mono tracking-widest focus:border-rose-400 focus:ring-2 focus:ring-rose-500/20 outline-none transition-all"
+              autoFocus
+            />
+          </div>
+          {/* Buttons */}
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              disabled={deleteConfirmText !== 'DELETE' || saving}
+              onClick={async () => {
+                setSaving(true);
+                try {
+                  await authAPI.deleteAccount({ confirm: true });
+                } catch (err) {
+                  console.warn('[Profile] Delete account API failed:', err?.message);
+                }
+                try {
+                  const keysToRemove = [];
+                  for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key !== 'cookie_consent') keysToRemove.push(key);
+                  }
+                  keysToRemove.forEach((k) => localStorage.removeItem(k));
+                  sessionStorage.clear();
+                } catch {}
+                setSaving(false);
+                setShowDeleteModal(false);
+                logout({ skipConfirmation: true });
+                window.location.href = '/';
+              }}
+              className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all ${
+                deleteConfirmText === 'DELETE' && !saving
+                  ? 'bg-rose-600 hover:bg-rose-700 shadow-md shadow-rose-200/50'
+                  : 'bg-gray-300 cursor-not-allowed'
+              }`}
+            >
+              {saving ? 'Deleting...' : 'Delete My Account'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }
