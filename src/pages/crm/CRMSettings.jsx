@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Settings, User, Bell, Shield, Clock, Globe, Palette, Mail,
   Phone, MapPin, Camera, Save, Eye, EyeOff, Lock, Key,
   Monitor, Smartphone, LogOut, Trash2, ChevronRight, Building2,
-  Stethoscope, Calendar, CreditCard,
+  Stethoscope, Calendar, CreditCard, Loader2, CheckCircle, Plus, X,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../../i18n';
+import { useAuth } from '../../context/AuthContext';
+import { doctorProfileAPI } from '../../lib/api';
 
 const TABS = [
   { key: 'profile', label: 'Profile', icon: User },
@@ -19,14 +21,84 @@ const TABS = [
 
 const CRMSettings = () => {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [showPassword, setShowPassword] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
 
   const [profile, setProfile] = useState({
-    firstName: 'Ahmet', lastName: 'Yilmaz', email: 'dr.ahmet@medgama.com', phone: '+90 532 100 2000',
-    specialty: 'General Medicine', title: 'MD, PhD', bio: 'Experienced physician specializing in internal medicine with 15+ years of practice.',
+    firstName: '', lastName: '', email: '', phone: '',
+    specialty: '', title: '', bio: '', experienceYears: '', licenseNumber: '',
     language: 'en',
   });
+  const [doctorServices, setDoctorServices] = useState([]);
+  const [doctorPrices, setDoctorPrices] = useState([]);
+  const [doctorEducation, setDoctorEducation] = useState([]);
+  const [doctorLanguages, setDoctorLanguages] = useState([]);
+  const [onlineConsultation, setOnlineConsultation] = useState(false);
+  const [doctorAddress, setDoctorAddress] = useState('');
+  const [doctorWebsite, setDoctorWebsite] = useState('');
+
+  // Load doctor profile from API
+  useEffect(() => {
+    const names = (user?.name || '').split(' ');
+    setProfile(p => ({ ...p, firstName: names[0] || '', lastName: names.slice(1).join(' ') || '', email: user?.email || '' }));
+    if (user?.role === 'doctor' || user?.role_id === 'doctor') {
+      doctorProfileAPI.get().then(res => {
+        const dp = res?.profile || res?.data?.profile;
+        if (dp) {
+          setProfile(p => ({
+            ...p,
+            specialty: dp.specialty || '',
+            title: dp.title || '',
+            bio: dp.bio || '',
+            experienceYears: dp.experience_years || '',
+            licenseNumber: dp.license_number || '',
+            phone: dp.phone || p.phone,
+          }));
+          setDoctorServices(dp.services || []);
+          setDoctorPrices(dp.prices || []);
+          setDoctorEducation(dp.education || []);
+          setDoctorLanguages(dp.languages || []);
+          setOnlineConsultation(!!dp.online_consultation);
+          setDoctorAddress(dp.address || '');
+          setDoctorWebsite(dp.website || '');
+        }
+      }).catch(() => {}).finally(() => setProfileLoading(false));
+    } else {
+      setProfileLoading(false);
+    }
+  }, [user]);
+
+  const saveProfile = async () => {
+    setProfileSaving(true);
+    setProfileSaved(false);
+    try {
+      await doctorProfileAPI.update({
+        title: profile.title,
+        specialty: profile.specialty,
+        bio: profile.bio,
+        experience_years: profile.experienceYears,
+        license_number: profile.licenseNumber,
+        phone: profile.phone,
+        services: doctorServices.filter(s => s.name),
+        prices: doctorPrices.filter(p => p.label),
+        education: doctorEducation.filter(e => e.degree || e.school),
+        languages: doctorLanguages,
+        online_consultation: onlineConsultation,
+        address: doctorAddress,
+        website: doctorWebsite,
+      });
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 3000);
+    } catch (err) {
+      console.error('Save profile failed:', err);
+    } finally {
+      setProfileSaving(false);
+    }
+  };
 
   const [clinic, setClinic] = useState({
     name: 'MedGama Health Center', address: 'Levent Mah. Buyukdere Cad. No:185', city: 'Istanbul', country: 'Turkey',
@@ -80,83 +152,182 @@ const CRMSettings = () => {
         <div className="flex-1 min-w-0">
           {/* Profile Tab */}
           {activeTab === 'profile' && (
-            <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100">
-                <h2 className="text-sm font-bold text-gray-900">Personal Information</h2>
-                <p className="text-xs text-gray-400 mt-0.5">Update your personal details and profile</p>
-              </div>
-              <div className="px-6 py-5 space-y-5">
-                {/* Avatar */}
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white text-xl font-bold">
-                    {profile.firstName[0]}{profile.lastName[0]}
-                  </div>
-                  <div>
-                    <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"><Camera className="w-3.5 h-3.5" /> Change Photo</button>
-                    <p className="text-[10px] text-gray-400 mt-0.5">JPG, PNG. Max 5MB</p>
-                  </div>
+            <div className="space-y-4">
+              {/* Personal Info */}
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h2 className="text-sm font-bold text-gray-900">Personal Information</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">Update your personal details and professional profile</p>
                 </div>
+                {profileLoading ? (
+                  <div className="px-6 py-10 flex justify-center"><Loader2 className="w-6 h-6 text-teal-600 animate-spin" /></div>
+                ) : (
+                  <div className="px-6 py-5 space-y-5">
+                    {/* Avatar */}
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white text-xl font-bold">
+                        {(profile.firstName || '?')[0]}{(profile.lastName || '?')[0]}
+                      </div>
+                      <div>
+                        <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"><Camera className="w-3.5 h-3.5" /> Change Photo</button>
+                        <p className="text-[10px] text-gray-400 mt-0.5">JPG, PNG. Max 5MB</p>
+                      </div>
+                    </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">First Name</label>
-                    <input type="text" value={profile.firstName} onChange={(e) => setProfile({...profile, firstName: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">First Name</label>
+                        <input type="text" value={profile.firstName} onChange={(e) => setProfile({...profile, firstName: e.target.value})}
+                          className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Last Name</label>
+                        <input type="text" value={profile.lastName} onChange={(e) => setProfile({...profile, lastName: e.target.value})}
+                          className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Email</label>
+                        <input type="email" value={profile.email} disabled
+                          className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-500 cursor-not-allowed" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Phone</label>
+                        <input type="tel" value={profile.phone} onChange={(e) => setProfile({...profile, phone: e.target.value})}
+                          className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Professional Title</label>
+                        <input type="text" value={profile.title} onChange={(e) => setProfile({...profile, title: e.target.value})} placeholder="e.g. Kardiyoloji Uzmanı"
+                          className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Specialty</label>
+                        <input type="text" value={profile.specialty} onChange={(e) => setProfile({...profile, specialty: e.target.value})} placeholder="e.g. Cardiology"
+                          className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Experience</label>
+                        <input type="text" value={profile.experienceYears} onChange={(e) => setProfile({...profile, experienceYears: e.target.value})} placeholder="e.g. 15+"
+                          className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">License Number</label>
+                        <input type="text" value={profile.licenseNumber} onChange={(e) => setProfile({...profile, licenseNumber: e.target.value})}
+                          className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">Bio / About</label>
+                      <textarea rows={4} value={profile.bio} onChange={(e) => setProfile({...profile, bio: e.target.value})} placeholder="Tell patients about yourself..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">Address</label>
+                      <input type="text" value={doctorAddress} onChange={(e) => setDoctorAddress(e.target.value)} placeholder="Office address"
+                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Website</label>
+                        <input type="text" value={doctorWebsite} onChange={(e) => setDoctorWebsite(e.target.value)} placeholder="https://..."
+                          className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      </div>
+                      <label className="flex items-center gap-3 self-end pb-1.5 cursor-pointer">
+                        <input type="checkbox" checked={onlineConsultation} onChange={e => setOnlineConsultation(e.target.checked)} className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500" />
+                        <span className="text-sm text-gray-700 font-medium">Online Consultation Available</span>
+                      </label>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
+                        <Globe className="w-3.5 h-3.5 text-gray-400" /> Preferred Language
+                      </label>
+                      <select value={profile.language} onChange={(e) => {
+                        setProfile({...profile, language: e.target.value});
+                        i18n.changeLanguage(e.target.value);
+                        try { localStorage.setItem('preferred_language', e.target.value); } catch {}
+                        try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
+                        document.documentElement.dir = LANGUAGES.find(l => l.code === e.target.value)?.dir || 'ltr';
+                      }}
+                        className="w-full sm:w-64 h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        {LANGUAGES.map((lang) => (
+                          <option key={lang.code} value={lang.code}>{lang.flag} {lang.label}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Last Name</label>
-                    <input type="text" value={profile.lastName} onChange={(e) => setProfile({...profile, lastName: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Email</label>
-                    <input type="email" value={profile.email} onChange={(e) => setProfile({...profile, email: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Phone</label>
-                    <input type="tel" value={profile.phone} onChange={(e) => setProfile({...profile, phone: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Specialty</label>
-                    <input type="text" value={profile.specialty} onChange={(e) => setProfile({...profile, specialty: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Title</label>
-                    <input type="text" value={profile.title} onChange={(e) => setProfile({...profile, title: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Bio</label>
-                  <textarea rows={3} value={profile.bio} onChange={(e) => setProfile({...profile, bio: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none" />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5 text-gray-400" /> Preferred Language
-                  </label>
-                  <select value={profile.language} onChange={(e) => {
-                    setProfile({...profile, language: e.target.value});
-                    i18n.changeLanguage(e.target.value);
-                    try { localStorage.setItem('preferred_language', e.target.value); } catch {}
-                    try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
-                    document.documentElement.dir = LANGUAGES.find(l => l.code === e.target.value)?.dir || 'ltr';
-                  }}
-                    className="w-full sm:w-64 h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                    {LANGUAGES.map((lang) => (
-                      <option key={lang.code} value={lang.code}>{lang.flag} {lang.label}</option>
-                    ))}
-                  </select>
-                  <p className="mt-1 text-[11px] text-gray-400">Sets the language for CRM interface and patient communications.</p>
+                )}
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-end gap-3">
+                  {profileSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Saved</span>}
+                  <button onClick={saveProfile} disabled={profileSaving}
+                    className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
+                    {profileSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save Changes
+                  </button>
                 </div>
               </div>
-              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex justify-end">
-                <button className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
-                  <Save className="w-4 h-4" /> Save Changes
-                </button>
+
+              {/* Services */}
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-bold text-gray-900">Services</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">Services you offer to patients</p>
+                  </div>
+                  <button type="button" onClick={() => setDoctorServices(s => [...s, { name: '', description: '' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
+                </div>
+                <div className="px-6 py-4 space-y-2">
+                  {doctorServices.length === 0 && <p className="text-xs text-gray-400 italic">No services added yet</p>}
+                  {doctorServices.map((svc, i) => (
+                    <div key={i} className="grid sm:grid-cols-2 gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100 relative">
+                      <button type="button" onClick={() => setDoctorServices(s => s.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
+                      <input value={svc.name} onChange={e => { const n = [...doctorServices]; n[i].name = e.target.value; setDoctorServices(n); }} placeholder="Service name" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={svc.description} onChange={e => { const n = [...doctorServices]; n[i].description = e.target.value; setDoctorServices(n); }} placeholder="Description" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Prices */}
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-bold text-gray-900">Pricing</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">Price ranges for your services</p>
+                  </div>
+                  <button type="button" onClick={() => setDoctorPrices(p => [...p, { label: '', min: '', max: '', currency: '₺' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
+                </div>
+                <div className="px-6 py-4 space-y-2">
+                  {doctorPrices.length === 0 && <p className="text-xs text-gray-400 italic">No prices added yet</p>}
+                  {doctorPrices.map((pr, i) => (
+                    <div key={i} className="grid grid-cols-4 gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100 relative">
+                      <button type="button" onClick={() => setDoctorPrices(p => p.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
+                      <input value={pr.label} onChange={e => { const n = [...doctorPrices]; n[i].label = e.target.value; setDoctorPrices(n); }} placeholder="Service" className="col-span-2 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={pr.min} onChange={e => { const n = [...doctorPrices]; n[i].min = e.target.value; setDoctorPrices(n); }} placeholder="Min ₺" type="number" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={pr.max} onChange={e => { const n = [...doctorPrices]; n[i].max = e.target.value; setDoctorPrices(n); }} placeholder="Max ₺" type="number" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Education */}
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-bold text-gray-900">Education</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">Your academic background</p>
+                  </div>
+                  <button type="button" onClick={() => setDoctorEducation(e => [...e, { degree: '', school: '', year: '' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
+                </div>
+                <div className="px-6 py-4 space-y-2">
+                  {doctorEducation.length === 0 && <p className="text-xs text-gray-400 italic">No education added yet</p>}
+                  {doctorEducation.map((edu, i) => (
+                    <div key={i} className="grid sm:grid-cols-3 gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100 relative">
+                      <button type="button" onClick={() => setDoctorEducation(e => e.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
+                      <input value={edu.degree} onChange={e => { const n = [...doctorEducation]; n[i].degree = e.target.value; setDoctorEducation(n); }} placeholder="Degree" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={edu.school} onChange={e => { const n = [...doctorEducation]; n[i].school = e.target.value; setDoctorEducation(n); }} placeholder="School" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={edu.year} onChange={e => { const n = [...doctorEducation]; n[i].year = e.target.value; setDoctorEducation(n); }} placeholder="Year" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
