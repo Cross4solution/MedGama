@@ -415,7 +415,7 @@ const DoctorChatPage = () => {
           )}
         </div>
             {/* Desktop layout */}
-            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-full min-h-0 mt-2">
+            <div className="hidden lg:flex gap-2 flex-1 overflow-hidden h-full min-h-0">
               {/* Threads Sidebar */}
               <div className="w-80 flex-shrink-0 h-full flex flex-col min-h-0">
                 <ThreadsSidebar
