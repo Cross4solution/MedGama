@@ -7,12 +7,27 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Expand post_type enum to include 'document' and 'mixed'
-        DB::statement("ALTER TABLE med_stream_posts MODIFY COLUMN post_type ENUM('text','image','video','document','mixed') DEFAULT 'text'");
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            // PostgreSQL: drop old check constraint and add new one with document & mixed
+            DB::statement("ALTER TABLE med_stream_posts DROP CONSTRAINT IF EXISTS med_stream_posts_post_type_check");
+            DB::statement("ALTER TABLE med_stream_posts ADD CONSTRAINT med_stream_posts_post_type_check CHECK (post_type::text = ANY (ARRAY['text','image','video','document','mixed']))");
+        } else {
+            // MySQL: modify enum column
+            DB::statement("ALTER TABLE med_stream_posts MODIFY COLUMN post_type ENUM('text','image','video','document','mixed') DEFAULT 'text'");
+        }
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE med_stream_posts MODIFY COLUMN post_type ENUM('text','image','video') DEFAULT 'text'");
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            DB::statement("ALTER TABLE med_stream_posts DROP CONSTRAINT IF EXISTS med_stream_posts_post_type_check");
+            DB::statement("ALTER TABLE med_stream_posts ADD CONSTRAINT med_stream_posts_post_type_check CHECK (post_type::text = ANY (ARRAY['text','image','video']))");
+        } else {
+            DB::statement("ALTER TABLE med_stream_posts MODIFY COLUMN post_type ENUM('text','image','video') DEFAULT 'text'");
+        }
     }
 };
