@@ -301,7 +301,7 @@ const DoctorChatPage = () => {
 
   if (loadingConvs) {
     return (
-      <div className="h-[calc(100vh-5rem)] w-full flex items-center justify-center">
+      <div className="h-[calc(100vh-4.5rem)] w-full flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-3 border-teal-200 border-t-teal-600 rounded-full animate-spin" />
           <span className="text-sm text-gray-400 font-medium">Loading messages...</span>
@@ -311,38 +311,8 @@ const DoctorChatPage = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-5rem)] w-full flex flex-col overflow-hidden">
+    <div className="h-[calc(100vh-4.5rem)] w-full flex flex-col overflow-hidden">
       <div className="flex-1 flex flex-col min-h-0">
-        {/* Doctor Info Header */}
-        <div className="bg-white/95 backdrop-blur-sm border-b border-gray-100 flex-shrink-0">
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2.5">
-            <div className="flex items-center gap-3">
-              <div className="relative flex-shrink-0">
-                <img
-                  src={headerAvatar}
-                  alt={headerName}
-                  className="w-11 h-11 rounded-xl object-cover ring-2 ring-white shadow-md"
-                  style={{ objectPosition: 'center 20%' }}
-                />
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white bg-emerald-500" />
-              </div>
-              <div>
-                <h1 className="text-sm font-bold text-gray-900 leading-tight">{headerName}</h1>
-                <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-medium mt-0.5">
-                  <span>Messages</span>
-                  {isApiMode && (
-                    <>
-                      <span className="text-gray-300">·</span>
-                      <span className="text-teal-600">{threads.length} conversations</span>
-                    </>
-                  )}
-                  <span className="ml-1 inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-md text-[10px] font-semibold border border-emerald-100/80">Online</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="flex-1 overflow-hidden min-h-0">
           <div className="max-w-7xl mx-auto px-0 sm:px-3 lg:px-4 py-0 sm:py-2 h-full overflow-hidden min-h-0 flex flex-col">
         {/* Mobile: Threads list or Chat view */}
