@@ -375,7 +375,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 <div className="relative flex-1">
                   <input
                     placeholder={disabledActions ? 'Sign in to comment…' : 'Add a comment…'}
-                    className={`w-full border border-gray-300 rounded-full pl-3 pr-9 py-1.5 text-[13px] transition-all ${disabledActions ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-transparent hover:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:border-gray-400'}`}
+                    className={`w-full border border-gray-300 rounded-full pl-3 ${commentText.trim() ? 'pr-[4.5rem]' : 'pr-9'} py-1.5 text-[13px] transition-all ${disabledActions ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-transparent hover:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:border-gray-400'}`}
                     disabled={disabledActions}
                     value={commentText}
                     onChange={(e)=>setCommentText(e.target.value)}
@@ -390,15 +390,34 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                       }
                     }}
                   />
-                  <button
-                    type="button"
-                    aria-label={disabledActions ? 'Login to add emoji' : 'Add emoji'}
-                    disabled={disabledActions}
-                    className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'}`}
-                    onClick={(e)=>{ e.stopPropagation(); if (!disabledActions) setShowEmoji(v=>!v); }}
-                  >
-                    <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-4 h-4 opacity-50" />
-                  </button>
+                  <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                    <button
+                      type="button"
+                      aria-label={disabledActions ? 'Login to add emoji' : 'Add emoji'}
+                      disabled={disabledActions}
+                      className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'}`}
+                      onClick={(e)=>{ e.stopPropagation(); if (!disabledActions) setShowEmoji(v=>!v); }}
+                    >
+                      <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-4 h-4 opacity-50" />
+                    </button>
+                    {commentText.trim() && (
+                      <button
+                        type="button"
+                        className="p-1 rounded-full bg-teal-600 hover:bg-teal-700 text-white transition-all"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!commentText.trim() || !item?.id) return;
+                          const newComment = commentText.trim();
+                          medStreamAPI.createComment(item.id, { content: newComment }).catch(() => {});
+                          setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), name: actorName, title: actorTitle, avatar: actorAvatar, text: newComment, time: 'Just now' }]);
+                          setCommentText('');
+                          showSuccessToast('Comment posted');
+                        }}
+                      >
+                        <Send className="w-3.5 h-3.5" strokeWidth={2} />
+                      </button>
+                    )}
+                  </div>
                   {showEmoji && !disabledActions && (
                     <div ref={emojiPickerRef} className="absolute left-0 top-full mt-1 z-20">
                       <EmojiPicker
