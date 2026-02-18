@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\CrmController;
 use App\Http\Controllers\Api\MedStreamController;
 use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\DoctorController;
+use App\Http\Controllers\Api\MessageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -190,4 +191,33 @@ Route::prefix('medstream')->group(function () {
         Route::get('/reports', [MedStreamController::class, 'reports']);
         Route::put('/reports/{id}', [MedStreamController::class, 'updateReport']);
     });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Messaging — Conversations, Messages, Attachments, Read Receipts
+|--------------------------------------------------------------------------
+*/
+Route::prefix('messages')->middleware('auth:sanctum')->group(function () {
+    // Conversations
+    Route::get('/conversations', [MessageController::class, 'conversations']);
+    Route::post('/conversations', [MessageController::class, 'createConversation']);
+    Route::get('/conversations/{id}', [MessageController::class, 'showConversation']);
+    Route::put('/conversations/{id}', [MessageController::class, 'updateConversation']);
+    Route::delete('/conversations/{id}', [MessageController::class, 'deleteConversation']);
+
+    // Messages within a conversation
+    Route::get('/conversations/{conversationId}/messages', [MessageController::class, 'messages']);
+    Route::post('/conversations/{conversationId}/messages', [MessageController::class, 'sendMessage']);
+
+    // Mark conversation as read
+    Route::post('/conversations/{conversationId}/read', [MessageController::class, 'markRead']);
+
+    // Single message operations
+    Route::put('/{messageId}', [MessageController::class, 'updateMessage']);
+    Route::delete('/{messageId}', [MessageController::class, 'deleteMessage']);
+
+    // Search & unread count
+    Route::get('/search', [MessageController::class, 'search']);
+    Route::get('/unread-count', [MessageController::class, 'unreadCount']);
 });
