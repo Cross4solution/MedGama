@@ -23,7 +23,7 @@ function getAuthToken() {
   }
 }
 
-const apiBase = process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api';
+const apiBase = (process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api').replace(/\/+$/, '');
 // Derive the host origin from apiBase (strip /api suffix)
 const wsAuthHost = apiBase.replace(/\/api\/?$/, '');
 

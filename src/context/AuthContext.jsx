@@ -160,7 +160,7 @@ export function AuthProvider({ children }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country]);
 
-  const API_BASE = process.env.REACT_APP_API_BASE || '';
+  const API_BASE = (process.env.REACT_APP_API_BASE || '').replace(/\/+$/, '');
   const ME_PATH = process.env.REACT_APP_API_ME || '/api/auth/me';
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchCurrentUser = useCallback(async (overrideToken) => {
