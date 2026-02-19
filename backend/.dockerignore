@@ -1,0 +1,17 @@
+.git
+.env
+.env.local
+.env.*.local
+node_modules
+vendor
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+tests
+phpunit.xml
+docker
+.editorconfig
+.gitattributes
+.gitignore
+README.md
