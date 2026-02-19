@@ -115,9 +115,9 @@ export function AuthProvider({ children }) {
       return { success: true, message: 'Demo login', data: { user: emailOrUser } };
     }
     const res = await endpoints.login({ email: emailOrUser, password });
-    // Accept both flat and nested API shapes (Laravel returns { user, token })
-    const apiUser = res?.user ?? res?.data?.user ?? null;
-    const access = res?.token ?? res?.access_token ?? res?.data?.access_token ?? res?.data?.token ?? null;
+    // Laravel UserResource returns { data: { ...user }, token, requires_email_verification }
+    const apiUser = res?.data ?? res?.user ?? null;
+    const access = res?.token ?? res?.access_token ?? null;
     if (!apiUser || !access) {
       throw new Error(JSON.stringify({ status: 401, message: 'Invalid credentials', data: res }));
     }
@@ -127,7 +127,11 @@ export function AuthProvider({ children }) {
     const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
     setUser(userWithRole);
     setToken(access);
-    try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
+    try {
+      localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country }));
+      localStorage.removeItem('auth_logout');
+      loggedOutRef.current = false;
+    } catch {}
     return { data: { user: userWithRole, access_token: access }, requires_email_verification: !!res?.requires_email_verification };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country]);
@@ -135,8 +139,8 @@ export function AuthProvider({ children }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const applyApiAuth = useCallback((res) => {
     try {
-      let apiUser = res?.user ?? res?.data?.user ?? null;
-      let access = res?.access_token ?? res?.data?.access_token ?? null;
+      let apiUser = res?.data ?? res?.user ?? null;
+      let access = res?.token ?? res?.access_token ?? null;
       if (!access) {
         const lsAccess = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
         if (lsAccess) access = lsAccess;
@@ -195,7 +199,8 @@ export function AuthProvider({ children }) {
         return null;
       }
       const data = await resp.json().catch(() => ({}));
-      const apiUser = data?.user ?? data?.data?.user ?? data ?? null;
+      // Laravel UserResource wraps user in { data: { ...fields } }
+      const apiUser = data?.data ?? data?.user ?? data ?? null;
       if (!apiUser) {
         try {
           const lsUser = JSON.parse(localStorage.getItem('google_user') || 'null');
@@ -222,7 +227,8 @@ export function AuthProvider({ children }) {
 
   const register = useCallback(async (payload) => {
     const res = await endpoints.userRegister(payload);
-    const apiUser = res?.user ?? null;
+    // Laravel UserResource: { data: { ...user }, token, requires_email_verification }
+    const apiUser = res?.data ?? res?.user ?? null;
     const access = res?.token ?? res?.access_token ?? null;
     if (apiUser && access) {
       const role = apiUser?.role_id || apiUser?.role || 'patient';
@@ -230,7 +236,11 @@ export function AuthProvider({ children }) {
       const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
       setUser(userWithRole);
       setToken(access);
-      try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
+      try {
+        localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country }));
+        localStorage.removeItem('auth_logout');
+        loggedOutRef.current = false;
+      } catch {}
     }
     return res;
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -238,7 +248,8 @@ export function AuthProvider({ children }) {
 
   const registerDoctor = useCallback(async (payload) => {
     const res = await endpoints.doctorRegister(payload);
-    const apiUser = res?.user ?? null;
+    // Laravel UserResource: { data: { ...user }, token, requires_email_verification }
+    const apiUser = res?.data ?? res?.user ?? null;
     const access = res?.token ?? res?.access_token ?? null;
     if (apiUser && access) {
       const role = apiUser?.role_id || apiUser?.role || 'doctor';
@@ -246,7 +257,11 @@ export function AuthProvider({ children }) {
       const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
       setUser(userWithRole);
       setToken(access);
-      try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
+      try {
+        localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country }));
+        localStorage.removeItem('auth_logout');
+        loggedOutRef.current = false;
+      } catch {}
     }
     return res;
   // eslint-disable-next-line react-hooks/exhaustive-deps
