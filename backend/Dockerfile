@@ -1,6 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  MedGama Backend — Production Dockerfile                       ║
-# ║  PHP 8.3-fpm + required extensions for Laravel 12              ║
+# ║  MedGama Backend — Railway Production Dockerfile               ║
+# ║  Single container: Nginx + PHP-FPM + Queue + Reverb            ║
+# ║  Managed by Supervisor                                         ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
 # ── Stage 1: Composer dependencies ──
@@ -18,8 +19,10 @@ RUN composer install \
 # ── Stage 2: Production image ──
 FROM php:8.3-fpm-alpine
 
-# Install system deps + PHP extensions
+# Install system deps + PHP extensions + Nginx + Supervisor
 RUN apk add --no-cache \
+        nginx \
+        supervisor \
         postgresql-dev \
         libpng-dev \
         libjpeg-turbo-dev \
@@ -28,6 +31,7 @@ RUN apk add --no-cache \
         icu-dev \
         oniguruma-dev \
         linux-headers \
+        bash \
         $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
@@ -48,9 +52,19 @@ RUN apk add --no-cache \
 # PHP production config
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# OPcache production settings
+# OPcache settings
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-COPY docker/php/php-fpm-pool.conf /usr/local/etc/php-fpm.d/zz-docker.conf
+
+# Nginx config (Railway provides PORT env var)
+COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
+RUN rm -f /etc/nginx/http.d/default.conf.bak
+
+# Supervisor config
+COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# PHP-FPM: listen on socket for Nginx
+RUN sed -i 's|listen = 127.0.0.1:9000|listen = /var/run/php-fpm.sock|' /usr/local/etc/php-fpm.d/zz-docker.conf 2>/dev/null || true
+COPY docker/php/php-fpm-pool.conf /usr/local/etc/php-fpm.d/zz-railway.conf
 
 WORKDIR /var/www/html
 
@@ -60,22 +74,18 @@ COPY --from=vendor /app/vendor ./vendor
 # Copy application code
 COPY . .
 
-# Set permissions
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+# Entrypoint script
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Generate optimized autoload + cache config/routes
-RUN php artisan config:clear \
-    && php artisan route:clear \
-    && php artisan view:clear
+# Create required directories & set permissions
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \
+        bootstrap/cache /var/run /var/log/supervisor \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data /var/lib/nginx /var/log/nginx
 
-# Expose PHP-FPM port
-EXPOSE 9000
+# Railway uses PORT env var (default 8080)
+EXPOSE 8080
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-    CMD php-fpm-healthcheck || exit 1
-
-USER www-data
-
-CMD ["php-fpm"]
+ENTRYPOINT ["/entrypoint.sh"]
