@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\DoctorProfileController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\MediaStreamController;
 
 /*
@@ -185,18 +186,21 @@ Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,super
 Route::prefix('medstream')->group(function () {
     // Public read
     Route::get('/posts', [MedStreamController::class, 'posts']);
-    Route::get('/posts/{id}', [MedStreamController::class, 'showPost']);
-    Route::get('/posts/{postId}/comments', [MedStreamController::class, 'comments']);
+    Route::get('/posts/{post}', [MedStreamController::class, 'showPost']);
+    Route::get('/posts/{post}/comments', [MedStreamController::class, 'comments']);
 
     // Protected write
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/posts', [MedStreamController::class, 'storePost']);
-        Route::put('/posts/{id}', [MedStreamController::class, 'updatePost']);
-        Route::delete('/posts/{id}', [MedStreamController::class, 'destroyPost']);
+        Route::put('/posts/{post}', [MedStreamController::class, 'updatePost']);
+        Route::delete('/posts/{post}', [MedStreamController::class, 'destroyPost']);
 
-        Route::post('/posts/{postId}/comments', [MedStreamController::class, 'storeComment']);
-        Route::post('/posts/{postId}/like', [MedStreamController::class, 'toggleLike']);
-        Route::post('/posts/{postId}/report', [MedStreamController::class, 'storeReport']);
+        Route::post('/posts/{post}/comments', [MedStreamController::class, 'storeComment']);
+        Route::put('/comments/{comment}', [MedStreamController::class, 'updateComment']);
+        Route::delete('/comments/{comment}', [MedStreamController::class, 'destroyComment']);
+
+        Route::post('/posts/{post}/like', [MedStreamController::class, 'toggleLike']);
+        Route::post('/posts/{post}/report', [MedStreamController::class, 'storeReport']);
 
         Route::get('/bookmarks', [MedStreamController::class, 'bookmarks']);
         Route::post('/bookmarks', [MedStreamController::class, 'toggleBookmark']);
@@ -250,6 +254,21 @@ Route::prefix('notifications')->middleware('auth:sanctum')->group(function () {
     Route::put('/read-all', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/{id}', [NotificationController::class, 'destroy']);
     Route::delete('/', [NotificationController::class, 'destroyAll']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Real-time Chat — 1:1 Doctor-Patient Conversations
+|--------------------------------------------------------------------------
+*/
+Route::prefix('chat')->middleware('auth:sanctum')->group(function () {
+    Route::get('/conversations', [ChatController::class, 'conversations']);
+    Route::post('/conversations', [ChatController::class, 'startConversation']);
+    Route::get('/conversations/{conversation}/messages', [ChatController::class, 'messages']);
+    Route::post('/conversations/{conversation}/messages', [ChatController::class, 'sendMessage']);
+    Route::post('/conversations/{conversation}/read', [ChatController::class, 'markAsRead']);
+    Route::post('/conversations/{conversation}/typing', [ChatController::class, 'typing']);
+    Route::get('/unread-count', [ChatController::class, 'unreadCount']);
 });
 
 /*

@@ -3,230 +3,219 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\MedStreamPost;
-use App\Models\MedStreamComment;
-use App\Models\MedStreamLike;
-use App\Models\MedStreamBookmark;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\UpdateProfileRequest;
+use App\Http\Requests\Auth\UploadAvatarRequest;
+use App\Http\Requests\Auth\ChangePasswordRequest;
+use App\Http\Requests\Auth\VerifyEmailRequest;
+use App\Http\Requests\Auth\VerifyMobileRequest;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Auth\UpdateMedicalHistoryRequest;
+use App\Http\Requests\Auth\UpdateNotificationPrefsRequest;
+use App\Http\Resources\UserResource;
+use App\Services\AuthService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\ValidationException;
-use App\Mail\VerificationCodeMail;
-use App\Mail\PasswordResetMail;
+use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
-    /**
-     * POST /api/auth/register
-     */
-    public function register(Request $request)
+    public function __construct(
+        private readonly AuthService $authService,
+    ) {}
+
+    #[OA\Post(
+        path: '/auth/register',
+        summary: 'Register a new user',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['fullname', 'email', 'password', 'password_confirmation', 'role_id'],
+                properties: [
+                    new OA\Property(property: 'fullname', type: 'string', example: 'John Doe'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
+                    new OA\Property(property: 'password', type: 'string', minLength: 8),
+                    new OA\Property(property: 'password_confirmation', type: 'string'),
+                    new OA\Property(property: 'role_id', type: 'string', enum: ['patient', 'doctor']),
+                    new OA\Property(property: 'mobile', type: 'string'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'User registered, token returned'),
+            new OA\Response(response: 422, description: 'Validation error', content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')),
+        ]
+    )]
+    public function register(RegisterRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-            'fullname' => 'required|string|max:255',
-            'mobile' => 'nullable|string|max:20',
-            'role_id' => 'sometimes|in:patient,doctor,clinicOwner',
-            'city_id' => 'sometimes|integer',
-            'country_id' => 'sometimes|integer',
-            'date_of_birth' => 'sometimes|date',
-            'gender' => 'sometimes|in:male,female,other',
-            'clinic_id' => 'sometimes|uuid',
-        ]);
+        $result = $this->authService->register($request->validated());
 
-        // Check unique email per clinic
-        $clinicId = $validated['clinic_id'] ?? null;
-        $exists = User::where('email', $validated['email'])
-            ->where('clinic_id', $clinicId)
-            ->where('is_active', true)
-            ->exists();
-
-        if ($exists) {
-            throw ValidationException::withMessages([
-                'email' => ['This email is already registered.'],
-            ]);
-        }
-
-        $verificationCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-
-        $user = User::create([
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-            'fullname' => $validated['fullname'],
-            'mobile' => $validated['mobile'] ?? null,
-            'role_id' => $validated['role_id'] ?? 'patient',
-            'city_id' => $validated['city_id'] ?? null,
-            'country_id' => $validated['country_id'] ?? null,
-            'date_of_birth' => $validated['date_of_birth'] ?? null,
-            'gender' => $validated['gender'] ?? null,
-            'clinic_id' => $clinicId,
-            'avatar' => null,
-            'email_verified' => false,
-            'email_verification_code' => $verificationCode,
-        ]);
-
-        // Send verification email
-        try {
-            Mail::to($user->email)->send(new VerificationCodeMail($verificationCode, $user->fullname));
-        } catch (\Throwable $e) {
-            // Log but don't block registration if mail fails
-            \Log::warning('Verification email failed: ' . $e->getMessage());
-        }
-
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-            'requires_email_verification' => true,
-        ], 201);
-    }
-
-    /**
-     * POST /api/auth/login
-     */
-    public function login(Request $request)
-    {
-        $validated = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-            'clinic_id' => 'sometimes|uuid',
-        ]);
-
-        $clinicId = $validated['clinic_id'] ?? null;
-
-        $user = User::where('email', $validated['email'])
-            ->when($clinicId, fn($q) => $q->where('clinic_id', $clinicId))
-            ->where('is_active', true)
-            ->first();
-
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
-
-        // Update last login
-        $user->update(['last_login' => now()]);
-
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        // Check email verification
-        if (!$user->email_verified) {
-            return response()->json([
-                'user' => $user,
-                'token' => $token,
+        return (new UserResource($result['user']))
+            ->withExtra([
+                'token'                      => $result['token'],
                 'requires_email_verification' => true,
-                'message' => 'Please verify your email address.',
-            ]);
-        }
-
-        $userData = $user->toArray();
-        // For doctors, include onboarding status
-        if ($user->role_id === 'doctor') {
-            $profile = $user->doctorProfile;
-            $userData['onboarding_completed'] = $profile ? (bool) $profile->onboarding_completed : false;
-        }
-
-        return response()->json([
-            'user' => $userData,
-            'token' => $token,
-        ]);
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 
-    /**
-     * POST /api/auth/logout
-     */
-    public function logout(Request $request)
+    #[OA\Post(
+        path: '/auth/login',
+        summary: 'Login and receive Bearer token',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'password'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
+                    new OA\Property(property: 'password', type: 'string'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Login successful — returns user + token'),
+            new OA\Response(response: 401, description: 'Invalid credentials', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        ]
+    )]
+    public function login(LoginRequest $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $result = $this->authService->login($request->validated());
+
+        $extra = ['token' => $result['token']];
+
+        if ($result['requires_email_verification']) {
+            $extra['requires_email_verification'] = true;
+            $extra['message'] = 'Please verify your email address.';
+        }
+
+        return (new UserResource($result['user']))
+            ->withExtra($extra)
+            ->response();
+    }
+
+    #[OA\Post(
+        path: '/auth/logout',
+        summary: 'Logout (revoke current token)',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(response: 200, description: 'Logged out'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
+    public function logout(Request $request): JsonResponse
+    {
+        $this->authService->logout($request->user());
 
         return response()->json(['message' => 'Logged out successfully.']);
     }
 
-    /**
-     * GET /api/auth/me
-     */
-    public function me(Request $request)
+    #[OA\Get(
+        path: '/auth/me',
+        summary: 'Get authenticated user profile',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(response: 200, description: 'Current user data with relations'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
+    public function me(Request $request): JsonResponse
     {
-        $user = $request->user()->load('clinic');
+        $user = $this->authService->getAuthenticatedUser($request->user());
 
-        $extra = [];
-        // For doctors, include onboarding status
-        if ($user->role_id === 'doctor') {
-            $profile = $user->doctorProfile;
-            $extra['onboarding_completed'] = $profile ? (bool) $profile->onboarding_completed : false;
-        }
-
-        return response()->json(['user' => array_merge($user->toArray(), $extra)]);
+        return (new UserResource($user))->response();
     }
 
-    /**
-     * PUT /api/auth/profile
-     */
-    public function updateProfile(Request $request)
+    #[OA\Put(
+        path: '/auth/profile',
+        summary: 'Update user profile',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'fullname', type: 'string'),
+                    new OA\Property(property: 'mobile', type: 'string'),
+                    new OA\Property(property: 'gender', type: 'string'),
+                    new OA\Property(property: 'date_of_birth', type: 'string', format: 'date'),
+                    new OA\Property(property: 'preferred_language', type: 'string'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Profile updated'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
+    public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'fullname' => 'sometimes|string|max:255',
-            'avatar' => 'sometimes|string|url',
-            'mobile' => 'sometimes|string|max:20',
-            'city_id' => 'sometimes|integer',
-            'country_id' => 'sometimes|integer',
-            'country' => 'sometimes|string|max:5',
-            'preferred_language' => 'sometimes|string|max:10',
-            'date_of_birth' => 'sometimes|date',
-            'gender' => 'sometimes|in:male,female,other',
-        ]);
+        $user = $this->authService->updateProfile($request->user(), $request->validated());
 
-        $request->user()->update($validated);
-
-        return response()->json(['user' => $request->user()->fresh()]);
+        return (new UserResource($user))->response();
     }
 
-    /**
-     * POST /api/auth/profile/avatar
-     */
-    public function uploadAvatar(Request $request)
+    #[OA\Post(
+        path: '/auth/profile/avatar',
+        summary: 'Upload avatar image',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    properties: [new OA\Property(property: 'avatar', type: 'string', format: 'binary')]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Avatar uploaded, URL returned'),
+        ]
+    )]
+    public function uploadAvatar(UploadAvatarRequest $request): JsonResponse
     {
-        $request->validate([
-            'avatar' => 'required|file|image|max:5120', // 5MB max
-        ]);
+        $result = $this->authService->uploadAvatar($request->user(), $request->file('avatar'));
 
-        $file = $request->file('avatar');
-        $path = $file->store('avatars', 'public');
-        $url = asset('storage/' . $path);
-
-        $request->user()->update(['avatar' => $url]);
-
-        return response()->json([
-            'avatar_url' => $url,
-            'url' => $url,
-            'user' => $request->user()->fresh(),
-        ]);
+        return (new UserResource($result['user']))
+            ->withExtra([
+                'avatar_url' => $result['url'],
+                'url'        => $result['url'],
+            ])
+            ->response();
     }
 
-    /**
-     * PUT /api/auth/profile/password
-     */
-    public function changePassword(Request $request)
+    #[OA\Put(
+        path: '/auth/profile/password',
+        summary: 'Change password',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['current_password', 'password', 'password_confirmation'],
+                properties: [
+                    new OA\Property(property: 'current_password', type: 'string'),
+                    new OA\Property(property: 'password', type: 'string', minLength: 8),
+                    new OA\Property(property: 'password_confirmation', type: 'string'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Password changed'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
-        $request->validate([
-            'current_password' => 'required|string',
-            'password' => 'required|string|min:6',
-            'password_confirmation' => 'required|string|same:password',
-        ]);
-
-        $user = $request->user();
-
-        if (!Hash::check($request->current_password, $user->password)) {
-            throw ValidationException::withMessages([
-                'current_password' => ['Current password is incorrect.'],
-            ]);
-        }
-
-        $user->update(['password' => $request->password]);
+        $this->authService->changePassword(
+            $request->user(),
+            $request->validated('current_password'),
+            $request->validated('password'),
+        );
 
         return response()->json(['message' => 'Password updated successfully.']);
     }
@@ -234,49 +223,21 @@ class AuthController extends Controller
     /**
      * POST /api/auth/verify-email
      */
-    public function verifyEmail(Request $request)
+    public function verifyEmail(VerifyEmailRequest $request): JsonResponse
     {
-        $request->validate(['code' => 'required|string|size:6']);
+        $user = $this->authService->verifyEmail($request->user(), $request->validated('code'));
 
-        $user = $request->user();
-
-        if ($user->email_verified) {
-            return response()->json(['message' => 'Email already verified.']);
-        }
-
-        if ($user->email_verification_code !== $request->code) {
-            throw ValidationException::withMessages([
-                'code' => ['Invalid verification code.'],
-            ]);
-        }
-
-        $user->update([
-            'email_verified' => true,
-            'email_verification_code' => null,
-        ]);
-
-        return response()->json(['message' => 'Email verified successfully.', 'user' => $user->fresh()]);
+        return (new UserResource($user))
+            ->withExtra(['message' => 'Email verified successfully.'])
+            ->response();
     }
 
     /**
      * POST /api/auth/resend-verification
      */
-    public function resendVerification(Request $request)
+    public function resendVerification(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        if ($user->email_verified) {
-            return response()->json(['message' => 'Email already verified.']);
-        }
-
-        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $user->update(['email_verification_code' => $code]);
-
-        try {
-            Mail::to($user->email)->send(new VerificationCodeMail($code, $user->fullname));
-        } catch (\Throwable $e) {
-            \Log::warning('Resend verification email failed: ' . $e->getMessage());
-        }
+        $this->authService->resendVerification($request->user());
 
         return response()->json(['message' => 'Verification code resent.']);
     }
@@ -284,202 +245,154 @@ class AuthController extends Controller
     /**
      * POST /api/auth/verify-mobile
      */
-    public function verifyMobile(Request $request)
+    public function verifyMobile(VerifyMobileRequest $request): JsonResponse
     {
-        $request->validate(['code' => 'required|string']);
-
-        // TODO: Implement actual verification code logic
-        $user = $request->user();
-        $user->update(['mobile_verified' => true]);
+        $this->authService->verifyMobile($request->user());
 
         return response()->json(['message' => 'Mobile verified successfully.']);
     }
 
-    /**
-     * POST /api/auth/forgot-password
-     */
-    public function forgotPassword(Request $request)
+    #[OA\Post(
+        path: '/auth/forgot-password',
+        summary: 'Request password reset code',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email'],
+                properties: [new OA\Property(property: 'email', type: 'string', format: 'email')]
+            )
+        ),
+        responses: [new OA\Response(response: 200, description: 'Reset code sent if email exists')]
+    )]
+    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
-        $request->validate(['email' => 'required|email']);
-
-        $user = User::where('email', $request->email)->where('is_active', true)->first();
-
-        // Always return success to prevent email enumeration
-        if (!$user) {
-            return response()->json(['message' => 'If this email exists, a reset code has been sent.']);
-        }
-
-        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $user->update([
-            'password_reset_code' => $code,
-            'password_reset_expires_at' => now()->addMinutes(15),
-        ]);
-
-        try {
-            Mail::to($user->email)->send(new PasswordResetMail($code, $user->fullname));
-        } catch (\Throwable $e) {
-            \Log::warning('Password reset email failed: ' . $e->getMessage());
-        }
+        $this->authService->forgotPassword($request->validated('email'));
 
         return response()->json(['message' => 'If this email exists, a reset code has been sent.']);
     }
 
-    /**
-     * POST /api/auth/reset-password
-     */
-    public function resetPassword(Request $request)
+    #[OA\Post(
+        path: '/auth/reset-password',
+        summary: 'Reset password with code',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'code', 'password', 'password_confirmation'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
+                    new OA\Property(property: 'code', type: 'string'),
+                    new OA\Property(property: 'password', type: 'string'),
+                    new OA\Property(property: 'password_confirmation', type: 'string'),
+                ]
+            )
+        ),
+        responses: [new OA\Response(response: 200, description: 'Password reset successful')]
+    )]
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
-        $request->validate([
-            'email' => 'required|email',
-            'code' => 'required|string|size:6',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $user = User::where('email', $request->email)->where('is_active', true)->first();
-
-        if (!$user) {
-            throw ValidationException::withMessages(['email' => ['User not found.']]);
-        }
-
-        if (!$user->password_reset_code || $user->password_reset_code !== $request->code) {
-            throw ValidationException::withMessages(['code' => ['Invalid reset code.']]);
-        }
-
-        if ($user->password_reset_expires_at && now()->gt($user->password_reset_expires_at)) {
-            throw ValidationException::withMessages(['code' => ['Reset code has expired. Please request a new one.']]);
-        }
-
-        $user->update([
-            'password' => $request->password,
-            'password_reset_code' => null,
-            'password_reset_expires_at' => null,
-        ]);
+        $this->authService->resetPassword(
+            $request->validated('email'),
+            $request->validated('code'),
+            $request->validated('password'),
+        );
 
         return response()->json(['message' => 'Password reset successfully.']);
     }
 
     // ── GDPR & Privacy ──
 
-    /**
-     * DELETE /api/auth/profile — Account deletion (GDPR Art. 17)
-     */
-    public function deleteAccount(Request $request)
+    #[OA\Delete(
+        path: '/auth/profile',
+        summary: 'Delete account (GDPR Art. 17 — Right to Erasure)',
+        description: 'Soft-deletes user account. Data permanently pruned after 3-year retention period.',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        responses: [new OA\Response(response: 200, description: 'Account soft-deleted')]
+    )]
+    public function deleteAccount(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        // Soft-delete: deactivate account and anonymize PII
-        $user->update([
-            'is_active' => false,
-            'email' => 'deleted_' . $user->id . '@removed.medgama.com',
-            'fullname' => 'Deleted User',
-            'avatar' => null,
-            'mobile' => null,
-            'mobile_verified' => false,
-            'email_verified' => false,
-        ]);
-
-        // Revoke all tokens
-        $user->tokens()->delete();
-
-        // Soft-delete related data
-        MedStreamPost::where('author_id', $user->id)->update(['is_active' => false]);
-        MedStreamComment::where('author_id', $user->id)->update(['is_active' => false]);
-        MedStreamLike::where('user_id', $user->id)->update(['is_active' => false]);
-        MedStreamBookmark::where('user_id', $user->id)->update(['is_active' => false]);
-
-        \Log::info('GDPR: Account deleted (soft)', ['user_id' => $user->id]);
+        $this->authService->deleteAccount($request->user());
 
         return response()->json(['message' => 'Account and data deleted successfully.']);
     }
 
-    /**
-     * GET /api/auth/profile/data-export — GDPR data portability (Art. 20)
-     */
-    public function dataExport(Request $request)
+    #[OA\Get(
+        path: '/auth/profile/data-export',
+        summary: 'Export personal data (GDPR Art. 20 — Data Portability)',
+        description: 'Returns full JSON export of all personal data including profile, appointments, medical history.',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        responses: [new OA\Response(response: 200, description: 'JSON export of all personal data')]
+    )]
+    public function dataExport(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        $export = [
-            'export_date' => now()->toISOString(),
-            'gdpr_export' => true,
-            'user' => [
-                'id' => $user->id,
-                'fullname' => $user->fullname,
-                'email' => $user->email,
-                'mobile' => $user->mobile,
-                'role' => $user->role_id,
-                'avatar' => $user->avatar,
-                'created_at' => $user->created_at,
-                'last_login' => $user->last_login,
-            ],
-            'posts' => $user->medStreamPosts()->select('id', 'content', 'post_type', 'media_url', 'created_at')->get(),
-            'comments' => MedStreamComment::where('author_id', $user->id)->select('id', 'post_id', 'content', 'created_at')->get(),
-            'likes' => MedStreamLike::where('user_id', $user->id)->where('is_active', true)->select('post_id', 'created_at')->get(),
-            'bookmarks' => $user->bookmarks()->where('is_active', true)->select('bookmarked_type', 'target_id', 'created_at')->get(),
-            'medical_history' => json_decode($user->medical_history ?? '[]', true),
-        ];
+        $export = $this->authService->exportData($request->user());
 
         return response()->json($export);
     }
 
-    /**
-     * GET /api/auth/profile/medical-history
-     */
-    public function getMedicalHistory(Request $request)
+    #[OA\Get(
+        path: '/auth/profile/medical-history',
+        summary: 'Get medical history (encrypted at rest — AES-256-CBC)',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        responses: [new OA\Response(response: 200, description: 'Medical history data (auto-decrypted)')]
+    )]
+    public function getMedicalHistory(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $conditions = json_decode($user->medical_history ?? '[]', true);
+        $conditions = $this->authService->getMedicalHistory($request->user());
 
         return response()->json(['conditions' => $conditions]);
     }
 
-    /**
-     * PUT /api/auth/profile/medical-history
-     */
-    public function updateMedicalHistory(Request $request)
+    #[OA\Put(
+        path: '/auth/profile/medical-history',
+        summary: 'Update medical history (encrypted at rest)',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [new OA\Property(property: 'conditions', type: 'array', items: new OA\Items(type: 'string'))]
+            )
+        ),
+        responses: [new OA\Response(response: 200, description: 'Medical history updated')]
+    )]
+    public function updateMedicalHistory(UpdateMedicalHistoryRequest $request): JsonResponse
     {
-        $request->validate([
-            'conditions' => 'required|array',
-            'conditions.*' => 'string|max:255',
-        ]);
+        $this->authService->updateMedicalHistory($request->user(), $request->validated('conditions'));
 
-        $request->user()->update([
-            'medical_history' => json_encode($request->conditions),
+        return response()->json([
+            'message'    => 'Medical history updated.',
+            'conditions' => $request->validated('conditions'),
         ]);
-
-        return response()->json(['message' => 'Medical history updated.', 'conditions' => $request->conditions]);
     }
 
-    /**
-     * GET /api/auth/profile/notification-preferences
-     */
-    public function getNotificationPrefs(Request $request)
+    #[OA\Get(
+        path: '/auth/profile/notification-preferences',
+        summary: 'Get notification preferences',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        responses: [new OA\Response(response: 200, description: 'Notification preferences')]
+    )]
+    public function getNotificationPrefs(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $prefs = json_decode($user->notification_preferences ?? '{}', true);
+        $prefs = $this->authService->getNotificationPrefs($request->user());
 
         return response()->json(['preferences' => $prefs]);
     }
 
-    /**
-     * PUT /api/auth/profile/notification-preferences
-     */
-    public function updateNotificationPrefs(Request $request)
+    #[OA\Put(
+        path: '/auth/profile/notification-preferences',
+        summary: 'Update notification preferences',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        responses: [new OA\Response(response: 200, description: 'Preferences updated')]
+    )]
+    public function updateNotificationPrefs(UpdateNotificationPrefsRequest $request): JsonResponse
     {
-        $request->validate([
-            'email_notifications' => 'sometimes|boolean',
-            'sms_notifications' => 'sometimes|boolean',
-            'push_notifications' => 'sometimes|boolean',
-            'appointment_reminders' => 'sometimes|boolean',
-            'marketing_messages' => 'sometimes|boolean',
-        ]);
-
-        $request->user()->update([
-            'notification_preferences' => json_encode($request->only([
-                'email_notifications', 'sms_notifications', 'push_notifications',
-                'appointment_reminders', 'marketing_messages',
-            ])),
-        ]);
+        $this->authService->updateNotificationPrefs($request->user(), $request->validated());
 
         return response()->json(['message' => 'Notification preferences updated.']);
     }

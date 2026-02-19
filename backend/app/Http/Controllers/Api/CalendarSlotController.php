@@ -3,104 +3,74 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\CalendarSlot;
+use App\Http\Requests\CalendarSlot\StoreCalendarSlotRequest;
+use App\Http\Requests\CalendarSlot\BulkStoreCalendarSlotRequest;
+use App\Http\Requests\CalendarSlot\UpdateCalendarSlotRequest;
+use App\Http\Resources\CalendarSlotResource;
+use App\Services\CalendarSlotService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CalendarSlotController extends Controller
 {
+    public function __construct(
+        private readonly CalendarSlotService $calendarSlotService,
+    ) {}
+
     /**
      * GET /api/calendar-slots
      */
-    public function index(Request $request)
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $query = CalendarSlot::active()->with(['doctor:id,fullname,avatar', 'clinic:id,fullname']);
+        $slots = $this->calendarSlotService->list(
+            $request->only(['doctor_id', 'clinic_id', 'date', 'available', 'per_page']),
+        );
 
-        $query->when($request->doctor_id, fn($q, $v) => $q->where('doctor_id', $v))
-              ->when($request->clinic_id, fn($q, $v) => $q->where('clinic_id', $v))
-              ->when($request->date, fn($q, $v) => $q->whereDate('slot_date', $v))
-              ->when($request->available, fn($q) => $q->available());
-
-        $slots = $query->orderBy('slot_date')->orderBy('start_time')
-            ->paginate($request->per_page ?? 50);
-
-        return response()->json($slots);
+        return CalendarSlotResource::collection($slots);
     }
 
     /**
      * POST /api/calendar-slots
      */
-    public function store(Request $request)
+    public function store(StoreCalendarSlotRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'doctor_id' => 'required|uuid|exists:users,id',
-            'clinic_id' => 'sometimes|uuid|exists:clinics,id',
-            'slot_date' => 'required|date|after_or_equal:today',
-            'start_time' => 'required|string',
-            'duration_minutes' => 'sometimes|integer|min:5|max:480',
-        ]);
+        $slot = $this->calendarSlotService->store($request->validated());
 
-        $validated['is_available'] = true;
-
-        $slot = CalendarSlot::create($validated);
-
-        return response()->json(['slot' => $slot], 201);
+        return (new CalendarSlotResource($slot))
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**
      * POST /api/calendar-slots/bulk — Create multiple slots at once
      */
-    public function bulkStore(Request $request)
+    public function bulkStore(BulkStoreCalendarSlotRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'doctor_id' => 'required|uuid|exists:users,id',
-            'clinic_id' => 'sometimes|uuid|exists:clinics,id',
-            'slots' => 'required|array|min:1',
-            'slots.*.slot_date' => 'required|date|after_or_equal:today',
-            'slots.*.start_time' => 'required|string',
-            'slots.*.duration_minutes' => 'sometimes|integer|min:5|max:480',
-        ]);
+        $result = $this->calendarSlotService->bulkStore($request->validated());
 
-        $created = [];
-        foreach ($validated['slots'] as $slotData) {
-            $created[] = CalendarSlot::create([
-                'doctor_id' => $validated['doctor_id'],
-                'clinic_id' => $validated['clinic_id'] ?? null,
-                'slot_date' => $slotData['slot_date'],
-                'start_time' => $slotData['start_time'],
-                'duration_minutes' => $slotData['duration_minutes'] ?? 30,
-                'is_available' => true,
-            ]);
-        }
-
-        return response()->json(['slots' => $created, 'count' => count($created)], 201);
+        return response()->json([
+            'slots' => CalendarSlotResource::collection(collect($result['slots'])),
+            'count' => $result['count'],
+        ], 201);
     }
 
     /**
      * PUT /api/calendar-slots/{id}
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCalendarSlotRequest $request, string $id): JsonResponse
     {
-        $slot = CalendarSlot::active()->findOrFail($id);
+        $slot = $this->calendarSlotService->update($id, $request->validated());
 
-        $validated = $request->validate([
-            'slot_date' => 'sometimes|date',
-            'start_time' => 'sometimes|string',
-            'duration_minutes' => 'sometimes|integer|min:5|max:480',
-            'is_available' => 'sometimes|boolean',
-        ]);
-
-        $slot->update($validated);
-
-        return response()->json(['slot' => $slot->fresh()]);
+        return (new CalendarSlotResource($slot))->response();
     }
 
     /**
      * DELETE /api/calendar-slots/{id}
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
-        $slot = CalendarSlot::active()->findOrFail($id);
-        $slot->update(['is_active' => false]);
+        $this->calendarSlotService->destroy($id);
 
         return response()->json(['message' => 'Slot deleted.']);
     }

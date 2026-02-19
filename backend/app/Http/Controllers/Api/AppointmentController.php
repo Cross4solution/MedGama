@@ -3,229 +3,175 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Appointment\StoreAppointmentRequest;
+use App\Http\Requests\Appointment\UpdateAppointmentRequest;
+use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
-use App\Models\CalendarSlot;
-use App\Models\User;
+use App\Models\HealthDataAuditLog;
+use App\Services\AppointmentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Notifications\AppointmentBookedNotification;
-use App\Notifications\AppointmentConfirmedNotification;
-use App\Notifications\AppointmentCancelledNotification;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use OpenApi\Attributes as OA;
 
 class AppointmentController extends Controller
 {
-    /**
-     * GET /api/appointments
-     */
-    public function index(Request $request)
+    public function __construct(
+        private readonly AppointmentService $appointmentService,
+    ) {}
+
+    #[OA\Get(
+        path: '/appointments',
+        summary: 'List appointments (scoped by authenticated user role)',
+        security: [['sanctum' => []]],
+        tags: ['Appointments'],
+        parameters: [
+            new OA\Parameter(name: 'status', in: 'query', schema: new OA\Schema(type: 'string', enum: ['pending', 'confirmed', 'cancelled', 'completed'])),
+            new OA\Parameter(name: 'date', in: 'query', schema: new OA\Schema(type: 'string', format: 'date')),
+            new OA\Parameter(name: 'doctor_id', in: 'query', schema: new OA\Schema(type: 'string', format: 'uuid')),
+            new OA\Parameter(name: 'patient_id', in: 'query', schema: new OA\Schema(type: 'string', format: 'uuid')),
+            new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Paginated appointments (AppointmentResource)'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $user = $request->user();
+        $appointments = $this->appointmentService->list(
+            $request->user(),
+            $request->only(['status', 'date', 'doctor_id', 'patient_id', 'per_page']),
+        );
 
-        $query = Appointment::active()->with(['patient:id,fullname,avatar,email', 'doctor:id,fullname,avatar', 'clinic:id,fullname']);
-
-        // Scope by role
-        if ($user->isDoctor()) {
-            $query->where('doctor_id', $user->id);
-        } elseif ($user->isPatient()) {
-            $query->where('patient_id', $user->id);
-        } elseif ($user->isClinicOwner()) {
-            $query->where('clinic_id', $user->clinic_id);
-        }
-
-        // Filters
-        $query->when($request->status, fn($q, $v) => $q->where('status', $v))
-              ->when($request->date, fn($q, $v) => $q->whereDate('appointment_date', $v))
-              ->when($request->doctor_id, fn($q, $v) => $q->where('doctor_id', $v))
-              ->when($request->patient_id, fn($q, $v) => $q->where('patient_id', $v));
-
-        $appointments = $query->orderBy('appointment_date', 'desc')
-            ->orderBy('appointment_time', 'desc')
-            ->paginate($request->per_page ?? 20);
-
-        return response()->json($appointments);
+        return AppointmentResource::collection($appointments);
     }
 
-    /**
-     * GET /api/appointments/{id}
-     */
-    public function show(Request $request, string $id)
+    #[OA\Get(
+        path: '/appointments/{appointment}',
+        summary: 'Show appointment detail (HIPAA-audited)',
+        description: 'Access is logged to health_data_audit_logs table. doctor_note and confirmation_note are encrypted at rest (AES-256-CBC).',
+        security: [['sanctum' => []]],
+        tags: ['Appointments'],
+        parameters: [
+            new OA\Parameter(name: 'appointment', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Appointment detail (AppointmentResource)'),
+            new OA\Response(response: 403, description: 'Not a participant', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 404, description: 'Not found'),
+        ]
+    )]
+    public function show(Appointment $appointment, Request $request): JsonResponse
     {
-        $appointment = Appointment::active()
-            ->with(['patient:id,fullname,avatar,email,mobile', 'doctor:id,fullname,avatar', 'clinic:id,fullname', 'slot'])
-            ->findOrFail($id);
+        $this->authorize('view', $appointment);
 
-        return response()->json(['appointment' => $appointment]);
+        $appointment->load(['patient:id,fullname,avatar,email,mobile', 'doctor:id,fullname,avatar', 'clinic:id,fullname', 'slot']);
+
+        // HIPAA/GDPR Audit: log health data access
+        HealthDataAuditLog::log(
+            accessorId: $request->user()->id,
+            patientId: $appointment->patient_id,
+            resourceType: 'appointment',
+            resourceId: $appointment->id,
+        );
+
+        return (new AppointmentResource($appointment))->response();
     }
 
-    /**
-     * POST /api/appointments
-     */
-    public function store(Request $request)
+    #[OA\Post(
+        path: '/appointments',
+        summary: 'Create appointment (locks calendar slot atomically)',
+        security: [['sanctum' => []]],
+        tags: ['Appointments'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['doctor_id', 'appointment_type', 'slot_id', 'appointment_date', 'appointment_time'],
+                properties: [
+                    new OA\Property(property: 'doctor_id', type: 'string', format: 'uuid'),
+                    new OA\Property(property: 'patient_id', type: 'string', format: 'uuid'),
+                    new OA\Property(property: 'clinic_id', type: 'string', format: 'uuid'),
+                    new OA\Property(property: 'appointment_type', type: 'string', enum: ['inPerson', 'online']),
+                    new OA\Property(property: 'slot_id', type: 'string', format: 'uuid'),
+                    new OA\Property(property: 'appointment_date', type: 'string', format: 'date'),
+                    new OA\Property(property: 'appointment_time', type: 'string', example: '14:30'),
+                    new OA\Property(property: 'confirmation_note', type: 'string', description: 'Encrypted at rest'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Appointment created (AppointmentResource)'),
+            new OA\Response(response: 422, description: 'Validation error / slot unavailable', content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')),
+        ]
+    )]
+    public function store(StoreAppointmentRequest $request): JsonResponse
     {
-        $user = $request->user();
-        $isDoctor = in_array($user->role_id, ['doctor', 'clinicOwner']);
+        $appointment = $this->appointmentService->store(
+            $request->user(),
+            $request->validated(),
+            $request->isCreatedByDoctor(),
+        );
 
-        // Different validation rules for doctor vs patient
-        $rules = [
-            'doctor_id' => 'required|uuid|exists:users,id',
-            'clinic_id' => 'sometimes|uuid|exists:clinics,id',
-            'appointment_type' => 'required|in:inPerson,online',
-            'slot_id' => 'sometimes|uuid|exists:calendar_slots,id',
-            'appointment_date' => 'required|date|after_or_equal:today',
-            'appointment_time' => 'required|string',
-            'confirmation_note' => 'sometimes|string|max:500',
-        ];
-
-        if ($isDoctor) {
-            // Doctor creating appointment for a patient
-            $rules['patient_id'] = 'sometimes|uuid|exists:users,id';
-            $rules['patient_name'] = 'required|string|max:255';
-            $rules['patient_email'] = 'required|email|max:255';
-            $rules['patient_phone'] = 'sometimes|string|max:50';
-            $rules['patient_dob'] = 'sometimes|date';
-        } else {
-            // Patient booking for themselves
-            $rules['patient_id'] = 'required|uuid|exists:users,id';
-        }
-
-        $validated = $request->validate($rules);
-
-        // If doctor is creating: find or create patient by email
-        if ($isDoctor && empty($validated['patient_id'])) {
-            $patient = User::where('email', $validated['patient_email'])->first();
-
-            if (!$patient) {
-                // Create a lightweight patient record
-                $patient = User::create([
-                    'email' => $validated['patient_email'],
-                    'fullname' => $validated['patient_name'],
-                    'mobile' => $validated['patient_phone'] ?? null,
-                    'date_of_birth' => $validated['patient_dob'] ?? null,
-                    'role_id' => 'patient',
-                    'password' => bcrypt(\Str::random(32)), // temporary password
-                ]);
-            }
-
-            $validated['patient_id'] = $patient->id;
-        }
-
-        // Remove extra fields not in appointments table
-        $appointmentData = collect($validated)->only([
-            'patient_id', 'doctor_id', 'clinic_id', 'appointment_type',
-            'slot_id', 'appointment_date', 'appointment_time', 'confirmation_note',
-        ])->toArray();
-
-        $appointmentData['status'] = 'pending';
-        $appointmentData['created_by'] = $user->id;
-
-        // Mark slot as unavailable if provided
-        if (!empty($appointmentData['slot_id'])) {
-            $slot = CalendarSlot::active()->findOrFail($appointmentData['slot_id']);
-            if (!$slot->is_available) {
-                return response()->json(['message' => 'This time slot is no longer available.'], 422);
-            }
-            $slot->update(['is_available' => false]);
-        }
-
-        $appointment = Appointment::create($appointmentData);
-        $appointment->load(['patient', 'doctor']);
-
-        // Notify patient (database + mail)
-        try {
-            if ($appointment->patient) {
-                $appointment->patient->notify(
-                    new AppointmentBookedNotification($appointment, 'patient')
-                );
-            }
-        } catch (\Throwable $e) {
-            \Log::warning('Appointment booked patient notification failed: ' . $e->getMessage());
-        }
-
-        // Notify doctor (database + mail)
-        try {
-            if ($appointment->doctor) {
-                $appointment->doctor->notify(
-                    new AppointmentBookedNotification($appointment, 'doctor')
-                );
-            }
-        } catch (\Throwable $e) {
-            \Log::warning('Appointment booked doctor notification failed: ' . $e->getMessage());
-        }
-
-        return response()->json([
-            'appointment' => $appointment->load(['patient:id,fullname,avatar', 'doctor:id,fullname,avatar']),
-        ], 201);
+        return (new AppointmentResource($appointment->load(['patient:id,fullname,avatar', 'doctor:id,fullname,avatar'])))
+            ->response()
+            ->setStatusCode(201);
     }
 
-    /**
-     * PUT /api/appointments/{id}
-     */
-    public function update(Request $request, string $id)
+    #[OA\Put(
+        path: '/appointments/{appointment}',
+        summary: 'Update appointment (status, notes, video link)',
+        security: [['sanctum' => []]],
+        tags: ['Appointments'],
+        parameters: [
+            new OA\Parameter(name: 'appointment', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'status', type: 'string', enum: ['pending', 'confirmed', 'cancelled', 'completed']),
+                    new OA\Property(property: 'doctor_note', type: 'string', description: 'Encrypted at rest (AES-256-CBC)'),
+                    new OA\Property(property: 'confirmation_note', type: 'string', description: 'Encrypted at rest'),
+                    new OA\Property(property: 'video_conference_link', type: 'string', format: 'uri'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Appointment updated'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+        ]
+    )]
+    public function update(UpdateAppointmentRequest $request, Appointment $appointment): JsonResponse
     {
-        $appointment = Appointment::active()->findOrFail($id);
+        $this->authorize('update', $appointment);
 
-        $validated = $request->validate([
-            'status' => 'sometimes|in:pending,confirmed,cancelled,completed',
-            'confirmation_note' => 'sometimes|string|max:500',
-            'doctor_note' => 'sometimes|string',
-            'video_conference_link' => 'sometimes|string|url',
-        ]);
+        $appointment = $this->appointmentService->update(
+            $request->user(),
+            $appointment,
+            $request->validated(),
+        );
 
-        $oldStatus = $appointment->status;
-        $appointment->update($validated);
-        $appointment->load(['patient', 'doctor']);
-
-        // If cancelled, release the slot
-        if (isset($validated['status']) && $validated['status'] === 'cancelled' && $appointment->slot_id) {
-            CalendarSlot::where('id', $appointment->slot_id)->update(['is_available' => true]);
-        }
-
-        // Send notifications on status change
-        if (isset($validated['status']) && $validated['status'] !== $oldStatus) {
-            $cancelledBy = $request->user()?->isDoctor() ? 'doctor' : ($request->user()?->isPatient() ? 'patient' : 'system');
-
-            try {
-                if ($validated['status'] === 'confirmed') {
-                    // Notify patient that appointment is confirmed
-                    if ($appointment->patient) {
-                        $appointment->patient->notify(
-                            new AppointmentConfirmedNotification($appointment)
-                        );
-                    }
-                } elseif ($validated['status'] === 'cancelled') {
-                    // Notify patient
-                    if ($appointment->patient) {
-                        $appointment->patient->notify(
-                            new AppointmentCancelledNotification($appointment, 'patient', $cancelledBy)
-                        );
-                    }
-                    // Notify doctor
-                    if ($appointment->doctor) {
-                        $appointment->doctor->notify(
-                            new AppointmentCancelledNotification($appointment, 'doctor', $cancelledBy)
-                        );
-                    }
-                }
-            } catch (\Throwable $e) {
-                \Log::warning('Appointment status notification failed: ' . $e->getMessage());
-            }
-        }
-
-        return response()->json(['appointment' => $appointment->fresh()]);
+        return (new AppointmentResource($appointment))->response();
     }
 
-    /**
-     * DELETE /api/appointments/{id} — Soft delete
-     */
-    public function destroy(string $id)
+    #[OA\Delete(
+        path: '/appointments/{appointment}',
+        summary: 'Soft-delete appointment (slot released, GDPR: pruned after 10 years)',
+        security: [['sanctum' => []]],
+        tags: ['Appointments'],
+        parameters: [
+            new OA\Parameter(name: 'appointment', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Appointment soft-deleted'),
+            new OA\Response(response: 403, description: 'Forbidden'),
+        ]
+    )]
+    public function destroy(Appointment $appointment): JsonResponse
     {
-        $appointment = Appointment::active()->findOrFail($id);
+        $this->authorize('delete', $appointment);
 
-        // Release slot
-        if ($appointment->slot_id) {
-            CalendarSlot::where('id', $appointment->slot_id)->update(['is_available' => true]);
-        }
-
-        $appointment->update(['is_active' => false]);
+        $this->appointmentService->destroy($appointment);
 
         return response()->json(['message' => 'Appointment deleted.']);
     }

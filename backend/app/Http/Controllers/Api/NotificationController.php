@@ -4,13 +4,24 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class NotificationController extends Controller
 {
-    /**
-     * GET /api/notifications
-     * List notifications for the authenticated user (paginated).
-     */
+    #[OA\Get(
+        path: '/notifications',
+        summary: 'List notifications (paginated, filterable)',
+        security: [['sanctum' => []]],
+        tags: ['Notifications'],
+        parameters: [
+            new OA\Parameter(name: 'unread', in: 'query', schema: new OA\Schema(type: 'boolean'), description: 'Filter unread only'),
+            new OA\Parameter(name: 'type', in: 'query', schema: new OA\Schema(type: 'string'), description: 'Filter by notification type'),
+            new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Paginated notifications'),
+        ]
+    )]
     public function index(Request $request)
     {
         $user = $request->user();
@@ -33,9 +44,15 @@ class NotificationController extends Controller
         return response()->json($notifications);
     }
 
-    /**
-     * GET /api/notifications/unread-count
-     */
+    #[OA\Get(
+        path: '/notifications/unread-count',
+        summary: 'Get unread notification count',
+        security: [['sanctum' => []]],
+        tags: ['Notifications'],
+        responses: [
+            new OA\Response(response: 200, description: 'Unread count'),
+        ]
+    )]
     public function unreadCount(Request $request)
     {
         $count = $request->user()->unreadNotifications()->count();
@@ -43,10 +60,18 @@ class NotificationController extends Controller
         return response()->json(['unread_count' => $count]);
     }
 
-    /**
-     * PUT /api/notifications/{id}/read
-     * Mark a single notification as read.
-     */
+    #[OA\Put(
+        path: '/notifications/{id}/read',
+        summary: 'Mark single notification as read',
+        security: [['sanctum' => []]],
+        tags: ['Notifications'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Notification marked as read'),
+        ]
+    )]
     public function markAsRead(Request $request, string $id)
     {
         $notification = $request->user()
@@ -58,20 +83,34 @@ class NotificationController extends Controller
         return response()->json(['message' => 'Notification marked as read.']);
     }
 
-    /**
-     * PUT /api/notifications/read-all
-     * Mark all notifications as read.
-     */
+    #[OA\Put(
+        path: '/notifications/read-all',
+        summary: 'Mark all notifications as read',
+        security: [['sanctum' => []]],
+        tags: ['Notifications'],
+        responses: [
+            new OA\Response(response: 200, description: 'All notifications marked as read'),
+        ]
+    )]
     public function markAllAsRead(Request $request)
     {
-        $request->user()->unreadNotifications->markAsRead();
+        $request->user()->unreadNotifications()->update(['read_at' => now()]);
 
         return response()->json(['message' => 'All notifications marked as read.']);
     }
 
-    /**
-     * DELETE /api/notifications/{id}
-     */
+    #[OA\Delete(
+        path: '/notifications/{id}',
+        summary: 'Delete single notification',
+        security: [['sanctum' => []]],
+        tags: ['Notifications'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Notification deleted'),
+        ]
+    )]
     public function destroy(Request $request, string $id)
     {
         $notification = $request->user()
@@ -83,10 +122,15 @@ class NotificationController extends Controller
         return response()->json(['message' => 'Notification deleted.']);
     }
 
-    /**
-     * DELETE /api/notifications
-     * Delete all read notifications.
-     */
+    #[OA\Delete(
+        path: '/notifications',
+        summary: 'Delete all read notifications',
+        security: [['sanctum' => []]],
+        tags: ['Notifications'],
+        responses: [
+            new OA\Response(response: 200, description: 'Read notifications cleared'),
+        ]
+    )]
     public function destroyAll(Request $request)
     {
         $request->user()

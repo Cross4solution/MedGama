@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Appointment extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, MassPrunable, SoftDeletes;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -16,21 +18,28 @@ class Appointment extends Model
     protected $fillable = [
         'patient_id', 'doctor_id', 'clinic_id', 'appointment_type', 'slot_id',
         'appointment_date', 'appointment_time', 'status', 'confirmation_note',
-        'video_conference_link', 'doctor_note', 'created_by',
+        'video_conference_link', 'doctor_note', 'created_by', 'is_active',
     ];
 
     protected function casts(): array
     {
         return [
-            'appointment_date' => 'date',
-            'is_active' => 'boolean',
+            'appointment_date'  => 'date',
+            'is_active'         => 'boolean',
+            'doctor_note'       => 'encrypted',
+            'confirmation_note' => 'encrypted',
         ];
     }
 
-    public function scopeActive($query)
+    // ── Prunable (GDPR Art. 5(1)(e) — 10 year retention) ──
+
+    public function prunable()
     {
-        return $query->where('is_active', true);
+        return static::onlyTrashed()
+            ->where('deleted_at', '<=', now()->subYears(10));
     }
+
+    // ── Relationships ──
 
     public function patient()
     {

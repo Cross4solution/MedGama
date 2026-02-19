@@ -2,38 +2,37 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\VisiblePostScope;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MedStreamPost extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, SoftDeletes;
 
     protected $keyType = 'string';
     public $incrementing = false;
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new VisiblePostScope);
+    }
+
     protected $fillable = [
-        'author_id', 'clinic_id', 'post_type', 'content', 'media_url', 'media', 'is_hidden',
+        'author_id', 'clinic_id', 'post_type', 'content', 'media_url', 'media',
+        'is_hidden', 'is_active', 'media_processing',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_hidden' => 'boolean',
-            'is_active' => 'boolean',
-            'media'     => 'array',
+            'is_hidden'        => 'boolean',
+            'is_active'        => 'boolean',
+            'media_processing' => 'boolean',
+            'media'            => 'array',
         ];
-    }
-
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
-
-    public function scopeVisible($query)
-    {
-        return $query->where('is_hidden', false)->where('is_active', true);
     }
 
     public function author()

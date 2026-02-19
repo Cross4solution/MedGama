@@ -193,7 +193,7 @@ class MessageController extends Controller
             $participant->update(['is_archived' => (bool) $request->is_archived]);
         }
 
-        return response()->json(['message' => 'Updated', 'conversation' => $this->formatConversation($conversation->fresh(), $user->id)]);
+        return response()->json(['message' => 'Updated', 'conversation' => $this->formatConversation($conversation->fresh()->load('activeParticipants.user:id,fullname,avatar,role_id'), $user->id)]);
     }
 
     /**
@@ -474,21 +474,28 @@ class MessageController extends Controller
     {
         $user = $request->user();
 
-        $participations = ConversationParticipant::where('user_id', $user->id)
-            ->where('is_active', true)
-            ->get();
-
-        $total = 0;
-        foreach ($participations as $p) {
-            $query = Message::where('conversation_id', $p->conversation_id)
-                ->where('sender_id', '!=', $user->id)
-                ->where('is_active', true);
-
-            if ($p->last_read_at) {
-                $query->where('created_at', '>', $p->last_read_at);
-            }
-            $total += $query->count();
-        }
+        // Single query instead of N+1 loop
+        $total = Message::where('is_active', true)
+            ->where('sender_id', '!=', $user->id)
+            ->whereIn('conversation_id', function ($q) use ($user) {
+                $q->select('conversation_id')
+                  ->from('conversation_participants')
+                  ->where('user_id', $user->id)
+                  ->where('is_active', true);
+            })
+            ->where(function ($q) use ($user) {
+                // Only count messages newer than last_read_at per conversation
+                $q->whereRaw(
+                    'messages.created_at > COALESCE(
+                        (SELECT cp.last_read_at FROM conversation_participants cp
+                         WHERE cp.conversation_id = messages.conversation_id
+                         AND cp.user_id = ? AND cp.is_active = true),
+                        \'1970-01-01\'::timestamp
+                    )',
+                    [$user->id]
+                );
+            })
+            ->count();
 
         return response()->json(['unread_count' => $total]);
     }

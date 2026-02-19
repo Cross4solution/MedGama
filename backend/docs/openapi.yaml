@@ -1,0 +1,1351 @@
+openapi: 3.0.3
+info:
+  title: MedGama API
+  description: |
+    MedGama Telehealth Platform — Backend API Documentation.
+
+    All protected endpoints require a Bearer token via `Authorization: Bearer <token>`.
+    Tokens are obtained from `POST /api/auth/login`.
+
+    **Error Response Format (Global)**
+    ```json
+    {
+      "success": false,
+      "message": "Human-readable error message",
+      "code": "ERROR_CODE"
+    }
+    ```
+
+    | HTTP | Code | Description |
+    |------|------|-------------|
+    | 401 | UNAUTHENTICATED | Missing or invalid token |
+    | 403 | FORBIDDEN | Insufficient permissions |
+    | 404 | RESOURCE_NOT_FOUND | Model not found |
+    | 404 | ENDPOINT_NOT_FOUND | Route does not exist |
+    | 422 | VALIDATION_ERROR | Request validation failed (includes `errors` object) |
+    | 429 | RATE_LIMIT_EXCEEDED | Too many requests |
+    | 500 | DATABASE_ERROR | Database query failure |
+    | 500 | INTERNAL_ERROR | Unexpected server error |
+  version: 1.0.0
+  contact:
+    name: MedGama Dev Team
+    email: dev@medgama.com
+
+servers:
+  - url: http://127.0.0.1:8001/api
+    description: Local Development
+  - url: https://api.medgama.com/api
+    description: Production
+
+tags:
+  - name: Auth
+    description: Authentication, profile management, verification
+  - name: Catalog
+    description: Public lookup data (specialties, cities, diseases, symptoms)
+  - name: Clinics
+    description: Clinic management
+  - name: Doctors
+    description: Public doctor listing and profiles
+  - name: Doctor Profile
+    description: Doctor's own profile management and onboarding
+  - name: Appointments
+    description: Appointment CRUD with slot management
+  - name: Calendar Slots
+    description: Doctor availability slots
+  - name: Patient Records
+    description: Lab results, reports, scans (HIPAA-audited)
+  - name: Digital Anamnesis
+    description: Patient health questionnaire (encrypted at rest)
+  - name: CRM
+    description: Doctor/clinic CRM — tags, stages, archived records
+  - name: MedStream
+    description: Social feed — posts, comments, likes, bookmarks, reports
+  - name: Chat
+    description: Real-time 1:1 doctor-patient messaging (WebSocket + REST)
+  - name: Notifications
+    description: In-app notification management
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "You are not authorized to perform this action."
+        code:
+          type: string
+          example: "FORBIDDEN"
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Validation failed."
+        code:
+          type: string
+          example: "VALIDATION_ERROR"
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            email: ["The email field is required."]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullname:
+          type: string
+        email:
+          type: string
+          format: email
+        avatar:
+          type: string
+          nullable: true
+        role_id:
+          type: string
+          enum: [patient, doctor, clinicOwner, superAdmin, saasAdmin]
+        mobile:
+          type: string
+          nullable: true
+        is_verified:
+          type: boolean
+
+    Appointment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        doctor_id:
+          type: string
+          format: uuid
+        appointment_type:
+          type: string
+          enum: [inPerson, online]
+        appointment_date:
+          type: string
+          format: date
+        appointment_time:
+          type: string
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled, completed]
+        doctor_note:
+          type: string
+          nullable: true
+          description: Encrypted at rest (AES-256-CBC)
+        confirmation_note:
+          type: string
+          nullable: true
+          description: Encrypted at rest
+        video_conference_link:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        patient:
+          $ref: '#/components/schemas/UserSummary'
+        doctor:
+          $ref: '#/components/schemas/UserSummary'
+
+    UserSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullname:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+
+    ChatConversation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_one_id:
+          type: string
+          format: uuid
+        user_two_id:
+          type: string
+          format: uuid
+        last_message_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_message_content:
+          type: string
+          nullable: true
+        last_message_type:
+          type: string
+          enum: [text, image, document]
+          nullable: true
+        other_user:
+          $ref: '#/components/schemas/UserSummary'
+        last_message_sender:
+          $ref: '#/components/schemas/UserSummary'
+        unread_count:
+          type: integer
+
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        conversation_id:
+          type: string
+          format: uuid
+        sender_id:
+          type: string
+          format: uuid
+        message_type:
+          type: string
+          enum: [text, image, document]
+        content:
+          type: string
+          nullable: true
+        attachment_url:
+          type: string
+          nullable: true
+        attachment_name:
+          type: string
+          nullable: true
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        sender:
+          $ref: '#/components/schemas/UserSummary'
+
+    MedStreamPost:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_id:
+          type: string
+          format: uuid
+        post_type:
+          type: string
+        content:
+          type: string
+        media_url:
+          type: string
+          nullable: true
+        media_processing:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        author:
+          $ref: '#/components/schemas/UserSummary'
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        data:
+          type: object
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+
+  responses:
+    Unauthenticated:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Unauthenticated."
+            code: "UNAUTHENTICATED"
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+
+paths:
+  # ═══════════════════════════════════════
+  # AUTH
+  # ═══════════════════════════════════════
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fullname, email, password, password_confirmation, role_id]
+              properties:
+                fullname:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                password_confirmation:
+                  type: string
+                role_id:
+                  type: string
+                  enum: [patient, doctor]
+                mobile:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login and receive Bearer token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout (revoke token)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Logged out
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Get authenticated user profile
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Current user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /auth/profile:
+    put:
+      tags: [Auth]
+      summary: Update profile
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullname:
+                  type: string
+                mobile:
+                  type: string
+                gender:
+                  type: string
+                date_of_birth:
+                  type: string
+                  format: date
+                preferred_language:
+                  type: string
+      responses:
+        '200':
+          description: Profile updated
+    delete:
+      tags: [Auth]
+      summary: Delete account (GDPR Art. 17 — Right to Erasure)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Account soft-deleted
+
+  /auth/profile/avatar:
+    post:
+      tags: [Auth]
+      summary: Upload avatar
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Avatar uploaded
+
+  /auth/profile/password:
+    put:
+      tags: [Auth]
+      summary: Change password
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_password, password, password_confirmation]
+              properties:
+                current_password:
+                  type: string
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+      responses:
+        '200':
+          description: Password changed
+
+  /auth/profile/data-export:
+    get:
+      tags: [Auth]
+      summary: Export personal data (GDPR Art. 20 — Data Portability)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: JSON export of all personal data
+
+  /auth/profile/medical-history:
+    get:
+      tags: [Auth]
+      summary: Get medical history (encrypted at rest)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Medical history data
+    put:
+      tags: [Auth]
+      summary: Update medical history
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                medical_history:
+                  type: string
+      responses:
+        '200':
+          description: Medical history updated
+
+  /auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: Request password reset code
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Reset code sent
+
+  /auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Reset password with code
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, code, password, password_confirmation]
+              properties:
+                email:
+                  type: string
+                code:
+                  type: string
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+      responses:
+        '200':
+          description: Password reset successful
+
+  # ═══════════════════════════════════════
+  # CATALOG
+  # ═══════════════════════════════════════
+  /catalog/specialties:
+    get:
+      tags: [Catalog]
+      summary: List all medical specialties
+      responses:
+        '200':
+          description: Array of specialties
+
+  /catalog/cities:
+    get:
+      tags: [Catalog]
+      summary: List all cities
+      responses:
+        '200':
+          description: Array of cities
+
+  /catalog/diseases:
+    get:
+      tags: [Catalog]
+      summary: List all diseases
+      responses:
+        '200':
+          description: Array of diseases
+
+  /catalog/symptoms:
+    get:
+      tags: [Catalog]
+      summary: List all symptoms
+      responses:
+        '200':
+          description: Array of symptoms
+
+  # ═══════════════════════════════════════
+  # DOCTORS
+  # ═══════════════════════════════════════
+  /doctors:
+    get:
+      tags: [Doctors]
+      summary: List doctors (public, filterable)
+      parameters:
+        - name: specialty_id
+          in: query
+          schema: { type: string }
+        - name: city_id
+          in: query
+          schema: { type: string }
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Paginated doctor list
+
+  /doctors/{id}:
+    get:
+      tags: [Doctors]
+      summary: Get doctor detail (public)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Doctor profile with specialties, clinic, slots
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ═══════════════════════════════════════
+  # APPOINTMENTS
+  # ═══════════════════════════════════════
+  /appointments:
+    get:
+      tags: [Appointments]
+      summary: List appointments (scoped by role)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, confirmed, cancelled, completed] }
+        - name: date
+          in: query
+          schema: { type: string, format: date }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Paginated appointments
+    post:
+      tags: [Appointments]
+      summary: Create appointment
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [doctor_id, appointment_type, slot_id, appointment_date, appointment_time]
+              properties:
+                doctor_id:
+                  type: string
+                  format: uuid
+                patient_id:
+                  type: string
+                  format: uuid
+                clinic_id:
+                  type: string
+                  format: uuid
+                appointment_type:
+                  type: string
+                  enum: [inPerson, online]
+                slot_id:
+                  type: string
+                  format: uuid
+                appointment_date:
+                  type: string
+                  format: date
+                appointment_time:
+                  type: string
+                confirmation_note:
+                  type: string
+      responses:
+        '201':
+          description: Appointment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /appointments/{appointment}:
+    get:
+      tags: [Appointments]
+      summary: Show appointment detail (HIPAA-audited)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: appointment
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Appointment detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    put:
+      tags: [Appointments]
+      summary: Update appointment (status, notes)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: appointment
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, confirmed, cancelled, completed]
+                doctor_note:
+                  type: string
+                video_conference_link:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: Appointment updated
+    delete:
+      tags: [Appointments]
+      summary: Soft-delete appointment
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: appointment
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Appointment deleted
+
+  # ═══════════════════════════════════════
+  # CALENDAR SLOTS
+  # ═══════════════════════════════════════
+  /calendar-slots:
+    get:
+      tags: [Calendar Slots]
+      summary: List available slots
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: doctor_id
+          in: query
+          schema: { type: string, format: uuid }
+        - name: date
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: Array of calendar slots
+    post:
+      tags: [Calendar Slots]
+      summary: Create a slot (doctor/clinicOwner/admin)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '201':
+          description: Slot created
+
+  /calendar-slots/bulk:
+    post:
+      tags: [Calendar Slots]
+      summary: Bulk create slots
+      security: [{ BearerAuth: [] }]
+      responses:
+        '201':
+          description: Slots created
+
+  # ═══════════════════════════════════════
+  # PATIENT RECORDS
+  # ═══════════════════════════════════════
+  /patient-records:
+    get:
+      tags: [Patient Records]
+      summary: List patient records (scoped by role, HIPAA-audited)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: patient_id
+          in: query
+          schema: { type: string, format: uuid }
+        - name: record_type
+          in: query
+          schema: { type: string, enum: [labResult, report, scan, other] }
+      responses:
+        '200':
+          description: Paginated records
+    post:
+      tags: [Patient Records]
+      summary: Upload patient record (doctor only)
+      security: [{ BearerAuth: [] }]
+      responses:
+        '201':
+          description: Record created
+
+  /patient-records/{id}:
+    get:
+      tags: [Patient Records]
+      summary: Show record detail (HIPAA-audited)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Record detail
+
+  # ═══════════════════════════════════════
+  # DIGITAL ANAMNESIS
+  # ═══════════════════════════════════════
+  /anamnesis/{patientId}:
+    get:
+      tags: [Digital Anamnesis]
+      summary: Get patient anamnesis (encrypted at rest, HIPAA-audited)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Anamnesis data (answers decrypted automatically)
+
+  /anamnesis:
+    post:
+      tags: [Digital Anamnesis]
+      summary: Create or update anamnesis
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [patient_id, answers]
+              properties:
+                patient_id:
+                  type: string
+                  format: uuid
+                answers:
+                  type: object
+                  description: Encrypted at rest (AES-256-CBC)
+      responses:
+        '200':
+          description: Anamnesis saved
+
+  # ═══════════════════════════════════════
+  # CRM
+  # ═══════════════════════════════════════
+  /crm/tags:
+    get:
+      tags: [CRM]
+      summary: List CRM tags
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Array of tags
+    post:
+      tags: [CRM]
+      summary: Create tag
+      security: [{ BearerAuth: [] }]
+      responses:
+        '201':
+          description: Tag created
+
+  /crm/stages:
+    get:
+      tags: [CRM]
+      summary: List CRM stages
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Array of stages
+
+  /crm/archived-records:
+    get:
+      tags: [CRM]
+      summary: List archived records
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Array of archived records
+
+  # ═══════════════════════════════════════
+  # MEDSTREAM
+  # ═══════════════════════════════════════
+  /medstream/posts:
+    get:
+      tags: [MedStream]
+      summary: List posts (public, paginated)
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        '200':
+          description: Paginated posts
+    post:
+      tags: [MedStream]
+      summary: Create post (doctor/clinicOwner/admin)
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [post_type, content]
+              properties:
+                post_type:
+                  type: string
+                  enum: [article, case, question, media]
+                content:
+                  type: string
+                clinic_id:
+                  type: string
+                  format: uuid
+                photos[]:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                videos[]:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Videos are processed asynchronously via ProcessMedStreamVideo Job
+      responses:
+        '201':
+          description: Post created (media_processing may be true for videos)
+
+  /medstream/posts/{post}:
+    get:
+      tags: [MedStream]
+      summary: Show post detail
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Post detail with comments, engagement
+    put:
+      tags: [MedStream]
+      summary: Update post
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Post updated
+    delete:
+      tags: [MedStream]
+      summary: Delete post (author or admin)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Post deleted
+
+  /medstream/posts/{post}/comments:
+    get:
+      tags: [MedStream]
+      summary: List comments for a post
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Paginated comments
+    post:
+      tags: [MedStream]
+      summary: Add comment to post
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                parent_id:
+                  type: string
+                  format: uuid
+                  description: For threaded replies
+      responses:
+        '201':
+          description: Comment created
+
+  /medstream/posts/{post}/like:
+    post:
+      tags: [MedStream]
+      summary: Toggle like on post
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: post
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Like toggled
+
+  /medstream/bookmarks:
+    get:
+      tags: [MedStream]
+      summary: List bookmarked posts
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Paginated bookmarks
+    post:
+      tags: [MedStream]
+      summary: Toggle bookmark
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bookmarked_type, target_id]
+              properties:
+                bookmarked_type:
+                  type: string
+                target_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Bookmark toggled
+
+  # ═══════════════════════════════════════
+  # CHAT (Real-time 1:1)
+  # ═══════════════════════════════════════
+  /chat/conversations:
+    get:
+      tags: [Chat]
+      summary: List conversations (with unread_count, last_message denormalized)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Paginated conversations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChatConversation'
+    post:
+      tags: [Chat]
+      summary: Start or retrieve a 1:1 conversation
+      description: |
+        **Business Rule:** A patient can only start a conversation with a doctor
+        if they have at least one `confirmed` or `completed` appointment together.
+        Doctors, clinic owners, and admins bypass this restriction.
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [recipient_id]
+              properties:
+                recipient_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Existing conversation returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatConversation'
+        '201':
+          description: New conversation created
+        '403':
+          description: No confirmed/completed appointment exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "You need a confirmed or completed appointment with this doctor before starting a conversation."
+                code: "FORBIDDEN"
+
+  /chat/conversations/{conversation}/messages:
+    get:
+      tags: [Chat]
+      summary: List messages (newest first, sender eager-loaded)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: conversation
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 30 }
+      responses:
+        '200':
+          description: Paginated messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChatMessage'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Chat]
+      summary: Send message (text or file attachment)
+      description: |
+        Broadcasts `message.sent` event on `private-chat.{conversation_id}` channel.
+        Also sends a database notification to the recipient.
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: conversation
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Required if no attachment
+                attachment:
+                  type: string
+                  format: binary
+                  description: Image or document (max 20MB). Type auto-detected from MIME.
+      responses:
+        '201':
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessage'
+
+  /chat/conversations/{conversation}/read:
+    post:
+      tags: [Chat]
+      summary: Bulk mark all unread messages as read
+      description: Single UPDATE query — marks all messages from the other user where `read_at IS NULL`.
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: conversation
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Messages marked as read
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  count:
+                    type: integer
+
+  /chat/conversations/{conversation}/typing:
+    post:
+      tags: [Chat]
+      summary: Broadcast typing indicator
+      description: Broadcasts `user.typing` event on `private-chat.{conversation_id}` channel.
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: conversation
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_typing:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Typing indicator broadcast
+
+  /chat/unread-count:
+    get:
+      tags: [Chat]
+      summary: Total unread message count across all conversations
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Unread count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  unread_count:
+                    type: integer
+
+  # ═══════════════════════════════════════
+  # NOTIFICATIONS
+  # ═══════════════════════════════════════
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: List notifications (paginated)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: unread
+          in: query
+          schema: { type: boolean }
+          description: Filter unread only
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Paginated notifications
+    delete:
+      tags: [Notifications]
+      summary: Delete all read notifications
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Read notifications deleted
+
+  /notifications/unread-count:
+    get:
+      tags: [Notifications]
+      summary: Get unread notification count
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: Unread count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  unread_count:
+                    type: integer
+
+  /notifications/{id}/read:
+    put:
+      tags: [Notifications]
+      summary: Mark single notification as read
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Notification marked as read
+
+  /notifications/read-all:
+    put:
+      tags: [Notifications]
+      summary: Mark all notifications as read
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: All notifications marked as read
+
+  /notifications/{id}:
+    delete:
+      tags: [Notifications]
+      summary: Delete single notification
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Notification deleted

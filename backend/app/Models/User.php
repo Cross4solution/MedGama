@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,7 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasUuids, Notifiable;
+    use HasApiTokens, HasFactory, HasUuids, MassPrunable, Notifiable, SoftDeletes;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -32,14 +33,24 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
-            'mobile_verified' => 'boolean',
-            'email_verified' => 'boolean',
-            'is_verified' => 'boolean',
-            'is_active' => 'boolean',
-            'date_of_birth' => 'date',
-            'last_login' => 'datetime',
+            'password'                 => 'hashed',
+            'mobile_verified'          => 'boolean',
+            'email_verified'           => 'boolean',
+            'is_verified'              => 'boolean',
+            'is_active'                => 'boolean',
+            'date_of_birth'            => 'date',
+            'last_login'               => 'datetime',
+            'medical_history'          => 'encrypted',
+            'notification_preferences' => 'encrypted:array',
         ];
+    }
+
+    // ── Prunable (GDPR Art. 5(1)(e) — 3 year retention after account deletion) ──
+
+    public function prunable()
+    {
+        return static::onlyTrashed()
+            ->where('deleted_at', '<=', now()->subYears(3));
     }
 
     // ── Scopes ──

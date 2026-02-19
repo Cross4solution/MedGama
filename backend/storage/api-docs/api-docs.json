@@ -1,0 +1,1829 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "MedGama Telehealth API",
+        "description": "## MedGama — Professional Telehealth Platform API\n\n### Authentication\nAll protected endpoints require a **Bearer token** via the `Authorization` header.\nObtain a token from `POST /api/auth/login`.\n\n### Compliance & Security Notes\n- **Encryption at Rest (AES-256-CBC):** All sensitive health data fields (`doctor_note`, `confirmation_note`, `answers`, `medical_history`, `description`) are encrypted using Laravel's Encrypted Casts with the application's `APP_KEY`. Data is stored as ciphertext in the database and automatically decrypted when accessed through Eloquent models.\n- **Health Data Audit Logging (HIPAA §164.312):** Every access to patient health data (appointments, patient records, digital anamnesis) is recorded in the `health_data_audit_logs` table with: accessor ID, patient ID, resource type, resource ID, IP address, user agent, and timestamp.\n- **GDPR Art. 5(1)(e) — Data Retention:** Soft-deleted records are permanently pruned after their legal retention period expires (User: 3 years, Health data: 10 years) via Laravel's `MassPrunable` trait, scheduled daily at 03:00.\n- **GDPR Art. 17 — Right to Erasure:** Account deletion soft-deletes user data. After the retention period, `model:prune` permanently removes it.\n- **GDPR Art. 20 — Data Portability:** `GET /api/auth/profile/data-export` provides a full JSON export of all personal data.\n- **KVKK Art. 7 — Data Destruction:** Aligned with GDPR pruning schedule.\n\n### Error Response Format (Global)\nAll API errors return a consistent JSON structure:\n```json\n{\n  \"success\": false,\n  \"message\": \"Human-readable error message\",\n  \"code\": \"ERROR_CODE\"\n}\n```\n\n| HTTP | Code | Description |\n|------|------|-------------|\n| 401 | UNAUTHENTICATED | Missing or invalid token |\n| 403 | FORBIDDEN | Insufficient permissions |\n| 404 | RESOURCE_NOT_FOUND | Model not found |\n| 422 | VALIDATION_ERROR | Validation failed (includes `errors` object) |\n| 429 | RATE_LIMIT_EXCEEDED | Too many requests |\n| 500 | DATABASE_ERROR | Database query failure |\n| 500 | INTERNAL_ERROR | Unexpected server error |\n\n### WebSocket Events (Laravel Broadcasting)\n| Channel | Event | Payload |\n|---------|-------|---------|\n| `private-chat.{conversationId}` | `message.sent` | ChatMessageResource |\n| `private-chat.{conversationId}` | `user.typing` | `{user_id, user_name, is_typing}` |",
+        "contact": {
+            "name": "MedGama Dev Team",
+            "email": "dev@medgama.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8001/api",
+            "description": "Local Development"
+        },
+        {
+            "url": "https://api.medgama.com/api",
+            "description": "Production"
+        }
+    ],
+    "paths": {
+        "/appointments": {
+            "get": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "List appointments (scoped by authenticated user role)",
+                "operationId": "b8c7b364f8969997096bb5cc471278c2",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "confirmed",
+                                "cancelled",
+                                "completed"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "doctor_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "patient_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated appointments (AppointmentResource)"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Create appointment (locks calendar slot atomically)",
+                "operationId": "a115e378e7f96db9e8a6537cbdd95921",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "doctor_id",
+                                    "appointment_type",
+                                    "slot_id",
+                                    "appointment_date",
+                                    "appointment_time"
+                                ],
+                                "properties": {
+                                    "doctor_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "patient_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "clinic_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "appointment_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "inPerson",
+                                            "online"
+                                        ]
+                                    },
+                                    "slot_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "appointment_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "appointment_time": {
+                                        "type": "string",
+                                        "example": "14:30"
+                                    },
+                                    "confirmation_note": {
+                                        "description": "Encrypted at rest",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Appointment created (AppointmentResource)"
+                    },
+                    "422": {
+                        "description": "Validation error / slot unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/appointments/{appointment}": {
+            "get": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Show appointment detail (HIPAA-audited)",
+                "description": "Access is logged to health_data_audit_logs table. doctor_note and confirmation_note are encrypted at rest (AES-256-CBC).",
+                "operationId": "a38fbb7f74ce31ce3a372d53c082515b",
+                "parameters": [
+                    {
+                        "name": "appointment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Appointment detail (AppointmentResource)"
+                    },
+                    "403": {
+                        "description": "Not a participant",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Update appointment (status, notes, video link)",
+                "operationId": "2664db886fddb964fd77ccad385baff4",
+                "parameters": [
+                    {
+                        "name": "appointment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "confirmed",
+                                            "cancelled",
+                                            "completed"
+                                        ]
+                                    },
+                                    "doctor_note": {
+                                        "description": "Encrypted at rest (AES-256-CBC)",
+                                        "type": "string"
+                                    },
+                                    "confirmation_note": {
+                                        "description": "Encrypted at rest",
+                                        "type": "string"
+                                    },
+                                    "video_conference_link": {
+                                        "type": "string",
+                                        "format": "uri"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Appointment updated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Appointments"
+                ],
+                "summary": "Soft-delete appointment (slot released, GDPR: pruned after 10 years)",
+                "operationId": "340a1d1e4b71864ef4d72553cf13c68a",
+                "parameters": [
+                    {
+                        "name": "appointment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Appointment soft-deleted"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new user",
+                "operationId": "08136088c4862c313b35d6518bab8d3a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "fullname",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "role_id"
+                                ],
+                                "properties": {
+                                    "fullname": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    },
+                                    "role_id": {
+                                        "type": "string",
+                                        "enum": [
+                                            "patient",
+                                            "doctor"
+                                        ]
+                                    },
+                                    "mobile": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered, token returned"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login and receive Bearer token",
+                "operationId": "99d66635c4992aeaa6aa44ff653d0563",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful — returns user + token"
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout (revoke current token)",
+                "operationId": "6abf3b64a4bc7838d56346f05a5153af",
+                "responses": {
+                    "200": {
+                        "description": "Logged out"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get authenticated user profile",
+                "operationId": "7edae2cdbaafc10dff8c9c4198b320a2",
+                "responses": {
+                    "200": {
+                        "description": "Current user data with relations"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/profile": {
+            "put": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Update user profile",
+                "operationId": "1b6f918eb3f3cd3b4d27be8eb1979861",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "fullname": {
+                                        "type": "string"
+                                    },
+                                    "mobile": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string"
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "preferred_language": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Delete account (GDPR Art. 17 — Right to Erasure)",
+                "description": "Soft-deletes user account. Data permanently pruned after 3-year retention period.",
+                "operationId": "2703650dff8cc37b9c6877dd84ef77ff",
+                "responses": {
+                    "200": {
+                        "description": "Account soft-deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/profile/avatar": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Upload avatar image",
+                "operationId": "9a4df8dcad784b636a7785b5a1e8cb28",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "avatar": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Avatar uploaded, URL returned"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/profile/password": {
+            "put": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Change password",
+                "operationId": "0ae70558b94f35e54d9ff9c62dcc02d6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password changed"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/forgot-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Request password reset code",
+                "operationId": "fea89d2766defe4ad877001920e3f289",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reset code sent if email exists"
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset password with code",
+                "operationId": "b8d03d5b689dcb65d3771f62d4f90a24",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "code",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "code": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successful"
+                    }
+                }
+            }
+        },
+        "/auth/profile/data-export": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Export personal data (GDPR Art. 20 — Data Portability)",
+                "description": "Returns full JSON export of all personal data including profile, appointments, medical history.",
+                "operationId": "27973a6c38bbd85116730dac3fef5eb4",
+                "responses": {
+                    "200": {
+                        "description": "JSON export of all personal data"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/profile/medical-history": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get medical history (encrypted at rest — AES-256-CBC)",
+                "operationId": "3d8581f23454dd2314f5fde976a0ee39",
+                "responses": {
+                    "200": {
+                        "description": "Medical history data (auto-decrypted)"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Update medical history (encrypted at rest)",
+                "operationId": "aa42d4b82251fc04c00c41cc6d3a3044",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "conditions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Medical history updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/profile/notification-preferences": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get notification preferences",
+                "operationId": "70680ff0665fb984334489b1d2a16da2",
+                "responses": {
+                    "200": {
+                        "description": "Notification preferences"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Update notification preferences",
+                "operationId": "f9cbfd4063b40f660d55685db9c09b7b",
+                "responses": {
+                    "200": {
+                        "description": "Preferences updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/chat/conversations": {
+            "get": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "List conversations (denormalized last_message, unread_count)",
+                "operationId": "bd436631aa9db291379544cbcadec892",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated conversations with other_user, last_message, unread_count"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Start or retrieve a 1:1 conversation",
+                "description": "Business Rule: A patient can only start a conversation with a doctor if they have at least one confirmed/completed appointment together. Doctors, clinic owners, and admins bypass this restriction.",
+                "operationId": "a87623873795097383e860ebb9a9a148",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "recipient_id"
+                                ],
+                                "properties": {
+                                    "recipient_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Existing conversation returned"
+                    },
+                    "201": {
+                        "description": "New conversation created"
+                    },
+                    "403": {
+                        "description": "No confirmed/completed appointment with this doctor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/chat/conversations/{conversation}/messages": {
+            "get": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "List messages (newest first, sender eager-loaded)",
+                "operationId": "b8aa74c6ed67873e7eda5ebf0b5a107a",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 30
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated messages (ChatMessageResource)"
+                    },
+                    "403": {
+                        "description": "Not a participant"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Send message (text or file). Broadcasts message.sent event via WebSocket.",
+                "operationId": "d90e88080122e58bd6b69cb39c086d01",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "content": {
+                                        "description": "Required if no attachment",
+                                        "type": "string"
+                                    },
+                                    "attachment": {
+                                        "description": "Image or document, max 20MB. Type auto-detected from MIME.",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Message sent (ChatMessageResource)"
+                    },
+                    "403": {
+                        "description": "Not a participant"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/chat/conversations/{conversation}/read": {
+            "post": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Bulk mark all unread messages as read (single UPDATE query)",
+                "operationId": "19c50eb0b048a75bcf9519bb42c5dbfb",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Messages marked as read with count"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/chat/unread-count": {
+            "get": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Total unread message count across all conversations",
+                "operationId": "eb5e1a9556b7447ff2f5bfe38b0a98e8",
+                "responses": {
+                    "200": {
+                        "description": "Unread count"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/chat/conversations/{conversation}/typing": {
+            "post": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Broadcast typing indicator via WebSocket (user.typing event)",
+                "operationId": "f40f0b0a17f06a7508bb7a58c3293c56",
+                "parameters": [
+                    {
+                        "name": "conversation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "is_typing": {
+                                        "type": "boolean",
+                                        "default": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Typing indicator broadcast"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/medstream/posts": {
+            "get": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "List posts (public, paginated)",
+                "operationId": "976dceb17cadf5c93b142e3a32b5066b",
+                "parameters": [
+                    {
+                        "name": "author_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "clinic_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "post_type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "article",
+                                "case",
+                                "question",
+                                "media"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated posts (MedStreamPostResource)"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "Create post (doctor/clinicOwner/admin). Videos processed asynchronously.",
+                "operationId": "69468c76b260b279beddbdd753e38b61",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "post_type",
+                                    "content"
+                                ],
+                                "properties": {
+                                    "post_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "article",
+                                            "case",
+                                            "question",
+                                            "media"
+                                        ]
+                                    },
+                                    "content": {
+                                        "type": "string"
+                                    },
+                                    "clinic_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "photos[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    },
+                                    "videos[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Post created (media_processing may be true for videos)"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/medstream/posts/{post}": {
+            "get": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "Show post detail with comments and engagement",
+                "operationId": "c9c0a9a42ff5af5dbb62bcaf5620ecb3",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post detail (MedStreamPostResource)"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "Update post (author or admin)",
+                "operationId": "03c52342b8ebbdd1bd940e0228a59a70",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post updated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "Delete post (author or admin)",
+                "operationId": "297459f8ba7bdefe11e61c306bc39579",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post deleted"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/medstream/posts/{post}/comments": {
+            "get": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "List comments for a post",
+                "operationId": "0c9bc18168f13369b604681774946181",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated comments (MedStreamCommentResource)"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "Add comment (supports threaded replies via parent_id)",
+                "operationId": "3058edc560c43023e4426b698752da9f",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "type": "string"
+                                    },
+                                    "parent_id": {
+                                        "description": "For threaded replies",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Comment created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/medstream/posts/{post}/like": {
+            "post": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "Toggle like on post",
+                "operationId": "3d5d86a7c214341c5495a3c41bed9edb",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Like toggled"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/medstream/bookmarks": {
+            "get": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "List bookmarked posts",
+                "operationId": "432252f07c4f407c860e1b1d5b31e5fa",
+                "responses": {
+                    "200": {
+                        "description": "Paginated bookmarks"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "Toggle bookmark",
+                "operationId": "0855b91a7125f5eea18257265ecb3704",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "bookmarked_type",
+                                    "target_id"
+                                ],
+                                "properties": {
+                                    "bookmarked_type": {
+                                        "type": "string"
+                                    },
+                                    "target_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Bookmark toggled"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/medstream/posts/{post}/report": {
+            "post": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "Report a post",
+                "operationId": "d80cd9e662e4905c6989e9d632cf92cf",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "reason": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Report created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/medstream/reports": {
+            "get": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "List reports (admin only)",
+                "operationId": "1b66d2bc33ad311de30a6087eba4da12",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated reports"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/medstream/reports/{id}": {
+            "put": {
+                "tags": [
+                    "MedStream"
+                ],
+                "summary": "Update report status (admin only)",
+                "operationId": "cca3e6481dfc0b428f8fa504efc6d4f0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/notifications": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "List notifications (paginated, filterable)",
+                "operationId": "b1274a2aaae8a4295a7e1925e8d8090f",
+                "parameters": [
+                    {
+                        "name": "unread",
+                        "in": "query",
+                        "description": "Filter unread only",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by notification type",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated notifications"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Delete all read notifications",
+                "operationId": "83cb9e29aa2e091e93c6b2fc4a689921",
+                "responses": {
+                    "200": {
+                        "description": "Read notifications cleared"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/notifications/unread-count": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Get unread notification count",
+                "operationId": "85697ee523a5dace428185c95efb9f2f",
+                "responses": {
+                    "200": {
+                        "description": "Unread count"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/notifications/{id}/read": {
+            "put": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Mark single notification as read",
+                "operationId": "8bc5203b95eaa5cf8614a66ced103386",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notification marked as read"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/notifications/read-all": {
+            "put": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Mark all notifications as read",
+                "operationId": "1c909390c7d97aa2aca778a2a6362450",
+                "responses": {
+                    "200": {
+                        "description": "All notifications marked as read"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/notifications/{id}": {
+            "delete": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Delete single notification",
+                "operationId": "0f28a0400610f81f01e2d25ce4e0edff",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notification deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ErrorResponse": {
+                "properties": {
+                    "success": {
+                        "description": "╔══════════════════════════════════════════════════════════════════╗\n║  MedGama API — OpenAPI 3.0 Specification                       ║\n║  GDPR / KVKK / HIPAA Compliant Telehealth Platform             ║\n╚══════════════════════════════════════════════════════════════════╝",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "You are not authorized."
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "FORBIDDEN"
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationErrorResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Validation failed."
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "VALIDATION_ERROR"
+                    },
+                    "errors": {
+                        "type": "object",
+                        "example": "{\"email\": [\"The email field is required.\"]}"
+                    }
+                },
+                "type": "object"
+            },
+            "UserSummary": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "fullname": {
+                        "type": "string"
+                    },
+                    "avatar": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationMeta": {
+                "properties": {
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Authentication, profile, verification"
+        },
+        {
+            "name": "Appointments",
+            "description": "Appointment CRUD (HIPAA-audited)"
+        },
+        {
+            "name": "Chat",
+            "description": "Real-time 1:1 doctor-patient messaging"
+        },
+        {
+            "name": "MedStream",
+            "description": "Social feed — posts, comments, likes"
+        },
+        {
+            "name": "Notifications",
+            "description": "In-app notification management"
+        }
+    ]
+}

@@ -97,7 +97,7 @@ class DoctorProfileController extends Controller
         $profile->update($validated);
 
         return response()->json([
-            'profile' => $profile->fresh(),
+            'profile' => $profile->refresh(),
             'message' => 'Profile updated successfully',
         ]);
     }
@@ -134,7 +134,7 @@ class DoctorProfileController extends Controller
         $profile->save();
 
         return response()->json([
-            'profile' => $profile->fresh(),
+            'profile' => $profile->refresh(),
             'message' => 'Onboarding step saved',
         ]);
     }

@@ -102,7 +102,7 @@ class CrmController extends Controller
             'updated_by' => $request->user()->id,
         ]);
 
-        return response()->json(['stage' => $stage->fresh()]);
+        return response()->json(['stage' => $stage->refresh()]);
     }
 
     // ── Archived Clinic Records ──

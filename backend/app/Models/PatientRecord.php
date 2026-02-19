@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PatientRecord extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, MassPrunable, SoftDeletes;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -21,15 +23,28 @@ class PatientRecord extends Model
     protected function casts(): array
     {
         return [
-            'upload_date' => 'date',
-            'is_active' => 'boolean',
+            'upload_date'  => 'date',
+            'is_active'    => 'boolean',
+            'description'  => 'encrypted',
         ];
     }
+
+    // ── Prunable (GDPR Art. 5(1)(e) — 10 year retention for health data) ──
+
+    public function prunable()
+    {
+        return static::onlyTrashed()
+            ->where('deleted_at', '<=', now()->subYears(10));
+    }
+
+    // ── Scopes ──
 
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
+
+    // ── Relationships ──
 
     public function patient()
     {

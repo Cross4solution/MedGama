@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\HealthDataAuditLog;
 use App\Models\PatientRecord;
 use Illuminate\Http\Request;
 
@@ -45,9 +46,19 @@ class PatientRecordController extends Controller
         return response()->json(['record' => $record], 201);
     }
 
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
-        return response()->json(['record' => PatientRecord::active()->with(['patient:id,fullname', 'doctor:id,fullname'])->findOrFail($id)]);
+        $record = PatientRecord::active()->with(['patient:id,fullname', 'doctor:id,fullname'])->findOrFail($id);
+
+        // HIPAA/GDPR Audit: log health data access
+        HealthDataAuditLog::log(
+            accessorId: $request->user()->id,
+            patientId: $record->patient_id,
+            resourceType: 'patient_record',
+            resourceId: $record->id,
+        );
+
+        return response()->json(['record' => $record]);
     }
 
     public function destroy(string $id)

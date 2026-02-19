@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Clinic;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ClinicController extends Controller
@@ -51,13 +52,17 @@ class ClinicController extends Controller
         $validated['codename'] = Str::slug($validated['name']) . '-' . Str::random(4);
         $validated['avatar'] = 'https://gravatar.com/avatar/' . md5(strtolower($validated['fullname'])) . '?s=200&d=identicon';
 
-        $clinic = Clinic::create($validated);
+        $clinic = DB::transaction(function () use ($validated) {
+            $clinic = Clinic::create($validated);
 
-        // Update owner role
-        User::where('id', $validated['owner_id'])->update([
-            'role_id' => 'clinicOwner',
-            'clinic_id' => $clinic->id,
-        ]);
+            // Update owner role
+            User::where('id', $validated['owner_id'])->update([
+                'role_id' => 'clinicOwner',
+                'clinic_id' => $clinic->id,
+            ]);
+
+            return $clinic;
+        });
 
         return response()->json(['clinic' => $clinic], 201);
     }
@@ -86,7 +91,7 @@ class ClinicController extends Controller
 
         $clinic->update($validated);
 
-        return response()->json(['clinic' => $clinic->fresh()]);
+        return response()->json(['clinic' => $clinic->refresh()]);
     }
 
     /**
@@ -135,31 +140,35 @@ class ClinicController extends Controller
             return response()->json(['message' => 'A user with this email already exists in this clinic.'], 422);
         }
 
-        $doctor = User::create([
-            'fullname'       => $validated['fullname'],
-            'email'          => $validated['email'],
-            'password'       => bcrypt($validated['password']),
-            'mobile'         => $validated['mobile'] ?? null,
-            'role_id'        => 'doctor',
-            'clinic_id'      => $clinic->id,
-            'is_active'      => true,
-            'email_verified' => true, // Clinic-created accounts are pre-verified
-        ]);
+        $doctor = DB::transaction(function () use ($validated, $clinic) {
+            $doctor = User::create([
+                'fullname'       => $validated['fullname'],
+                'email'          => $validated['email'],
+                'password'       => bcrypt($validated['password']),
+                'mobile'         => $validated['mobile'] ?? null,
+                'role_id'        => 'doctor',
+                'clinic_id'      => $clinic->id,
+                'is_active'      => true,
+                'email_verified' => true, // Clinic-created accounts are pre-verified
+            ]);
 
-        // Create doctor profile if any profile fields provided
-        $profileFields = array_filter([
-            'title'            => $validated['title'] ?? null,
-            'specialty'        => $validated['specialty'] ?? null,
-            'bio'              => $validated['bio'] ?? null,
-            'experience_years' => $validated['experience_years'] ?? null,
-        ]);
+            // Create doctor profile if any profile fields provided
+            $profileFields = array_filter([
+                'title'            => $validated['title'] ?? null,
+                'specialty'        => $validated['specialty'] ?? null,
+                'bio'              => $validated['bio'] ?? null,
+                'experience_years' => $validated['experience_years'] ?? null,
+            ]);
 
-        if (!empty($profileFields)) {
-            $doctor->doctorProfile()->create(array_merge($profileFields, [
-                'onboarding_completed' => false,
-                'onboarding_step'      => 0,
-            ]));
-        }
+            if (!empty($profileFields)) {
+                $doctor->doctorProfile()->create(array_merge($profileFields, [
+                    'onboarding_completed' => false,
+                    'onboarding_step'      => 0,
+                ]));
+            }
+
+            return $doctor;
+        });
 
         return response()->json([
             'doctor'  => $doctor->load('doctorProfile'),

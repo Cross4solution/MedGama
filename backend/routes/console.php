@@ -17,3 +17,14 @@ Schedule::command('appointments:send-reminders')
     ->everyFifteenMinutes()
     ->withoutOverlapping()
     ->runInBackground();
+
+// GDPR Art. 5(1)(e) — Prune expired soft-deleted records daily at 03:00
+// User: 3 years, Appointment/DigitalAnamnesis/PatientRecord: 10 years
+Schedule::command('model:prune', [
+    '--model' => [
+        \App\Models\User::class,
+        \App\Models\Appointment::class,
+        \App\Models\DigitalAnamnesis::class,
+        \App\Models\PatientRecord::class,
+    ],
+])->dailyAt('03:00')->runInBackground();

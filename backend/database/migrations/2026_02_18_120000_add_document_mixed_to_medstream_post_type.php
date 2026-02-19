@@ -13,10 +13,11 @@ return new class extends Migration
             // PostgreSQL: drop old check constraint and add new one with document & mixed
             DB::statement("ALTER TABLE med_stream_posts DROP CONSTRAINT IF EXISTS med_stream_posts_post_type_check");
             DB::statement("ALTER TABLE med_stream_posts ADD CONSTRAINT med_stream_posts_post_type_check CHECK (post_type::text = ANY (ARRAY['text','image','video','document','mixed']))");
-        } else {
+        } elseif ($driver === 'mysql') {
             // MySQL: modify enum column
             DB::statement("ALTER TABLE med_stream_posts MODIFY COLUMN post_type ENUM('text','image','video','document','mixed') DEFAULT 'text'");
         }
+        // SQLite: no-op (column is already a string type, no enum constraint)
     }
 
     public function down(): void
@@ -26,8 +27,9 @@ return new class extends Migration
         if ($driver === 'pgsql') {
             DB::statement("ALTER TABLE med_stream_posts DROP CONSTRAINT IF EXISTS med_stream_posts_post_type_check");
             DB::statement("ALTER TABLE med_stream_posts ADD CONSTRAINT med_stream_posts_post_type_check CHECK (post_type::text = ANY (ARRAY['text','image','video']))");
-        } else {
+        } elseif ($driver === 'mysql') {
             DB::statement("ALTER TABLE med_stream_posts MODIFY COLUMN post_type ENUM('text','image','video') DEFAULT 'text'");
         }
+        // SQLite: no-op
     }
 };

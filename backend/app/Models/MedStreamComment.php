@@ -5,16 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MedStreamComment extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, SoftDeletes;
 
     protected $keyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
-        'post_id', 'author_id', 'parent_id', 'content', 'is_hidden',
+        'post_id', 'author_id', 'parent_id', 'content', 'is_hidden', 'is_active',
     ];
 
     public function parent()
@@ -24,7 +25,7 @@ class MedStreamComment extends Model
 
     public function replies()
     {
-        return $this->hasMany(MedStreamComment::class, 'parent_id')->active()->where('is_hidden', false);
+        return $this->hasMany(MedStreamComment::class, 'parent_id')->where('is_hidden', false);
     }
 
     protected function casts(): array
@@ -35,10 +36,6 @@ class MedStreamComment extends Model
         ];
     }
 
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
 
     public function post()
     {

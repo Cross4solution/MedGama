@@ -182,6 +182,79 @@ class MediaOptimizer
     }
 
     /**
+     * Process a video from a raw file path (used by background job).
+     * Same logic as processVideo but accepts a path instead of UploadedFile.
+     */
+    public static function processVideoFromPath(string $filePath, string $originalName, int $fileSize, string $folder = 'medstream/videos'): array
+    {
+        $id = Str::uuid()->toString();
+        $ext = pathinfo($originalName, PATHINFO_EXTENSION) ?: 'mp4';
+        $filename = "{$id}.{$ext}";
+        $storagePath = "{$folder}/{$filename}";
+
+        // Move from temp to storage
+        Storage::disk('public')->put($storagePath, file_get_contents($filePath));
+        $storedFullPath = Storage::disk('public')->path($storagePath);
+        $url = asset('storage/' . $storagePath);
+
+        $result = [
+            'id'       => $id,
+            'original' => $url,
+            'thumb'    => null,
+            'type'     => 'video',
+            'name'     => $originalName,
+            'size'     => $fileSize,
+        ];
+
+        $ffmpeg = self::findFFmpeg();
+        if ($ffmpeg && file_exists($storedFullPath)) {
+            try {
+                // Extract thumbnail
+                $thumbFilename = "{$id}_thumb.jpg";
+                $thumbStoragePath = "{$folder}/{$thumbFilename}";
+                $thumbFullPath = Storage::disk('public')->path($thumbStoragePath);
+
+                $cmd = escapeshellcmd($ffmpeg) . ' -i ' . escapeshellarg($storedFullPath)
+                    . ' -ss 00:00:01 -vframes 1 -vf scale=400:-1 -q:v 8 '
+                    . escapeshellarg($thumbFullPath) . ' -y 2>&1';
+                exec($cmd, $output, $returnCode);
+
+                if ($returnCode === 0 && file_exists($thumbFullPath)) {
+                    $result['thumb'] = asset('storage/' . $thumbStoragePath);
+                }
+
+                // Compress if > 20MB
+                if ($fileSize > 20 * 1024 * 1024) {
+                    $compressedFilename = "{$id}_compressed.mp4";
+                    $compressedStoragePath = "{$folder}/{$compressedFilename}";
+                    $compressedFullPath = Storage::disk('public')->path($compressedStoragePath);
+
+                    $cmd = escapeshellcmd($ffmpeg) . ' -i ' . escapeshellarg($storedFullPath)
+                        . ' -vcodec libx264 -crf 28 -preset fast -vf scale=1280:-2'
+                        . ' -acodec aac -b:a 128k -movflags +faststart'
+                        . ' ' . escapeshellarg($compressedFullPath) . ' -y 2>&1';
+                    exec($cmd, $output2, $returnCode2);
+
+                    if ($returnCode2 === 0 && file_exists($compressedFullPath)) {
+                        $compressedSize = filesize($compressedFullPath);
+                        if ($compressedSize < $fileSize) {
+                            $result['original'] = asset('storage/' . $compressedStoragePath);
+                            $result['size'] = $compressedSize;
+                            Storage::disk('public')->delete($storagePath);
+                        } else {
+                            @unlink($compressedFullPath);
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                \Log::warning('MediaOptimizer: FFmpeg processing failed (job)', ['error' => $e->getMessage()]);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Process an uploaded document (PDF, Word, Excel, PPT).
      * No optimization — just store and return metadata.
      */
