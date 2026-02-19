@@ -118,4 +118,5 @@ DESC,
 #[OA\Tag(name: 'Catalog', description: 'Public lookup data')]
 #[OA\Tag(name: 'Doctors', description: 'Public doctor listing')]
 #[OA\Tag(name: 'Calendar Slots', description: 'Doctor availability management')]
+#[OA\Tag(name: 'Analytics', description: 'Clinic business intelligence & reporting (cached 1h)')]
 class OpenApiSpec {}

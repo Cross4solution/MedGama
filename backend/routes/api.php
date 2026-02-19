@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\MediaStreamController;
+use App\Http\Controllers\Api\ClinicAnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -278,3 +279,13 @@ Route::prefix('chat')->middleware('auth:sanctum')->group(function () {
 */
 Route::get('/media/stream/{path}', [MediaStreamController::class, 'stream'])
     ->where('path', '.*');
+
+/*
+|--------------------------------------------------------------------------
+| Clinic Analytics — Business Intelligence & Reporting
+|--------------------------------------------------------------------------
+*/
+Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
+    Route::get('/clinic/{clinicId}/summary', [ClinicAnalyticsController::class, 'summary']);
+    Route::get('/clinic/{clinicId}/doctors', [ClinicAnalyticsController::class, 'doctorPerformance']);
+});
