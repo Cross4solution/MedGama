@@ -6,9 +6,10 @@ use App\Models\User;
 use App\Models\Clinic;
 use App\Models\Specialty;
 use App\Models\City;
+use App\Models\Appointment;
+use App\Models\DoctorProfile;
 use App\Models\SymptomSpecialtyMapping;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,7 +26,6 @@ class DatabaseSeeder extends Seeder
             'email_verified' => true,
             'mobile_verified' => true,
             'is_verified' => true,
-            'avatar' => 'https://gravatar.com/avatar/' . md5('admin@admin.com') . '?s=200&d=identicon',
         ]);
 
         // ── Test Clinic ──
@@ -38,7 +38,6 @@ class DatabaseSeeder extends Seeder
             'email_verified' => true,
             'mobile_verified' => true,
             'is_verified' => true,
-            'avatar' => 'https://gravatar.com/avatar/' . md5('clinic@medgama.com') . '?s=200&d=identicon',
         ]);
 
         $clinic = Clinic::create([
@@ -49,7 +48,6 @@ class DatabaseSeeder extends Seeder
             'address' => 'Levent, İstanbul, Türkiye',
             'biography' => 'Modern sağlık hizmetleri sunan çok branşlı klinik.',
             'is_verified' => true,
-            'avatar' => 'https://gravatar.com/avatar/' . md5('medgama') . '?s=200&d=identicon',
         ]);
 
         $clinicOwner->update(['clinic_id' => $clinic->id]);
@@ -65,10 +63,24 @@ class DatabaseSeeder extends Seeder
             'mobile_verified' => true,
             'is_verified' => true,
             'clinic_id' => $clinic->id,
-            'avatar' => 'https://gravatar.com/avatar/' . md5('doctor@medgama.com') . '?s=200&d=identicon',
         ]);
 
-        // ── Test Patient ──
+        // Doctor profile (onboarding complete)
+        if (class_exists(DoctorProfile::class)) {
+            try {
+                DoctorProfile::create([
+                    'user_id' => $doctor->id,
+                    'specialty_code' => 'CARD',
+                    'title' => 'Uzm. Dr.',
+                    'biography' => 'Kardiyoloji uzmanı, 10 yıllık deneyim.',
+                    'onboarding_completed' => true,
+                ]);
+            } catch (\Throwable $e) {
+                // Skip if table/columns don't match
+            }
+        }
+
+        // ── Test Patients ──
         $patient = User::create([
             'email' => 'patient@medgama.com',
             'password' => 'patient123',
@@ -80,8 +92,55 @@ class DatabaseSeeder extends Seeder
             'date_of_birth' => '1990-05-15',
             'gender' => 'male',
             'country_id' => 90,
-            'avatar' => 'https://gravatar.com/avatar/' . md5('patient@medgama.com') . '?s=200&d=identicon',
         ]);
+
+        $patient2 = User::create([
+            'email' => 'zeynep@medgama.com',
+            'password' => 'patient123',
+            'fullname' => 'Zeynep Arslan',
+            'role_id' => 'patient',
+            'mobile' => '+905001234571',
+            'email_verified' => true,
+            'date_of_birth' => '1985-11-22',
+            'gender' => 'female',
+            'country_id' => 90,
+        ]);
+
+        // ── Sample Appointments ──
+        try {
+            Appointment::create([
+                'patient_id' => $patient->id,
+                'doctor_id' => $doctor->id,
+                'clinic_id' => $clinic->id,
+                'appointment_type' => 'in_person',
+                'appointment_date' => now()->addDays(3)->toDateString(),
+                'appointment_time' => '10:00',
+                'status' => 'confirmed',
+                'created_by' => $patient->id,
+            ]);
+            Appointment::create([
+                'patient_id' => $patient2->id,
+                'doctor_id' => $doctor->id,
+                'clinic_id' => $clinic->id,
+                'appointment_type' => 'video',
+                'appointment_date' => now()->addDays(5)->toDateString(),
+                'appointment_time' => '14:30',
+                'status' => 'pending',
+                'created_by' => $patient2->id,
+            ]);
+            Appointment::create([
+                'patient_id' => $patient->id,
+                'doctor_id' => $doctor->id,
+                'clinic_id' => $clinic->id,
+                'appointment_type' => 'in_person',
+                'appointment_date' => now()->subDays(7)->toDateString(),
+                'appointment_time' => '09:00',
+                'status' => 'completed',
+                'created_by' => $patient->id,
+            ]);
+        } catch (\Throwable $e) {
+            $this->command->warn('Appointments seed skipped: ' . $e->getMessage());
+        }
 
         // ── Specialties ──
         $specialties = [
@@ -151,6 +210,18 @@ class DatabaseSeeder extends Seeder
             SymptomSpecialtyMapping::create($s);
         }
 
-        $this->command->info('Seeded: 1 admin, 1 clinic owner, 1 doctor, 1 patient, 20 specialties, 8 cities, 10 symptom mappings');
+        $this->command->info('');
+        $this->command->info('╔══════════════════════════════════════════════════════════════╗');
+        $this->command->info('║  MedGama — Seed Complete                                    ║');
+        $this->command->info('╠══════════════════════════════════════════════════════════════╣');
+        $this->command->info('║  Users:                                                     ║');
+        $this->command->info('║    Admin    → admin@admin.com       / admin123               ║');
+        $this->command->info('║    Clinic   → clinic@medgama.com    / clinic123              ║');
+        $this->command->info('║    Doctor   → doctor@medgama.com    / doctor123              ║');
+        $this->command->info('║    Patient  → patient@medgama.com   / patient123             ║');
+        $this->command->info('║    Patient2 → zeynep@medgama.com    / patient123             ║');
+        $this->command->info('║                                                              ║');
+        $this->command->info('║  Data: 20 specialties, 8 cities, 10 symptoms, 3 appointments ║');
+        $this->command->info('╚══════════════════════════════════════════════════════════════╝');
     }
 }
