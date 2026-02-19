@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { endpoints } from '../lib/api';
+import { endpoints, authAPI } from '../lib/api';
 
 // Very light mock auth just for frontend flows
 const AuthContext = createContext(null);
@@ -252,20 +252,30 @@ export function AuthProvider({ children }) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [logoutCallback, setLogoutCallback] = useState(null);
 
+  const clearLocalAuth = () => {
+    setUser(null);
+    setToken(null);
+    try {
+      localStorage.removeItem('auth_state');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('google_access_token');
+      localStorage.removeItem('google_user');
+      localStorage.setItem('auth_logout', '1');
+      loggedOutRef.current = true;
+    } catch {}
+  };
+
+  const performLogout = () => {
+    // Revoke token on backend (fire-and-forget)
+    authAPI.logout().catch(() => {});
+    clearLocalAuth();
+  };
+
   const logout = (options = {}) => {
     const { skipConfirmation = false } = options;
     
     if (skipConfirmation) {
-      setUser(null);
-      setToken(null);
-      try {
-        localStorage.removeItem('auth_state');
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('google_access_token');
-        localStorage.removeItem('google_user');
-        localStorage.setItem('auth_logout', '1');
-        loggedOutRef.current = true;
-      } catch {}
+      performLogout();
       return true;
     }
     
@@ -274,16 +284,7 @@ export function AuthProvider({ children }) {
       setLogoutCallback(() => (confirmed) => {
         setShowLogoutConfirm(false);
         if (confirmed) {
-          setUser(null);
-          setToken(null);
-          try {
-            localStorage.removeItem('auth_state');
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('google_access_token');
-            localStorage.removeItem('google_user');
-            localStorage.setItem('auth_logout', '1');
-            loggedOutRef.current = true;
-          } catch {}
+          performLogout();
           resolve(true);
         } else {
           resolve(false);

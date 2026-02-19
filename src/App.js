@@ -10,6 +10,7 @@ import { ToastProvider } from './context/ToastContext';
 import { CookieConsentProvider } from './context/CookieConsentContext';
 import scrollConfig from './config/scroll';
 import ScrollToTopButton from './components/common/ScrollToTopButton';
+import DoctorOnboardingModal from './pages/DoctorOnboarding.jsx';
 
 // Lazy-loaded pages for code splitting
 const HomeV2 = React.lazy(() => import('./pages/HomeV2'));
@@ -34,7 +35,6 @@ const Notifications = React.lazy(() => import('./pages/Notifications'));
 const Profile = React.lazy(() => import('./pages/Profile'));
 const PostDetail = React.lazy(() => import('./pages/PostDetail'));
 const DoctorProfilePage = React.lazy(() => import('./pages/DoctorProfile.jsx'));
-import DoctorOnboardingModal from './pages/DoctorOnboarding.jsx';
 const ClinicProfileEdit = React.lazy(() => import('./pages/ClinicProfileEdit.jsx'));
 const DoctorsDepartments = React.lazy(() => import('./pages/DoctorsDepartments.jsx'));
 const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage'));

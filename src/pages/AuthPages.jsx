@@ -138,17 +138,23 @@ const AuthPages = () => {
     } catch (err) {
       if (err?.status === 401) {
         notify({ type: 'error', message: err?.data?.message || 'Invalid credentials' });
+      } else if (err?.status === 403) {
+        notify({ type: 'error', message: err?.message || 'You do not have permission to perform this action.' });
       } else if (err?.status === 422 && err?.data?.errors) {
         const fieldErrors = {};
         Object.entries(err.data.errors).forEach(([field, arr]) => {
-          const key = field === 'password_confirmation' ? 'confirmPassword' : field;
+          const key = field === 'password_confirmation' ? 'confirmPassword'
+            : field === 'fullname' ? 'firstName'
+            : field;
           fieldErrors[key] = Array.isArray(arr) ? arr[0] : String(arr);
         });
         setErrors((prev) => ({ ...prev, ...fieldErrors }));
-        notify({ type: 'error', message: err?.data?.message || 'Validation error' });
+        notify({ type: 'error', message: err?.data?.message || 'Please correct the highlighted fields.' });
       } else {
-        notify({ type: 'error', message: err?.message || 'Unexpected error' });
+        notify({ type: 'error', message: err?.message || 'An unexpected error occurred. Please try again.' });
       }
+    } finally {
+      setSubmitting(false);
     }
   };
 

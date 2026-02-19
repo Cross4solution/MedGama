@@ -27,9 +27,9 @@ api.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
     const data = error.response?.data;
+    const code = data?.code || null; // Backend error code: FORBIDDEN, VALIDATION_ERROR, etc.
 
     // Auto-logout on 401 only for auth-critical endpoints (login, me, etc.)
-    // Don't logout for regular API calls (medstream, appointments, etc.) — just fail silently
     if (status === 401) {
       const url = error.config?.url || '';
       const isAuthEndpoint = url.includes('/auth/') || url.includes('/me');
@@ -39,10 +39,17 @@ api.interceptors.response.use(
       }
     }
 
+    // Human-readable message for common status codes
+    let message = data?.message || data?.error || error.message || `HTTP ${status}`;
+    if (status === 403 && !data?.message) {
+      message = 'You do not have permission to perform this action.';
+    }
+
     return Promise.reject({
       status,
+      code,
       data,
-      message: data?.message || data?.error || error.message || `HTTP ${status}`,
+      message,
       errors: data?.errors || {},
     });
   }
@@ -269,6 +276,25 @@ export const notificationAPI = {
   markAllAsRead: () => api.put('/notifications/read-all'),
   delete: (id) => api.delete(`/notifications/${id}`),
   deleteAll: () => api.delete('/notifications'),
+};
+
+// ── Chat Service (1:1 Doctor-Patient) ──
+export const chatAPI = {
+  conversations: (params) => api.get('/chat/conversations', { params }),
+  startConversation: (payload) => api.post('/chat/conversations', payload),
+  messages: (conversationId, params) => api.get(`/chat/conversations/${conversationId}/messages`, { params }),
+  sendMessage: (conversationId, payload) => api.post(`/chat/conversations/${conversationId}/messages`, payload),
+  markAsRead: (conversationId) => api.post(`/chat/conversations/${conversationId}/read`),
+  typing: (conversationId) => api.post(`/chat/conversations/${conversationId}/typing`),
+  unreadCount: () => api.get('/chat/unread-count'),
+};
+
+// ── Analytics Service (Clinic BI) ──
+export const analyticsAPI = {
+  clinicSummary: (clinicId) => api.get(`/analytics/clinic/${clinicId}/summary`),
+  doctorPerformance: (clinicId) => api.get(`/analytics/clinic/${clinicId}/doctors`),
+  engagement: (clinicId) => api.get(`/analytics/clinic/${clinicId}/engagement`),
+  appointmentTrend: (clinicId) => api.get(`/analytics/clinic/${clinicId}/appointment-trend`),
 };
 
 // ── Legacy compat (for existing code that imports { endpoints }) ──
