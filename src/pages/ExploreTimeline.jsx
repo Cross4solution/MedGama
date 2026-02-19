@@ -30,12 +30,14 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
         onApiRefresh?.(apiIds);
         setApiPosts(list.map((p) => {
           const ec = p.engagement_counter || p.engagementCounter || {};
+          const clinicName = p.clinic?.fullname || '';
+          const authorRole = p.author?.role_id || 'doctor';
           return {
             id: p.id,
             author_id: p.author_id,
-            type: 'doctor_update',
+            type: authorRole === 'clinicOwner' ? 'clinic_update' : 'doctor_update',
             title: p.author?.fullname || 'Doctor',
-            subtitle: '',
+            subtitle: clinicName,
             city: '',
             img: p.media_url || '',
             text: p.content || '',
@@ -45,15 +47,16 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
             countryCode: '',
             actor: {
               id: p.author_id,
-              role: p.author?.role_id || 'doctor',
+              role: authorRole,
               name: p.author?.fullname || 'Doctor',
-              title: '',
+              title: clinicName || (authorRole === 'doctor' ? 'Doctor' : ''),
               avatarUrl: p.author?.avatar || '/images/default/default-avatar.svg',
             },
             socialContext: '',
             created_at: p.created_at || null,
             timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
             visibility: 'public',
+            media_processing: !!p.media_processing,
             media: (() => {
               // If backend returned uploaded media array, use it
               if (Array.isArray(p.media) && p.media.length > 0) {
@@ -376,11 +379,12 @@ export default function ExploreTimeline() {
       const p = res?.post || res;
       if (p?.id) {
         const ec = p.engagement_counter || p.engagementCounter || {};
+        const clinicName = p.clinic?.fullname || '';
         const newItem = {
           id: p.id,
           type: 'doctor_update',
           title: p.author?.fullname || user?.name || 'Doctor',
-          subtitle: '',
+          subtitle: clinicName,
           city: '',
           img: p.media_url || PLACEHOLDER_IMG,
           text: p.content || '',
@@ -392,13 +396,14 @@ export default function ExploreTimeline() {
             id: p.author_id || user?.id,
             role: p.author?.role_id || user?.role || 'doctor',
             name: p.author?.fullname || user?.name || 'Doctor',
-            title: '',
+            title: clinicName || '',
             avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
           },
           socialContext: '',
           created_at: p.created_at || new Date().toISOString(),
           timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
           visibility: 'public',
+          media_processing: !!p.media_processing,
           media: (() => {
             if (Array.isArray(p.media) && p.media.length > 0) {
               return p.media.map(m => ({ url: m.medium || m.original || m.url, thumb: m.thumb, name: m.name, type: m.type || p.post_type || 'image' }));

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, FileText, Play, Download } from 'lucide-react';
+import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, FileText, Play, Download, Bookmark } from 'lucide-react';
 import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
 import { useAuth } from '../context/AuthContext';
@@ -128,6 +128,7 @@ export default function PostDetail() {
   const [bookmarked, setBookmarked] = React.useState(!!item?.is_bookmarked);
 
   const likedRef = React.useRef(!!item?.is_liked);
+  const bookmarkedRef = React.useRef(!!item?.is_bookmarked);
 
   // Sync liked/bookmarked state when item changes (e.g. after API fetch)
   React.useEffect(() => {
@@ -140,18 +141,39 @@ export default function PostDetail() {
       setLikeCount(Number(item?.engagement?.likes) || Number(item?.likes) || 0);
     }
     if (item?.is_bookmarked !== undefined) {
-      setBookmarked(!!item.is_bookmarked);
+      const val = !!item.is_bookmarked;
+      setBookmarked(val);
+      bookmarkedRef.current = val;
     }
   }, [item?.id, item?.is_liked, item?.is_bookmarked]);
 
   const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
-    const next = !likedRef.current;
+    const prev = likedRef.current;
+    const next = !prev;
     likedRef.current = next;
     setLiked(next);
     setLikeCount((c) => Math.max(0, c + (next ? 1 : -1)));
     if (item?.id) {
-      medStreamAPI.toggleLike(item.id).catch(() => {});
+      medStreamAPI.toggleLike(item.id).catch(() => {
+        likedRef.current = prev;
+        setLiked(prev);
+        setLikeCount((c) => Math.max(0, c + (prev ? 1 : -1)));
+      });
+    }
+  }, [item?.id]);
+
+  const handleBookmark = React.useCallback((e) => {
+    e?.stopPropagation?.();
+    const prev = bookmarkedRef.current;
+    const next = !prev;
+    bookmarkedRef.current = next;
+    setBookmarked(next);
+    if (item?.id) {
+      medStreamAPI.toggleBookmark({ post_id: item.id }).catch(() => {
+        bookmarkedRef.current = prev;
+        setBookmarked(prev);
+      });
     }
   }, [item?.id]);
 
@@ -560,7 +582,7 @@ export default function PostDetail() {
             </div>
 
             {/* Action bar */}
-            <div className="mx-5 py-1 border-t border-b border-gray-100 grid grid-cols-3 gap-0.5">
+            <div className="mx-5 py-1 border-t border-b border-gray-100 grid grid-cols-4 gap-0.5">
               <button
                 type="button"
                 className={`inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-[13px] font-medium transition-all ${liked ? 'text-blue-600 bg-blue-50/60' : 'text-gray-600 hover:bg-gray-50'}`}
@@ -576,6 +598,14 @@ export default function PostDetail() {
               >
                 <MessageCircle className="w-[16px] h-[16px]" strokeWidth={1.7} />
                 Comment
+              </button>
+              <button
+                type="button"
+                className={`inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-[13px] font-medium transition-all ${bookmarked ? 'text-amber-600 bg-amber-50/60' : 'text-gray-600 hover:bg-gray-50'}`}
+                onClick={handleBookmark}
+              >
+                <Bookmark className="w-[16px] h-[16px]" strokeWidth={bookmarked ? 2.4 : 1.7} fill={bookmarked ? 'currentColor' : 'none'} />
+                Save
               </button>
               <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-[13px]" />
             </div>

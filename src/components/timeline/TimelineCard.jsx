@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, MapPin, Share2, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Share2, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2, Bookmark, Loader2 } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
@@ -412,13 +412,34 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
     if (disabledActions) return;
-    const next = !likedRef.current;
+    const prev = likedRef.current;
+    const next = !prev;
     likedRef.current = next;
     setLiked(next);
     setLikeCount((c) => Math.max(0, c + (next ? 1 : -1)));
-    // Fire API call (fire-and-forget)
+    // Optimistic: rollback on error
     if (item?.id) {
-      medStreamAPI.toggleLike(item.id).catch(() => {});
+      medStreamAPI.toggleLike(item.id).catch(() => {
+        likedRef.current = prev;
+        setLiked(prev);
+        setLikeCount((c) => Math.max(0, c + (prev ? 1 : -1)));
+      });
+    }
+  }, [disabledActions, item?.id]);
+
+  const bookmarkedRef = useRef(!!item?.is_bookmarked);
+  const handleBookmark = React.useCallback((e) => {
+    e?.stopPropagation?.();
+    if (disabledActions) return;
+    const prev = bookmarkedRef.current;
+    const next = !prev;
+    bookmarkedRef.current = next;
+    setBookmarked(next);
+    if (item?.id) {
+      medStreamAPI.toggleBookmark({ post_id: item.id }).catch(() => {
+        bookmarkedRef.current = prev;
+        setBookmarked(prev);
+      });
     }
   }, [disabledActions, item?.id]);
 
@@ -822,8 +843,16 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
           
 
+          {/* Video processing banner */}
+          {item?.media_processing && (
+            <div className="mx-3 mb-1 rounded-lg border border-sky-200 bg-sky-50/80 px-3 py-2 flex items-center gap-2">
+              <Loader2 className="w-4 h-4 text-sky-600 animate-spin flex-shrink-0" />
+              <span className="text-xs font-medium text-sky-700">Video is being processed. It will appear shortly.</span>
+            </div>
+          )}
+
           {/* Action bar */}
-          <div className="px-2 py-1 border-t border-gray-100 mt-1 grid grid-cols-3 gap-0.5 justify-items-center">
+          <div className="px-2 py-1 border-t border-gray-100 mt-1 grid grid-cols-4 gap-0.5 justify-items-center">
             <button
               type="button"
               className={`w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-[13px] transition-all ${liked ? 'text-teal-600 bg-teal-50/60 font-semibold' : 'text-gray-600 hover:bg-gray-100 font-medium'}`}
@@ -843,6 +872,14 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             >
               <MessageCircle className="w-[15px] h-[15px]" strokeWidth={1.6} />
               <span>Comment</span>
+            </button>
+            <button
+              type="button"
+              className={`w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-[13px] transition-all ${bookmarked ? 'text-amber-600 bg-amber-50/60 font-semibold' : 'text-gray-600 hover:bg-gray-100 font-medium'}`}
+              onClick={handleBookmark}
+            >
+              <Bookmark className="w-[15px] h-[15px]" strokeWidth={bookmarked ? 2.2 : 1.6} fill={bookmarked ? 'currentColor' : 'none'} />
+              <span>Save</span>
             </button>
             <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-sm" />
           </div>
