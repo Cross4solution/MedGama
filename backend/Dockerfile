@@ -14,10 +14,11 @@ RUN composer install \
     --no-interaction \
     --no-scripts \
     --prefer-dist \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --ignore-platform-req=php
 
 # ── Stage 2: Production image ──
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 # Install system deps + PHP extensions + Nginx + Supervisor
 RUN apk add --no-cache \
