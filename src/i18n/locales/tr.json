@@ -186,7 +186,8 @@
       "helpSupport": "Yardım & Destek",
       "smartCalendar": "Akıllı Takvim",
       "examination": "Muayene",
-      "billing": "Tahsilat"
+      "billing": "Tahsilat",
+      "mainSite": "Ana Siteye Git"
     },
     "dashboard": {
       "title": "Kontrol Paneli",

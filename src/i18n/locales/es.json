@@ -179,7 +179,8 @@
       "documents": "Documentos",
       "integrations": "Integraciones",
       "settings": "Configuración",
-      "helpSupport": "Ayuda y soporte"
+      "helpSupport": "Ayuda y soporte",
+      "mainSite": "Ir al sitio principal"
     },
     "dashboard": {
       "title": "Panel de control",

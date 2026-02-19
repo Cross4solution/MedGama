@@ -183,7 +183,8 @@
       "documents": "Documents",
       "integrations": "Intégrations",
       "settings": "Paramètres",
-      "helpSupport": "Aide & Support"
+      "helpSupport": "Aide & Support",
+      "mainSite": "Aller au site principal"
     },
     "dashboard": {
       "title": "Tableau de bord",

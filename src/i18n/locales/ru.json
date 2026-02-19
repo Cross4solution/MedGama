@@ -179,7 +179,8 @@
       "documents": "Документы",
       "integrations": "Интеграции",
       "settings": "Настройки",
-      "helpSupport": "Помощь и поддержка"
+      "helpSupport": "Помощь и поддержка",
+      "mainSite": "Перейти на главный сайт"
     },
     "dashboard": {
       "title": "Панель управления",

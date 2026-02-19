@@ -186,7 +186,8 @@
       "helpSupport": "Help & Support",
       "smartCalendar": "Smart Calendar",
       "examination": "Examination",
-      "billing": "Billing"
+      "billing": "Billing",
+      "mainSite": "Go to Main Site"
     },
     "dashboard": {
       "title": "Dashboard",
