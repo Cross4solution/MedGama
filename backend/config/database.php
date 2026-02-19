@@ -96,6 +96,13 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'options' => [
+                // Strict mode: abort queries that run longer than 30s
+                'options' => implode(' ', array_filter([
+                    '-c statement_timeout=' . env('DB_STATEMENT_TIMEOUT', '30000'),
+                    '-c lock_timeout=' . env('DB_LOCK_TIMEOUT', '10000'),
+                ])),
+            ],
         ],
 
         'sqlsrv' => [
