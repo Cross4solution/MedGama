@@ -19,7 +19,7 @@ const DashboardRedirect = () => {
     } else if (role === 'superAdmin' || role === 'saasAdmin') {
       navigate('/admin', { replace: true });
     } else {
-      navigate('/home-v2', { replace: true });
+      navigate('/explore', { replace: true });
     }
   }, [user, navigate]);
 
