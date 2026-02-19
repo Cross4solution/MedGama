@@ -4,8 +4,10 @@ import ThreadsSidebar from 'components/chat/ThreadsSidebar';
 import ChatHeader from 'components/chat/ChatHeader';
 import ChatMessageList from 'components/chat/ChatMessageList';
 import ChatInput from 'components/chat/ChatInput';
-import { messageAPI } from '../lib/api';
+import { chatAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { getEcho } from '../lib/echo';
 
 // ── Helpers ──
 
@@ -27,16 +29,14 @@ function formatTime(dateStr) {
 }
 
 /**
- * Convert API conversation to thread format used by ThreadsSidebar.
+ * Convert API conversation (ChatConversationResource) to thread format used by ThreadsSidebar.
  */
-function convToThread(conv, currentUserId) {
-  const other = conv.participants?.find(p => p.id !== currentUserId);
-  const name = conv.type === 'group'
-    ? (conv.title || conv.participants?.map(p => p.fullname).join(', ') || 'Group')
-    : (other?.fullname || 'Unknown');
+function convToThread(conv) {
+  const other = conv.other_user;
+  const name = other?.fullname || 'Unknown';
   const avatar = other?.avatar || '/images/default/default-avatar.svg';
-  const last = conv.latest_message?.body || '';
-  const when = timeAgo(conv.latest_message?.created_at || conv.updated_at);
+  const last = conv.last_message_content || '';
+  const when = timeAgo(conv.last_message_at || conv.created_at);
   const tags = [];
   if (conv.unread_count > 0) tags.push(`${conv.unread_count} new`);
 
@@ -54,16 +54,18 @@ function convToThread(conv, currentUserId) {
 }
 
 /**
- * Convert API message to the format used by ChatMessage component.
+ * Convert API message (ChatMessageResource) to the format used by ChatMessage component.
  */
 function apiMsgToLocal(msg, currentUserId) {
   return {
     id: msg.id,
     sender: msg.sender_id === currentUserId ? 'doctor' : 'patient',
-    text: msg.body || '',
+    text: msg.content || '',
     time: formatTime(msg.created_at),
     status: 'sent',
-    attachments: msg.attachments || [],
+    attachments: msg.attachment_url ? [{ url: msg.attachment_url, name: msg.attachment_name }] : [],
+    senderName: msg.sender?.fullname || '',
+    senderAvatar: msg.sender?.avatar || '/images/default/default-avatar.svg',
     _raw: msg,
   };
 }
@@ -96,6 +98,7 @@ function getMockMessages(id) {
 
 const DoctorChatPage = () => {
   const { user, hydrated } = useAuth();
+  const { notify } = useToast();
   const [message, setMessage] = useState('');
   const [channelFilter, setChannelFilter] = useState('All');
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
@@ -112,6 +115,11 @@ const DoctorChatPage = () => {
   const [sending, setSending] = useState(false);
   const pollRef = useRef(null);
 
+  // Typing indicator state
+  const [typingUser, setTypingUser] = useState(null);
+  const typingTimeoutRef = useRef(null);
+  const lastTypingSentRef = useRef(0);
+
   const currentUserId = user?.id || null;
   const hasStoredToken = useMemo(() => {
     try {
@@ -124,12 +132,9 @@ const DoctorChatPage = () => {
 
   // Fetch conversations from API
   const fetchConversations = useCallback(async () => {
-    // Wait until auth hydration settles to avoid brief mock UI flash
     if (!hydrated) return;
     if (!currentUserId) {
-      // If we likely have a signed-in session, wait for user resolution instead of showing mock data
       if (hasStoredToken) return;
-      // Guest mode fallback
       setThreads(MOCK_THREADS);
       setIsApiMode(false);
       setLoadingConvs(false);
@@ -137,13 +142,12 @@ const DoctorChatPage = () => {
     }
 
     try {
-      const res = await messageAPI.conversations({ per_page: 50 });
+      const res = await chatAPI.conversations({ per_page: 50 });
       const data = res?.data || [];
-      const apiThreads = Array.isArray(data) ? data.map(c => convToThread(c, currentUserId)) : [];
+      const apiThreads = Array.isArray(data) ? data.map(c => convToThread(c)) : [];
       setThreads(apiThreads);
       setIsApiMode(true);
 
-      // If no active thread or active thread not in list, select first if present
       if (apiThreads.length > 0) {
         if (!activeThreadId || !apiThreads.find(t => t.id === activeThreadId)) {
           setActiveThreadId(apiThreads[0].id);
@@ -153,7 +157,6 @@ const DoctorChatPage = () => {
         setMessages([]);
       }
     } catch {
-      // API failed for authenticated user: keep clean empty state instead of flashing mock design
       setThreads([]);
       setIsApiMode(true);
       setActiveThreadId(null);
@@ -172,20 +175,20 @@ const DoctorChatPage = () => {
     if (!convId || !isApiMode) return;
     setLoadingMsgs(true);
     try {
-      const res = await messageAPI.messages(convId, { per_page: 100 });
+      const res = await chatAPI.messages(convId, { per_page: 100 });
       const data = res?.data || [];
       const mapped = data.map(m => apiMsgToLocal(m, currentUserId));
       setMessages(mapped);
-      // Mark as read
-      messageAPI.markRead(convId).catch(() => {});
+      chatAPI.markAsRead(convId).catch(() => {});
     } catch {
       setMessages([]);
     }
     setLoadingMsgs(false);
   }, [isApiMode, currentUserId]);
 
-  // When active thread changes, fetch messages
+  // When active thread changes, fetch messages + reset typing
   useEffect(() => {
+    setTypingUser(null);
     if (isApiMode && activeThreadId) {
       fetchMessages(activeThreadId);
     } else if (!isApiMode && activeThreadId) {
@@ -193,26 +196,65 @@ const DoctorChatPage = () => {
     }
   }, [activeThreadId, isApiMode, fetchMessages]);
 
-  // Polling: refresh conversations and messages every 10s
+  // ── Laravel Echo: Real-time WebSocket subscriptions ──
+  useEffect(() => {
+    if (!isApiMode || !activeThreadId) return;
+    const echo = getEcho();
+    if (!echo) return; // No WebSocket config → graceful fallback to polling
+
+    const channel = echo.private(`chat.${activeThreadId}`);
+
+    // Listen for new messages
+    channel.listen('.message.sent', (data) => {
+      if (data?.sender_id === currentUserId) return; // Ignore own messages (already optimistic)
+      const msg = apiMsgToLocal(data, currentUserId);
+      setMessages(prev => {
+        if (prev.some(m => m.id === msg.id)) return prev;
+        return [...prev, msg];
+      });
+      // Update conversation list unread count
+      fetchConversations();
+    });
+
+    // Listen for typing indicator
+    channel.listen('.user.typing', (data) => {
+      if (data?.user_id === currentUserId) return;
+      if (data?.is_typing) {
+        setTypingUser(data.user_name || 'Someone');
+        // Auto-clear after 4s if no new typing event
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => setTypingUser(null), 4000);
+      } else {
+        setTypingUser(null);
+      }
+    });
+
+    return () => {
+      echo.leave(`chat.${activeThreadId}`);
+      clearTimeout(typingTimeoutRef.current);
+    };
+  }, [isApiMode, activeThreadId, currentUserId, fetchConversations]);
+
+  // Polling fallback: refresh conversations every 10s (messages only if no Echo)
   useEffect(() => {
     if (!isApiMode) return;
+    const echo = getEcho();
+    const pollInterval = echo ? 30000 : 10000; // Slower polling when Echo is active
     pollRef.current = setInterval(() => {
       fetchConversations();
-      if (activeThreadId) {
+      if (!echo && activeThreadId) {
         fetchMessages(activeThreadId);
       }
-    }, 10000);
+    }, pollInterval);
     return () => clearInterval(pollRef.current);
   }, [isApiMode, activeThreadId, fetchConversations, fetchMessages]);
 
   const activeContact = useMemo(() => threads.find(t => t.id === activeThreadId), [threads, activeThreadId]);
 
-  // Apply channel filter to thread list
   const filteredThreads = useMemo(() => {
     return threads.filter(t => (channelFilter === 'All' ? true : t.channel === channelFilter));
   }, [threads, channelFilter]);
 
-  // Mobile pagination logic
   const mobileTotalPages = Math.ceil(filteredThreads.length / threadsPerPage);
   const mobileStartIndex = (mobileCurrentPage - 1) * threadsPerPage;
   const mobileEndIndex = mobileStartIndex + threadsPerPage;
@@ -222,14 +264,33 @@ const DoctorChatPage = () => {
     setMobileCurrentPage(page);
   };
 
+  // ── Send typing indicator (debounced: max once per 2s) ──
+  const sendTyping = useCallback((isTyping) => {
+    if (!isApiMode || !activeThreadId) return;
+    const now = Date.now();
+    if (isTyping && now - lastTypingSentRef.current < 2000) return;
+    lastTypingSentRef.current = now;
+    chatAPI.typing(activeThreadId, isTyping).catch(() => {});
+  }, [isApiMode, activeThreadId]);
+
+  // Wrap onChange to emit typing events
+  const handleMessageChange = useCallback((val) => {
+    setMessage(val);
+    if (val.trim()) {
+      sendTyping(true);
+    }
+  }, [sendTyping]);
+
   const handleSendMessage = async (attachments) => {
     const text = message.trim();
     const hasFiles = attachments && attachments.length > 0;
     if (!text && !hasFiles) return;
     if (sending) return;
 
+    // Send typing(false) when sending
+    sendTyping(false);
+
     if (isApiMode && activeThreadId) {
-      // Optimistic: add message to UI immediately
       const optimistic = {
         id: 'opt-' + Date.now(),
         sender: 'doctor',
@@ -243,20 +304,17 @@ const DoctorChatPage = () => {
       setSending(true);
 
       try {
-        const res = await messageAPI.sendMessage(activeThreadId, {
-          body: text || undefined,
-          attachments: hasFiles ? attachments : undefined,
+        const res = await chatAPI.sendMessage(activeThreadId, {
+          content: text || undefined,
+          attachment: hasFiles ? attachments[0] : undefined,
         });
-        // Replace optimistic with real message
-        const real = apiMsgToLocal(res.message, currentUserId);
+        const real = apiMsgToLocal(res, currentUserId);
         setMessages(prev => prev.map(m => m.id === optimistic.id ? real : m));
       } catch {
-        // Mark as failed
         setMessages(prev => prev.map(m => m.id === optimistic.id ? { ...m, status: 'failed' } : m));
       }
       setSending(false);
     } else {
-      // Mock mode
       const newMessage = {
         id: messages.length + 1,
         sender: 'doctor',
@@ -270,7 +328,6 @@ const DoctorChatPage = () => {
   };
 
   const handleSelectThread = (id) => {
-    // Mobile: always open chat view
     setMobileChatOpen(true);
     if (id === activeThreadId) return;
     setActiveThreadId(id);
@@ -283,6 +340,29 @@ const DoctorChatPage = () => {
     setChannelFilter(value);
     setMobileCurrentPage(1);
   };
+
+  // ── Start new conversation (with 403 appointment check) ──
+  const startConversation = useCallback(async (recipientId) => {
+    if (!recipientId) return;
+    try {
+      const res = await chatAPI.startConversation({ recipient_id: recipientId });
+      const conv = res?.data || res;
+      if (conv?.id) {
+        await fetchConversations();
+        setActiveThreadId(conv.id);
+        setMobileChatOpen(true);
+      }
+    } catch (err) {
+      if (err?.status === 403) {
+        notify({
+          type: 'error',
+          message: 'Sadece randevulu doktorlarınızla mesajlaşabilirsiniz. / You can only message doctors you have an appointment with.',
+        });
+      } else {
+        notify({ type: 'error', message: err?.message || 'Failed to start conversation.' });
+      }
+    }
+  }, [fetchConversations, notify]);
 
   // Get current user info for header
   const currentUserInfo = useMemo(() => {
@@ -404,13 +484,13 @@ const DoctorChatPage = () => {
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-white sm:rounded-2xl sm:border sm:border-gray-200/60 sm:shadow-lg sm:shadow-gray-200/30">
               {activeThreadId && activeContact ? (
                 <>
-                  <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} />
+                  <ChatHeader activeContact={activeContact} onVideoCall={()=>{}} onCall={()=>{}} onBack={()=>setMobileChatOpen(false)} typingUser={typingUser} />
                   <ChatMessageList
                     messages={messages}
                     leftAvatar={activeContact?.avatar || '/images/default/default-avatar.svg'}
                     rightAvatar={headerAvatar}
                   />
-                  <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} sending={sending} />
+                  <ChatInput message={message} onChange={handleMessageChange} onSend={handleSendMessage} sending={sending} />
                 </>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
@@ -450,7 +530,7 @@ const DoctorChatPage = () => {
                   {activeThreadId && activeContact ? (
                     <>
                       {/* Chat Header */}
-                      <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} />
+                      <ChatHeader activeContact={activeContact} onVideoCall={() => {}} onCall={() => {}} onBack={() => {}} typingUser={typingUser} />
 
                       {/* Messages */}
                       <ChatMessageList
@@ -460,7 +540,7 @@ const DoctorChatPage = () => {
                       />
 
                       {/* Message Input */}
-                      <ChatInput message={message} onChange={setMessage} onSend={handleSendMessage} sending={sending} />
+                      <ChatInput message={message} onChange={handleMessageChange} onSend={handleSendMessage} sending={sending} />
                     </>
                   ) : (
                     <div className="flex-1 flex flex-col items-center justify-center text-center px-6">

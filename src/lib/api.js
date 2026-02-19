@@ -283,9 +283,20 @@ export const chatAPI = {
   conversations: (params) => api.get('/chat/conversations', { params }),
   startConversation: (payload) => api.post('/chat/conversations', payload),
   messages: (conversationId, params) => api.get(`/chat/conversations/${conversationId}/messages`, { params }),
-  sendMessage: (conversationId, payload) => api.post(`/chat/conversations/${conversationId}/messages`, payload),
+  sendMessage: (conversationId, { content, attachment } = {}) => {
+    if (!attachment) {
+      return api.post(`/chat/conversations/${conversationId}/messages`, { content });
+    }
+    const fd = new FormData();
+    if (content) fd.append('content', content);
+    fd.append('attachment', attachment);
+    return api.post(`/chat/conversations/${conversationId}/messages`, fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000,
+    });
+  },
   markAsRead: (conversationId) => api.post(`/chat/conversations/${conversationId}/read`),
-  typing: (conversationId) => api.post(`/chat/conversations/${conversationId}/typing`),
+  typing: (conversationId, isTyping = true) => api.post(`/chat/conversations/${conversationId}/typing`, { is_typing: isTyping }),
   unreadCount: () => api.get('/chat/unread-count'),
 };
 

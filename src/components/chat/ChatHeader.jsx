@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronLeft } from 'lucide-react';
 
-export default function ChatHeader({ activeContact, onVideoCall, onCall, onBack }) {
+export default function ChatHeader({ activeContact, onVideoCall, onCall, onBack, typingUser }) {
   return (
     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white rounded-t-2xl">
       <div className="flex items-center gap-3">
@@ -26,9 +26,20 @@ export default function ChatHeader({ activeContact, onVideoCall, onCall, onBack 
         </div>
         <div>
           <h3 className="text-sm font-bold text-gray-900 leading-tight">{activeContact?.name || 'Contact'}</h3>
-          <span className={`text-[11px] font-medium ${activeContact?.online ? 'text-emerald-600' : 'text-gray-400'}`}>
-            {activeContact?.online ? 'Online' : 'Offline'}
-          </span>
+          {typingUser ? (
+            <span className="text-[11px] font-medium text-teal-600 flex items-center gap-1">
+              <span className="inline-flex gap-0.5">
+                <span className="w-1 h-1 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-1 h-1 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-1 h-1 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </span>
+              {typingUser} is typing
+            </span>
+          ) : (
+            <span className={`text-[11px] font-medium ${activeContact?.online ? 'text-emerald-600' : 'text-gray-400'}`}>
+              {activeContact?.online ? 'Online' : 'Offline'}
+            </span>
+          )}
         </div>
       </div>
     </div>
