@@ -300,6 +300,16 @@ export const chatAPI = {
   unreadCount: () => api.get('/chat/unread-count'),
 };
 
+// ── SuperAdmin Service ──
+export const adminAPI = {
+  dashboard: () => api.get('/admin/dashboard'),
+  doctors: (params) => api.get('/admin/doctors', { params }),
+  verifyDoctor: (id, verified) => api.put(`/admin/doctors/${id}/verify`, { verified }),
+  reports: (params) => api.get('/admin/reports', { params }),
+  approveReport: (id) => api.put(`/admin/reports/${id}/approve`),
+  removeReport: (id) => api.delete(`/admin/reports/${id}/remove`),
+};
+
 // ── Analytics Service (Clinic BI) ──
 export const analyticsAPI = {
   clinicSummary: (clinicId) => api.get(`/analytics/clinic/${clinicId}/summary`),

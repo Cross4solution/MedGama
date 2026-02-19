@@ -52,6 +52,12 @@ const CRMPatient360 = React.lazy(() => import('./pages/crm/CRMPatient360'));
 const CRMBilling = React.lazy(() => import('./pages/crm/CRMBilling'));
 const CRMExamination = React.lazy(() => import('./pages/crm/CRMExamination'));
 
+// Admin Pages
+const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
+const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminVerification = React.lazy(() => import('./pages/admin/AdminVerification'));
+const AdminModeration = React.lazy(() => import('./pages/admin/AdminModeration'));
+
 // Minimal loading fallback
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -149,8 +155,9 @@ function AppContent() {
   const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/verify-email', '/forgot-password'];
   const isAuthPage = hideOnAuthPages.includes(location.pathname);
   const isCRMPage = location.pathname.startsWith('/crm');
-  const showCookieBanner = !isAuthPage && !isCRMPage;
-  const showHeader = !isAuthPage && !isCRMPage;
+  const isAdminPage = location.pathname.startsWith('/admin');
+  const showCookieBanner = !isAuthPage && !isCRMPage && !isAdminPage;
+  const showHeader = !isAuthPage && !isCRMPage && !isAdminPage;
   
   // Sayfa türüne göre padding ayarı
   const pagesWithOwnContainer = [
@@ -222,6 +229,10 @@ function AppContent() {
         <Route path="/crm/billing" element={<CRMLayout><CRMBilling /></CRMLayout>} />
         <Route path="/crm/examination" element={<CRMLayout><CRMExamination /></CRMLayout>} />
         <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+        <Route path="/admin/verification" element={<AdminLayout><AdminVerification /></AdminLayout>} />
+        <Route path="/admin/moderation" element={<AdminLayout><AdminModeration /></AdminLayout>} />
         </Routes>
         </Suspense>
       </div>

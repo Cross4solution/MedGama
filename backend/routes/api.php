@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\MediaStreamController;
 use App\Http\Controllers\Api\ClinicAnalyticsController;
+use App\Http\Controllers\Api\SuperAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -290,4 +291,23 @@ Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
     Route::get('/clinic/{clinicId}/doctors', [ClinicAnalyticsController::class, 'doctorPerformance']);
     Route::get('/clinic/{clinicId}/engagement', [ClinicAnalyticsController::class, 'engagement']);
     Route::get('/clinic/{clinicId}/appointment-trend', [ClinicAnalyticsController::class, 'appointmentTrend']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| SuperAdmin — Platform Management (Dashboard, Verification, Moderation)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin'])->group(function () {
+    // Global dashboard
+    Route::get('/dashboard', [SuperAdminController::class, 'dashboard']);
+
+    // Doctor verification
+    Route::get('/doctors', [SuperAdminController::class, 'doctors']);
+    Route::put('/doctors/{id}/verify', [SuperAdminController::class, 'verifyDoctor']);
+
+    // Content moderation
+    Route::get('/reports', [SuperAdminController::class, 'reports']);
+    Route::put('/reports/{id}/approve', [SuperAdminController::class, 'approveReport']);
+    Route::delete('/reports/{id}/remove', [SuperAdminController::class, 'removeReport']);
 });
