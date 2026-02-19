@@ -101,6 +101,181 @@ class ClinicAnalyticsService
     }
 
     /**
+     * Get MedStream engagement stats with daily trend (Chart.js / Recharts compatible).
+     *
+     * Returns: totals + daily labels[] and datasets[] for charting.
+     */
+    public function getEngagementStats(string $clinicId): array
+    {
+        $cacheKey = "clinic_engagement:{$clinicId}:" . now()->format('Y-m');
+
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($clinicId) {
+            $startOfMonth = Carbon::now()->startOfMonth();
+            $endOfMonth   = Carbon::now()->endOfMonth();
+
+            $doctorIds = User::where('clinic_id', $clinicId)
+                ->where('role_id', 'doctor')
+                ->where('is_active', true)
+                ->pluck('id');
+
+            if ($doctorIds->isEmpty()) {
+                return $this->emptyEngagementResponse($startOfMonth, $endOfMonth);
+            }
+
+            // ── Totals ──
+            $postIds = MedStreamPost::withoutGlobalScopes()
+                ->whereIn('author_id', $doctorIds)
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->where('is_active', true)
+                ->pluck('id');
+
+            $totals = ['posts' => $postIds->count(), 'likes' => 0, 'comments' => 0];
+
+            if ($postIds->isNotEmpty()) {
+                $agg = MedStreamEngagementCounter::whereIn('post_id', $postIds)
+                    ->selectRaw('COALESCE(SUM(like_count), 0) as likes, COALESCE(SUM(comment_count), 0) as comments')
+                    ->first();
+                $totals['likes']    = (int) $agg->likes;
+                $totals['comments'] = (int) $agg->comments;
+            }
+
+            // ── Daily Trend (Chart.js format: labels + datasets) ──
+            $dailyPosts = MedStreamPost::withoutGlobalScopes()
+                ->whereIn('author_id', $doctorIds)
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->where('is_active', true)
+                ->selectRaw("DATE(created_at) as day, COUNT(*) as count")
+                ->groupBy('day')
+                ->pluck('count', 'day');
+
+            $labels   = [];
+            $postData = [];
+            $period   = Carbon::parse($startOfMonth);
+            $end      = Carbon::parse($endOfMonth)->min(Carbon::now());
+
+            while ($period->lte($end)) {
+                $dayStr     = $period->toDateString();
+                $labels[]   = $period->format('M d');
+                $postData[] = (int) ($dailyPosts[$dayStr] ?? 0);
+                $period->addDay();
+            }
+
+            return [
+                'period' => now()->format('Y-m'),
+                'totals' => $totals,
+                'chart'  => [
+                    'labels'   => $labels,
+                    'datasets' => [
+                        [
+                            'label'           => 'Posts',
+                            'data'            => $postData,
+                            'backgroundColor' => 'rgba(59, 130, 246, 0.5)',
+                            'borderColor'     => 'rgb(59, 130, 246)',
+                        ],
+                    ],
+                ],
+            ];
+        });
+    }
+
+    /**
+     * Get daily appointment trend for charting (Chart.js / Recharts compatible).
+     */
+    public function getAppointmentTrend(string $clinicId): array
+    {
+        $cacheKey = "clinic_appt_trend:{$clinicId}:" . now()->format('Y-m');
+
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($clinicId) {
+            $startOfMonth = Carbon::now()->startOfMonth();
+            $endOfMonth   = Carbon::now()->endOfMonth();
+
+            $daily = Appointment::where('clinic_id', $clinicId)
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->selectRaw("
+                    DATE(created_at) as day,
+                    COUNT(*) as total,
+                    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
+                    SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled
+                ")
+                ->groupBy('day')
+                ->get()
+                ->keyBy('day');
+
+            $labels    = [];
+            $totalData = [];
+            $compData  = [];
+            $cancData  = [];
+            $period    = Carbon::parse($startOfMonth);
+            $end       = Carbon::parse($endOfMonth)->min(Carbon::now());
+
+            while ($period->lte($end)) {
+                $dayStr      = $period->toDateString();
+                $labels[]    = $period->format('M d');
+                $row         = $daily[$dayStr] ?? null;
+                $totalData[] = (int) ($row?->total ?? 0);
+                $compData[]  = (int) ($row?->completed ?? 0);
+                $cancData[]  = (int) ($row?->cancelled ?? 0);
+                $period->addDay();
+            }
+
+            return [
+                'period' => now()->format('Y-m'),
+                'chart'  => [
+                    'labels'   => $labels,
+                    'datasets' => [
+                        [
+                            'label'           => 'Total',
+                            'data'            => $totalData,
+                            'backgroundColor' => 'rgba(59, 130, 246, 0.5)',
+                            'borderColor'     => 'rgb(59, 130, 246)',
+                        ],
+                        [
+                            'label'           => 'Completed',
+                            'data'            => $compData,
+                            'backgroundColor' => 'rgba(34, 197, 94, 0.5)',
+                            'borderColor'     => 'rgb(34, 197, 94)',
+                        ],
+                        [
+                            'label'           => 'Cancelled',
+                            'data'            => $cancData,
+                            'backgroundColor' => 'rgba(239, 68, 68, 0.5)',
+                            'borderColor'     => 'rgb(239, 68, 68)',
+                        ],
+                    ],
+                ],
+            ];
+        });
+    }
+
+    /**
+     * Empty engagement response when clinic has no doctors.
+     */
+    private function emptyEngagementResponse(Carbon $start, Carbon $end): array
+    {
+        $labels   = [];
+        $postData = [];
+        $period   = Carbon::parse($start);
+        $endDate  = Carbon::parse($end)->min(Carbon::now());
+
+        while ($period->lte($endDate)) {
+            $labels[]   = $period->format('M d');
+            $postData[] = 0;
+            $period->addDay();
+        }
+
+        return [
+            'period' => now()->format('Y-m'),
+            'totals' => ['posts' => 0, 'likes' => 0, 'comments' => 0],
+            'chart'  => [
+                'labels'   => $labels,
+                'datasets' => [
+                    ['label' => 'Posts', 'data' => $postData, 'backgroundColor' => 'rgba(59, 130, 246, 0.5)', 'borderColor' => 'rgb(59, 130, 246)'],
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Get performance metrics for each doctor in the clinic.
      *
      * Returns: per-doctor completed appointments and profile view count.

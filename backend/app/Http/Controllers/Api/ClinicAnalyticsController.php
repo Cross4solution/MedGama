@@ -61,6 +61,52 @@ class ClinicAnalyticsController extends Controller
         return response()->json(['data' => $data]);
     }
 
+    #[OA\Get(
+        path: '/analytics/clinic/{clinicId}/engagement',
+        summary: 'MedStream engagement stats with daily trend (Chart.js / Recharts ready)',
+        description: 'Returns totals (posts, likes, comments) and a chart object with labels[] + datasets[] for direct use in Chart.js or Recharts. Cached for 1 hour.',
+        security: [['sanctum' => []]],
+        tags: ['Analytics'],
+        parameters: [
+            new OA\Parameter(name: 'clinicId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Engagement totals + chart data'),
+            new OA\Response(response: 403, description: 'Not the clinic owner'),
+        ]
+    )]
+    public function engagement(Request $request, string $clinicId): JsonResponse
+    {
+        $this->authorizeClinicAccess($request->user(), $clinicId);
+
+        $data = $this->analyticsService->getEngagementStats($clinicId);
+
+        return response()->json(['data' => $data]);
+    }
+
+    #[OA\Get(
+        path: '/analytics/clinic/{clinicId}/appointment-trend',
+        summary: 'Daily appointment trend (Chart.js / Recharts ready)',
+        description: 'Returns daily labels[] and datasets[] (Total, Completed, Cancelled) for charting. Cached for 1 hour.',
+        security: [['sanctum' => []]],
+        tags: ['Analytics'],
+        parameters: [
+            new OA\Parameter(name: 'clinicId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Appointment trend chart data'),
+            new OA\Response(response: 403, description: 'Not the clinic owner'),
+        ]
+    )]
+    public function appointmentTrend(Request $request, string $clinicId): JsonResponse
+    {
+        $this->authorizeClinicAccess($request->user(), $clinicId);
+
+        $data = $this->analyticsService->getAppointmentTrend($clinicId);
+
+        return response()->json(['data' => $data]);
+    }
+
     /**
      * Ensure the authenticated user is the clinic owner or a superAdmin.
      */

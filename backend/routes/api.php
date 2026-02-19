@@ -288,4 +288,6 @@ Route::get('/media/stream/{path}', [MediaStreamController::class, 'stream'])
 Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
     Route::get('/clinic/{clinicId}/summary', [ClinicAnalyticsController::class, 'summary']);
     Route::get('/clinic/{clinicId}/doctors', [ClinicAnalyticsController::class, 'doctorPerformance']);
+    Route::get('/clinic/{clinicId}/engagement', [ClinicAnalyticsController::class, 'engagement']);
+    Route::get('/clinic/{clinicId}/appointment-trend', [ClinicAnalyticsController::class, 'appointmentTrend']);
 });

@@ -192,6 +192,110 @@ class ClinicAnalyticsTest extends TestCase
         $response->assertStatus(403);
     }
 
+    // ── Engagement Endpoint ──
+
+    public function test_engagement_returns_chart_js_format(): void
+    {
+        $post = MedStreamPost::factory()->create([
+            'author_id' => $this->doctor->id,
+            'clinic_id' => $this->clinic->id,
+        ]);
+
+        MedStreamEngagementCounter::create([
+            'post_id'       => $post->id,
+            'like_count'    => 20,
+            'comment_count' => 8,
+        ]);
+
+        $response = $this->actingAs($this->owner, 'sanctum')
+            ->getJson("/api/analytics/clinic/{$this->clinic->id}/engagement");
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    'period',
+                    'totals' => ['posts', 'likes', 'comments'],
+                    'chart'  => [
+                        'labels',
+                        'datasets' => [
+                            ['label', 'data', 'backgroundColor', 'borderColor'],
+                        ],
+                    ],
+                ],
+            ])
+            ->assertJsonPath('data.totals.posts', 1)
+            ->assertJsonPath('data.totals.likes', 20)
+            ->assertJsonPath('data.totals.comments', 8);
+    }
+
+    public function test_engagement_labels_are_daily(): void
+    {
+        $response = $this->actingAs($this->owner, 'sanctum')
+            ->getJson("/api/analytics/clinic/{$this->clinic->id}/engagement");
+
+        $response->assertOk();
+
+        $labels = $response->json('data.chart.labels');
+        $this->assertIsArray($labels);
+        $this->assertGreaterThanOrEqual(1, count($labels));
+    }
+
+    public function test_engagement_authorization_blocks_other_clinic(): void
+    {
+        $otherClinic = Clinic::factory()->create();
+
+        $response = $this->actingAs($this->owner, 'sanctum')
+            ->getJson("/api/analytics/clinic/{$otherClinic->id}/engagement");
+
+        $response->assertStatus(403);
+    }
+
+    // ── Appointment Trend Endpoint ──
+
+    public function test_appointment_trend_returns_chart_js_format(): void
+    {
+        $patient = User::factory()->patient()->create();
+        $slot = CalendarSlot::factory()->create(['doctor_id' => $this->doctor->id, 'clinic_id' => $this->clinic->id]);
+
+        Appointment::factory()->create([
+            'patient_id' => $patient->id, 'doctor_id' => $this->doctor->id,
+            'clinic_id' => $this->clinic->id, 'slot_id' => $slot->id,
+            'status' => 'completed', 'created_by' => $patient->id,
+        ]);
+
+        $response = $this->actingAs($this->owner, 'sanctum')
+            ->getJson("/api/analytics/clinic/{$this->clinic->id}/appointment-trend");
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    'period',
+                    'chart' => [
+                        'labels',
+                        'datasets' => [
+                            ['label', 'data', 'backgroundColor', 'borderColor'],
+                        ],
+                    ],
+                ],
+            ]);
+
+        $datasets = $response->json('data.chart.datasets');
+        $this->assertCount(3, $datasets);
+        $this->assertEquals('Total', $datasets[0]['label']);
+        $this->assertEquals('Completed', $datasets[1]['label']);
+        $this->assertEquals('Cancelled', $datasets[2]['label']);
+    }
+
+    public function test_appointment_trend_authorization_blocks_patient(): void
+    {
+        $patient = User::factory()->patient()->create();
+
+        $response = $this->actingAs($patient, 'sanctum')
+            ->getJson("/api/analytics/clinic/{$this->clinic->id}/appointment-trend");
+
+        $response->assertStatus(403);
+    }
+
     // ── Cache ──
 
     public function test_summary_is_cached(): void
@@ -203,6 +307,18 @@ class ClinicAnalyticsTest extends TestCase
             ->assertOk();
 
         $cacheKey = "clinic_summary:{$this->clinic->id}:" . now()->format('Y-m');
+        $this->assertTrue(Cache::has($cacheKey));
+    }
+
+    public function test_engagement_is_cached(): void
+    {
+        Cache::flush();
+
+        $this->actingAs($this->owner, 'sanctum')
+            ->getJson("/api/analytics/clinic/{$this->clinic->id}/engagement")
+            ->assertOk();
+
+        $cacheKey = "clinic_engagement:{$this->clinic->id}:" . now()->format('Y-m');
         $this->assertTrue(Cache::has($cacheKey));
     }
 }
