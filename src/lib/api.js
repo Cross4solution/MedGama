@@ -7,6 +7,7 @@ const api = axios.create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
   timeout: 30000,
+  withCredentials: true,
 });
 
 // ── Request Interceptor — attach JWT token ──
@@ -40,13 +41,32 @@ api.interceptors.response.use(
     }
 
     // Human-readable message for common status codes
-    let message = data?.message || data?.error || error.message || `HTTP ${status}`;
-    if (status === 403 && !data?.message) {
-      message = 'You do not have permission to perform this action.';
+    let message;
+    if (!error.response) {
+      // No response at all — network error, timeout, or CORS block
+      if (error.code === 'ECONNABORTED') {
+        message = 'Request timed out. Please check your connection and try again.';
+      } else {
+        message = 'Unable to reach the server. Please check your internet connection.';
+      }
+    } else {
+      message = data?.message || data?.error || `HTTP ${status}`;
+      if (status === 403 && !data?.message) {
+        message = 'You do not have permission to perform this action.';
+      }
+      if (status === 422 && data?.errors) {
+        // Extract first validation error as the main message
+        const firstField = Object.keys(data.errors)[0];
+        const firstErr = data.errors[firstField];
+        message = data.message || (Array.isArray(firstErr) ? firstErr[0] : String(firstErr));
+      }
+      if (status === 500 && !data?.message) {
+        message = 'Server error. Please try again later.';
+      }
     }
 
     return Promise.reject({
-      status,
+      status: status || 0,
       code,
       data,
       message,

@@ -105,7 +105,7 @@ const AuthPages = () => {
           navigate('/verify-email');
         } else {
           notify({ type: 'success', message: 'Login successful' });
-          navigate('/home-v2');
+          navigate('/dashboard');
         }
       } else if (currentPage === 'register') {
         if (formData.role === 'clinic') {
@@ -130,26 +130,40 @@ const AuthPages = () => {
             localStorage.setItem(key, JSON.stringify(extras));
           }
         } catch {}
-        notify({ type: 'success', message: 'Registration successful! Please verify your email.' });
-        navigate('/verify-email');
+        // If auto-verified (demo mode), go straight to dashboard
+        const needsVerification = res?.requires_email_verification ?? res?.data?.requires_email_verification;
+        if (needsVerification === false) {
+          notify({ type: 'success', message: res?.message || res?.data?.message || 'Registration successful! Your email has been automatically verified.' });
+          navigate('/dashboard');
+        } else {
+          notify({ type: 'success', message: 'Registration successful! Please verify your email.' });
+          navigate('/verify-email');
+        }
       } else {
         notify({ type: 'info', message: 'Password reset link sent if the email exists.' });
       }
     } catch (err) {
+      // Surface real backend error messages instead of generic "Network Error"
       if (err?.status === 401) {
-        notify({ type: 'error', message: err?.data?.message || 'Invalid credentials' });
+        notify({ type: 'error', message: err?.message || err?.data?.message || 'Invalid credentials' });
       } else if (err?.status === 403) {
         notify({ type: 'error', message: err?.message || 'You do not have permission to perform this action.' });
-      } else if (err?.status === 422 && err?.data?.errors) {
-        const fieldErrors = {};
-        Object.entries(err.data.errors).forEach(([field, arr]) => {
-          const key = field === 'password_confirmation' ? 'confirmPassword'
-            : field === 'fullname' ? 'firstName'
-            : field;
-          fieldErrors[key] = Array.isArray(arr) ? arr[0] : String(arr);
-        });
-        setErrors((prev) => ({ ...prev, ...fieldErrors }));
-        notify({ type: 'error', message: err?.data?.message || 'Please correct the highlighted fields.' });
+      } else if (err?.status === 422) {
+        // Validation errors — map backend field names to form field names
+        if (err?.errors && typeof err.errors === 'object') {
+          const fieldErrors = {};
+          Object.entries(err.errors).forEach(([field, arr]) => {
+            const key = field === 'password_confirmation' ? 'confirmPassword'
+              : field === 'fullname' ? 'firstName'
+              : field;
+            fieldErrors[key] = Array.isArray(arr) ? arr[0] : String(arr);
+          });
+          setErrors((prev) => ({ ...prev, ...fieldErrors }));
+        }
+        notify({ type: 'error', message: err?.message || 'Please correct the highlighted fields.' });
+      } else if (err?.status === 0 || !err?.status) {
+        // Network error / CORS / timeout — show user-friendly message
+        notify({ type: 'error', message: err?.message || 'Unable to reach the server. Please check your internet connection.' });
       } else {
         notify({ type: 'error', message: err?.message || 'An unexpected error occurred. Please try again.' });
       }

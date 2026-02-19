@@ -59,11 +59,18 @@ class AuthService
             ]);
         });
 
-        $this->sendVerificationEmail($user->email, $verificationCode, $user->fullname);
+        // In demo/log mode, auto-verify email so users go straight to dashboard
+        $isDemoMail = in_array(config('mail.default'), ['log', 'array']);
+        if ($isDemoMail) {
+            $user->update(['email_verified' => true, 'email_verification_code' => null]);
+            $user->refresh();
+        } else {
+            $this->sendVerificationEmail($user->email, $verificationCode, $user->fullname);
+        }
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
-        return ['user' => $user, 'token' => $token];
+        return ['user' => $user, 'token' => $token, 'auto_verified' => $isDemoMail];
     }
 
     /**

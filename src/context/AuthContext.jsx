@@ -173,7 +173,8 @@ export function AuthProvider({ children }) {
           'Authorization': `Bearer ${tk}`
         },
         cache: 'no-store',
-        mode: 'cors'
+        mode: 'cors',
+        credentials: 'include',
       });
       if (resp.status === 404) {
         meUnavailableRef.current = true;

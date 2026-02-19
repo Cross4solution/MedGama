@@ -53,11 +53,17 @@ class AuthController extends Controller
     {
         $result = $this->authService->register($request->validated());
 
+        $extra = [
+            'token'                      => $result['token'],
+            'requires_email_verification' => !($result['auto_verified'] ?? false),
+        ];
+
+        if ($result['auto_verified'] ?? false) {
+            $extra['message'] = 'Your email has been automatically verified (demo mode).';
+        }
+
         return (new UserResource($result['user']))
-            ->withExtra([
-                'token'                      => $result['token'],
-                'requires_email_verification' => true,
-            ])
+            ->withExtra($extra)
             ->response()
             ->setStatusCode(201);
     }
