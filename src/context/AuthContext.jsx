@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { endpoints, authAPI } from '../lib/api';
 
 // Very light mock auth just for frontend flows
@@ -92,10 +92,10 @@ export function AuthProvider({ children }) {
   }, [user, token, country]);
 
   // Update user fields without touching token (for profile edits)
-  const updateUser = (updatedFields, newCountry) => {
+  const updateUser = useCallback((updatedFields, newCountry) => {
     setUser(prev => ({ ...prev, ...updatedFields }));
     if (newCountry) setCountry(newCountry);
-  };
+  }, []);
 
   const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
   const normalizeAvatar = (url) => {
@@ -106,7 +106,8 @@ export function AuthProvider({ children }) {
     return url;
   };
 
-  const login = async (emailOrUser, password) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const login = useCallback(async (emailOrUser, password) => {
     // Backward-compatible demo login: if first arg is an object, treat it as user
     if (emailOrUser && typeof emailOrUser === 'object') {
       setUser(emailOrUser);
@@ -118,7 +119,10 @@ export function AuthProvider({ children }) {
     const apiUser = res?.user ?? res?.data?.user ?? null;
     const access = res?.token ?? res?.access_token ?? res?.data?.access_token ?? res?.data?.token ?? null;
     if (!apiUser || !access) {
-      throw { status: 401, message: 'Invalid credentials', data: res };
+      const err = new Error('Invalid credentials');
+      err.status = 401;
+      err.data = res;
+      throw err;
     }
     // Map role_id to role for frontend compatibility
     const role = apiUser?.role_id || apiUser?.role || 'patient';
@@ -128,9 +132,11 @@ export function AuthProvider({ children }) {
     setToken(access);
     try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
     return { data: { user: userWithRole, access_token: access }, requires_email_verification: !!res?.requires_email_verification };
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [country]);
 
-  const applyApiAuth = (res) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const applyApiAuth = useCallback((res) => {
     try {
       let apiUser = res?.user ?? res?.data?.user ?? null;
       let access = res?.access_token ?? res?.data?.access_token ?? null;
@@ -151,11 +157,13 @@ export function AuthProvider({ children }) {
       try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
       return { user: userWithRole, access_token: access };
     } catch { return null; }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [country]);
 
   const API_BASE = process.env.REACT_APP_API_BASE || '';
   const ME_PATH = process.env.REACT_APP_API_ME || '/api/auth/me';
-  const fetchCurrentUser = async (overrideToken) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchCurrentUser = useCallback(async (overrideToken) => {
     try {
       if (loggedOutRef.current) return null;
       if (meUnavailableRef.current) return null;
@@ -211,8 +219,10 @@ export function AuthProvider({ children }) {
       try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country })); } catch {}
       return userWithRole;
     } catch { return null; }
-  };
-  const register = async (payload) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, country]);
+
+  const register = useCallback(async (payload) => {
     const res = await endpoints.userRegister(payload);
     const apiUser = res?.user ?? null;
     const access = res?.token ?? res?.access_token ?? null;
@@ -225,8 +235,10 @@ export function AuthProvider({ children }) {
       try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
     }
     return res;
-  };
-  const registerDoctor = async (payload) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const registerDoctor = useCallback(async (payload) => {
     const res = await endpoints.doctorRegister(payload);
     const apiUser = res?.user ?? null;
     const access = res?.token ?? res?.access_token ?? null;
@@ -239,8 +251,10 @@ export function AuthProvider({ children }) {
       try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
     }
     return res;
-  };
-  const demoLogin = (role = 'patient') => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const demoLogin = useCallback((role = 'patient') => {
     if (process.env.NODE_ENV === 'production') return null;
     const demo = role === 'doctor' ? { id: 'doc-demo-1', role: 'doctor', name: 'Demo Doctor' }
       : role === 'clinic' ? { id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }
@@ -248,11 +262,12 @@ export function AuthProvider({ children }) {
     setUser(demo);
     setToken(null);
     return demo;
-  };
+  }, []);
+
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [logoutCallback, setLogoutCallback] = useState(null);
 
-  const clearLocalAuth = () => {
+  const clearLocalAuth = useCallback(() => {
     setUser(null);
     setToken(null);
     try {
@@ -263,15 +278,15 @@ export function AuthProvider({ children }) {
       localStorage.setItem('auth_logout', '1');
       loggedOutRef.current = true;
     } catch {}
-  };
+  }, []);
 
-  const performLogout = () => {
+  const performLogout = useCallback(() => {
     // Revoke token on backend (fire-and-forget)
     authAPI.logout().catch(() => {});
     clearLocalAuth();
-  };
+  }, [clearLocalAuth]);
 
-  const logout = (options = {}) => {
+  const logout = useCallback((options = {}) => {
     const { skipConfirmation = false } = options;
     
     if (skipConfirmation) {
@@ -292,7 +307,7 @@ export function AuthProvider({ children }) {
       });
       setShowLogoutConfirm(true);
     });
-  };
+  }, [performLogout]);
 
   const value = useMemo(() => ({
     user,
@@ -312,7 +327,7 @@ export function AuthProvider({ children }) {
     sidebarMobileOpen,
     setSidebarMobileOpen,
     hydrated,
-  }), [user, token, country, sidebarMobileOpen, hydrated]);
+  }), [user, token, country, sidebarMobileOpen, hydrated, login, updateUser, applyApiAuth, fetchCurrentUser, demoLogin, register, registerDoctor, logout]);
 
   // If we have a token (from fallback) but no user yet, try to fetch current user once
   useEffect(() => {
