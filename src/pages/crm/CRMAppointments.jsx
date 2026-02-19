@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { appointmentAPI } from '../../lib/api';
 
 // ─── Mock Data ───────────────────────────────────────────────
@@ -51,9 +52,28 @@ const MethodIcon = ({ method, size = 'sm' }) => {
 };
 
 // ─── Main Component ──────────────────────────────────────────
+const mapApiToLocal = (a) => ({
+  id: a.id,
+  date: a.appointment_date,
+  time: a.appointment_time || '09:00',
+  endTime: '',
+  patient: a.patient?.fullname || 'Patient',
+  email: a.patient?.email || '',
+  phone: a.patient?.mobile || '',
+  age: '',
+  gender: '',
+  type: a.appointment_type === 'online' ? 'Video Call' : 'Check-up',
+  status: a.status === 'pending' ? 'upcoming' : a.status,
+  rawStatus: a.status,
+  method: a.appointment_type === 'online' ? 'video' : 'in-person',
+  notes: a.confirmation_note || a.doctor_note || '',
+  doctor: a.doctor?.fullname || '',
+});
+
 const CRMAppointments = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { notify } = useToast();
   const [view, setView] = useState('list'); // list | calendar
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [calendarMonth, setCalendarMonth] = useState(new Date());
@@ -64,31 +84,25 @@ const CRMAppointments = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [apiAppointments, setApiAppointments] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [updating, setUpdating] = useState(null); // holds appointment id being updated
+
+  const refreshAppointments = async () => {
+    try {
+      const res = await appointmentAPI.list({ per_page: 100 });
+      const list = res?.data || [];
+      setApiAppointments(list.map(mapApiToLocal));
+    } catch {
+      // Keep existing data on refresh failure
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fetch appointments from API
   useEffect(() => {
-    appointmentAPI.list({ per_page: 100 }).then(res => {
-      const list = res?.data || [];
-      if (list.length > 0) {
-        setApiAppointments(list.map(a => ({
-          id: a.id,
-          date: a.appointment_date,
-          time: a.appointment_time || '09:00',
-          endTime: '',
-          patient: a.patient?.fullname || 'Patient',
-          email: a.patient?.email || '',
-          phone: a.patient?.mobile || '',
-          age: '',
-          gender: '',
-          type: a.appointment_type === 'online' ? 'Video Call' : 'Check-up',
-          status: a.status || 'upcoming',
-          method: a.appointment_type === 'online' ? 'video' : 'in-person',
-          notes: a.confirmation_note || a.doctor_note || '',
-          doctor: a.doctor?.fullname || '',
-        })));
-      }
-    }).catch(() => {});
+    refreshAppointments();
   }, []);
 
   const allAppointments = apiAppointments || MOCK_APPOINTMENTS;
@@ -112,23 +126,42 @@ const CRMAppointments = () => {
       });
       setShowNewModal(false);
       setNewForm({ patient: '', email: '', phone: '', date: '', time: '', endTime: '', type: 'Check-up', method: 'in-person', notes: '' });
-      // Refresh list
-      appointmentAPI.list({ per_page: 100 }).then(res => {
-        const list = res?.data || [];
-        if (list.length > 0) {
-          setApiAppointments(list.map(a => ({
-            id: a.id, date: a.appointment_date, time: a.appointment_time || '09:00', endTime: '',
-            patient: a.patient?.fullname || 'Patient', email: a.patient?.email || '', phone: a.patient?.mobile || '',
-            age: '', gender: '', type: a.appointment_type === 'online' ? 'Video Call' : 'Check-up',
-            status: a.status || 'upcoming', method: a.appointment_type === 'online' ? 'video' : 'in-person',
-            notes: a.confirmation_note || a.doctor_note || '', doctor: a.doctor?.fullname || '',
-          })));
-        }
-      }).catch(() => {});
+      notify({ type: 'success', message: t('crm.appointments.created') || 'Appointment created successfully.' });
+      refreshAppointments();
     } catch (err) {
-      // silently fail, keep modal open
+      // Slot conflict handling
+      const slotErr = err?.errors?.slot_id?.[0] || '';
+      const isSlotConflict = err?.status === 422 && (slotErr.includes('no longer available') || slotErr.includes('slot'));
+      if (isSlotConflict) {
+        notify({ type: 'error', message: 'Bu saat dilimi az önce doldu. Lütfen başka bir saat seçin. / This time slot was just taken.' });
+      } else if (err?.status === 422) {
+        const firstErr = Object.values(err?.errors || {})?.[0]?.[0] || err?.message || 'Validation error';
+        notify({ type: 'error', message: firstErr });
+      } else {
+        notify({ type: 'error', message: err?.message || 'Failed to create appointment.' });
+      }
     } finally {
       setCreating(false);
+    }
+  };
+
+  // ── Status Update (Confirm / Cancel / Complete) ──
+  const handleStatusUpdate = async (appointmentId, newStatus) => {
+    setUpdating(appointmentId);
+    try {
+      await appointmentAPI.update(appointmentId, { status: newStatus });
+      const labels = { confirmed: 'confirmed', cancelled: 'cancelled', completed: 'completed' };
+      notify({ type: 'success', message: `Appointment ${labels[newStatus] || 'updated'} successfully.` });
+      refreshAppointments();
+      setShowDetailModal(false);
+    } catch (err) {
+      if (err?.status === 403) {
+        notify({ type: 'error', message: 'You do not have permission to update this appointment.' });
+      } else {
+        notify({ type: 'error', message: err?.message || 'Failed to update appointment.' });
+      }
+    } finally {
+      setUpdating(null);
     }
   };
 
@@ -157,7 +190,7 @@ const CRMAppointments = () => {
   const getAppointmentsForDay = (day) => {
     if (!day) return [];
     const dateStr = `${calendarMonth.getFullYear()}-${String(calendarMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return MOCK_APPOINTMENTS.filter((a) => a.date === dateStr);
+    return allAppointments.filter((a) => a.date === dateStr);
   };
 
   const todayStr = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })();
@@ -168,11 +201,11 @@ const CRMAppointments = () => {
   };
 
   const stats = useMemo(() => ({
-    total: MOCK_APPOINTMENTS.length,
-    upcoming: MOCK_APPOINTMENTS.filter(a => a.status === 'upcoming').length,
-    completed: MOCK_APPOINTMENTS.filter(a => a.status === 'completed').length,
-    cancelled: MOCK_APPOINTMENTS.filter(a => a.status === 'cancelled').length,
-  }), []);
+    total: allAppointments.length,
+    upcoming: allAppointments.filter(a => a.status === 'upcoming' || a.status === 'pending' || a.status === 'confirmed').length,
+    completed: allAppointments.filter(a => a.status === 'completed').length,
+    cancelled: allAppointments.filter(a => a.status === 'cancelled').length,
+  }), [allAppointments]);
 
   return (
     <div className="space-y-6">
@@ -513,9 +546,33 @@ const CRMAppointments = () => {
               )}
             </div>
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
-              <button className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-colors">{t('common.cancel')}</button>
-              <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">{t('crm.appointments.scheduled')}</button>
-              <button className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">{t('crm.appointments.inProgress')}</button>
+              {selectedAppointment.rawStatus !== 'cancelled' && selectedAppointment.rawStatus !== 'completed' && (
+                <button
+                  onClick={() => handleStatusUpdate(selectedAppointment.id, 'cancelled')}
+                  disabled={!!updating}
+                  className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {updating === selectedAppointment.id ? '...' : (t('crm.appointments.cancelled') || 'Cancel')}
+                </button>
+              )}
+              {(selectedAppointment.rawStatus === 'pending') && (
+                <button
+                  onClick={() => handleStatusUpdate(selectedAppointment.id, 'confirmed')}
+                  disabled={!!updating}
+                  className="px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {updating === selectedAppointment.id ? '...' : 'Confirm'}
+                </button>
+              )}
+              {(selectedAppointment.rawStatus === 'confirmed' || selectedAppointment.rawStatus === 'pending') && (
+                <button
+                  onClick={() => handleStatusUpdate(selectedAppointment.id, 'completed')}
+                  disabled={!!updating}
+                  className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50"
+                >
+                  {updating === selectedAppointment.id ? '...' : (t('common.completed') || 'Complete')}
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -194,8 +194,20 @@ export default function TelehealthAppointmentPage() {
       await appointmentAPI.create(payload);
       setSuccess(true);
     } catch (err) {
-      const msg = err?.errors?.appointment_date?.[0] || err?.errors?.doctor_id?.[0] || err?.message || 'Failed to create appointment.';
-      setError(msg);
+      // Slot conflict: backend returns 422 with slot_id error "This time slot is no longer available."
+      const slotErr = err?.errors?.slot_id?.[0] || '';
+      const isSlotConflict = err?.status === 422 && (slotErr.includes('no longer available') || slotErr.includes('slot'));
+      if (isSlotConflict) {
+        setError('Bu saat dilimi az önce doldu. Lütfen başka bir saat seçin. / This time slot was just taken. Please choose another.');
+        // Go back to datetime step so user can pick a new slot
+        const dtIdx = STEPS.findIndex(s => s.key === 'datetime');
+        if (dtIdx >= 0) { setStep(dtIdx); setSelectedTime(''); }
+      } else if (err?.status === 403) {
+        setError('You do not have permission to create this appointment.');
+      } else {
+        const msg = err?.errors?.appointment_date?.[0] || err?.errors?.doctor_id?.[0] || err?.message || 'Failed to create appointment.';
+        setError(msg);
+      }
     } finally {
       setSubmitting(false);
     }
