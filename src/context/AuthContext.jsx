@@ -119,10 +119,7 @@ export function AuthProvider({ children }) {
     const apiUser = res?.user ?? res?.data?.user ?? null;
     const access = res?.token ?? res?.access_token ?? res?.data?.access_token ?? res?.data?.token ?? null;
     if (!apiUser || !access) {
-      const err = new Error('Invalid credentials');
-      err.status = 401;
-      err.data = res;
-      throw err;
+      throw new Error(JSON.stringify({ status: 401, message: 'Invalid credentials', data: res }));
     }
     // Map role_id to role for frontend compatibility
     const role = apiUser?.role_id || apiUser?.role || 'patient';
