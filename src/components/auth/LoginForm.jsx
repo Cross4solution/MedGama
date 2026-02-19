@@ -11,7 +11,8 @@ const LoginForm = ({
   handleInputChange, 
   handleSubmit, 
   setCurrentPage,
-  googleId = 'googleBtn'
+  googleId = 'googleBtn',
+  submitting = false
 }) => {
   const { t } = useTranslation();
   const { applyApiAuth, fetchCurrentUser } = useAuth();
@@ -171,9 +172,11 @@ const LoginForm = ({
         <button
           type="button"
           onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-sm sm:text-base shadow-sm hover:shadow-md"
+          disabled={submitting}
+          className={`w-full py-2 sm:py-3 px-4 rounded-xl focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-sm sm:text-base shadow-sm hover:shadow-md flex items-center justify-center gap-2 ${submitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
         >
-          {t('common.login')}
+          {submitting && <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>}
+          {submitting ? t('auth.loggingIn') || 'Logging in...' : t('common.login')}
         </button>
         <p className="text-[11px] text-gray-400 text-center leading-relaxed px-2">
           {t('auth.gdprNotice')}

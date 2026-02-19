@@ -40,6 +40,8 @@ const DoctorsDepartments = React.lazy(() => import('./pages/DoctorsDepartments.j
 const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage'));
 const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRightsPage'));
 const DashboardRedirect = React.lazy(() => import('./pages/DashboardRedirect'));
+const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+const ServerErrorPage = React.lazy(() => import('./pages/ServerErrorPage'));
 
 // CRM Pages
 const CRMLayout = React.lazy(() => import('./components/crm/CRMLayout'));
@@ -235,6 +237,8 @@ function AppContent() {
         <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
         <Route path="/admin/verification" element={<AdminLayout><AdminVerification /></AdminLayout>} />
         <Route path="/admin/moderation" element={<AdminLayout><AdminModeration /></AdminLayout>} />
+        <Route path="/500" element={<ServerErrorPage />} />
+        <Route path="*" element={<NotFoundPage />} />
         </Routes>
         </Suspense>
       </div>
