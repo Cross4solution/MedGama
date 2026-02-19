@@ -235,7 +235,7 @@ function AppContent() {
 }
 
 function DoctorOnboardingGate() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
@@ -250,7 +250,8 @@ function DoctorOnboardingGate() {
 
   const handleComplete = useCallback(() => {
     setShowOnboarding(false);
-  }, []);
+    updateUser({ onboarding_completed: true });
+  }, [updateUser]);
 
   return <DoctorOnboardingModal open={showOnboarding} onComplete={handleComplete} />;
 }
