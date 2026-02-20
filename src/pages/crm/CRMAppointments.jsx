@@ -145,21 +145,26 @@ const CRMAppointments = () => {
     }
   };
 
-  // ── Status Update (Confirm / Cancel / Complete) ──
+  // ── Status Update (Confirm / Cancel / Complete) — optimistic ──
   const handleStatusUpdate = async (appointmentId, newStatus) => {
     setUpdating(appointmentId);
+    // Optimistic: update local state immediately
+    const prevAppointments = apiAppointments ? [...apiAppointments] : null;
+    const mappedStatus = newStatus === 'confirmed' ? 'upcoming' : newStatus;
+    if (apiAppointments) {
+      setApiAppointments(prev => prev.map(a =>
+        a.id === appointmentId ? { ...a, status: mappedStatus, rawStatus: newStatus } : a
+      ));
+    }
+    setShowDetailModal(false);
     try {
       await appointmentAPI.update(appointmentId, { status: newStatus });
-      const labels = { confirmed: 'confirmed', cancelled: 'cancelled', completed: 'completed' };
-      notify({ type: 'success', message: `Appointment ${labels[newStatus] || 'updated'} successfully.` });
-      refreshAppointments();
-      setShowDetailModal(false);
+      const labels = { confirmed: 'Randevu onaylandı.', cancelled: 'Randevu iptal edildi.', completed: 'Randevu tamamlandı.' };
+      notify({ type: 'success', message: labels[newStatus] || 'Randevu güncellendi.' });
     } catch (err) {
-      if (err?.status === 403) {
-        notify({ type: 'error', message: 'You do not have permission to update this appointment.' });
-      } else {
-        notify({ type: 'error', message: err?.message || 'Failed to update appointment.' });
-      }
+      // Rollback on error
+      if (prevAppointments) setApiAppointments(prevAppointments);
+      notify({ type: 'error', message: err?.message || 'Randevu güncellenemedi.' });
     } finally {
       setUpdating(null);
     }

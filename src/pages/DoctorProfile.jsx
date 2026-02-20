@@ -33,6 +33,7 @@ const DoctorProfilePage = () => {
   const [activeTab, setActiveTab] = useState('genel-bakis');
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [doctor, setDoctor] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -46,6 +47,8 @@ const DoctorProfilePage = () => {
       if (d) {
         setDoctor(d);
         setProfile(d.doctor_profile || null);
+        setFollowerCount(d.followers_count || d.doctor_profile?.followers_count || 0);
+        setIsFollowing(!!d.is_followed);
       }
     }).catch(() => {}).finally(() => setLoading(false));
   }, [doctorId]);
@@ -129,20 +132,23 @@ const DoctorProfilePage = () => {
                   {doctor.is_verified && <CheckCircle className="w-5 h-5 text-teal-500" />}
                 </div>
                 {doctorTitle && <p className="text-sm text-teal-600 font-medium mb-1.5">{doctorTitle}</p>}
-                <div className="flex items-center gap-3 text-xs text-gray-500">
-                  {doctorLocation && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gray-400" />{doctorLocation}</span>}
-                  {experienceYears && <span className="flex items-center gap-1"><Stethoscope className="w-3.5 h-3.5 text-gray-400" />{experienceYears} Years</span>}
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                  {doctorLocation && <span className="flex items-center gap-1 truncate max-w-[180px] sm:max-w-none"><MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />{doctorLocation}</span>}
+                  {experienceYears && <span className="flex items-center gap-1"><Stethoscope className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />{experienceYears} Years</span>}
+                  <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />{followerCount} Followers</span>
                 </div>
               </div>
             </div>
             <button
               onClick={guardAction(() => {
                 setFollowLoading(true);
+                const wasFollowing = isFollowing;
                 setIsFollowing(f => !f);
+                setFollowerCount(c => wasFollowing ? Math.max(0, c - 1) : c + 1);
                 setTimeout(() => setFollowLoading(false), 400);
               })}
               disabled={followLoading}
-              className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 min-w-[110px] ${isFollowing
+              className={`px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 min-w-[110px] ${isFollowing
                 ? 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
                 : 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm'} ${followLoading ? 'opacity-60 cursor-wait' : ''}`}
             >
@@ -354,16 +360,16 @@ const DoctorProfilePage = () => {
               </div>
               <div className="p-4 space-y-2.5">
                 {onlineConsultation && (
-                  <button onClick={guardAction(() => navigate(`/telehealth/${doctorId}`))} className="w-full bg-teal-600 text-white py-2.5 px-4 rounded-xl hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
+                  <button onClick={guardAction(() => navigate(`/telehealth/${doctorId}`))} className="w-full min-h-[44px] bg-teal-600 text-white py-2.5 px-4 rounded-xl hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
                     <Video className="w-4 h-4" />
                     <span>Online Consultation</span>
                   </button>
                 )}
-                <button onClick={guardAction(() => navigate(`/appointments/new?doctor=${doctorId}`))} className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
+                <button onClick={guardAction(() => navigate(`/appointments/new?doctor=${doctorId}`))} className="w-full min-h-[44px] bg-blue-600 text-white py-2.5 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
                   <img src="/images/icon/calender-svgrepo-com.svg" alt="Calendar" className="w-4 h-4 brightness-0 invert" />
                   <span>Book Appointment</span>
                 </button>
-                <button onClick={guardAction(() => navigate(`/messages?to=${doctorId}`))} className="w-full bg-violet-600 text-white py-2.5 px-4 rounded-xl hover:bg-violet-700 focus:ring-4 focus:ring-violet-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
+                <button onClick={guardAction(() => navigate(`/messages?to=${doctorId}`))} className="w-full min-h-[44px] bg-violet-600 text-white py-2.5 px-4 rounded-xl hover:bg-violet-700 focus:ring-4 focus:ring-violet-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
                   <img src="/images/icon/chat-round-line-svgrepo-com.svg" alt="Chat" className="w-4 h-4 brightness-0 invert" />
                   <span>Send Message</span>
                 </button>
