@@ -1,5 +1,6 @@
 import React, { Suspense, useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import SidebarPatient from './components/SidebarPatient';
 import { useAuth } from './context/AuthContext';
 import CookieBanner from './components/CookieBanner';
@@ -21,14 +22,12 @@ const TelehealthAppointmentPage = React.lazy(() => import('./pages/TelehealthApp
 const TelehealthPage = React.lazy(() => import('./pages/TelehealthPage'));
 const TermsOfServicePage = React.lazy(() => import('./pages/TermsOfServicePage'));
 const PrivacyPolicyPage = React.lazy(() => import('./pages/PrivacyPolicyPage'));
-const AuthPages = React.lazy(() => import('./pages/AuthPages'));
+const LoginPage = React.lazy(() => import('./pages/LoginPage'));
 const AboutPage = React.lazy(() => import('./pages/AboutPage'));
 const ForPatientsPage = React.lazy(() => import('./pages/ForPatientsPage'));
 const ForClinicsPage = React.lazy(() => import('./pages/ForClinicsPage'));
 const VascoAIPage = React.lazy(() => import('./pages/VascoAIPage'));
 const ContactPage = React.lazy(() => import('./pages/ContactPage'));
-const DoctorLogin = React.lazy(() => import('./pages/DoctorLogin'));
-const ClinicLogin = React.lazy(() => import('./pages/ClinicLogin'));
 const VerifyEmailPage = React.lazy(() => import('./pages/VerifyEmailPage'));
 const ForgotPasswordPage = React.lazy(() => import('./pages/ForgotPasswordPage'));
 const Notifications = React.lazy(() => import('./pages/Notifications'));
@@ -204,9 +203,9 @@ function AppContent() {
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/cookie-policy" element={<CookiePolicyPage />} />
         <Route path="/data-rights" element={<DataPrivacyRightsPage />} />
-        <Route path="/auth" element={<AuthPages />} />
-        <Route path="/login" element={<AuthPages />} />
-        <Route path="/register" element={<AuthPages />} />
+        <Route path="/auth" element={<LoginPage role="patient" />} />
+        <Route path="/login" element={<LoginPage role="patient" />} />
+        <Route path="/register" element={<LoginPage role="patient" />} />
         <Route path="/dashboard" element={<DashboardRedirect />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -216,8 +215,8 @@ function AppContent() {
         <Route path="/vasco-ai" element={<VascoAIPage />} />
         <Route path="/contact" element={<ContactPage />} />
         {/* Role-specific logins */}
-        <Route path="/doctor-login" element={<DoctorLogin />} />
-        <Route path="/clinic-login" element={<ClinicLogin />} />
+        <Route path="/doctor-login" element={<LoginPage role="doctor" />} />
+        <Route path="/clinic-login" element={<LoginPage role="clinic" />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
@@ -275,15 +274,17 @@ function DoctorOnboardingGate() {
 
 function App() {
   return (
-    <Router>
-      <CookieConsentProvider>
-        <AuthProvider>
-          <ToastProvider>
-            <AppContent />
-          </ToastProvider>
-        </AuthProvider>
-      </CookieConsentProvider>
-    </Router>
+    <HelmetProvider>
+      <Router>
+        <CookieConsentProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <AppContent />
+            </ToastProvider>
+          </AuthProvider>
+        </CookieConsentProvider>
+      </Router>
+    </HelmetProvider>
   );
 }
 
