@@ -7,6 +7,7 @@ import { toEnglishTimestamp } from '../../utils/i18n';
 import Modal from '../common/Modal';
 import { medStreamAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
@@ -220,6 +221,8 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const avatarUrl = item.avatar || '/images/default/default-avatar.svg';
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
+  const { t } = useTranslation();
+  const isGuest = !authUser;
   const [expanded, setExpanded] = useState(false);
   const [showCommentsPreview, setShowCommentsPreview] = useState(false);
   const [liked, setLiked] = useState(!!item?.is_liked);
@@ -408,10 +411,13 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const headerPad = compact ? 'px-3 pt-2.5' : 'px-3 pt-3';
   const headerGap = compact ? 'gap-2' : 'gap-3';
 
+  const loginRequiredMsg = t('auth.loginRequiredMessage', 'You need to sign in to perform this action.');
+
   const likedRef = useRef(!!item?.is_liked);
   const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
     if (disabledActions) return;
+    if (isGuest) { showSuccessToast(loginRequiredMsg); return; }
     const prev = likedRef.current;
     const next = !prev;
     likedRef.current = next;
@@ -425,12 +431,13 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
         setLikeCount((c) => Math.max(0, c + (prev ? 1 : -1)));
       });
     }
-  }, [disabledActions, item?.id]);
+  }, [disabledActions, isGuest, loginRequiredMsg, item?.id]);
 
   const bookmarkedRef = useRef(!!item?.is_bookmarked);
   const handleBookmark = React.useCallback((e) => {
     e?.stopPropagation?.();
     if (disabledActions) return;
+    if (isGuest) { showSuccessToast(loginRequiredMsg); return; }
     const prev = bookmarkedRef.current;
     const next = !prev;
     bookmarkedRef.current = next;
@@ -441,7 +448,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
         setBookmarked(prev);
       });
     }
-  }, [disabledActions, item?.id]);
+  }, [disabledActions, isGuest, loginRequiredMsg, item?.id]);
 
   const handleShareExternal = async (e) => {
     e?.stopPropagation?.();
@@ -706,14 +713,16 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 <AvatarImg src={authUser?.avatar || '/images/default/default-avatar.svg'} alt="Your avatar" className="w-6 h-6 rounded-full object-cover" />
                 <div className="relative flex-1">
                   <input
-                    placeholder={disabledActions ? 'Sign in to comment…' : 'Add a comment…'}
-                    className={`w-full border border-gray-300 rounded-full pl-3 ${commentText.trim() ? 'pr-[4.5rem]' : 'pr-9'} py-1.5 text-[13px] transition-all ${disabledActions ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-transparent hover:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:border-gray-400'}`}
-                    disabled={disabledActions}
+                    placeholder={(disabledActions || isGuest) ? 'Sign in to comment…' : 'Add a comment…'}
+                    className={`w-full border border-gray-300 rounded-full pl-3 ${commentText.trim() ? 'pr-[4.5rem]' : 'pr-9'} py-1.5 text-[13px] transition-all ${(disabledActions || isGuest) ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-transparent hover:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:border-gray-400'}`}
+                    disabled={disabledActions || isGuest}
+                    onFocus={() => { if (isGuest) showSuccessToast(loginRequiredMsg); }}
                     value={commentText}
                     onChange={(e)=>setCommentText(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && commentText.trim() && item?.id) {
                         e.stopPropagation();
+                        if (isGuest) { showSuccessToast(loginRequiredMsg); return; }
                         const newComment = commentText.trim();
                         medStreamAPI.createComment(item.id, { content: newComment }).catch((err) => console.warn('Comment failed:', err));
                         setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
@@ -740,6 +749,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         className="p-1.5 rounded-full bg-teal-500/90 hover:bg-teal-600 text-white shadow-sm hover:shadow transition-all duration-200 animate-[fadeIn_0.15s_ease-out]"
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (isGuest) { showSuccessToast(loginRequiredMsg); return; }
                           if (!commentText.trim() || !item?.id) return;
                           const newComment = commentText.trim();
                           medStreamAPI.createComment(item.id, { content: newComment }).catch((err) => console.warn('Comment failed:', err));

@@ -155,7 +155,11 @@
     "passwordResetDesc": "Kayıtlı e-postanızı girin, size şifre sıfırlama bağlantısı gönderelim.",
     "resetLinkNotice": "Şifrenizi sıfırlamak için size bir bağlantı göndereceğiz.",
     "sendResetLink": "Şifre Sıfırlama Bağlantısı Gönder",
-    "backToLogin": "Girişe dön"
+    "backToLogin": "Girişe dön",
+    "loggingIn": "Giriş yapılıyor...",
+    "loginRequiredTitle": "Giriş yapmanız gerekiyor",
+    "loginRequiredMessage": "Bu işlemi gerçekleştirmek için üye olmanız gerekiyor.",
+    "goToLogin": "Giriş Yap"
   },
   "footer": {
     "aboutUs": "Hakkımızda",

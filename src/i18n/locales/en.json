@@ -155,7 +155,11 @@
     "passwordResetDesc": "Enter your registered email and we'll send you a password reset link.",
     "resetLinkNotice": "We'll email you a link to reset your password.",
     "sendResetLink": "Send Password Reset Link",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "loggingIn": "Logging in...",
+    "loginRequiredTitle": "Sign in required",
+    "loginRequiredMessage": "You need to sign in to perform this action.",
+    "goToLogin": "Sign In"
   },
   "footer": {
     "aboutUs": "About Us",

@@ -143,16 +143,20 @@ const AuthPages = () => {
         notify({ type: 'info', message: 'Password reset link sent if the email exists.' });
       }
     } catch (err) {
-      // Surface real backend error messages instead of generic "Network Error"
-      if (err?.status === 401) {
-        notify({ type: 'error', message: err?.message || err?.data?.message || 'Invalid credentials' });
-      } else if (err?.status === 403) {
-        notify({ type: 'error', message: err?.message || 'You do not have permission to perform this action.' });
-      } else if (err?.status === 422) {
+      // Extract message from various error shapes
+      const status = err?.status || err?.response?.status || 0;
+      const message = err?.message || err?.data?.message || err?.response?.data?.message || '';
+
+      if (status === 401) {
+        notify({ type: 'error', message: message || 'Invalid credentials. Please check your email and password.' });
+      } else if (status === 403) {
+        notify({ type: 'error', message: message || 'You do not have permission to perform this action.' });
+      } else if (status === 422) {
         // Validation errors — map backend field names to form field names
-        if (err?.errors && typeof err.errors === 'object') {
+        const backendErrors = err?.errors || err?.data?.errors || err?.response?.data?.errors;
+        if (backendErrors && typeof backendErrors === 'object') {
           const fieldErrors = {};
-          Object.entries(err.errors).forEach(([field, arr]) => {
+          Object.entries(backendErrors).forEach(([field, arr]) => {
             const key = field === 'password_confirmation' ? 'confirmPassword'
               : field === 'fullname' ? 'firstName'
               : field;
@@ -160,12 +164,14 @@ const AuthPages = () => {
           });
           setErrors((prev) => ({ ...prev, ...fieldErrors }));
         }
-        notify({ type: 'error', message: err?.message || 'Please correct the highlighted fields.' });
-      } else if (err?.status === 0 || !err?.status) {
-        // Network error / CORS / timeout — show user-friendly message
-        notify({ type: 'error', message: err?.message || 'Unable to reach the server. Please check your internet connection.' });
+        notify({ type: 'error', message: message || 'Please correct the highlighted fields.' });
+      } else if (status === 429) {
+        notify({ type: 'error', message: 'Too many attempts. Please wait a moment and try again.' });
+      } else if (!status || status === 0) {
+        // Network error / CORS / timeout
+        notify({ type: 'error', message: message || 'Unable to reach the server. Please check your internet connection.' });
       } else {
-        notify({ type: 'error', message: err?.message || 'An unexpected error occurred. Please try again.' });
+        notify({ type: 'error', message: message || 'An unexpected error occurred. Please try again later.' });
       }
     } finally {
       setSubmitting(false);

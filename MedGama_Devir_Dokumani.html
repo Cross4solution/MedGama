@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedGama — Proje Devir Dokümanı</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1e293b;
+    line-height: 1.6;
+    background: #fff;
+    font-size: 13px;
+  }
+
+  @media print {
+    body { font-size: 11px; }
+    .page-break { page-break-before: always; }
+    .no-print { display: none; }
+    .cover { min-height: 100vh; }
+  }
+
+  /* Cover Page */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #134e4a 100%);
+    color: white;
+    text-align: center;
+    padding: 60px 40px;
+  }
+  .cover-logo {
+    width: 100px;
+    height: 100px;
+    background: white;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    font-weight: 800;
+    color: #0d9488;
+    margin-bottom: 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .cover h1 {
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+  .cover .subtitle {
+    font-size: 20px;
+    opacity: 0.9;
+    font-weight: 500;
+    margin-bottom: 48px;
+  }
+  .cover .meta {
+    font-size: 14px;
+    opacity: 0.7;
+    line-height: 2;
+  }
+
+  /* Content */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 40px;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0d9488;
+    margin-top: 48px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #ccfbf1;
+    letter-spacing: -0.5px;
+  }
+  h2:first-child { margin-top: 0; }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #334155;
+    margin-top: 24px;
+    margin-bottom: 10px;
+  }
+
+  p { margin-bottom: 12px; color: #475569; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 20px;
+    font-size: 12.5px;
+  }
+  th {
+    background: #f0fdfa;
+    color: #0d9488;
+    font-weight: 700;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 2px solid #99f6e4;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+  }
+  tr:hover td { background: #f8fafc; }
+
+  code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: #0f766e;
+  }
+
+  pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: 10px;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-teal { background: #ccfbf1; color: #0d9488; }
+  .badge-blue { background: #dbeafe; color: #2563eb; }
+  .badge-amber { background: #fef3c7; color: #d97706; }
+  .badge-red { background: #fee2e2; color: #dc2626; }
+
+  .info-box {
+    background: #f0fdfa;
+    border-left: 4px solid #0d9488;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    color: #134e4a;
+    font-size: 13px;
+  }
+
+  .warning-box {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    color: #78350f;
+    font-size: 13px;
+  }
+
+  ul { margin: 8px 0 16px 20px; color: #475569; }
+  li { margin-bottom: 5px; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 16px 0;
+  }
+  .card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0d9488;
+    margin-bottom: 8px;
+  }
+
+  .file-tree {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 20px 24px;
+    border-radius: 10px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    margin: 12px 0 20px;
+  }
+  .file-tree .dir { color: #38bdf8; font-weight: 600; }
+  .file-tree .comment { color: #64748b; }
+
+  .print-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #0d9488;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(13,148,136,0.4);
+    z-index: 100;
+    transition: all 0.2s;
+  }
+  .print-btn:hover { background: #0f766e; transform: translateY(-2px); }
+
+  .toc { margin: 20px 0; }
+  .toc a {
+    display: block;
+    padding: 8px 0;
+    color: #334155;
+    text-decoration: none;
+    border-bottom: 1px solid #f1f5f9;
+    font-weight: 500;
+  }
+  .toc a:hover { color: #0d9488; }
+  .toc .num { color: #0d9488; font-weight: 700; margin-right: 8px; }
+
+  .footer {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+    font-size: 12px;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Print Button -->
+<button class="print-btn no-print" onclick="window.print()">📄 PDF Olarak Kaydet</button>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <div class="cover-logo">M</div>
+  <h1>MedGama</h1>
+  <div class="subtitle">Proje Devir Dokümanı</div>
+  <div class="meta">
+    Dijital Sağlık ve Randevu Platformu<br>
+    Versiyon: 1.0 — Şubat 2026<br>
+    Hazırlayan: Cross4solution
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- TOC -->
+<h2>İçindekiler</h2>
+<div class="toc">
+  <a href="#repo"><span class="num">01</span> Repository & Canlı Linkler</a>
+  <a href="#tech"><span class="num">02</span> Teknoloji Yığını</a>
+  <a href="#setup"><span class="num">03</span> Lokal Kurulum</a>
+  <a href="#accounts"><span class="num">04</span> Test Hesapları</a>
+  <a href="#api"><span class="num">05</span> API Endpoint Referansı</a>
+  <a href="#structure"><span class="num">06</span> Proje Dosya Yapısı</a>
+  <a href="#config"><span class="num">07</span> Konfigürasyon Dosyaları</a>
+  <a href="#security"><span class="num">08</span> Güvenlik</a>
+  <a href="#deploy"><span class="num">09</span> Deploy Notları</a>
+  <a href="#demo"><span class="num">10</span> Demo Modu</a>
+  <a href="#env"><span class="num">11</span> Environment Değişkenleri</a>
+</div>
+
+<!-- 1. REPO -->
+<div class="page-break"></div>
+<h2 id="repo">01 — Repository & Canlı Linkler</h2>
+
+<h3>GitHub Repository</h3>
+<pre><code>https://github.com/Cross4solution/MedGama</code></pre>
+
+<table>
+  <tr><th>Branch</th><th>Açıklama</th></tr>
+  <tr><td><code>main</code></td><td>Production — Vercel + Railway otomatik deploy</td></tr>
+  <tr><td><code>new-development</code></td><td>Aktif geliştirme branch'i</td></tr>
+</table>
+
+<h3>Canlı Ortam</h3>
+<table>
+  <tr><th>Ortam</th><th>URL</th></tr>
+  <tr><td><strong>Frontend (Vercel)</strong></td><td>https://med-gama.vercel.app</td></tr>
+  <tr><td><strong>Backend API (Railway)</strong></td><td>https://medgama-production.up.railway.app</td></tr>
+  <tr><td><strong>API Health Check</strong></td><td>https://medgama-production.up.railway.app/up</td></tr>
+  <tr><td><strong>API Base URL</strong></td><td>https://medgama-production.up.railway.app/api</td></tr>
+</table>
+
+<!-- 2. TECH -->
+<h2 id="tech">02 — Teknoloji Yığını</h2>
+
+<div class="two-col">
+  <div class="card">
+    <h4>Frontend</h4>
+    <ul style="margin-left:16px">
+      <li>React 19</li>
+      <li>TailwindCSS</li>
+      <li>React Router v6</li>
+      <li>i18next (10 dil)</li>
+      <li>Lucide Icons</li>
+      <li>Axios</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Backend</h4>
+    <ul style="margin-left:16px">
+      <li>Laravel 11 (PHP 8.4)</li>
+      <li>PostgreSQL (UUID)</li>
+      <li>Redis (Cache + Queue)</li>
+      <li>Laravel Sanctum (Auth)</li>
+      <li>Laravel Reverb (WebSocket)</li>
+      <li>Docker + Supervisor</li>
+    </ul>
+  </div>
+</div>
+
+<table>
+  <tr><th>Katman</th><th>Teknoloji</th><th>Hosting</th></tr>
+  <tr><td>Frontend</td><td>React 19, TailwindCSS</td><td>Vercel</td></tr>
+  <tr><td>Backend API</td><td>Laravel 11, PHP 8.4</td><td>Railway (Docker)</td></tr>
+  <tr><td>Veritabanı</td><td>PostgreSQL 15+</td><td>Railway Plugin</td></tr>
+  <tr><td>Cache & Queue</td><td>Redis 7+</td><td>Railway Plugin</td></tr>
+  <tr><td>WebSocket</td><td>Laravel Reverb</td><td>Railway (port 6001)</td></tr>
+</table>
+
+<!-- 3. SETUP -->
+<div class="page-break"></div>
+<h2 id="setup">03 — Lokal Kurulum</h2>
+
+<h3>Gereksinimler</h3>
+<table>
+  <tr><th>Araç</th><th>Minimum Versiyon</th></tr>
+  <tr><td>PHP</td><td>8.4+</td></tr>
+  <tr><td>Composer</td><td>2.x</td></tr>
+  <tr><td>PostgreSQL</td><td>15+</td></tr>
+  <tr><td>Redis</td><td>7+</td></tr>
+  <tr><td>Node.js</td><td>18+</td></tr>
+</table>
+
+<h3>Backend Kurulum</h3>
+<pre><code>cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve --port=8001
+
+# Opsiyonel:
+php artisan queue:work redis --sleep=3 --tries=3
+php artisan reverb:start --host=0.0.0.0 --port=6001</code></pre>
+
+<h3>Frontend Kurulum</h3>
+<pre><code># Proje kök dizininde
+npm install --legacy-peer-deps
+cp .env.example .env
+# .env içinde: REACT_APP_API_BASE=http://127.0.0.1:8001/api
+npm start</code></pre>
+
+<div class="info-box">
+  <strong>💡 İpucu:</strong> <code>--legacy-peer-deps</code> flag'i React 19 ile bazı paketlerin uyumluluk uyarılarını atlamak için gereklidir.
+</div>
+
+<!-- 4. ACCOUNTS -->
+<h2 id="accounts">04 — Test Hesapları</h2>
+<p><code>php artisan migrate --seed</code> sonrası otomatik oluşan hesaplar:</p>
+
+<table>
+  <tr><th>Rol</th><th>Email</th><th>Şifre</th><th>Login Sonrası Sayfa</th></tr>
+  <tr><td><span class="badge badge-red">SuperAdmin</span></td><td>admin@admin.com</td><td>admin123</td><td>/admin</td></tr>
+  <tr><td><span class="badge badge-amber">Klinik Sahibi</span></td><td>clinic@medgama.com</td><td>clinic123</td><td>/crm</td></tr>
+  <tr><td><span class="badge badge-blue">Doktor</span></td><td>doctor@medgama.com</td><td>doctor123</td><td>/crm</td></tr>
+  <tr><td><span class="badge badge-teal">Hasta</span></td><td>patient@medgama.com</td><td>patient123</td><td>/explore</td></tr>
+  <tr><td><span class="badge badge-teal">Hasta 2</span></td><td>zeynep@medgama.com</td><td>patient123</td><td>/explore</td></tr>
+</table>
+
+<p>Ayrıca seed ile oluşan veriler: <strong>20 uzmanlık</strong>, <strong>8 şehir</strong>, <strong>10 semptom eşleme</strong>, <strong>3 örnek randevu</strong> (confirmed, pending, completed).</p>
+
+<!-- 5. API -->
+<div class="page-break"></div>
+<h2 id="api">05 — API Endpoint Referansı</h2>
+
+<h3>Public Endpoint'ler (Auth gerektirmeyen)</h3>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Açıklama</th><th>Limit</th></tr>
+  <tr><td><span class="badge badge-teal">POST</span></td><td>/api/auth/register</td><td>Kullanıcı kaydı</td><td>3/dk</td></tr>
+  <tr><td><span class="badge badge-teal">POST</span></td><td>/api/auth/login</td><td>Giriş</td><td>5/dk</td></tr>
+  <tr><td><span class="badge badge-teal">POST</span></td><td>/api/auth/forgot-password</td><td>Şifre sıfırlama</td><td>3/dk</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/catalog/specialties</td><td>Uzmanlık listesi</td><td>—</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/catalog/cities</td><td>Şehir listesi</td><td>—</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/doctors</td><td>Doktor listesi</td><td>—</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/clinics</td><td>Klinik listesi</td><td>—</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/medstream/posts</td><td>MedStream akışı</td><td>—</td></tr>
+</table>
+
+<h3>Protected Endpoint'ler <span class="badge badge-amber">Bearer Token Gerekli</span></h3>
+
+<h4 style="margin-top:16px; color:#0d9488;">Profil & Auth</h4>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Açıklama</th></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/auth/me</td><td>Mevcut kullanıcı bilgisi</td></tr>
+  <tr><td><span class="badge badge-amber">PUT</span></td><td>/api/auth/profile</td><td>Profil güncelle</td></tr>
+  <tr><td><span class="badge badge-teal">POST</span></td><td>/api/auth/profile/avatar</td><td>Avatar yükle</td></tr>
+  <tr><td><span class="badge badge-amber">PUT</span></td><td>/api/auth/profile/password</td><td>Şifre değiştir</td></tr>
+  <tr><td><span class="badge badge-red">DELETE</span></td><td>/api/auth/profile</td><td>Hesap sil (GDPR)</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/auth/profile/data-export</td><td>Veri export (GDPR)</td></tr>
+</table>
+
+<h4 style="margin-top:16px; color:#0d9488;">Randevular</h4>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Açıklama</th></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/appointments</td><td>Randevu listesi</td></tr>
+  <tr><td><span class="badge badge-teal">POST</span></td><td>/api/appointments</td><td>Randevu oluştur</td></tr>
+  <tr><td><span class="badge badge-amber">PUT</span></td><td>/api/appointments/{id}</td><td>Randevu güncelle</td></tr>
+  <tr><td><span class="badge badge-red">DELETE</span></td><td>/api/appointments/{id}</td><td>Randevu iptal</td></tr>
+</table>
+
+<h4 style="margin-top:16px; color:#0d9488;">Mesajlaşma & Chat</h4>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Açıklama</th></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/messages/conversations</td><td>Konuşma listesi</td></tr>
+  <tr><td><span class="badge badge-teal">POST</span></td><td>/api/messages/conversations/{id}/messages</td><td>Mesaj gönder</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/messages/unread-count</td><td>Okunmamış sayısı</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/chat/conversations</td><td>Gerçek zamanlı chat listesi</td></tr>
+  <tr><td><span class="badge badge-teal">POST</span></td><td>/api/chat/conversations/{id}/messages</td><td>Chat mesaj gönder</td></tr>
+</table>
+
+<h4 style="margin-top:16px; color:#0d9488;">Bildirimler</h4>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Açıklama</th></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/notifications</td><td>Bildirim listesi</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/notifications/unread-count</td><td>Okunmamış sayısı</td></tr>
+  <tr><td><span class="badge badge-amber">PUT</span></td><td>/api/notifications/read-all</td><td>Tümünü okundu yap</td></tr>
+</table>
+
+<h4 style="margin-top:16px; color:#0d9488;">MedStream (Sosyal Akış)</h4>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Açıklama</th></tr>
+  <tr><td><span class="badge badge-teal">POST</span></td><td>/api/medstream/posts</td><td>Post oluştur</td></tr>
+  <tr><td><span class="badge badge-teal">POST</span></td><td>/api/medstream/posts/{id}/like</td><td>Beğen / beğenme</td></tr>
+  <tr><td><span class="badge badge-teal">POST</span></td><td>/api/medstream/posts/{id}/comments</td><td>Yorum yaz</td></tr>
+</table>
+
+<h4 style="margin-top:16px; color:#0d9488;">CRM, Analitik & Admin</h4>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Açıklama</th><th>Yetki</th></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/crm/tags</td><td>CRM etiketleri</td><td>doctor, clinicOwner</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/analytics/clinic/{id}/summary</td><td>Klinik istatistikleri</td><td>auth</td></tr>
+  <tr><td><span class="badge badge-blue">GET</span></td><td>/api/admin/dashboard</td><td>Platform istatistikleri</td><td>superAdmin</td></tr>
+  <tr><td><span class="badge badge-amber">PUT</span></td><td>/api/admin/doctors/{id}/verify</td><td>Doktor doğrula</td><td>superAdmin</td></tr>
+</table>
+
+<!-- 6. STRUCTURE -->
+<div class="page-break"></div>
+<h2 id="structure">06 — Proje Dosya Yapısı</h2>
+
+<div class="file-tree">
+<span class="dir">MedGama/</span><br>
+├── <span class="dir">backend/</span> <span class="comment">← Laravel 11 API</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">app/Http/Controllers/Api/</span> <span class="comment">← API Controller'ları</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">app/Http/Requests/</span> <span class="comment">← Form validation sınıfları</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">app/Http/Resources/</span> <span class="comment">← JSON response formatları</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">app/Models/</span> <span class="comment">← Eloquent modelleri (UUID, SoftDeletes)</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">app/Services/</span> <span class="comment">← İş mantığı (AuthService vb.)</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">app/Notifications/</span> <span class="comment">← Bildirim sınıfları</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">config/</span> <span class="comment">← Laravel config dosyaları</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">database/migrations/</span> <span class="comment">← DB migration'ları</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">database/seeders/</span> <span class="comment">← Test verileri</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">docker/</span> <span class="comment">← Dockerfile, nginx, supervisor</span><br>
+│&nbsp;&nbsp; ├── routes/api.php <span class="comment">← API route tanımları</span><br>
+│&nbsp;&nbsp; ├── .env.example <span class="comment">← Env şablonu (yorumlu)</span><br>
+│&nbsp;&nbsp; └── README.md <span class="comment">← Backend dokümantasyonu</span><br>
+│<br>
+├── <span class="dir">src/</span> <span class="comment">← React Frontend</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">components/auth/</span> <span class="comment">← LoginForm, RegisterForm</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">components/crm/</span> <span class="comment">← CRM layout ve bileşenler</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">components/admin/</span> <span class="comment">← Admin layout</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">context/AuthContext.jsx</span> <span class="comment">← Auth state yönetimi</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">context/ToastContext.jsx</span> <span class="comment">← Bildirim toast'ları</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">lib/api.js</span> <span class="comment">← Axios + tüm API endpoint'leri</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">pages/</span> <span class="comment">← Sayfa bileşenleri</span><br>
+│&nbsp;&nbsp; ├── <span class="dir">i18n/</span> <span class="comment">← 10 dil çeviri dosyaları</span><br>
+│&nbsp;&nbsp; └── App.js <span class="comment">← Route tanımları</span><br>
+│<br>
+├── public/index.html <span class="comment">← SEO meta tags</span><br>
+├── package.json <span class="comment">← Frontend bağımlılıkları</span><br>
+├── tailwind.config.js <span class="comment">← TailwindCSS config</span><br>
+└── vercel.json <span class="comment">← Vercel deploy config</span>
+</div>
+
+<!-- 7. CONFIG -->
+<h2 id="config">07 — Önemli Konfigürasyon Dosyaları</h2>
+<table>
+  <tr><th>Dosya</th><th>Açıklama</th></tr>
+  <tr><td><code>backend/.env.example</code></td><td>Tüm env değişkenleri (yorumlu)</td></tr>
+  <tr><td><code>backend/config/cors.php</code></td><td>CORS ayarları — <code>CORS_ALLOWED_ORIGINS</code> env'den</td></tr>
+  <tr><td><code>backend/config/database.php</code></td><td>PostgreSQL + strict timeout ayarları</td></tr>
+  <tr><td><code>backend/config/broadcasting.php</code></td><td>Reverb/Pusher WebSocket config</td></tr>
+  <tr><td><code>backend/bootstrap/app.php</code></td><td>Error handler (production-safe, ham hata göstermez)</td></tr>
+  <tr><td><code>backend/docker/supervisor/supervisord.conf</code></td><td>Container servisleri (nginx, php-fpm, queue, reverb)</td></tr>
+  <tr><td><code>src/lib/api.js</code></td><td>Frontend API katmanı (Axios + interceptors)</td></tr>
+  <tr><td><code>src/context/AuthContext.jsx</code></td><td>Token yönetimi, login/register/logout</td></tr>
+</table>
+
+<!-- 8. SECURITY -->
+<div class="page-break"></div>
+<h2 id="security">08 — Güvenlik</h2>
+
+<table>
+  <tr><th>Önlem</th><th>Detay</th></tr>
+  <tr><td><strong>Rate Limiting</strong></td><td>Login 5/dk, Register 3/dk, Password Reset 3/dk (IP bazlı)</td></tr>
+  <tr><td><strong>Auth</strong></td><td>Laravel Sanctum Bearer token + <code>withCredentials: true</code></td></tr>
+  <tr><td><strong>CORS</strong></td><td>Sadece <code>CORS_ALLOWED_ORIGINS</code> env'deki domain'ler</td></tr>
+  <tr><td><strong>Encrypted Fields</strong></td><td><code>doctor_note</code>, <code>confirmation_note</code> DB'de şifreli</td></tr>
+  <tr><td><strong>Error Handler</strong></td><td><code>APP_DEBUG=false</code> → kullanıcıya ham hata gösterilmez</td></tr>
+  <tr><td><strong>GDPR</strong></td><td>Soft delete, veri export, hesap silme, cookie consent</td></tr>
+  <tr><td><strong>Password</strong></td><td>BCRYPT 12 round hashing</td></tr>
+  <tr><td><strong>DB Timeout</strong></td><td>statement_timeout=30s, lock_timeout=10s</td></tr>
+</table>
+
+<!-- 9. DEPLOY -->
+<h2 id="deploy">09 — Deploy Notları</h2>
+
+<div class="two-col">
+  <div class="card">
+    <h4>Vercel (Frontend)</h4>
+    <ul style="margin-left:16px">
+      <li><code>main</code> branch'e push → otomatik deploy</li>
+      <li>Env: <code>REACT_APP_API_BASE</code></li>
+      <li>SPA routing: <code>vercel.json</code> rewrites</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Railway (Backend)</h4>
+    <ul style="margin-left:16px">
+      <li><code>main</code> branch'e push → Dockerfile build</li>
+      <li>Supervisor: nginx, php-fpm, queue, reverb, scheduler</li>
+      <li>Boot: <code>artisan optimize + migrate</code></li>
+    </ul>
+  </div>
+</div>
+
+<h3>Railway'de Ayarlanması Gereken Env'ler</h3>
+<pre><code>APP_ENV=production
+APP_DEBUG=false
+APP_KEY=base64:...
+CORS_ALLOWED_ORIGINS=https://med-gama.vercel.app
+FRONTEND_URL=https://med-gama.vercel.app
+MAIL_MAILER=log
+REVERB_APP_KEY=your-reverb-key
+REVERB_APP_SECRET=your-reverb-secret
+SANCTUM_STATEFUL_DOMAINS=med-gama.vercel.app</code></pre>
+
+<div class="info-box">
+  <strong>📌 Not:</strong> <code>DATABASE_URL</code> ve <code>REDIS_URL</code> Railway plugin'leri tarafından otomatik sağlanır. Manuel ayarlamaya gerek yok.
+</div>
+
+<!-- 10. DEMO -->
+<h2 id="demo">10 — Demo Modu</h2>
+
+<div class="warning-box">
+  <strong>⚠️ Önemli:</strong> Şu an sistem <code>MAIL_MAILER=log</code> ile çalışıyor. Bu demek ki:
+</div>
+
+<ul>
+  <li>Kayıt olan kullanıcılar <strong>otomatik doğrulanır</strong> (email verification atlanır)</li>
+  <li>Gerçek mail gönderilmez, <code>storage/logs/laravel.log</code> dosyasına yazılır</li>
+  <li>Gerçek mail sunucusu bağlandığında <code>.env</code>'de <code>MAIL_MAILER=smtp</code> yapılması yeterli</li>
+  <li>Backend'de bu mantık <code>app/Services/AuthService.php</code> → <code>$isDemoMail</code> flag'i ile kontrol edilir</li>
+</ul>
+
+<!-- 11. ENV -->
+<h2 id="env">11 — Environment Değişkenleri Referansı</h2>
+
+<table>
+  <tr><th>Değişken</th><th>Açıklama</th><th>Örnek</th></tr>
+  <tr><td><code>APP_KEY</code></td><td>Uygulama şifreleme anahtarı</td><td><code>php artisan key:generate</code></td></tr>
+  <tr><td><code>APP_DEBUG</code></td><td>Hata detayı göster</td><td><code>false</code> (production)</td></tr>
+  <tr><td><code>DATABASE_URL</code></td><td>PostgreSQL bağlantısı</td><td>Railway otomatik sağlar</td></tr>
+  <tr><td><code>REDIS_URL</code></td><td>Redis bağlantısı</td><td>Railway otomatik sağlar</td></tr>
+  <tr><td><code>CORS_ALLOWED_ORIGINS</code></td><td>İzin verilen frontend domain'leri</td><td><code>https://med-gama.vercel.app</code></td></tr>
+  <tr><td><code>FRONTEND_URL</code></td><td>Frontend URL (mail linkleri için)</td><td><code>https://med-gama.vercel.app</code></td></tr>
+  <tr><td><code>MAIL_MAILER</code></td><td>Mail sürücüsü</td><td><code>log</code> (demo) / <code>smtp</code></td></tr>
+  <tr><td><code>REVERB_APP_KEY</code></td><td>WebSocket auth key</td><td>Rastgele string</td></tr>
+  <tr><td><code>REVERB_APP_SECRET</code></td><td>WebSocket auth secret</td><td>Rastgele string</td></tr>
+  <tr><td><code>SANCTUM_STATEFUL_DOMAINS</code></td><td>Cookie auth domain'leri</td><td><code>med-gama.vercel.app</code></td></tr>
+  <tr><td><code>SESSION_SAME_SITE</code></td><td>Cross-domain cookie</td><td><code>none</code></td></tr>
+  <tr><td><code>DB_STATEMENT_TIMEOUT</code></td><td>Max sorgu süresi (ms)</td><td><code>30000</code></td></tr>
+  <tr><td><code>REACT_APP_API_BASE</code></td><td>Frontend → Backend API URL</td><td><code>https://...railway.app/api</code></td></tr>
+</table>
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong>MedGama</strong> — Dijital Sağlık ve Randevu Platformu<br>
+  Proje Devir Dokümanı v1.0 — Şubat 2026<br>
+  Cross4solution &copy; 2026. Tüm hakları saklıdır.
+</div>
+
+</div>
+</body>
+</html>

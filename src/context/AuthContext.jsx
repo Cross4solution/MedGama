@@ -119,7 +119,8 @@ export function AuthProvider({ children }) {
     const apiUser = res?.data ?? res?.user ?? null;
     const access = res?.token ?? res?.access_token ?? null;
     if (!apiUser || !access) {
-      throw new Error(JSON.stringify({ status: 401, message: 'Invalid credentials', data: res }));
+      // eslint-disable-next-line no-throw-literal
+      throw { status: 401, message: 'Invalid credentials. Please check your email and password.', data: res };
     }
     // Map role_id to role for frontend compatibility
     const role = apiUser?.role_id || apiUser?.role || 'patient';

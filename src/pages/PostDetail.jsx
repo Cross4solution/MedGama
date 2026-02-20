@@ -4,6 +4,7 @@ import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, FileText,
 import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import EmojiPicker from '../components/EmojiPicker';
 import { medStreamAPI } from '../lib/api';
 
@@ -45,7 +46,19 @@ export default function PostDetail() {
   const [replyText, setReplyText] = React.useState('');
   const [newComment, setNewComment] = React.useState('');
   const { user } = useAuth();
+  const { t } = useTranslation();
+  const isGuest = !user;
   const isPatient = user?.role === 'patient';
+  const loginRequiredMsg = t('auth.loginRequiredMessage', 'You need to sign in to perform this action.');
+
+  // Simple toast state for guest warnings
+  const [guestToast, setGuestToast] = React.useState('');
+  const guestToastTimer = React.useRef(null);
+  const showGuestToast = (msg) => {
+    setGuestToast(msg);
+    if (guestToastTimer.current) clearTimeout(guestToastTimer.current);
+    guestToastTimer.current = setTimeout(() => setGuestToast(''), 3500);
+  };
   const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
   const emojiReplyRef = React.useRef(null);
   const [apiDetailComments, setApiDetailComments] = React.useState([]);
@@ -149,6 +162,7 @@ export default function PostDetail() {
 
   const handleLike = React.useCallback((e) => {
     e?.stopPropagation?.();
+    if (isGuest) { showGuestToast(loginRequiredMsg); return; }
     const prev = likedRef.current;
     const next = !prev;
     likedRef.current = next;
@@ -161,10 +175,11 @@ export default function PostDetail() {
         setLikeCount((c) => Math.max(0, c + (prev ? 1 : -1)));
       });
     }
-  }, [item?.id]);
+  }, [isGuest, loginRequiredMsg, item?.id]);
 
   const handleBookmark = React.useCallback((e) => {
     e?.stopPropagation?.();
+    if (isGuest) { showGuestToast(loginRequiredMsg); return; }
     const prev = bookmarkedRef.current;
     const next = !prev;
     bookmarkedRef.current = next;
@@ -175,7 +190,7 @@ export default function PostDetail() {
         setBookmarked(prev);
       });
     }
-  }, [item?.id]);
+  }, [isGuest, loginRequiredMsg, item?.id]);
 
   const goPrev = () => setImgIndex((i) => (i - 1 + mediaList.length) % mediaList.length);
   const goNext = () => setImgIndex((i) => (i + 1) % mediaList.length);
@@ -348,6 +363,7 @@ export default function PostDetail() {
     }).catch(() => setDetailCommentsLoaded(true));
   }, [item?.id, id, detailCommentsLoaded]);
   const submitDetailComment = () => {
+    if (isGuest) { showGuestToast(loginRequiredMsg); return; }
     const text = newComment.trim();
     if (!text || !item?.id) return;
     setLocalDetailComments(prev => [...prev, {
@@ -365,6 +381,7 @@ export default function PostDetail() {
   };
 
   const submitDetailReply = () => {
+    if (isGuest) { showGuestToast(loginRequiredMsg); return; }
     const text = replyText.trim();
     const parentId = replyTo;
     if (!text || !item?.id) return;
@@ -395,7 +412,18 @@ export default function PostDetail() {
   };
 
   return (
-    loading && !item ? (
+    <>
+    {/* Guest login-required toast */}
+    {guestToast && (
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] animate-[fadeIn_0.2s_ease-out]">
+        <div className="bg-white border border-gray-200 shadow-xl rounded-xl px-5 py-3 flex items-center gap-3 max-w-sm">
+          <span className="text-amber-500 text-lg">⚠️</span>
+          <span className="text-sm text-gray-700 font-medium">{guestToast}</span>
+          <button onClick={() => navigate('/login')} className="ml-2 text-xs font-semibold text-teal-600 hover:text-teal-700 whitespace-nowrap">{t('auth.goToLogin', 'Sign In')}</button>
+        </div>
+      </div>
+    )}
+    {loading && !item ? (
       <div className="fixed inset-0 bg-black/60 z-[90] flex items-center justify-center">
         <div className="w-10 h-10 border-3 border-white/30 border-t-white rounded-full animate-spin" />
       </div>
@@ -619,8 +647,9 @@ export default function PostDetail() {
                   <img src={user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg'} alt="You" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200 flex-shrink-0 mt-0.5" />
                   <div className="flex-1 flex items-center gap-2 border border-gray-200 rounded-full px-4 py-2 bg-gray-50/50 hover:bg-white hover:border-gray-300 focus-within:bg-white focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-500/10 transition-all">
                     <input
-                      placeholder="Add a comment..."
-                      className="flex-1 outline-none text-sm bg-transparent placeholder:text-gray-400"
+                      placeholder={isGuest ? 'Sign in to comment…' : 'Add a comment...'}
+                      className={`flex-1 outline-none text-sm bg-transparent placeholder:text-gray-400 ${isGuest ? 'cursor-not-allowed' : ''}`}
+                      disabled={isGuest}
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter') submitDetailComment(); }}
@@ -720,6 +749,7 @@ export default function PostDetail() {
         </div>
       </div>
     </div>
-    )
+    )}
+    </>
   );
 }
