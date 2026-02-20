@@ -57,7 +57,7 @@ const CookieInfoPopup = ({ setShowCookieInfoPopup }) => {
           <p>You can manage your cookie preferences at any time through our cookie banner settings, your profile settings, or your browser settings. You can also withdraw consent at any time.</p>
           
           <p><strong>Contact</strong></p>
-          <p>For questions about our cookie policy: <span className="text-teal-600">privacy@medgama.com</span> or <span className="text-teal-600">dpo@medgama.com</span></p>
+          <p>For questions about our cookie policy: <span className="text-teal-600">privacy@medagama.com</span> or <span className="text-teal-600">dpo@medagama.com</span></p>
         </div>
         <div className="mt-6 flex items-center justify-between">
           <a href="/cookie-policy" className="text-xs text-teal-600 hover:text-teal-700 font-medium underline underline-offset-2">

@@ -32,7 +32,7 @@ class AppointmentBookedNotification extends Notification implements ShouldQueue
         if ($this->recipientRole === 'doctor') {
             $patientName = $appt->patient?->fullname ?? 'A patient';
             return (new MailMessage)
-                ->subject('MedGama — New Appointment Request')
+                ->subject('MedaGama — New Appointment Request')
                 ->greeting("Hello, Dr. {$notifiable->fullname}!")
                 ->line("{$patientName} has booked an appointment with you.")
                 ->line("**Date:** {$date}")
@@ -45,7 +45,7 @@ class AppointmentBookedNotification extends Notification implements ShouldQueue
 
         $doctorName = $appt->doctor?->fullname ?? 'Your doctor';
         return (new MailMessage)
-            ->subject('MedGama — Appointment Booked')
+            ->subject('MedaGama — Appointment Booked')
             ->greeting("Hello, {$notifiable->fullname}!")
             ->line('Your appointment has been successfully booked.')
             ->line("**Doctor:** {$doctorName}")

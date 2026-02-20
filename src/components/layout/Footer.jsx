@@ -6,7 +6,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   const quickLinks = [
-    { label: 'About MedGama', href: '/about' },
+    { label: 'About MedaGama', href: '/about' },
     { label: 'For Patients', href: '/for-patients' },
     { label: 'For Clinics', href: '/for-clinics' },
     { label: 'Vasco AI', href: '/vasco-ai' },
@@ -39,8 +39,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 rounded-lg object-contain" />
-              <span className="text-white text-base font-bold tracking-tight">MedGama</span>
+              <img src="/images/logo/crm-logo.jpg" alt="MedaGama" className="h-7 w-7 rounded-lg object-contain" />
+              <span className="text-white text-base font-bold tracking-tight">MedaGama</span>
             </div>
             <p className="text-sm leading-relaxed text-white/60 mb-4">
               A global, end-to-end health portal for patients, doctors and clinics.
@@ -101,7 +101,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-10 pt-6 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span className="text-xs text-white/50">© {year} MedGama. {t('footer.allRightsReserved')}</span>
+          <span className="text-xs text-white/50">© {year} MedaGama. {t('footer.allRightsReserved')}</span>
           <div className="flex items-center gap-4 text-xs text-white/50">
             <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy</a>
             <span className="text-white/30">·</span>

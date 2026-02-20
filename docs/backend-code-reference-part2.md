@@ -1,4 +1,4 @@
-# MedGama Backend — Controller Kod Referansı (Bölüm 2)
+# MedaGama Backend — Controller Kod Referansı (Bölüm 2)
 
 **Tarih:** 19 Şubat 2026  
 **Bu doküman `backend-code-reference.md` dosyasının devamıdır.**
@@ -1964,5 +1964,5 @@ class MediaStreamController extends Controller
 
 ---
 
-*Bu doküman MedGama backend kaynak kodunun referans kopyasıdır — Bölüm 2.*  
+*Bu doküman MedaGama backend kaynak kodunun referans kopyasıdır — Bölüm 2.*  
 *Oluşturulma tarihi: 19 Şubat 2026*

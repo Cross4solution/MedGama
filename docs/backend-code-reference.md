@@ -1,4 +1,4 @@
-# MedGama Backend — Controller & Model Kod Referansı
+# MedaGama Backend — Controller & Model Kod Referansı
 
 **Tarih:** 19 Şubat 2026  
 **Framework:** Laravel 11 (PHP 8.3)  
@@ -1944,7 +1944,7 @@ class AuthController extends Controller
 
         $user->update([
             'is_active' => false,
-            'email' => 'deleted_' . $user->id . '@removed.medgama.com',
+            'email' => 'deleted_' . $user->id . '@removed.medagama.com',
             'fullname' => 'Deleted User',
             'avatar' => null,
             'mobile' => null,
@@ -2645,5 +2645,5 @@ Route::get('/media/stream/{path}', [MediaStreamController::class, 'stream'])
 
 ---
 
-*Bu doküman MedGama backend kaynak kodunun referans kopyasıdır.*
+*Bu doküman MedaGama backend kaynak kodunun referans kopyasıdır.*
 *Oluşturulma tarihi: 19 Şubat 2026*

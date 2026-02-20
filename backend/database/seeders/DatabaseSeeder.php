@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
 
         // ── Test Clinic ──
         $clinicOwner = User::create([
-            'email' => 'clinic@medgama.com',
+            'email' => 'clinic@medagama.com',
             'password' => 'clinic123',
             'fullname' => 'Dr. Mehmet Yılmaz',
             'role_id' => 'clinicOwner',
@@ -41,9 +41,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $clinic = Clinic::create([
-            'name' => 'MedGama',
-            'codename' => 'medgama-clinic',
-            'fullname' => 'MedGama Sağlık Merkezi',
+            'name' => 'MedaGama',
+            'codename' => 'medagama-clinic',
+            'fullname' => 'MedaGama Sağlık Merkezi',
             'owner_id' => $clinicOwner->id,
             'address' => 'Levent, İstanbul, Türkiye',
             'biography' => 'Modern sağlık hizmetleri sunan çok branşlı klinik.',
@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
 
         // ── Test Doctor ──
         $doctor = User::create([
-            'email' => 'doctor@medgama.com',
+            'email' => 'doctor@medagama.com',
             'password' => 'doctor123',
             'fullname' => 'Dr. Ayşe Kaya',
             'role_id' => 'doctor',
@@ -82,7 +82,7 @@ class DatabaseSeeder extends Seeder
 
         // ── Test Patients ──
         $patient = User::create([
-            'email' => 'patient@medgama.com',
+            'email' => 'patient@medagama.com',
             'password' => 'patient123',
             'fullname' => 'Ali Demir',
             'role_id' => 'patient',
@@ -95,7 +95,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $patient2 = User::create([
-            'email' => 'zeynep@medgama.com',
+            'email' => 'zeynep@medagama.com',
             'password' => 'patient123',
             'fullname' => 'Zeynep Arslan',
             'role_id' => 'patient',
@@ -212,14 +212,14 @@ class DatabaseSeeder extends Seeder
 
         $this->command->info('');
         $this->command->info('╔══════════════════════════════════════════════════════════════╗');
-        $this->command->info('║  MedGama — Seed Complete                                    ║');
+        $this->command->info('║  MedaGama — Seed Complete                                    ║');
         $this->command->info('╠══════════════════════════════════════════════════════════════╣');
         $this->command->info('║  Users:                                                     ║');
         $this->command->info('║    Admin    → admin@admin.com       / admin123               ║');
-        $this->command->info('║    Clinic   → clinic@medgama.com    / clinic123              ║');
-        $this->command->info('║    Doctor   → doctor@medgama.com    / doctor123              ║');
-        $this->command->info('║    Patient  → patient@medgama.com   / patient123             ║');
-        $this->command->info('║    Patient2 → zeynep@medgama.com    / patient123             ║');
+        $this->command->info('║    Clinic   → clinic@medagama.com    / clinic123              ║');
+        $this->command->info('║    Doctor   → doctor@medagama.com    / doctor123              ║');
+        $this->command->info('║    Patient  → patient@medagama.com   / patient123             ║');
+        $this->command->info('║    Patient2 → zeynep@medagama.com    / patient123             ║');
         $this->command->info('║                                                              ║');
         $this->command->info('║  Data: 20 specialties, 8 cities, 10 symptoms, 3 appointments ║');
         $this->command->info('╚══════════════════════════════════════════════════════════════╝');

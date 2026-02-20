@@ -125,7 +125,7 @@ export default function DataPrivacyRightsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `medgama-data-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `medagama-data-export-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -313,8 +313,8 @@ export default function DataPrivacyRightsPage() {
             For any questions or requests regarding your data privacy rights, please contact our DPO:
           </p>
           <div className="text-xs text-gray-700 space-y-0.5">
-            <p>Email: <a href="mailto:dpo@medgama.com" className="text-teal-600 underline underline-offset-2">dpo@medgama.com</a></p>
-            <p>Privacy inquiries: <a href="mailto:privacy@medgama.com" className="text-teal-600 underline underline-offset-2">privacy@medgama.com</a></p>
+            <p>Email: <a href="mailto:dpo@medagama.com" className="text-teal-600 underline underline-offset-2">dpo@medagama.com</a></p>
+            <p>Privacy inquiries: <a href="mailto:privacy@medagama.com" className="text-teal-600 underline underline-offset-2">privacy@medagama.com</a></p>
             <p>Response time: Within 30 days (extendable by 60 days for complex requests)</p>
           </div>
         </div>

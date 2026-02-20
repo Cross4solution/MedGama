@@ -34,7 +34,7 @@ class AppointmentReminderNotification extends Notification implements ShouldQueu
         if ($this->recipientRole === 'doctor') {
             $patientName = $appt->patient?->fullname ?? 'A patient';
             $mail = (new MailMessage)
-                ->subject("MedGama — Appointment in {$timeLabel}")
+                ->subject("MedaGama — Appointment in {$timeLabel}")
                 ->greeting("Hello, Dr. {$notifiable->fullname}!")
                 ->line("You have an appointment in **{$timeLabel}**.")
                 ->line("**Patient:** {$patientName}")
@@ -52,7 +52,7 @@ class AppointmentReminderNotification extends Notification implements ShouldQueu
 
         $doctorName = $appt->doctor?->fullname ?? 'Your doctor';
         $mail = (new MailMessage)
-            ->subject("MedGama — Appointment Reminder ({$timeLabel})")
+            ->subject("MedaGama — Appointment Reminder ({$timeLabel})")
             ->greeting("Hello, {$notifiable->fullname}!")
             ->line("This is a friendly reminder that your appointment is in **{$timeLabel}**.")
             ->line("**Doctor:** {$doctorName}")

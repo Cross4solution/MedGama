@@ -20,7 +20,7 @@
                                         </div>
                                     </td>
                                     <td style="vertical-align:middle;">
-                                        <span style="font-size:24px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">MedGama</span>
+                                        <span style="font-size:24px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">MedaGama</span>
                                     </td>
                                 </tr>
                             </table>
@@ -43,7 +43,7 @@
                     </tr>
                     <tr>
                         <td style="padding:0 40px 32px;">
-                            <p style="margin:0;font-size:11px;color:#9ca3af;text-align:center;">MedGama Healthcare Platform &bull; <a href="https://medgama.com" style="color:#dc2626;text-decoration:none;">medgama.com</a></p>
+                            <p style="margin:0;font-size:11px;color:#9ca3af;text-align:center;">MedaGama Healthcare Platform &bull; <a href="https://medagama.com" style="color:#dc2626;text-decoration:none;">medagama.com</a></p>
                         </td>
                     </tr>
                 </table>

@@ -1,7 +1,7 @@
-# MedGama — Backend Geliştirici Rehberi
+# MedaGama — Backend Geliştirici Rehberi
 
 > **Son Güncelleme:** 17 Şubat 2026  
-> **Proje:** MedGama — Dijital Sağlık Platformu  
+> **Proje:** MedaGama — Dijital Sağlık Platformu  
 > **Backend Altyapı:** Mindbricks (Node.js, otomatik kod üretimi)  
 > **Frontend:** React 19 + TailwindCSS (ayrı repo/dizin)
 
@@ -9,14 +9,14 @@
 
 ## 1. Genel Bakış
 
-MedGama, hastaları doktorlar ve kliniklerle buluşturan kapsamlı bir dijital sağlık platformudur. Backend altyapısı **Mindbricks** platformu üzerinden otomatik olarak üretilmiş ve deploy edilmiştir.
+MedaGama, hastaları doktorlar ve kliniklerle buluşturan kapsamlı bir dijital sağlık platformudur. Backend altyapısı **Mindbricks** platformu üzerinden otomatik olarak üretilmiş ve deploy edilmiştir.
 
 ### Mimari Şema
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    FRONTEND (React)                      │
-│              Vercel'de deploy — medgama.com               │
+│              Vercel'de deploy — medagama.com               │
 └──────────┬──────────┬──────────┬──────────┬─────────────┘
            │          │          │          │
            ▼          ▼          ▼          ▼
@@ -549,7 +549,7 @@ POST   /m2m/archivedclinicrecord/create
 
 ## 8. Multi-Tenancy (Çoklu Kiracılık)
 
-MedGama **clinic = tenant** modelini kullanır.
+MedaGama **clinic = tenant** modelini kullanır.
 
 ### Kurallar
 

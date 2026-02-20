@@ -5,7 +5,7 @@ return [
     'documentations' => [
         'default' => [
             'api' => [
-                'title' => 'MedGama API',
+                'title' => 'MedaGama API',
             ],
 
             'routes' => [

@@ -48,7 +48,7 @@ const INTEGRATIONS = [
     required: true,
     features: ['Insurance eligibility check', 'Provision query (Provizyon)', 'Invoice submission (Fatura)', 'Claim tracking (Hak Ediş)', 'Drug approval (İlaç Onay)'],
     fields: [
-      { key: 'username', label: 'Medula Username', type: 'text', value: 'medgama_clinic', required: true },
+      { key: 'username', label: 'Medula Username', type: 'text', value: 'medagama_clinic', required: true },
       { key: 'password', label: 'Medula Password', type: 'password', value: '••••••••', required: true },
       { key: 'facility_code', label: 'SGK Facility Code', type: 'text', value: '34-01-0042', required: true },
       { key: 'branch_code', label: 'Branch Code (Branş Kodu)', type: 'text', value: '4400', required: true },

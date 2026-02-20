@@ -337,8 +337,8 @@ const LoginPage = ({ role = 'patient' }) => {
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-4 sm:mb-6">
         <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-          <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
-          <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedGama</span>
+          <img src="/images/logo/crm-logo.jpg" alt="MedaGama" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
+          <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedaGama</span>
         </div>
         <h1 className="text-lg font-bold text-gray-900 mb-0.5">{t(config.titleKey)}</h1>
         <p className="text-xs text-gray-500">{t(config.subtitleKey)}</p>
@@ -470,7 +470,7 @@ const LoginPage = ({ role = 'patient' }) => {
         <meta property="og:description" content={t(config.metaDescKey)} />
         <meta property="og:type" content="website" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href={`https://medgama.com${role === 'patient' ? '/login' : role === 'doctor' ? '/doctor-login' : '/clinic-login'}`} />
+        <link rel="canonical" href={`https://medagama.com${role === 'patient' ? '/login' : role === 'doctor' ? '/doctor-login' : '/clinic-login'}`} />
       </Helmet>
 
       <div className="min-h-screen w-full flex relative overflow-hidden">

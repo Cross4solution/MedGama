@@ -32,7 +32,7 @@ class AppointmentCancelledNotification extends Notification implements ShouldQue
         if ($this->recipientRole === 'doctor') {
             $patientName = $appt->patient?->fullname ?? 'A patient';
             return (new MailMessage)
-                ->subject('MedGama — Appointment Cancelled')
+                ->subject('MedaGama — Appointment Cancelled')
                 ->greeting("Hello, Dr. {$notifiable->fullname}")
                 ->line("An appointment has been cancelled.")
                 ->line("**Patient:** {$patientName}")
@@ -45,7 +45,7 @@ class AppointmentCancelledNotification extends Notification implements ShouldQue
 
         $doctorName = $appt->doctor?->fullname ?? 'Your doctor';
         return (new MailMessage)
-            ->subject('MedGama — Appointment Cancelled')
+            ->subject('MedaGama — Appointment Cancelled')
             ->greeting("Hello, {$notifiable->fullname}")
             ->line('We\'re sorry to inform you that your appointment has been cancelled.')
             ->line("**Doctor:** {$doctorName}")

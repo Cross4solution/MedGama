@@ -1,4 +1,4 @@
-# MedGama Backend API
+# MedaGama Backend API
 
 Dijital sağlık ve randevu yönetim platformu. Laravel 11 tabanlı RESTful API.
 
@@ -6,7 +6,7 @@ Dijital sağlık ve randevu yönetim platformu. Laravel 11 tabanlı RESTful API.
 
 ## Proje Hakkında
 
-MedGama, hastaları doktorlar ve kliniklerle buluşturan kapsamlı bir dijital sağlık platformudur.
+MedaGama, hastaları doktorlar ve kliniklerle buluşturan kapsamlı bir dijital sağlık platformudur.
 
 **Temel Özellikler:**
 - Hasta / Doktor / Klinik / Admin çoklu rol sistemi
@@ -49,8 +49,8 @@ MedGama, hastaları doktorlar ve kliniklerle buluşturan kapsamlı bir dijital s
 
 ```bash
 # 1. Repo'yu klonla
-git clone https://github.com/Cross4solution/MedGama.git
-cd MedGama/backend
+git clone https://github.com/Cross4solution/MedaGama.git
+cd MedaGama/backend
 
 # 2. Bağımlılıkları yükle
 composer install
@@ -82,10 +82,10 @@ php artisan reverb:start --host=0.0.0.0 --port=6001
 | Rol | Email | Şifre |
 |-----|-------|-------|
 | **Admin** | admin@admin.com | admin123 |
-| **Klinik** | clinic@medgama.com | clinic123 |
-| **Doktor** | doctor@medgama.com | doctor123 |
-| **Hasta** | patient@medgama.com | patient123 |
-| **Hasta 2** | zeynep@medgama.com | patient123 |
+| **Klinik** | clinic@medagama.com | clinic123 |
+| **Doktor** | doctor@medagama.com | doctor123 |
+| **Hasta** | patient@medagama.com | patient123 |
+| **Hasta 2** | zeynep@medagama.com | patient123 |
 
 ---
 
@@ -204,7 +204,7 @@ Frontend React uygulaması Vercel'de host edilir.
 
 **Önemli Frontend Env Değişkenleri (Vercel):**
 ```
-REACT_APP_API_BASE=https://medgama-production.up.railway.app/api
+REACT_APP_API_BASE=https://medagama-production.up.railway.app/api
 ```
 
 **CORS Notu:** Backend'de `CORS_ALLOWED_ORIGINS` Vercel domain'ini içermeli ve `supports_credentials=true` olmalı.

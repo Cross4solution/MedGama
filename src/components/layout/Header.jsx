@@ -172,12 +172,12 @@ const Header = () => {
               <Link to={logoTo} onClick={closeMenu} className="flex items-center space-x-2 cursor-pointer select-none ml-9 sm:ml-9">
                 <img
                   src="/images/logo/crm-logo.jpg"
-                  alt="MedGama Logo"
+                  alt="MedaGama Logo"
                   className="h-8 md:h-9 w-auto object-contain rounded"
                   loading="eager"
                   decoding="async"
                 />
-                <span className="text-[17px] font-bold text-gray-900 tracking-tight">MedGama</span>
+                <span className="text-[17px] font-bold text-gray-900 tracking-tight">MedaGama</span>
               </Link>
             );
           })()}

@@ -59,9 +59,9 @@ const MOCK_APPOINTMENTS = [
 ];
 
 const MOCK_URGENT_NOTES = [
-  { id: 1, type: 'critical', from: 'MedGama System', message: 'Lab results for Mehmet Ozkan show abnormal values — requires immediate review.', time: '8 min ago', read: false },
+  { id: 1, type: 'critical', from: 'MedaGama System', message: 'Lab results for Mehmet Ozkan show abnormal values — requires immediate review.', time: '8 min ago', read: false },
   { id: 2, type: 'warning', from: 'Secretary', message: 'Patient Fatma Koc requested urgent appointment reschedule for tomorrow.', time: '25 min ago', read: false },
-  { id: 3, type: 'info', from: 'MedGama', message: 'New prescription regulation update effective from March 1st. Please review.', time: '1 hour ago', read: true },
+  { id: 3, type: 'info', from: 'MedaGama', message: 'New prescription regulation update effective from March 1st. Please review.', time: '1 hour ago', read: true },
   { id: 4, type: 'warning', from: 'Secretary', message: 'Insurance pre-authorization pending for Elif Arslan procedure.', time: '2 hours ago', read: true },
   { id: 5, type: 'info', from: 'System', message: 'Monthly report for January is ready for review.', time: '3 hours ago', read: true },
 ];

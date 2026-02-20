@@ -363,7 +363,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const displayText = expanded ? item.text : truncate(item.text);
   const isTruncated = !expanded && item?.text && displayText !== item.text;
   // Derive LinkedIn-like actor/meta fields
-  const actorName = item?.actor?.name || item?.title || 'MedGama';
+  const actorName = item?.actor?.name || item?.title || 'MedaGama';
   const actorTitle = item?.actor?.title || item?.subtitle || 'Healthcare';
   const actorAvatar = item?.actor?.avatarUrl || avatarUrl;
   const timeAgo = item?.timeAgo || '1 gün';

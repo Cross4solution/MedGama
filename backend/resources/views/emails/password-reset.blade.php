@@ -22,7 +22,7 @@
                                         </div>
                                     </td>
                                     <td style="vertical-align:middle;">
-                                        <span style="font-size:24px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">MedGama</span>
+                                        <span style="font-size:24px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">MedaGama</span>
                                     </td>
                                 </tr>
                             </table>
@@ -77,7 +77,7 @@
                     <tr>
                         <td style="padding:24px 40px 32px;text-align:center;">
                             <p style="margin:0 0 6px;font-size:12px;color:#9ca3af;">
-                                This email was sent by <strong style="color:#6b7280;">MedGama</strong>
+                                This email was sent by <strong style="color:#6b7280;">MedaGama</strong>
                             </p>
                             <p style="margin:0;font-size:11px;color:#d1d5db;">
                                 Medical Tourism & Healthcare Platform

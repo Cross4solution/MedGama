@@ -786,7 +786,7 @@ export default function Profile() {
                         const pageW = doc.internal.pageSize.getWidth();
                         let y = 18;
 
-                        doc.setFontSize(20); doc.setTextColor(13, 148, 136); doc.text('MedGama', 14, y);
+                        doc.setFontSize(20); doc.setTextColor(13, 148, 136); doc.text('MedaGama', 14, y);
                         doc.setFontSize(10); doc.setTextColor(100); doc.text('Personal Data Report - GDPR Art. 20', 14, y + 7);
                         doc.text('Generated: ' + dateStr, pageW - 14, y + 7, { align: 'right' });
                         y += 12; doc.setDrawColor(13, 148, 136); doc.setLineWidth(0.7); doc.line(14, y, pageW - 14, y); y += 10;
@@ -850,10 +850,10 @@ export default function Profile() {
                         y = doc.lastAutoTable.finalY + 14;
 
                         doc.setFontSize(8); doc.setTextColor(156, 163, 175);
-                        doc.text('This report was generated automatically by MedGama in compliance with GDPR Article 20.', pageW / 2, y, { align: 'center' });
-                        doc.text('For questions, contact dpo@medgama.com', pageW / 2, y + 5, { align: 'center' });
+                        doc.text('This report was generated automatically by MedaGama in compliance with GDPR Article 20.', pageW / 2, y, { align: 'center' });
+                        doc.text('For questions, contact dpo@medagama.com', pageW / 2, y + 5, { align: 'center' });
 
-                        doc.save('medgama-data-' + new Date().toISOString().split('T')[0] + '.pdf');
+                        doc.save('medagama-data-' + new Date().toISOString().split('T')[0] + '.pdf');
                         showToast('PDF downloaded successfully');
                       } catch (err) {
                         console.error('PDF generation error:', err);
@@ -889,7 +889,7 @@ export default function Profile() {
                       const csv = '\uFEFF' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
                       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                       const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a'); a.href = url; a.download = `medgama-data-${new Date().toISOString().split('T')[0]}.csv`;
+                      const a = document.createElement('a'); a.href = url; a.download = `medagama-data-${new Date().toISOString().split('T')[0]}.csv`;
                       document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
                       setSaving(false);
                       showToast('CSV exported — open with Excel or Google Sheets');

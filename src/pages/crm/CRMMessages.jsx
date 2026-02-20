@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 const MOCK_CONVERSATIONS = [
   { id: 1, name: 'Zeynep Kaya', avatar: null, online: true, lastMessage: 'Thank you doctor, I will follow the prescription.', lastTime: '10:32', unread: 0, type: 'patient', starred: false },
   { id: 2, name: 'Ali Yilmaz', avatar: null, online: false, lastMessage: 'When should I come for the follow-up?', lastTime: '09:45', unread: 2, type: 'patient', starred: true },
-  { id: 3, name: 'MedGama System', avatar: null, online: true, lastMessage: 'New appointment request from Burak Sahin.', lastTime: '09:12', unread: 1, type: 'system', starred: false },
+  { id: 3, name: 'MedaGama System', avatar: null, online: true, lastMessage: 'New appointment request from Burak Sahin.', lastTime: '09:12', unread: 1, type: 'system', starred: false },
   { id: 4, name: 'Selin Acar', avatar: null, online: true, lastMessage: 'I uploaded my test results to the portal.', lastTime: 'Yesterday', unread: 0, type: 'patient', starred: false },
   { id: 5, name: 'Secretary - Aylin', avatar: null, online: true, lastMessage: 'Dr., your 14:00 appointment has been rescheduled to 15:00.', lastTime: 'Yesterday', unread: 0, type: 'staff', starred: true },
   { id: 6, name: 'Mehmet Ozkan', avatar: null, online: false, lastMessage: 'My blood sugar levels have been unstable this week.', lastTime: 'Yesterday', unread: 3, type: 'patient', starred: false },

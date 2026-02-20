@@ -31,10 +31,10 @@ const PrivacyPopup = ({ setShowPrivacyPopup }) => {
         </div>
 
         <p><strong>1. DATA CONTROLLER (Art. 13(1)(a) GDPR)</strong></p>
-        <p>MedGama Health Technologies ("Company") processes your personal data as a data controller under the General Data Protection Regulation (GDPR) and applicable data protection laws.</p>
+        <p>MedaGama Health Technologies ("Company") processes your personal data as a data controller under the General Data Protection Regulation (GDPR) and applicable data protection laws.</p>
         
         <p><strong>2. DATA PROTECTION OFFICER (Art. 37-39 GDPR)</strong></p>
-        <p>Contact our DPO at: <span className="text-teal-600">dpo@medgama.com</span></p>
+        <p>Contact our DPO at: <span className="text-teal-600">dpo@medagama.com</span></p>
         
         <p><strong>3. PERSONAL DATA WE COLLECT (Art. 13(1)(d) GDPR)</strong></p>
         <p>3.1. <strong>Identity Data:</strong> First name, last name, date of birth, profile photo</p>
@@ -76,12 +76,12 @@ const PrivacyPopup = ({ setShowPrivacyPopup }) => {
         <p>8.8. Right to Lodge a Complaint with a supervisory authority (Art. 77)</p>
         
         <p><strong>9. EXERCISING YOUR RIGHTS</strong></p>
-        <p>Email: <span className="text-teal-600">dpo@medgama.com</span> or visit our <a href="/data-rights" className="text-teal-600 font-medium underline underline-offset-2">Data Privacy Rights</a> page.</p>
+        <p>Email: <span className="text-teal-600">dpo@medagama.com</span> or visit our <a href="/data-rights" className="text-teal-600 font-medium underline underline-offset-2">Data Privacy Rights</a> page.</p>
         <p>Response Time: Within 30 days (extendable by 60 days for complex requests)</p>
         
         <p><strong>10. CONTACT</strong></p>
-        <p>Data Protection Officer: <span className="text-teal-600">dpo@medgama.com</span></p>
-        <p>Privacy inquiries: <span className="text-teal-600">privacy@medgama.com</span></p>
+        <p>Data Protection Officer: <span className="text-teal-600">dpo@medagama.com</span></p>
+        <p>Privacy inquiries: <span className="text-teal-600">privacy@medagama.com</span></p>
       </div>
       <div className="mt-6 flex items-center justify-between">
         <a href="/privacy-policy" className="text-xs text-teal-600 hover:text-teal-700 font-medium underline underline-offset-2">

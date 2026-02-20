@@ -22,7 +22,7 @@
                                         </div>
                                     </td>
                                     <td style="vertical-align:middle;">
-                                        <span style="font-size:24px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">MedGama</span>
+                                        <span style="font-size:24px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">MedaGama</span>
                                     </td>
                                 </tr>
                             </table>
@@ -35,7 +35,7 @@
                         <td style="padding:36px 40px 20px;">
                             <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#111827;">Verify your email</h1>
                             <p style="margin:0 0 24px;font-size:15px;color:#6b7280;line-height:1.6;">
-                                Hi <strong style="color:#374151;">{{ $userName }}</strong>, welcome to MedGama! Please use the verification code below to confirm your email address.
+                                Hi <strong style="color:#374151;">{{ $userName }}</strong>, welcome to MedaGama! Please use the verification code below to confirm your email address.
                             </p>
                         </td>
                     </tr>
@@ -77,7 +77,7 @@
                     <tr>
                         <td style="padding:24px 40px 32px;text-align:center;">
                             <p style="margin:0 0 6px;font-size:12px;color:#9ca3af;">
-                                This email was sent by <strong style="color:#6b7280;">MedGama</strong>
+                                This email was sent by <strong style="color:#6b7280;">MedaGama</strong>
                             </p>
                             <p style="margin:0;font-size:11px;color:#d1d5db;">
                                 Medical Tourism & Healthcare Platform

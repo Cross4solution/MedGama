@@ -29,7 +29,7 @@ class AppointmentConfirmedNotification extends Notification implements ShouldQue
         $doctorName = $appt->doctor?->fullname ?? 'Your doctor';
 
         $mail = (new MailMessage)
-            ->subject('MedGama — Appointment Confirmed')
+            ->subject('MedaGama — Appointment Confirmed')
             ->greeting("Great news, {$notifiable->fullname}!")
             ->line('Your appointment has been confirmed by the doctor.')
             ->line("**Doctor:** {$doctorName}")

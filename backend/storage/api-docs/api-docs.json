@@ -1,11 +1,11 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "MedGama Telehealth API",
-        "description": "## MedGama — Professional Telehealth Platform API\n\n### Authentication\nAll protected endpoints require a **Bearer token** via the `Authorization` header.\nObtain a token from `POST /api/auth/login`.\n\n### Compliance & Security Notes\n- **Encryption at Rest (AES-256-CBC):** All sensitive health data fields (`doctor_note`, `confirmation_note`, `answers`, `medical_history`, `description`) are encrypted using Laravel's Encrypted Casts with the application's `APP_KEY`. Data is stored as ciphertext in the database and automatically decrypted when accessed through Eloquent models.\n- **Health Data Audit Logging (HIPAA §164.312):** Every access to patient health data (appointments, patient records, digital anamnesis) is recorded in the `health_data_audit_logs` table with: accessor ID, patient ID, resource type, resource ID, IP address, user agent, and timestamp.\n- **GDPR Art. 5(1)(e) — Data Retention:** Soft-deleted records are permanently pruned after their legal retention period expires (User: 3 years, Health data: 10 years) via Laravel's `MassPrunable` trait, scheduled daily at 03:00.\n- **GDPR Art. 17 — Right to Erasure:** Account deletion soft-deletes user data. After the retention period, `model:prune` permanently removes it.\n- **GDPR Art. 20 — Data Portability:** `GET /api/auth/profile/data-export` provides a full JSON export of all personal data.\n- **KVKK Art. 7 — Data Destruction:** Aligned with GDPR pruning schedule.\n\n### Error Response Format (Global)\nAll API errors return a consistent JSON structure:\n```json\n{\n  \"success\": false,\n  \"message\": \"Human-readable error message\",\n  \"code\": \"ERROR_CODE\"\n}\n```\n\n| HTTP | Code | Description |\n|------|------|-------------|\n| 401 | UNAUTHENTICATED | Missing or invalid token |\n| 403 | FORBIDDEN | Insufficient permissions |\n| 404 | RESOURCE_NOT_FOUND | Model not found |\n| 422 | VALIDATION_ERROR | Validation failed (includes `errors` object) |\n| 429 | RATE_LIMIT_EXCEEDED | Too many requests |\n| 500 | DATABASE_ERROR | Database query failure |\n| 500 | INTERNAL_ERROR | Unexpected server error |\n\n### WebSocket Events (Laravel Broadcasting)\n| Channel | Event | Payload |\n|---------|-------|---------|\n| `private-chat.{conversationId}` | `message.sent` | ChatMessageResource |\n| `private-chat.{conversationId}` | `user.typing` | `{user_id, user_name, is_typing}` |",
+        "title": "MedaGama Telehealth API",
+        "description": "## MedaGama — Professional Telehealth Platform API\n\n### Authentication\nAll protected endpoints require a **Bearer token** via the `Authorization` header.\nObtain a token from `POST /api/auth/login`.\n\n### Compliance & Security Notes\n- **Encryption at Rest (AES-256-CBC):** All sensitive health data fields (`doctor_note`, `confirmation_note`, `answers`, `medical_history`, `description`) are encrypted using Laravel's Encrypted Casts with the application's `APP_KEY`. Data is stored as ciphertext in the database and automatically decrypted when accessed through Eloquent models.\n- **Health Data Audit Logging (HIPAA §164.312):** Every access to patient health data (appointments, patient records, digital anamnesis) is recorded in the `health_data_audit_logs` table with: accessor ID, patient ID, resource type, resource ID, IP address, user agent, and timestamp.\n- **GDPR Art. 5(1)(e) — Data Retention:** Soft-deleted records are permanently pruned after their legal retention period expires (User: 3 years, Health data: 10 years) via Laravel's `MassPrunable` trait, scheduled daily at 03:00.\n- **GDPR Art. 17 — Right to Erasure:** Account deletion soft-deletes user data. After the retention period, `model:prune` permanently removes it.\n- **GDPR Art. 20 — Data Portability:** `GET /api/auth/profile/data-export` provides a full JSON export of all personal data.\n- **KVKK Art. 7 — Data Destruction:** Aligned with GDPR pruning schedule.\n\n### Error Response Format (Global)\nAll API errors return a consistent JSON structure:\n```json\n{\n  \"success\": false,\n  \"message\": \"Human-readable error message\",\n  \"code\": \"ERROR_CODE\"\n}\n```\n\n| HTTP | Code | Description |\n|------|------|-------------|\n| 401 | UNAUTHENTICATED | Missing or invalid token |\n| 403 | FORBIDDEN | Insufficient permissions |\n| 404 | RESOURCE_NOT_FOUND | Model not found |\n| 422 | VALIDATION_ERROR | Validation failed (includes `errors` object) |\n| 429 | RATE_LIMIT_EXCEEDED | Too many requests |\n| 500 | DATABASE_ERROR | Database query failure |\n| 500 | INTERNAL_ERROR | Unexpected server error |\n\n### WebSocket Events (Laravel Broadcasting)\n| Channel | Event | Payload |\n|---------|-------|---------|\n| `private-chat.{conversationId}` | `message.sent` | ChatMessageResource |\n| `private-chat.{conversationId}` | `user.typing` | `{user_id, user_name, is_typing}` |",
         "contact": {
-            "name": "MedGama Dev Team",
-            "email": "dev@medgama.com"
+            "name": "MedaGama Dev Team",
+            "email": "dev@medagama.com"
         },
         "version": "1.0.0"
     },
@@ -15,7 +15,7 @@
             "description": "Local Development"
         },
         {
-            "url": "https://api.medgama.com/api",
+            "url": "https://api.medagama.com/api",
             "description": "Production"
         }
     ],
@@ -1725,7 +1725,7 @@
             "ErrorResponse": {
                 "properties": {
                     "success": {
-                        "description": "╔══════════════════════════════════════════════════════════════════╗\n║  MedGama API — OpenAPI 3.0 Specification                       ║\n║  GDPR / KVKK / HIPAA Compliant Telehealth Platform             ║\n╚══════════════════════════════════════════════════════════════════╝",
+                        "description": "╔══════════════════════════════════════════════════════════════════╗\n║  MedaGama API — OpenAPI 3.0 Specification                       ║\n║  GDPR / KVKK / HIPAA Compliant Telehealth Platform             ║\n╚══════════════════════════════════════════════════════════════════╝",
                         "type": "boolean",
                         "example": false
                     },

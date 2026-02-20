@@ -30,7 +30,7 @@ class AppointmentBookedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'MedGama — Appointment Booked',
+            subject: 'MedaGama — Appointment Booked',
         );
     }
 

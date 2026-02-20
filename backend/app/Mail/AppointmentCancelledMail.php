@@ -28,7 +28,7 @@ class AppointmentCancelledMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'MedGama — Appointment Cancelled',
+            subject: 'MedaGama — Appointment Cancelled',
         );
     }
 

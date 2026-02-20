@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang='tr'><head><meta charset='utf-8'>
-<title>MedGama Development Report</title>
+<title>MedaGama Development Report</title>
 <style>
   @page { size: A4; margin: 18mm 14mm; }
   * { box-sizing: border-box; }
@@ -58,7 +58,7 @@
 </style>
 </head><body>
 
-<h1>MedGama — Development Report</h1>
+<h1>MedaGama — Development Report</h1>
 <h3>new-development Branch | Full Sprint Summary</h3>
 
 <div class='summary-box'>
@@ -92,8 +92,8 @@
   </div>
 </div>
 
-<h1>MedGama — Development Report</h1>
-<h3>new-development Branch | Full Sprint Summary</h3></p><p><hr></p><p><h2>Executive Summary</h2></p><p>Bu sprint kapsamında MedGama platformu üzerinde <strong>142 commit</strong> ile kapsamlı geliştirmeler yapılmıştır. Çalışmalar üç ana kategoride yoğunlaşmıştır:</p><p>1. <strong>UI/UX Modernizasyonu</strong> — 20+ sayfa ve bileşen sıfırdan yeniden tasarlandı
+<h1>MedaGama — Development Report</h1>
+<h3>new-development Branch | Full Sprint Summary</h3></p><p><hr></p><p><h2>Executive Summary</h2></p><p>Bu sprint kapsamında MedaGama platformu üzerinde <strong>142 commit</strong> ile kapsamlı geliştirmeler yapılmıştır. Çalışmalar üç ana kategoride yoğunlaşmıştır:</p><p>1. <strong>UI/UX Modernizasyonu</strong> — 20+ sayfa ve bileşen sıfırdan yeniden tasarlandı
 2. <strong>Performans Optimizasyonu</strong> — İlk yükleme süresi %97 azaltıldı
 3. <strong>Güvenlik Sertleştirmesi</strong> — 7 kritik güvenlik iyileştirmesi uygulandı</p><p><strong>Toplam:</strong> 429 dosya değiştirildi | 120.155+ satır eklendi | 142 commit</p><p><hr></p><p><h2>1. Baştan Yeniden Tasarlanan Sayfalar & Bileşenler</h2></p><p>Platformun tamamı modern, profesyonel ve tutarlı bir tasarım diline kavuşturuldu. Aşağıdaki sayfalar ve bileşenler <strong>sıfırdan yeniden tasarlandı:</strong></p><p><h3>🏠 Ana Sayfalar</h3></p><p><table><thead><tr><th>Sayfa</th><th>Yapılan Değişiklikler</th></tr></thead><tbody><tr><td><strong>Ana Sayfa (HomeV2)</strong></td><td>Hero section, gradient arka plan, blur efektli görsel, "Explore" CTA butonu, modern layout</td></tr><tr><td><strong>Explore Timeline</strong></td><td>LinkedIn benzeri tek sütun tasarım, birleşik filtre sidebar'ı, sonsuz kaydırma (infinite scroll), konum izni akışı, ülke/uzmanlık filtreleri</td></tr><tr><td><strong>Clinic Detail</strong></td><td>Modern hero section, yeniden tasarlanan 5 tab (Overview, Gallery, Before/After, Doctors, Reviews), sidebar iletişim kartları, akreditasyon badge'leri</td></tr><tr><td><strong>Doctor Profile</strong></td><td>Yeni hero cover görseli, galeri lightbox, modern bilgi kartları, online danışmanlık/randevu/mesaj butonları</td></tr><tr><td><strong>Post Detail</strong></td><td>Backdrop blur header, kart-baloncuk yorumlar, modern aksiyon barı, teal renk vurguları</td></tr></tbody></table>
 <h3>🔐 Kimlik Doğrulama Sayfaları</h3></p><p><table><thead><tr><th>Sayfa</th><th>Yapılan Değişiklikler</th></tr></thead><tbody><tr><td><strong>Login (Patient)</strong></td><td>Profesyonel gradient arka plan, iki sütunlu layout (bilgi + form), SSL/HIPAA badge'leri, Google OAuth entegrasyonu</td></tr><tr><td><strong>Doctor Login</strong></td><td>Teal gradient tema, doktor özelinde bilgi paneli, Google OAuth, mobil uyumlu responsive tasarım</td></tr><tr><td><strong>Clinic Login</strong></td><td>Klinik temalı gradient, özellik listesi, modern form tasarımı</td></tr><tr><td><strong>Register Form</strong></td><td>Modern segmented control (Patient/Doctor/Clinic), çok adımlı form (2 step), ülke/şehir combobox, tıbbi geçmiş tag'leri</td></tr><tr><td><strong>Forgot Password</strong></td><td>Tutarlı gradient tema, minimal form tasarımı</td></tr></tbody></table>
@@ -125,7 +125,7 @@ X-XSS-Protection: 1; mode=block               → Tarayıcı XSS filtresini akti
 <hr></p><p><h2>5. Teknik Borç Azaltma</h2></p><p><li>Kullanılmayan dosyalar ve bağımlılıklar temizlendi</li>
 <li>429 dosyada 120.000+ satır kod düzenlendi</li>
 <li>Lint uyarıları giderildi (unused imports, vars)</li>
-<li>Kod tekrarları azaltıldı (reusable component'ler)</li></p><p><hr></p><p><h2>Sonuç</h2></p><p>Bu sprint ile MedGama platformu:</p><p>✅ <strong>%97 daha hızlı</strong> ilk yükleme süresi (10 MB → 265 KB)  
+<li>Kod tekrarları azaltıldı (reusable component'ler)</li></p><p><hr></p><p><h2>Sonuç</h2></p><p>Bu sprint ile MedaGama platformu:</p><p>✅ <strong>%97 daha hızlı</strong> ilk yükleme süresi (10 MB → 265 KB)  
 ✅ <strong>250 ülke</strong> desteği ile gerçek anlamda global platform  
 ✅ <strong>7 katmanlı güvenlik</strong> sertleştirmesi  
 ✅ <strong>Modern, profesyonel UI</strong> — tüm sayfalar yeniden tasarlandı  

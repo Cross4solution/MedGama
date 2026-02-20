@@ -36,7 +36,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "https://medgama.soulm8.co",
+  "proxy": "https://medagama.soulm8.co",
   "eslintConfig": {
     "extends": [
       "react-app",

@@ -252,7 +252,7 @@ const AuthPages = () => {
                 <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 border border-white/20">
                   <Heart className="w-10 h-10" />
                 </div>
-                <h2 className="text-4xl font-bold mb-4 leading-tight">Welcome to<br />MedGama</h2>
+                <h2 className="text-4xl font-bold mb-4 leading-tight">Welcome to<br />MedaGama</h2>
                 <p className="text-base text-teal-100/90 mb-10 leading-relaxed">Your trusted platform for healthcare services, expert doctors, and modern treatment methods — all in one place.</p>
 
                 {/* Features */}

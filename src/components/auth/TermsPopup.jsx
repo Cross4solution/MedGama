@@ -28,7 +28,7 @@ const TermsPopup = ({ setShowTermsPopup }) => {
         </div>
 
         <p><strong>1. PARTIES AND SUBJECT</strong></p>
-        <p>These Terms of Use ("Terms") constitute a legal agreement between MedGama Health Technologies ("Company") and individuals using the platform ("User"). The platform is provided to search for healthcare services, book appointments, and manage health information.</p>
+        <p>These Terms of Use ("Terms") constitute a legal agreement between MedaGama Health Technologies ("Company") and individuals using the platform ("User"). The platform is provided to search for healthcare services, book appointments, and manage health information.</p>
         
         <p><strong>2. SCOPE OF SERVICE AND LIMITATIONS</strong></p>
         <p>2.1. Services provided through the platform do not constitute medical advice, diagnosis, or treatment. Information is for informational purposes only.</p>
@@ -44,7 +44,7 @@ const TermsPopup = ({ setShowTermsPopup }) => {
         <p>4.1. Your personal data is processed in accordance with the GDPR (EU) 2016/679 and our <a href="/privacy-policy" className="text-teal-600 font-medium underline underline-offset-2">Privacy Policy</a>.</p>
         <p>4.2. Health data (special category data under Art. 9 GDPR) is only processed with your explicit consent.</p>
         <p>4.3. You have the right to access, rectify, delete, restrict, and port your data at any time via our <a href="/data-rights" className="text-teal-600 font-medium underline underline-offset-2">Data Rights</a> page.</p>
-        <p>4.4. Our Data Protection Officer can be reached at <span className="text-teal-600">dpo@medgama.com</span>.</p>
+        <p>4.4. Our Data Protection Officer can be reached at <span className="text-teal-600">dpo@medagama.com</span>.</p>
         
         <p><strong>5. INTELLECTUAL PROPERTY RIGHTS</strong></p>
         <p>5.1. The platform content, design, and software are protected by the Company's intellectual property rights.</p>
@@ -64,8 +64,8 @@ const TermsPopup = ({ setShowTermsPopup }) => {
         <p>8.2. The laws of the Republic of Turkey shall apply, without prejudice to mandatory EU consumer protection and GDPR provisions.</p>
         
         <p><strong>9. CONTACT</strong></p>
-        <p>General inquiries: <span className="text-teal-600">info@medgama.com</span></p>
-        <p>Data Protection Officer: <span className="text-teal-600">dpo@medgama.com</span></p>
+        <p>General inquiries: <span className="text-teal-600">info@medagama.com</span></p>
+        <p>Data Protection Officer: <span className="text-teal-600">dpo@medagama.com</span></p>
       </div>
       <div className="mt-6 flex items-center justify-between">
         <a href="/terms-of-service" className="text-xs text-teal-600 hover:text-teal-700 font-medium underline underline-offset-2">

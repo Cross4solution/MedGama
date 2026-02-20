@@ -1,4 +1,4 @@
-# MedGama — Production Deployment Guide
+# MedaGama — Production Deployment Guide
 
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
@@ -14,15 +14,15 @@
 ## Prerequisites
 
 - Docker Engine 24+ & Docker Compose v2
-- Domain names: `medgama.com` + `api.medgama.com` pointing to your server
+- Domain names: `medagama.com` + `api.medagama.com` pointing to your server
 - Minimum server: 2 vCPU, 4GB RAM, 40GB SSD
 
 ## Quick Start
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Cross4solution/MedGama.git
-cd MedGama
+git clone https://github.com/Cross4solution/MedaGama.git
+cd MedaGama
 
 # 2. Configure backend environment
 cp backend/.env.example backend/.env
@@ -33,9 +33,9 @@ docker-compose run --rm app php artisan key:generate
 
 # 4. Build frontend
 npm ci --legacy-peer-deps
-REACT_APP_API_BASE=https://api.medgama.com/api \
+REACT_APP_API_BASE=https://api.medagama.com/api \
 REACT_APP_REVERB_APP_KEY=your-reverb-app-key \
-REACT_APP_REVERB_HOST=api.medgama.com \
+REACT_APP_REVERB_HOST=api.medagama.com \
 REACT_APP_REVERB_PORT=443 \
 npx react-scripts build
 
@@ -63,13 +63,13 @@ docker-compose exec app php artisan view:cache
 # 2. Get initial certificate:
 docker-compose run --rm certbot certonly \
   --webroot -w /var/www/certbot \
-  -d medgama.com -d www.medgama.com -d api.medgama.com \
-  --email admin@medgama.com --agree-tos --no-eff-email
+  -d medagama.com -d www.medagama.com -d api.medagama.com \
+  --email admin@medagama.com --agree-tos --no-eff-email
 
-# 3. Certificates are saved to docker/ssl/live/medgama.com/
+# 3. Certificates are saved to docker/ssl/live/medagama.com/
 # 4. Create symlinks:
-ln -s live/medgama.com/fullchain.pem docker/ssl/fullchain.pem
-ln -s live/medgama.com/privkey.pem docker/ssl/privkey.pem
+ln -s live/medagama.com/fullchain.pem docker/ssl/fullchain.pem
+ln -s live/medagama.com/privkey.pem docker/ssl/privkey.pem
 
 # 5. Restart nginx with full SSL config
 docker-compose restart nginx
@@ -92,7 +92,7 @@ cp your-privkey.pem docker/ssl/privkey.pem
 ```
 Client (Browser)
     │
-    │  wss://api.medgama.com/app/{key}
+    │  wss://api.medagama.com/app/{key}
     │
     ▼
 ┌─────────────────────────┐
@@ -123,7 +123,7 @@ Client (Browser)
 
 ```env
 BROADCAST_CONNECTION=reverb
-REVERB_APP_ID=medgama
+REVERB_APP_ID=medagama
 REVERB_APP_KEY=your-reverb-app-key        # Generate: openssl rand -hex 16
 REVERB_APP_SECRET=your-reverb-app-secret  # Generate: openssl rand -hex 32
 REVERB_HOST=0.0.0.0
@@ -136,7 +136,7 @@ REVERB_SCHEME=https
 ```env
 # For Reverb via Nginx SSL proxy:
 REACT_APP_REVERB_APP_KEY=your-reverb-app-key  # Must match backend REVERB_APP_KEY
-REACT_APP_REVERB_HOST=api.medgama.com          # Public domain (NOT internal hostname)
+REACT_APP_REVERB_HOST=api.medagama.com          # Public domain (NOT internal hostname)
 REACT_APP_REVERB_PORT=443                       # Nginx SSL port (NOT 8080)
 ```
 
@@ -172,7 +172,7 @@ The `/broadcasting/auth` endpoint is handled by Laravel (PHP-FPM) through the st
 | `APP_KEY` | `base64:...` | Generate with `php artisan key:generate` |
 | `SESSION_ENCRYPT` | `true` | Encrypts session data |
 | `SESSION_SECURE_COOKIE` | `true` | Cookies only sent over HTTPS |
-| `SESSION_DOMAIN` | `.medgama.com` | Shared across subdomains |
+| `SESSION_DOMAIN` | `.medagama.com` | Shared across subdomains |
 | `LOG_LEVEL` | `warning` | Reduces log noise in production |
 | `CACHE_STORE` | `redis` | Fast in-memory cache |
 | `QUEUE_CONNECTION` | `redis` | Async job processing |
@@ -221,7 +221,7 @@ docker-compose exec app php artisan config:cache
 docker-compose exec app php artisan queue:restart
 
 # Database backup
-docker-compose exec postgres pg_dump -U medgama medgama > backup_$(date +%Y%m%d).sql
+docker-compose exec postgres pg_dump -U medagama medagama > backup_$(date +%Y%m%d).sql
 
 # Scale queue workers
 docker-compose up -d --scale queue=3

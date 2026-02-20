@@ -43,7 +43,7 @@ const AdminLayout = ({ children }) => {
           <Shield className="w-5 h-5 text-white" />
         </div>
         <div>
-          <span className="text-base font-bold text-white tracking-tight">MedGama</span>
+          <span className="text-base font-bold text-white tracking-tight">MedaGama</span>
           <span className="block text-[10px] text-gray-400 font-medium tracking-wider uppercase">Admin Panel</span>
         </div>
       </Link>

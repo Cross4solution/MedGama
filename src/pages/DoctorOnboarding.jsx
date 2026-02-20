@@ -441,7 +441,7 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
               <div className="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
                 <PartyPopper className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Welcome to MedGama!</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">Welcome to MedaGama!</h2>
               <p className="text-teal-100 text-sm">Your profile is now complete</p>
             </div>
             <div className="px-8 py-6 text-center">

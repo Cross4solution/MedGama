@@ -6,15 +6,15 @@ use OpenApi\Attributes as OA;
 
 /**
  * ╔══════════════════════════════════════════════════════════════════╗
- * ║  MedGama API — OpenAPI 3.0 Specification                       ║
+ * ║  MedaGama API — OpenAPI 3.0 Specification                       ║
  * ║  GDPR / KVKK / HIPAA Compliant Telehealth Platform             ║
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 #[OA\Info(
     version: '1.0.0',
-    title: 'MedGama Telehealth API',
+    title: 'MedaGama Telehealth API',
     description: <<<'DESC'
-## MedGama — Professional Telehealth Platform API
+## MedaGama — Professional Telehealth Platform API
 
 ### Authentication
 All protected endpoints require a **Bearer token** via the `Authorization` header.
@@ -54,10 +54,10 @@ All API errors return a consistent JSON structure:
 | `private-chat.{conversationId}` | `message.sent` | ChatMessageResource |
 | `private-chat.{conversationId}` | `user.typing` | `{user_id, user_name, is_typing}` |
 DESC,
-    contact: new OA\Contact(name: 'MedGama Dev Team', email: 'dev@medgama.com'),
+    contact: new OA\Contact(name: 'MedaGama Dev Team', email: 'dev@medagama.com'),
 )]
 #[OA\Server(url: 'http://127.0.0.1:8001/api', description: 'Local Development')]
-#[OA\Server(url: 'https://api.medgama.com/api', description: 'Production')]
+#[OA\Server(url: 'https://api.medagama.com/api', description: 'Production')]
 #[OA\SecurityScheme(
     securityScheme: 'sanctum',
     type: 'apiKey',

@@ -272,7 +272,7 @@ class AuthService
         DB::transaction(function () use ($user) {
             $user->update([
                 'is_active'      => false,
-                'email'          => 'deleted_' . $user->id . '@removed.medgama.com',
+                'email'          => 'deleted_' . $user->id . '@removed.medagama.com',
                 'fullname'       => 'Deleted User',
                 'avatar'         => null,
                 'mobile'         => null,

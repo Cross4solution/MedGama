@@ -7,7 +7,7 @@ const NotFoundPage = () => {
     <div className="min-h-[80vh] flex items-center justify-center px-4">
       <div className="text-center max-w-lg">
         <div className="mb-6">
-          <img src="/images/logo/crm-logo.jpg" alt="MedGama" className="h-16 w-16 mx-auto rounded-2xl shadow-lg" />
+          <img src="/images/logo/crm-logo.jpg" alt="MedaGama" className="h-16 w-16 mx-auto rounded-2xl shadow-lg" />
         </div>
         <h1 className="text-7xl font-extrabold text-teal-600 mb-2">404</h1>
         <h2 className="text-2xl font-bold text-gray-900 mb-3">Sayfa Bulunamadı</h2>

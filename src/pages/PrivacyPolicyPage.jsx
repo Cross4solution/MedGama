@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
           </div>
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
             <p className="text-sm text-blue-800 leading-relaxed">
-              This Privacy Policy explains how MedGama Health Technologies ("MedGama", "we", "us", "our") collects, 
+              This Privacy Policy explains how MedaGama Health Technologies ("MedaGama", "we", "us", "our") collects, 
               uses, discloses, and protects your personal data in accordance with the <strong>General Data Protection 
               Regulation (EU) 2016/679 (GDPR)</strong> and applicable national data protection laws. This policy applies 
               to all users of our platform, including patients, doctors, and clinics.
@@ -46,9 +46,9 @@ export default function PrivacyPolicyPage() {
               The data controller responsible for your personal data is:
             </p>
             <div className="bg-gray-100 rounded-xl p-4 text-sm text-gray-700 space-y-1">
-              <p><strong>MedGama Health Technologies</strong></p>
-              <p>Email: <a href="mailto:privacy@medgama.com" className="text-teal-600 underline underline-offset-2">privacy@medgama.com</a></p>
-              <p>Website: <a href="https://medgama.com" className="text-teal-600 underline underline-offset-2">medgama.com</a></p>
+              <p><strong>MedaGama Health Technologies</strong></p>
+              <p>Email: <a href="mailto:privacy@medagama.com" className="text-teal-600 underline underline-offset-2">privacy@medagama.com</a></p>
+              <p>Website: <a href="https://medagama.com" className="text-teal-600 underline underline-offset-2">medagama.com</a></p>
             </div>
           </div>
 
@@ -61,7 +61,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="bg-gray-100 rounded-xl p-4 text-sm text-gray-700 space-y-1">
               <p><strong>Data Protection Officer</strong></p>
-              <p>Email: <a href="mailto:dpo@medgama.com" className="text-teal-600 underline underline-offset-2">dpo@medgama.com</a></p>
+              <p>Email: <a href="mailto:dpo@medagama.com" className="text-teal-600 underline underline-offset-2">dpo@medagama.com</a></p>
             </div>
           </div>
 
@@ -266,7 +266,7 @@ export default function PrivacyPolicyPage() {
                   Data Privacy Rights Center
                 </Link>{' '}
                 or email us at{' '}
-                <a href="mailto:dpo@medgama.com" className="font-semibold underline underline-offset-2">dpo@medgama.com</a>.
+                <a href="mailto:dpo@medagama.com" className="font-semibold underline underline-offset-2">dpo@medagama.com</a>.
                 We will respond within <strong>30 days</strong>.
               </p>
             </div>
@@ -321,9 +321,9 @@ export default function PrivacyPolicyPage() {
               If you have any questions about this Privacy Policy or wish to exercise your data protection rights:
             </p>
             <div className="bg-gray-100 rounded-xl p-4 text-sm text-gray-700 space-y-1">
-              <p><strong>MedGama Health Technologies</strong></p>
-              <p>Data Protection Officer: <a href="mailto:dpo@medgama.com" className="text-teal-600 underline underline-offset-2">dpo@medgama.com</a></p>
-              <p>General privacy inquiries: <a href="mailto:privacy@medgama.com" className="text-teal-600 underline underline-offset-2">privacy@medgama.com</a></p>
+              <p><strong>MedaGama Health Technologies</strong></p>
+              <p>Data Protection Officer: <a href="mailto:dpo@medagama.com" className="text-teal-600 underline underline-offset-2">dpo@medagama.com</a></p>
+              <p>General privacy inquiries: <a href="mailto:privacy@medagama.com" className="text-teal-600 underline underline-offset-2">privacy@medagama.com</a></p>
               <p className="mt-2 text-xs text-gray-500">
                 If you are not satisfied with our response, you have the right to lodge a complaint with your local 
                 data protection supervisory authority.
