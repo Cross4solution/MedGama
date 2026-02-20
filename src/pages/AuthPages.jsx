@@ -203,6 +203,8 @@ const AuthPages = () => {
                     setCurrentPage={setCurrentPage}
                     googleId="googleBtnPatientMobile"
                     submitting={submitting}
+                    setShowTermsPopup={setShowTermsPopup}
+                    setShowPrivacyPopup={setShowPrivacyPopup}
                   />
                   <button
                     type="button"
@@ -310,6 +312,8 @@ const AuthPages = () => {
                       setCurrentPage={setCurrentPage}
                       googleId="googleBtnPatientDesktop"
                       submitting={submitting}
+                      setShowTermsPopup={setShowTermsPopup}
+                      setShowPrivacyPopup={setShowPrivacyPopup}
                     />
                     <div className="mt-4">
                       <button

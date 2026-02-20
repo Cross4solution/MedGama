@@ -30,11 +30,9 @@ function MediaImg({ src, alt, className, onClick = undefined }) {
   if (failed) {
     return (
       <div className={`${className} bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center`} onClick={onClick} role={onClick ? 'button' : undefined}>
-        <div className="flex flex-col items-center gap-2 text-gray-400">
-          <div className="w-12 h-12 rounded-full bg-gray-200/80 flex items-center justify-center">
-            <ImageOff className="w-6 h-6" />
-          </div>
-          <span className="text-xs font-medium">Image unavailable</span>
+        <div className="flex flex-col items-center gap-2 text-gray-300">
+          <span className="text-3xl">🖼️</span>
+          <span className="text-[11px] font-medium text-gray-400">This image couldn't be loaded</span>
         </div>
       </div>
     );

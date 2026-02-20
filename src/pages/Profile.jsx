@@ -336,9 +336,13 @@ export default function Profile() {
       // Still update local state so UI stays consistent (avatar preview etc.)
       updateUser({ name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage }, codeUpper);
       const msg = err?.message || '';
-      if (msg.includes('Network') || msg.includes('timeout') || !err?.status) {
+      const status = err?.status || 0;
+      if (msg.includes('Network') || msg.includes('timeout') || !status) {
         // Backend unreachable — profile saved locally, no need to alarm user
         showToast('Profile updated successfully');
+      } else if (status === 401) {
+        // Token expired or invalid — still saved locally
+        showToast('Profile updated locally. Please re-login to sync with server.');
       } else {
         showToast(msg || 'Failed to update profile', 'error');
       }

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Heart, Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Heart, Eye, EyeOff, Mail, Lock, Stethoscope, Building2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const LoginForm = ({ 
@@ -12,7 +12,9 @@ const LoginForm = ({
   handleSubmit, 
   setCurrentPage,
   googleId = 'googleBtn',
-  submitting = false
+  submitting = false,
+  setShowTermsPopup,
+  setShowPrivacyPopup,
 }) => {
   const { t } = useTranslation();
   const { applyApiAuth, fetchCurrentUser } = useAuth();
@@ -179,7 +181,14 @@ const LoginForm = ({
           {submitting ? t('auth.loggingIn') || 'Logging in...' : t('common.login')}
         </button>
         <p className="text-[11px] text-gray-400 text-center leading-relaxed px-2">
-          {t('auth.gdprNotice')}
+          {t('auth.gdprNotice')}{' '}
+          {setShowTermsPopup && (
+            <button type="button" onClick={() => setShowTermsPopup(true)} className="text-blue-500 hover:text-blue-600 hover:underline">{t('auth.termsOfUse', 'Terms of Use')}</button>
+          )}
+          {setShowTermsPopup && setShowPrivacyPopup && <span> · </span>}
+          {setShowPrivacyPopup && (
+            <button type="button" onClick={() => setShowPrivacyPopup(true)} className="text-blue-500 hover:text-blue-600 hover:underline">{t('footer.privacyPolicy', 'Privacy Policy')}</button>
+          )}
         </p>
         <div className="relative my-6 w-full">
           <div className="relative flex justify-center text-sm">
@@ -199,6 +208,27 @@ const LoginForm = ({
             {t('auth.signUp')}
           </button>
         </p>
+
+        {/* Role login switcher */}
+        <div className="w-full pt-3 mt-1 border-t border-gray-100">
+          <p className="text-xs text-gray-400 text-center mb-2.5">Sign in as a different role</p>
+          <div className="flex gap-2">
+            <a
+              href="/doctor-login"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 bg-gray-50 hover:bg-teal-50 hover:border-teal-300 text-gray-600 hover:text-teal-700 text-sm font-medium transition-all"
+            >
+              <Stethoscope className="w-4 h-4" />
+              Doctor
+            </a>
+            <a
+              href="/clinic-login"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 bg-gray-50 hover:bg-blue-50 hover:border-blue-300 text-gray-600 hover:text-blue-700 text-sm font-medium transition-all"
+            >
+              <Building2 className="w-4 h-4" />
+              Clinic
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
