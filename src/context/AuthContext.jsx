@@ -179,7 +179,6 @@ export function AuthProvider({ children }) {
         },
         cache: 'no-store',
         mode: 'cors',
-        credentials: 'include',
       });
       if (resp.status === 404) {
         meUnavailableRef.current = true;
