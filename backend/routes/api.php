@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClinicController;
 use App\Http\Controllers\Api\AppointmentController;
@@ -18,6 +19,26 @@ use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\MediaStreamController;
 use App\Http\Controllers\Api\ClinicAnalyticsController;
 use App\Http\Controllers\Api\SuperAdminController;
+
+/*
+|--------------------------------------------------------------------------
+| Health Check (Railway / Load Balancer)
+|--------------------------------------------------------------------------
+*/
+Route::get('/health', function () {
+    try {
+        DB::connection()->getPdo();
+        $dbOk = true;
+    } catch (\Throwable $e) {
+        $dbOk = false;
+    }
+    return response()->json([
+        'status'  => $dbOk ? 'healthy' : 'degraded',
+        'app'     => config('app.name'),
+        'db'      => $dbOk ? 'connected' : 'disconnected',
+        'time'    => now()->toIso8601String(),
+    ], $dbOk ? 200 : 503);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -314,8 +335,12 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
 
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  TEMPORARY: One-time DB seed route — DELETE AFTER USE           ║
+// ║  Usage: GET /api/system/init-db?key=MedaGama2026SecretInit      ║
 // ╚══════════════════════════════════════════════════════════════════╝
-Route::get('/db-init-secure-2026', function () {
+Route::get('/system/init-db', function (\Illuminate\Http\Request $request) {
+    if ($request->query('key') !== 'MedaGama2026SecretInit') {
+        return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
+    }
     try {
         \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
             '--seed' => true,
@@ -331,6 +356,7 @@ Route::get('/db-init-secure-2026', function () {
         return response()->json([
             'status' => 'error',
             'message' => $e->getMessage(),
+            'trace'   => $e->getTraceAsString(),
         ], 500);
     }
 });

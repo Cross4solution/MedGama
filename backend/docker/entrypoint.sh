@@ -2,7 +2,7 @@
 # Do NOT use set -e — container must start even if DB/migrations fail
 
 echo "╔══════════════════════════════════════════════╗"
-echo "║  MedGama Backend — Starting...               ║"
+echo "║  MedaGama Backend — Starting...              ║"
 echo "╚══════════════════════════════════════════════╝"
 
 # ── Railway provides PORT env var ──
@@ -22,11 +22,10 @@ php artisan storage:link 2>/dev/null || true
 php artisan config:cache 2>/dev/null || true
 php artisan route:cache 2>/dev/null || true
 
-# ── EMERGENCY: Drop all tables, re-migrate, and seed from scratch ──
-echo "→ Running migrate:fresh --seed --force..."
-php artisan migrate:fresh --seed --force 2>&1 || echo "⚠ migrate:fresh failed"
-echo "→ Database reset complete."
+# ── Run pending migrations (safe — does NOT drop tables) ──
+echo "→ Running pending migrations..."
+php artisan migrate --force 2>&1 || echo "⚠ migrate failed (DB may not be ready yet)"
 
-# ── Start Supervisor IMMEDIATELY (Nginx + PHP-FPM start first → healthcheck passes) ──
+# ── Start Supervisor (Nginx + PHP-FPM + Queue) ──
 echo "→ Starting Supervisor..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

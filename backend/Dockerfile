@@ -1,5 +1,5 @@
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  MedGama Backend — Railway Production Dockerfile               ║
+# ║  MedaGama Backend — Railway Production Dockerfile              ║
 # ║  Single container: Nginx + PHP-FPM + Queue + Reverb            ║
 # ║  Managed by Supervisor                                         ║
 # ╚══════════════════════════════════════════════════════════════════╝
