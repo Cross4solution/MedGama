@@ -22,18 +22,10 @@ php artisan storage:link 2>/dev/null || true
 php artisan config:cache 2>/dev/null || true
 php artisan route:cache 2>/dev/null || true
 
-# ── Run migrations ──
-echo "→ Running migrations..."
-php artisan migrate --force 2>&1 || echo "⚠ Migration failed (DB may not be ready yet)"
-
-# ── Seed if tables are empty (first deploy) ──
-USER_COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" 2>/dev/null | tail -1)
-if [ "$USER_COUNT" = "0" ] || [ -z "$USER_COUNT" ]; then
-    echo "→ Database empty — running seeder..."
-    php artisan db:seed --force 2>&1 || echo "⚠ Seed failed"
-else
-    echo "→ Database has $USER_COUNT users — skipping seed"
-fi
+# ── EMERGENCY: Drop all tables, re-migrate, and seed from scratch ──
+echo "→ Running migrate:fresh --seed --force..."
+php artisan migrate:fresh --seed --force 2>&1 || echo "⚠ migrate:fresh failed"
+echo "→ Database reset complete."
 
 # ── Start Supervisor IMMEDIATELY (Nginx + PHP-FPM start first → healthcheck passes) ──
 echo "→ Starting Supervisor..."
