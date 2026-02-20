@@ -99,7 +99,7 @@ const AuthPages = () => {
     try {
       setSubmitting(true);
       if (currentPage === 'login') {
-        const res = await login(formData.email, formData.password);
+        const res = await login(formData.email, formData.password, !!formData.rememberMe);
         if (res?.requires_email_verification) {
           notify({ type: 'info', message: 'Lütfen e-posta adresinizi doğrulayın.' });
           navigate('/verify-email');

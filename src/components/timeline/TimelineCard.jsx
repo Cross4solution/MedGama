@@ -30,9 +30,9 @@ function MediaImg({ src, alt, className, onClick = undefined }) {
   if (failed) {
     return (
       <div className={`${className} bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center`} onClick={onClick} role={onClick ? 'button' : undefined}>
-        <div className="flex flex-col items-center gap-2 text-gray-300">
-          <span className="text-3xl">🖼️</span>
-          <span className="text-[11px] font-medium text-gray-400">This image couldn't be loaded</span>
+        <div className="flex flex-col items-center gap-2">
+          <ImageOff className="w-8 h-8 text-gray-300" strokeWidth={1.5} />
+          <span className="text-[11px] font-medium text-gray-400">Görsel yüklenemedi</span>
         </div>
       </div>
     );
@@ -253,7 +253,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     if (!showCommentsPreview || commentsLoaded || !item?.id) return;
     medStreamAPI.comments(item.id, { per_page: 50 }).then(res => {
       const list = res?.data || [];
-      setApiComments(list.map(c => ({
+      const mapped = list.map(c => ({
         id: c.id,
         author_id: c.author_id || c.author?.id,
         name: c.author?.fullname || 'User',
@@ -273,7 +273,11 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           parent_id: r.parent_id || c.id,
           replies: [],
         })),
-      })));
+      }));
+      setApiComments(mapped);
+      // Sync real comment count (top-level + all replies)
+      const realCount = mapped.reduce((sum, c) => sum + 1 + (c.replies?.length || 0), 0);
+      setCommentCount(realCount);
       setCommentsLoaded(true);
     }).catch(() => setCommentsLoaded(true));
   }, [showCommentsPreview, commentsLoaded, item?.id]);
@@ -427,6 +431,8 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
         const serverLiked = res?.liked ?? next;
         likedRef.current = serverLiked;
         setLiked(serverLiked);
+        // Sync count from server if available
+        if (res?.like_count !== undefined) setLikeCount(Number(res.like_count));
       }).catch((err) => {
         console.warn('Like failed:', err?.message || err);
         likedRef.current = prev;
@@ -797,7 +803,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     <>
                       {visibleComments.map((c) => (
                         <div key={c.id} className="py-2.5">
-                          <div className="flex items-start gap-2">
+                          <div className="flex items-start gap-2 relative group/comment">
                             <AvatarImg src={c.avatar} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-baseline justify-between gap-2">
@@ -805,27 +811,29 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                                   <span className="text-[13px] font-semibold text-[rgba(0,0,0,0.9)]">{c.name}</span>
                                   {c.title && <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">{c.title}</p>}
                                 </div>
-                                <span className="text-[11px] text-gray-400 flex-shrink-0">{c.time}</span>
+                                <div className="flex items-center gap-1.5 flex-shrink-0">
+                                  <span className="text-[11px] text-gray-400">{c.time}</span>
+                                  {(c.author_id === authUser?.id || c.user_id === authUser?.id) && (
+                                    <button type="button" className="p-1 rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover/comment:opacity-100 transition-all" title="Delete" onClick={(e)=>{
+                                      e.stopPropagation();
+                                      setApiComments(prev => prev.filter(x => x.id !== c.id));
+                                      setLocalComments(prev => prev.filter(x => x.id !== c.id));
+                                      setCommentCount(cnt => Math.max(0, cnt - 1));
+                                      if (!String(c.id).startsWith('lc-')) {
+                                        medStreamAPI.deleteComment(c.id).catch(() => {
+                                          setApiComments(prev => [...prev, c]);
+                                          setCommentCount(cnt => cnt + 1);
+                                        });
+                                      }
+                                    }}>
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                               <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">{c.text}</p>
                               <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
                                 <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
-                                {(c.author_id === authUser?.id || c.user_id === authUser?.id) && (
-                                  <button type="button" className="font-semibold hover:text-red-500 hover:underline transition-colors ml-2" onClick={(e)=>{
-                                    e.stopPropagation();
-                                    // Optimistic remove
-                                    setApiComments(prev => prev.filter(x => x.id !== c.id));
-                                    setLocalComments(prev => prev.filter(x => x.id !== c.id));
-                                    setCommentCount(cnt => Math.max(0, cnt - 1));
-                                    if (!String(c.id).startsWith('lc-')) {
-                                      medStreamAPI.deleteComment(c.id).catch(() => {
-                                        // Rollback on error
-                                        setApiComments(prev => [...prev, c]);
-                                        setCommentCount(cnt => cnt + 1);
-                                      });
-                                    }
-                                  }}>Delete</button>
-                                )}
                               </div>
                               {/* Nested replies */}
                               {Array.isArray(c.replies) && c.replies.length > 0 && (

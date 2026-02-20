@@ -163,6 +163,16 @@ export default function TelehealthAppointmentPage() {
     return dateStr(day) < todayStr;
   }, [dateStr, todayStr]);
 
+  // Check if a time slot is in the past (only relevant when selectedDate === today)
+  const isPastTimeSlot = useCallback((time) => {
+    if (!time || selectedDate !== todayStr) return false;
+    const now = new Date();
+    const bufferMs = 15 * 60 * 1000; // 15 minute buffer
+    const [hh, mm] = time.split(':').map(Number);
+    const slotDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm);
+    return slotDate.getTime() <= now.getTime() + bufferMs;
+  }, [selectedDate, todayStr]);
+
   const handleSubmit = async () => {
     if (!user) { setError('Randevu oluşturmak için lütfen giriş yapın.'); return; }
     if (!selectedDoctor) { setError('Lütfen bir doktor seçin.'); return; }
@@ -604,19 +614,25 @@ export default function TelehealthAppointmentPage() {
                             <span>{group.icon}</span> {group.label}
                           </p>
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                            {group.slots.map(time => (
-                              <button
-                                key={time}
-                                onClick={() => setSelectedTime(time)}
-                                className={`h-10 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                                  selectedTime === time
-                                    ? 'bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-md shadow-teal-200/50'
-                                    : 'bg-gray-50 text-gray-700 border border-gray-200 hover:border-teal-300 hover:bg-teal-50'
-                                }`}
-                              >
-                                {time}
-                              </button>
-                            ))}
+                            {group.slots.map(time => {
+                              const past = isPastTimeSlot(time);
+                              return (
+                                <button
+                                  key={time}
+                                  disabled={past}
+                                  onClick={() => setSelectedTime(time)}
+                                  className={`h-10 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                                    past
+                                      ? 'bg-gray-100 text-gray-300 border border-gray-100 cursor-not-allowed line-through'
+                                      : selectedTime === time
+                                        ? 'bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-md shadow-teal-200/50'
+                                        : 'bg-gray-50 text-gray-700 border border-gray-200 hover:border-teal-300 hover:bg-teal-50'
+                                  }`}
+                                >
+                                  {time}
+                                </button>
+                              );
+                            })}
                           </div>
                         </div>
                       ))}

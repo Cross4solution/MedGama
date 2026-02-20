@@ -14,11 +14,11 @@ const DashboardRedirect = () => {
 
     const role = user?.role || user?.role_id || 'patient';
 
-    if (role === 'doctor') {
-      navigate('/crm', { replace: true });
-    } else if (role === 'superAdmin' || role === 'saasAdmin') {
+    if (role === 'superAdmin' || role === 'saasAdmin') {
       navigate('/admin', { replace: true });
     } else {
+      // All users (doctor, clinic, patient) land on main platform
+      // CRM is a separate premium module accessed via sidebar
       navigate('/explore', { replace: true });
     }
   }, [user, navigate]);

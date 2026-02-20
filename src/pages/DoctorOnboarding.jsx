@@ -76,6 +76,7 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
   // Step 2
   const [services, setServices] = useState([{ name: '', description: '' }]);
   const [prices, setPrices] = useState([{ label: '', min: '', max: '', currency: '₺' }]);
+  const [consultationDuration, setConsultationDuration] = useState('30');
   const [onlineConsultation, setOnlineConsultation] = useState(false);
 
   // Step 3
@@ -109,6 +110,7 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
         if (p.certifications?.length) setCertifications(p.certifications);
         if (p.services?.length) setServices(p.services);
         if (p.prices?.length) setPrices(p.prices);
+        if (p.consultation_duration) setConsultationDuration(String(p.consultation_duration));
         if (p.online_consultation) setOnlineConsultation(p.online_consultation);
         if (p.address) setAddress(p.address);
         if (p.phone) {
@@ -141,7 +143,7 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
       const stepData = {};
       if (step === 0) Object.assign(stepData, { title, specialty, experience_years: experienceYears, license_number: licenseNumber, bio, languages });
       else if (step === 1) Object.assign(stepData, { education: education.filter(e => e.degree || e.school), certifications: certifications.filter(c => c.name) });
-      else if (step === 2) Object.assign(stepData, { services: services.filter(s => s.name), prices: prices.filter(p => p.label), online_consultation: onlineConsultation });
+      else if (step === 2) Object.assign(stepData, { services: services.filter(s => s.name), prices: prices.filter(p => p.label), consultation_duration: Number(consultationDuration) || 30, online_consultation: onlineConsultation });
       else if (step === 3) Object.assign(stepData, { address, phone, website });
       await doctorProfileAPI.updateOnboarding({ step, ...stepData });
       if (nextStep !== undefined) setStep(nextStep);
@@ -339,6 +341,21 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
                         </div>
                       ))}
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Consultation Duration</label>
+                    <select
+                      value={consultationDuration}
+                      onChange={e => setConsultationDuration(e.target.value)}
+                      className="w-full sm:w-48 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none bg-white"
+                    >
+                      <option value="15">15 minutes</option>
+                      <option value="20">20 minutes</option>
+                      <option value="30">30 minutes</option>
+                      <option value="45">45 minutes</option>
+                      <option value="60">60 minutes</option>
+                    </select>
+                    <p className="text-xs text-gray-400 mt-1">Appointment slots will be generated based on this duration</p>
                   </div>
                   <label className="flex items-center gap-3 p-3 bg-teal-50/50 rounded-xl border border-teal-100 cursor-pointer">
                     <input type="checkbox" checked={onlineConsultation} onChange={e => setOnlineConsultation(e.target.checked)} className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500" />

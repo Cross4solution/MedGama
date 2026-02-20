@@ -159,6 +159,9 @@ const LoginForm = ({
           <label className="flex items-center space-x-2">
             <input
               type="checkbox"
+              name="rememberMe"
+              checked={!!formData.rememberMe}
+              onChange={handleInputChange}
               className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <span className="text-xs sm:text-sm text-gray-600">{t('auth.rememberMe')}</span>
@@ -215,14 +218,14 @@ const LoginForm = ({
           <div className="flex gap-2">
             <a
               href="/doctor-login"
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 bg-gray-50 hover:bg-teal-50 hover:border-teal-300 text-gray-600 hover:text-teal-700 text-sm font-medium transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700 text-sm font-semibold transition-all"
             >
               <Stethoscope className="w-4 h-4" />
               Doctor
             </a>
             <a
               href="/clinic-login"
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 bg-gray-50 hover:bg-blue-50 hover:border-blue-300 text-gray-600 hover:text-blue-700 text-sm font-medium transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-blue-200 bg-blue-50/60 hover:bg-blue-100 hover:border-blue-400 text-blue-700 text-sm font-semibold transition-all"
             >
               <Building2 className="w-4 h-4" />
               Clinic

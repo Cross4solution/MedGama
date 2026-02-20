@@ -113,7 +113,7 @@ const DoctorLogin = () => {
       if (res?.requires_email_verification) {
         navigate('/verify-email', { replace: true });
       } else {
-        navigate('/crm', { replace: true });
+        navigate('/explore', { replace: true });
       }
       return;
     } catch (err) {

@@ -50,6 +50,8 @@ const getNavSections = (t) => [
   },
 ];
 
+const CRM_ALLOWED_ROLES = ['doctor', 'clinic', 'clinicOwner', 'superAdmin', 'saasAdmin'];
+
 const CRMLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -58,6 +60,18 @@ const CRMLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const { t } = useTranslation();
   const NAV_SECTIONS = getNavSections(t);
+
+  // CRM access control — redirect unauthorized users
+  React.useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true });
+      return;
+    }
+    const role = user?.role || user?.role_id || 'patient';
+    if (!CRM_ALLOWED_ROLES.includes(role)) {
+      navigate('/explore', { replace: true });
+    }
+  }, [user, navigate]);
 
   const isActive = (path) => {
     if (path === '/crm') return location.pathname === '/crm';

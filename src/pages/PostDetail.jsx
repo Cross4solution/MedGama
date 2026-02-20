@@ -173,6 +173,7 @@ export default function PostDetail() {
         const serverLiked = res?.liked ?? next;
         likedRef.current = serverLiked;
         setLiked(serverLiked);
+        if (res?.like_count !== undefined) setLikeCount(Number(res.like_count));
       }).catch((err) => {
         console.warn('Like failed:', err?.message || err);
         likedRef.current = prev;
@@ -282,13 +283,22 @@ export default function PostDetail() {
     const onKey = (e) => {
       if (e.key === 'ArrowLeft') goPrev();
       if (e.key === 'ArrowRight') goNext();
-      if (e.key === 'Escape') navigate(-1);
+      if (e.key === 'Escape') goBack();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   // Share URL (same approach as TimelineCard)
+  // Smart back navigation: if user came via direct link (no history), go to /explore
+  const goBack = React.useCallback(() => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/explore', { replace: true });
+    }
+  }, [navigate]);
+
   const shareUrl = (() => {
     try {
       const origin = typeof window !== 'undefined' && window.location ? window.location.origin : '';
@@ -440,7 +450,7 @@ export default function PostDetail() {
     ) : !item ? (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-3xl mx-auto px-4 py-16 text-center text-gray-600">
-          <button onClick={() => navigate(-1)} className="mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+          <button onClick={goBack} className="mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors">
             <ChevronLeft className="w-4 h-4" /> Back
           </button>
           <div className="rounded-2xl border bg-white p-10 shadow-sm">
@@ -464,7 +474,7 @@ export default function PostDetail() {
           )}
 
           {/* Close button */}
-          <button onClick={() => navigate(-1)} className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white/90 hover:text-white flex items-center justify-center transition-all" aria-label="Close">
+          <button onClick={goBack} className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white/90 hover:text-white flex items-center justify-center transition-all" aria-label="Close">
             <X className="w-5 h-5" />
           </button>
 
