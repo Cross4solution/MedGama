@@ -311,3 +311,26 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     Route::put('/reports/{id}/approve', [SuperAdminController::class, 'approveReport']);
     Route::delete('/reports/{id}/remove', [SuperAdminController::class, 'removeReport']);
 });
+
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  TEMPORARY: One-time DB seed route — DELETE AFTER USE           ║
+// ╚══════════════════════════════════════════════════════════════════╝
+Route::get('/db-init-secure-2026', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
+            '--seed' => true,
+            '--force' => true,
+        ]);
+        $output = \Illuminate\Support\Facades\Artisan::output();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Database migrated and seeded successfully.',
+            'output' => $output,
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+});
