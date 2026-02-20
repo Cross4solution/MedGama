@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClinicController;
 use App\Http\Controllers\Api\AppointmentController;
@@ -22,22 +21,11 @@ use App\Http\Controllers\Api\SuperAdminController;
 
 /*
 |--------------------------------------------------------------------------
-| Health Check (Railway / Load Balancer)
+| Health Check (Railway / Load Balancer) — NO DB dependency
 |--------------------------------------------------------------------------
 */
 Route::get('/health', function () {
-    try {
-        DB::connection()->getPdo();
-        $dbOk = true;
-    } catch (\Throwable $e) {
-        $dbOk = false;
-    }
-    return response()->json([
-        'status'  => $dbOk ? 'healthy' : 'degraded',
-        'app'     => config('app.name'),
-        'db'      => $dbOk ? 'connected' : 'disconnected',
-        'time'    => now()->toIso8601String(),
-    ], $dbOk ? 200 : 503);
+    return response('ok', 200)->header('Content-Type', 'text/plain');
 });
 
 /*

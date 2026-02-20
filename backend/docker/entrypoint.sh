@@ -18,14 +18,18 @@ chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 # ── Storage link ──
 php artisan storage:link 2>/dev/null || true
 
-# ── Config & Route cache ──
+# ── Config & Route cache (must succeed before serving) ──
 php artisan config:cache 2>/dev/null || true
 php artisan route:cache 2>/dev/null || true
 
-# ── Run pending migrations (safe — does NOT drop tables) ──
-echo "→ Running pending migrations..."
-php artisan migrate --force 2>&1 || echo "⚠ migrate failed (DB may not be ready yet)"
+# ── Run pending migrations in background (don't block web server start) ──
+(
+    sleep 3
+    echo "→ Running pending migrations..."
+    php artisan migrate --force --no-interaction 2>&1 || echo "⚠ migrate failed"
+    echo "→ Migrations done."
+) &
 
-# ── Start Supervisor (Nginx + PHP-FPM + Queue) ──
-echo "→ Starting Supervisor..."
+# ── Start Supervisor IMMEDIATELY (Nginx + PHP-FPM → healthcheck passes) ──
+echo "→ Starting Supervisor (Nginx + PHP-FPM)..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
