@@ -164,9 +164,9 @@ export default function TelehealthAppointmentPage() {
   }, [dateStr, todayStr]);
 
   const handleSubmit = async () => {
-    if (!user) { setError('Please login to create an appointment.'); return; }
-    if (!selectedDoctor) { setError('Please select a doctor.'); return; }
-    if (!selectedTime) { setError('Please select a time slot.'); return; }
+    if (!user) { setError('Randevu oluşturmak için lütfen giriş yapın.'); return; }
+    if (!selectedDoctor) { setError('Lütfen bir doktor seçin.'); return; }
+    if (!selectedTime) { setError('Lütfen bir saat dilimi seçin.'); return; }
     setSubmitting(true);
     setError('');
     try {
@@ -208,9 +208,9 @@ export default function TelehealthAppointmentPage() {
         const dtIdx = STEPS.findIndex(s => s.key === 'datetime');
         if (dtIdx >= 0) { setStep(dtIdx); setSelectedTime(''); }
       } else if (err?.status === 403) {
-        setError('You do not have permission to create this appointment.');
+        setError('Bu randevuyu oluşturma yetkiniz bulunmuyor.');
       } else {
-        const msg = err?.errors?.appointment_date?.[0] || err?.errors?.doctor_id?.[0] || err?.message || 'Failed to create appointment.';
+        const msg = err?.errors?.appointment_date?.[0] || err?.errors?.doctor_id?.[0] || err?.message || 'Randevu oluşturulamadı. Lütfen tekrar deneyin.';
         setError(msg);
       }
     } finally {

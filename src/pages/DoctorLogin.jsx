@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff, Phone } from 'lucide-react';
+import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff, Phone, Loader2 } from 'lucide-react';
 import PhoneVerification from '../components/auth/PhoneVerification';
 import { useTranslation } from 'react-i18next';
 
@@ -104,7 +104,7 @@ const DoctorLogin = () => {
     setLoading(true);
     setError('');
     if (!formData.email || !formData.password) {
-      setError('Please enter email and password');
+      setError('Lütfen e-posta ve şifrenizi girin.');
       setLoading(false);
       return;
     }
@@ -117,9 +117,9 @@ const DoctorLogin = () => {
       }
       return;
     } catch (err) {
-      if (err?.status === 401) setError(err?.data?.message || 'Invalid credentials');
-      else if (err?.status === 422) setError(err?.data?.message || 'Validation error');
-      else setError(err?.message || 'Unexpected error');
+      if (err?.status === 401) setError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
+      else if (err?.status === 422) setError(err?.message || 'Girdiğiniz bilgilerde hata var.');
+      else setError(err?.message || 'Beklenmeyen bir hata oluştu.');
     } finally {
       setLoading(false);
     }
@@ -240,7 +240,8 @@ const DoctorLogin = () => {
                 </div>
                 {error && <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-xl text-xs">{error}</div>}
                 <button type="submit" disabled={loading}
-                        className="w-full bg-teal-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all disabled:opacity-50">
+                        className="w-full bg-teal-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                   {loading ? t('auth.signingIn') : t('auth.signIn')}
                 </button>
                 <p className="text-[11px] text-gray-400 text-center leading-relaxed px-1">

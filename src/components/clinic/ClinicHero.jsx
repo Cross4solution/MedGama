@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Star, Heart, Minus } from 'lucide-react';
+import { MapPin, Star, Heart, Minus, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function ClinicHero({
@@ -12,6 +12,7 @@ export default function ClinicHero({
   isFavorite,
   onToggleFavorite,
   isFollowing,
+  followLoading,
   onToggleFollow,
   onFollow,
 }) {
@@ -54,12 +55,15 @@ export default function ClinicHero({
             </button>
             <button
               onClick={onToggleFollow || onFollow}
+              disabled={followLoading}
               className={`${isFollowing
                 ? 'bg-white text-teal-700 border-teal-300 hover:bg-teal-50'
-                : 'bg-teal-600 text-white hover:bg-teal-700 border-transparent'} border px-4 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 text-sm font-semibold shadow-sm hover:shadow-md`}
+                : 'bg-teal-600 text-white hover:bg-teal-700 border-transparent'} border px-4 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 text-sm font-semibold shadow-sm hover:shadow-md min-w-[110px] ${followLoading ? 'opacity-60 cursor-wait' : ''}`}
               aria-label={isFollowing ? 'Unfollow' : 'Follow'}
             >
-              {isFollowing ? (
+              {followLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : isFollowing ? (
                 <>
                   <Minus className="w-4 h-4 flex-shrink-0" />
                   <span>{t('common.unfollow')}</span>

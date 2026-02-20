@@ -39,28 +39,35 @@ api.interceptors.response.use(
       }
     }
 
-    // Human-readable message for common status codes
+    // Human-readable Turkish messages for common status codes
     let message;
     if (!error.response) {
-      // No response at all — network error, timeout, or CORS block
       if (error.code === 'ECONNABORTED') {
-        message = 'Request timed out. Please check your connection and try again.';
+        message = 'İstek zaman aşımına uğradı. Lütfen bağlantınızı kontrol edip tekrar deneyin.';
       } else {
-        message = 'Unable to reach the server. Please check your internet connection.';
+        message = 'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.';
       }
     } else {
-      message = data?.message || data?.error || `HTTP ${status}`;
-      if (status === 403 && !data?.message) {
-        message = 'You do not have permission to perform this action.';
-      }
-      if (status === 422 && data?.errors) {
-        // Extract first validation error as the main message
+      // Try to use backend message first, then provide Turkish fallback
+      const rawMsg = data?.message || data?.error || '';
+      if (status === 401) {
+        message = rawMsg || 'Oturum süreniz doldu. Lütfen tekrar giriş yapın.';
+      } else if (status === 403) {
+        message = 'Bu işlemi gerçekleştirme yetkiniz bulunmuyor.';
+      } else if (status === 422 && data?.errors) {
         const firstField = Object.keys(data.errors)[0];
         const firstErr = data.errors[firstField];
-        message = data.message || (Array.isArray(firstErr) ? firstErr[0] : String(firstErr));
-      }
-      if (status === 500 && !data?.message) {
-        message = 'Server error. Please try again later.';
+        message = Array.isArray(firstErr) ? firstErr[0] : String(firstErr);
+      } else if (status === 422) {
+        message = rawMsg || 'Girdiğiniz bilgilerde hata var. Lütfen kontrol edin.';
+      } else if (status === 404) {
+        message = 'Aradığınız kayıt bulunamadı.';
+      } else if (status === 429) {
+        message = 'Çok fazla istek gönderdiniz. Lütfen biraz bekleyin.';
+      } else if (status >= 500) {
+        message = 'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.';
+      } else {
+        message = rawMsg || `Bir hata oluştu (${status})`;
       }
     }
 

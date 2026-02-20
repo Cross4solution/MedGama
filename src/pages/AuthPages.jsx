@@ -65,22 +65,22 @@ const AuthPages = () => {
     const newErrors = {};
 
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'E-posta adresi gereklidir.';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = 'Geçerli bir e-posta adresi girin.';
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Şifre gereklidir.';
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = 'Şifre en az 8 karakter olmalıdır.';
     }
 
     if (currentPage === 'register') {
-      if (!formData.confirmPassword) newErrors.confirmPassword = 'Confirm password is required';
-      if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
-      if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the Terms of Use';
-      if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'You must accept the Privacy Policy to proceed';
+      if (!formData.confirmPassword) newErrors.confirmPassword = 'Şifre tekrarı gereklidir.';
+      if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Şifreler eşleşmiyor.';
+      if (!formData.acceptTerms) newErrors.acceptTerms = 'Kullanım Koşullarını kabul etmelisiniz.';
+      if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'Gizlilik Politikasını kabul etmelisiniz.';
     }
 
     setErrors(newErrors);
@@ -92,7 +92,7 @@ const AuthPages = () => {
     const currentErrors = validateForm();
     if (Object.keys(currentErrors).length) {
       const firstKey = Object.keys(currentErrors)[0];
-      const msg = firstKey ? (currentErrors[firstKey] || 'Please correct the highlighted fields') : 'Please correct the highlighted fields';
+      const msg = firstKey ? (currentErrors[firstKey] || 'Lütfen işaretli alanları düzeltin.') : 'Lütfen işaretli alanları düzeltin.';
       notify({ type: 'error', message: msg });
       return;
     }
@@ -101,15 +101,15 @@ const AuthPages = () => {
       if (currentPage === 'login') {
         const res = await login(formData.email, formData.password);
         if (res?.requires_email_verification) {
-          notify({ type: 'info', message: 'Please verify your email address.' });
+          notify({ type: 'info', message: 'Lütfen e-posta adresinizi doğrulayın.' });
           navigate('/verify-email');
         } else {
-          notify({ type: 'success', message: 'Login successful' });
+          notify({ type: 'success', message: 'Giriş başarılı!' });
           navigate('/dashboard');
         }
       } else if (currentPage === 'register') {
         if (formData.role === 'clinic') {
-          notify({ type: 'info', message: 'Clinic registration will be available soon. Please sign in via clinic portal.' });
+          notify({ type: 'info', message: 'Klinik kaydı yakında aktif olacaktır. Lütfen klinik portalından giriş yapın.' });
           setSubmitting(false);
           navigate('/clinic-login');
           return;
@@ -133,14 +133,14 @@ const AuthPages = () => {
         // If auto-verified (demo mode), go straight to dashboard
         const needsVerification = res?.requires_email_verification ?? res?.data?.requires_email_verification;
         if (needsVerification === false) {
-          notify({ type: 'success', message: res?.message || res?.data?.message || 'Registration successful! Your email has been automatically verified.' });
+          notify({ type: 'success', message: 'Kayıt başarılı! E-posta adresiniz otomatik olarak doğrulandı.' });
           navigate('/dashboard');
         } else {
-          notify({ type: 'success', message: 'Registration successful! Please verify your email.' });
+          notify({ type: 'success', message: 'Kayıt başarılı! Lütfen e-posta adresinizi doğrulayın.' });
           navigate('/verify-email');
         }
       } else {
-        notify({ type: 'info', message: 'Password reset link sent if the email exists.' });
+        notify({ type: 'info', message: 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.' });
       }
     } catch (err) {
       // Extract message from various error shapes
@@ -148,11 +148,10 @@ const AuthPages = () => {
       const message = err?.message || err?.data?.message || err?.response?.data?.message || '';
 
       if (status === 401) {
-        notify({ type: 'error', message: message || 'Invalid credentials. Please check your email and password.' });
+        notify({ type: 'error', message: 'E-posta veya şifre hatalı. Lütfen tekrar deneyin.' });
       } else if (status === 403) {
-        notify({ type: 'error', message: message || 'You do not have permission to perform this action.' });
+        notify({ type: 'error', message: 'Bu işlemi gerçekleştirme yetkiniz bulunmuyor.' });
       } else if (status === 422) {
-        // Validation errors — map backend field names to form field names
         const backendErrors = err?.errors || err?.data?.errors || err?.response?.data?.errors;
         if (backendErrors && typeof backendErrors === 'object') {
           const fieldErrors = {};
@@ -164,14 +163,13 @@ const AuthPages = () => {
           });
           setErrors((prev) => ({ ...prev, ...fieldErrors }));
         }
-        notify({ type: 'error', message: message || 'Please correct the highlighted fields.' });
+        notify({ type: 'error', message: message || 'Lütfen işaretli alanları düzeltin.' });
       } else if (status === 429) {
-        notify({ type: 'error', message: 'Too many attempts. Please wait a moment and try again.' });
+        notify({ type: 'error', message: 'Çok fazla deneme yaptınız. Lütfen biraz bekleyin.' });
       } else if (!status || status === 0) {
-        // Network error / CORS / timeout
-        notify({ type: 'error', message: message || 'Unable to reach the server. Please check your internet connection.' });
+        notify({ type: 'error', message: 'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.' });
       } else {
-        notify({ type: 'error', message: message || 'An unexpected error occurred. Please try again later.' });
+        notify({ type: 'error', message: message || 'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.' });
       }
     } finally {
       setSubmitting(false);

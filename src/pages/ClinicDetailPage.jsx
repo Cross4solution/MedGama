@@ -54,6 +54,7 @@ const ClinicDetailPage = () => {
   const [activeTab, setActiveTab] = useState('genel-bakis');
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
   
   // Prices Tab State
   const [selectedService, setSelectedService] = useState(null);
@@ -141,7 +142,12 @@ const ClinicDetailPage = () => {
               isFavorite={isFavorite}
               onToggleFavorite={guardAction(() => setIsFavorite(!isFavorite))}
               isFollowing={isFollowing}
-              onToggleFollow={guardAction(() => setIsFollowing((v) => !v))}
+              followLoading={followLoading}
+              onToggleFollow={guardAction(() => {
+                setFollowLoading(true);
+                setIsFollowing((v) => !v);
+                setTimeout(() => setFollowLoading(false), 400);
+              })}
               onFollow={() => {}}
             />
 
