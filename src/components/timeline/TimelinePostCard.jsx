@@ -5,10 +5,12 @@ import TimelineButton from './TimelineButton';
 import Badge from '../Badge';
 import { toEnglishTimestamp } from '../../utils/i18n';
 import { useAuth } from '../../context/AuthContext';
+import useAuthGuard from '../../hooks/useAuthGuard';
 import ShareMenu from '../ShareMenu';
 
 export default function TimelinePostCard({ post }) {
   const { user } = useAuth();
+  const { guardAction } = useAuthGuard();
   const isPatient = user?.role === 'patient';
   const badgeVariant = (post?.badge?.color && ['teal','blue','purple','amber','green','red','gray'].includes(post.badge.color)) ? post.badge.color : 'blue';
   return (
@@ -59,11 +61,11 @@ export default function TimelinePostCard({ post }) {
             <>
               {isPatient ? (
                 <>
-                  <button className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm border border-gray-200 bg-gray-100 text-gray-900 font-bold transition-none hover:rounded-md">
+                  <button onClick={guardAction(() => {})} className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm border border-gray-200 bg-gray-100 text-gray-900 font-bold transition-none hover:rounded-md">
                     <Heart className="w-5 h-5" strokeWidth={2.5} />
                     <span>{post.engagement.likes}</span>
                   </button>
-                  <button className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm border border-gray-200 bg-gray-100 text-gray-900 font-bold transition-none hover:rounded-md">
+                  <button onClick={guardAction(() => {})} className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm border border-gray-200 bg-gray-100 text-gray-900 font-bold transition-none hover:rounded-md">
                     <MessageCircle className="w-5 h-5" strokeWidth={2.5} />
                     <span>{post.engagement.comments}</span>
                   </button>
@@ -84,7 +86,7 @@ export default function TimelinePostCard({ post }) {
             </>
           }
           right={!isPatient && post.hasAppointmentButton ? (
-            <TimelineButton className="w-full sm:w-auto">Book Appointment</TimelineButton>
+            <TimelineButton className="w-full sm:w-auto" onClick={guardAction(() => {})}>Book Appointment</TimelineButton>
           ) : null}
         />
       </div>

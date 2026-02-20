@@ -3,8 +3,10 @@ import { Heart, MessageCircle, Share2, User } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import TimelineButton from './TimelineButton';
 import TimelineActionsRow from './TimelineActionsRow';
+import useAuthGuard from '../../hooks/useAuthGuard';
 
 export default function TimelineProReviewCard({ professionalReview }) {
+  const { guardAction } = useAuthGuard();
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
       <div className="p-6 pb-0">
@@ -52,11 +54,11 @@ export default function TimelineProReviewCard({ professionalReview }) {
         <TimelineActionsRow
           left={
             <>
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-red-500">
+              <button onClick={guardAction(() => {})} className="flex items-center space-x-2 text-gray-600 hover:text-red-500">
                 <Heart className="w-5 h-5" />
                 <span>{professionalReview.engagement?.likes ?? 156}</span>
               </button>
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-500">
+              <button onClick={guardAction(() => {})} className="flex items-center space-x-2 text-gray-600 hover:text-blue-500">
                 <MessageCircle className="w-5 h-5" />
                 <span>{professionalReview.engagement?.comments ?? 24}</span>
               </button>

@@ -28,6 +28,11 @@ export default function TelehealthAppointmentPage() {
   const { formatCurrency, country, user } = useAuth();
   const navigate = useNavigate();
 
+  // Redirect unauthenticated users to login
+  useEffect(() => {
+    if (!user) navigate('/login', { replace: true });
+  }, [user, navigate]);
+
   const isDoctor = user?.role_id === 'doctor' || user?.role_id === 'clinicOwner';
   const STEPS = isDoctor ? STEPS_DOCTOR : STEPS_PATIENT;
 
