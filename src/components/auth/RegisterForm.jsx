@@ -244,6 +244,16 @@ const RegisterForm = ({
             </button>
           </div>
           {errors.confirmPassword && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.confirmPassword}</p>}
+          {!errors.confirmPassword && fd.confirmPassword && fd.password && fd.confirmPassword !== fd.password && (
+            <p className="text-amber-500 text-xs mt-1 text-left flex items-center gap-1">
+              <span>⚠</span> Passwords do not match
+            </p>
+          )}
+          {!errors.confirmPassword && fd.confirmPassword && fd.password && fd.confirmPassword === fd.password && fd.password.length >= 6 && (
+            <p className="text-green-500 text-xs mt-1 text-left flex items-center gap-1">
+              <span>✓</span> Passwords match
+            </p>
+          )}
         </div>
         
           </div>

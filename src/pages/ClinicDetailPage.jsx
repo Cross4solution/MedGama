@@ -7,6 +7,7 @@ import Tabs from '../components/tabs/Tabs';
 import ContactActions from '../components/clinic/ContactActions';
 import PriceRangeList from '../components/pricing/PriceRangeList';
 import { useAuth } from '../context/AuthContext';
+import useAuthGuard from '../hooks/useAuthGuard';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI } from '../lib/api';
 
@@ -34,6 +35,7 @@ import {
 
 const ClinicDetailPage = () => {
   const { user } = useAuth();
+  const { guardAction } = useAuthGuard();
   const { t } = useTranslation();
   const { id: clinicParam } = useParams();
   const [apiClinic, setApiClinic] = useState(null);
@@ -137,9 +139,9 @@ const ClinicDetailPage = () => {
               reviews={clinicInfo.reviewCount}
               badgeNode={null}
               isFavorite={isFavorite}
-              onToggleFavorite={() => setIsFavorite(!isFavorite)}
+              onToggleFavorite={guardAction(() => setIsFavorite(!isFavorite))}
               isFollowing={isFollowing}
-              onToggleFollow={() => setIsFollowing((v) => !v)}
+              onToggleFollow={guardAction(() => setIsFollowing((v) => !v))}
               onFollow={() => {}}
             />
 
@@ -154,7 +156,7 @@ const ClinicDetailPage = () => {
 
           {/* Sidebar */}
           <div className="lg:w-80 space-y-4 lg:sticky lg:top-24 h-max">
-            <ContactActions onTelehealth={() => {}} onBook={() => {}} onMessage={() => {}} />
+            <ContactActions onTelehealth={guardAction(() => {})} onBook={guardAction(() => {})} onMessage={guardAction(() => {})} />
             <PriceRangeList items={priceRangesData} />
           </div>
         </div>

@@ -353,6 +353,19 @@ export function AuthProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
+  // Listen for auth:logout event from API interceptor (token expired / 401)
+  useEffect(() => {
+    const handleForceLogout = () => {
+      clearLocalAuth();
+      // Redirect to login if not already there
+      if (window.location.pathname !== '/login' && !window.location.pathname.includes('-login')) {
+        window.location.href = '/login';
+      }
+    };
+    window.addEventListener('auth:logout', handleForceLogout);
+    return () => window.removeEventListener('auth:logout', handleForceLogout);
+  }, [clearLocalAuth]);
+
   return (
     <AuthContext.Provider value={value}>
       {children}

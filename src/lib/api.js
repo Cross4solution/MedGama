@@ -29,12 +29,12 @@ api.interceptors.response.use(
     const data = error.response?.data;
     const code = data?.code || null; // Backend error code: FORBIDDEN, VALIDATION_ERROR, etc.
 
-    // Auto-logout on 401 only for auth-critical endpoints (login, me, etc.)
+    // Auto-logout on 401 for any endpoint except login/register (token expired or invalid)
     if (status === 401) {
       const url = error.config?.url || '';
-      const isAuthEndpoint = url.includes('/auth/') || url.includes('/me');
-      if (isAuthEndpoint) {
-        localStorage.removeItem('auth_state');
+      const isLoginOrRegister = url.includes('/login') || url.includes('/register');
+      if (!isLoginOrRegister) {
+        try { localStorage.removeItem('auth_state'); } catch {}
         window.dispatchEvent(new CustomEvent('auth:logout'));
       }
     }

@@ -22,14 +22,17 @@ import {
 } from 'lucide-react';
 import Tabs from 'components/tabs/Tabs';
 import { doctorAPI } from '../lib/api';
+import useAuthGuard from '../hooks/useAuthGuard';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
 const DoctorProfilePage = () => {
   const { id: doctorId } = useParams();
   const navigate = useNavigate();
+  const { guardAction } = useAuthGuard();
   const [activeTab, setActiveTab] = useState('genel-bakis');
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [doctor, setDoctor] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -133,12 +136,19 @@ const DoctorProfilePage = () => {
               </div>
             </div>
             <button
-              onClick={() => setIsFollowing(!isFollowing)}
-              className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 ${isFollowing
+              onClick={guardAction(() => {
+                setFollowLoading(true);
+                setIsFollowing(f => !f);
+                setTimeout(() => setFollowLoading(false), 400);
+              })}
+              disabled={followLoading}
+              className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 min-w-[110px] ${isFollowing
                 ? 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
-                : 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm'}`}
+                : 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm'} ${followLoading ? 'opacity-60 cursor-wait' : ''}`}
             >
-              {isFollowing ? (
+              {followLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : isFollowing ? (
                 <><Minus className="w-4 h-4" /><span>Following</span></>
               ) : (
                 <><span>+ Follow</span></>
@@ -344,16 +354,16 @@ const DoctorProfilePage = () => {
               </div>
               <div className="p-4 space-y-2.5">
                 {onlineConsultation && (
-                  <button className="w-full bg-teal-600 text-white py-2.5 px-4 rounded-xl hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
+                  <button onClick={guardAction(() => navigate(`/telehealth/${doctorId}`))} className="w-full bg-teal-600 text-white py-2.5 px-4 rounded-xl hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
                     <Video className="w-4 h-4" />
                     <span>Online Consultation</span>
                   </button>
                 )}
-                <button className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
+                <button onClick={guardAction(() => navigate(`/appointments/new?doctor=${doctorId}`))} className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
                   <img src="/images/icon/calender-svgrepo-com.svg" alt="Calendar" className="w-4 h-4 brightness-0 invert" />
                   <span>Book Appointment</span>
                 </button>
-                <button className="w-full bg-violet-600 text-white py-2.5 px-4 rounded-xl hover:bg-violet-700 focus:ring-4 focus:ring-violet-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
+                <button onClick={guardAction(() => navigate(`/messages?to=${doctorId}`))} className="w-full bg-violet-600 text-white py-2.5 px-4 rounded-xl hover:bg-violet-700 focus:ring-4 focus:ring-violet-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
                   <img src="/images/icon/chat-round-line-svgrepo-com.svg" alt="Chat" className="w-4 h-4 brightness-0 invert" />
                   <span>Send Message</span>
                 </button>
