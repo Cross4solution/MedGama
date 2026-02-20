@@ -1,35 +1,17 @@
 #!/bin/bash
-# Do NOT use set -e — container must start even if DB/migrations fail
+# CRITICAL: No artisan commands here — they can hang/crash and block Nginx.
+# Supervisor starts Nginx FIRST → healthcheck passes → then Laravel init runs.
 
-echo "╔══════════════════════════════════════════════╗"
-echo "║  MedaGama Backend — Starting...              ║"
-echo "╚══════════════════════════════════════════════╝"
-
-# ── Railway provides PORT env var ──
 PORT="${PORT:-8080}"
-echo "→ Port: $PORT"
+echo "→ MedaGama starting on port $PORT"
+
+# Replace port placeholder in Nginx config
 sed -i "s/__PORT__/$PORT/g" /etc/nginx/http.d/default.conf
 
-# ── Storage directories ──
+# Ensure writable dirs exist (pure filesystem, no PHP)
 mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
 chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
-# ── Storage link ──
-php artisan storage:link 2>/dev/null || true
-
-# ── Config & Route cache (must succeed before serving) ──
-php artisan config:cache 2>/dev/null || true
-php artisan route:cache 2>/dev/null || true
-
-# ── Run pending migrations in background (don't block web server start) ──
-(
-    sleep 3
-    echo "→ Running pending migrations..."
-    php artisan migrate --force --no-interaction 2>&1 || echo "⚠ migrate failed"
-    echo "→ Migrations done."
-) &
-
-# ── Start Supervisor IMMEDIATELY (Nginx + PHP-FPM → healthcheck passes) ──
-echo "→ Starting Supervisor (Nginx + PHP-FPM)..."
+# Start Supervisor NOW — Nginx answers /health immediately
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

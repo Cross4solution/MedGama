@@ -57,14 +57,15 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Nginx config (Railway provides PORT env var)
+# Remove ALL default nginx configs to avoid port conflicts
+RUN rm -f /etc/nginx/http.d/*.conf 2>/dev/null || true
 COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
-RUN rm -f /etc/nginx/http.d/default.conf.bak
 
 # Supervisor config
 COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# PHP-FPM: listen on socket for Nginx
-RUN sed -i 's|listen = 127.0.0.1:9000|listen = /var/run/php-fpm.sock|' /usr/local/etc/php-fpm.d/zz-docker.conf 2>/dev/null || true
+# PHP-FPM: force unix socket (override any default TCP listener)
+RUN rm -f /usr/local/etc/php-fpm.d/zz-docker.conf 2>/dev/null || true
 COPY docker/php/php-fpm-pool.conf /usr/local/etc/php-fpm.d/zz-railway.conf
 
 WORKDIR /var/www/html
