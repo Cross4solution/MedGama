@@ -1,10 +1,46 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { doctorProfileAPI } from '../lib/api';
 import {
   Stethoscope, GraduationCap, Briefcase, MapPin, Check, ChevronRight, ChevronLeft,
-  Plus, X, Loader2, AlertCircle
+  Plus, X, Loader2, AlertCircle, PartyPopper
 } from 'lucide-react';
+
+const PHONE_CODES = [
+  { code: '+90', flag: '🇹🇷', label: 'TR' },
+  { code: '+49', flag: '🇩🇪', label: 'DE' },
+  { code: '+1', flag: '🇺🇸', label: 'US' },
+  { code: '+44', flag: '🇬🇧', label: 'UK' },
+  { code: '+33', flag: '🇫🇷', label: 'FR' },
+  { code: '+31', flag: '🇳🇱', label: 'NL' },
+  { code: '+39', flag: '🇮🇹', label: 'IT' },
+  { code: '+34', flag: '🇪🇸', label: 'ES' },
+  { code: '+7', flag: '🇷🇺', label: 'RU' },
+  { code: '+966', flag: '🇸🇦', label: 'SA' },
+  { code: '+971', flag: '🇦🇪', label: 'AE' },
+  { code: '+55', flag: '🇧🇷', label: 'BR' },
+  { code: '+351', flag: '🇵🇹', label: 'PT' },
+];
+
+// Format number with thousand separators (Turkish style: 10.000)
+const formatThousands = (val) => {
+  const digits = String(val).replace(/\D/g, '');
+  if (!digits) return '';
+  return Number(digits).toLocaleString('tr-TR');
+};
+
+// Parse formatted price back to raw number string
+const parsePrice = (val) => String(val).replace(/\D/g, '');
+
+// Format phone digits: 5XX XXX XX XX
+const formatPhoneDigits = (val) => {
+  const d = val.replace(/\D/g, '').slice(0, 10);
+  if (d.length <= 3) return d;
+  if (d.length <= 6) return d.slice(0, 3) + ' ' + d.slice(3);
+  if (d.length <= 8) return d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6);
+  return d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6, 8) + ' ' + d.slice(8);
+};
 
 const STEPS = [
   { id: 0, label: 'Professional Info', icon: Stethoscope },
@@ -44,8 +80,16 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
 
   // Step 3
   const [address, setAddress] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phoneCode, setPhoneCode] = useState('+90');
+  const [phoneDigits, setPhoneDigits] = useState('');
   const [website, setWebsite] = useState('');
+
+  // Welcome modal
+  const [showWelcome, setShowWelcome] = useState(false);
+  const navigate = useNavigate();
+
+  // Derived full phone
+  const phone = phoneDigits ? `${phoneCode} ${formatPhoneDigits(phoneDigits)}` : '';
 
   useEffect(() => {
     if (!open) return;
@@ -67,7 +111,16 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
         if (p.prices?.length) setPrices(p.prices);
         if (p.online_consultation) setOnlineConsultation(p.online_consultation);
         if (p.address) setAddress(p.address);
-        if (p.phone) setPhone(p.phone);
+        if (p.phone) {
+          // Parse existing phone into code + digits
+          const match = p.phone.match(/^(\+\d{1,3})\s*(.*)$/);
+          if (match) {
+            setPhoneCode(match[1]);
+            setPhoneDigits(match[2].replace(/\D/g, ''));
+          } else {
+            setPhoneDigits(p.phone.replace(/\D/g, ''));
+          }
+        }
         if (p.website) setWebsite(p.website);
       }
     }).catch(() => {}).finally(() => setLoading(false));
@@ -102,10 +155,16 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
       if (step === 0 && !validateStep0()) return;
       setSaving(true);
       doctorProfileAPI.updateOnboarding({ step: 3, address, phone, website })
-        .then(() => onComplete?.())
+        .then(() => setShowWelcome(true))
         .catch(() => {})
         .finally(() => setSaving(false));
     }
+  };
+
+  const handleWelcomeClose = () => {
+    setShowWelcome(false);
+    onComplete?.();
+    navigate('/dashboard');
   };
 
   const handleBack = () => { if (step > 0) setStep(step - 1); };
@@ -219,7 +278,7 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
                           {education.length > 1 && <button type="button" onClick={() => setEducation(e => e.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>}
                           <input value={edu.degree} onChange={e => { const n = [...education]; n[i].degree = e.target.value; setEducation(n); }} placeholder="Degree" className={smallInputCls} />
                           <input value={edu.school} onChange={e => { const n = [...education]; n[i].school = e.target.value; setEducation(n); }} placeholder="School" className={smallInputCls} />
-                          <input value={edu.year} onChange={e => { const n = [...education]; n[i].year = e.target.value; setEducation(n); }} placeholder="Year" className={smallInputCls} />
+                          <input value={edu.year} onChange={e => { const raw = e.target.value.replace(/\D/g, '').slice(0, 4); const n = [...education]; n[i].year = raw; setEducation(n); }} placeholder="Year" inputMode="numeric" maxLength={4} className={smallInputCls} />
                         </div>
                       ))}
                     </div>
@@ -238,7 +297,7 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
                             <button type="button" onClick={() => setCertifications(c => c.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
                             <input value={cert.name} onChange={e => { const n = [...certifications]; n[i].name = e.target.value; setCertifications(n); }} placeholder="Name" className={smallInputCls} />
                             <input value={cert.issuer} onChange={e => { const n = [...certifications]; n[i].issuer = e.target.value; setCertifications(n); }} placeholder="Issuer" className={smallInputCls} />
-                            <input value={cert.year} onChange={e => { const n = [...certifications]; n[i].year = e.target.value; setCertifications(n); }} placeholder="Year" className={smallInputCls} />
+                            <input value={cert.year} onChange={e => { const raw = e.target.value.replace(/\D/g, '').slice(0, 4); const n = [...certifications]; n[i].year = raw; setCertifications(n); }} placeholder="Year" inputMode="numeric" maxLength={4} className={smallInputCls} />
                           </div>
                         ))}
                       </div>
@@ -275,8 +334,8 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
                         <div key={i} className="grid grid-cols-4 gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100 relative">
                           {prices.length > 1 && <button type="button" onClick={() => setPrices(p => p.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>}
                           <input value={pr.label} onChange={e => { const n = [...prices]; n[i].label = e.target.value; setPrices(n); }} placeholder="Service" className={'col-span-2 ' + smallInputCls} />
-                          <input value={pr.min} onChange={e => { const n = [...prices]; n[i].min = e.target.value; setPrices(n); }} placeholder="Min ₺" type="number" className={smallInputCls} />
-                          <input value={pr.max} onChange={e => { const n = [...prices]; n[i].max = e.target.value; setPrices(n); }} placeholder="Max ₺" type="number" className={smallInputCls} />
+                          <input value={formatThousands(pr.min)} onChange={e => { const n = [...prices]; n[i].min = parsePrice(e.target.value); setPrices(n); }} placeholder="Min ₺" inputMode="numeric" className={smallInputCls} />
+                          <input value={formatThousands(pr.max)} onChange={e => { const n = [...prices]; n[i].max = parsePrice(e.target.value); setPrices(n); }} placeholder="Max ₺" inputMode="numeric" className={smallInputCls} />
                         </div>
                       ))}
                     </div>
@@ -301,7 +360,25 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone</label>
-                      <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+90 5XX XXX XX XX" className={inputCls} />
+                      <div className="flex gap-0">
+                        <select
+                          value={phoneCode}
+                          onChange={e => setPhoneCode(e.target.value)}
+                          className="border border-gray-300 border-r-0 rounded-l-xl px-2 py-2.5 text-sm bg-gray-50 outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 min-w-[90px]"
+                        >
+                          {PHONE_CODES.map(pc => (
+                            <option key={pc.code} value={pc.code}>{pc.flag} {pc.code}</option>
+                          ))}
+                        </select>
+                        <input
+                          value={formatPhoneDigits(phoneDigits)}
+                          onChange={e => setPhoneDigits(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                          placeholder="5XX XXX XX XX"
+                          inputMode="numeric"
+                          maxLength={13}
+                          className="flex-1 border border-gray-300 rounded-r-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all"
+                        />
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">Website</label>
@@ -337,6 +414,36 @@ export default function DoctorOnboardingModal({ open, onComplete }) {
           </div>
         </div>
       </div>
+
+      {/* Welcome Modal */}
+      {showWelcome && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="relative z-10 w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div className="bg-gradient-to-br from-teal-500 to-emerald-600 px-8 pt-10 pb-8 text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
+                <PartyPopper className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Welcome to MedGama!</h2>
+              <p className="text-teal-100 text-sm">Your profile is now complete</p>
+            </div>
+            <div className="px-8 py-6 text-center">
+              <p className="text-gray-600 text-sm leading-relaxed mb-1">
+                Congratulations, <strong>{user?.name || 'Doctor'}</strong>! Your professional profile has been set up successfully.
+              </p>
+              <p className="text-gray-500 text-xs mb-6">
+                Patients can now find you and book appointments. You can update your profile anytime from your dashboard.
+              </p>
+              <button
+                onClick={handleWelcomeClose}
+                className="w-full py-3 rounded-xl text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 shadow-sm transition-all"
+              >
+                Go to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
