@@ -423,9 +423,14 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     likedRef.current = next;
     setLiked(next);
     setLikeCount((c) => Math.max(0, c + (next ? 1 : -1)));
-    // Optimistic: rollback on error
     if (item?.id) {
-      medStreamAPI.toggleLike(item.id).catch(() => {
+      medStreamAPI.toggleLike(item.id).then((res) => {
+        // Sync with server response
+        const serverLiked = res?.liked ?? next;
+        likedRef.current = serverLiked;
+        setLiked(serverLiked);
+      }).catch((err) => {
+        console.warn('Like failed:', err?.message || err);
         likedRef.current = prev;
         setLiked(prev);
         setLikeCount((c) => Math.max(0, c + (prev ? 1 : -1)));
@@ -443,7 +448,12 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     bookmarkedRef.current = next;
     setBookmarked(next);
     if (item?.id) {
-      medStreamAPI.toggleBookmark({ post_id: item.id }).catch(() => {
+      medStreamAPI.toggleBookmark({ post_id: item.id }).then((res) => {
+        const serverBookmarked = res?.bookmarked ?? next;
+        bookmarkedRef.current = serverBookmarked;
+        setBookmarked(serverBookmarked);
+      }).catch((err) => {
+        console.warn('Bookmark failed:', err?.message || err);
         bookmarkedRef.current = prev;
         setBookmarked(prev);
       });
@@ -802,6 +812,22 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                               <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">{c.text}</p>
                               <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
                                 <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
+                                {(c.author_id === authUser?.id || c.user_id === authUser?.id) && (
+                                  <button type="button" className="font-semibold hover:text-red-500 hover:underline transition-colors ml-2" onClick={(e)=>{
+                                    e.stopPropagation();
+                                    // Optimistic remove
+                                    setApiComments(prev => prev.filter(x => x.id !== c.id));
+                                    setLocalComments(prev => prev.filter(x => x.id !== c.id));
+                                    setCommentCount(cnt => Math.max(0, cnt - 1));
+                                    if (!String(c.id).startsWith('lc-')) {
+                                      medStreamAPI.deleteComment(c.id).catch(() => {
+                                        // Rollback on error
+                                        setApiComments(prev => [...prev, c]);
+                                        setCommentCount(cnt => cnt + 1);
+                                      });
+                                    }
+                                  }}>Delete</button>
+                                )}
                               </div>
                               {/* Nested replies */}
                               {Array.isArray(c.replies) && c.replies.length > 0 && (
@@ -815,6 +841,17 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                                           <span className="text-[10px] text-gray-400 flex-shrink-0">{r.time}</span>
                                         </div>
                                         <p className="text-[12px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-0.5">{r.text}</p>
+                                        {(r.author_id === authUser?.id || r.user_id === authUser?.id) && (
+                                          <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-red-500 hover:underline transition-colors mt-0.5" onClick={(e)=>{
+                                            e.stopPropagation();
+                                            // Remove reply optimistically
+                                            setApiComments(prev => prev.map(x => x.id === c.id ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== r.id) } : x));
+                                            setLocalComments(prev => prev.map(x => x.id === c.id ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== r.id) } : x));
+                                            if (!String(r.id).startsWith('lc-') && !String(r.id).startsWith('lr-')) {
+                                              medStreamAPI.deleteComment(r.id).catch(() => {});
+                                            }
+                                          }}>Delete</button>
+                                        )}
                                       </div>
                                     </div>
                                   ))}

@@ -222,6 +222,7 @@ export const medStreamAPI = {
   deletePost: (id) => api.delete(`/medstream/posts/${id}`),
   comments: (postId, params) => api.get(`/medstream/posts/${postId}/comments`, { params }),
   createComment: (postId, payload) => api.post(`/medstream/posts/${postId}/comments`, payload),
+  deleteComment: (commentId) => api.delete(`/medstream/comments/${commentId}`),
   toggleLike: (postId) => api.post(`/medstream/posts/${postId}/like`),
   reportPost: (postId, reason) => api.post(`/medstream/posts/${postId}/report`, { reason }),
   bookmarks: (params) => api.get('/medstream/bookmarks', { params }),

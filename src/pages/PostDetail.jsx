@@ -169,7 +169,12 @@ export default function PostDetail() {
     setLiked(next);
     setLikeCount((c) => Math.max(0, c + (next ? 1 : -1)));
     if (item?.id) {
-      medStreamAPI.toggleLike(item.id).catch(() => {
+      medStreamAPI.toggleLike(item.id).then((res) => {
+        const serverLiked = res?.liked ?? next;
+        likedRef.current = serverLiked;
+        setLiked(serverLiked);
+      }).catch((err) => {
+        console.warn('Like failed:', err?.message || err);
         likedRef.current = prev;
         setLiked(prev);
         setLikeCount((c) => Math.max(0, c + (prev ? 1 : -1)));
@@ -185,7 +190,12 @@ export default function PostDetail() {
     bookmarkedRef.current = next;
     setBookmarked(next);
     if (item?.id) {
-      medStreamAPI.toggleBookmark({ post_id: item.id }).catch(() => {
+      medStreamAPI.toggleBookmark({ post_id: item.id }).then((res) => {
+        const serverBookmarked = res?.bookmarked ?? next;
+        bookmarkedRef.current = serverBookmarked;
+        setBookmarked(serverBookmarked);
+      }).catch((err) => {
+        console.warn('Bookmark failed:', err?.message || err);
         bookmarkedRef.current = prev;
         setBookmarked(prev);
       });
@@ -695,6 +705,15 @@ export default function PostDetail() {
                                 </div>
                                 <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400 pl-2">
                                   <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
+                                  {(c.author_id === user?.id || c.user_id === user?.id) && (
+                                    <button type="button" className="font-semibold hover:text-red-500 transition-colors" onClick={() => {
+                                      setApiDetailComments(prev => prev.filter(x => x.id !== c.id));
+                                      setLocalDetailComments(prev => prev.filter(x => x.id !== c.id));
+                                      if (!String(c.id).startsWith('dc-')) {
+                                        medStreamAPI.deleteComment(c.id).catch(() => {});
+                                      }
+                                    }}>Delete</button>
+                                  )}
                                 </div>
                                 {/* Nested replies */}
                                 {Array.isArray(c.replies) && c.replies.length > 0 && (
@@ -710,6 +729,15 @@ export default function PostDetail() {
                                             </div>
                                             <p className="text-[12px] text-gray-700 leading-relaxed mt-0.5">{r.text}</p>
                                           </div>
+                                          {(r.author_id === user?.id || r.user_id === user?.id) && (
+                                            <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-red-500 transition-colors mt-0.5 flex-shrink-0" onClick={() => {
+                                              setApiDetailComments(prev => prev.map(x => x.id === c.id ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== r.id) } : x));
+                                              setLocalDetailComments(prev => prev.map(x => x.id === c.id ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== r.id) } : x));
+                                              if (!String(r.id).startsWith('dc-') && !String(r.id).startsWith('dr-')) {
+                                                medStreamAPI.deleteComment(r.id).catch(() => {});
+                                              }
+                                            }}>Delete</button>
+                                          )}
                                         </div>
                                       </div>
                                     ))}
