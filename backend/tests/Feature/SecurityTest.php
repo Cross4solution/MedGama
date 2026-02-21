@@ -8,6 +8,7 @@ use App\Models\Clinic;
 use App\Models\PatientRecord;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class SecurityTest extends TestCase
@@ -33,8 +34,8 @@ class SecurityTest extends TestCase
         ]);
 
         // Other patient tries to view
-        $response = $this->actingAs($other, 'sanctum')
-            ->getJson("/api/appointments/{$appointment->id}");
+        Sanctum::actingAs($other);
+        $response = $this->getJson("/api/appointments/{$appointment->id}");
 
         $response->assertStatus(403)
             ->assertJsonPath('code', 'FORBIDDEN');
@@ -51,8 +52,8 @@ class SecurityTest extends TestCase
             'doctor_id'  => $doctor->id,
         ]);
 
-        $response = $this->actingAs($other, 'sanctum')
-            ->getJson("/api/patient-records/{$record->id}");
+        Sanctum::actingAs($other);
+        $response = $this->getJson("/api/patient-records/{$record->id}");
 
         // The controller doesn't have policy-based auth, but the patient should only see their own records
         // This tests that the record is returned (no ownership check on show currently)
@@ -86,8 +87,8 @@ class SecurityTest extends TestCase
             'slot_id'    => $slot->id,
         ]);
 
-        $response = $this->actingAs($other, 'sanctum')
-            ->deleteJson("/api/appointments/{$appointment->id}");
+        Sanctum::actingAs($other);
+        $response = $this->deleteJson("/api/appointments/{$appointment->id}");
 
         $response->assertStatus(403);
     }
@@ -103,8 +104,8 @@ class SecurityTest extends TestCase
             'user_two_id' => $userB->id,
         ]);
 
-        $response = $this->actingAs($outsider, 'sanctum')
-            ->getJson("/api/chat/conversations/{$conversation->id}/messages");
+        Sanctum::actingAs($outsider);
+        $response = $this->getJson("/api/chat/conversations/{$conversation->id}/messages");
 
         $response->assertStatus(403);
     }
@@ -117,8 +118,8 @@ class SecurityTest extends TestCase
     {
         $admin = User::factory()->create(['role_id' => 'superAdmin']);
 
-        $response = $this->actingAs($admin, 'sanctum')
-            ->getJson('/api/admin/dashboard');
+        Sanctum::actingAs($admin);
+        $response = $this->getJson('/api/admin/dashboard');
 
         $response->assertOk()
             ->assertJsonStructure(['data' => ['users', 'appointments', 'medstream']]);
@@ -129,8 +130,8 @@ class SecurityTest extends TestCase
         $admin = User::factory()->create(['role_id' => 'superAdmin']);
         User::factory()->doctor()->count(3)->create();
 
-        $response = $this->actingAs($admin, 'sanctum')
-            ->getJson('/api/admin/doctors');
+        Sanctum::actingAs($admin);
+        $response = $this->getJson('/api/admin/doctors');
 
         $response->assertOk()
             ->assertJsonStructure(['data']);
@@ -141,8 +142,8 @@ class SecurityTest extends TestCase
         $admin  = User::factory()->create(['role_id' => 'superAdmin']);
         $doctor = User::factory()->doctor()->create(['is_verified' => false]);
 
-        $response = $this->actingAs($admin, 'sanctum')
-            ->putJson("/api/admin/doctors/{$doctor->id}/verify", ['verified' => true]);
+        Sanctum::actingAs($admin);
+        $response = $this->putJson("/api/admin/doctors/{$doctor->id}/verify", ['verified' => true]);
 
         $response->assertOk()
             ->assertJsonPath('doctor.is_verified', true);
@@ -154,8 +155,8 @@ class SecurityTest extends TestCase
     {
         $admin = User::factory()->create(['role_id' => 'superAdmin']);
 
-        $response = $this->actingAs($admin, 'sanctum')
-            ->getJson('/api/admin/reports');
+        Sanctum::actingAs($admin);
+        $response = $this->getJson('/api/admin/reports');
 
         $response->assertOk();
     }
@@ -168,8 +169,8 @@ class SecurityTest extends TestCase
             'clinic_id' => $clinic->id,
         ]);
 
-        $response = $this->actingAs($owner, 'sanctum')
-            ->getJson('/api/admin/dashboard');
+        Sanctum::actingAs($owner);
+        $response = $this->getJson('/api/admin/dashboard');
 
         $response->assertStatus(403);
     }
@@ -183,8 +184,8 @@ class SecurityTest extends TestCase
         ]);
         $doctor = User::factory()->doctor()->create(['is_verified' => false]);
 
-        $response = $this->actingAs($owner, 'sanctum')
-            ->putJson("/api/admin/doctors/{$doctor->id}/verify", ['verified' => true]);
+        Sanctum::actingAs($owner);
+        $response = $this->putJson("/api/admin/doctors/{$doctor->id}/verify", ['verified' => true]);
 
         $response->assertStatus(403);
 
@@ -203,8 +204,8 @@ class SecurityTest extends TestCase
         ]);
 
         // ClinicOwner A tries to access Clinic B's analytics
-        $response = $this->actingAs($ownerA, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$clinicB->id}/summary");
+        Sanctum::actingAs($ownerA);
+        $response = $this->getJson("/api/analytics/clinic/{$clinicB->id}/summary");
 
         $response->assertStatus(403);
     }
@@ -214,8 +215,8 @@ class SecurityTest extends TestCase
         $admin  = User::factory()->create(['role_id' => 'superAdmin']);
         $clinic = Clinic::factory()->create();
 
-        $response = $this->actingAs($admin, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$clinic->id}/summary");
+        Sanctum::actingAs($admin);
+        $response = $this->getJson("/api/analytics/clinic/{$clinic->id}/summary");
 
         $response->assertOk();
     }
@@ -224,29 +225,24 @@ class SecurityTest extends TestCase
     {
         $patient = User::factory()->patient()->create();
 
-        $this->actingAs($patient, 'sanctum')
-            ->getJson('/api/admin/dashboard')
-            ->assertStatus(403);
+        Sanctum::actingAs($patient);
+        $this->getJson('/api/admin/dashboard')->assertStatus(403);
 
-        $this->actingAs($patient, 'sanctum')
-            ->getJson('/api/admin/doctors')
-            ->assertStatus(403);
+        Sanctum::actingAs($patient);
+        $this->getJson('/api/admin/doctors')->assertStatus(403);
 
-        $this->actingAs($patient, 'sanctum')
-            ->getJson('/api/admin/reports')
-            ->assertStatus(403);
+        Sanctum::actingAs($patient);
+        $this->getJson('/api/admin/reports')->assertStatus(403);
     }
 
     public function test_doctor_cannot_access_admin_routes(): void
     {
         $doctor = User::factory()->doctor()->create();
 
-        $this->actingAs($doctor, 'sanctum')
-            ->getJson('/api/admin/dashboard')
-            ->assertStatus(403);
+        Sanctum::actingAs($doctor);
+        $this->getJson('/api/admin/dashboard')->assertStatus(403);
 
-        $this->actingAs($doctor, 'sanctum')
-            ->putJson('/api/admin/doctors/' . $doctor->id . '/verify', ['verified' => true])
-            ->assertStatus(403);
+        Sanctum::actingAs($doctor);
+        $this->putJson('/api/admin/doctors/' . $doctor->id . '/verify', ['verified' => true])->assertStatus(403);
     }
 }
