@@ -47,14 +47,10 @@ class SecurityTest extends TestCase
         $patient = User::factory()->patient()->create();
         $other   = User::factory()->patient()->create();
 
-        try {
-            $record = PatientRecord::factory()->create([
-                'patient_id' => $patient->id,
-                'doctor_id'  => $doctor->id,
-            ]);
-        } catch (\Throwable $e) {
-            $this->fail('SECURITY_DEBUG record_create: ' . $e->getMessage());
-        }
+        $record = PatientRecord::factory()->create([
+            'patient_id' => $patient->id,
+            'doctor_id'  => $doctor->id,
+        ]);
 
         Sanctum::actingAs($other);
         $response = $this->getJson("/api/patient-records/{$record->id}");
@@ -103,14 +99,10 @@ class SecurityTest extends TestCase
         $userB = User::factory()->create();
         $outsider = User::factory()->create();
 
-        try {
-            $conversation = \App\Models\ChatConversation::factory()->create([
-                'user_one_id' => $userA->id,
-                'user_two_id' => $userB->id,
-            ]);
-        } catch (\Throwable $e) {
-            $this->fail('SECURITY_DEBUG chat_conversation_create: ' . $e->getMessage());
-        }
+        $conversation = \App\Models\ChatConversation::factory()->create([
+            'user_one_id' => $userA->id,
+            'user_two_id' => $userB->id,
+        ]);
 
         Sanctum::actingAs($outsider);
         $response = $this->getJson("/api/chat/conversations/{$conversation->id}/messages");
