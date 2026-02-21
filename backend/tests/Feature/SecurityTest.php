@@ -52,8 +52,7 @@ class SecurityTest extends TestCase
                 'doctor_id'  => $doctor->id,
             ]);
         } catch (\Throwable $e) {
-            fwrite(STDERR, "\n\n=== DEBUG SecurityTest:49 ===\n" . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n=== END DEBUG ===\n\n");
-            throw $e;
+            $this->fail('UNIQUE_DEBUG: ' . $e->getMessage());
         }
 
         $response = $this->actingAs($other, 'sanctum')
