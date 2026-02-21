@@ -36,7 +36,7 @@ class MedStreamPostResource extends JsonResource
             ]),
             'engagement_counter' => $this->whenLoaded('engagementCounter', fn() => [
                 'like_count'    => $this->engagementCounter->like_count ?? 0,
-                'comment_count' => $this->engagementCounter->comment_count ?? 0,
+                'comment_count' => $this->real_comment_count ?? $this->engagementCounter->comment_count ?? 0,
             ]),
             'comments' => MedStreamCommentResource::collection($this->whenLoaded('comments')),
 

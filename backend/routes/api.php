@@ -195,10 +195,12 @@ Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,super
 |--------------------------------------------------------------------------
 */
 Route::prefix('medstream')->group(function () {
-    // Public read
-    Route::get('/posts', [MedStreamController::class, 'posts']);
-    Route::get('/posts/{post}', [MedStreamController::class, 'showPost']);
-    Route::get('/posts/{post}/comments', [MedStreamController::class, 'comments']);
+    // Public read (optional auth to resolve is_liked/is_bookmarked flags)
+    Route::middleware('optional.auth')->group(function () {
+        Route::get('/posts', [MedStreamController::class, 'posts']);
+        Route::get('/posts/{post}', [MedStreamController::class, 'showPost']);
+        Route::get('/posts/{post}/comments', [MedStreamController::class, 'comments']);
+    });
 
     // Protected write
     Route::middleware('auth:sanctum')->group(function () {

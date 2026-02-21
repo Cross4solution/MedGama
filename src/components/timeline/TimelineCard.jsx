@@ -794,7 +794,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     )}
                   </div>
                   {showEmoji && !disabledActions && (
-                    <div ref={emojiPickerRef} className="absolute left-0 bottom-full mb-1 z-50">
+                    <div ref={emojiPickerRef} className="absolute left-0 bottom-full mb-1" style={{ zIndex: 9999 }}>
                       <EmojiPicker
                         onSelect={(e)=>{ setCommentText(t => t + e); setShowEmoji(false); }}
                       />

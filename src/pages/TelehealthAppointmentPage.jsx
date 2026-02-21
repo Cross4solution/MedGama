@@ -10,6 +10,7 @@ import {
   Mail, Phone, CalendarDays, Sparkles, Info, Heart
 } from 'lucide-react';
 import { doctorAPI, appointmentAPI, calendarSlotAPI } from '../lib/api';
+import DoctorAppointmentManager from '../components/doctor/DoctorAppointmentManager';
 
 const STEPS_PATIENT = [
   { key: 'doctor', label: 'Doctor', icon: Stethoscope },
@@ -342,8 +343,25 @@ export default function TelehealthAppointmentPage() {
 
         {/* Header */}
         <div className="mb-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{isDoctor ? 'Create Appointment' : 'Book Appointment'}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{isDoctor ? 'Appointment Management' : 'Book Appointment'}</h1>
         </div>
+
+        {/* Doctor: Incoming Requests + Confirmed Appointments */}
+        {isDoctor && (
+          <div className="mb-6">
+            <DoctorAppointmentManager />
+          </div>
+        )}
+
+        {/* Stepper — Create New Appointment */}
+        {isDoctor && (
+          <div className="mb-4">
+            <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
+              <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-teal-500 to-emerald-500" />
+              Create New Appointment
+            </h2>
+          </div>
+        )}
 
         {/* Stepper */}
         <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-4 sm:p-5 mb-6">

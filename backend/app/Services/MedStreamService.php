@@ -31,6 +31,7 @@ class MedStreamService
     {
         $posts = MedStreamPost::query()
             ->with(['author:id,fullname,avatar,role_id', 'clinic:id,fullname,avatar', 'engagementCounter'])
+            ->withCount(['comments as real_comment_count' => fn($q) => $q->where('is_hidden', false)])
             ->when($filters['author_id'] ?? null, fn($q, $v) => $q->where('author_id', $v))
             ->when($filters['clinic_id'] ?? null, fn($q, $v) => $q->where('clinic_id', $v))
             ->when($filters['post_type'] ?? null, fn($q, $v) => $q->where('post_type', $v))
