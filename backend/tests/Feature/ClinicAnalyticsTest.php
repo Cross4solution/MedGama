@@ -8,13 +8,13 @@ use App\Models\Clinic;
 use App\Models\MedStreamEngagementCounter;
 use App\Models\MedStreamPost;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class ClinicAnalyticsTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private Clinic $clinic;
     private User $owner;

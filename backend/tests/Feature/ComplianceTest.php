@@ -8,13 +8,13 @@ use App\Models\Clinic;
 use App\Models\DigitalAnamnesis;
 use App\Models\HealthDataAuditLog;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ComplianceTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     // ── Encrypted Casts: Data stored encrypted in DB ──
 

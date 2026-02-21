@@ -7,12 +7,12 @@ use App\Models\CalendarSlot;
 use App\Models\Clinic;
 use App\Models\PatientRecord;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class SecurityTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_patient_cannot_view_another_patients_appointment(): void
     {

@@ -6,12 +6,12 @@ use App\Models\Appointment;
 use App\Models\CalendarSlot;
 use App\Models\Clinic;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class AppointmentTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private User $doctor;
     private User $patient;
