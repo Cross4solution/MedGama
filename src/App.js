@@ -257,7 +257,10 @@ function DoctorOnboardingGate() {
   useEffect(() => {
     if (!user) { setShowOnboarding(false); return; }
     const isDoctor = user?.role === 'doctor' || user?.role_id === 'doctor';
-    if (isDoctor && user?.onboarding_completed === false) {
+    // Only show onboarding if explicitly false (not undefined/null) AND user just registered
+    // Check sessionStorage flag set during registration flow
+    const justRegistered = sessionStorage.getItem('doctor_just_registered') === 'true';
+    if (isDoctor && user?.onboarding_completed === false && justRegistered) {
       setShowOnboarding(true);
     } else {
       setShowOnboarding(false);
@@ -267,6 +270,7 @@ function DoctorOnboardingGate() {
   const handleComplete = useCallback(() => {
     setShowOnboarding(false);
     updateUser({ onboarding_completed: true });
+    try { sessionStorage.removeItem('doctor_just_registered'); } catch {}
   }, [updateUser]);
 
   return <DoctorOnboardingModal open={showOnboarding} onComplete={handleComplete} />;

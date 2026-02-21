@@ -87,9 +87,15 @@ class AuthService
             ->where('is_active', true)
             ->first();
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (!$user) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => ['No account found with this email address.'],
+            ]);
+        }
+
+        if (!Hash::check($data['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'password' => ['The password you entered is incorrect.'],
             ]);
         }
 

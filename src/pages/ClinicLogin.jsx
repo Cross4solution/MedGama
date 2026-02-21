@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Building2, Users, Calendar, Video, Shield, Lock, Eye, EyeOff, Phone, Loader2 } from 'lucide-react';
+import { Building2, Users, Calendar, Video, Shield, Lock, Eye, EyeOff, Phone, Loader2, Heart, Stethoscope } from 'lucide-react';
 import PhoneVerification from '../components/auth/PhoneVerification';
+import TermsPopup from '../components/auth/TermsPopup';
+import PrivacyPopup from '../components/auth/PrivacyPopup';
 import { useTranslation } from 'react-i18next';
 
 const ClinicLogin = () => {
@@ -13,6 +15,8 @@ const ClinicLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [showPhoneVerification, setShowPhoneVerification] = useState(false);
+  const [showTermsPopup, setShowTermsPopup] = useState(false);
+  const [showPrivacyPopup, setShowPrivacyPopup] = useState(false);
   const { t } = useTranslation();
 
   // If user is already logged in (doctor/clinic), skip login form
@@ -49,7 +53,10 @@ const ClinicLogin = () => {
         navigate('/explore', { replace: true });
       }
     } catch (err) {
-      if (err?.status === 401) setError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
+      const backendErrors = err?.errors || err?.data?.errors || err?.response?.data?.errors;
+      if (backendErrors?.email) setError(Array.isArray(backendErrors.email) ? backendErrors.email[0] : backendErrors.email);
+      else if (backendErrors?.password) setError(Array.isArray(backendErrors.password) ? backendErrors.password[0] : backendErrors.password);
+      else if (err?.status === 401) setError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');
       else if (err?.status === 422) setError(err?.message || 'Girdiğiniz bilgilerde hata var.');
       else setError(err?.message || 'Beklenmeyen bir hata oluştu.');
     } finally {
@@ -92,6 +99,7 @@ const ClinicLogin = () => {
   }
 
   return (
+    <>
     <div className="min-h-screen w-full flex relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800" />
@@ -170,8 +178,8 @@ const ClinicLogin = () => {
                 </button>
                 <p className="text-[11px] text-gray-400 text-center leading-relaxed px-1">
                   {t('auth.gdprNotice').split(t('auth.termsOfService'))[0]}
-                  <a href="/terms-of-service" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">{t('auth.termsOfService')}</a>{' '}
-                  <a href="/privacy-policy" className="text-teal-500 hover:text-teal-600 underline underline-offset-2">{t('auth.privacyPolicy')}</a>
+                  <button type="button" onClick={() => setShowTermsPopup(true)} className="text-teal-500 hover:text-teal-600 underline underline-offset-2">{t('auth.termsOfService')}</button>{' '}
+                  <button type="button" onClick={() => setShowPrivacyPopup(true)} className="text-teal-500 hover:text-teal-600 underline underline-offset-2">{t('auth.privacyPolicy')}</button>
                 </p>
                 <button type="button"
                         onClick={() => { login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }); navigate('/explore', { replace: true }); }}
@@ -183,10 +191,18 @@ const ClinicLogin = () => {
                 {t('auth.dontHaveAccount')}{' '}
                 <a href="/register" className="text-teal-600 hover:text-teal-700 font-semibold">{t('auth.signUp')}</a>
               </div>
-              <div className="mt-2 text-center text-xs text-gray-400">
-                <a href="/doctor-login" className="hover:text-gray-600 transition-colors">{t('nav.doctorLogin')}</a>
-                <span className="mx-2">·</span>
-                <a href="/login" className="hover:text-gray-600 transition-colors">{t('nav.patientLogin')}</a>
+              <div className="mt-4 pt-3 border-t border-gray-100">
+                <p className="text-xs text-gray-500 text-center mb-2.5 font-medium">{t('auth.signInAsDifferentRole', 'Sign in as a different role')}</p>
+                <div className="flex gap-2">
+                  <a href="/doctor-login" className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700 text-sm font-semibold transition-all">
+                    <Stethoscope className="w-4 h-4" />
+                    {t('nav.doctorLogin')}
+                  </a>
+                  <a href="/login" className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-rose-200 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-400 text-rose-700 text-sm font-semibold transition-all">
+                    <Heart className="w-4 h-4" />
+                    {t('nav.patientLogin')}
+                  </a>
+                </div>
               </div>
             </div>
             {/* Mobile info */}
@@ -200,6 +216,9 @@ const ClinicLogin = () => {
         </div>
       </div>
     </div>
+    {showTermsPopup && <TermsPopup setShowTermsPopup={setShowTermsPopup} />}
+    {showPrivacyPopup && <PrivacyPopup setShowPrivacyPopup={setShowPrivacyPopup} />}
+    </>
   );
 };
 

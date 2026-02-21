@@ -261,6 +261,7 @@ export function AuthProvider({ children }) {
         localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country }));
         localStorage.removeItem('auth_logout');
         loggedOutRef.current = false;
+        sessionStorage.setItem('doctor_just_registered', 'true');
       } catch {}
     }
     return res;

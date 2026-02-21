@@ -315,15 +315,18 @@ const LoginPage = ({ role = 'patient' }) => {
       else if (status === 403) notify({ type: 'error', message: message || 'You do not have permission to perform this action.' });
       else if (status === 422) {
         const backendErrors = err?.errors || err?.data?.errors || err?.response?.data?.errors;
+        let firstFieldMsg = '';
         if (backendErrors && typeof backendErrors === 'object') {
           const fieldErrors = {};
           Object.entries(backendErrors).forEach(([field, arr]) => {
             const key = field === 'password_confirmation' ? 'confirmPassword' : field === 'fullname' ? 'firstName' : field;
-            fieldErrors[key] = Array.isArray(arr) ? arr[0] : String(arr);
+            const msg = Array.isArray(arr) ? arr[0] : String(arr);
+            fieldErrors[key] = msg;
+            if (!firstFieldMsg) firstFieldMsg = msg;
           });
           setErrors(prev => ({ ...prev, ...fieldErrors }));
         }
-        notify({ type: 'error', message: message || 'Please correct the highlighted fields.' });
+        notify({ type: 'error', message: firstFieldMsg || message || 'Please correct the highlighted fields.' });
       } else if (status === 429) notify({ type: 'error', message: 'Too many attempts. Please wait a moment and try again.' });
       else if (!status || status === 0) notify({ type: 'error', message: message || 'Unable to reach the server. Please check your internet connection.' });
       else notify({ type: 'error', message: message || 'An unexpected error occurred. Please try again later.' });
@@ -387,8 +390,8 @@ const LoginPage = ({ role = 'patient' }) => {
         </button>
         <p className="text-[11px] text-gray-400 text-center leading-relaxed px-1">
           {t('auth.gdprNotice').split(t('auth.termsOfService'))[0]}
-          <a href="/terms-of-service" className={`${config.linkColorLight} underline underline-offset-2`}>{t('auth.termsOfService')}</a>{' '}
-          <a href="/privacy-policy" className={`${config.linkColorLight} underline underline-offset-2`}>{t('auth.privacyPolicy')}</a>
+          <button type="button" onClick={() => setShowTermsPopup(true)} className={`${config.linkColorLight} underline underline-offset-2`}>{t('auth.termsOfService')}</button>{' '}
+          <button type="button" onClick={() => setShowPrivacyPopup(true)} className={`${config.linkColorLight} underline underline-offset-2`}>{t('auth.privacyPolicy')}</button>
         </p>
         {config.showGoogleLogin && (
           <>
@@ -405,13 +408,28 @@ const LoginPage = ({ role = 'patient' }) => {
         {t('auth.dontHaveAccount')}{' '}
         <button type="button" onClick={() => setCurrentPage('register')} className={`${config.linkColor} font-semibold`}>{t('auth.signUp')}</button>
       </div>
-      <div className="mt-2 text-center text-xs text-gray-400">
-        {config.otherLogins.map((link, i) => (
-          <React.Fragment key={link.href}>
-            {i > 0 && <span className="mx-2">·</span>}
-            <a href={link.href} className="hover:text-gray-600 transition-colors">{t(link.labelKey)}</a>
-          </React.Fragment>
-        ))}
+      <div className="mt-4 pt-3 border-t border-gray-100">
+        <p className="text-xs text-gray-500 text-center mb-2.5 font-medium">{t('auth.signInAsDifferentRole', 'Sign in as a different role')}</p>
+        <div className="flex gap-2">
+          {config.otherLogins.map((link) => {
+            const isDoctor = link.href === '/doctor-login';
+            const isClinic = link.href === '/clinic-login';
+            const isPatient = link.href === '/login';
+            const Icon = isDoctor ? Stethoscope : isClinic ? Building2 : Heart;
+            const colors = isDoctor
+              ? 'border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700'
+              : isClinic
+              ? 'border-purple-200 bg-purple-50/60 hover:bg-purple-100 hover:border-purple-400 text-purple-700'
+              : 'border-rose-200 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-400 text-rose-700';
+            return (
+              <a key={link.href} href={link.href}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 ${colors} text-sm font-semibold transition-all`}>
+                <Icon className="w-4 h-4" />
+                {t(link.labelKey)}
+              </a>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
