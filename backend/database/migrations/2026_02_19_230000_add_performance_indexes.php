@@ -48,7 +48,7 @@ return new class extends Migration
     {
         $dropIfExists = function (string $table, string $indexName) {
             $driver = Schema::getConnection()->getDriverName();
-            if ($driver === 'pgsql') {
+            if ($driver === 'pgsql' || $driver === 'sqlite') {
                 DB::statement("DROP INDEX IF EXISTS {$indexName}");
             } else {
                 DB::statement("DROP INDEX {$indexName} ON {$table}");

@@ -7,12 +7,12 @@ use App\Models\CalendarSlot;
 use App\Models\Clinic;
 use App\Models\PatientRecord;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
 class SecurityTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseMigrations;
 
     public function test_patient_cannot_view_another_patients_appointment(): void
     {
@@ -42,18 +42,14 @@ class SecurityTest extends TestCase
 
     public function test_patient_cannot_view_another_patients_record(): void
     {
-        try {
-            $doctor  = User::factory()->doctor()->create();
-            $patient = User::factory()->patient()->create();
-            $other   = User::factory()->patient()->create();
+        $doctor  = User::factory()->doctor()->create();
+        $patient = User::factory()->patient()->create();
+        $other   = User::factory()->patient()->create();
 
-            $record = PatientRecord::factory()->create([
-                'patient_id' => $patient->id,
-                'doctor_id'  => $doctor->id,
-            ]);
-        } catch (\Throwable $e) {
-            $this->fail('UNIQUE_DEBUG: ' . $e->getMessage());
-        }
+        $record = PatientRecord::factory()->create([
+            'patient_id' => $patient->id,
+            'doctor_id'  => $doctor->id,
+        ]);
 
         $response = $this->actingAs($other, 'sanctum')
             ->getJson("/api/patient-records/{$record->id}");
