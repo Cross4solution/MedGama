@@ -135,12 +135,12 @@ function AppContent() {
           const y = Number(val);
           sessionStorage.removeItem('returnScroll');
           if (!Number.isNaN(y) && y > 0) {
-            // Delay restore so DOM has time to render content
-            requestAnimationFrame(() => {
-              window.scrollTo({ top: y, behavior: 'auto' });
-              // Double-check after a short delay (lazy-loaded content)
-              setTimeout(() => window.scrollTo({ top: y, behavior: 'auto' }), 150);
-            });
+            // Multiple retries to handle lazy-loaded content
+            const restore = () => window.scrollTo({ top: y, behavior: 'auto' });
+            requestAnimationFrame(restore);
+            setTimeout(restore, 100);
+            setTimeout(restore, 300);
+            setTimeout(restore, 600);
           }
         }
       } catch {}

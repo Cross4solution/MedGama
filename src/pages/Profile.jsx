@@ -41,7 +41,6 @@ function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
   };
 
   const toggleItems = [
-    { key: 'email_notifications', label: t('profile.emailNotifications'), desc: t('profile.emailNotificationsDesc') },
     { key: 'sms_notifications', label: t('profile.smsNotifications'), desc: t('profile.smsNotificationsDesc') },
     { key: 'push_notifications', label: t('profile.pushNotifications'), desc: t('profile.pushNotificationsDesc') },
     { key: 'appointment_reminders', label: t('profile.appointmentReminders'), desc: t('profile.appointmentRemindersDesc') },

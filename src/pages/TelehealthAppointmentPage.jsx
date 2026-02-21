@@ -57,6 +57,7 @@ export default function TelehealthAppointmentPage() {
   const [loadingDoctors, setLoadingDoctors] = useState(true);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [selectedSpecialty, setSelectedSpecialty] = useState('');
 
   const [allCountries, setAllCountries] = useState([]);
   useEffect(() => {
@@ -340,9 +341,8 @@ export default function TelehealthAppointmentPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-4">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{isDoctor ? 'Create Appointment' : 'Book Appointment'}</h1>
-          <p className="text-xs sm:text-sm text-gray-400 font-medium">{isDoctor ? 'Schedule an appointment for your patient' : 'Schedule your telehealth consultation'}</p>
         </div>
 
         {/* Stepper */}
@@ -425,12 +425,38 @@ export default function TelehealthAppointmentPage() {
                   </div>
                 </div>
 
-                {/* Doctor Cards */}
+                {/* Specialty Filter + Doctor Cards */}
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Stethoscope className="w-4 h-4 text-teal-600" />
                     Select Your Doctor
                   </h3>
+                  {/* Specialty Filter */}
+                  {!loadingDoctors && doctors.length > 0 && (() => {
+                    const specs = [...new Set(doctors.map(d => d.specialty).filter(Boolean))].sort();
+                    if (specs.length <= 1) return null;
+                    return (
+                      <div className="mb-4">
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => setSelectedSpecialty('')}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                              !selectedSpecialty ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300 hover:bg-teal-50'
+                            }`}
+                          >All Specialties</button>
+                          {specs.map(sp => (
+                            <button
+                              key={sp}
+                              onClick={() => setSelectedSpecialty(sp)}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                                selectedSpecialty === sp ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300 hover:bg-teal-50'
+                              }`}
+                            >{sp}</button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
                   {loadingDoctors ? (
                     <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                       <Loader2 className="w-8 h-8 animate-spin mb-3 text-teal-500" />
@@ -444,7 +470,7 @@ export default function TelehealthAppointmentPage() {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {doctors.map((doctor) => {
+                      {doctors.filter(d => !selectedSpecialty || d.specialty === selectedSpecialty).map((doctor) => {
                         const isSelected = selectedDoctor === doctor.id;
                         return (
                           <button

@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { clinicAPI, doctorAPI } from '../../lib/api';
 
 const PLACEHOLDER_HINTS = [
@@ -11,6 +12,7 @@ const PLACEHOLDER_HINTS = [
 ];
 
 export default function GlobalSearch() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [ph, setPh] = useState(PLACEHOLDER_HINTS[0]);
@@ -78,10 +80,6 @@ export default function GlobalSearch() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Fallback static data
-  const staticClinics = ['Acıbadem Sağlık Grubu', 'Acibadem International', 'SmileCare Clinic', 'AestheticPlus', 'Vision Center', 'OrthoLife'];
-  const staticDoctors = ['Dr. Ahmet Yılmaz', 'Dr. Mehmet Demir', 'Dr. Elif Kaya', 'Dr. Ayşe Yılmaz'];
-
   const [apiResults, setApiResults] = useState([]);
   const debounceRef = useRef(null);
 
@@ -111,28 +109,18 @@ export default function GlobalSearch() {
     .trim();
 
   const results = useMemo(() => {
-    // API sonuçları varsa onları kullan
-    if (apiResults.length > 0) return apiResults;
-    // Fallback: statik veri
-    const q = normalize(query);
-    if (!q) return [];
-    const tokens = q.split(/\s+/).filter(Boolean);
-    const items = [
-      ...staticClinics.map((c) => ({ type: 'Klinik', name: c })),
-      ...staticDoctors.map((d) => ({ type: 'Doktor', name: d })),
-    ];
-    return items
-      .filter((i) => {
-        const nameN = normalize(i.name);
-        return tokens.every((t) => nameN.includes(t));
-      })
-      .slice(0, 8);
-  }, [query, apiResults]);
+    return apiResults;
+  }, [apiResults]);
 
 
-  const onSelect = (name) => {
-    setQuery(name); // autofill input with selected value
+  const onSelect = (item) => {
     setOpen(false);
+    setQuery('');
+    if (item.type === 'Klinik') {
+      navigate(`/clinic/${encodeURIComponent(item.codename || item.id)}`);
+    } else if (item.type === 'Doktor') {
+      navigate(`/doctor/${encodeURIComponent(item.id)}`);
+    }
   };
 
   const onKeyDown = (e) => {
@@ -149,7 +137,7 @@ export default function GlobalSearch() {
     } else if (e.key === 'Enter') {
       if (activeIndex >= 0 && activeIndex < results.length) {
         e.preventDefault();
-        onSelect(results[activeIndex].name);
+        onSelect(results[activeIndex]);
       }
     } else if (e.key === 'Escape') {
       setOpen(false);
@@ -206,7 +194,7 @@ export default function GlobalSearch() {
                     role="option"
                     aria-selected={activeIndex === idx}
                     onMouseEnter={() => setActiveIndex(idx)}
-                    onClick={() => onSelect(r.name)}
+                    onClick={() => onSelect(r)}
                     className={`w-full text-left px-4 py-3 flex items-center justify-between gap-3 transition-colors ${activeIndex === idx ? 'bg-gray-50' : 'hover:bg-gray-50'}`}
                   >
                     <span className="flex items-center gap-3 min-w-0">
