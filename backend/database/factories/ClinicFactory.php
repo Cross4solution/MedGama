@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Clinic;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class ClinicFactory extends Factory
 {
@@ -14,7 +15,7 @@ class ClinicFactory extends Factory
     {
         return [
             'name'        => fake()->company(),
-            'codename'    => fake()->unique()->slug(2),
+            'codename'    => strtolower((string) Str::ulid()),
             'fullname'    => fake()->company() . ' Clinic',
             'owner_id'    => User::factory()->clinicOwner(),
             'is_verified' => true,
