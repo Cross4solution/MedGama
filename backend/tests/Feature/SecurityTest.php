@@ -42,14 +42,19 @@ class SecurityTest extends TestCase
 
     public function test_patient_cannot_view_another_patients_record(): void
     {
-        $doctor  = User::factory()->doctor()->create();
-        $patient = User::factory()->patient()->create();
-        $other   = User::factory()->patient()->create();
+        try {
+            $doctor  = User::factory()->doctor()->create();
+            $patient = User::factory()->patient()->create();
+            $other   = User::factory()->patient()->create();
 
-        $record = PatientRecord::factory()->create([
-            'patient_id' => $patient->id,
-            'doctor_id'  => $doctor->id,
-        ]);
+            $record = PatientRecord::factory()->create([
+                'patient_id' => $patient->id,
+                'doctor_id'  => $doctor->id,
+            ]);
+        } catch (\Throwable $e) {
+            fwrite(STDERR, "\n\n=== DEBUG SecurityTest:49 ===\n" . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n=== END DEBUG ===\n\n");
+            throw $e;
+        }
 
         $response = $this->actingAs($other, 'sanctum')
             ->getJson("/api/patient-records/{$record->id}");

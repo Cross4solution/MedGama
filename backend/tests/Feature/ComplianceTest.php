@@ -124,12 +124,17 @@ class ComplianceTest extends TestCase
         $patient = User::factory()->patient()->create();
         $doctor  = User::factory()->doctor()->create();
 
-        DigitalAnamnesis::create([
-            'patient_id' => $patient->id,
-            'doctor_id'  => $doctor->id,
-            'answers'    => ['test' => 'value'],
-            'is_active'  => true,
-        ]);
+        try {
+            DigitalAnamnesis::create([
+                'patient_id' => $patient->id,
+                'doctor_id'  => $doctor->id,
+                'answers'    => ['test' => 'value'],
+                'is_active'  => true,
+            ]);
+        } catch (\Throwable $e) {
+            fwrite(STDERR, "\n\n=== DEBUG ComplianceTest:127 ===\n" . $e->getMessage() . "\n=== END DEBUG ===\n\n");
+            throw $e;
+        }
 
         $this->actingAs($doctor, 'sanctum')
             ->getJson("/api/anamnesis/{$patient->id}");
