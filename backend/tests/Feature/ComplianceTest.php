@@ -10,6 +10,7 @@ use App\Models\HealthDataAuditLog;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\DB;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ComplianceTest extends TestCase
@@ -70,12 +71,14 @@ class ComplianceTest extends TestCase
         $patient = User::factory()->patient()->create();
         $doctor  = User::factory()->doctor()->create();
 
-        $anamnesis = DigitalAnamnesis::create([
-            'patient_id' => $patient->id,
-            'doctor_id'  => $doctor->id,
-            'answers'    => ['allergy' => 'Penicillin', 'blood_type' => 'A+'],
-            'is_active'  => true,
-        ]);
+        $anamnesis = DigitalAnamnesis::updateOrCreate(
+            ['patient_id' => $patient->id],
+            [
+                'doctor_id'  => $doctor->id,
+                'answers'    => ['allergy' => 'Penicillin', 'blood_type' => 'A+'],
+                'is_active'  => true,
+            ]
+        );
 
         $raw = DB::table('digital_anamneses')
             ->where('id', $anamnesis->id)
@@ -108,8 +111,8 @@ class ComplianceTest extends TestCase
             'slot_id'    => $slot->id,
         ]);
 
-        $this->actingAs($doctor, 'sanctum')
-            ->getJson("/api/appointments/{$appointment->id}");
+        Sanctum::actingAs($doctor);
+        $this->getJson("/api/appointments/{$appointment->id}");
 
         $this->assertDatabaseHas('health_data_audit_logs', [
             'accessor_id'   => $doctor->id,
@@ -124,20 +127,17 @@ class ComplianceTest extends TestCase
         $patient = User::factory()->patient()->create();
         $doctor  = User::factory()->doctor()->create();
 
-        try {
-            DigitalAnamnesis::create([
-                'patient_id' => $patient->id,
+        DigitalAnamnesis::updateOrCreate(
+            ['patient_id' => $patient->id],
+            [
                 'doctor_id'  => $doctor->id,
                 'answers'    => ['test' => 'value'],
                 'is_active'  => true,
-            ]);
-        } catch (\Throwable $e) {
-            $existing = DB::table('digital_anamneses')->count();
-            $this->fail("UNIQUE_DEBUG ComplianceTest: {$e->getMessage()} | existing_rows={$existing} | patient_id={$patient->id}");
-        }
+            ]
+        );
 
-        $this->actingAs($doctor, 'sanctum')
-            ->getJson("/api/anamnesis/{$patient->id}");
+        Sanctum::actingAs($doctor);
+        $this->getJson("/api/anamnesis/{$patient->id}");
 
         $this->assertDatabaseHas('health_data_audit_logs', [
             'accessor_id'   => $doctor->id,
@@ -163,8 +163,8 @@ class ComplianceTest extends TestCase
             'slot_id'    => $slot->id,
         ]);
 
-        $this->actingAs($doctor, 'sanctum')
-            ->getJson("/api/appointments/{$appointment->id}");
+        Sanctum::actingAs($doctor);
+        $this->getJson("/api/appointments/{$appointment->id}");
 
         $log = HealthDataAuditLog::first();
         $this->assertNotNull($log);
@@ -190,9 +190,12 @@ class ComplianceTest extends TestCase
         ]);
 
         // Access 3 times
-        $this->actingAs($doctor, 'sanctum')->getJson("/api/appointments/{$appointment->id}");
-        $this->actingAs($doctor, 'sanctum')->getJson("/api/appointments/{$appointment->id}");
-        $this->actingAs($patient, 'sanctum')->getJson("/api/appointments/{$appointment->id}");
+        Sanctum::actingAs($doctor);
+        $this->getJson("/api/appointments/{$appointment->id}");
+        Sanctum::actingAs($doctor);
+        $this->getJson("/api/appointments/{$appointment->id}");
+        Sanctum::actingAs($patient);
+        $this->getJson("/api/appointments/{$appointment->id}");
 
         $this->assertEquals(3, HealthDataAuditLog::count());
     }
