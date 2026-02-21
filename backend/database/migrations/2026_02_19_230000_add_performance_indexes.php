@@ -9,13 +9,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Helper: create index only if it doesn't already exist (PostgreSQL safe)
+        // Helper: create index only if it doesn't already exist (all drivers)
         $createIfNotExists = function (string $table, string $indexName, string $columns) {
             $driver = Schema::getConnection()->getDriverName();
-            if ($driver === 'pgsql') {
+            if ($driver === 'pgsql' || $driver === 'sqlite') {
                 DB::statement("CREATE INDEX IF NOT EXISTS {$indexName} ON {$table} ({$columns})");
             } else {
-                // MySQL / SQLite — check information_schema
+                // MySQL — check information_schema
                 $exists = DB::select("SHOW INDEX FROM {$table} WHERE Key_name = ?", [$indexName]);
                 if (empty($exists)) {
                     DB::statement("CREATE INDEX {$indexName} ON {$table} ({$columns})");
