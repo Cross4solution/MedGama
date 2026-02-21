@@ -107,7 +107,7 @@ jobs:
           DB_DATABASE: medagama_test
           DB_USERNAME: medagama
           DB_PASSWORD: secret
-        run: php artisan test --no-coverage -vvv
+        run: php artisan test --no-coverage
 
   # ══════════════════════════════════════════════
   #  Frontend — React Build
