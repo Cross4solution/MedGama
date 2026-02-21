@@ -243,13 +243,15 @@ class MedStreamService
                 MedStreamEngagementCounter::where('post_id', $postId)->where('like_count', '>', 0)->decrement('like_count');
             }
 
-            return ['liked' => $newState, 'created' => false];
+            $counter = MedStreamEngagementCounter::where('post_id', $postId)->first();
+            return ['liked' => $newState, 'created' => false, 'like_count' => $counter?->like_count ?? 0];
         }
 
         MedStreamLike::create(['post_id' => $postId, 'user_id' => $userId]);
         MedStreamEngagementCounter::where('post_id', $postId)->increment('like_count');
 
-        return ['liked' => true, 'created' => true];
+        $counter = MedStreamEngagementCounter::where('post_id', $postId)->first();
+        return ['liked' => true, 'created' => true, 'like_count' => $counter?->like_count ?? 0];
     }
 
     // ══════════════════════════════════════════════
@@ -261,11 +263,36 @@ class MedStreamService
      */
     public function listBookmarks(string $userId, array $filters): LengthAwarePaginator
     {
-        return MedStreamBookmark::active()
+        // For post bookmarks, return full post data with engagement
+        $query = MedStreamBookmark::active()
             ->where('user_id', $userId)
             ->when($filters['type'] ?? null, fn($q, $v) => $q->where('bookmarked_type', $v))
-            ->orderByDesc('created_at')
-            ->paginate($filters['per_page'] ?? 20);
+            ->orderByDesc('created_at');
+
+        $bookmarks = $query->paginate($filters['per_page'] ?? 20);
+
+        // Eager-load post details for post bookmarks
+        $postIds = $bookmarks->getCollection()
+            ->where('bookmarked_type', 'post')
+            ->pluck('target_id')
+            ->unique()
+            ->values();
+
+        if ($postIds->isNotEmpty()) {
+            $posts = MedStreamPost::whereIn('id', $postIds)
+                ->with(['author:id,fullname,avatar,role_id', 'clinic:id,fullname,avatar', 'engagementCounter'])
+                ->get()
+                ->keyBy('id');
+
+            $bookmarks->getCollection()->transform(function ($bookmark) use ($posts) {
+                if ($bookmark->bookmarked_type === 'post' && isset($posts[$bookmark->target_id])) {
+                    $bookmark->post = $posts[$bookmark->target_id];
+                }
+                return $bookmark;
+            });
+        }
+
+        return $bookmarks;
     }
 
     /**
@@ -273,9 +300,16 @@ class MedStreamService
      */
     public function toggleBookmark(string $userId, array $data): array
     {
+        $type = $data['bookmarked_type'] ?? 'post';
+        $targetId = $data['target_id'] ?? $data['post_id'] ?? null;
+
+        if (!$targetId) {
+            return ['bookmarked' => false, 'created' => false];
+        }
+
         $existing = MedStreamBookmark::where('user_id', $userId)
-            ->where('bookmarked_type', $data['bookmarked_type'])
-            ->where('target_id', $data['target_id'])
+            ->where('bookmarked_type', $type)
+            ->where('target_id', $targetId)
             ->first();
 
         if ($existing) {
@@ -286,8 +320,8 @@ class MedStreamService
 
         MedStreamBookmark::create([
             'user_id'        => $userId,
-            'bookmarked_type' => $data['bookmarked_type'],
-            'target_id'      => $data['target_id'],
+            'bookmarked_type' => $type,
+            'target_id'      => $targetId,
         ]);
 
         return ['bookmarked' => true, 'created' => true];

@@ -510,6 +510,7 @@ const Header = () => {
             // Mirror mobile dropdown with SidebarPatient menu for patients
             const patientItems = [
               { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/saved', label: 'Saved Posts', icon: Bookmark },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },
@@ -518,6 +519,7 @@ const Header = () => {
             ];
             const doctorItems = [
               { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/saved', label: 'Saved Posts', icon: Bookmark },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },
@@ -526,6 +528,7 @@ const Header = () => {
             ];
             const clinicItems = [
               { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/saved', label: 'Saved Posts', icon: Bookmark },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
               { to: '/telehealth', label: 'Telehealth', icon: Monitor },

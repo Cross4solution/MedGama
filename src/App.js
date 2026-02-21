@@ -41,6 +41,7 @@ const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRights
 const DashboardRedirect = React.lazy(() => import('./pages/DashboardRedirect'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 const ServerErrorPage = React.lazy(() => import('./pages/ServerErrorPage'));
+const SavedPosts = React.lazy(() => import('./pages/SavedPosts'));
 
 // CRM Pages
 const CRMLayout = React.lazy(() => import('./components/crm/CRMLayout'));
@@ -192,6 +193,7 @@ function AppContent() {
         <Route path="/home" element={<HomeV2 />} />
         <Route path="/home-v2" element={<HomeV2 />} />
         <Route path="/explore" element={<ExploreTimeline />} />
+        <Route path="/saved" element={<SavedPosts />} />
         <Route path="/doctors-departments" element={<DoctorsDepartments />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />

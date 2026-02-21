@@ -14,8 +14,20 @@ class ToggleBookmarkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'bookmarked_type' => 'required|in:post,doctor,clinic,patient',
-            'target_id'       => 'required|uuid',
+            'bookmarked_type' => 'sometimes|in:post,doctor,clinic,patient',
+            'target_id'       => 'sometimes|uuid',
+            'post_id'         => 'sometimes|uuid',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        // Allow frontend shorthand: { post_id } → { bookmarked_type: 'post', target_id }
+        if ($this->has('post_id') && !$this->has('target_id')) {
+            $this->merge([
+                'bookmarked_type' => 'post',
+                'target_id'       => $this->input('post_id'),
+            ]);
+        }
     }
 }

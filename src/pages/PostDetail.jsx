@@ -18,6 +18,28 @@ function toStreamUrl(url) {
   return `${base}/api/media/stream/${storagePath}`;
 }
 
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return '';
+  if (dateStr === 'Just now') return 'Just now';
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    const now = new Date();
+    const diffMs = now - date;
+    const diffSec = Math.floor(diffMs / 1000);
+    if (diffSec < 60) return 'Just now';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin}m ago`;
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) return `${diffHour}h ago`;
+    const diffDay = Math.floor(diffHour / 24);
+    if (diffDay < 7) return `${diffDay}d ago`;
+    const diffWeek = Math.floor(diffDay / 7);
+    if (diffWeek < 4) return `${diffWeek}w ago`;
+    return date.toLocaleDateString();
+  } catch { return dateStr; }
+}
+
 function getMediaType(m) {
   if (m.type === 'video' || /\.(mp4|webm|mov|avi)$/i.test(m.url || '')) return 'video';
   if (m.type === 'document' || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.url || '') || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.name || '')) return 'document';
@@ -366,7 +388,7 @@ export default function PostDetail() {
         name: c.author?.fullname || 'User',
         avatar: c.author?.avatar || '/images/default/default-avatar.svg',
         text: c.content || '',
-        time: c.created_at ? new Date(c.created_at).toLocaleDateString() : '',
+        time: c.created_at || '',
         parent_id: c.parent_id || null,
         replies: (c.replies || []).map(r => ({
           id: r.id,
@@ -374,7 +396,7 @@ export default function PostDetail() {
           name: r.author?.fullname || 'User',
           avatar: r.author?.avatar || '/images/default/default-avatar.svg',
           text: r.content || '',
-          time: r.created_at ? new Date(r.created_at).toLocaleDateString() : '',
+          time: r.created_at || '',
           parent_id: r.parent_id || c.id,
           replies: [],
         })),
@@ -709,7 +731,7 @@ export default function PostDetail() {
                                 <div className="bg-gray-50/80 rounded-xl px-3.5 py-2.5">
                                   <div className="flex items-baseline justify-between gap-2">
                                     <span className="text-[13px] font-semibold text-gray-900">{c.name}</span>
-                                    <span className="text-[11px] text-gray-400 flex-shrink-0">{c.time}</span>
+                                    <span className="text-[11px] text-gray-400 flex-shrink-0">{formatTimeAgo(c.time)}</span>
                                   </div>
                                   <p className="text-[13px] text-gray-700 leading-relaxed mt-0.5">{c.text}</p>
                                 </div>
@@ -735,7 +757,7 @@ export default function PostDetail() {
                                           <div className="bg-gray-50/60 rounded-lg px-3 py-2">
                                             <div className="flex items-baseline justify-between gap-2">
                                               <span className="text-[12px] font-semibold text-gray-900">{r.name}</span>
-                                              <span className="text-[10px] text-gray-400 flex-shrink-0">{r.time}</span>
+                                              <span className="text-[10px] text-gray-400 flex-shrink-0">{formatTimeAgo(r.time)}</span>
                                             </div>
                                             <p className="text-[12px] text-gray-700 leading-relaxed mt-0.5">{r.text}</p>
                                           </div>

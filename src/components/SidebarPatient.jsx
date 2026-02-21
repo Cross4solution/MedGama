@@ -28,6 +28,7 @@ export default function SidebarPatient() {
   const patientItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
+    { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
@@ -39,6 +40,7 @@ export default function SidebarPatient() {
   const doctorItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
+    { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
@@ -49,6 +51,7 @@ export default function SidebarPatient() {
   const clinicItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
+    { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },

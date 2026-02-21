@@ -255,7 +255,7 @@ class MedStreamController extends Controller
         $result = $this->medStreamService->toggleLike($request->user()->id, $post->id);
 
         return response()->json(
-            ['liked' => $result['liked']],
+            ['liked' => $result['liked'], 'like_count' => $result['like_count'] ?? 0],
             $result['created'] ? 201 : 200,
         );
     }

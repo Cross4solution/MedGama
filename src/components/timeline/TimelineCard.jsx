@@ -28,14 +28,7 @@ function AvatarImg({ src, alt, className }) {
 function MediaImg({ src, alt, className, onClick = undefined }) {
   const [failed, setFailed] = React.useState(false);
   if (failed) {
-    return (
-      <div className={`${className} bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center`} onClick={onClick} role={onClick ? 'button' : undefined}>
-        <div className="flex flex-col items-center gap-2">
-          <ImageOff className="w-8 h-8 text-gray-300" strokeWidth={1.5} />
-          <span className="text-[11px] font-medium text-gray-400">Görsel yüklenemedi</span>
-        </div>
-      </div>
-    );
+    return null;
   }
   return (
     <img
@@ -53,6 +46,28 @@ function getMediaType(m) {
   if (m.type === 'video' || /\.(mp4|webm|mov|avi)$/i.test(m.url || '')) return 'video';
   if (m.type === 'document' || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.url || '') || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.name || '')) return 'document';
   return 'image';
+}
+
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return '';
+  if (dateStr === 'Just now') return 'Just now';
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    const now = new Date();
+    const diffMs = now - date;
+    const diffSec = Math.floor(diffMs / 1000);
+    if (diffSec < 60) return 'Just now';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin}m ago`;
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) return `${diffHour}h ago`;
+    const diffDay = Math.floor(diffHour / 24);
+    if (diffDay < 7) return `${diffDay}d ago`;
+    const diffWeek = Math.floor(diffDay / 7);
+    if (diffWeek < 4) return `${diffWeek}w ago`;
+    return date.toLocaleDateString();
+  } catch { return dateStr; }
 }
 
 function getFileExt(m) {
@@ -260,7 +275,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
         title: '',
         avatar: c.author?.avatar || '/images/default/default-avatar.svg',
         text: c.content || '',
-        time: c.created_at ? new Date(c.created_at).toLocaleDateString() : '',
+        time: c.created_at || '',
         parent_id: c.parent_id || null,
         replies: (c.replies || []).map(r => ({
           id: r.id,
@@ -269,7 +284,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           title: '',
           avatar: r.author?.avatar || '/images/default/default-avatar.svg',
           text: r.content || '',
-          time: r.created_at ? new Date(r.created_at).toLocaleDateString() : '',
+          time: r.created_at || '',
           parent_id: r.parent_id || c.id,
           replies: [],
         })),
@@ -812,9 +827,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                                   {c.title && <p className="text-[11px] text-[rgba(0,0,0,0.6)] leading-tight truncate">{c.title}</p>}
                                 </div>
                                 <div className="flex items-center gap-1.5 flex-shrink-0">
-                                  <span className="text-[11px] text-gray-400">{c.time}</span>
+                                  <span className="text-[11px] text-gray-400">{formatTimeAgo(c.time)}</span>
                                   {(c.author_id === authUser?.id || c.user_id === authUser?.id) && (
-                                    <button type="button" className="p-1 rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover/comment:opacity-100 transition-all" title="Delete" onClick={(e)=>{
+                                    <button type="button" className="p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all" title="Delete" onClick={(e)=>{
                                       e.stopPropagation();
                                       setApiComments(prev => prev.filter(x => x.id !== c.id));
                                       setLocalComments(prev => prev.filter(x => x.id !== c.id));
@@ -844,7 +859,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                                       <div className="flex-1 min-w-0">
                                         <div className="flex items-baseline justify-between gap-2">
                                           <span className="text-[12px] font-semibold text-[rgba(0,0,0,0.9)]">{r.name}</span>
-                                          <span className="text-[10px] text-gray-400 flex-shrink-0">{r.time}</span>
+                                          <span className="text-[10px] text-gray-400 flex-shrink-0">{formatTimeAgo(r.time)}</span>
                                         </div>
                                         <p className="text-[12px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-0.5">{r.text}</p>
                                         {(r.author_id === authUser?.id || r.user_id === authUser?.id) && (
