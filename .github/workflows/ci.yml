@@ -99,6 +99,16 @@ jobs:
           sed -i 's/^          //' .env
           php artisan key:generate
 
+      - name: Verify migrations
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: medagama_test
+          DB_USERNAME: medagama
+          DB_PASSWORD: secret
+        run: php artisan migrate:fresh --force
+
       - name: Run tests
         env:
           DB_CONNECTION: pgsql
