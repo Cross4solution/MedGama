@@ -132,8 +132,8 @@ class ComplianceTest extends TestCase
                 'is_active'  => true,
             ]);
         } catch (\Throwable $e) {
-            fwrite(STDERR, "\n\n=== DEBUG ComplianceTest:127 ===\n" . $e->getMessage() . "\n=== END DEBUG ===\n\n");
-            throw $e;
+            $existing = DB::table('digital_anamneses')->count();
+            $this->fail("UNIQUE_DEBUG ComplianceTest: {$e->getMessage()} | existing_rows={$existing} | patient_id={$patient->id}");
         }
 
         $this->actingAs($doctor, 'sanctum')
