@@ -85,6 +85,7 @@ export default function PostDetail() {
   const emojiReplyRef = React.useRef(null);
   const [apiDetailComments, setApiDetailComments] = React.useState([]);
   const [detailCommentsLoaded, setDetailCommentsLoaded] = React.useState(false);
+  const [deleteCommentConfirm, setDeleteCommentConfirm] = React.useState(null); // { id, isReply, parentId }
 
   // ExploreTimeline/TimelineCard üzerinden gelen state öncelikli, fallback to API
   const [apiItem, setApiItem] = React.useState(null);
@@ -736,14 +737,12 @@ export default function PostDetail() {
                                   <p className="text-[13px] text-gray-700 leading-relaxed mt-0.5">{c.text}</p>
                                 </div>
                                 <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400 pl-2">
-                                  <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
+                                  {c.author_id !== user?.id && c.user_id !== user?.id && (
+                                    <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
+                                  )}
                                   {(c.author_id === user?.id || c.user_id === user?.id) && (
                                     <button type="button" className="font-semibold hover:text-red-500 transition-colors" onClick={() => {
-                                      setApiDetailComments(prev => prev.filter(x => x.id !== c.id));
-                                      setLocalDetailComments(prev => prev.filter(x => x.id !== c.id));
-                                      if (!String(c.id).startsWith('dc-')) {
-                                        medStreamAPI.deleteComment(c.id).catch(() => {});
-                                      }
+                                      setDeleteCommentConfirm({ id: c.id, isReply: false, parentId: null });
                                     }}>Delete</button>
                                   )}
                                 </div>
@@ -763,11 +762,7 @@ export default function PostDetail() {
                                           </div>
                                           {(r.author_id === user?.id || r.user_id === user?.id) && (
                                             <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-red-500 transition-colors mt-0.5 flex-shrink-0" onClick={() => {
-                                              setApiDetailComments(prev => prev.map(x => x.id === c.id ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== r.id) } : x));
-                                              setLocalDetailComments(prev => prev.map(x => x.id === c.id ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== r.id) } : x));
-                                              if (!String(r.id).startsWith('dc-') && !String(r.id).startsWith('dr-')) {
-                                                medStreamAPI.deleteComment(r.id).catch(() => {});
-                                              }
+                                              setDeleteCommentConfirm({ id: r.id, isReply: true, parentId: c.id });
                                             }}>Delete</button>
                                           )}
                                         </div>
@@ -803,6 +798,42 @@ export default function PostDetail() {
                     <p className="py-3 text-center text-xs text-gray-400">No comments yet. Be the first!</p>
                   )}
                 </div>
+
+                {/* Delete Comment Confirmation */}
+                {deleteCommentConfirm && (
+                  <div className="mt-3 rounded-xl border border-red-200 bg-red-50/80 p-3">
+                    <p className="text-xs font-semibold text-red-700 mb-2">Are you sure you want to delete this comment?</p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        className="px-3 py-1.5 text-xs font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors"
+                        onClick={() => {
+                          const { id, isReply, parentId } = deleteCommentConfirm;
+                          if (isReply && parentId) {
+                            setApiDetailComments(prev => prev.map(x => x.id === parentId ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== id) } : x));
+                            setLocalDetailComments(prev => prev.map(x => x.id === parentId ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== id) } : x));
+                          } else {
+                            setApiDetailComments(prev => prev.filter(x => x.id !== id));
+                            setLocalDetailComments(prev => prev.filter(x => x.id !== id));
+                          }
+                          if (!String(id).startsWith('dc-') && !String(id).startsWith('dr-')) {
+                            medStreamAPI.deleteComment(id).catch(() => {});
+                          }
+                          setDeleteCommentConfirm(null);
+                        }}
+                      >
+                        Delete
+                      </button>
+                      <button
+                        type="button"
+                        className="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors"
+                        onClick={() => setDeleteCommentConfirm(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

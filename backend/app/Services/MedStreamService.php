@@ -50,6 +50,7 @@ class MedStreamService
      */
     public function loadPostDetails(MedStreamPost $post, ?string $userId): MedStreamPost
     {
+        $post->loadCount(['comments as real_comment_count' => fn($q) => $q->where('is_hidden', false)]);
         $post->load([
             'author:id,fullname,avatar,role_id',
             'clinic:id,fullname,avatar',

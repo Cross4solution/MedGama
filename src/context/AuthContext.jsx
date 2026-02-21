@@ -128,11 +128,14 @@ export function AuthProvider({ children }) {
     const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
     setUser(userWithRole);
     setToken(access);
+    meUnavailableRef.current = false; // Reset so fetchCurrentUser can refresh avatar
     try {
       localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country }));
       localStorage.removeItem('auth_logout');
       loggedOutRef.current = false;
     } catch {}
+    // Fetch fresh user data from /auth/me to get latest avatar
+    try { fetchCurrentUser(access); } catch {}
     return { data: { user: userWithRole, access_token: access }, requires_email_verification: !!res?.requires_email_verification };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country]);

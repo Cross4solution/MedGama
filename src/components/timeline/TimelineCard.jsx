@@ -262,6 +262,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const [apiComments, setApiComments] = useState([]);
   const [commentsLoaded, setCommentsLoaded] = useState(false);
   const [visibleCommentCount, setVisibleCommentCount] = useState(3);
+  const [deleteCommentConfirm, setDeleteCommentConfirm] = useState(null); // { id, isReply, parentId }
 
   // Fetch comments from API when comment section opens
   useEffect(() => {
@@ -336,8 +337,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     const text = replyText.trim();
     const parentId = replyTo;
     if (!text) { setReplyTo(''); setReplyText(''); return; }
+    const tempId = 'reply-' + Date.now();
     const newReply = {
-      id: 'reply-' + Date.now(),
+      id: tempId,
       author_id: authUser?.id,
       name: authUser?.name || 'You',
       title: '',
@@ -359,12 +361,35 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       ));
     }
     setCommentCount(c => c + 1);
-    // Fire API call with parent_id
-    if (item?.id) {
-      medStreamAPI.createComment(item.id, { content: text, parent_id: parentId }).catch((err) => console.warn('Reply failed:', err));
-    }
     setReplyTo('');
     setReplyText('');
+    // Fire API call with parent_id — replace temp ID on success, rollback on failure
+    if (item?.id) {
+      medStreamAPI.createComment(item.id, { content: text, parent_id: parentId }).then((res) => {
+        const saved = res?.data || res;
+        if (saved?.id) {
+          const updateReplies = (comments) => comments.map(c => {
+            if (c.id === parentId) {
+              return { ...c, replies: (c.replies || []).map(r => r.id === tempId ? { ...r, id: saved.id, author_id: saved.author_id || saved.author?.id || authUser?.id, time: saved.created_at || 'Just now' } : r) };
+            }
+            return c;
+          });
+          setApiComments(updateReplies);
+          setLocalComments(updateReplies);
+        }
+      }).catch(() => {
+        const removeReply = (comments) => comments.map(c => {
+          if (c.id === parentId) {
+            return { ...c, replies: (c.replies || []).filter(r => r.id !== tempId) };
+          }
+          return c;
+        });
+        setApiComments(removeReply);
+        setLocalComments(removeReply);
+        setCommentCount(c => Math.max(0, c - 1));
+        showSuccessToast('Failed to post reply');
+      });
+    }
   };
 
   const truncate = (text, max = 120) => {
@@ -753,12 +778,21 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         e.stopPropagation();
                         if (isGuest) { showSuccessToast(loginRequiredMsg); return; }
                         const newComment = commentText.trim();
-                        medStreamAPI.createComment(item.id, { content: newComment }).catch((err) => console.warn('Comment failed:', err));
-                        setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
+                        const tempId = 'lc-' + Date.now();
+                        setLocalComments(prev => [...prev, { id: tempId, author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
                         setCommentCount(c => c + 1);
                         setVisibleCommentCount(v => v + 1);
                         setCommentText('');
-                        showSuccessToast('Comment posted');
+                        medStreamAPI.createComment(item.id, { content: newComment }).then((res) => {
+                          const saved = res?.data || res;
+                          if (saved?.id) {
+                            setLocalComments(prev => prev.map(c => c.id === tempId ? { ...c, id: saved.id, author_id: saved.author_id || saved.author?.id || authUser?.id, time: saved.created_at || 'Just now' } : c));
+                          }
+                        }).catch(() => {
+                          setLocalComments(prev => prev.filter(c => c.id !== tempId));
+                          setCommentCount(c => Math.max(0, c - 1));
+                          showSuccessToast('Failed to post comment');
+                        });
                       }
                     }}
                   />
@@ -781,12 +815,21 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                           if (isGuest) { showSuccessToast(loginRequiredMsg); return; }
                           if (!commentText.trim() || !item?.id) return;
                           const newComment = commentText.trim();
-                          medStreamAPI.createComment(item.id, { content: newComment }).catch((err) => console.warn('Comment failed:', err));
-                          setLocalComments(prev => [...prev, { id: 'lc-' + Date.now(), author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
+                          const tempId = 'lc-' + Date.now();
+                          setLocalComments(prev => [...prev, { id: tempId, author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
                           setCommentCount(c => c + 1);
                           setVisibleCommentCount(v => v + 1);
                           setCommentText('');
-                          showSuccessToast('Comment posted');
+                          medStreamAPI.createComment(item.id, { content: newComment }).then((res) => {
+                            const saved = res?.data || res;
+                            if (saved?.id) {
+                              setLocalComments(prev => prev.map(c => c.id === tempId ? { ...c, id: saved.id, author_id: saved.author_id || saved.author?.id || authUser?.id, time: saved.created_at || 'Just now' } : c));
+                            }
+                          }).catch(() => {
+                            setLocalComments(prev => prev.filter(c => c.id !== tempId));
+                            setCommentCount(c => Math.max(0, c - 1));
+                            showSuccessToast('Failed to post comment');
+                          });
                         }}
                       >
                         <Send className="w-3 h-3" strokeWidth={2.2} />
@@ -831,15 +874,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                                   {(c.author_id === authUser?.id || c.user_id === authUser?.id) && (
                                     <button type="button" className="p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all" title="Delete" onClick={(e)=>{
                                       e.stopPropagation();
-                                      setApiComments(prev => prev.filter(x => x.id !== c.id));
-                                      setLocalComments(prev => prev.filter(x => x.id !== c.id));
-                                      setCommentCount(cnt => Math.max(0, cnt - 1));
-                                      if (!String(c.id).startsWith('lc-')) {
-                                        medStreamAPI.deleteComment(c.id).catch(() => {
-                                          setApiComments(prev => [...prev, c]);
-                                          setCommentCount(cnt => cnt + 1);
-                                        });
-                                      }
+                                      setDeleteCommentConfirm({ id: c.id, isReply: false, parentId: null });
                                     }}>
                                       <Trash2 className="w-3.5 h-3.5" />
                                     </button>
@@ -848,7 +883,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                               </div>
                               <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">{c.text}</p>
                               <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
-                                <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
+                                {c.author_id !== authUser?.id && c.user_id !== authUser?.id && (
+                                  <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
+                                )}
                               </div>
                               {/* Nested replies */}
                               {Array.isArray(c.replies) && c.replies.length > 0 && (
@@ -865,12 +902,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                                         {(r.author_id === authUser?.id || r.user_id === authUser?.id) && (
                                           <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-red-500 hover:underline transition-colors mt-0.5" onClick={(e)=>{
                                             e.stopPropagation();
-                                            // Remove reply optimistically
-                                            setApiComments(prev => prev.map(x => x.id === c.id ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== r.id) } : x));
-                                            setLocalComments(prev => prev.map(x => x.id === c.id ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== r.id) } : x));
-                                            if (!String(r.id).startsWith('lc-') && !String(r.id).startsWith('lr-')) {
-                                              medStreamAPI.deleteComment(r.id).catch(() => {});
-                                            }
+                                            setDeleteCommentConfirm({ id: r.id, isReply: true, parentId: c.id });
                                           }}>Delete</button>
                                         )}
                                       </div>
@@ -910,6 +942,44 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           )}
 
           
+
+          {/* Delete Comment Confirmation Dialog */}
+          {deleteCommentConfirm && (
+            <div className="mx-3 mb-2 rounded-xl border border-red-200 bg-red-50/80 p-3" onClick={(e) => e.stopPropagation()}>
+              <p className="text-xs font-semibold text-red-700 mb-2">Are you sure you want to delete this comment?</p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="px-3 py-1.5 text-xs font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const { id, isReply, parentId } = deleteCommentConfirm;
+                    if (isReply && parentId) {
+                      setApiComments(prev => prev.map(x => x.id === parentId ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== id) } : x));
+                      setLocalComments(prev => prev.map(x => x.id === parentId ? { ...x, replies: (x.replies || []).filter(rr => rr.id !== id) } : x));
+                    } else {
+                      setApiComments(prev => prev.filter(x => x.id !== id));
+                      setLocalComments(prev => prev.filter(x => x.id !== id));
+                      setCommentCount(cnt => Math.max(0, cnt - 1));
+                    }
+                    if (!String(id).startsWith('lc-') && !String(id).startsWith('reply-') && !String(id).startsWith('lr-')) {
+                      medStreamAPI.deleteComment(id).catch(() => {});
+                    }
+                    setDeleteCommentConfirm(null);
+                  }}
+                >
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  className="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors"
+                  onClick={(e) => { e.stopPropagation(); setDeleteCommentConfirm(null); }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Video processing banner */}
           {item?.media_processing && (
