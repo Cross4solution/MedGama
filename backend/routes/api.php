@@ -28,6 +28,40 @@ Route::get('/health', function () {
     return response('ok', 200)->header('Content-Type', 'text/plain');
 });
 
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  TEMPORARY: One-time DB seed route — DELETE AFTER USE           ║
+// ║  Usage: GET or POST /api/system/init-db?key=MedaGama2026SecretInit ║
+// ╚══════════════════════════════════════════════════════════════════╝
+Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Request $request) {
+    if ($request->query('key') !== 'MedaGama2026SecretInit') {
+        return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
+    }
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', [
+            '--force' => true,
+        ]);
+        $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+
+        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+            '--force' => true,
+        ]);
+        $seedOutput = \Illuminate\Support\Facades\Artisan::output();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Database migrated and seeded successfully.',
+            'migrate_output' => $migrateOutput,
+            'seed_output' => $seedOutput,
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'trace'   => $e->getTraceAsString(),
+        ], 500);
+    }
+});
+
 /*
 |--------------------------------------------------------------------------
 | Auth Routes (Public)
@@ -323,30 +357,3 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     Route::delete('/reports/{id}/remove', [SuperAdminController::class, 'removeReport']);
 });
 
-// ╔══════════════════════════════════════════════════════════════════╗
-// ║  TEMPORARY: One-time DB seed route — DELETE AFTER USE           ║
-// ║  Usage: GET /api/system/init-db?key=MedaGama2026SecretInit      ║
-// ╚══════════════════════════════════════════════════════════════════╝
-Route::get('/system/init-db', function (\Illuminate\Http\Request $request) {
-    if ($request->query('key') !== 'MedaGama2026SecretInit') {
-        return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
-    }
-    try {
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
-            '--seed' => true,
-            '--force' => true,
-        ]);
-        $output = \Illuminate\Support\Facades\Artisan::output();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Database migrated and seeded successfully.',
-            'output' => $output,
-        ]);
-    } catch (\Throwable $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => $e->getMessage(),
-            'trace'   => $e->getTraceAsString(),
-        ], 500);
-    }
-});

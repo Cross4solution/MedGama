@@ -8,6 +8,8 @@ storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
+bootstrap/cache/routes-v7.php
+bootstrap/cache/config.php
 tests
 phpunit.xml
 .editorconfig

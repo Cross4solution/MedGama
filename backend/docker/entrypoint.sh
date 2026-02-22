@@ -14,6 +14,11 @@ chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 mkdir -p public
 ln -sfn ../storage/app/public public/storage
 
+# Clear any stale caches from previous builds (critical for route discovery)
+php artisan route:clear 2>/dev/null || true
+php artisan config:clear 2>/dev/null || true
+php artisan cache:clear 2>/dev/null || true
+
 # Run database migrations on every deployment (safe — only applies pending migrations)
 php artisan migrate --force 2>&1 || echo "⚠ Migration failed (DB may not be ready yet)"
 

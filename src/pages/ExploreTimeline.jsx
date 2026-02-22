@@ -144,9 +144,9 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     return items;
   }, []);
 
-  // API verileri varsa onları kullan, yoksa mock — injected posts always on top
+  // API verileri varsa onları kullan — mock fallback DISABLED (mock IDs cause 404/422 on real API)
   // Don't show mock data while API is still loading (prevents flash on navigation)
-  const baseSource = !apiLoaded ? [] : (apiPosts.length > 0 ? apiPosts : base);
+  const baseSource = !apiLoaded ? [] : apiPosts;
   const source = injectedPosts.length > 0 ? [...injectedPosts, ...baseSource] : baseSource;
 
   const filtered = useMemo(() => {
