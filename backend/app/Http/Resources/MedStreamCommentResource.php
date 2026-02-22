@@ -18,6 +18,7 @@ class MedStreamCommentResource extends JsonResource
             'is_hidden'  => (bool) $this->is_hidden,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
+            'time_ago'   => $this->created_at?->diffForHumans(),
 
             'author' => $this->whenLoaded('author', fn() => [
                 'id'       => $this->author->id,

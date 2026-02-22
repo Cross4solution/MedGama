@@ -21,6 +21,7 @@ class MedStreamPostResource extends JsonResource
             'media_processing'  => (bool) $this->media_processing,
             'created_at'        => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
+            'time_ago'          => $this->created_at?->diffForHumans(),
 
             // Relations
             'author' => $this->whenLoaded('author', fn() => [
