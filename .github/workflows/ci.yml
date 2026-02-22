@@ -175,5 +175,5 @@ jobs:
         timeout-minutes: 8
 
       - name: Verify image
-        run: docker run --rm medagama-app:test php -v
+        run: docker run --rm --entrypoint php medagama-app:test -v
         timeout-minutes: 2
