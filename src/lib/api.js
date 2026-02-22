@@ -1,6 +1,17 @@
 import axios from 'axios';
 
-const BASE_URL = (process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api').replace(/\/+$/, '');
+const FALLBACK_API_BASE = (() => {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    const isLocalHost = host === 'localhost' || host === '127.0.0.1';
+    if (!isLocalHost) {
+      return 'https://medgama-production.up.railway.app/api';
+    }
+  }
+  return 'http://127.0.0.1:8001/api';
+})();
+
+const BASE_URL = (process.env.REACT_APP_API_BASE || FALLBACK_API_BASE).replace(/\/+$/, '');
 
 // ── Axios Instance ──
 const api = axios.create({

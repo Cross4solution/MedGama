@@ -144,9 +144,11 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     return items;
   }, []);
 
-  // API verileri varsa onları kullan, yoksa mock — injected posts always on top
-  // Don't show mock data while API is still loading (prevents flash on navigation)
-  const baseSource = !apiLoaded ? [] : (apiPosts.length > 0 ? apiPosts : base);
+  // API verileri varsa onları kullan.
+  // Mock fallback sadece explicit olarak açılmışsa çalışsın.
+  // Bu sayede API kopukluğunda sahte postlar görünerek like/save/comment davranışı bozulmaz.
+  const allowMockFallback = process.env.REACT_APP_ENABLE_MOCK_FEED === '1';
+  const baseSource = !apiLoaded ? [] : (apiPosts.length > 0 ? apiPosts : (allowMockFallback ? base : []));
   const source = injectedPosts.length > 0 ? [...injectedPosts, ...baseSource] : baseSource;
 
   const filtered = useMemo(() => {
