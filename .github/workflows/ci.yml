@@ -117,7 +117,17 @@ jobs:
           DB_DATABASE: medagama_test
           DB_USERNAME: medagama
           DB_PASSWORD: secret
-        run: php artisan test --no-coverage
+        run: vendor/bin/phpunit --log-junit test-results.xml --testdox 2>&1 | tee test-output.txt
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            backend/test-results.xml
+            backend/test-output.txt
+          retention-days: 7
 
   # ══════════════════════════════════════════════
   #  Frontend — React Build
