@@ -162,6 +162,7 @@ jobs:
   docker:
     name: Docker Build Check
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [backend, frontend]
     if: github.ref == 'refs/heads/main'
 
@@ -171,6 +172,8 @@ jobs:
 
       - name: Build backend Docker image
         run: docker build -t medagama-app:test ./backend
+        timeout-minutes: 8
 
       - name: Verify image
         run: docker run --rm medagama-app:test php -v
+        timeout-minutes: 2
