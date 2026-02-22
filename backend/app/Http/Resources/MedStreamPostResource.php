@@ -34,10 +34,10 @@ class MedStreamPostResource extends JsonResource
                 'fullname' => $this->clinic->fullname,
                 'avatar'   => $this->clinic->avatar ?? null,
             ]),
-            'engagement_counter' => $this->whenLoaded('engagementCounter', fn() => [
-                'like_count'    => (int) ($this->real_like_count ?? $this->engagementCounter->like_count ?? 0),
-                'comment_count' => (int) ($this->real_comment_count ?? $this->engagementCounter->comment_count ?? 0),
-            ]),
+            'engagement_counter' => [
+                'like_count'    => (int) ($this->real_like_count ?? ($this->relationLoaded('engagementCounter') && $this->engagementCounter ? $this->engagementCounter->like_count : 0)),
+                'comment_count' => (int) ($this->real_comment_count ?? ($this->relationLoaded('engagementCounter') && $this->engagementCounter ? $this->engagementCounter->comment_count : 0)),
+            ],
             'comments' => MedStreamCommentResource::collection($this->whenLoaded('comments')),
 
             // Computed flags (set by service layer)

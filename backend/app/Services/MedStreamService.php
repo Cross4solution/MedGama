@@ -243,6 +243,8 @@ class MedStreamService
                 ->first();
 
             if ($existing) {
+                // IMPORTANT: compute $newState BEFORE update(), because update() + save()
+                // syncs originals — getOriginal() would return the NEW value after that.
                 $newState = !$existing->is_active;
                 $existing->update(['is_active' => $newState]);
 
@@ -251,15 +253,20 @@ class MedStreamService
                 } else {
                     MedStreamEngagementCounter::where('post_id', $postId)->where('like_count', '>', 0)->decrement('like_count');
                 }
+
+                $liked = $newState;
+                $created = false;
             } else {
                 MedStreamLike::create(['post_id' => $postId, 'user_id' => $userId]);
                 MedStreamEngagementCounter::where('post_id', $postId)->increment('like_count');
+
+                $liked = true;
+                $created = true;
             }
 
-            $liked = $existing ? !$existing->getOriginal('is_active') : true;
             $realCount = MedStreamLike::where('post_id', $postId)->where('is_active', true)->count();
 
-            return ['liked' => $liked, 'created' => !$existing, 'like_count' => $realCount];
+            return ['liked' => $liked, 'created' => $created, 'like_count' => $realCount];
         });
     }
 

@@ -16,9 +16,10 @@ const DashboardRedirect = () => {
 
     if (role === 'superAdmin' || role === 'saasAdmin') {
       navigate('/admin', { replace: true });
+    } else if (role === 'patient') {
+      navigate('/', { replace: true });
     } else {
-      // All users (doctor, clinic, patient) land on main platform
-      // CRM is a separate premium module accessed via sidebar
+      // Doctors and clinics land on MedStream
       navigate('/explore', { replace: true });
     }
   }, [user, navigate]);

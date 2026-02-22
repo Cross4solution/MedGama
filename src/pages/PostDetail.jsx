@@ -104,7 +104,7 @@ export default function PostDetail() {
     if (stateItem && !stateHasBlob) return; // state is valid, no need to fetch
     setLoading(true);
     medStreamAPI.getPost(id).then(res => {
-      const p = res?.post || res?.data?.post || res;
+      const p = res?.data || res?.post || res;
       if (p?.id) {
         setApiItem({
           id: p.id,

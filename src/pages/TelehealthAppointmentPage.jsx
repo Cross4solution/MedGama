@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import PhoneNumberInput from '../components/forms/PhoneNumberInput';
 import { listCountriesAll } from '../utils/geo';
@@ -7,10 +7,58 @@ import {
   Calendar, Loader2, CheckCircle2, ChevronLeft, ChevronRight,
   User, Clock, Video, Shield, Star, FileText, CreditCard,
   Building2, ArrowRight, ArrowLeft, Stethoscope, BadgeCheck,
-  Mail, Phone, CalendarDays, Sparkles, Info, Heart
+  Mail, Phone, CalendarDays, Sparkles, Info, Heart, Plus,
+  Users, ClipboardList, TrendingUp
 } from 'lucide-react';
 import { doctorAPI, appointmentAPI, calendarSlotAPI } from '../lib/api';
 import DoctorAppointmentManager from '../components/doctor/DoctorAppointmentManager';
+
+// ─── Doctor Appointment Dashboard (metrics + big requests) ───
+function DoctorAppointmentDashboard() {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    appointmentAPI.list({ per_page: 200 }).then(res => {
+      setAppointments(res?.data || []);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  const pending = useMemo(() => appointments.filter(a => a.status === 'pending'), [appointments]);
+  const confirmed = useMemo(() => appointments.filter(a => a.status === 'confirmed'), [appointments]);
+  const completed = useMemo(() => appointments.filter(a => a.status === 'completed'), [appointments]);
+  const total = appointments.length;
+
+  const metrics = [
+    { label: 'Total Appointments', value: total, icon: ClipboardList, color: 'from-blue-500 to-indigo-600', bg: 'bg-blue-50', text: 'text-blue-600' },
+    { label: 'Pending Requests', value: pending.length, icon: Clock, color: 'from-amber-500 to-orange-600', bg: 'bg-amber-50', text: 'text-amber-600' },
+    { label: 'Confirmed', value: confirmed.length, icon: CheckCircle2, color: 'from-teal-500 to-emerald-600', bg: 'bg-teal-50', text: 'text-teal-600' },
+    { label: 'Completed', value: completed.length, icon: TrendingUp, color: 'from-emerald-500 to-green-600', bg: 'bg-emerald-50', text: 'text-emerald-600' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Metrics Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {metrics.map((m) => (
+          <div key={m.label} className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-3">
+              <div className={`w-10 h-10 rounded-xl ${m.bg} flex items-center justify-center`}>
+                <m.icon className={`w-5 h-5 ${m.text}`} />
+              </div>
+              {loading && <Loader2 className="w-4 h-4 animate-spin text-gray-300" />}
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{loading ? '—' : m.value}</p>
+            <p className="text-xs font-medium text-gray-500 mt-1">{m.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Big Appointment Requests */}
+      <DoctorAppointmentManager />
+    </div>
+  );
+}
 
 const STEPS_PATIENT = [
   { key: 'doctor', label: 'Doctor', icon: Stethoscope },
@@ -28,6 +76,8 @@ const STEPS_DOCTOR = [
 export default function TelehealthAppointmentPage() {
   const { formatCurrency, country, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isCreateMode = searchParams.get('create') === '1';
 
   // Redirect unauthenticated users to login
   useEffect(() => {
@@ -327,8 +377,8 @@ export default function TelehealthAppointmentPage() {
             <button onClick={() => navigate(isDoctor ? '/crm/appointments' : '/telehealth')} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-all">
               {isDoctor ? 'View Appointments' : 'My Appointments'}
             </button>
-            <button onClick={() => navigate(isDoctor ? '/crm' : '/home-v2')} className="flex-1 bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:from-teal-700 hover:to-emerald-700 transition-all shadow-md shadow-teal-200/50">
-              {isDoctor ? 'Back to Dashboard' : 'Back to Home'}
+            <button onClick={() => navigate(isDoctor ? '/telehealth-appointment' : '/')} className="flex-1 bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:from-teal-700 hover:to-emerald-700 transition-all shadow-md shadow-teal-200/50">
+              {isDoctor ? 'Back to Appointments' : 'Back to Home'}
             </button>
           </div>
         </div>
@@ -336,30 +386,52 @@ export default function TelehealthAppointmentPage() {
     );
   }
 
-  // ─── Main Layout ───
+  // ─── Doctor Dashboard (no ?create param) ───
+  if (isDoctor && !isCreateMode) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-teal-50/20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          {/* Header with Create button */}
+          <div className="flex items-center justify-between mb-6">
+            <div />
+            <button
+              onClick={() => navigate('/telehealth-appointment?create=1')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-xl text-sm font-bold hover:from-teal-700 hover:to-emerald-700 transition-all shadow-md shadow-teal-200/50 hover:shadow-lg"
+            >
+              <Plus className="w-4 h-4" />
+              Create New Appointment
+            </button>
+          </div>
+
+          {/* Metrics Cards */}
+          <DoctorAppointmentDashboard />
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Main Layout (Patient booking OR Doctor create mode) ───
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-teal-50/20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         {/* Header */}
-        <div className="mb-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{isDoctor ? 'Appointment Management' : 'Book Appointment'}</h1>
-        </div>
-
-        {/* Doctor: Incoming Requests + Confirmed Appointments */}
-        {isDoctor && (
-          <div className="mb-6">
-            <DoctorAppointmentManager />
+        {!isDoctor && (
+          <div className="mb-4">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Book Appointment</h1>
           </div>
         )}
 
-        {/* Stepper — Create New Appointment */}
-        {isDoctor && (
+        {/* Back button for doctor create mode */}
+        {isDoctor && isCreateMode && (
           <div className="mb-4">
-            <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
-              <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-teal-500 to-emerald-500" />
-              Create New Appointment
-            </h2>
+            <button
+              onClick={() => navigate('/telehealth-appointment')}
+              className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Appointments
+            </button>
           </div>
         )}
 

@@ -86,7 +86,7 @@ function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
 }
 
 export default function Profile() {
-  const { user, country, updateUser, logout } = useAuth();
+  const { user, country, updateUser, logout, fetchCurrentUser } = useAuth();
   const { openSettings: openCookieSettings, consent, consentTimestamp, resetConsent } = useCookieConsent();
   const { t, i18n } = useTranslation();
   const [active, setActive] = useState('account');
@@ -330,6 +330,8 @@ export default function Profile() {
         preferred_language: preferredLanguage,
       });
       updateUser({ name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage }, codeUpper);
+      // Fetch fresh user data from server to ensure avatar URL from DB is persisted (not blob)
+      try { await fetchCurrentUser(); } catch {}
       showToast('Profile updated successfully');
     } catch (err) {
       // Still update local state so UI stays consistent (avatar preview etc.)
