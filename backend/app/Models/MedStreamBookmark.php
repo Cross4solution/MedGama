@@ -13,7 +13,7 @@ class MedStreamBookmark extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $fillable = ['user_id', 'bookmarked_type', 'target_id'];
+    protected $fillable = ['user_id', 'bookmarked_type', 'target_id', 'is_active'];
 
     protected function casts(): array
     {

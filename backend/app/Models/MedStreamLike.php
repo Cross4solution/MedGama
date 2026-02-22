@@ -13,7 +13,7 @@ class MedStreamLike extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $fillable = ['post_id', 'user_id'];
+    protected $fillable = ['post_id', 'user_id', 'is_active'];
 
     protected function casts(): array
     {

@@ -92,7 +92,7 @@ export const authAPI = {
   uploadAvatar: (file) => {
     const fd = new FormData();
     fd.append('avatar', file);
-    return api.post('/auth/profile/avatar', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+    return api.post('/auth/profile/avatar', fd, { headers: { 'Content-Type': undefined } });
   },
   // Password change with current_password verification
   changePassword: (payload) => api.put('/auth/profile/password', payload),
@@ -134,7 +134,7 @@ export const doctorProfileAPI = {
   get: () => api.get('/doctor-profile'),
   update: (data) => api.put('/doctor-profile', data),
   updateOnboarding: (data) => api.put('/doctor-profile/onboarding', data),
-  uploadGallery: (formData) => api.post('/doctor-profile/gallery', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  uploadGallery: (formData) => api.post('/doctor-profile/gallery', formData, { headers: { 'Content-Type': undefined } }),
 };
 
 // ── Appointment Service ──
@@ -215,7 +215,7 @@ export const medStreamAPI = {
     papers.forEach((file, i) => fd.append(`papers[${i}]`, file));
 
     return api.post('/medstream/posts', fd, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': undefined },
       timeout: 120000, // 2 min for large uploads
       onUploadProgress: (e) => {
         if (onProgress && e.total) {
@@ -260,7 +260,7 @@ export const messageAPI = {
     if (reply_to_id) fd.append('reply_to_id', reply_to_id);
     attachments.forEach((file, i) => fd.append(`attachments[${i}]`, file));
     return api.post(`/messages/conversations/${conversationId}/messages`, fd, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': undefined },
       timeout: 60000,
     });
   },
@@ -318,7 +318,7 @@ export const chatAPI = {
     if (content) fd.append('content', content);
     fd.append('attachment', attachment);
     return api.post(`/chat/conversations/${conversationId}/messages`, fd, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': undefined },
       timeout: 60000,
     });
   },

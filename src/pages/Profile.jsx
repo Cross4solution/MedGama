@@ -317,10 +317,14 @@ export default function Profile() {
       if (avatarFileRef.current) {
         try {
           const res = await authAPI.uploadAvatar(avatarFileRef.current);
-          avatarUrl = res?.avatar_url || res?.url || avatarUrl;
+          // Backend returns { data: { avatar: url }, avatar_url, url } via UserResource+withExtra
+          avatarUrl = res?.avatar_url || res?.url || res?.data?.avatar || avatarUrl;
           avatarFileRef.current = null;
         } catch (err) {
-          console.warn('[Profile] Avatar upload failed, using local preview:', err?.message);
+          console.error('[Profile] Avatar upload failed:', err?.message, err?.status, err?.data);
+          showToast(err?.message || 'Avatar upload failed. Please try again.', 'error');
+          setSaving(false);
+          return;
         }
       }
       // Update profile fields
@@ -329,9 +333,8 @@ export default function Profile() {
         country: codeUpper,
         preferred_language: preferredLanguage,
       });
+      // Update local state with the server-returned avatar URL (not blob)
       updateUser({ name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage }, codeUpper);
-      // Fetch fresh user data from server to ensure avatar URL from DB is persisted (not blob)
-      try { await fetchCurrentUser(); } catch {}
       showToast('Profile updated successfully');
     } catch (err) {
       // Still update local state so UI stays consistent (avatar preview etc.)
