@@ -18,7 +18,7 @@ class User extends Authenticatable
     public $incrementing = false;
 
     protected $fillable = [
-        'email', 'password', 'fullname', 'avatar', 'role_id', 'mobile',
+        'email', 'password', 'fullname', 'avatar', 'profile_image', 'role_id', 'mobile',
         'mobile_verified', 'email_verified', 'email_verification_code',
         'password_reset_code', 'password_reset_expires_at',
         'city_id', 'country_id', 'country', 'preferred_language',

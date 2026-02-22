@@ -31,10 +31,15 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   try {
     const saved = localStorage.getItem('auth_state');
+    let token = null;
     if (saved) {
-      const { token } = JSON.parse(saved);
-      if (token) config.headers.Authorization = `Bearer ${token}`;
+      const parsed = JSON.parse(saved);
+      token = parsed?.token || null;
     }
+    if (!token) {
+      token = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
+    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
   } catch {}
   return config;
 });
