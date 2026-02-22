@@ -214,20 +214,78 @@ const CRMAppointments = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.appointments.title')}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{t('crm.appointments.subtitle')}</p>
-        </div>
-        <button
-          onClick={() => setShowNewModal(true)}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md"
-        >
-          <Plus className="w-4 h-4" />
-          {t('crm.appointments.newAppointment')}
-        </button>
-      </div>
+      {/* Pending Appointment Requests */}
+      {(() => {
+        const pendingRequests = allAppointments.filter(a => a.rawStatus === 'pending' || a.status === 'upcoming');
+        if (pendingRequests.length === 0) return null;
+        return (
+          <div className="bg-white rounded-2xl border border-amber-200/60 shadow-sm">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-amber-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+                  <AlertCircle className="w-4.5 h-4.5 text-amber-600" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-gray-900">Appointment Requests</h2>
+                  <p className="text-xs text-gray-500">{pendingRequests.length} pending request{pendingRequests.length !== 1 ? 's' : ''}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowNewModal(true)}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md"
+              >
+                <Plus className="w-4 h-4" />
+                Create New Appointment
+              </button>
+            </div>
+            <div className="divide-y divide-amber-50">
+              {pendingRequests.slice(0, 5).map((apt) => (
+                <div key={apt.id} className="flex items-center justify-between px-5 py-3.5 hover:bg-amber-50/30 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-200 to-amber-300 flex items-center justify-center text-amber-700 text-xs font-bold flex-shrink-0">
+                      {apt.patient.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">{apt.patient}</p>
+                      <p className="text-xs text-gray-500">{apt.date} &middot; {apt.time} &middot; <span className="capitalize">{apt.method === 'in-person' ? 'In-Person' : apt.method}</span></p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {apt.rawStatus === 'pending' && (
+                      <>
+                        <button
+                          onClick={() => handleStatusUpdate(apt.id, 'confirmed')}
+                          disabled={!!updating}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-semibold hover:bg-teal-700 transition-all disabled:opacity-50"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Confirm
+                        </button>
+                        <button
+                          onClick={() => handleStatusUpdate(apt.id, 'cancelled')}
+                          disabled={!!updating}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-red-600 bg-red-50 rounded-lg text-xs font-semibold hover:bg-red-100 transition-all disabled:opacity-50"
+                        >
+                          <XCircle className="w-3.5 h-3.5" />
+                          Decline
+                        </button>
+                      </>
+                    )}
+                    <button onClick={() => handleViewDetail(apt)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {pendingRequests.length > 5 && (
+                <div className="px-5 py-2.5 text-center">
+                  <span className="text-xs font-medium text-amber-600">+{pendingRequests.length - 5} more requests</span>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -247,7 +305,7 @@ const CRMAppointments = () => {
       {/* Toolbar */}
       <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
-          {/* View Toggle + Search */}
+          {/* View Toggle + Search + Create */}
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="flex bg-gray-100 rounded-lg p-0.5">
               <button onClick={() => setView('list')} className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${view === 'list' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
@@ -269,7 +327,7 @@ const CRMAppointments = () => {
             </div>
           </div>
 
-          {/* Filters */}
+          {/* Filters + Create Button */}
           <div className="flex items-center gap-2 overflow-x-auto">
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent">
               <option value="all">{t('common.all')} {t('common.status')}</option>
@@ -282,6 +340,13 @@ const CRMAppointments = () => {
               <option value="all">{t('common.all')} {t('common.type')}</option>
               {APPOINTMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
+            <button
+              onClick={() => setShowNewModal(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-semibold hover:bg-teal-700 transition-all shadow-sm whitespace-nowrap"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Create New Appointment
+            </button>
           </div>
         </div>
 

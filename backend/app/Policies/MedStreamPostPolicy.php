@@ -11,13 +11,13 @@ class MedStreamPostPolicy
      * Anyone can view visible posts (handled by scope), but hidden posts
      * can only be viewed by the author or an admin.
      */
-    public function view(User $user, MedStreamPost $post): bool
+    public function view(?User $user, MedStreamPost $post): bool
     {
         if (!$post->is_hidden) {
             return true;
         }
 
-        return $user->id === $post->author_id || $user->isAdmin();
+        return $user && ($user->id === $post->author_id || $user->isAdmin());
     }
 
     /**

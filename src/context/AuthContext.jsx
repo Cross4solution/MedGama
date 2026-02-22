@@ -218,8 +218,9 @@ export function AuthProvider({ children }) {
         } catch {}
         return null;
       }
-      const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
-      const userWithRole = { ...apiUser, avatar: normalizeAvatar(apiUser?.avatar), role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+      const role = apiUser?.role_id || apiUser?.role || 'patient';
+      const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
+      const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
       setUser(userWithRole);
       setToken(tk);
       try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country })); } catch {}

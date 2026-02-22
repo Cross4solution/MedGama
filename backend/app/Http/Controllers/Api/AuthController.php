@@ -348,6 +348,10 @@ class AuthController extends Controller
     )]
     public function getMedicalHistory(Request $request): JsonResponse
     {
+        if ($request->user()->role_id !== 'patient') {
+            return response()->json(['message' => 'Medical history is only available for patients.'], 403);
+        }
+
         $conditions = $this->authService->getMedicalHistory($request->user());
 
         return response()->json(['conditions' => $conditions]);
@@ -367,6 +371,10 @@ class AuthController extends Controller
     )]
     public function updateMedicalHistory(UpdateMedicalHistoryRequest $request): JsonResponse
     {
+        if ($request->user()->role_id !== 'patient') {
+            return response()->json(['message' => 'Medical history is only available for patients.'], 403);
+        }
+
         $this->authService->updateMedicalHistory($request->user(), $request->validated('conditions'));
 
         return response()->json([

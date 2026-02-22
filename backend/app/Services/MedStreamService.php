@@ -31,7 +31,10 @@ class MedStreamService
     {
         $posts = MedStreamPost::query()
             ->with(['author:id,fullname,avatar,role_id', 'clinic:id,fullname,avatar', 'engagementCounter'])
-            ->withCount(['comments as real_comment_count' => fn($q) => $q->where('is_hidden', false)])
+            ->withCount([
+                'comments as real_comment_count' => fn($q) => $q->where('is_hidden', false),
+                'likes as real_like_count' => fn($q) => $q->where('is_active', true),
+            ])
             ->when($filters['author_id'] ?? null, fn($q, $v) => $q->where('author_id', $v))
             ->when($filters['clinic_id'] ?? null, fn($q, $v) => $q->where('clinic_id', $v))
             ->when($filters['post_type'] ?? null, fn($q, $v) => $q->where('post_type', $v))
@@ -50,7 +53,10 @@ class MedStreamService
      */
     public function loadPostDetails(MedStreamPost $post, ?string $userId): MedStreamPost
     {
-        $post->loadCount(['comments as real_comment_count' => fn($q) => $q->where('is_hidden', false)]);
+        $post->loadCount([
+            'comments as real_comment_count' => fn($q) => $q->where('is_hidden', false),
+            'likes as real_like_count' => fn($q) => $q->where('is_active', true),
+        ]);
         $post->load([
             'author:id,fullname,avatar,role_id',
             'clinic:id,fullname,avatar',
@@ -231,29 +237,30 @@ class MedStreamService
      */
     public function toggleLike(string $userId, string $postId): array
     {
-        $existing = MedStreamLike::where('post_id', $postId)
-            ->where('user_id', $userId)
-            ->first();
+        return DB::transaction(function () use ($userId, $postId) {
+            $existing = MedStreamLike::where('post_id', $postId)
+                ->where('user_id', $userId)
+                ->first();
 
-        if ($existing) {
-            $newState = !$existing->is_active;
-            $existing->update(['is_active' => $newState]);
+            if ($existing) {
+                $newState = !$existing->is_active;
+                $existing->update(['is_active' => $newState]);
 
-            if ($newState) {
-                MedStreamEngagementCounter::where('post_id', $postId)->increment('like_count');
+                if ($newState) {
+                    MedStreamEngagementCounter::where('post_id', $postId)->increment('like_count');
+                } else {
+                    MedStreamEngagementCounter::where('post_id', $postId)->where('like_count', '>', 0)->decrement('like_count');
+                }
             } else {
-                MedStreamEngagementCounter::where('post_id', $postId)->where('like_count', '>', 0)->decrement('like_count');
+                MedStreamLike::create(['post_id' => $postId, 'user_id' => $userId]);
+                MedStreamEngagementCounter::where('post_id', $postId)->increment('like_count');
             }
 
-            $counter = MedStreamEngagementCounter::where('post_id', $postId)->first();
-            return ['liked' => $newState, 'created' => false, 'like_count' => $counter?->like_count ?? 0];
-        }
+            $liked = $existing ? !$existing->getOriginal('is_active') : true;
+            $realCount = MedStreamLike::where('post_id', $postId)->where('is_active', true)->count();
 
-        MedStreamLike::create(['post_id' => $postId, 'user_id' => $userId]);
-        MedStreamEngagementCounter::where('post_id', $postId)->increment('like_count');
-
-        $counter = MedStreamEngagementCounter::where('post_id', $postId)->first();
-        return ['liked' => true, 'created' => true, 'like_count' => $counter?->like_count ?? 0];
+            return ['liked' => $liked, 'created' => !$existing, 'like_count' => $realCount];
+        });
     }
 
     // ══════════════════════════════════════════════
@@ -309,24 +316,26 @@ class MedStreamService
             return ['bookmarked' => false, 'created' => false];
         }
 
-        $existing = MedStreamBookmark::where('user_id', $userId)
-            ->where('bookmarked_type', $type)
-            ->where('target_id', $targetId)
-            ->first();
+        return DB::transaction(function () use ($userId, $type, $targetId) {
+            $existing = MedStreamBookmark::where('user_id', $userId)
+                ->where('bookmarked_type', $type)
+                ->where('target_id', $targetId)
+                ->first();
 
-        if ($existing) {
-            $newState = !$existing->is_active;
-            $existing->update(['is_active' => $newState]);
-            return ['bookmarked' => $newState, 'created' => false];
-        }
+            if ($existing) {
+                $newState = !$existing->is_active;
+                $existing->update(['is_active' => $newState]);
+                return ['bookmarked' => $newState, 'created' => false];
+            }
 
-        MedStreamBookmark::create([
-            'user_id'        => $userId,
-            'bookmarked_type' => $type,
-            'target_id'      => $targetId,
-        ]);
+            MedStreamBookmark::create([
+                'user_id'        => $userId,
+                'bookmarked_type' => $type,
+                'target_id'      => $targetId,
+            ]);
 
-        return ['bookmarked' => true, 'created' => true];
+            return ['bookmarked' => true, 'created' => true];
+        });
     }
 
     // ══════════════════════════════════════════════
