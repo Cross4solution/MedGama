@@ -215,16 +215,21 @@ class MedStreamService
     }
 
     /**
-     * Soft-delete a comment and decrement the engagement counter.
+     * Soft-delete a comment (and all descendants) and decrement counter by actual removed count.
      */
     public function destroyComment(MedStreamComment $comment): void
     {
         DB::transaction(function () use ($comment) {
-            MedStreamEngagementCounter::where('post_id', $comment->post_id)
-                ->where('comment_count', '>', 0)
-                ->decrement('comment_count');
+            $idsToDelete = $this->collectDescendantCommentIds($comment->id);
+            $decrementBy = MedStreamComment::whereIn('id', $idsToDelete)->count();
 
-            $comment->delete();
+            if ($decrementBy > 0) {
+                MedStreamEngagementCounter::where('post_id', $comment->post_id)
+                    ->where('comment_count', '>', 0)
+                    ->decrement('comment_count', $decrementBy);
+            }
+
+            MedStreamComment::whereIn('id', $idsToDelete)->delete();
         });
     }
 
@@ -419,6 +424,34 @@ class MedStreamService
             $post->is_bookmarked = in_array($post->id, $bookmarkedPostIds);
             return $post;
         });
+    }
+
+    /**
+     * Collect the target comment id + all descendant reply ids (any depth).
+     *
+     * @return array<int, string>
+     */
+    private function collectDescendantCommentIds(string $rootId): array
+    {
+        $allIds = [$rootId];
+        $frontier = [$rootId];
+
+        while (!empty($frontier)) {
+            $children = MedStreamComment::whereIn('parent_id', $frontier)
+                ->pluck('id')
+                ->toArray();
+
+            $children = array_values(array_diff($children, $allIds));
+
+            if (empty($children)) {
+                break;
+            }
+
+            $allIds = array_merge($allIds, $children);
+            $frontier = $children;
+        }
+
+        return $allIds;
     }
 
     /**

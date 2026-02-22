@@ -166,14 +166,12 @@ export function AuthProvider({ children }) {
   }, [country]);
 
   const API_BASE = useMemo(() => {
-    const envBase = (process.env.REACT_APP_API_BASE || '').replace(/\/+$/, '');
-    if (envBase) return envBase;
     if (typeof window !== 'undefined') {
       const host = window.location.hostname;
       const isLocalHost = host === 'localhost' || host === '127.0.0.1';
       if (!isLocalHost) return 'https://medgama-production.up.railway.app/api';
     }
-    return 'http://127.0.0.1:8001/api';
+    return (process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api').replace(/\/+$/, '');
   }, []);
   const ME_PATH = process.env.REACT_APP_API_ME || '/auth/me';
   // eslint-disable-next-line react-hooks/exhaustive-deps
