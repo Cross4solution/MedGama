@@ -259,10 +259,9 @@ function DoctorOnboardingGate() {
   useEffect(() => {
     if (!user) { setShowOnboarding(false); return; }
     const isDoctor = user?.role === 'doctor' || user?.role_id === 'doctor';
-    // Only show onboarding if explicitly false (not undefined/null) AND user just registered
-    // Check sessionStorage flag set during registration flow
-    const justRegistered = sessionStorage.getItem('doctor_just_registered') === 'true';
-    if (isDoctor && user?.onboarding_completed === false && justRegistered) {
+    // Show onboarding for any doctor whose onboarding_completed is explicitly false.
+    // Once onboarding_completed is true in DB, modal never appears.
+    if (isDoctor && user?.onboarding_completed === false) {
       setShowOnboarding(true);
     } else {
       setShowOnboarding(false);

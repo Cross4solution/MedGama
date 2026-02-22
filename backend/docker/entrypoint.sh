@@ -10,6 +10,13 @@ mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage
 chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
+# Ensure storage symlink exists (equivalent of `php artisan storage:link`)
+mkdir -p public
+ln -sfn ../storage/app/public public/storage
+
+# Run database migrations on every deployment (safe — only applies pending migrations)
+php artisan migrate --force 2>&1 || echo "⚠ Migration failed (DB may not be ready yet)"
+
 # Force safe defaults — no Redis, no external dependency
 export CACHE_STORE=file
 export QUEUE_CONNECTION=sync

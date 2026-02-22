@@ -443,52 +443,60 @@ export default function TelehealthAppointmentPage() {
                   </div>
                 </div>
 
-                {/* Specialty Filter + Doctor Cards */}
+                {/* Step 1: Specialty Selection */}
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
-                  <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
                     <Stethoscope className="w-4 h-4 text-teal-600" />
-                    Select Your Doctor
+                    Select Specialty
                   </h3>
-                  {/* Specialty Filter */}
-                  {!loadingDoctors && doctors.length > 0 && (() => {
+                  <p className="text-xs text-gray-400 mb-4">Choose a medical specialty to find the right doctor for you</p>
+                  {loadingDoctors ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-teal-500 mr-2" />
+                      <span className="text-sm text-gray-400">Loading specialties...</span>
+                    </div>
+                  ) : (() => {
                     const specs = [...new Set(doctors.map(d => d.specialty).filter(Boolean))].sort();
-                    if (specs.length <= 1) return null;
-                    return (
-                      <div className="mb-4">
-                        <div className="flex flex-wrap gap-2">
+                    return specs.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {specs.map(sp => (
                           <button
-                            onClick={() => setSelectedSpecialty('')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                              !selectedSpecialty ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300 hover:bg-teal-50'
+                            key={sp}
+                            onClick={() => { setSelectedSpecialty(sp); setSelectedDoctor(null); }}
+                            className={`px-3 py-3 rounded-xl text-xs font-semibold border-2 text-left transition-all ${
+                              selectedSpecialty === sp ? 'bg-teal-50 text-teal-700 border-teal-500 shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300 hover:bg-teal-50/50'
                             }`}
-                          >All Specialties</button>
-                          {specs.map(sp => (
-                            <button
-                              key={sp}
-                              onClick={() => setSelectedSpecialty(sp)}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                                selectedSpecialty === sp ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300 hover:bg-teal-50'
-                              }`}
-                            >{sp}</button>
-                          ))}
-                        </div>
+                          >
+                            <Stethoscope className={`w-4 h-4 mb-1.5 ${selectedSpecialty === sp ? 'text-teal-600' : 'text-gray-400'}`} />
+                            {sp}
+                          </button>
+                        ))}
                       </div>
+                    ) : (
+                      <p className="text-sm text-gray-400 text-center py-4">No specialties available</p>
                     );
                   })()}
-                  {loadingDoctors ? (
-                    <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-                      <Loader2 className="w-8 h-8 animate-spin mb-3 text-teal-500" />
-                      <p className="text-sm font-medium">Loading available doctors...</p>
-                    </div>
-                  ) : doctors.length === 0 ? (
+                </div>
+
+                {/* Step 2: Doctor Cards (shown only after specialty selection) */}
+                {selectedSpecialty && (
+                <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-teal-600" />
+                      Doctors — {selectedSpecialty}
+                    </h3>
+                    <button onClick={() => { setSelectedSpecialty(''); setSelectedDoctor(null); }} className="text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline transition-colors">Change specialty</button>
+                  </div>
+                  {doctors.filter(d => d.specialty === selectedSpecialty).length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                       <Stethoscope className="w-10 h-10 mb-3 text-gray-300" />
-                      <p className="text-sm font-medium text-gray-500">No doctors available at the moment</p>
-                      <p className="text-xs text-gray-400 mt-1">Please try again later</p>
+                      <p className="text-sm font-medium text-gray-500">No doctors available for this specialty</p>
+                      <p className="text-xs text-gray-400 mt-1">Please try a different specialty</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {doctors.filter(d => !selectedSpecialty || d.specialty === selectedSpecialty).map((doctor) => {
+                      {doctors.filter(d => d.specialty === selectedSpecialty).map((doctor) => {
                         const isSelected = selectedDoctor === doctor.id;
                         return (
                           <button
@@ -532,6 +540,7 @@ export default function TelehealthAppointmentPage() {
                     </div>
                   )}
                 </div>
+                )}
               </div>
             )}
 

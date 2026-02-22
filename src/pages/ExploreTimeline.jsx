@@ -54,7 +54,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
             },
             socialContext: '',
             created_at: p.created_at || null,
-            timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
+            timeAgo: p.time_ago || (p.created_at ? new Date(p.created_at).toLocaleDateString() : ''),
             visibility: 'public',
             media_processing: !!p.media_processing,
             media: (() => {
