@@ -8,13 +8,14 @@ use App\Models\Clinic;
 use App\Models\MedStreamEngagementCounter;
 use App\Models\MedStreamPost;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ClinicAnalyticsTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     private Clinic $clinic;
     private User $owner;
@@ -34,8 +35,8 @@ class ClinicAnalyticsTest extends TestCase
 
     public function test_clinic_owner_can_access_own_analytics(): void
     {
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -52,8 +53,8 @@ class ClinicAnalyticsTest extends TestCase
     {
         $otherClinic = Clinic::factory()->create();
 
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$otherClinic->id}/summary");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$otherClinic->id}/summary");
 
         $response->assertStatus(403);
     }
@@ -62,8 +63,8 @@ class ClinicAnalyticsTest extends TestCase
     {
         $patient = User::factory()->patient()->create();
 
-        $response = $this->actingAs($patient, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
+        Sanctum::actingAs($patient);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
 
         $response->assertStatus(403);
     }
@@ -72,8 +73,8 @@ class ClinicAnalyticsTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
 
-        $response = $this->actingAs($admin, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
+        Sanctum::actingAs($admin);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
 
         $response->assertOk();
     }
@@ -110,8 +111,8 @@ class ClinicAnalyticsTest extends TestCase
             'status' => 'pending', 'created_by' => $patient->id,
         ]);
 
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
 
         $response->assertOk()
             ->assertJsonPath('data.appointments.total', 3)
@@ -131,8 +132,8 @@ class ClinicAnalyticsTest extends TestCase
             'created_by' => $newPatient->id,
         ]);
 
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
 
         $response->assertOk()
             ->assertJsonPath('data.new_patients', 1);
@@ -151,8 +152,8 @@ class ClinicAnalyticsTest extends TestCase
             'comment_count' => 5,
         ]);
 
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/summary");
 
         $response->assertOk()
             ->assertJsonPath('data.engagement.total_posts', 1)
@@ -173,8 +174,8 @@ class ClinicAnalyticsTest extends TestCase
             'status' => 'completed', 'created_by' => $patient->id,
         ]);
 
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/doctors");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/doctors");
 
         $response->assertOk()
             ->assertJsonCount(1, 'data')
@@ -186,8 +187,8 @@ class ClinicAnalyticsTest extends TestCase
     {
         $otherClinic = Clinic::factory()->create();
 
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$otherClinic->id}/doctors");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$otherClinic->id}/doctors");
 
         $response->assertStatus(403);
     }
@@ -207,8 +208,8 @@ class ClinicAnalyticsTest extends TestCase
             'comment_count' => 8,
         ]);
 
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/engagement");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/engagement");
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -230,8 +231,8 @@ class ClinicAnalyticsTest extends TestCase
 
     public function test_engagement_labels_are_daily(): void
     {
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/engagement");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/engagement");
 
         $response->assertOk();
 
@@ -244,8 +245,8 @@ class ClinicAnalyticsTest extends TestCase
     {
         $otherClinic = Clinic::factory()->create();
 
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$otherClinic->id}/engagement");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$otherClinic->id}/engagement");
 
         $response->assertStatus(403);
     }
@@ -263,8 +264,8 @@ class ClinicAnalyticsTest extends TestCase
             'status' => 'completed', 'created_by' => $patient->id,
         ]);
 
-        $response = $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/appointment-trend");
+        Sanctum::actingAs($this->owner);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/appointment-trend");
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -290,8 +291,8 @@ class ClinicAnalyticsTest extends TestCase
     {
         $patient = User::factory()->patient()->create();
 
-        $response = $this->actingAs($patient, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/appointment-trend");
+        Sanctum::actingAs($patient);
+        $response = $this->getJson("/api/analytics/clinic/{$this->clinic->id}/appointment-trend");
 
         $response->assertStatus(403);
     }
@@ -302,8 +303,8 @@ class ClinicAnalyticsTest extends TestCase
     {
         Cache::flush();
 
-        $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/summary")
+        Sanctum::actingAs($this->owner);
+        $this->getJson("/api/analytics/clinic/{$this->clinic->id}/summary")
             ->assertOk();
 
         $cacheKey = "clinic_summary:{$this->clinic->id}:" . now()->format('Y-m');
@@ -314,8 +315,8 @@ class ClinicAnalyticsTest extends TestCase
     {
         Cache::flush();
 
-        $this->actingAs($this->owner, 'sanctum')
-            ->getJson("/api/analytics/clinic/{$this->clinic->id}/engagement")
+        Sanctum::actingAs($this->owner);
+        $this->getJson("/api/analytics/clinic/{$this->clinic->id}/engagement")
             ->assertOk();
 
         $cacheKey = "clinic_engagement:{$this->clinic->id}:" . now()->format('Y-m');

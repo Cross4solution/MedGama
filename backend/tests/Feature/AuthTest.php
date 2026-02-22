@@ -3,12 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     // ── Registration ──
 
@@ -80,8 +81,8 @@ class AuthTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user, 'sanctum')
-            ->getJson('/api/auth/me');
+        Sanctum::actingAs($user);
+        $response = $this->getJson('/api/auth/me');
 
         $response->assertOk()
             ->assertJsonPath('data.id', $user->id);

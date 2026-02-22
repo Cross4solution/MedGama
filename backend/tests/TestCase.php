@@ -8,6 +8,9 @@ use Ramsey\Uuid\Uuid;
 
 abstract class TestCase extends BaseTestCase
 {
+    protected $dropTypes = true;
+    protected $dropViews = true;
+
     protected function setUp(): void
     {
         parent::setUp();

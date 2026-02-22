@@ -6,12 +6,13 @@ use App\Models\ChatConversation;
 use App\Models\ChatMessage;
 use App\Models\MedStreamPost;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ChatMedStreamTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     // ── Chat Tests ──
 
@@ -30,8 +31,8 @@ class ChatMedStreamTest extends TestCase
             'sender_id'       => $userA->id,
         ]);
 
-        $response = $this->actingAs($userA, 'sanctum')
-            ->getJson("/api/chat/conversations/{$conversation->id}/messages");
+        Sanctum::actingAs($userA);
+        $response = $this->getJson("/api/chat/conversations/{$conversation->id}/messages");
 
         $response->assertOk();
     }
@@ -47,8 +48,8 @@ class ChatMedStreamTest extends TestCase
             'user_two_id' => $userB->id,
         ]);
 
-        $response = $this->actingAs($outsider, 'sanctum')
-            ->getJson("/api/chat/conversations/{$conversation->id}/messages");
+        Sanctum::actingAs($outsider);
+        $response = $this->getJson("/api/chat/conversations/{$conversation->id}/messages");
 
         $response->assertStatus(403);
     }
@@ -63,10 +64,10 @@ class ChatMedStreamTest extends TestCase
             'user_two_id' => $patient->id,
         ]);
 
-        $response = $this->actingAs($doctor, 'sanctum')
-            ->postJson("/api/chat/conversations/{$conversation->id}/messages", [
-                'content' => 'Hello patient, how are you?',
-            ]);
+        Sanctum::actingAs($doctor);
+        $response = $this->postJson("/api/chat/conversations/{$conversation->id}/messages", [
+            'content' => 'Hello patient, how are you?',
+        ]);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('chat_messages', [
@@ -87,10 +88,10 @@ class ChatMedStreamTest extends TestCase
             'user_two_id' => $userB->id,
         ]);
 
-        $response = $this->actingAs($outsider, 'sanctum')
-            ->postJson("/api/chat/conversations/{$conversation->id}/messages", [
-                'content' => 'I should not be able to send this',
-            ]);
+        Sanctum::actingAs($outsider);
+        $response = $this->postJson("/api/chat/conversations/{$conversation->id}/messages", [
+            'content' => 'I should not be able to send this',
+        ]);
 
         $response->assertStatus(403);
     }
@@ -112,8 +113,8 @@ class ChatMedStreamTest extends TestCase
         ]);
 
         // Patient marks as read
-        $response = $this->actingAs($patient, 'sanctum')
-            ->postJson("/api/chat/conversations/{$conversation->id}/read");
+        Sanctum::actingAs($patient);
+        $response = $this->postJson("/api/chat/conversations/{$conversation->id}/read");
 
         $response->assertOk()
             ->assertJsonPath('count', 3);
@@ -135,8 +136,8 @@ class ChatMedStreamTest extends TestCase
             'author_id' => $author->id,
         ]);
 
-        $response = $this->actingAs($author, 'sanctum')
-            ->deleteJson("/api/medstream/posts/{$post->id}");
+        Sanctum::actingAs($author);
+        $response = $this->deleteJson("/api/medstream/posts/{$post->id}");
 
         $response->assertOk();
         $this->assertSoftDeleted('med_stream_posts', ['id' => $post->id]);
@@ -151,8 +152,8 @@ class ChatMedStreamTest extends TestCase
             'author_id' => $author->id,
         ]);
 
-        $response = $this->actingAs($other, 'sanctum')
-            ->deleteJson("/api/medstream/posts/{$post->id}");
+        Sanctum::actingAs($other);
+        $response = $this->deleteJson("/api/medstream/posts/{$post->id}");
 
         $response->assertStatus(403);
     }
@@ -166,8 +167,8 @@ class ChatMedStreamTest extends TestCase
             'author_id' => $author->id,
         ]);
 
-        $response = $this->actingAs($admin, 'sanctum')
-            ->deleteJson("/api/medstream/posts/{$post->id}");
+        Sanctum::actingAs($admin);
+        $response = $this->deleteJson("/api/medstream/posts/{$post->id}");
 
         $response->assertOk();
         $this->assertSoftDeleted('med_stream_posts', ['id' => $post->id]);

@@ -6,12 +6,13 @@ use App\Models\Appointment;
 use App\Models\CalendarSlot;
 use App\Models\Clinic;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class AppointmentTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     private User $doctor;
     private User $patient;
@@ -35,16 +36,16 @@ class AppointmentTest extends TestCase
 
     public function test_patient_can_create_appointment(): void
     {
-        $response = $this->actingAs($this->patient, 'sanctum')
-            ->postJson('/api/appointments', [
-                'patient_id'       => $this->patient->id,
-                'doctor_id'        => $this->doctor->id,
-                'clinic_id'        => $this->clinic->id,
-                'appointment_type' => 'online',
-                'slot_id'          => $this->slot->id,
-                'appointment_date' => $this->slot->slot_date->toDateString(),
-                'appointment_time' => '10:00',
-            ]);
+        Sanctum::actingAs($this->patient);
+        $response = $this->postJson('/api/appointments', [
+            'patient_id'       => $this->patient->id,
+            'doctor_id'        => $this->doctor->id,
+            'clinic_id'        => $this->clinic->id,
+            'appointment_type' => 'online',
+            'slot_id'          => $this->slot->id,
+            'appointment_date' => $this->slot->slot_date->toDateString(),
+            'appointment_time' => '10:00',
+        ]);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('appointments', [
@@ -56,16 +57,16 @@ class AppointmentTest extends TestCase
 
     public function test_slot_becomes_unavailable_after_booking(): void
     {
-        $this->actingAs($this->patient, 'sanctum')
-            ->postJson('/api/appointments', [
-                'patient_id'       => $this->patient->id,
-                'doctor_id'        => $this->doctor->id,
-                'clinic_id'        => $this->clinic->id,
-                'appointment_type' => 'online',
-                'slot_id'          => $this->slot->id,
-                'appointment_date' => $this->slot->slot_date->toDateString(),
-                'appointment_time' => '10:00',
-            ]);
+        Sanctum::actingAs($this->patient);
+        $this->postJson('/api/appointments', [
+            'patient_id'       => $this->patient->id,
+            'doctor_id'        => $this->doctor->id,
+            'clinic_id'        => $this->clinic->id,
+            'appointment_type' => 'online',
+            'slot_id'          => $this->slot->id,
+            'appointment_date' => $this->slot->slot_date->toDateString(),
+            'appointment_time' => '10:00',
+        ]);
 
         $this->slot->refresh();
         $this->assertFalse($this->slot->is_available);
@@ -74,30 +75,30 @@ class AppointmentTest extends TestCase
     public function test_duplicate_slot_booking_is_rejected(): void
     {
         // First booking
-        $this->actingAs($this->patient, 'sanctum')
-            ->postJson('/api/appointments', [
-                'patient_id'       => $this->patient->id,
-                'doctor_id'        => $this->doctor->id,
-                'clinic_id'        => $this->clinic->id,
-                'appointment_type' => 'online',
-                'slot_id'          => $this->slot->id,
-                'appointment_date' => $this->slot->slot_date->toDateString(),
-                'appointment_time' => '10:00',
-            ]);
+        Sanctum::actingAs($this->patient);
+        $this->postJson('/api/appointments', [
+            'patient_id'       => $this->patient->id,
+            'doctor_id'        => $this->doctor->id,
+            'clinic_id'        => $this->clinic->id,
+            'appointment_type' => 'online',
+            'slot_id'          => $this->slot->id,
+            'appointment_date' => $this->slot->slot_date->toDateString(),
+            'appointment_time' => '10:00',
+        ]);
 
         $patient2 = User::factory()->patient()->create();
 
         // Second booking on same slot
-        $response = $this->actingAs($patient2, 'sanctum')
-            ->postJson('/api/appointments', [
-                'patient_id'       => $patient2->id,
-                'doctor_id'        => $this->doctor->id,
-                'clinic_id'        => $this->clinic->id,
-                'appointment_type' => 'online',
-                'slot_id'          => $this->slot->id,
-                'appointment_date' => $this->slot->slot_date->toDateString(),
-                'appointment_time' => '10:00',
-            ]);
+        Sanctum::actingAs($patient2);
+        $response = $this->postJson('/api/appointments', [
+            'patient_id'       => $patient2->id,
+            'doctor_id'        => $this->doctor->id,
+            'clinic_id'        => $this->clinic->id,
+            'appointment_type' => 'online',
+            'slot_id'          => $this->slot->id,
+            'appointment_date' => $this->slot->slot_date->toDateString(),
+            'appointment_time' => '10:00',
+        ]);
 
         $response->assertStatus(422);
     }
@@ -111,8 +112,8 @@ class AppointmentTest extends TestCase
             'slot_id'    => $this->slot->id,
         ]);
 
-        $response = $this->actingAs($this->doctor, 'sanctum')
-            ->getJson("/api/appointments/{$appointment->id}");
+        Sanctum::actingAs($this->doctor);
+        $response = $this->getJson("/api/appointments/{$appointment->id}");
 
         $response->assertOk();
     }
