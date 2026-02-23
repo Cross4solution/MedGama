@@ -165,14 +165,13 @@ export function AuthProvider({ children }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country]);
 
-  const API_BASE = useMemo(() => {
+  const API_BASE = (() => {
     if (typeof window !== 'undefined') {
-      const host = window.location.hostname;
-      const isLocalHost = host === 'localhost' || host === '127.0.0.1';
-      if (!isLocalHost) return 'https://medgama-production.up.railway.app/api';
+      const h = window.location.hostname;
+      if (h.endsWith('.vercel.app') || h === 'medagama.com' || h === 'www.medagama.com') return '/api';
     }
-    return (process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api').replace(/\/+$/, '');
-  }, []);
+    return (process.env.REACT_APP_API_BASE || '').replace(/\/+$/, '');
+  })();
   const ME_PATH = process.env.REACT_APP_API_ME || '/auth/me';
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchCurrentUser = useCallback(async (overrideToken) => {
@@ -225,9 +224,8 @@ export function AuthProvider({ children }) {
         } catch {}
         return null;
       }
-      const role = apiUser?.role_id || apiUser?.role || 'patient';
-      const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
-      const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
+      const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
+      const userWithRole = { ...apiUser, avatar: normalizeAvatar(apiUser?.avatar), role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
       setUser(userWithRole);
       setToken(tk);
       try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country })); } catch {}

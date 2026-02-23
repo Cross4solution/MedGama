@@ -1,24 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config/apiBase';
 
-const PRODUCTION_API_BASE = 'https://medgama-production.up.railway.app/api';
-
-const FALLBACK_API_BASE = (() => {
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    const isLocalHost = host === 'localhost' || host === '127.0.0.1';
-    if (!isLocalHost) return PRODUCTION_API_BASE;
-  }
-  return 'http://127.0.0.1:8001/api';
-})();
-
-const BASE_URL = (() => {
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    const isLocalHost = host === 'localhost' || host === '127.0.0.1';
-    if (!isLocalHost) return PRODUCTION_API_BASE;
-  }
-  return (process.env.REACT_APP_API_BASE || FALLBACK_API_BASE).replace(/\/+$/, '');
-})();
+const BASE_URL = API_BASE_URL;
 
 // Debug: verify which API URL was baked into this build (check browser console)
 if (typeof window !== 'undefined') {
@@ -36,15 +19,10 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   try {
     const saved = localStorage.getItem('auth_state');
-    let token = null;
     if (saved) {
-      const parsed = JSON.parse(saved);
-      token = parsed?.token || null;
+      const { token } = JSON.parse(saved);
+      if (token) config.headers.Authorization = `Bearer ${token}`;
     }
-    if (!token) {
-      token = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
-    }
-    if (token) config.headers.Authorization = `Bearer ${token}`;
   } catch {}
   return config;
 });
@@ -120,7 +98,7 @@ export const authAPI = {
   uploadAvatar: (file) => {
     const fd = new FormData();
     fd.append('avatar', file);
-    return api.post('/auth/profile/avatar', fd, { headers: { 'Content-Type': undefined } });
+    return api.post('/auth/profile/avatar', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
   // Password change with current_password verification
   changePassword: (payload) => api.put('/auth/profile/password', payload),
@@ -162,7 +140,7 @@ export const doctorProfileAPI = {
   get: () => api.get('/doctor-profile'),
   update: (data) => api.put('/doctor-profile', data),
   updateOnboarding: (data) => api.put('/doctor-profile/onboarding', data),
-  uploadGallery: (formData) => api.post('/doctor-profile/gallery', formData, { headers: { 'Content-Type': undefined } }),
+  uploadGallery: (formData) => api.post('/doctor-profile/gallery', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };
 
 // ── Appointment Service ──
@@ -243,7 +221,7 @@ export const medStreamAPI = {
     papers.forEach((file, i) => fd.append(`papers[${i}]`, file));
 
     return api.post('/medstream/posts', fd, {
-      headers: { 'Content-Type': undefined },
+      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120000, // 2 min for large uploads
       onUploadProgress: (e) => {
         if (onProgress && e.total) {
@@ -288,7 +266,7 @@ export const messageAPI = {
     if (reply_to_id) fd.append('reply_to_id', reply_to_id);
     attachments.forEach((file, i) => fd.append(`attachments[${i}]`, file));
     return api.post(`/messages/conversations/${conversationId}/messages`, fd, {
-      headers: { 'Content-Type': undefined },
+      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 60000,
     });
   },
@@ -346,7 +324,7 @@ export const chatAPI = {
     if (content) fd.append('content', content);
     fd.append('attachment', attachment);
     return api.post(`/chat/conversations/${conversationId}/messages`, fd, {
-      headers: { 'Content-Type': undefined },
+      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 60000,
     });
   },

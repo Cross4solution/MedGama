@@ -23,7 +23,7 @@ const LoginForm = ({
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
     if (!clientId) return;
 
-    const API_BASE = process.env.REACT_APP_API_BASE || '';
+    const API_BASE = (() => { const h = window.location.hostname; if (h.endsWith('.vercel.app') || h === 'medagama.com') return '/api'; return process.env.REACT_APP_API_BASE || ''; })();
     const LOGIN_GOOGLE = process.env.REACT_APP_API_LOGIN_GOOGLE || '/api/login/google';
     const mountAccessTokenFlow = () => {
       /** @type {any} */
