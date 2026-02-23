@@ -153,9 +153,12 @@ export function AuthProvider({ children }) {
         try { apiUser = JSON.parse(localStorage.getItem('google_user') || 'null'); } catch {}
       }
       if (!apiUser || !access) return null;
-      const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
+      const roleRaw = apiUser?.role_id || apiUser?.role || '';
+      const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || 'specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
+      const isClinic = roleRaw === 'clinic' || roleRaw === 'clinicOwner';
+      const role = isDoctor ? 'doctor' : isClinic ? roleRaw : (roleRaw || 'patient');
       const name = apiUser?.name || [apiUser?.fname, apiUser?.lname].filter(Boolean).join(' ').trim() || apiUser?.email || 'User';
-      const userWithRole = { ...apiUser, name, avatar: normalizeAvatar(apiUser?.avatar), role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+      const userWithRole = { ...apiUser, name, avatar: normalizeAvatar(apiUser?.avatar), role };
       setUser(userWithRole);
       setToken(access);
       try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country })); } catch {}
@@ -224,8 +227,11 @@ export function AuthProvider({ children }) {
         } catch {}
         return null;
       }
-      const isDoctor = apiUser && typeof apiUser === 'object' && ('specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser || apiUser?.role === 'doctor');
-      const userWithRole = { ...apiUser, avatar: normalizeAvatar(apiUser?.avatar), role: isDoctor ? 'doctor' : (apiUser?.role || 'patient') };
+      const roleRaw = apiUser?.role_id || apiUser?.role || '';
+      const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || 'specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
+      const isClinic = roleRaw === 'clinic' || roleRaw === 'clinicOwner';
+      const role = isDoctor ? 'doctor' : isClinic ? roleRaw : (roleRaw || 'patient');
+      const userWithRole = { ...apiUser, avatar: normalizeAvatar(apiUser?.avatar), role };
       setUser(userWithRole);
       setToken(tk);
       try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country })); } catch {}
