@@ -13,7 +13,6 @@ use App\Mail\PasswordResetMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class AuthService
@@ -147,14 +146,10 @@ class AuthService
     public function uploadAvatar(User $user, UploadedFile $file): array
     {
         $path = $file->store('avatars', 'public');
-        $url  = asset('api/media/stream/' . $path);
+        // Use relative URL so it works through Vercel proxy (/storage/...)
+        $url  = '/storage/' . $path;
 
-        $payload = ['avatar' => $url];
-        if (Schema::hasColumn('users', 'profile_image')) {
-            $payload['profile_image'] = $url;
-        }
-
-        $user->update($payload);
+        $user->update(['avatar' => $url]);
 
         return ['url' => $url, 'user' => $user->refresh()];
     }

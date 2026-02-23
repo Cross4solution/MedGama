@@ -39,7 +39,7 @@ class MediaOptimizer
                 if (!$image) {
                     // Fallback: store original without processing
                     $rawPath = $file->store($folder, 'public');
-                    $url = asset('storage/' . $rawPath);
+                    $url = '/storage/' . $rawPath;
                     return [
                         'id'       => $id,
                         'original' => $url,
@@ -76,13 +76,13 @@ class MediaOptimizer
                 Storage::disk('public')->put($path, file_get_contents($tmpPath));
                 @unlink($tmpPath);
 
-                $results[$variant] = asset('storage/' . $path);
+                $results[$variant] = '/storage/' . $path;
             } catch (\Throwable $e) {
                 \Log::warning("MediaOptimizer: Failed to process {$variant} variant", ['error' => $e->getMessage()]);
                 // Fallback: store original
                 if (empty($results)) {
                     $rawPath = $file->store($folder, 'public');
-                    $url = asset('storage/' . $rawPath);
+                    $url = '/storage/' . $rawPath;
                     $results[$variant] = $url;
                 }
             }
@@ -119,7 +119,7 @@ class MediaOptimizer
         // Store original first
         $file->storeAs($folder, $filename, 'public');
         $storedPath = Storage::disk('public')->path($path);
-        $url = asset('storage/' . $path);
+        $url = '/storage/' . $path;
 
         $result = [
             'id'        => $id,
@@ -145,7 +145,7 @@ class MediaOptimizer
                 exec($cmd, $output, $returnCode);
 
                 if ($returnCode === 0 && file_exists($thumbFullPath)) {
-                    $result['thumb'] = asset('storage/' . $thumbPath);
+                    $result['thumb'] = '/storage/' . $thumbPath;
                 }
 
                 // Compress video if larger than 20MB
@@ -164,7 +164,7 @@ class MediaOptimizer
                         // Use compressed version if smaller
                         $compressedSize = filesize($compressedFullPath);
                         if ($compressedSize < $file->getSize()) {
-                            $result['original'] = asset('storage/' . $compressedPath);
+                            $result['original'] = '/storage/' . $compressedPath;
                             $result['size'] = $compressedSize;
                             // Optionally delete the uncompressed original
                             Storage::disk('public')->delete($path);
@@ -195,7 +195,7 @@ class MediaOptimizer
         // Move from temp to storage
         Storage::disk('public')->put($storagePath, file_get_contents($filePath));
         $storedFullPath = Storage::disk('public')->path($storagePath);
-        $url = asset('storage/' . $storagePath);
+        $url = '/storage/' . $storagePath;
 
         $result = [
             'id'       => $id,
@@ -220,7 +220,7 @@ class MediaOptimizer
                 exec($cmd, $output, $returnCode);
 
                 if ($returnCode === 0 && file_exists($thumbFullPath)) {
-                    $result['thumb'] = asset('storage/' . $thumbStoragePath);
+                    $result['thumb'] = '/storage/' . $thumbStoragePath;
                 }
 
                 // Compress if > 20MB
@@ -238,7 +238,7 @@ class MediaOptimizer
                     if ($returnCode2 === 0 && file_exists($compressedFullPath)) {
                         $compressedSize = filesize($compressedFullPath);
                         if ($compressedSize < $fileSize) {
-                            $result['original'] = asset('storage/' . $compressedStoragePath);
+                            $result['original'] = '/storage/' . $compressedStoragePath;
                             $result['size'] = $compressedSize;
                             Storage::disk('public')->delete($storagePath);
                         } else {
@@ -267,7 +267,7 @@ class MediaOptimizer
 
         return [
             'id'       => $id,
-            'original' => asset('storage/' . "{$folder}/{$filename}"),
+            'original' => '/storage/' . "{$folder}/{$filename}",
             'thumb'    => null,
             'type'     => 'document',
             'name'     => $file->getClientOriginalName(),

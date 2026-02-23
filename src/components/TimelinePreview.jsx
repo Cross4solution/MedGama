@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toEnglishTimestamp } from '../utils/i18n';
 import { Star, MessageCircle, Heart, Clock, Image as ImageIcon, Folder, Share2 } from 'lucide-react';
-import { generateExploreStyleItems } from 'components/timeline/feedMock';
 import Badge from './Badge';
 import TimelineCard from 'components/timeline/TimelineCard';
 import { medStreamAPI } from '../lib/api';
@@ -61,9 +60,8 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
     }).catch(() => {}).finally(() => setLoading(false));
   }, [limit]);
 
-  // Explore-style ortak veri: doğrudan TimelineCard ile uyumlu
-  const defaults = useMemo(() => generateExploreStyleItems(limit ?? 6), [limit]);
-  const data = apiPosts.length ? apiPosts : (items.length ? items : defaults);
+  // Only show real API posts — no mock fallback (mock IDs cause 404 on like/comment/bookmark)
+  const data = apiPosts.length ? apiPosts : items;
   const scrollRef = useRef(null);
 
   // Restore scroll to last clicked post if exists, else keep position
@@ -141,6 +139,12 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : !data.length ? (
+              <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                <MessageCircle className="w-10 h-10 mb-3 opacity-40" />
+                <p className="text-sm font-medium">No posts yet</p>
+                <p className="text-xs mt-1">Be the first to share on MedStream!</p>
               </div>
             ) : (
             <div className="space-y-3">
