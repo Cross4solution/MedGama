@@ -15,7 +15,9 @@ return [
     |
     */
 
-    'paths' => ['*'],
+    // CORS is handled ENTIRELY by Nginx (server-level add_header).
+    // Empty paths = HandleCors middleware does NOTHING = no duplicate headers.
+    'paths' => [],
 
     'allowed_methods' => ['*'],
 
@@ -25,13 +27,10 @@ return [
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => ['*'],
+    'exposed_headers' => [],
 
-    'max_age' => 86400,
+    'max_age' => 0,
 
-    // NOTE: credentials (cookies) cannot be used with wildcard origin.
-    // Our app uses Bearer token auth (Authorization header), not cookies,
-    // so this is safe. Re-enable + restrict origins once CORS is confirmed working.
     'supports_credentials' => false,
 
 ];
