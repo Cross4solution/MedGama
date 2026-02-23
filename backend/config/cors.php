@@ -23,14 +23,15 @@ return [
         array_map('trim', explode(',', env('CORS_ALLOWED_ORIGINS', ''))),
         [
             env('APP_FRONTEND_URL', 'http://localhost:3000'),
+            'https://med-gama.vercel.app',
             'http://localhost:3000',
             'http://localhost:5173',
         ]
     ))),
 
     'allowed_origins_patterns' => array_filter([
-        env('CORS_ALLOWED_PATTERN'),  // e.g. https://*.vercel.app
-        'https://*medagama*.vercel.app',
+        env('CORS_ALLOWED_PATTERN'),
+        'https://*med*gama*.vercel.app',
     ]),
 
     'allowed_headers' => ['*'],

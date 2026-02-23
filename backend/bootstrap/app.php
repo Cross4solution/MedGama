@@ -27,7 +27,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'optional.auth' => \App\Http\Middleware\OptionalAuth::class,
         ]);
 
+        // Ensure CORS runs FIRST on every request (including OPTIONS preflight)
+        $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
+
         // Token-based auth (Bearer) — no CSRF needed for API routes
+        $middleware->api(remove: [
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 
