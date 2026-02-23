@@ -27,11 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'optional.auth' => \App\Http\Middleware\OptionalAuth::class,
         ]);
 
-        // CORS is handled entirely by Nginx (add_header in every location block).
-        // Do NOT add HandleCors here — dual headers cause browsers to reject responses.
-        $middleware->remove(\Illuminate\Http\Middleware\HandleCors::class);
-
-        // Token-based auth (Bearer) — no CSRF needed for API routes
+        // CORS handled by Laravel HandleCors (default global middleware).
+        // No need to prepend — it's already in the default stack.
+        // Just ensure CSRF is removed from API routes (Bearer token auth only).
         $middleware->api(remove: [
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
         ]);
