@@ -20,6 +20,11 @@ const BASE_URL = (() => {
   return (process.env.REACT_APP_API_BASE || FALLBACK_API_BASE).replace(/\/+$/, '');
 })();
 
+// Debug: verify which API URL was baked into this build (check browser console)
+if (typeof window !== 'undefined') {
+  console.info('[MedaGama] API_BASE =', BASE_URL);
+}
+
 // ── Axios Instance ──
 const api = axios.create({
   baseURL: BASE_URL,
