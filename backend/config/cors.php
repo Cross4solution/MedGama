@@ -15,9 +15,7 @@ return [
     |
     */
 
-    // CORS is handled ENTIRELY by Nginx (server-level add_header).
-    // Empty paths = HandleCors middleware does NOTHING = no duplicate headers.
-    'paths' => [],
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'broadcasting/auth'],
 
     'allowed_methods' => ['*'],
 
@@ -29,7 +27,7 @@ return [
 
     'exposed_headers' => [],
 
-    'max_age' => 0,
+    'max_age' => 86400,
 
     'supports_credentials' => false,
 
