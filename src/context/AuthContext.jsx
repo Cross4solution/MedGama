@@ -64,6 +64,11 @@ export function AuthProvider({ children }) {
           const av = parsed.user?.avatar;
           const isPlaceholder = typeof av === 'string' && (av.includes('gravatar.com') || av.includes('identicon') || av.includes('ui-avatars.com'));
           if (isPlaceholder || !av) parsed.user.avatar = '/images/default/default-avatar.svg';
+          // Re-evaluate role from role_id to fix stale cached roles
+          const rid = parsed.user?.role_id || parsed.user?.role || '';
+          if (rid === 'doctor' || rid === 'clinic' || rid === 'clinicOwner') {
+            parsed.user.role = rid;
+          }
           setUser(parsed.user);
           setToken(parsed.token);
           setCountry(parsed.country || 'TR');
