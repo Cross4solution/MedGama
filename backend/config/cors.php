@@ -15,31 +15,23 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'broadcasting/auth'],
+    'paths' => ['*'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => array_filter(array_unique(array_merge(
-        array_map('trim', explode(',', env('CORS_ALLOWED_ORIGINS', ''))),
-        [
-            env('APP_FRONTEND_URL', 'http://localhost:3000'),
-            'https://med-gama.vercel.app',
-            'http://localhost:3000',
-            'http://localhost:5173',
-        ]
-    ))),
+    'allowed_origins' => ['*'],
 
-    'allowed_origins_patterns' => array_filter([
-        env('CORS_ALLOWED_PATTERN'),
-        'https://*med*gama*.vercel.app',
-    ]),
+    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => [],
+    'exposed_headers' => ['*'],
 
     'max_age' => 86400,
 
-    'supports_credentials' => true,
+    // NOTE: credentials (cookies) cannot be used with wildcard origin.
+    // Our app uses Bearer token auth (Authorization header), not cookies,
+    // so this is safe. Re-enable + restrict origins once CORS is confirmed working.
+    'supports_credentials' => false,
 
 ];
