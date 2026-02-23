@@ -4,7 +4,7 @@
  * If this works but /api/system/init-db doesn't, the issue is Laravel routing.
  * If this also 404s, the issue is nginx → PHP-FPM pipeline.
  *
- * URL: https://medgama-production.up.railway.app/init-check.php?key=MedaGama2026SecretInit
+ * URL: https://medagama-production.up.railway.app/init-check.php?key=MedaGama2026SecretInit
  */
 
 header('Content-Type: application/json');
