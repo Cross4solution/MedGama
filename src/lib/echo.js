@@ -1,5 +1,6 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
+import { API_BASE_URL } from '../config/apiBase';
 
 // Make Pusher available globally (required by laravel-echo)
 window.Pusher = Pusher;
@@ -23,8 +24,9 @@ function getAuthToken() {
   }
 }
 
-const apiBase = (process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api').replace(/\/+$/, '');
+const apiBase = API_BASE_URL;
 // Derive the host origin from apiBase (strip /api suffix)
+// For Vercel proxy ("/api"), wsAuthHost becomes "" which means same-origin
 const wsAuthHost = apiBase.replace(/\/api\/?$/, '');
 
 // Reverb (self-hosted) config

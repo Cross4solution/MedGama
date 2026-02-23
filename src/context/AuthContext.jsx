@@ -165,7 +165,13 @@ export function AuthProvider({ children }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country]);
 
-  const API_BASE = (process.env.REACT_APP_API_BASE || '').replace(/\/+$/, '');
+  const API_BASE = (() => {
+    if (typeof window !== 'undefined') {
+      const h = window.location.hostname;
+      if (h.endsWith('.vercel.app') || h === 'medagama.com' || h === 'www.medagama.com') return '/api';
+    }
+    return (process.env.REACT_APP_API_BASE || '').replace(/\/+$/, '');
+  })();
   const ME_PATH = process.env.REACT_APP_API_ME || '/auth/me';
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchCurrentUser = useCallback(async (overrideToken) => {

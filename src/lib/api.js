@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config/apiBase';
 
-const BASE_URL = (process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8001/api').replace(/\/+$/, '');
+const BASE_URL = API_BASE_URL;
 
 // Debug: verify which API URL was baked into this build (check browser console)
 if (typeof window !== 'undefined') {
