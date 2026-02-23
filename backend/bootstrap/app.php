@@ -27,8 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'optional.auth' => \App\Http\Middleware\OptionalAuth::class,
         ]);
 
-        // Ensure CORS runs FIRST on every request (including OPTIONS preflight)
-        $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
+        // CORS is handled entirely by Nginx (add_header in every location block).
+        // Do NOT add HandleCors here — dual headers cause browsers to reject responses.
+        $middleware->remove(\Illuminate\Http\Middleware\HandleCors::class);
 
         // Token-based auth (Bearer) — no CSRF needed for API routes
         $middleware->api(remove: [

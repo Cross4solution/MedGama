@@ -21,14 +21,20 @@ echo "→ Nginx will listen on port $PORT"
 echo "→ Testing nginx config..."
 nginx -t -c /etc/nginx/nginx.conf 2>&1
 if [ $? -ne 0 ]; then
-    echo "✖ NGINX CONFIG INVALID — dumping config:"
-    cat /etc/nginx/nginx.conf
+    echo "✖ NGINX CONFIG INVALID — dumping full config:"
+    cat -n /etc/nginx/nginx.conf
     echo "────────────────────────────────────────"
+else
+    echo "✔ nginx config test passed"
 fi
 
-# Show the listen line to confirm port injection worked
+# Show CORS-critical lines to confirm headers are in place
 echo "→ Nginx listen line:"
 grep -n "listen" /etc/nginx/nginx.conf
+echo "→ Nginx CORS lines:"
+grep -n "Access-Control" /etc/nginx/nginx.conf
+echo "→ Nginx location lines:"
+grep -n "location" /etc/nginx/nginx.conf
 
 # ── 4. Create required directories ──
 mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache public
