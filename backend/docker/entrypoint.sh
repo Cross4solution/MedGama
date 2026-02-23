@@ -20,21 +20,17 @@ echo "→ Nginx will listen on port $PORT"
 # ── 3. Verify nginx config is valid ──
 echo "→ Testing nginx config..."
 nginx -t -c /etc/nginx/nginx.conf 2>&1
-if [ $? -ne 0 ]; then
-    echo "✖ NGINX CONFIG INVALID — dumping full config:"
-    cat -n /etc/nginx/nginx.conf
-    echo "────────────────────────────────────────"
+NGINX_TEST=$?
+if [ $NGINX_TEST -ne 0 ]; then
+    echo "✖ NGINX CONFIG TEST FAILED (exit=$NGINX_TEST)"
 else
-    echo "✔ nginx config test passed"
+    echo "✔ NGINX CONFIG TEST PASSED"
 fi
 
-# Show CORS-critical lines to confirm headers are in place
-echo "→ Nginx listen line:"
-grep -n "listen" /etc/nginx/nginx.conf
-echo "→ Nginx CORS lines:"
-grep -n "Access-Control" /etc/nginx/nginx.conf
-echo "→ Nginx location lines:"
-grep -n "location" /etc/nginx/nginx.conf
+# ALWAYS dump the full config to Railway logs for debugging
+echo "╔══ FULL NGINX CONFIG START ══╗"
+cat -n /etc/nginx/nginx.conf
+echo "╚══ FULL NGINX CONFIG END ════╝"
 
 # ── 4. Create required directories ──
 mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache public
