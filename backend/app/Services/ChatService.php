@@ -151,7 +151,7 @@ class ChatService
             $folder = 'chat/attachments/' . $conversation->id;
             $filename = Str::uuid() . '.' . ($attachment->getClientOriginalExtension() ?: 'bin');
             $attachment->storeAs($folder, $filename, 'public');
-            $attachmentUrl = asset('storage/' . $folder . '/' . $filename);
+            $attachmentUrl = '/storage/' . $folder . '/' . $filename;
             $attachmentName = $attachment->getClientOriginalName();
         }
 

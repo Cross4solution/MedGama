@@ -146,7 +146,8 @@ class AuthService
     public function uploadAvatar(User $user, UploadedFile $file): array
     {
         $path = $file->store('avatars', 'public');
-        $url  = asset('storage/' . $path);
+        // Use relative URL so it works through Vercel proxy (/storage/...)
+        $url  = '/storage/' . $path;
 
         $user->update(['avatar' => $url]);
 

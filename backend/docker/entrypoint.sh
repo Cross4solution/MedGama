@@ -32,13 +32,15 @@ echo "╔══ FULL NGINX CONFIG START ══╗"
 cat -n /etc/nginx/nginx.conf
 echo "╚══ FULL NGINX CONFIG END ════╝"
 
-# ── 4. Create required directories ──
+# ── 4. Create required directories (including avatar upload target) ──
 mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache public
+mkdir -p storage/app/public/avatars storage/app/public/medstream
 chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
 # ── 5. Storage symlink ──
-ln -sfn ../storage/app/public public/storage
+rm -f public/storage
+ln -sfn "$(pwd)/storage/app/public" public/storage
 
 # ── 6. FORCE CLEAR ALL CACHES ──
 echo "→ Clearing caches..."
