@@ -12,6 +12,16 @@ import es from './locales/es.json';
 import nl from './locales/nl.json';
 import it from './locales/it.json';
 import pt from './locales/pt.json';
+import zh from './locales/zh.json';
+import hi from './locales/hi.json';
+import ja from './locales/ja.json';
+import ko from './locales/ko.json';
+import pl from './locales/pl.json';
+import uk from './locales/uk.json';
+import ro from './locales/ro.json';
+import bn from './locales/bn.json';
+import vi from './locales/vi.json';
+import th from './locales/th.json';
 
 const resources = {
   en: { translation: en },
@@ -24,6 +34,16 @@ const resources = {
   nl: { translation: nl },
   it: { translation: it },
   pt: { translation: pt },
+  zh: { translation: zh },
+  hi: { translation: hi },
+  ja: { translation: ja },
+  ko: { translation: ko },
+  pl: { translation: pl },
+  uk: { translation: uk },
+  ro: { translation: ro },
+  bn: { translation: bn },
+  vi: { translation: vi },
+  th: { translation: th },
 };
 
 // One-time migration: clear stale auto-detected language so default becomes English
@@ -75,12 +95,22 @@ export default i18n;
 export const LANGUAGES = [
   { code: 'en', label: 'English', flag: '🇬🇧', dir: 'ltr' },
   { code: 'tr', label: 'Türkçe', flag: '🇹🇷', dir: 'ltr' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
+  { code: 'zh', label: '中文', flag: '🇨🇳', dir: 'ltr' },
+  { code: 'hi', label: 'हिन्दी', flag: '🇮🇳', dir: 'ltr' },
+  { code: 'es', label: 'Español', flag: '🇪🇸', dir: 'ltr' },
   { code: 'fr', label: 'Français', flag: '🇫🇷', dir: 'ltr' },
   { code: 'ar', label: 'العربية', flag: '🇸🇦', dir: 'rtl' },
-  { code: 'ru', label: 'Русский', flag: '🇷🇺', dir: 'ltr' },
-  { code: 'es', label: 'Español', flag: '🇪🇸', dir: 'ltr' },
-  { code: 'nl', label: 'Nederlands', flag: '🇳🇱', dir: 'ltr' },
-  { code: 'it', label: 'Italiano', flag: '🇮🇹', dir: 'ltr' },
+  { code: 'bn', label: 'বাংলা', flag: '🇧🇩', dir: 'ltr' },
   { code: 'pt', label: 'Português', flag: '🇵🇹', dir: 'ltr' },
+  { code: 'ru', label: 'Русский', flag: '🇷🇺', dir: 'ltr' },
+  { code: 'ja', label: '日本語', flag: '🇯🇵', dir: 'ltr' },
+  { code: 'de', label: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
+  { code: 'ko', label: '한국어', flag: '🇰🇷', dir: 'ltr' },
+  { code: 'vi', label: 'Tiếng Việt', flag: '��', dir: 'ltr' },
+  { code: 'it', label: 'Italiano', flag: '🇮🇹', dir: 'ltr' },
+  { code: 'th', label: 'ไทย', flag: '🇹🇭', dir: 'ltr' },
+  { code: 'pl', label: 'Polski', flag: '🇵🇱', dir: 'ltr' },
+  { code: 'uk', label: 'Українська', flag: '🇺🇦', dir: 'ltr' },
+  { code: 'ro', label: 'Română', flag: '🇷🇴', dir: 'ltr' },
+  { code: 'nl', label: 'Nederlands', flag: '��', dir: 'ltr' },
 ];
