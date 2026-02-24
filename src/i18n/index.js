@@ -106,11 +106,11 @@ export const LANGUAGES = [
   { code: 'ja', label: '日本語', flag: '🇯🇵', dir: 'ltr' },
   { code: 'de', label: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
   { code: 'ko', label: '한국어', flag: '🇰🇷', dir: 'ltr' },
-  { code: 'vi', label: 'Tiếng Việt', flag: '��', dir: 'ltr' },
+  { code: 'vi', label: 'Tiếng Việt', flag: '🇻🇳', dir: 'ltr' },
   { code: 'it', label: 'Italiano', flag: '🇮🇹', dir: 'ltr' },
   { code: 'th', label: 'ไทย', flag: '🇹🇭', dir: 'ltr' },
   { code: 'pl', label: 'Polski', flag: '🇵🇱', dir: 'ltr' },
   { code: 'uk', label: 'Українська', flag: '🇺🇦', dir: 'ltr' },
   { code: 'ro', label: 'Română', flag: '🇷🇴', dir: 'ltr' },
-  { code: 'nl', label: 'Nederlands', flag: '��', dir: 'ltr' },
+  { code: 'nl', label: 'Nederlands', flag: '🇳🇱', dir: 'ltr' },
 ];
