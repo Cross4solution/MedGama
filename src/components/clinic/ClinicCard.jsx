@@ -3,12 +3,18 @@ import { Heart, MapPin, Stethoscope, Clock } from 'lucide-react';
 import Badge from 'components/Badge';
 import { useTranslation } from 'react-i18next';
 
+function formatRating(value) {
+  const n = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(n)) return '';
+  return n.toFixed(1);
+}
+
 function Rating({ value, reviewCount }) {
   return (
     <div className="flex items-center gap-1">
       {/* Using a single star icon with value to match original UI */}
       <svg className="w-4 h-4 fill-yellow-400 text-yellow-400" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431 8.2 1.193-5.934 5.787 1.401 8.168L12 18.896l-7.335 3.87 1.401-8.168L.132 9.211l8.2-1.193z"/></svg>
-      <span className="font-semibold text-gray-900">{value}</span>
+      <span className="font-semibold text-gray-900">{formatRating(value)}</span>
       {typeof reviewCount === 'number' && (
         <span className="text-sm text-gray-500">({reviewCount})</span>
       )}

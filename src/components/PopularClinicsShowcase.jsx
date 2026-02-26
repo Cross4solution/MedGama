@@ -2,6 +2,12 @@ import React, { useMemo, useRef } from 'react';
 import { Star, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+function formatRating(value) {
+  const n = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(n)) return '';
+  return n.toFixed(1);
+}
+
 function ClinicCard({ clinic, onClick, onView }) {
   const { t } = useTranslation();
   return (
@@ -17,7 +23,7 @@ function ClinicCard({ clinic, onClick, onView }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
         <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-white/95 backdrop-blur-sm rounded-lg px-2 py-1 shadow-sm">
           <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-          <span className="text-xs font-bold text-gray-900">{clinic.rating}</span>
+          <span className="text-xs font-bold text-gray-900">{formatRating(clinic.rating)}</span>
         </div>
       </div>
       <div className="flex-1 flex flex-col p-3.5">
