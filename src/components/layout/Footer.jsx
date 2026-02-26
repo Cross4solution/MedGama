@@ -39,7 +39,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center mb-3">
-              <img src="/images/logo/favicon-icon.png" alt="MedaGama" className="h-10 w-auto object-contain" />
+              <img src="/images/logo/favicon-icon-white.png" alt="MedaGama" className="h-10 w-auto object-contain" />
             </div>
             <p className="text-sm leading-relaxed text-white/60 mb-4">
               A global, end-to-end health portal for patients, doctors and clinics.
