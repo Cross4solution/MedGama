@@ -169,15 +169,14 @@ const Header = () => {
           {(() => {
             const logoTo = '/home-v2';
             return (
-              <Link to={logoTo} onClick={closeMenu} className="flex items-center space-x-2 cursor-pointer select-none ml-9 sm:ml-9">
+              <Link to={logoTo} onClick={closeMenu} className="flex items-center cursor-pointer select-none ml-9 sm:ml-9">
                 <img
                   src="/images/logo/logo.svg"
                   alt="MedaGama Logo"
-                  className="h-8 md:h-9 w-auto object-contain rounded"
+                  className="h-8 md:h-9 w-auto object-contain"
                   loading="eager"
                   decoding="async"
                 />
-                <span className="text-[17px] font-bold text-gray-900 tracking-tight">MedaGama</span>
               </Link>
             );
           })()}

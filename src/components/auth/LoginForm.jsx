@@ -103,9 +103,8 @@ const LoginForm = ({
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-4 sm:mb-8">
-        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-1 sm:mb-3">
-          <img src="/images/logo/logo.svg" alt="MedaGama" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
-          <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedaGama</span>
+        <div className="flex items-center justify-center mb-1 sm:mb-3">
+          <img src="/images/logo/logo.svg" alt="MedaGama" className="h-10 sm:h-12 w-auto object-contain" />
         </div>
         <p className="text-sm sm:text-base text-gray-600">{t('auth.loginSubtitle')}</p>
       </div>

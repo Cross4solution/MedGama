@@ -38,9 +38,8 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-3">
-              <img src="/images/logo/logo.svg" alt="MedaGama" className="h-7 w-7 rounded-lg object-contain" />
-              <span className="text-white text-base font-bold tracking-tight">MedaGama</span>
+            <div className="flex items-center mb-3">
+              <img src="/images/logo/logo.svg" alt="MedaGama" className="h-8 w-auto object-contain" />
             </div>
             <p className="text-sm leading-relaxed text-white/60 mb-4">
               A global, end-to-end health portal for patients, doctors and clinics.
