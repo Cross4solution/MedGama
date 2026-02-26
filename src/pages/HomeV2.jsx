@@ -7,6 +7,7 @@ import CoreBoxes from '../components/CoreBoxes';
 import PopularClinicsShowcase from '../components/PopularClinicsShowcase';
 import TimelinePreview from '../components/TimelinePreview';
 import { clinicAPI } from '../lib/api';
+import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
 
 // Fallback mock data — used when API is unavailable
 const FALLBACK_CLINICS = [
@@ -36,8 +37,8 @@ export default function HomeV2() {
           name: c.fullname || c.name,
           city: c.address || '',
           dept: '',
-          rating: 4.5 + Math.random() * 0.5,
-          reviews: Math.floor(Math.random() * 300) + 50,
+          rating: resolveClinicRating(c),
+          reviews: resolveClinicReviewCount(c),
           image: c.avatar || FALLBACK_CLINICS[i % FALLBACK_CLINICS.length]?.image,
           codename: c.codename,
         })));
@@ -113,6 +114,8 @@ export default function HomeV2() {
       {/* Popular Clinics reusable showcase */}
       <PopularClinicsShowcase
         items={clinics}
+        title={t('home.popularTreatments')}
+        midTitle={t('home.popularClinics')}
         onCardClick={(c) => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate(c.codename ? `/clinic/${c.codename}` : '/clinic'); }}
         onViewClick={(c) => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate(c.codename ? `/clinic/${c.codename}` : '/clinic'); }}
       />

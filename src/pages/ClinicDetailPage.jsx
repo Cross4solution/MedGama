@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import useAuthGuard from '../hooks/useAuthGuard';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI } from '../lib/api';
+import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
 
 // Tab Components
 import OverviewTab from '../components/clinic/tabs/OverviewTab';
@@ -44,7 +45,8 @@ const ClinicDetailPage = () => {
     window.scrollTo(0, 0);
     if (clinicParam) {
       clinicAPI.getByCodename(clinicParam).then((res) => {
-        const c = res?.clinic || res?.data || res;
+        const raw = res?.data || res;
+        const c = raw?.clinic || raw;
         if (c && c.id) setApiClinic(c);
       }).catch(() => {});
     }
@@ -136,8 +138,8 @@ const ClinicDetailPage = () => {
               image={apiClinic?.avatar || clinicInfo.heroImage}
               name={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
               location={apiClinic?.address || clinicInfo.location}
-              rating={clinicInfo.rating}
-              reviews={clinicInfo.reviewCount}
+              rating={resolveClinicRating(apiClinic, clinicInfo.rating)}
+              reviews={resolveClinicReviewCount(apiClinic, clinicInfo.reviewCount)}
               badgeNode={null}
               isFavorite={isFavorite}
               onToggleFavorite={guardAction(() => setIsFavorite(!isFavorite))}
