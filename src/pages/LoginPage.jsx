@@ -481,9 +481,9 @@ const LoginPage = ({ role = 'patient' }) => {
   return (
     <>
       <Helmet>
-        <title>{t(config.metaTitleKey)}</title>
+        <title>{role === 'doctor' ? 'Doctor Sign In | MedaGama' : role === 'clinic' ? 'Clinic Sign In | MedaGama' : 'Sign In | MedaGama'}</title>
         <meta name="description" content={t(config.metaDescKey)} />
-        <meta property="og:title" content={t(config.metaTitleKey)} />
+        <meta property="og:title" content={role === 'doctor' ? 'Doctor Sign In | MedaGama' : role === 'clinic' ? 'Clinic Sign In | MedaGama' : 'Sign In | MedaGama'} />
         <meta property="og:description" content={t(config.metaDescKey)} />
         <meta property="og:type" content="website" />
         <meta name="robots" content="index, follow" />

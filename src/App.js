@@ -74,6 +74,67 @@ function AppContent() {
   const { user } = useAuth();
   // Show sidebar for all logged-in users (including patients), but not on CRM or verify-email pages
   const hasSidebar = !!user && !location.pathname.startsWith('/crm') && location.pathname !== '/verify-email';
+
+  React.useEffect(() => {
+    const path = String(location.pathname || '/');
+    const isDoctor = /^\/doctor\//.test(path);
+    const isPost = /^\/post\//.test(path);
+    const isClinicDetail = /^\/clinic\//.test(path);
+
+    const titleMap = {
+      '/': 'MedaGama',
+      '/home': 'MedaGama',
+      '/home-v2': 'MedaGama',
+      '/explore': 'MedStream | MedaGama',
+      '/saved': 'Saved Posts | MedaGama',
+      '/doctors-departments': 'Doctors & Departments | MedaGama',
+      '/clinic': 'Clinics | MedaGama',
+      '/clinic-edit': 'Edit Clinic Profile | MedaGama',
+      '/doctor-chat': 'Messages | MedaGama',
+      '/telehealth': 'Telehealth | MedaGama',
+      '/telehealth-appointment': 'Appointments | MedaGama',
+      '/terms-of-service': 'Terms of Service | MedaGama',
+      '/privacy-policy': 'Privacy Policy | MedaGama',
+      '/cookie-policy': 'Cookie Policy | MedaGama',
+      '/data-rights': 'Data Privacy Rights | MedaGama',
+      '/auth': 'Sign In | MedaGama',
+      '/login': 'Sign In | MedaGama',
+      '/register': 'Create Account | MedaGama',
+      '/verify-email': 'Verify Email | MedaGama',
+      '/forgot-password': 'Reset Password | MedaGama',
+      '/about': 'About | MedaGama',
+      '/for-patients': 'For Patients | MedaGama',
+      '/for-clinics': 'For Clinics | MedaGama',
+      '/vasco-ai': 'Vasco AI | MedaGama',
+      '/contact': 'Contact | MedaGama',
+      '/notifications': 'Notifications | MedaGama',
+      '/profile': 'Profile | MedaGama',
+      '/dashboard': 'Dashboard | MedaGama',
+      '/crm': 'CRM Dashboard | MedaGama',
+      '/crm/appointments': 'CRM Appointments | MedaGama',
+      '/crm/patients': 'CRM Patients | MedaGama',
+      '/crm/patient-360': 'CRM Patient 360 | MedaGama',
+      '/crm/reports': 'CRM Reports | MedaGama',
+      '/crm/settings': 'CRM Settings | MedaGama',
+      '/crm/integrations': 'CRM Integrations | MedaGama',
+      '/crm/billing': 'CRM Billing | MedaGama',
+      '/crm/examination': 'CRM Examination | MedaGama',
+      '/crm/help': 'CRM Help | MedaGama',
+      '/admin': 'Admin Dashboard | MedaGama',
+      '/admin/verification': 'Doctor Verification | MedaGama',
+      '/admin/moderation': 'Content Moderation | MedaGama',
+      '/500': 'Server Error | MedaGama',
+    };
+
+    const title =
+      titleMap[path] ||
+      (isDoctor ? 'Doctor Profile | MedaGama' : null) ||
+      (isPost ? 'Post | MedaGama' : null) ||
+      (isClinicDetail ? 'Clinic | MedaGama' : null) ||
+      'MedaGama';
+
+    document.title = title;
+  }, [location.pathname]);
   
   // Opsiyonel tekerlek kaydırma override'ı: varsayılan AÇIK (azıcık yavaş ve akıcı)
   // Scroll override: tek kaynaktan (config/scroll.js)
