@@ -13,7 +13,8 @@
  * NETGSM OTP SMS endpoint: https://api.netgsm.com.tr/sms/send/otp
  */
 
-const API_BASE = (() => { if (typeof window !== 'undefined') { const h = window.location.hostname; if (h.endsWith('.vercel.app') || h === 'medagama.com') return '/api'; } return process.env.REACT_APP_API_BASE || ''; })();
+import { API_BASE_URL } from '../config/apiBase';
+const API_BASE = API_BASE_URL;
 const SEND_OTP_URL = process.env.REACT_APP_API_SEND_OTP || '/api/auth/send-otp';
 const VERIFY_OTP_URL = process.env.REACT_APP_API_VERIFY_OTP || '/api/auth/verify-otp';
 

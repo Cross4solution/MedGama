@@ -48,6 +48,7 @@ class UserResource extends JsonResource
             'gender'             => $this->gender,
             'last_login'         => $this->last_login?->toISOString(),
             'clinic_id'          => $this->clinic_id,
+            'clinic_name'        => $this->clinic_name,
             'created_at'         => $this->created_at?->toISOString(),
             'updated_at'         => $this->updated_at?->toISOString(),
         ];

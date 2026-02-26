@@ -26,7 +26,10 @@ class MedStreamCommentResource extends JsonResource
                 'avatar'   => $this->author->avatar,
             ]),
 
-            'replies' => MedStreamCommentResource::collection($this->whenLoaded('replies')),
+            'replies' => $this->whenLoaded('allReplies',
+                fn() => MedStreamCommentResource::collection($this->allReplies),
+                fn() => MedStreamCommentResource::collection($this->whenLoaded('replies'))
+            ),
         ];
     }
 }

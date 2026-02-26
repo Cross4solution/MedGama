@@ -53,6 +53,7 @@ class AuthService
                 'date_of_birth'           => $data['date_of_birth'] ?? null,
                 'gender'                  => $data['gender'] ?? null,
                 'clinic_id'               => $clinicId,
+                'clinic_name'             => $data['clinic_name'] ?? null,
                 'avatar'                  => null,
                 'email_verified'          => false,
                 'email_verification_code' => $verificationCode,

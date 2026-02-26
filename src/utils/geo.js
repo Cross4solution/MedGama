@@ -308,6 +308,14 @@ export function getFlagCode(countryName) {
       return 'sx';
     }
   } catch {}
+  // Fallback: try normalized (accent-stripped) match against all keys
+  try {
+    const nInput = normalize(countryName || '');
+    const keys = Object.keys(countryCodes);
+    for (let i = 0; i < keys.length; i++) {
+      if (normalize(keys[i]) === nInput) return countryCodes[keys[i]];
+    }
+  } catch {}
   const variants = getCountryVariants(countryName);
   for (let i = 0; i < variants.length; i++) {
     const v = variants[i];

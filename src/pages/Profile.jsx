@@ -112,7 +112,8 @@ export default function Profile() {
     i18n.changeLanguage(lang);
     try { localStorage.setItem('preferred_language', lang); } catch {}
     try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
-    document.documentElement.dir = LANGUAGES.find(l => l.code === lang)?.dir || 'ltr';
+    // Layout always stays LTR — only the language text changes
+    document.documentElement.dir = 'ltr';
   };
 
   // Mock preferences (persist localStorage)

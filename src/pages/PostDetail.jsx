@@ -59,6 +59,57 @@ function getFileName(m) {
 
 const EXT_COLORS = { PDF: 'bg-red-500', DOC: 'bg-blue-500', DOCX: 'bg-blue-500', XLS: 'bg-green-600', XLSX: 'bg-green-600', PPT: 'bg-orange-500', PPTX: 'bg-orange-500', CSV: 'bg-emerald-500' };
 
+function DetailNestedReply({ r, depth, user, replyTo, setReplyTo, replyText, setReplyText, submitDetailReply, setDeleteCommentConfirm, topParentId }) {
+  const avatarSize = depth >= 2 ? 'w-5 h-5' : 'w-6 h-6';
+  const fontSize = depth >= 2 ? 'text-[11px]' : 'text-[12px]';
+  const timeFontSize = depth >= 2 ? 'text-[9px]' : 'text-[10px]';
+  return (
+    <div>
+      <div className="flex items-start gap-2">
+        <img src={r.avatar} alt={r.name} className={`${avatarSize} rounded-full object-cover flex-shrink-0`} />
+        <div className="flex-1 min-w-0">
+          <div className="bg-gray-50/60 rounded-lg px-3 py-2">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className={`${fontSize} font-semibold text-gray-900`}>{r.name}</span>
+              <span className={`${timeFontSize} text-gray-400 flex-shrink-0`}>{formatTimeAgo(r.time)}</span>
+            </div>
+            <p className={`${fontSize} text-gray-700 leading-relaxed mt-0.5`}>{r.text}</p>
+          </div>
+          <div className="mt-0.5 flex items-center gap-2 pl-1">
+            {r.author_id !== user?.id && r.user_id !== user?.id && (
+              <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === r.id ? '' : r.id); setReplyText(''); }}>Reply</button>
+            )}
+            {(r.author_id === user?.id || r.user_id === user?.id) && (
+              <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-red-500 transition-colors" onClick={() => {
+                setDeleteCommentConfirm({ id: r.id, isReply: true, parentId: topParentId });
+              }}>Delete</button>
+            )}
+          </div>
+          {Array.isArray(r.replies) && r.replies.length > 0 && (
+            <div className="mt-1.5 ml-1 pl-2.5 border-l-2 border-gray-100 space-y-1.5">
+              {r.replies.map((sub) => (
+                <DetailNestedReply
+                  key={sub.id} r={sub} depth={depth + 1} user={user}
+                  replyTo={replyTo} setReplyTo={setReplyTo} replyText={replyText} setReplyText={setReplyText}
+                  submitDetailReply={submitDetailReply} setDeleteCommentConfirm={setDeleteCommentConfirm} topParentId={topParentId}
+                />
+              ))}
+            </div>
+          )}
+          {replyTo === r.id && (
+            <div className="mt-1.5 ml-1 pl-2.5 border-l-2 border-teal-200">
+              <div className="flex items-center gap-2">
+                <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder="Write a reply..." className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[11px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
+                <button type="button" className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>Post</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PostDetail() {
   const { state } = useLocation();
   const { id } = useParams();
@@ -377,31 +428,25 @@ export default function PostDetail() {
   const [localDetailComments, setLocalDetailComments] = React.useState([]);
   const [visibleDetailCommentCount, setVisibleDetailCommentCount] = React.useState(3);
 
+  // Recursive mapper for API comment data
+  const mapApiComment = (c) => ({
+    id: c.id,
+    author_id: c.author_id || c.author?.id,
+    name: c.author?.fullname || 'User',
+    avatar: c.author?.avatar || '/images/default/default-avatar.svg',
+    text: c.content || '',
+    time: c.created_at || '',
+    parent_id: c.parent_id || null,
+    replies: (c.replies || []).map(mapApiComment),
+  });
+
   // Fetch comments from API
   React.useEffect(() => {
     const postId = item?.id || id;
     if (!postId || detailCommentsLoaded) return;
     medStreamAPI.comments(postId, { per_page: 50 }).then(res => {
       const list = res?.data || [];
-      setApiDetailComments(list.map(c => ({
-        id: c.id,
-        author_id: c.author_id || c.author?.id,
-        name: c.author?.fullname || 'User',
-        avatar: c.author?.avatar || '/images/default/default-avatar.svg',
-        text: c.content || '',
-        time: c.created_at || '',
-        parent_id: c.parent_id || null,
-        replies: (c.replies || []).map(r => ({
-          id: r.id,
-          author_id: r.author_id || r.author?.id,
-          name: r.author?.fullname || 'User',
-          avatar: r.author?.avatar || '/images/default/default-avatar.svg',
-          text: r.content || '',
-          time: r.created_at || '',
-          parent_id: r.parent_id || c.id,
-          replies: [],
-        })),
-      })));
+      setApiDetailComments(list.map(mapApiComment));
       setDetailCommentsLoaded(true);
     }).catch(() => setDetailCommentsLoaded(true));
   }, [item?.id, id, detailCommentsLoaded]);
@@ -419,8 +464,42 @@ export default function PostDetail() {
       parent_id: null,
       replies: [],
     }]);
-    medStreamAPI.createComment(item.id, { content: text }).catch(() => {});
+    const tempId = 'dc-' + (Date.now() - 1);
+    medStreamAPI.createComment(item.id, { content: text }).then((res) => {
+      const saved = res?.data || res;
+      if (saved?.id) {
+        setLocalDetailComments(prev => prev.map(c => c.id?.startsWith?.('dc-') && c.text === text ? { ...c, id: saved.id } : c));
+      }
+    }).catch((err) => {
+      setLocalDetailComments(prev => prev.filter(c => !(c.id?.startsWith?.('dc-') && c.text === text)));
+      console.error('[MedStream] Detail comment failed:', err?.status, err?.message, err);
+    });
     setNewComment('');
+  };
+
+  // Recursive helpers for nested reply tree operations
+  const addReplyToTree = (comments, parentId, newReply) => {
+    return comments.map(c => {
+      if (c.id === parentId) return { ...c, replies: [...(c.replies || []), newReply] };
+      if (Array.isArray(c.replies) && c.replies.length > 0) return { ...c, replies: addReplyToTree(c.replies, parentId, newReply) };
+      return c;
+    });
+  };
+  const updateReplyInTree = (comments, tempId, updates) => {
+    return comments.map(c => {
+      if (c.id === tempId) return { ...c, ...updates };
+      if (Array.isArray(c.replies) && c.replies.length > 0) return { ...c, replies: updateReplyInTree(c.replies, tempId, updates) };
+      return c;
+    });
+  };
+  const removeReplyFromTree = (comments, tempId) => {
+    return comments.map(c => {
+      if (Array.isArray(c.replies)) {
+        const filtered = c.replies.filter(r => r.id !== tempId);
+        return { ...c, replies: removeReplyFromTree(filtered, tempId) };
+      }
+      return c;
+    });
   };
 
   const submitDetailReply = () => {
@@ -428,8 +507,9 @@ export default function PostDetail() {
     const text = replyText.trim();
     const parentId = replyTo;
     if (!text || !item?.id) return;
+    const tempId = 'dr-' + Date.now();
     const newReply = {
-      id: 'dr-' + Date.now(),
+      id: tempId,
       author_id: user?.id,
       name: user?.name || item?.actor?.name || 'You',
       avatar: user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg',
@@ -438,18 +518,20 @@ export default function PostDetail() {
       parent_id: parentId,
       replies: [],
     };
-    // Add reply nested under parent
-    const inApi = apiDetailComments.some(c => c.id === parentId);
-    if (inApi) {
-      setApiDetailComments(prev => prev.map(c =>
-        c.id === parentId ? { ...c, replies: [...(c.replies || []), newReply] } : c
-      ));
-    } else {
-      setLocalDetailComments(prev => prev.map(c =>
-        c.id === parentId ? { ...c, replies: [...(c.replies || []), newReply] } : c
-      ));
-    }
-    medStreamAPI.createComment(item.id, { content: text, parent_id: parentId }).catch(() => {});
+    // Add reply nested under parent at any depth
+    setApiDetailComments(prev => addReplyToTree(prev, parentId, newReply));
+    setLocalDetailComments(prev => addReplyToTree(prev, parentId, newReply));
+    medStreamAPI.createComment(item.id, { content: text, parent_id: parentId }).then((res) => {
+      const saved = res?.data || res;
+      if (saved?.id) {
+        setApiDetailComments(prev => updateReplyInTree(prev, tempId, { id: saved.id }));
+        setLocalDetailComments(prev => updateReplyInTree(prev, tempId, { id: saved.id }));
+      }
+    }).catch((err) => {
+      setApiDetailComments(prev => removeReplyFromTree(prev, tempId));
+      setLocalDetailComments(prev => removeReplyFromTree(prev, tempId));
+      console.error('[MedStream] Detail reply failed:', err?.status, err?.message, err);
+    });
     setReplyTo('');
     setReplyText('');
   };
@@ -746,27 +828,15 @@ export default function PostDetail() {
                                     }}>Delete</button>
                                   )}
                                 </div>
-                                {/* Nested replies */}
+                                {/* Nested replies — recursive */}
                                 {Array.isArray(c.replies) && c.replies.length > 0 && (
                                   <div className="mt-2 ml-2 pl-3 border-l-2 border-gray-100 space-y-2">
                                     {c.replies.map((r) => (
-                                      <div key={r.id} className="flex items-start gap-2">
-                                        <img src={r.avatar} alt={r.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
-                                        <div className="flex-1 min-w-0">
-                                          <div className="bg-gray-50/60 rounded-lg px-3 py-2">
-                                            <div className="flex items-baseline justify-between gap-2">
-                                              <span className="text-[12px] font-semibold text-gray-900">{r.name}</span>
-                                              <span className="text-[10px] text-gray-400 flex-shrink-0">{formatTimeAgo(r.time)}</span>
-                                            </div>
-                                            <p className="text-[12px] text-gray-700 leading-relaxed mt-0.5">{r.text}</p>
-                                          </div>
-                                          {(r.author_id === user?.id || r.user_id === user?.id) && (
-                                            <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-red-500 transition-colors mt-0.5 flex-shrink-0" onClick={() => {
-                                              setDeleteCommentConfirm({ id: r.id, isReply: true, parentId: c.id });
-                                            }}>Delete</button>
-                                          )}
-                                        </div>
-                                      </div>
+                                      <DetailNestedReply
+                                        key={r.id} r={r} depth={1} user={user}
+                                        replyTo={replyTo} setReplyTo={setReplyTo} replyText={replyText} setReplyText={setReplyText}
+                                        submitDetailReply={submitDetailReply} setDeleteCommentConfirm={setDeleteCommentConfirm} topParentId={c.id}
+                                      />
                                     ))}
                                   </div>
                                 )}

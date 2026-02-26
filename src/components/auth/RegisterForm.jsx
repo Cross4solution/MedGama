@@ -8,6 +8,7 @@ import {
   Lock,
   User,
   Stethoscope,
+  Building2,
   Calendar,
   MapPin,
   Chrome,
@@ -98,7 +99,7 @@ const RegisterForm = ({
   <div className="w-full max-w-md mx-auto">
          <div className="text-center mb-1">
            <div className="flex items-center justify-center gap-2 sm:gap-3 mb-0.5">
-             <img src="/images/logo/crm-logo.jpg" alt="MedaGama" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
+             <img src="/images/logo/logo.svg" alt="MedaGama" className="h-7 w-7 sm:h-8 sm:w-8 object-contain" />
              <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">MedaGama</span>
            </div>
            <h1 className="text-lg font-bold text-gray-900 mb-0.5">{t('auth.createAccount')}</h1>
@@ -113,6 +114,7 @@ const RegisterForm = ({
                {[
                  { key: 'patient', label: t('common.patient'), Icon: User },
                  { key: 'doctor', label: t('common.doctor'), Icon: Stethoscope },
+                 { key: 'clinic', label: t('common.clinic') || 'Clinic', Icon: Building2 },
                ].map((opt) => {
                  const isActive = (fd.role ?? 'patient') === opt.key;
                  return (
@@ -172,6 +174,27 @@ const RegisterForm = ({
           </div>
           {(errors.lastName || localErrors.lastName) && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.lastName || localErrors.lastName}</p>}
         </div>
+        {(fd.role === 'clinic') && (
+        <div>
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">
+            {t('auth.clinicName') || 'Clinic Name'}
+          </label>
+          <div className="relative">
+            <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              name="clinicName"
+              value={fd.clinicName ?? ''}
+              onChange={handleInputChange}
+              className={`w-full h-10 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm ${
+                (errors.clinicName || localErrors.clinicName) ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="Your clinic name"
+            />
+          </div>
+          {(errors.clinicName || localErrors.clinicName) && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.clinicName || localErrors.clinicName}</p>}
+        </div>
+        )}
       </div>
              <div className="grid grid-cols-1 gap-1 w-full max-w-2xl mb-2 sm:mb-3">
         <div>

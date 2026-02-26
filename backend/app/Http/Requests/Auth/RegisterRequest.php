@@ -24,6 +24,7 @@ class RegisterRequest extends FormRequest
             'date_of_birth' => 'sometimes|date',
             'gender'        => 'sometimes|in:male,female,other',
             'clinic_id'     => 'sometimes|uuid',
+            'clinic_name'   => 'sometimes|string|max:255',
         ];
     }
 }

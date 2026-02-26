@@ -23,32 +23,41 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
-const getNavSections = (t) => [
-  {
-    title: t('crm.sidebar.main'),
-    items: [
-      { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm' },
-      { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments' },
-      { label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients' },
-      { label: t('crm.sidebar.examination'), icon: Stethoscope, path: '/crm/examination' },
-    ],
-  },
-  {
-    title: t('crm.sidebar.management'),
-    items: [
-      { label: t('crm.sidebar.billing'), icon: Receipt, path: '/crm/billing' },
-      { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports' },
-      { label: t('crm.sidebar.integrations'), icon: Plug, path: '/crm/integrations' },
-    ],
-  },
-  {
-    title: t('crm.sidebar.system'),
-    items: [
-      { label: t('crm.sidebar.settings'), icon: Settings, path: '/crm/settings' },
-      { label: t('crm.sidebar.helpSupport'), icon: HelpCircle, path: '/crm/help' },
-    ],
-  },
-];
+const getNavSections = (t, role) => {
+  const isClinic = role === 'clinic' || role === 'clinicOwner';
+
+  const mainItems = [
+    { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm' },
+    { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments' },
+    { label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients' },
+  ];
+  // Doctor-only: examination
+  if (!isClinic) {
+    mainItems.push({ label: t('crm.sidebar.examination'), icon: Stethoscope, path: '/crm/examination' });
+  }
+  // Clinic-only: staff management
+  if (isClinic) {
+    mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
+  }
+
+  const managementItems = [
+    { label: t('crm.sidebar.billing'), icon: Receipt, path: '/crm/billing' },
+    { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports' },
+    { label: t('crm.sidebar.integrations'), icon: Plug, path: '/crm/integrations' },
+  ];
+
+  return [
+    { title: t('crm.sidebar.main'), items: mainItems },
+    { title: t('crm.sidebar.management'), items: managementItems },
+    {
+      title: t('crm.sidebar.system'),
+      items: [
+        { label: t('crm.sidebar.settings'), icon: Settings, path: '/crm/settings' },
+        { label: t('crm.sidebar.helpSupport'), icon: HelpCircle, path: '/crm/help' },
+      ],
+    },
+  ];
+};
 
 const CRM_ALLOWED_ROLES = ['doctor', 'clinic', 'clinicOwner', 'superAdmin', 'saasAdmin'];
 
@@ -59,7 +68,8 @@ const CRMLayout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { t } = useTranslation();
-  const NAV_SECTIONS = getNavSections(t);
+  const userRole = user?.role || user?.role_id || 'doctor';
+  const NAV_SECTIONS = getNavSections(t, userRole);
 
   // CRM access control — redirect unauthorized users
   React.useEffect(() => {

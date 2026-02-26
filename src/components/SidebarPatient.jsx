@@ -59,7 +59,8 @@ export default function SidebarPatient() {
     { to: '/clinic-edit', label: t('sidebar.profile'), icon: User },
   ];
 
-  const items = role === 'patient' ? patientItems : (role === 'clinic' ? clinicItems : doctorItems);
+  const isClinic = role === 'clinic' || role === 'clinicOwner';
+  const items = role === 'patient' ? patientItems : (isClinic ? clinicItems : doctorItems);
   const showCRM = role === 'doctor' || role === 'clinic' || role === 'clinicOwner';
 
   const NavItem = ({ to = undefined, href = undefined, icon: Icon, label, badge = undefined, external = false }) => {

@@ -354,8 +354,8 @@ export const analyticsAPI = {
 // ── Legacy compat (for existing code that imports { endpoints }) ──
 export const endpoints = {
   login: (payload) => authAPI.login(payload),
-  userRegister: (payload) => authAPI.register({ ...payload, role_id: 'patient' }),
-  doctorRegister: (payload) => authAPI.register({ ...payload, role_id: 'doctor' }),
+  userRegister: (payload) => authAPI.register({ role_id: 'patient', ...payload }),
+  doctorRegister: (payload) => authAPI.register({ role_id: 'doctor', ...payload }),
 };
 
 export default api;

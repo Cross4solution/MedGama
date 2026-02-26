@@ -63,7 +63,7 @@ class MedStreamService
             'engagementCounter',
             'comments' => fn($q) => $q->where('is_hidden', false)
                 ->whereNull('parent_id')
-                ->with(['author:id,fullname,avatar', 'replies' => fn($r) => $r->with('author:id,fullname,avatar')->orderBy('created_at')])
+                ->with(['author:id,fullname,avatar', 'allReplies'])
                 ->latest()
                 ->limit(20),
         ]);
@@ -172,7 +172,7 @@ class MedStreamService
             ->whereNull('parent_id')
             ->with([
                 'author:id,fullname,avatar',
-                'replies' => fn($q) => $q->with('author:id,fullname,avatar')->orderBy('created_at'),
+                'allReplies',
             ])
             ->orderByDesc('created_at')
             ->paginate($filters['per_page'] ?? 20);

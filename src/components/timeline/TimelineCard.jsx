@@ -42,6 +42,70 @@ function MediaImg({ src, alt, className, onClick = undefined }) {
   );
 }
 
+function NestedReply({ r, depth, authUser, replyTo, setReplyTo, replyText, setReplyText, submitReply, setDeleteCommentConfirm, topParentId }) {
+  const avatarSize = depth >= 2 ? 'w-5 h-5' : 'w-6 h-6';
+  const fontSize = depth >= 2 ? 'text-[11px]' : 'text-[12px]';
+  const timeFontSize = depth >= 2 ? 'text-[9px]' : 'text-[10px]';
+  return (
+    <div>
+      <div className="flex items-start gap-2">
+        <AvatarImg src={r.avatar} alt={r.name} className={`${avatarSize} rounded-full object-cover flex-shrink-0`} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-baseline justify-between gap-2">
+            <span className={`${fontSize} font-semibold text-[rgba(0,0,0,0.9)]`}>{r.name}</span>
+            <span className={`${timeFontSize} text-gray-400 flex-shrink-0`}>{formatTimeAgo(r.time)}</span>
+          </div>
+          <p className={`${fontSize} text-[rgba(0,0,0,0.9)] leading-[1.43] mt-0.5`}>{r.text}</p>
+          <div className="mt-1 flex items-center gap-2">
+            {(r.author_id === authUser?.id || r.user_id === authUser?.id) && (
+              <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-red-500 hover:underline transition-colors" onClick={(e) => {
+                e.stopPropagation();
+                setDeleteCommentConfirm({ id: r.id, isReply: true, parentId: topParentId });
+              }}>Delete</button>
+            )}
+            {r.author_id !== authUser?.id && r.user_id !== authUser?.id && (
+              <button type="button" className="text-[10px] font-semibold text-gray-500 hover:text-blue-600 hover:underline transition-colors" onClick={(e) => {
+                e.stopPropagation();
+                setReplyTo(p => p === r.id ? '' : r.id);
+                setReplyText('');
+              }}>Reply</button>
+            )}
+          </div>
+          {/* Sub-replies (recursive) */}
+          {Array.isArray(r.replies) && r.replies.length > 0 && (
+            <div className="mt-1.5 ml-1 pl-2.5 border-l-2 border-gray-100 space-y-1.5">
+              {r.replies.map((sub) => (
+                <NestedReply
+                  key={sub.id}
+                  r={sub}
+                  depth={depth + 1}
+                  authUser={authUser}
+                  replyTo={replyTo}
+                  setReplyTo={setReplyTo}
+                  replyText={replyText}
+                  setReplyText={setReplyText}
+                  submitReply={submitReply}
+                  setDeleteCommentConfirm={setDeleteCommentConfirm}
+                  topParentId={topParentId}
+                />
+              ))}
+            </div>
+          )}
+          {/* Reply input for this specific reply */}
+          {replyTo === r.id && (
+            <div className="mt-1.5 ml-1 pl-2.5 border-l-2 border-teal-200">
+              <div className="flex items-center gap-2">
+                <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitReply(e); }} placeholder="Write a reply..." className="flex-1 border border-gray-300 rounded-full px-3 py-1 text-[11px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" onClick={(e) => e.stopPropagation()} />
+                <button type="button" className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitReply}>Post</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function getMediaType(m) {
   if (m.type === 'video' || /\.(mp4|webm|mov|avi)$/i.test(m.url || '')) return 'video';
   if (m.type === 'document' || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.url || '') || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.name || '')) return 'document';
@@ -264,36 +328,29 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const [visibleCommentCount, setVisibleCommentCount] = useState(3);
   const [deleteCommentConfirm, setDeleteCommentConfirm] = useState(null); // { id, isReply, parentId }
 
+  // Recursive mapper for API comment data
+  const mapApiComment = (c) => ({
+    id: c.id,
+    author_id: c.author_id || c.author?.id,
+    name: c.author?.fullname || 'User',
+    title: '',
+    avatar: c.author?.avatar || '/images/default/default-avatar.svg',
+    text: c.content || '',
+    time: c.created_at || '',
+    parent_id: c.parent_id || null,
+    replies: (c.replies || []).map(mapApiComment),
+  });
+  // Recursive count of all comments in tree
+  const countTree = (comments) => comments.reduce((sum, c) => sum + 1 + countTree(c.replies || []), 0);
+
   // Fetch comments from API when comment section opens
   useEffect(() => {
     if (!showCommentsPreview || commentsLoaded || !item?.id) return;
     medStreamAPI.comments(item.id, { per_page: 50 }).then(res => {
       const list = res?.data || [];
-      const mapped = list.map(c => ({
-        id: c.id,
-        author_id: c.author_id || c.author?.id,
-        name: c.author?.fullname || 'User',
-        title: '',
-        avatar: c.author?.avatar || '/images/default/default-avatar.svg',
-        text: c.content || '',
-        time: c.created_at || '',
-        parent_id: c.parent_id || null,
-        replies: (c.replies || []).map(r => ({
-          id: r.id,
-          author_id: r.author_id || r.author?.id,
-          name: r.author?.fullname || 'User',
-          title: '',
-          avatar: r.author?.avatar || '/images/default/default-avatar.svg',
-          text: r.content || '',
-          time: r.created_at || '',
-          parent_id: r.parent_id || c.id,
-          replies: [],
-        })),
-      }));
+      const mapped = list.map(mapApiComment);
       setApiComments(mapped);
-      // Sync real comment count (top-level + all replies)
-      const realCount = mapped.reduce((sum, c) => sum + 1 + (c.replies?.length || 0), 0);
-      setCommentCount(realCount);
+      setCommentCount(countTree(mapped));
       setCommentsLoaded(true);
     }).catch(() => setCommentsLoaded(true));
   }, [showCommentsPreview, commentsLoaded, item?.id]);
@@ -332,6 +389,39 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     toastTimerRef.current = window.setTimeout(() => setShowToast(false), 3000);
   };
 
+  // Recursive helper: add a reply under the correct parent at any depth
+  const addReplyToTree = (comments, parentId, newReply) => {
+    return comments.map(c => {
+      if (c.id === parentId) {
+        return { ...c, replies: [...(c.replies || []), newReply] };
+      }
+      if (Array.isArray(c.replies) && c.replies.length > 0) {
+        return { ...c, replies: addReplyToTree(c.replies, parentId, newReply) };
+      }
+      return c;
+    });
+  };
+  // Recursive helper: update a reply's fields by tempId at any depth
+  const updateReplyInTree = (comments, tempId, updates) => {
+    return comments.map(c => {
+      if (c.id === tempId) return { ...c, ...updates };
+      if (Array.isArray(c.replies) && c.replies.length > 0) {
+        return { ...c, replies: updateReplyInTree(c.replies, tempId, updates) };
+      }
+      return c;
+    });
+  };
+  // Recursive helper: remove a reply by tempId at any depth
+  const removeReplyFromTree = (comments, tempId) => {
+    return comments.map(c => {
+      if (Array.isArray(c.replies)) {
+        const filtered = c.replies.filter(r => r.id !== tempId);
+        return { ...c, replies: removeReplyFromTree(filtered, tempId) };
+      }
+      return c;
+    });
+  };
+
   const submitReply = (e) => {
     e?.stopPropagation?.();
     const text = replyText.trim();
@@ -349,17 +439,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       parent_id: parentId,
       replies: [],
     };
-    // Add reply nested under parent in apiComments or localComments
-    const inApi = apiComments.some(c => c.id === parentId);
-    if (inApi) {
-      setApiComments(prev => prev.map(c =>
-        c.id === parentId ? { ...c, replies: [...(c.replies || []), newReply] } : c
-      ));
-    } else {
-      setLocalComments(prev => prev.map(c =>
-        c.id === parentId ? { ...c, replies: [...(c.replies || []), newReply] } : c
-      ));
-    }
+    // Add reply nested under parent at any depth
+    setApiComments(prev => addReplyToTree(prev, parentId, newReply));
+    setLocalComments(prev => addReplyToTree(prev, parentId, newReply));
     setCommentCount(c => c + 1);
     setReplyTo('');
     setReplyText('');
@@ -368,26 +450,17 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       medStreamAPI.createComment(item.id, { content: text, parent_id: parentId }).then((res) => {
         const saved = res?.data || res;
         if (saved?.id) {
-          const updateReplies = (comments) => comments.map(c => {
-            if (c.id === parentId) {
-              return { ...c, replies: (c.replies || []).map(r => r.id === tempId ? { ...r, id: saved.id, author_id: saved.author_id || saved.author?.id || authUser?.id, time: saved.created_at || 'Just now' } : r) };
-            }
-            return c;
-          });
-          setApiComments(updateReplies);
-          setLocalComments(updateReplies);
+          const updates = { id: saved.id, author_id: saved.author_id || saved.author?.id || authUser?.id, time: saved.created_at || 'Just now' };
+          setApiComments(prev => updateReplyInTree(prev, tempId, updates));
+          setLocalComments(prev => updateReplyInTree(prev, tempId, updates));
         }
-      }).catch(() => {
-        const removeReply = (comments) => comments.map(c => {
-          if (c.id === parentId) {
-            return { ...c, replies: (c.replies || []).filter(r => r.id !== tempId) };
-          }
-          return c;
-        });
-        setApiComments(removeReply);
-        setLocalComments(removeReply);
+      }).catch((err) => {
+        setApiComments(prev => removeReplyFromTree(prev, tempId));
+        setLocalComments(prev => removeReplyFromTree(prev, tempId));
         setCommentCount(c => Math.max(0, c - 1));
-        showSuccessToast('Failed to post reply');
+        const msg = err?.message || err?.data?.message || 'Failed to post reply';
+        console.error('[MedStream] Reply failed:', err?.status, msg, err);
+        showSuccessToast(msg);
       });
     }
   };
@@ -788,10 +861,12 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                           if (saved?.id) {
                             setLocalComments(prev => prev.map(c => c.id === tempId ? { ...c, id: saved.id, author_id: saved.author_id || saved.author?.id || authUser?.id, time: saved.created_at || 'Just now' } : c));
                           }
-                        }).catch(() => {
+                        }).catch((err) => {
                           setLocalComments(prev => prev.filter(c => c.id !== tempId));
                           setCommentCount(c => Math.max(0, c - 1));
-                          showSuccessToast('Failed to post comment');
+                          const msg = err?.message || err?.data?.message || 'Failed to post comment';
+                          console.error('[MedStream] Comment failed:', err?.status, msg, err);
+                          showSuccessToast(msg);
                         });
                       }
                     }}
@@ -825,10 +900,12 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                             if (saved?.id) {
                               setLocalComments(prev => prev.map(c => c.id === tempId ? { ...c, id: saved.id, author_id: saved.author_id || saved.author?.id || authUser?.id, time: saved.created_at || 'Just now' } : c));
                             }
-                          }).catch(() => {
+                          }).catch((err) => {
                             setLocalComments(prev => prev.filter(c => c.id !== tempId));
                             setCommentCount(c => Math.max(0, c - 1));
-                            showSuccessToast('Failed to post comment');
+                            const msg = err?.message || err?.data?.message || 'Failed to post comment';
+                            console.error('[MedStream] Comment failed:', err?.status, msg, err);
+                            showSuccessToast(msg);
                           });
                         }}
                       >
@@ -887,26 +964,23 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                                   <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
                                 )}
                               </div>
-                              {/* Nested replies */}
+                              {/* Nested replies — recursive */}
                               {Array.isArray(c.replies) && c.replies.length > 0 && (
                                 <div className="mt-2 ml-2 pl-3 border-l-2 border-gray-100 space-y-2">
                                   {c.replies.map((r) => (
-                                    <div key={r.id} className="flex items-start gap-2">
-                                      <AvatarImg src={r.avatar} alt={r.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-baseline justify-between gap-2">
-                                          <span className="text-[12px] font-semibold text-[rgba(0,0,0,0.9)]">{r.name}</span>
-                                          <span className="text-[10px] text-gray-400 flex-shrink-0">{formatTimeAgo(r.time)}</span>
-                                        </div>
-                                        <p className="text-[12px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-0.5">{r.text}</p>
-                                        {(r.author_id === authUser?.id || r.user_id === authUser?.id) && (
-                                          <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-red-500 hover:underline transition-colors mt-0.5" onClick={(e)=>{
-                                            e.stopPropagation();
-                                            setDeleteCommentConfirm({ id: r.id, isReply: true, parentId: c.id });
-                                          }}>Delete</button>
-                                        )}
-                                      </div>
-                                    </div>
+                                    <NestedReply
+                                      key={r.id}
+                                      r={r}
+                                      depth={1}
+                                      authUser={authUser}
+                                      replyTo={replyTo}
+                                      setReplyTo={setReplyTo}
+                                      replyText={replyText}
+                                      setReplyText={setReplyText}
+                                      submitReply={submitReply}
+                                      setDeleteCommentConfirm={setDeleteCommentConfirm}
+                                      topParentId={c.id}
+                                    />
                                   ))}
                                 </div>
                               )}

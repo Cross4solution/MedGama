@@ -33,6 +33,7 @@ const AuthPages = () => {
     birthDate: '',
     city: '',
     medicalHistory: '',
+    clinicName: '',
     acceptTerms: false,
     acceptPrivacy: false,
     acceptHealthData: false,
@@ -108,21 +109,18 @@ const AuthPages = () => {
           navigate('/dashboard');
         }
       } else if (currentPage === 'register') {
-        if (formData.role === 'clinic') {
-          notify({ type: 'info', message: 'Klinik kaydı yakında aktif olacaktır. Lütfen klinik portalından giriş yapın.' });
-          setSubmitting(false);
-          navigate('/clinic-login');
-          return;
-        }
-        const doRegister = formData.role === 'doctor' ? registerDoctor : register;
-        const res = await doRegister({
+        const roleId = formData.role === 'clinic' ? 'clinicOwner' : formData.role;
+        const doRegister = roleId === 'doctor' ? registerDoctor : register;
+        const payload = {
           email: formData.email,
           password: formData.password,
           fullname: `${formData.firstName} ${formData.lastName}`.trim() || formData.email,
           mobile: formData.phone ? `${formData.phoneCode}${formData.phone}`.replace(/\s/g, '') : undefined,
           city_id: formData.city ? parseInt(formData.city) : undefined,
           date_of_birth: formData.birthDate || undefined,
-        });
+          ...(formData.role === 'clinic' ? { role_id: 'clinicOwner', clinic_name: formData.clinicName || undefined } : {}),
+        };
+        const res = await doRegister(payload);
         try {
           if ((formData.role || 'patient') === 'patient' && formData.email) {
             const key = `patient_profile_extra_${formData.email}`;
@@ -130,11 +128,12 @@ const AuthPages = () => {
             localStorage.setItem(key, JSON.stringify(extras));
           }
         } catch {}
-        // If auto-verified (demo mode), go straight to dashboard
+        // If auto-verified (demo mode), go straight to dashboard/crm
         const needsVerification = res?.requires_email_verification ?? res?.data?.requires_email_verification;
+        const redirectTo = (roleId === 'doctor' || roleId === 'clinicOwner') ? '/crm' : '/dashboard';
         if (needsVerification === false) {
           notify({ type: 'success', message: 'Kayıt başarılı! E-posta adresiniz otomatik olarak doğrulandı.' });
-          navigate('/dashboard');
+          navigate(redirectTo);
         } else {
           notify({ type: 'success', message: 'Kayıt başarılı! Lütfen e-posta adresinizi doğrulayın.' });
           navigate('/verify-email');

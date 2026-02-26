@@ -39,7 +39,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <img src="/images/logo/crm-logo.jpg" alt="MedaGama" className="h-7 w-7 rounded-lg object-contain" />
+              <img src="/images/logo/logo.svg" alt="MedaGama" className="h-7 w-7 rounded-lg object-contain" />
               <span className="text-white text-base font-bold tracking-tight">MedaGama</span>
             </div>
             <p className="text-sm leading-relaxed text-white/60 mb-4">

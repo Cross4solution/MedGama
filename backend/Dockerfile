@@ -56,6 +56,9 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 # OPcache settings
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
+# Upload limits (default PHP is 2MB which is too small for media)
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 # Nginx config — REPLACE the entire main nginx.conf (no dependency on Alpine include paths)
 RUN rm -f /etc/nginx/http.d/*.conf /etc/nginx/conf.d/*.conf 2>/dev/null || true
 COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf

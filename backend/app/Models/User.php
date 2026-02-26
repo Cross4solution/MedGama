@@ -23,7 +23,7 @@ class User extends Authenticatable
         'password_reset_code', 'password_reset_expires_at',
         'city_id', 'country_id', 'country', 'preferred_language',
         'date_of_birth', 'gender', 'is_verified', 'last_login', 'clinic_id',
-        'medical_history', 'notification_preferences',
+        'medical_history', 'notification_preferences', 'clinic_name',
     ];
 
     protected $hidden = [

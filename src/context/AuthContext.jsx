@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { endpoints, authAPI } from '../lib/api';
+import { API_BASE_URL } from '../config/apiBase';
 
 // Very light mock auth just for frontend flows
 const AuthContext = createContext(null);
@@ -162,7 +163,7 @@ export function AuthProvider({ children }) {
       const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || 'specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
       const isClinic = roleRaw === 'clinic' || roleRaw === 'clinicOwner';
       const role = isDoctor ? 'doctor' : isClinic ? roleRaw : (roleRaw || 'patient');
-      const name = apiUser?.name || [apiUser?.fname, apiUser?.lname].filter(Boolean).join(' ').trim() || apiUser?.email || 'User';
+      const name = apiUser?.fullname || apiUser?.name || [apiUser?.fname, apiUser?.lname].filter(Boolean).join(' ').trim() || apiUser?.email || 'User';
       const userWithRole = { ...apiUser, name, avatar: normalizeAvatar(apiUser?.avatar), role };
       setUser(userWithRole);
       setToken(access);
@@ -173,13 +174,7 @@ export function AuthProvider({ children }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country]);
 
-  const API_BASE = (() => {
-    if (typeof window !== 'undefined') {
-      const h = window.location.hostname;
-      if (h.endsWith('.vercel.app') || h === 'medagama.com' || h === 'www.medagama.com') return '/api';
-    }
-    return (process.env.REACT_APP_API_BASE || '').replace(/\/+$/, '');
-  })();
+  const API_BASE = API_BASE_URL;
   const ME_PATH = process.env.REACT_APP_API_ME || '/auth/me';
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchCurrentUser = useCallback(async (overrideToken) => {
@@ -236,7 +231,8 @@ export function AuthProvider({ children }) {
       const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || 'specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
       const isClinic = roleRaw === 'clinic' || roleRaw === 'clinicOwner';
       const role = isDoctor ? 'doctor' : isClinic ? roleRaw : (roleRaw || 'patient');
-      const userWithRole = { ...apiUser, avatar: normalizeAvatar(apiUser?.avatar), role };
+      const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
+      const userWithRole = { ...apiUser, name, avatar: normalizeAvatar(apiUser?.avatar), role };
       setUser(userWithRole);
       setToken(tk);
       try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: tk, country })); } catch {}

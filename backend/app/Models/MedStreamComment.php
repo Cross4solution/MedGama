@@ -28,6 +28,14 @@ class MedStreamComment extends Model
         return $this->hasMany(MedStreamComment::class, 'parent_id')->where('is_hidden', false);
     }
 
+    /**
+     * Recursive: replies with their nested replies (unlimited depth).
+     */
+    public function allReplies()
+    {
+        return $this->replies()->with(['author:id,fullname,avatar', 'allReplies'])->orderBy('created_at');
+    }
+
     protected function casts(): array
     {
         return [

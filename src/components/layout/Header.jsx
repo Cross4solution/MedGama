@@ -171,7 +171,7 @@ const Header = () => {
             return (
               <Link to={logoTo} onClick={closeMenu} className="flex items-center space-x-2 cursor-pointer select-none ml-9 sm:ml-9">
                 <img
-                  src="/images/logo/crm-logo.jpg"
+                  src="/images/logo/logo.svg"
                   alt="MedaGama Logo"
                   className="h-8 md:h-9 w-auto object-contain rounded"
                   loading="eager"
