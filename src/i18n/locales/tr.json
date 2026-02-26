@@ -227,7 +227,14 @@
       "writePrescription": "Reçete Yaz",
       "viewReports": "Raporları Görüntüle",
       "noAppointments": "Bugün için randevu yok",
-      "viewAll": "Tümünü Gör"
+      "viewAll": "Tümünü Gör",
+      "aiAssistant": "Yapay Zeka Asistan",
+      "aiTagUrgent": "acil",
+      "aiTagWarning": "uyarı",
+      "aiTagSchedule": "program",
+      "aiTagPatient": "hasta",
+      "aiTagRevenue": "gelir",
+      "aiTagOverview": "özet"
     },
     "appointments": {
       "title": "Randevular",

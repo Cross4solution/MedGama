@@ -227,7 +227,14 @@
       "writePrescription": "Write Prescription",
       "viewReports": "View Reports",
       "noAppointments": "No appointments for today",
-      "viewAll": "View All"
+      "viewAll": "View All",
+      "aiAssistant": "AI Assistant",
+      "aiTagUrgent": "urgent",
+      "aiTagWarning": "warning",
+      "aiTagSchedule": "schedule",
+      "aiTagPatient": "patient",
+      "aiTagRevenue": "revenue",
+      "aiTagOverview": "overview"
     },
     "appointments": {
       "title": "Appointments",

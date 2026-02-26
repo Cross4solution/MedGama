@@ -31,6 +31,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import AiInsightBanner from '../../components/crm/AiInsightBanner';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const TODAY = new Date();
@@ -176,6 +177,14 @@ const CRMDashboard = () => {
           </button>
         </div>
       </div>
+
+      {/* AI Insight Banner */}
+      <AiInsightBanner
+        appointments={appointments}
+        alerts={MOCK_URGENT_NOTES}
+        stats={MOCK_STATS}
+        patients={MOCK_RECENT_PATIENTS}
+      />
 
       {/* KPI Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
