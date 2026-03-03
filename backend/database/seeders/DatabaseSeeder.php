@@ -16,128 +16,161 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ── Super Admin ──
-        $admin = User::create([
-            'id' => 'f7103b85-fcda-4dec-92c6-c336f71fd3a2',
-            'email' => 'admin@admin.com',
-            'password' => 'admin123',
-            'fullname' => 'Platform Admin',
-            'role_id' => 'superAdmin',
-            'mobile' => '+905001234567',
-            'email_verified' => true,
-            'mobile_verified' => true,
-            'is_verified' => true,
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'id' => 'f7103b85-fcda-4dec-92c6-c336f71fd3a2',
+                'password' => 'admin123',
+                'fullname' => 'Platform Admin',
+                'role_id' => 'superAdmin',
+                'mobile' => '+905001234567',
+                'email_verified' => true,
+                'mobile_verified' => true,
+                'is_verified' => true,
+                'is_active' => true,
+            ]
+        );
 
         // ── Test Clinic ──
-        $clinicOwner = User::create([
-            'email' => 'clinic@medagama.com',
-            'password' => 'clinic123',
-            'fullname' => 'Dr. Mehmet Yılmaz',
-            'role_id' => 'clinicOwner',
-            'mobile' => '+905001234568',
-            'email_verified' => true,
-            'mobile_verified' => true,
-            'is_verified' => true,
-        ]);
+        $clinicOwner = User::updateOrCreate(
+            ['email' => 'clinic@medagama.com'],
+            [
+                'password' => 'clinic123',
+                'fullname' => 'Dr. Mehmet Yılmaz',
+                'role_id' => 'clinicOwner',
+                'mobile' => '+905001234568',
+                'email_verified' => true,
+                'mobile_verified' => true,
+                'is_verified' => true,
+                'is_active' => true,
+            ]
+        );
 
-        $clinic = Clinic::create([
-            'name' => 'MedaGama',
-            'codename' => 'medagama-clinic',
-            'fullname' => 'MedaGama Sağlık Merkezi',
-            'owner_id' => $clinicOwner->id,
-            'address' => 'Levent, İstanbul, Türkiye',
-            'biography' => 'Modern sağlık hizmetleri sunan çok branşlı klinik.',
-            'is_verified' => true,
-        ]);
+        $clinic = Clinic::updateOrCreate(
+            ['codename' => 'medagama-clinic'],
+            [
+                'name' => 'MedaGama',
+                'fullname' => 'MedaGama Sağlık Merkezi',
+                'owner_id' => $clinicOwner->id,
+                'address' => 'Levent, İstanbul, Türkiye',
+                'biography' => 'Modern sağlık hizmetleri sunan çok branşlı klinik.',
+                'is_verified' => true,
+                'is_active' => true,
+            ]
+        );
 
         $clinicOwner->update(['clinic_id' => $clinic->id]);
 
         // ── Test Doctor ──
-        $doctor = User::create([
-            'email' => 'doctor@medagama.com',
-            'password' => 'doctor123',
-            'fullname' => 'Dr. Ayşe Kaya',
-            'role_id' => 'doctor',
-            'mobile' => '+905001234569',
-            'email_verified' => true,
-            'mobile_verified' => true,
-            'is_verified' => true,
-            'clinic_id' => $clinic->id,
-        ]);
+        $doctor = User::updateOrCreate(
+            ['email' => 'doctor@medagama.com'],
+            [
+                'password' => 'doctor123',
+                'fullname' => 'Dr. Ayşe Kaya',
+                'role_id' => 'doctor',
+                'mobile' => '+905001234569',
+                'email_verified' => true,
+                'mobile_verified' => true,
+                'is_verified' => true,
+                'clinic_id' => $clinic->id,
+                'is_active' => true,
+            ]
+        );
 
         // Doctor profile (onboarding complete)
         if (class_exists(DoctorProfile::class)) {
             try {
-                DoctorProfile::create([
-                    'user_id' => $doctor->id,
-                    'specialty_code' => 'CARD',
-                    'title' => 'Uzm. Dr.',
-                    'biography' => 'Kardiyoloji uzmanı, 10 yıllık deneyim.',
-                    'onboarding_completed' => true,
-                ]);
+                DoctorProfile::updateOrCreate(
+                    ['user_id' => $doctor->id],
+                    [
+                        'specialty_code' => 'CARD',
+                        'title' => 'Uzm. Dr.',
+                        'biography' => 'Kardiyoloji uzmanı, 10 yıllık deneyim.',
+                        'onboarding_completed' => true,
+                    ]
+                );
             } catch (\Throwable $e) {
                 // Skip if table/columns don't match
             }
         }
 
         // ── Test Patients ──
-        $patient = User::create([
-            'email' => 'patient@medagama.com',
-            'password' => 'patient123',
-            'fullname' => 'Ali Demir',
-            'role_id' => 'patient',
-            'mobile' => '+905001234570',
-            'email_verified' => true,
-            'mobile_verified' => true,
-            'date_of_birth' => '1990-05-15',
-            'gender' => 'male',
-            'country_id' => 90,
-        ]);
+        $patient = User::updateOrCreate(
+            ['email' => 'patient@medagama.com'],
+            [
+                'password' => 'patient123',
+                'fullname' => 'Ali Demir',
+                'role_id' => 'patient',
+                'mobile' => '+905001234570',
+                'email_verified' => true,
+                'mobile_verified' => true,
+                'date_of_birth' => '1990-05-15',
+                'gender' => 'male',
+                'country_id' => 90,
+                'is_active' => true,
+            ]
+        );
 
-        $patient2 = User::create([
-            'email' => 'zeynep@medagama.com',
-            'password' => 'patient123',
-            'fullname' => 'Zeynep Arslan',
-            'role_id' => 'patient',
-            'mobile' => '+905001234571',
-            'email_verified' => true,
-            'date_of_birth' => '1985-11-22',
-            'gender' => 'female',
-            'country_id' => 90,
-        ]);
+        $patient2 = User::updateOrCreate(
+            ['email' => 'zeynep@medagama.com'],
+            [
+                'password' => 'patient123',
+                'fullname' => 'Zeynep Arslan',
+                'role_id' => 'patient',
+                'mobile' => '+905001234571',
+                'email_verified' => true,
+                'mobile_verified' => true,
+                'date_of_birth' => '1985-11-22',
+                'gender' => 'female',
+                'country_id' => 90,
+                'is_active' => true,
+            ]
+        );
 
         // ── Sample Appointments ──
         try {
-            Appointment::create([
-                'patient_id' => $patient->id,
-                'doctor_id' => $doctor->id,
-                'clinic_id' => $clinic->id,
-                'appointment_type' => 'in_person',
-                'appointment_date' => now()->addDays(3)->toDateString(),
-                'appointment_time' => '10:00',
-                'status' => 'confirmed',
-                'created_by' => $patient->id,
-            ]);
-            Appointment::create([
-                'patient_id' => $patient2->id,
-                'doctor_id' => $doctor->id,
-                'clinic_id' => $clinic->id,
-                'appointment_type' => 'video',
-                'appointment_date' => now()->addDays(5)->toDateString(),
-                'appointment_time' => '14:30',
-                'status' => 'pending',
-                'created_by' => $patient2->id,
-            ]);
-            Appointment::create([
-                'patient_id' => $patient->id,
-                'doctor_id' => $doctor->id,
-                'clinic_id' => $clinic->id,
-                'appointment_type' => 'in_person',
-                'appointment_date' => now()->subDays(7)->toDateString(),
-                'appointment_time' => '09:00',
-                'status' => 'completed',
-                'created_by' => $patient->id,
-            ]);
+            Appointment::updateOrCreate(
+                [
+                    'patient_id' => $patient->id,
+                    'doctor_id' => $doctor->id,
+                    'clinic_id' => $clinic->id,
+                    'appointment_date' => now()->addDays(3)->toDateString(),
+                    'appointment_time' => '10:00',
+                ],
+                [
+                    'appointment_type' => 'in_person',
+                    'status' => 'confirmed',
+                    'created_by' => $patient->id,
+                ]
+            );
+            Appointment::updateOrCreate(
+                [
+                    'patient_id' => $patient2->id,
+                    'doctor_id' => $doctor->id,
+                    'clinic_id' => $clinic->id,
+                    'appointment_date' => now()->addDays(5)->toDateString(),
+                    'appointment_time' => '14:30',
+                ],
+                [
+                    'appointment_type' => 'video',
+                    'status' => 'pending',
+                    'created_by' => $patient2->id,
+                ]
+            );
+            Appointment::updateOrCreate(
+                [
+                    'patient_id' => $patient->id,
+                    'doctor_id' => $doctor->id,
+                    'clinic_id' => $clinic->id,
+                    'appointment_date' => now()->subDays(7)->toDateString(),
+                    'appointment_time' => '09:00',
+                ],
+                [
+                    'appointment_type' => 'in_person',
+                    'status' => 'completed',
+                    'created_by' => $patient->id,
+                ]
+            );
         } catch (\Throwable $e) {
             $this->command->warn('Appointments seed skipped: ' . $e->getMessage());
         }
@@ -168,7 +201,13 @@ class DatabaseSeeder extends Seeder
 
         $specialtyIds = [];
         foreach ($specialties as $s) {
-            $spec = Specialty::create($s);
+            $spec = Specialty::updateOrCreate(
+                ['code' => $s['code']],
+                [
+                    'display_order' => $s['display_order'],
+                    'translations' => $s['translations'],
+                ]
+            );
             $specialtyIds[$s['code']] = $spec->id;
         }
 
@@ -179,49 +218,52 @@ class DatabaseSeeder extends Seeder
             ['code' => 'IZM', 'country_id' => 90, 'translations' => ['en' => 'Izmir', 'tr' => 'İzmir']],
             ['code' => 'ANT', 'country_id' => 90, 'translations' => ['en' => 'Antalya', 'tr' => 'Antalya']],
             ['code' => 'BUR', 'country_id' => 90, 'translations' => ['en' => 'Bursa', 'tr' => 'Bursa']],
+            ['code' => 'ADA', 'country_id' => 90, 'translations' => ['en' => 'Adana', 'tr' => 'Adana']],
+            ['code' => 'GAZ', 'country_id' => 90, 'translations' => ['en' => 'Gaziantep', 'tr' => 'Gaziantep']],
+            ['code' => 'KON', 'country_id' => 90, 'translations' => ['en' => 'Konya', 'tr' => 'Konya']],
         ];
 
-        // Cities (Germany)
         $citiesDE = [
-            ['code' => 'BER', 'country_id' => 49, 'translations' => ['en' => 'Berlin', 'tr' => 'Berlin', 'de' => 'Berlin']],
-            ['code' => 'MUN', 'country_id' => 49, 'translations' => ['en' => 'Munich', 'tr' => 'Münih', 'de' => 'München']],
-            ['code' => 'HAM', 'country_id' => 49, 'translations' => ['en' => 'Hamburg', 'tr' => 'Hamburg', 'de' => 'Hamburg']],
+            ['code' => 'BER', 'country_id' => 49, 'translations' => ['en' => 'Berlin', 'de' => 'Berlin']],
+            ['code' => 'MUC', 'country_id' => 49, 'translations' => ['en' => 'Munich', 'de' => 'München']],
         ];
 
         foreach (array_merge($cities, $citiesDE) as $c) {
-            City::create($c);
+            City::updateOrCreate(
+                ['code' => $c['code'], 'country_id' => $c['country_id']],
+                ['translations' => $c['translations']]
+            );
         }
 
         // ── Symptom-Specialty Mappings ──
         $symptoms = [
-            ['symptom' => 'chest_pain', 'specialty_ids' => [$specialtyIds['CARD']], 'translations' => ['en' => 'Chest Pain', 'tr' => 'Göğüs Ağrısı']],
-            ['symptom' => 'headache', 'specialty_ids' => [$specialtyIds['NEUR']], 'translations' => ['en' => 'Headache', 'tr' => 'Baş Ağrısı']],
-            ['symptom' => 'skin_rash', 'specialty_ids' => [$specialtyIds['DERM'], $specialtyIds['ALLE']], 'translations' => ['en' => 'Skin Rash', 'tr' => 'Cilt Döküntüsü']],
-            ['symptom' => 'cough', 'specialty_ids' => [$specialtyIds['PULM'], $specialtyIds['ENT']], 'translations' => ['en' => 'Cough', 'tr' => 'Öksürük']],
-            ['symptom' => 'stomach_pain', 'specialty_ids' => [$specialtyIds['GAST']], 'translations' => ['en' => 'Stomach Pain', 'tr' => 'Mide Ağrısı']],
-            ['symptom' => 'joint_pain', 'specialty_ids' => [$specialtyIds['ORTH'], $specialtyIds['RHEU']], 'translations' => ['en' => 'Joint Pain', 'tr' => 'Eklem Ağrısı']],
-            ['symptom' => 'blurred_vision', 'specialty_ids' => [$specialtyIds['OPHT']], 'translations' => ['en' => 'Blurred Vision', 'tr' => 'Bulanık Görme']],
-            ['symptom' => 'anxiety', 'specialty_ids' => [$specialtyIds['PSYC']], 'translations' => ['en' => 'Anxiety', 'tr' => 'Anksiyete']],
-            ['symptom' => 'frequent_urination', 'specialty_ids' => [$specialtyIds['UROL'], $specialtyIds['ENDO']], 'translations' => ['en' => 'Frequent Urination', 'tr' => 'Sık İdrara Çıkma']],
-            ['symptom' => 'toothache', 'specialty_ids' => [$specialtyIds['DENT']], 'translations' => ['en' => 'Toothache', 'tr' => 'Diş Ağrısı']],
+            ['symptom' => 'chest pain', 'specialty_code' => 'CARD'],
+            ['symptom' => 'shortness of breath', 'specialty_code' => 'PULM'],
+            ['symptom' => 'skin rash', 'specialty_code' => 'DERM'],
+            ['symptom' => 'stomach pain', 'specialty_code' => 'GAST'],
+            ['symptom' => 'headache', 'specialty_code' => 'NEUR'],
+            ['symptom' => 'joint pain', 'specialty_code' => 'RHEU'],
+            ['symptom' => 'vision problem', 'specialty_code' => 'OPHT'],
+            ['symptom' => 'tooth pain', 'specialty_code' => 'DENT'],
+            ['symptom' => 'anxiety', 'specialty_code' => 'PSYC'],
+            ['symptom' => 'urination pain', 'specialty_code' => 'UROL'],
         ];
 
         foreach ($symptoms as $s) {
-            SymptomSpecialtyMapping::create($s);
+            SymptomSpecialtyMapping::updateOrCreate(
+                ['symptom' => $s['symptom']],
+                ['specialty_code' => $s['specialty_code']]
+            );
         }
 
         $this->command->info('');
         $this->command->info('╔══════════════════════════════════════════════════════════════╗');
-        $this->command->info('║  MedaGama — Seed Complete                                    ║');
-        $this->command->info('╠══════════════════════════════════════════════════════════════╣');
         $this->command->info('║  Users:                                                     ║');
         $this->command->info('║    Admin    → admin@admin.com       / admin123               ║');
         $this->command->info('║    Clinic   → clinic@medagama.com    / clinic123              ║');
         $this->command->info('║    Doctor   → doctor@medagama.com    / doctor123              ║');
         $this->command->info('║    Patient  → patient@medagama.com   / patient123             ║');
         $this->command->info('║    Patient2 → zeynep@medagama.com    / patient123             ║');
-        $this->command->info('║                                                              ║');
-        $this->command->info('║  Data: 20 specialties, 8 cities, 10 symptoms, 3 appointments ║');
         $this->command->info('╚══════════════════════════════════════════════════════════════╝');
     }
 }

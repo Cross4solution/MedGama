@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, ArrowUpRight } from 'lucide-react';
+import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, ArrowUpRight, Heart } from 'lucide-react';
 
 // Custom chat icon using public SVG (accepts className via props)
 const ChatRoundIcon = (props) => (
@@ -29,6 +29,7 @@ export default function SidebarPatient() {
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
@@ -41,6 +42,7 @@ export default function SidebarPatient() {
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
@@ -52,6 +54,7 @@ export default function SidebarPatient() {
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
@@ -102,13 +105,13 @@ export default function SidebarPatient() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className={`hidden lg:block fixed left-0 w-[12rem] top-[4.5rem] z-40 h-[calc(100vh-4.5rem)]`}>
-        <div className="h-full pt-0 pb-2 pl-0">
-          <div className="h-full rounded-br-2xl border-r border-b border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-lg shadow-gray-200/40 flex flex-col overflow-hidden">
+      <aside className={`hidden lg:block fixed left-0 w-[12rem] top-[3.5rem] z-40 h-[calc(100vh-3.5rem)]`}>
+        <div className="h-full">
+          <div className="h-full border-r border-gray-200/60 bg-white flex flex-col overflow-hidden">
             {/* Navigation */}
-            <div className="flex-1 overflow-y-auto py-3">
+            <div className="flex-1 overflow-y-auto pb-3 pt-2">
               <div className="px-3">
-                <div className="mb-3 px-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu') || 'Menu'}</div>
+                <div className="mb-2 px-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu') || 'Menu'}</div>
                 <nav className="space-y-1">
                   {items.map((it, idx) => (
                     <NavItem key={`${it.to || it.href || it.label || 'item'}-${idx}`} {...it} />
@@ -140,20 +143,6 @@ export default function SidebarPatient() {
               </div>
             </div>
 
-            {/* Footer actions */}
-            <div className="mt-auto px-3 pb-4 pt-3 border-t border-gray-100">
-              <button
-                onClick={async () => {
-                  const confirmed = await logout();
-                  if (confirmed) {
-                    navigate('/home-v2');
-                  }
-                }}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-600 hover:to-red-600 shadow-md shadow-rose-200/50 hover:shadow-lg hover:shadow-rose-300/50 transition-all duration-200 hover:-translate-y-0.5"
-              >
-                <LogOut className="w-4 h-4" /> {t('common.logout')}
-              </button>
-            </div>
           </div>
         </div>
       </aside>
@@ -258,15 +247,8 @@ export default function SidebarPatient() {
                 </nav>
               </div>
 
-              {/* Mobile Footer */}
-              <div className="mt-auto px-3 pb-4 pt-3 border-t border-gray-100">
-                <button
-                  onClick={() => { setSidebarMobileOpen(false); logout(); navigate('/home-v2'); }}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-600 hover:to-red-600 shadow-md shadow-rose-200/50 transition-all duration-200"
-                >
-                  <LogOut className="w-4 h-4" /> {t('common.logout')}
-                </button>
-              </div>
+
+
             </div>
           </div>
         </div>

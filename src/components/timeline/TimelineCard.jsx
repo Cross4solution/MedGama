@@ -834,7 +834,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
           {/* Comments Preview */}
           {showCommentsPreview && (
-            <div className="px-3 pb-3 mt-0 border-t border-gray-100 pt-2.5 relative min-h-0 transform-gpu overflow-x-hidden">
+            <div className="px-3 pb-3 mt-0 border-t border-gray-100 pt-2.5 relative min-h-0 transform-gpu">
               {/* New comment input */}
               <div className="flex items-center gap-2">
                 <AvatarImg src={authUser?.avatar || '/images/default/default-avatar.svg'} alt="Your avatar" className="w-6 h-6 rounded-full object-cover" />
@@ -914,7 +914,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     )}
                   </div>
                   {showEmoji && !disabledActions && (
-                    <div ref={emojiPickerRef} className="absolute left-0 bottom-full mb-1" style={{ zIndex: 9999 }}>
+                    <div ref={emojiPickerRef} className="absolute right-0 bottom-full mb-2" style={{ zIndex: 9999 }}>
                       <EmojiPicker
                         onSelect={(e)=>{ setCommentText(t => t + e); setShowEmoji(false); }}
                       />

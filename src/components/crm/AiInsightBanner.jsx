@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Sparkles, X, ChevronRight, AlertTriangle, CalendarDays, TrendingUp } from 'lucide-react';
+import { Sparkles, ChevronRight, AlertTriangle, CalendarDays, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -114,7 +114,6 @@ function generateInsights({ appointments, alerts, stats, patients, t }) {
 // ── Component ────────────────────────────────────────────────
 export default function AiInsightBanner({ appointments, alerts, stats, patients }) {
   const { t } = useTranslation();
-  const [dismissed, setDismissed] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -136,7 +135,7 @@ export default function AiInsightBanner({ appointments, alerts, stats, patients 
     return () => clearInterval(timer);
   }, [insights.length]);
 
-  if (dismissed || insights.length === 0) return null;
+  if (insights.length === 0) return null;
 
   const current = insights[activeIndex % insights.length];
   const Icon = current.icon;
@@ -200,14 +199,6 @@ export default function AiInsightBanner({ appointments, alerts, stats, patients 
             <ChevronRight className="w-4 h-4" />
           </button>
         )}
-        <button
-          type="button"
-          onClick={() => setDismissed(true)}
-          className="w-7 h-7 rounded-lg hover:bg-white/60 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
-          aria-label="Dismiss"
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
       </div>
 
       {/* Progress dots */}

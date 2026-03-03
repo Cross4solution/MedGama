@@ -5,11 +5,11 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
-import { User, Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink, Globe } from 'lucide-react';
+import { Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../i18n';
 import { useCookieConsent } from '../context/CookieConsentContext';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
@@ -89,7 +89,13 @@ export default function Profile() {
   const { user, country, updateUser, logout, fetchCurrentUser } = useAuth();
   const { openSettings: openCookieSettings, consent, consentTimestamp, resetConsent } = useCookieConsent();
   const { t, i18n } = useTranslation();
-  const [active, setActive] = useState('account');
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab');
+  const [active, setActive] = useState(tabFromUrl || 'notifications');
+
+  useEffect(() => {
+    if (tabFromUrl) setActive(tabFromUrl);
+  }, [tabFromUrl]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
@@ -444,8 +450,6 @@ export default function Profile() {
               <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('profile.settings')}</div>
             </div>
             <div className="p-2 space-y-0.5">
-              <NavItem id="account" icon={User} title={t('profile.account')} desc={t('profile.accountDesc')} />
-              <NavItem id="security" icon={Shield} title={t('profile.security')} desc={t('profile.securityDesc')} />
               <NavItem id="notifications" icon={Bell} title={t('profile.notifications')} desc={t('profile.notificationsDesc')} />
               {user?.role === 'patient' && (
                 <NavItem id="medical" icon={HeartPulse} title={t('profile.medicalHistory')} desc={t('profile.medicalHistoryDesc')} />

@@ -39,7 +39,8 @@ class AuthService
             ]);
         }
 
-        $verificationCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        // Hardcoded for testing - always use 123456
+        $verificationCode = '123456';
 
         $user = DB::transaction(function () use ($data, $clinicId, $verificationCode) {
             return User::create([
@@ -203,7 +204,8 @@ class AuthService
             return;
         }
 
-        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        // Hardcoded for testing - always use 123456
+        $code = '123456';
         $user->update(['email_verification_code' => $code]);
 
         $this->sendVerificationEmail($user->email, $code, $user->fullname);

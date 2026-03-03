@@ -9,19 +9,22 @@ export default function SearchSections() {
 
   return (
     <>
-      {/* Clinics Search (unified clinic/doctor autocomplete) */}
-      <section id="clinics-search" className="pt-5 pb-5 bg-gradient-to-b from-gray-50 to-white border-b border-gray-100">
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
-          <GlobalSearch />
+      {/* Custom Search (Country → City → Speciality → Symptom/Procedure) */}
+      <section className="pt-5 pb-5 bg-gradient-to-b from-gray-50 to-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Search</h2>
+          <CustomSearch />
         </div>
       </section>
 
-      {/* Custom Search (Country → City → Speciality → Symptom/Procedure) */}
-      <section className="pt-5 pb-2">
+      {/* Clinics Search (unified clinic/doctor autocomplete) */}
+      <section id="clinics-search" className="pt-5 pb-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Advanced Search</h2>
-          <CustomSearch />
-          {/* Title for course/feature boxes under custom search */}
+          <h2 className="text-lg font-bold text-gray-900 mb-4 text-center">Clinic Search</h2>
+          <div className="relative max-w-3xl mx-auto">
+            <GlobalSearch />
+          </div>
+          {/* Title for course/feature boxes under simple search */}
           <div id="discover-services" className="mt-8 mb-2 flex items-center gap-2">
             <Sparkles className="w-4.5 h-4.5 text-teal-600" />
             <h2 className="text-lg font-bold text-gray-900">Discover Our World-First Services</h2>

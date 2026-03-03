@@ -3,12 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { clinicAPI, doctorAPI } from '../../lib/api';
 
 const PLACEHOLDER_HINTS = [
-  'Search clinics or doctors',
-  'Try "Dental implant Istanbul"',
-  'Try "Cardiology"',
-  'Try "Dr. Ahmet Yılmaz"',
-  'Try "Hair transplant"',
-  'Try "Rhinoplasty Turkey"',
+  'Search Clinics or Doctors',
+  'Acıbadem Hospital',
+  'Medipol Hospital',
 ];
 
 export default function GlobalSearch() {

@@ -129,6 +129,19 @@ export const clinicAPI = {
   createStaff: (id, payload) => api.post(`/clinics/${id}/staff`, payload),
 };
 
+// ── Social Service (Follow / Favorite) ──
+export const socialAPI = {
+  follow: (targetType, targetId) => api.post('/social/follow', { target_type: targetType, target_id: targetId }),
+  unfollow: (targetType, targetId) => api.post('/social/unfollow', { target_type: targetType, target_id: targetId }),
+  isFollowing: (targetType, targetId) => api.get('/social/is-following', { params: { target_type: targetType, target_id: targetId } }),
+  followers: (targetType, targetId, params) => api.get('/social/followers', { params: { target_type: targetType, target_id: targetId, ...params } }),
+  following: (params) => api.get('/social/following', { params }),
+  favorite: (targetType, targetId) => api.post('/social/favorite', { target_type: targetType, target_id: targetId }),
+  unfavorite: (targetType, targetId) => api.post('/social/unfavorite', { target_type: targetType, target_id: targetId }),
+  isFavorited: (targetType, targetId) => api.get('/social/is-favorited', { params: { target_type: targetType, target_id: targetId } }),
+  favorites: (params) => api.get('/social/favorites', { params }),
+};
+
 // ── Doctor Service ──
 export const doctorAPI = {
   list: (params) => api.get('/doctors', { params }),

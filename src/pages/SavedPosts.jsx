@@ -15,6 +15,7 @@ export default function SavedPosts() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
+  const [confirmRemove, setConfirmRemove] = useState(null);
 
   const fetchBookmarks = useCallback(async (pageNum = 1) => {
     try {
@@ -92,6 +93,7 @@ export default function SavedPosts() {
   };
 
   const handleUnsave = async (postId) => {
+    setConfirmRemove(null);
     setPosts(prev => prev.filter(p => p.id !== postId));
     setTotal(prev => Math.max(0, prev - 1));
     try {
@@ -117,6 +119,7 @@ export default function SavedPosts() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Header */}
@@ -159,7 +162,7 @@ export default function SavedPosts() {
                 />
                 <button
                   type="button"
-                  onClick={() => handleUnsave(post.id)}
+                  onClick={() => setConfirmRemove(post.id)}
                   className="absolute top-3 right-3 p-2 rounded-full bg-white/90 shadow-sm border border-gray-200 text-gray-400 hover:text-red-500 hover:bg-red-50 hover:border-red-200 transition-all z-10"
                   title="Remove from saved"
                 >
@@ -178,5 +181,34 @@ export default function SavedPosts() {
         )}
       </div>
     </div>
+
+    {/* Confirm Remove Modal */}
+    {confirmRemove && (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setConfirmRemove(null)}>
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+        <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center" onClick={e => e.stopPropagation()}>
+          <div className="mx-auto w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center mb-3">
+            <Trash2 className="w-6 h-6 text-rose-500" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-1">Remove Saved Post?</h3>
+          <p className="text-sm text-gray-500 mb-5">Are you sure you want to remove this post from your saved list?</p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setConfirmRemove(null)}
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => handleUnsave(confirmRemove)}
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-rose-500 text-white hover:bg-rose-600 transition-colors"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   );
 }

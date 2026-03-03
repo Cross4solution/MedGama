@@ -330,7 +330,7 @@ export default function CustomSearch() {
 
         {/* 4. Specialty */}
         <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Specialty</label>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">Specialty / Disease</label>
           <div
             className={`border border-gray-300 rounded-xl px-2.5 py-1.5 text-sm flex items-center flex-wrap gap-1.5 min-h-[2.5rem] transition-all ${disableSpecialty ? 'bg-gray-50 cursor-not-allowed opacity-60' : 'bg-white hover:border-gray-400 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-400'}`}
           >

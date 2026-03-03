@@ -4,7 +4,6 @@ import LeafletMap from 'components/map/LeafletMap';
 import {
   Award,
   Stethoscope,
-  Activity,
   Heart,
   CheckCircle,
   Shield,
@@ -13,7 +12,6 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  Star,
   Minus,
   Video,
   Loader2,
@@ -23,6 +21,11 @@ import {
 import Tabs from 'components/tabs/Tabs';
 import { doctorAPI } from '../lib/api';
 import useAuthGuard from '../hooks/useAuthGuard';
+import useSocial from '../hooks/useSocial';
+import { useTranslation } from 'react-i18next';
+import BookAppointmentModal from '../components/modals/BookAppointmentModal';
+import OnlineConsultationModal from '../components/modals/OnlineConsultationModal';
+import SendMessageModal from '../components/modals/SendMessageModal';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
@@ -30,13 +33,18 @@ const DoctorProfilePage = () => {
   const { id: doctorId } = useParams();
   const navigate = useNavigate();
   const { guardAction } = useAuthGuard();
+  const { i18n } = useTranslation();
+  const isTr = i18n.language?.startsWith('tr');
   const [activeTab, setActiveTab] = useState('genel-bakis');
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
-  const [followerCount, setFollowerCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [doctor, setDoctor] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [initialSocial, setInitialSocial] = useState({});
+
+  // Modal states
+  const [bookModal, setBookModal] = useState(false);
+  const [consultModal, setConsultModal] = useState(false);
+  const [messageModal, setMessageModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -47,11 +55,17 @@ const DoctorProfilePage = () => {
       if (d) {
         setDoctor(d);
         setProfile(d.doctor_profile || null);
-        setFollowerCount(d.followers_count || d.doctor_profile?.followers_count || 0);
-        setIsFollowing(!!d.is_followed);
+        setInitialSocial({
+          isFollowing: !!d.is_followed,
+          isFavorited: !!d.is_favorited,
+          followerCount: d.followers_count || d.doctor_profile?.followers_count || 0,
+        });
       }
     }).catch(() => {}).finally(() => setLoading(false));
   }, [doctorId]);
+
+  // Social hook (follow / favorite)
+  const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('doctor', doctorId, initialSocial);
 
   const doctorName = doctor?.fullname || 'Doctor';
   const doctorTitle = profile?.title || profile?.specialty || '';
@@ -139,27 +153,32 @@ const DoctorProfilePage = () => {
                 </div>
               </div>
             </div>
-            <button
-              onClick={guardAction(() => {
-                setFollowLoading(true);
-                const wasFollowing = isFollowing;
-                setIsFollowing(f => !f);
-                setFollowerCount(c => wasFollowing ? Math.max(0, c - 1) : c + 1);
-                setTimeout(() => setFollowLoading(false), 400);
-              })}
-              disabled={followLoading}
-              className={`px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 min-w-[110px] ${isFollowing
-                ? 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
-                : 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm'} ${followLoading ? 'opacity-60 cursor-wait' : ''}`}
-            >
-              {followLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : isFollowing ? (
-                <><Minus className="w-4 h-4" /><span>Following</span></>
-              ) : (
-                <><span>+ Follow</span></>
-              )}
-            </button>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={guardAction(toggleFavorite)}
+                className={`p-2.5 rounded-xl border transition-all duration-200 ${
+                  isFavorited ? 'bg-red-50 text-red-500 border-red-200' : 'bg-white text-gray-400 border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200'
+                }`}
+                aria-label={isFavorited ? 'Unfavorite' : 'Favorite'}
+              >
+                <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+              </button>
+              <button
+                onClick={guardAction(toggleFollow)}
+                disabled={followLoading}
+                className={`px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 min-w-[110px] ${isFollowing
+                  ? 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
+                  : 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm'} ${followLoading ? 'opacity-60 cursor-wait' : ''}`}
+              >
+                {followLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : isFollowing ? (
+                  <><Minus className="w-4 h-4" /><span>{isTr ? 'Takiptesin' : 'Following'}</span></>
+                ) : (
+                  <><span>{isTr ? '+ Takip Et' : '+ Follow'}</span></>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -356,22 +375,20 @@ const DoctorProfilePage = () => {
             {/* Contact */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
               <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
-                <h3 className="text-sm font-semibold text-gray-900">Contact</h3>
+                <h3 className="text-sm font-semibold text-gray-900">{isTr ? 'İletişim' : 'Contact'}</h3>
               </div>
               <div className="p-4 space-y-2.5">
-                {onlineConsultation && (
-                  <button onClick={guardAction(() => navigate(`/telehealth/${doctorId}`))} className="w-full min-h-[44px] bg-teal-600 text-white py-2.5 px-4 rounded-xl hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
-                    <Video className="w-4 h-4" />
-                    <span>Online Consultation</span>
-                  </button>
-                )}
-                <button onClick={guardAction(() => navigate(`/appointments/new?doctor=${doctorId}`))} className="w-full min-h-[44px] bg-blue-600 text-white py-2.5 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
-                  <img src="/images/icon/calender-svgrepo-com.svg" alt="Calendar" className="w-4 h-4 brightness-0 invert" />
-                  <span>Book Appointment</span>
+                <button onClick={guardAction(() => setConsultModal(true))} className="w-full min-h-[44px] bg-teal-600 text-white py-2.5 px-4 rounded-xl hover:bg-teal-700 focus:ring-4 focus:ring-teal-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
+                  <Video className="w-4 h-4" />
+                  <span>{isTr ? 'Online Görüşme' : 'Online Consultation'}</span>
                 </button>
-                <button onClick={guardAction(() => navigate(`/messages?to=${doctorId}`))} className="w-full min-h-[44px] bg-violet-600 text-white py-2.5 px-4 rounded-xl hover:bg-violet-700 focus:ring-4 focus:ring-violet-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
+                <button onClick={guardAction(() => setBookModal(true))} className="w-full min-h-[44px] bg-blue-600 text-white py-2.5 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
+                  <img src="/images/icon/calender-svgrepo-com.svg" alt="Calendar" className="w-4 h-4 brightness-0 invert" />
+                  <span>{isTr ? 'Randevu Al' : 'Book Appointment'}</span>
+                </button>
+                <button onClick={guardAction(() => setMessageModal(true))} className="w-full min-h-[44px] bg-violet-600 text-white py-2.5 px-4 rounded-xl hover:bg-violet-700 focus:ring-4 focus:ring-violet-200 transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-sm">
                   <img src="/images/icon/chat-round-line-svgrepo-com.svg" alt="Chat" className="w-4 h-4 brightness-0 invert" />
-                  <span>Send Message</span>
+                  <span>{isTr ? 'Mesaj Gönder' : 'Send Message'}</span>
                 </button>
               </div>
             </div>
@@ -414,6 +431,29 @@ const DoctorProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <BookAppointmentModal
+        open={bookModal}
+        onClose={() => setBookModal(false)}
+        targetId={doctorId}
+        targetName={doctorName}
+        targetType="doctor"
+      />
+      <OnlineConsultationModal
+        open={consultModal}
+        onClose={() => setConsultModal(false)}
+        targetId={doctorId}
+        targetName={doctorName}
+        targetType="doctor"
+      />
+      <SendMessageModal
+        open={messageModal}
+        onClose={() => setMessageModal(false)}
+        targetId={doctorId}
+        targetName={doctorName}
+        targetType="doctor"
+      />
     </div>
   );
 };

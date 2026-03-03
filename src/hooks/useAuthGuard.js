@@ -25,7 +25,7 @@ export default function useAuthGuard() {
         if (!isLoggedIn) {
           notify({
             type: 'warning',
-            message: 'Bu işlemi gerçekleştirmek için lütfen giriş yapın.',
+            message: 'Please sign in to continue.',
           });
           // Clear any existing timer to avoid double redirects
           if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff } from 'lucide-react';
+import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff, LogOut, Shield, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { notificationAPI } from '../../lib/api';
@@ -366,16 +366,59 @@ const Header = () => {
                     )}
                   </div>
 
-                  {/* Avatar + Name */}
+                  {/* Avatar + Name + Dropdown */}
                   <div className="relative" ref={profileRef}>
-                    <div className="flex items-center gap-2 px-1.5 py-1 rounded-lg border border-transparent" title={user.name}>
+                    <button
+                      type="button"
+                      onClick={() => setProfileOpen(p => !p)}
+                      className="flex items-center gap-2 px-1.5 py-1 rounded-lg border border-transparent hover:bg-gray-50 transition-colors cursor-pointer"
+                      title={user.name}
+                    >
                       <img
                         src={user.avatar || '/images/default/default-avatar.svg'}
                         alt={user.name}
                         className="w-7 h-7 rounded-full object-cover border border-gray-200"
                       />
                       <span className="text-[13px] text-gray-700 font-medium max-w-[140px] truncate">{user.name}</span>
-                    </div>
+                      <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {profileOpen && (
+                      <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
+                        {/* User info header */}
+                        <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
+                          <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+                          <p className="text-[11px] text-gray-400 truncate">{user.email || (String(user.role || 'patient').charAt(0).toUpperCase() + String(user.role || 'patient').slice(1))}</p>
+                        </div>
+                        <div className="p-1.5">
+                          <button
+                            type="button"
+                            onClick={() => { setProfileOpen(false); navigate('/profile?tab=account'); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                          >
+                            <User className="w-4 h-4 text-gray-400" />
+                            {t('profile.account', 'Account')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setProfileOpen(false); navigate('/profile?tab=security'); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                          >
+                            <Shield className="w-4 h-4 text-gray-400" />
+                            {t('profile.security', 'Security')}
+                          </button>
+                        </div>
+                        <div className="border-t border-gray-100 p-1.5">
+                          <button
+                            type="button"
+                            onClick={() => { setProfileOpen(false); setConfirmLogoutOpen(true); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            {t('common.logout', 'Logout')}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </>
               )}

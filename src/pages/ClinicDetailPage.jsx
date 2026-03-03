@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { CheckCircle } from 'lucide-react';
-import Badge from '../components/Badge';
 import ClinicHero from '../components/clinic/ClinicHero';
 import Tabs from '../components/tabs/Tabs';
 import ContactActions from '../components/clinic/ContactActions';
 import PriceRangeList from '../components/pricing/PriceRangeList';
 import { useAuth } from '../context/AuthContext';
 import useAuthGuard from '../hooks/useAuthGuard';
+import useSocial from '../hooks/useSocial';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI } from '../lib/api';
 import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
+import BookAppointmentModal from '../components/modals/BookAppointmentModal';
+import OnlineConsultationModal from '../components/modals/OnlineConsultationModal';
+import SendMessageModal from '../components/modals/SendMessageModal';
 
 // Tab Components
 import OverviewTab from '../components/clinic/tabs/OverviewTab';
@@ -40,6 +42,12 @@ const ClinicDetailPage = () => {
   const { t } = useTranslation();
   const { id: clinicParam } = useParams();
   const [apiClinic, setApiClinic] = useState(null);
+  const [initialSocial, setInitialSocial] = useState({});
+
+  // Modal states
+  const [bookModal, setBookModal] = useState(false);
+  const [consultModal, setConsultModal] = useState(false);
+  const [messageModal, setMessageModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -47,16 +55,32 @@ const ClinicDetailPage = () => {
       clinicAPI.getByCodename(clinicParam).then((res) => {
         const raw = res?.data || res;
         const c = raw?.clinic || raw;
-        if (c && c.id) setApiClinic(c);
+        if (c && c.id) {
+          setApiClinic(c);
+          setInitialSocial({
+            isFollowing: !!c.is_followed,
+            isFavorited: !!c.is_favorited,
+            followerCount: c.followers_count || 0,
+          });
+        }
       }).catch(() => {});
     }
   }, [clinicParam]);
 
+  // Social hook (follow / favorite)
+  const clinicMeta = {
+    name: apiClinic?.fullname || apiClinic?.name || clinicInfo.name,
+    codename: apiClinic?.codename || clinicParam || '',
+    avatar: apiClinic?.avatar || clinicInfo.heroImage,
+    address: apiClinic?.address || clinicInfo.location,
+    rating: resolveClinicRating(apiClinic, clinicInfo.rating),
+    reviewCount: resolveClinicReviewCount(apiClinic, clinicInfo.reviewCount),
+    specialty: apiClinic?.specialty || '',
+  };
+  const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('clinic', apiClinic?.id, initialSocial, clinicMeta);
+
   // UI State
   const [activeTab, setActiveTab] = useState('genel-bakis');
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
   
   // Prices Tab State
   const [selectedService, setSelectedService] = useState(null);
@@ -141,15 +165,11 @@ const ClinicDetailPage = () => {
               rating={resolveClinicRating(apiClinic, clinicInfo.rating)}
               reviews={resolveClinicReviewCount(apiClinic, clinicInfo.reviewCount)}
               badgeNode={null}
-              isFavorite={isFavorite}
-              onToggleFavorite={guardAction(() => setIsFavorite(!isFavorite))}
+              isFavorite={isFavorited}
+              onToggleFavorite={guardAction(toggleFavorite)}
               isFollowing={isFollowing}
               followLoading={followLoading}
-              onToggleFollow={guardAction(() => {
-                setFollowLoading(true);
-                setIsFollowing((v) => !v);
-                setTimeout(() => setFollowLoading(false), 400);
-              })}
+              onToggleFollow={guardAction(toggleFollow)}
               onFollow={() => {}}
             />
 
@@ -164,11 +184,33 @@ const ClinicDetailPage = () => {
 
           {/* Sidebar */}
           <div className="lg:w-80 space-y-4 lg:sticky lg:top-24 h-max">
-            <ContactActions onTelehealth={guardAction(() => {})} onBook={guardAction(() => {})} onMessage={guardAction(() => {})} />
+            <ContactActions onTelehealth={guardAction(() => setConsultModal(true))} onBook={guardAction(() => setBookModal(true))} onMessage={guardAction(() => setMessageModal(true))} />
             <PriceRangeList items={priceRangesData} />
           </div>
         </div>
       </div>
+      {/* Modals */}
+      <BookAppointmentModal
+        open={bookModal}
+        onClose={() => setBookModal(false)}
+        targetId={apiClinic?.id}
+        targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
+        targetType="clinic"
+      />
+      <OnlineConsultationModal
+        open={consultModal}
+        onClose={() => setConsultModal(false)}
+        targetId={apiClinic?.id}
+        targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
+        targetType="clinic"
+      />
+      <SendMessageModal
+        open={messageModal}
+        onClose={() => setMessageModal(false)}
+        targetId={apiClinic?.id}
+        targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
+        targetType="clinic"
+      />
     </div>
   );
 };
