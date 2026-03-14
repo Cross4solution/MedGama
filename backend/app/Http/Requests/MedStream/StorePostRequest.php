@@ -9,17 +9,21 @@ class StorePostRequest extends FormRequest
     public function authorize(): bool
     {
         return in_array($this->user()->role_id, [
-            'doctor', 'clinicOwner', 'superAdmin', 'saasAdmin',
+            'doctor', 'clinicOwner', 'hospital', 'superAdmin', 'saasAdmin',
         ]);
     }
 
     public function rules(): array
     {
         return [
-            'post_type'  => 'required|in:text,image,video,document,mixed',
-            'content'    => 'sometimes|string',
-            'media_url'  => 'sometimes|string|url',
-            'clinic_id'  => 'sometimes|uuid|exists:clinics,id',
+            'post_type'    => 'required|in:text,image,video,document,mixed',
+            'content'      => 'sometimes|string',
+            'media_url'    => 'sometimes|string|url',
+            'clinic_id'    => 'sometimes|uuid|exists:clinics,id',
+            'hospital_id'  => 'sometimes|uuid|exists:hospitals,id',
+            'specialty_id' => 'sometimes|nullable|uuid|exists:specialties,id',
+            'is_anonymous' => 'sometimes|boolean',
+            'gdpr_consent' => 'sometimes|boolean',
             'photos'     => 'sometimes|array',
             'photos.*'   => 'file|mimes:jpg,jpeg,png,gif,bmp,webp,svg,heic,heif|max:10240',
             'videos'     => 'sometimes|array',

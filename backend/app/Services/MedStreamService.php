@@ -8,6 +8,7 @@ use App\Models\MedStreamLike;
 use App\Models\MedStreamBookmark;
 use App\Models\MedStreamReport;
 use App\Models\MedStreamEngagementCounter;
+use App\Models\DoctorFollow;
 use App\Models\User;
 use App\Jobs\ProcessMedStreamVideo;
 use App\Notifications\PostCommentedNotification;
@@ -30,14 +31,23 @@ class MedStreamService
     public function listPosts(?string $userId, array $filters): LengthAwarePaginator
     {
         $posts = MedStreamPost::query()
-            ->with(['author:id,fullname,avatar,role_id', 'clinic:id,fullname,avatar', 'engagementCounter'])
+            ->with([
+                'author:id,fullname,avatar,role_id',
+                'clinic:id,fullname,avatar',
+                'hospital:id,name,avatar',
+                'specialty:id,code,name',
+                'engagementCounter',
+            ])
             ->withCount([
                 'comments as real_comment_count' => fn($q) => $q->where('is_hidden', false),
                 'likes as real_like_count' => fn($q) => $q->where('is_active', true),
+                'reports as report_count',
             ])
             ->when($filters['author_id'] ?? null, fn($q, $v) => $q->where('author_id', $v))
             ->when($filters['clinic_id'] ?? null, fn($q, $v) => $q->where('clinic_id', $v))
+            ->when($filters['hospital_id'] ?? null, fn($q, $v) => $q->where('hospital_id', $v))
             ->when($filters['post_type'] ?? null, fn($q, $v) => $q->where('post_type', $v))
+            ->when($filters['specialty_id'] ?? null, fn($q, $v) => $q->where('specialty_id', $v))
             ->orderByDesc('created_at')
             ->paginate($filters['per_page'] ?? 20);
 
@@ -60,6 +70,8 @@ class MedStreamService
         $post->load([
             'author:id,fullname,avatar,role_id',
             'clinic:id,fullname,avatar',
+            'hospital:id,name,avatar',
+            'specialty:id,code,name',
             'engagementCounter',
             'comments' => fn($q) => $q->where('is_hidden', false)
                 ->whereNull('parent_id')
@@ -96,11 +108,15 @@ class MedStreamService
             $postData = [
                 'author_id'        => $author->id,
                 'clinic_id'        => $data['clinic_id'] ?? $author->clinic_id,
+                'hospital_id'      => $data['hospital_id'] ?? $author->hospital_id,
+                'specialty_id'     => $data['specialty_id'] ?? null,
                 'post_type'        => $data['post_type'],
                 'content'          => $data['content'] ?? null,
                 'media_url'        => $mediaResult['media_url'],
                 'media'            => $mediaResult['uploaded_files'] ?: null,
                 'media_processing' => $hasVideos,
+                'is_anonymous'     => (bool) ($data['is_anonymous'] ?? false),
+                'gdpr_consent'     => (bool) ($data['gdpr_consent'] ?? false),
             ];
 
             $post = MedStreamPost::create($postData);
@@ -292,7 +308,7 @@ class MedStreamService
 
         $bookmarks = $query->paginate($filters['per_page'] ?? 20);
 
-        // Eager-load post details for post bookmarks
+        // Eager-load post details for post bookmarks (Saved Posts — Bölüm 4.7)
         $postIds = $bookmarks->getCollection()
             ->where('bookmarked_type', 'post')
             ->pluck('target_id')
@@ -301,7 +317,11 @@ class MedStreamService
 
         if ($postIds->isNotEmpty()) {
             $posts = MedStreamPost::whereIn('id', $postIds)
-                ->with(['author:id,fullname,avatar,role_id', 'clinic:id,fullname,avatar', 'engagementCounter'])
+                ->with(['author:id,fullname,avatar,role_id', 'clinic:id,fullname,avatar', 'hospital:id,name,avatar', 'engagementCounter'])
+                ->withCount([
+                    'comments as real_comment_count' => fn($q) => $q->where('is_hidden', false),
+                    'likes as real_like_count' => fn($q) => $q->where('is_active', true),
+                ])
                 ->get()
                 ->keyBy('id');
 
@@ -359,10 +379,15 @@ class MedStreamService
      */
     public function createReport(string $reporterId, string $postId, array $data): MedStreamReport
     {
-        return MedStreamReport::updateOrCreate(
+        $report = MedStreamReport::updateOrCreate(
             ['post_id' => $postId, 'reporter_id' => $reporterId],
             ['reason' => $data['reason'], 'admin_status' => 'pending'],
         );
+
+        // Auto-hide if threshold reached
+        $this->checkAutoHideThreshold($postId);
+
+        return $report;
     }
 
     /**
@@ -371,7 +396,12 @@ class MedStreamService
     public function listReports(array $filters): LengthAwarePaginator
     {
         return MedStreamReport::active()
-            ->with(['post:id,content,author_id', 'reporter:id,fullname'])
+            ->with([
+                'post:id,content,author_id,is_hidden',
+                'post.author:id,fullname,avatar',
+                'reporter:id,fullname',
+                'resolver:id,fullname',
+            ])
             ->when($filters['status'] ?? null, fn($q, $v) => $q->where('admin_status', $v))
             ->orderByDesc('created_at')
             ->paginate($filters['per_page'] ?? 20);
@@ -379,20 +409,177 @@ class MedStreamService
 
     /**
      * Update report status. If hidden/deleted, hide the post too.
+     * Records resolver info and timestamps for audit trail.
      */
-    public function updateReport(string $id, array $data): MedStreamReport
+    public function updateReport(string $id, array $data, ?string $adminId = null): MedStreamReport
     {
         $report = MedStreamReport::active()->findOrFail($id);
 
-        DB::transaction(function () use ($report, $data) {
-            $report->update($data);
+        DB::transaction(function () use ($report, $data, $adminId) {
+            $updateData = $data;
 
-            if (in_array($data['admin_status'], ['hidden', 'deleted'])) {
-                MedStreamPost::where('id', $report->post_id)->update(['is_hidden' => true]);
+            // Stamp resolver info when status changes from pending
+            if (isset($data['admin_status']) && $data['admin_status'] !== 'pending') {
+                $updateData['resolved_by'] = $adminId;
+                $updateData['resolved_at'] = now();
+            }
+
+            $report->update($updateData);
+
+            // Moderation action: hide or soft-delete the post
+            if (isset($data['admin_status']) && in_array($data['admin_status'], ['hidden', 'deleted'])) {
+                MedStreamPost::withoutGlobalScopes()
+                    ->where('id', $report->post_id)
+                    ->update(['is_hidden' => true]);
             }
         });
 
-        return $report->refresh();
+        return $report->refresh()->load(['post:id,content,author_id', 'reporter:id,fullname', 'resolver:id,fullname']);
+    }
+
+    /**
+     * Auto-hide post if it accumulates too many reports (moderation threshold).
+     * Called after createReport. Threshold configurable via config.
+     */
+    public function checkAutoHideThreshold(string $postId): bool
+    {
+        $threshold = config('medstream.auto_hide_report_threshold', 3);
+
+        $reportCount = MedStreamReport::where('post_id', $postId)
+            ->where('admin_status', 'pending')
+            ->where('is_active', true)
+            ->count();
+
+        if ($reportCount >= $threshold) {
+            MedStreamPost::withoutGlobalScopes()
+                ->where('id', $postId)
+                ->update(['is_hidden' => true]);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Increment view count for a post (fire-and-forget, no transaction needed).
+     */
+    public function incrementViewCount(string $postId): void
+    {
+        MedStreamPost::withoutGlobalScopes()
+            ->where('id', $postId)
+            ->increment('view_count');
+    }
+
+    // ══════════════════════════════════════════════
+    //  FEED ALGORITHM  (Bölüm 5)
+    // ══════════════════════════════════════════════
+
+    /**
+     * Smart feed: followed doctors first, then popular/recent posts.
+     * Returns a mixed, deduplicated feed paginated.
+     */
+    public function feed(string $userId, array $filters): LengthAwarePaginator
+    {
+        $followingIds = DoctorFollow::where('follower_id', $userId)
+            ->where('is_active', true)
+            ->pluck('following_id')
+            ->toArray();
+
+        $baseQuery = MedStreamPost::query()
+            ->with([
+                'author:id,fullname,avatar,role_id',
+                'clinic:id,fullname,avatar',
+                'hospital:id,name,avatar',
+                'specialty:id,code,name',
+                'engagementCounter',
+            ])
+            ->withCount([
+                'comments as real_comment_count' => fn($q) => $q->where('is_hidden', false),
+                'likes as real_like_count' => fn($q) => $q->where('is_active', true),
+            ])
+            ->when($filters['specialty_id'] ?? null, fn($q, $v) => $q->where('specialty_id', $v))
+            ->when($filters['post_type'] ?? null, fn($q, $v) => $q->where('post_type', $v));
+
+        // Sort: followed-first hybrid scoring
+        if (!empty($followingIds)) {
+            $placeholders = implode(',', array_fill(0, count($followingIds), '?'));
+            $baseQuery->orderByRaw(
+                "CASE WHEN author_id IN ({$placeholders}) THEN 0 ELSE 1 END ASC",
+                $followingIds
+            );
+        }
+
+        // Secondary: popularity score (likes * 3 + comments * 2 + views)
+        $baseQuery->orderByRaw(
+            '(COALESCE((SELECT like_count FROM med_stream_engagement_counters WHERE post_id = med_stream_posts.id), 0) * 3 
+              + COALESCE((SELECT comment_count FROM med_stream_engagement_counters WHERE post_id = med_stream_posts.id), 0) * 2 
+              + COALESCE(view_count, 0)) DESC'
+        );
+
+        // Tertiary: newest
+        $baseQuery->orderByDesc('created_at');
+
+        $posts = $baseQuery->paginate($filters['per_page'] ?? 20);
+
+        $this->appendEngagementFlags($posts, $userId);
+
+        return $posts;
+    }
+
+    // ══════════════════════════════════════════════
+    //  FOLLOWS
+    // ══════════════════════════════════════════════
+
+    /**
+     * Toggle follow on a doctor. Returns ['following' => bool].
+     */
+    public function toggleFollow(string $followerId, string $followingId): array
+    {
+        if ($followerId === $followingId) {
+            return ['following' => false, 'error' => 'Cannot follow yourself'];
+        }
+
+        return DB::transaction(function () use ($followerId, $followingId) {
+            $existing = DoctorFollow::where('follower_id', $followerId)
+                ->where('following_id', $followingId)
+                ->first();
+
+            if ($existing) {
+                $newState = !$existing->is_active;
+                $existing->update(['is_active' => $newState]);
+                return ['following' => $newState];
+            }
+
+            DoctorFollow::create([
+                'follower_id'  => $followerId,
+                'following_id' => $followingId,
+            ]);
+
+            return ['following' => true];
+        });
+    }
+
+    /**
+     * Get follow counts for a user.
+     */
+    public function followCounts(string $userId): array
+    {
+        return [
+            'followers'  => DoctorFollow::where('following_id', $userId)->where('is_active', true)->count(),
+            'following'  => DoctorFollow::where('follower_id', $userId)->where('is_active', true)->count(),
+        ];
+    }
+
+    /**
+     * Check if user A follows user B.
+     */
+    public function isFollowing(string $followerId, string $followingId): bool
+    {
+        return DoctorFollow::where('follower_id', $followerId)
+            ->where('following_id', $followingId)
+            ->where('is_active', true)
+            ->exists();
     }
 
     // ══════════════════════════════════════════════
@@ -406,6 +593,7 @@ class MedStreamService
     {
         $postIds = $posts->pluck('id')->toArray();
 
+        // Batch-load engagement flags in two queries (prevents N+1)
         $likedPostIds = MedStreamLike::where('user_id', $userId)
             ->where('is_active', true)
             ->whereIn('post_id', $postIds)

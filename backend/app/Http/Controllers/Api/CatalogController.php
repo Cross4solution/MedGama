@@ -28,7 +28,10 @@ class CatalogController extends Controller
         $validated = $request->validate([
             'code' => 'required|string|max:20|unique:specialties,code',
             'display_order' => 'sometimes|integer',
-            'translations' => 'required|array',
+            'name' => 'required|array',
+            'name.en' => 'required|string|max:255',
+            'name.tr' => 'required|string|max:255',
+            'description' => 'sometimes|array',
         ]);
 
         $specialty = Specialty::create($validated);
@@ -42,7 +45,8 @@ class CatalogController extends Controller
 
         $validated = $request->validate([
             'display_order' => 'sometimes|integer',
-            'translations' => 'sometimes|array',
+            'name' => 'sometimes|array',
+            'description' => 'sometimes|array',
         ]);
 
         $specialty->update($validated);
@@ -73,7 +77,9 @@ class CatalogController extends Controller
         $validated = $request->validate([
             'code' => 'required|string|max:20',
             'country_id' => 'required|integer',
-            'translations' => 'required|array',
+            'name' => 'required|array',
+            'name.en' => 'required|string|max:255',
+            'name.tr' => 'required|string|max:255',
         ]);
 
         $city = City::create($validated);
@@ -86,7 +92,7 @@ class CatalogController extends Controller
         $city = City::active()->findOrFail($id);
 
         $validated = $request->validate([
-            'translations' => 'sometimes|array',
+            'name' => 'sometimes|array',
         ]);
 
         $city->update($validated);
@@ -116,7 +122,10 @@ class CatalogController extends Controller
         $validated = $request->validate([
             'code' => 'required|string|max:20|unique:disease_conditions,code',
             'recommended_specialty_ids' => 'sometimes|array',
-            'translations' => 'required|array',
+            'name' => 'required|array',
+            'name.en' => 'required|string|max:255',
+            'name.tr' => 'required|string|max:255',
+            'description' => 'sometimes|array',
         ]);
 
         $disease = DiseaseCondition::create($validated);
@@ -130,7 +139,8 @@ class CatalogController extends Controller
 
         $validated = $request->validate([
             'recommended_specialty_ids' => 'sometimes|array',
-            'translations' => 'sometimes|array',
+            'name' => 'sometimes|array',
+            'description' => 'sometimes|array',
         ]);
 
         $disease->update($validated);
@@ -154,7 +164,9 @@ class CatalogController extends Controller
         $validated = $request->validate([
             'symptom' => 'required|string|max:100|unique:symptom_specialty_mappings,symptom',
             'specialty_ids' => 'required|array',
-            'translations' => 'required|array',
+            'name' => 'required|array',
+            'name.en' => 'required|string|max:255',
+            'name.tr' => 'required|string|max:255',
         ]);
 
         $mapping = SymptomSpecialtyMapping::create($validated);
@@ -168,7 +180,7 @@ class CatalogController extends Controller
 
         $validated = $request->validate([
             'specialty_ids' => 'sometimes|array',
-            'translations' => 'sometimes|array',
+            'name' => 'sometimes|array',
         ]);
 
         $mapping->update($validated);

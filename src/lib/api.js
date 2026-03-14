@@ -15,7 +15,7 @@ const api = axios.create({
   timeout: 30000,
 });
 
-// ── Request Interceptor — attach JWT token ──
+// ── Request Interceptor — attach JWT token + Accept-Language ──
 api.interceptors.request.use((config) => {
   try {
     const saved = localStorage.getItem('auth_state');
@@ -23,6 +23,11 @@ api.interceptors.request.use((config) => {
       const { token } = JSON.parse(saved);
       if (token) config.headers.Authorization = `Bearer ${token}`;
     }
+  } catch {}
+  // Send current UI language to backend for locale-aware responses
+  try {
+    const lang = localStorage.getItem('preferred_language') || 'en';
+    config.headers['Accept-Language'] = lang;
   } catch {}
   return config;
 });
@@ -188,6 +193,44 @@ export const anamnesisAPI = {
   upsert: (payload) => api.post('/anamnesis', payload),
 };
 
+// ── Examination & Prescription Service ──
+export const examinationAPI = {
+  list: (params) => api.get('/crm/examinations', { params }),
+  get: (id) => api.get(`/crm/examinations/${id}`),
+  create: (payload) => api.post('/crm/examinations', payload),
+  update: (id, payload) => api.put(`/crm/examinations/${id}`, payload),
+  delete: (id) => api.delete(`/crm/examinations/${id}`),
+  searchIcd10: (term) => api.get('/crm/icd10/search', { params: { q: term } }),
+  prescriptionPdf: (id) => api.get(`/crm/examinations/${id}/prescription-pdf`, { responseType: 'blob' }),
+};
+
+// ── CRM Patient Management (Bölüm 7.3) ──
+export const patientAPI = {
+  list: (params) => api.get('/crm/patients', { params }),
+  stats: () => api.get('/crm/patients/stats'),
+  filters: () => api.get('/crm/patients/filters'),
+  get: (id) => api.get(`/crm/patients/${id}`),
+  timeline: (id, params) => api.get(`/crm/patients/${id}/timeline`, { params }),
+  summary: (id) => api.get(`/crm/patients/${id}/summary`),
+  documents: (id, params) => api.get(`/crm/patients/${id}/documents`, { params }),
+  addTag: (id, tag) => api.post(`/crm/patients/${id}/tags`, { tag }),
+  removeTag: (tagId) => api.delete(`/crm/patients/tags/${tagId}`),
+  setStage: (id, stage) => api.post(`/crm/patients/${id}/stage`, { stage }),
+};
+
+// ── CRM Billing / Invoicing (Bölüm 7.5) ──
+export const billingAPI = {
+  invoices: (params) => api.get('/crm/billing/invoices', { params }),
+  getInvoice: (id) => api.get(`/crm/billing/invoices/${id}`),
+  createInvoice: (payload) => api.post('/crm/billing/invoices', payload),
+  updateInvoice: (id, payload) => api.put(`/crm/billing/invoices/${id}`, payload),
+  deleteInvoice: (id) => api.delete(`/crm/billing/invoices/${id}`),
+  invoicePdf: (id) => api.get(`/crm/billing/invoices/${id}/pdf`, { responseType: 'blob' }),
+  stats: (params) => api.get('/crm/billing/stats', { params }),
+  revenueChart: (params) => api.get('/crm/billing/revenue-chart', { params }),
+  outstanding: (params) => api.get('/crm/billing/outstanding', { params }),
+};
+
 // ── CRM Service (Tags, Stages, Archives) ──
 export const crmAPI = {
   tags: (params) => api.get('/crm/tags', { params }),
@@ -216,18 +259,26 @@ export const medStreamAPI = {
    * @param {Function} opts.onProgress    - (percent: number) => void
    * @returns {Promise}
    */
-  createPost: ({ content, post_type, photos = [], videos = [], papers = [], onProgress } = {}) => {
+  createPost: ({ content, post_type, specialty_id, is_anonymous, gdpr_consent, photos = [], videos = [], papers = [], onProgress } = {}) => {
     const hasFiles = photos.length > 0 || videos.length > 0 || papers.length > 0;
 
     // Text-only post — simple JSON
     if (!hasFiles) {
-      return api.post('/medstream/posts', { content, post_type: post_type || 'text' });
+      return api.post('/medstream/posts', {
+        content, post_type: post_type || 'text',
+        specialty_id: specialty_id || undefined,
+        is_anonymous: !!is_anonymous,
+        gdpr_consent: !!gdpr_consent,
+      });
     }
 
     // Build FormData for file upload
     const fd = new FormData();
     if (content) fd.append('content', content);
     fd.append('post_type', post_type || 'mixed');
+    if (specialty_id) fd.append('specialty_id', specialty_id);
+    if (is_anonymous) fd.append('is_anonymous', '1');
+    if (gdpr_consent) fd.append('gdpr_consent', '1');
 
     photos.forEach((file, i) => fd.append(`photos[${i}]`, file));
     videos.forEach((file, i) => fd.append(`videos[${i}]`, file));
@@ -255,6 +306,11 @@ export const medStreamAPI = {
   toggleBookmark: (payload) => api.post('/medstream/bookmarks', payload),
   reports: (params) => api.get('/medstream/reports', { params }),
   updateReport: (id, payload) => api.put(`/medstream/reports/${id}`, payload),
+
+  // Feed & Follows (Bölüm 5)
+  feed: (params) => api.get('/medstream/feed', { params }),
+  toggleFollow: (userId) => api.post(`/medstream/follow/${userId}`),
+  followCounts: (userId) => api.get(`/medstream/follow-counts/${userId}`),
 };
 
 // ── Messaging Service ──
@@ -349,11 +405,25 @@ export const chatAPI = {
 // ── SuperAdmin Service ──
 export const adminAPI = {
   dashboard: () => api.get('/admin/dashboard'),
+  growthTrend: () => api.get('/admin/growth-trend'),
   doctors: (params) => api.get('/admin/doctors', { params }),
   verifyDoctor: (id, verified) => api.put(`/admin/doctors/${id}/verify`, { verified }),
+  suspendUser: (id, suspend) => api.put(`/admin/users/${id}/suspend`, { suspend }),
   reports: (params) => api.get('/admin/reports', { params }),
   approveReport: (id) => api.put(`/admin/reports/${id}/approve`),
   removeReport: (id) => api.delete(`/admin/reports/${id}/remove`),
+  // Catalog CRUD
+  specialties: (params) => api.get('/admin/catalog/specialties', { params }),
+  createSpecialty: (payload) => api.post('/admin/catalog/specialties', payload),
+  updateSpecialty: (id, payload) => api.put(`/admin/catalog/specialties/${id}`, payload),
+  deleteSpecialty: (id) => api.delete(`/admin/catalog/specialties/${id}`),
+  cities: (params) => api.get('/admin/catalog/cities', { params }),
+  createCity: (payload) => api.post('/admin/catalog/cities', payload),
+  updateCity: (id, payload) => api.put(`/admin/catalog/cities/${id}`, payload),
+  deleteCity: (id) => api.delete(`/admin/catalog/cities/${id}`),
+  diseases: (params) => api.get('/admin/catalog/diseases', { params }),
+  createDisease: (payload) => api.post('/admin/catalog/diseases', payload),
+  updateDisease: (id, payload) => api.put(`/admin/catalog/diseases/${id}`, payload),
 };
 
 // ── Analytics Service (Clinic BI) ──

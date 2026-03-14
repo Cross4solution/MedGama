@@ -15,6 +15,7 @@ class UpdateReportRequest extends FormRequest
     {
         return [
             'admin_status' => 'required|in:pending,reviewed,hidden,deleted',
+            'admin_notes'  => 'sometimes|nullable|string|max:2000',
         ];
     }
 }

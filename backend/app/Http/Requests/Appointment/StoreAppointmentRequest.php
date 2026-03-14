@@ -18,8 +18,8 @@ class StoreAppointmentRequest extends FormRequest
         $rules = [
             'doctor_id'         => 'required|uuid|exists:users,id',
             'clinic_id'         => 'sometimes|uuid|exists:clinics,id',
-            'appointment_type'  => 'required|in:inPerson,online',
-            'slot_id'           => 'required|uuid|exists:calendar_slots,id',
+            'appointment_type'  => 'required|in:inPerson,online,phone',
+            'slot_id'           => 'sometimes|nullable|uuid|exists:calendar_slots,id',
             'appointment_date'  => 'required|date|after_or_equal:today',
             'appointment_time'  => 'required|string',
             'confirmation_note' => 'sometimes|string|max:500',

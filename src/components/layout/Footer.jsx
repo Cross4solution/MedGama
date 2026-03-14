@@ -71,21 +71,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Social */}
-          <div>
-            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">{t('footer.contact')}</h3>
-            <ul className="space-y-2.5">
-              {socialLinks.map((s) => (
-                <li key={s.label}>
-                  <a href={s.href} className="text-sm text-white/70 hover:text-white transition-colors inline-flex items-center gap-2">
-                    {s.icon}
-                    <span>{s.label}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           {/* Legal */}
           <div>
             <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">{t('footer.legal')}</h3>
@@ -95,6 +80,16 @@ export default function Footer() {
                   <a href={l.href} className="text-sm text-white/70 hover:text-white transition-colors">{l.label}</a>
                 </li>
               ))}
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">{t('footer.contact')}</h3>
+            <ul className="space-y-2.5">
+              <li>
+                <a href="/contact" className="text-sm text-white/70 hover:text-white transition-colors">Contact Us</a>
+              </li>
             </ul>
           </div>
         </div>

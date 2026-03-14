@@ -216,6 +216,17 @@ const DoctorChatPage = () => {
       fetchConversations();
     });
 
+    // Listen for read receipts
+    channel.listen('.message.read', (data) => {
+      if (data?.read_by === currentUserId) return;
+      // Mark all own messages as read
+      setMessages(prev => prev.map(m =>
+        m.sender === 'doctor' && !m._raw?.read_at
+          ? { ...m, status: 'read' }
+          : m
+      ));
+    });
+
     // Listen for typing indicator
     channel.listen('.user.typing', (data) => {
       if (data?.user_id === currentUserId) return;

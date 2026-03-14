@@ -26,8 +26,10 @@ class MessageAttachment extends Model
     protected function casts(): array
     {
         return [
-            'file_size' => 'integer',
-            'is_active' => 'boolean',
+            'file_path'  => 'encrypted',
+            'thumb_path' => 'encrypted',
+            'file_size'  => 'integer',
+            'is_active'  => 'boolean',
         ];
     }
 

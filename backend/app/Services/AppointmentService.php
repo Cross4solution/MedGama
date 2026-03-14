@@ -34,6 +34,9 @@ class AppointmentService
         // Filters
         $query->when($filters['status'] ?? null, fn($q, $v) => $q->where('status', $v))
               ->when($filters['date'] ?? null, fn($q, $v) => $q->whereDate('appointment_date', $v))
+              ->when($filters['date_from'] ?? null, fn($q, $v) => $q->whereDate('appointment_date', '>=', $v))
+              ->when($filters['date_to'] ?? null, fn($q, $v) => $q->whereDate('appointment_date', '<=', $v))
+              ->when($filters['appointment_type'] ?? null, fn($q, $v) => $q->where('appointment_type', $v))
               ->when($filters['doctor_id'] ?? null, fn($q, $v) => $q->where('doctor_id', $v))
               ->when($filters['patient_id'] ?? null, fn($q, $v) => $q->where('patient_id', $v));
 

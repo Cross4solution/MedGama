@@ -74,19 +74,19 @@ export default function PopularClinicsShowcase({
   const midTitle = midTitleProp || t('home.popularClinics');
   const scrollRefTop = useRef(null);
   const scrollRefBottom = useRef(null);
-  const columns = useMemo(() => {
+  const groups = useMemo(() => {
     const arr = items;
-    const cols = [];
-    for (let i = 0; i < arr.length; i += 2) cols.push(arr.slice(i, i + 2));
-    return cols;
+    const grps = [];
+    for (let i = 0; i < arr.length; i += 3) grps.push(arr.slice(i, i + 3));
+    return grps;
   }, [items]);
 
   const scrollByAmount = (ref, dir = 1) => {
     const el = ref?.current;
     if (!el) return;
-    const firstCol = el.querySelector('.snap-start');
+    const firstGroup = el.querySelector('.snap-start');
     const gap = 16;
-    const amount = firstCol ? firstCol.clientWidth + gap : el.clientWidth;
+    const amount = firstGroup ? firstGroup.clientWidth + gap : el.clientWidth;
     el.scrollBy({ left: dir * amount, behavior: 'smooth' });
   };
 
@@ -115,11 +115,12 @@ export default function PopularClinicsShowcase({
             style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             <div className="flex gap-4 px-0">
-              {columns.map((col, i) => (
-                <div key={`top-${i}`} className="flex-none shrink-0 basis-[80%] sm:basis-[48%] lg:basis-[calc((100%_-_32px)/3)] min-w-0 snap-start [scroll-snap-stop:always]">
-                  <div className="flex flex-col gap-4">
-                    {col[0] && <ClinicCard clinic={col[0]} onClick={handleCardClick} onView={handleViewClick} />}
-                    {col[1] && <ClinicCard clinic={col[1]} onClick={handleCardClick} onView={handleViewClick} />}
+              {groups.map((group, i) => (
+                <div key={`top-${i}`} className="flex-none shrink-0 w-full min-w-0 snap-start [scroll-snap-stop:always]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {group.map((clinic, idx) => (
+                      <ClinicCard key={idx} clinic={clinic} onClick={handleCardClick} onView={handleViewClick} />
+                    ))}
                   </div>
                 </div>
               ))}
@@ -142,10 +143,12 @@ export default function PopularClinicsShowcase({
             style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             <div className="flex gap-4 px-0">
-              {columns.map((col, i) => (
-                <div key={`bot-${i}`} className="flex-none shrink-0 basis-[80%] sm:basis-[48%] lg:basis-[calc((100%_-_32px)/3)] min-w-0 snap-start [scroll-snap-stop:always]">
-                  <div className="flex flex-col gap-4">
-                    {col[1] && <ClinicCard clinic={col[1]} onClick={handleCardClick} onView={handleViewClick} />}
+              {groups.map((group, i) => (
+                <div key={`bot-${i}`} className="flex-none shrink-0 w-full min-w-0 snap-start [scroll-snap-stop:always]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {group.map((clinic, idx) => (
+                      <ClinicCard key={idx} clinic={clinic} onClick={handleCardClick} onView={handleViewClick} />
+                    ))}
                   </div>
                 </div>
               ))}

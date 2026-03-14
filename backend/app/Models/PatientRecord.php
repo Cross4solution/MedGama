@@ -16,16 +16,25 @@ class PatientRecord extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'patient_id', 'clinic_id', 'doctor_id', 'file_url',
-        'upload_date', 'record_type', 'description',
+        'patient_id', 'clinic_id', 'doctor_id', 'appointment_id',
+        'file_url', 'upload_date', 'record_type', 'description',
+        // Examination fields
+        'icd10_code', 'diagnosis_note', 'vitals',
+        'examination_note', 'treatment_plan', 'prescriptions',
     ];
 
     protected function casts(): array
     {
         return [
-            'upload_date'  => 'date',
-            'is_active'    => 'boolean',
-            'description'  => 'encrypted',
+            'upload_date'      => 'date',
+            'is_active'        => 'boolean',
+            // GDPR Art. 9 — All medical data encrypted at rest
+            'description'      => 'encrypted',
+            'diagnosis_note'   => 'encrypted',
+            'examination_note' => 'encrypted',
+            'treatment_plan'   => 'encrypted',
+            'vitals'           => 'encrypted:array',
+            'prescriptions'    => 'encrypted:array',
         ];
     }
 
@@ -37,11 +46,35 @@ class PatientRecord extends Model
             ->where('deleted_at', '<=', now()->subYears(10));
     }
 
+    // ── Dynamic Attributes ──
+
+    /**
+     * Vitals alert data — set dynamically by ExaminationService.
+     * Not persisted to database; computed on read.
+     */
+    public ?array $vitals_alert = null;
+
+    public function toArray()
+    {
+        $array = parent::toArray();
+
+        if ($this->vitals_alert !== null) {
+            $array['vitals_alert'] = $this->vitals_alert;
+        }
+
+        return $array;
+    }
+
     // ── Scopes ──
 
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function scopeExaminations($query)
+    {
+        return $query->where('record_type', 'examination');
     }
 
     // ── Relationships ──
@@ -59,5 +92,15 @@ class PatientRecord extends Model
     public function clinic()
     {
         return $this->belongsTo(Clinic::class);
+    }
+
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
+
+    public function icd10()
+    {
+        return $this->belongsTo(Icd10Code::class, 'icd10_code', 'code');
     }
 }

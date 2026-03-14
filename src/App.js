@@ -55,12 +55,14 @@ const CRMIntegrations = React.lazy(() => import('./pages/crm/CRMIntegrations'));
 const CRMPatient360 = React.lazy(() => import('./pages/crm/CRMPatient360'));
 const CRMBilling = React.lazy(() => import('./pages/crm/CRMBilling'));
 const CRMExamination = React.lazy(() => import('./pages/crm/CRMExamination'));
+const CRMMedStream = React.lazy(() => import('./pages/crm/CRMMedStream'));
 
 // Admin Pages
 const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
 const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminVerification = React.lazy(() => import('./pages/admin/AdminVerification'));
 const AdminModeration = React.lazy(() => import('./pages/admin/AdminModeration'));
+const AdminCatalog = React.lazy(() => import('./pages/admin/AdminCatalog'));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -120,10 +122,12 @@ function AppContent() {
       '/crm/integrations': 'CRM Integrations | MedaGama',
       '/crm/billing': 'CRM Billing | MedaGama',
       '/crm/examination': 'CRM Examination | MedaGama',
+      '/crm/medstream': 'MedStream | MedaGama',
       '/crm/help': 'CRM Help | MedaGama',
       '/admin': 'Admin Dashboard | MedaGama',
       '/admin/verification': 'Doctor Verification | MedaGama',
       '/admin/moderation': 'Content Moderation | MedaGama',
+      '/admin/catalog': 'Catalog Management | MedaGama',
       '/500': 'Server Error | MedaGama',
     };
 
@@ -296,11 +300,13 @@ function AppContent() {
         <Route path="/crm/integrations" element={<CRMLayout><CRMIntegrations /></CRMLayout>} />
         <Route path="/crm/billing" element={<CRMLayout><CRMBilling /></CRMLayout>} />
         <Route path="/crm/examination" element={<CRMLayout><CRMExamination /></CRMLayout>} />
+        <Route path="/crm/medstream" element={<CRMLayout><CRMMedStream /></CRMLayout>} />
         <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
         <Route path="/admin/verification" element={<AdminLayout><AdminVerification /></AdminLayout>} />
         <Route path="/admin/moderation" element={<AdminLayout><AdminModeration /></AdminLayout>} />
+        <Route path="/admin/catalog" element={<AdminLayout><AdminCatalog /></AdminLayout>} />
         <Route path="/500" element={<ServerErrorPage />} />
         <Route path="*" element={<NotFoundPage />} />
         </Routes>

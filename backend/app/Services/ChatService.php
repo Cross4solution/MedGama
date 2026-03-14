@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\MessageRead;
 use App\Events\MessageSent;
 use App\Models\Appointment;
 use App\Models\ChatConversation;
@@ -194,10 +195,20 @@ class ChatService
      */
     public function markAsRead(ChatConversation $conversation, string $userId): int
     {
-        return ChatMessage::where('conversation_id', $conversation->id)
+        $count = ChatMessage::where('conversation_id', $conversation->id)
             ->where('sender_id', '!=', $userId)
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
+
+        if ($count > 0) {
+            broadcast(new MessageRead(
+                conversationId: $conversation->id,
+                readByUserId: $userId,
+                readCount: $count,
+            ))->toOthers();
+        }
+
+        return $count;
     }
 
     /**

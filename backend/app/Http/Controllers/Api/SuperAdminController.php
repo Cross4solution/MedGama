@@ -173,4 +173,36 @@ class SuperAdminController extends Controller
             'report'  => $report,
         ]);
     }
+
+    // ══════════════════════════════════════════════
+    //  USER SUSPENSION
+    // ══════════════════════════════════════════════
+
+    public function suspendUser(Request $request, string $id): JsonResponse
+    {
+        $request->validate(['suspend' => 'required|boolean']);
+
+        $user = $this->superAdminService->suspendUser($id, (bool) $request->input('suspend'));
+
+        return response()->json([
+            'message' => $user->is_active ? 'User reactivated.' : 'User suspended.',
+            'user'    => [
+                'id'        => $user->id,
+                'fullname'  => $user->fullname,
+                'email'     => $user->email,
+                'is_active' => $user->is_active,
+            ],
+        ]);
+    }
+
+    // ══════════════════════════════════════════════
+    //  GROWTH TREND
+    // ══════════════════════════════════════════════
+
+    public function growthTrend(): JsonResponse
+    {
+        $data = $this->superAdminService->getGrowthTrend();
+
+        return response()->json(['data' => $data]);
+    }
 }

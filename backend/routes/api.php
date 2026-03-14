@@ -8,6 +8,9 @@ use App\Http\Controllers\Api\CalendarSlotController;
 use App\Http\Controllers\Api\PatientRecordController;
 use App\Http\Controllers\Api\DigitalAnamnesisController;
 use App\Http\Controllers\Api\CrmController;
+use App\Http\Controllers\Api\PatientController;
+use App\Http\Controllers\Api\ExaminationController;
+use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\MedStreamController;
 use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\DoctorController;
@@ -207,10 +210,28 @@ Route::middleware('auth:sanctum')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| CRM — Patient Management (Bölüm 7.3)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospital,superAdmin', 'crm.access'])->group(function () {
+    Route::get('/patients', [PatientController::class, 'index']);
+    Route::get('/patients/stats', [PatientController::class, 'stats']);
+    Route::get('/patients/filters', [PatientController::class, 'filters']);
+    Route::get('/patients/{id}', [PatientController::class, 'show']);
+    Route::get('/patients/{id}/timeline', [PatientController::class, 'timeline']);
+    Route::get('/patients/{id}/summary', [PatientController::class, 'summary']);
+    Route::get('/patients/{id}/documents', [PatientController::class, 'documents']);
+    Route::post('/patients/{id}/tags', [PatientController::class, 'addTag']);
+    Route::delete('/patients/tags/{tagId}', [PatientController::class, 'removeTag']);
+    Route::post('/patients/{id}/stage', [PatientController::class, 'setStage']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | CRM — Tags, Stages, Archives (Protected — doctor/clinicOwner)
 |--------------------------------------------------------------------------
 */
-Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,superAdmin'])->group(function () {
+Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospital,superAdmin', 'crm.access'])->group(function () {
     Route::get('/tags', [CrmController::class, 'tags']);
     Route::post('/tags', [CrmController::class, 'storeTag']);
     Route::delete('/tags/{id}', [CrmController::class, 'destroyTag']);
@@ -221,6 +242,43 @@ Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,super
 
     Route::get('/archived-records', [CrmController::class, 'archivedRecords']);
     Route::post('/archived-records', [CrmController::class, 'storeArchivedRecord']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| CRM — Billing / Invoicing (Bölüm 7.5)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('crm/billing')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospital,superAdmin', 'crm.access'])->group(function () {
+    Route::get('/invoices', [BillingController::class, 'index']);
+    Route::post('/invoices', [BillingController::class, 'store']);
+    Route::get('/invoices/{id}', [BillingController::class, 'show']);
+    Route::put('/invoices/{id}', [BillingController::class, 'update']);
+    Route::delete('/invoices/{id}', [BillingController::class, 'destroy']);
+    Route::get('/invoices/{id}/pdf', [BillingController::class, 'pdf']);
+    Route::get('/stats', [BillingController::class, 'stats']);
+    Route::get('/revenue-chart', [BillingController::class, 'revenueChart']);
+    Route::get('/outstanding', [BillingController::class, 'outstanding']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Examination & Prescription — Doctor only (Bölüm 7.4)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor', 'crm.access'])->group(function () {
+    // Examinations CRUD
+    Route::get('/examinations', [ExaminationController::class, 'index']);
+    Route::get('/examinations/{id}', [ExaminationController::class, 'show']);
+    Route::post('/examinations', [ExaminationController::class, 'store']);
+    Route::put('/examinations/{id}', [ExaminationController::class, 'update']);
+    Route::delete('/examinations/{id}', [ExaminationController::class, 'destroy']);
+
+    // Prescription PDF download
+    Route::get('/examinations/{id}/prescription-pdf', [ExaminationController::class, 'prescriptionPdf']);
+
+    // ICD-10 code search
+    Route::get('/icd10/search', [ExaminationController::class, 'searchIcd10']);
 });
 
 /*
@@ -238,6 +296,8 @@ Route::prefix('medstream')->group(function () {
 
     // Protected write
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/feed', [MedStreamController::class, 'feed']);
+
         Route::post('/posts', [MedStreamController::class, 'storePost']);
         Route::put('/posts/{post}', [MedStreamController::class, 'updatePost']);
         Route::delete('/posts/{post}', [MedStreamController::class, 'destroyPost']);
@@ -251,6 +311,9 @@ Route::prefix('medstream')->group(function () {
 
         Route::get('/bookmarks', [MedStreamController::class, 'bookmarks']);
         Route::post('/bookmarks', [MedStreamController::class, 'toggleBookmark']);
+
+        Route::post('/follow/{userId}', [MedStreamController::class, 'toggleFollow']);
+        Route::get('/follow-counts/{userId}', [MedStreamController::class, 'followCounts']);
     });
 
     // Admin moderation
@@ -346,14 +409,35 @@ Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
 Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin'])->group(function () {
     // Global dashboard
     Route::get('/dashboard', [SuperAdminController::class, 'dashboard']);
+    Route::get('/growth-trend', [SuperAdminController::class, 'growthTrend']);
 
     // Doctor verification
     Route::get('/doctors', [SuperAdminController::class, 'doctors']);
     Route::put('/doctors/{id}/verify', [SuperAdminController::class, 'verifyDoctor']);
 
+    // User suspension
+    Route::put('/users/{id}/suspend', [SuperAdminController::class, 'suspendUser']);
+
     // Content moderation
     Route::get('/reports', [SuperAdminController::class, 'reports']);
     Route::put('/reports/{id}/approve', [SuperAdminController::class, 'approveReport']);
     Route::delete('/reports/{id}/remove', [SuperAdminController::class, 'removeReport']);
+
+    // Catalog management (admin CRUD)
+    Route::prefix('catalog')->group(function () {
+        Route::get('/specialties', [CatalogController::class, 'specialties']);
+        Route::post('/specialties', [CatalogController::class, 'storeSpecialty']);
+        Route::put('/specialties/{id}', [CatalogController::class, 'updateSpecialty']);
+        Route::delete('/specialties/{id}', [CatalogController::class, 'destroySpecialty']);
+
+        Route::get('/cities', [CatalogController::class, 'cities']);
+        Route::post('/cities', [CatalogController::class, 'storeCity']);
+        Route::put('/cities/{id}', [CatalogController::class, 'updateCity']);
+        Route::delete('/cities/{id}', [CatalogController::class, 'destroyCity']);
+
+        Route::get('/diseases', [CatalogController::class, 'diseases']);
+        Route::post('/diseases', [CatalogController::class, 'storeDisease']);
+        Route::put('/diseases/{id}', [CatalogController::class, 'updateDisease']);
+    });
 });
 

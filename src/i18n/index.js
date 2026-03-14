@@ -22,6 +22,8 @@ import ro from './locales/ro.json';
 import bn from './locales/bn.json';
 import vi from './locales/vi.json';
 import th from './locales/th.json';
+import az from './locales/az.json';
+import uz from './locales/uz.json';
 
 const resources = {
   en: { translation: en },
@@ -44,6 +46,8 @@ const resources = {
   bn: { translation: bn },
   vi: { translation: vi },
   th: { translation: th },
+  az: { translation: az },
+  uz: { translation: uz },
 };
 
 // One-time migration: clear stale auto-detected language so default becomes English
@@ -92,22 +96,26 @@ i18n
 
 export default i18n;
 
+// Primary 10 languages (Doc §11.1) listed first, then extras
 export const LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇬🇧', dir: 'ltr' },
   { code: 'tr', label: 'Türkçe', flag: '🇹🇷', dir: 'ltr' },
-  { code: 'zh', label: '中文', flag: '🇨🇳', dir: 'ltr' },
-  { code: 'hi', label: 'हिन्दी', flag: '🇮🇳', dir: 'ltr' },
-  { code: 'es', label: 'Español', flag: '🇪🇸', dir: 'ltr' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷', dir: 'ltr' },
+  { code: 'en', label: 'English', flag: '🇬🇧', dir: 'ltr' },
   { code: 'ar', label: 'العربية', flag: '🇸🇦', dir: 'rtl' },
-  { code: 'bn', label: 'বাংলা', flag: '🇧🇩', dir: 'ltr' },
-  { code: 'pt', label: 'Português', flag: '🇵🇹', dir: 'ltr' },
-  { code: 'ru', label: 'Русский', flag: '🇷🇺', dir: 'ltr' },
-  { code: 'ja', label: '日本語', flag: '🇯🇵', dir: 'ltr' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
-  { code: 'ko', label: '한국어', flag: '🇰🇷', dir: 'ltr' },
-  { code: 'vi', label: 'Tiếng Việt', flag: '🇻🇳', dir: 'ltr' },
-  { code: 'it', label: 'Italiano', flag: '🇮🇹', dir: 'ltr' },
+  { code: 'ru', label: 'Русский', flag: '🇺', dir: 'ltr' },
+  { code: 'de', label: 'Deutsch', flag: '��', dir: 'ltr' },
+  { code: 'fr', label: 'Français', flag: '��', dir: 'ltr' },
+  { code: 'es', label: 'Español', flag: '🇪🇸', dir: 'ltr' },
+  { code: 'it', label: 'Italiano', flag: '��', dir: 'ltr' },
+  { code: 'az', label: 'Azərbaycanca', flag: '🇦🇿', dir: 'ltr' },
+  { code: 'uz', label: 'Oʻzbekcha', flag: '��', dir: 'ltr' },
+  // Additional languages
+  { code: 'zh', label: '中文', flag: '��', dir: 'ltr' },
+  { code: 'hi', label: 'हिन्दी', flag: '��', dir: 'ltr' },
+  { code: 'bn', label: 'বাংলা', flag: '��', dir: 'ltr' },
+  { code: 'pt', label: 'Português', flag: '��', dir: 'ltr' },
+  { code: 'ja', label: '日本語', flag: '��', dir: 'ltr' },
+  { code: 'ko', label: '한국어', flag: '��', dir: 'ltr' },
+  { code: 'vi', label: 'Tiếng Việt', flag: '��', dir: 'ltr' },
   { code: 'th', label: 'ไทย', flag: '🇹🇭', dir: 'ltr' },
   { code: 'pl', label: 'Polski', flag: '🇵🇱', dir: 'ltr' },
   { code: 'uk', label: 'Українська', flag: '🇺🇦', dir: 'ltr' },

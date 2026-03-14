@@ -5,12 +5,13 @@ namespace App\Models;
 use App\Models\Scopes\VisiblePostScope;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MedStreamPost extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, MassPrunable, SoftDeletes;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -21,18 +22,30 @@ class MedStreamPost extends Model
     }
 
     protected $fillable = [
-        'author_id', 'clinic_id', 'post_type', 'content', 'media_url', 'media',
-        'is_hidden', 'is_active', 'media_processing',
+        'author_id', 'clinic_id', 'hospital_id', 'specialty_id', 'post_type', 'content',
+        'media_url', 'media', 'is_hidden', 'is_anonymous', 'gdpr_consent',
+        'is_active', 'media_processing', 'view_count',
     ];
 
     protected function casts(): array
     {
         return [
             'is_hidden'        => 'boolean',
+            'is_anonymous'     => 'boolean',
+            'gdpr_consent'     => 'boolean',
             'is_active'        => 'boolean',
             'media_processing' => 'boolean',
             'media'            => 'array',
+            'view_count'       => 'integer',
         ];
+    }
+
+    // ── Prunable (GDPR Art. 5(1)(e) — 3 year retention after soft-delete) ──
+
+    public function prunable()
+    {
+        return static::onlyTrashed()
+            ->where('deleted_at', '<=', now()->subYears(3));
     }
 
     public function author()
@@ -43,6 +56,16 @@ class MedStreamPost extends Model
     public function clinic()
     {
         return $this->belongsTo(Clinic::class);
+    }
+
+    public function hospital()
+    {
+        return $this->belongsTo(Hospital::class);
+    }
+
+    public function specialty()
+    {
+        return $this->belongsTo(Specialty::class);
     }
 
     public function comments()

@@ -35,7 +35,8 @@ class MedStreamController extends Controller
         parameters: [
             new OA\Parameter(name: 'author_id', in: 'query', schema: new OA\Schema(type: 'string', format: 'uuid')),
             new OA\Parameter(name: 'clinic_id', in: 'query', schema: new OA\Schema(type: 'string', format: 'uuid')),
-            new OA\Parameter(name: 'post_type', in: 'query', schema: new OA\Schema(type: 'string', enum: ['article', 'case', 'question', 'media'])),
+            new OA\Parameter(name: 'hospital_id', in: 'query', schema: new OA\Schema(type: 'string', format: 'uuid')),
+            new OA\Parameter(name: 'post_type', in: 'query', schema: new OA\Schema(type: 'string', enum: ['text', 'image', 'video', 'document', 'mixed'])),
             new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 15)),
         ],
         responses: [
@@ -46,7 +47,7 @@ class MedStreamController extends Controller
     {
         $posts = $this->medStreamService->listPosts(
             $request->user()?->id,
-            $request->only(['author_id', 'clinic_id', 'post_type', 'per_page']),
+            $request->only(['author_id', 'clinic_id', 'hospital_id', 'post_type', 'per_page']),
         );
 
         return MedStreamPostResource::collection($posts);
@@ -68,6 +69,9 @@ class MedStreamController extends Controller
     {
         $this->authorize('view', $post);
 
+        // Increment view count (fire-and-forget)
+        $this->medStreamService->incrementViewCount($post->id);
+
         $post = $this->medStreamService->loadPostDetails($post, $request->user()?->id);
 
         return (new MedStreamPostResource($post))->response();
@@ -75,7 +79,7 @@ class MedStreamController extends Controller
 
     #[OA\Post(
         path: '/medstream/posts',
-        summary: 'Create post (doctor/clinicOwner/admin). Videos processed asynchronously.',
+        summary: 'Create post (doctor/clinicOwner/hospital/admin). Videos processed asynchronously.',
         security: [['sanctum' => []]],
         tags: ['MedStream'],
         requestBody: new OA\RequestBody(
@@ -84,9 +88,10 @@ class MedStreamController extends Controller
                 schema: new OA\Schema(
                     required: ['post_type', 'content'],
                     properties: [
-                        new OA\Property(property: 'post_type', type: 'string', enum: ['article', 'case', 'question', 'media']),
+                        new OA\Property(property: 'post_type', type: 'string', enum: ['text', 'image', 'video', 'document', 'mixed']),
                         new OA\Property(property: 'content', type: 'string'),
                         new OA\Property(property: 'clinic_id', type: 'string', format: 'uuid'),
+                        new OA\Property(property: 'hospital_id', type: 'string', format: 'uuid'),
                         new OA\Property(property: 'photos[]', type: 'array', items: new OA\Items(type: 'string', format: 'binary')),
                         new OA\Property(property: 'videos[]', type: 'array', items: new OA\Items(type: 'string', format: 'binary')),
                     ]
@@ -380,8 +385,71 @@ class MedStreamController extends Controller
     )]
     public function updateReport(UpdateReportRequest $request, string $id): JsonResponse
     {
-        $report = $this->medStreamService->updateReport($id, $request->validated());
+        $report = $this->medStreamService->updateReport($id, $request->validated(), $request->user()->id);
 
         return response()->json(['report' => $report]);
+    }
+
+    // ── Feed (Bölüm 5 — followed + popular) ──
+
+    #[OA\Get(
+        path: '/medstream/feed',
+        summary: 'Personalized feed: followed doctors first, then popular posts',
+        security: [['sanctum' => []]],
+        tags: ['MedStream'],
+        parameters: [
+            new OA\Parameter(name: 'specialty_id', in: 'query', schema: new OA\Schema(type: 'string', format: 'uuid')),
+            new OA\Parameter(name: 'post_type', in: 'query', schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Personalized feed (MedStreamPostResource)'),
+        ]
+    )]
+    public function feed(Request $request): AnonymousResourceCollection
+    {
+        $posts = $this->medStreamService->feed(
+            $request->user()->id,
+            $request->only(['specialty_id', 'post_type', 'per_page']),
+        );
+
+        return MedStreamPostResource::collection($posts);
+    }
+
+    // ── Follows ──
+
+    #[OA\Post(
+        path: '/medstream/follow/{userId}',
+        summary: 'Toggle follow on a doctor',
+        security: [['sanctum' => []]],
+        tags: ['MedStream'],
+        parameters: [
+            new OA\Parameter(name: 'userId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Follow toggled'),
+        ]
+    )]
+    public function toggleFollow(Request $request, string $userId): JsonResponse
+    {
+        $result = $this->medStreamService->toggleFollow($request->user()->id, $userId);
+
+        return response()->json($result);
+    }
+
+    #[OA\Get(
+        path: '/medstream/follow-counts/{userId}',
+        summary: 'Get follower/following counts for a user',
+        tags: ['MedStream'],
+        parameters: [
+            new OA\Parameter(name: 'userId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Follow counts'),
+        ]
+    )]
+    public function followCounts(string $userId): JsonResponse
+    {
+        return response()->json($this->medStreamService->followCounts($userId));
     }
 }

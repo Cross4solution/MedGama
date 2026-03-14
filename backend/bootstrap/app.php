@@ -26,14 +26,21 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth'          => \App\Http\Middleware\Authenticate::class,
             'role'          => \App\Http\Middleware\CheckRole::class,
             'optional.auth' => \App\Http\Middleware\OptionalAuth::class,
+            'crm.access'    => \App\Http\Middleware\CheckCrmAccess::class,
+            'set.locale'    => \App\Http\Middleware\SetLocale::class,
         ]);
 
         // CORS handled by Laravel HandleCors (default global middleware).
         // No need to prepend — it's already in the default stack.
         // Just ensure CSRF is removed from API routes (Bearer token auth only).
-        $middleware->api(remove: [
-            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
-        ]);
+        $middleware->api(
+            remove: [
+                \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            ],
+            append: [
+                \App\Http\Middleware\SetLocale::class,
+            ],
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 

@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   ShieldCheck,
   AlertTriangle,
+  BookOpen,
   Menu,
   X,
   LogOut,
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
   { label: 'Doctor Verification', icon: ShieldCheck, path: '/admin/verification' },
   { label: 'Content Moderation', icon: AlertTriangle, path: '/admin/moderation' },
+  { label: 'Catalog Management', icon: BookOpen, path: '/admin/catalog' },
 ];
 
 const AdminLayout = ({ children }) => {

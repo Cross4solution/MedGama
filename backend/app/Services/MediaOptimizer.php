@@ -130,7 +130,7 @@ class MediaOptimizer
             'size'      => $file->getSize(),
         ];
 
-        // Try FFmpeg compression + thumbnail
+        // Try FFmpeg compression + thumbnail + streaming-ready
         $ffmpeg = self::findFFmpeg();
         if ($ffmpeg && file_exists($storedPath)) {
             try {
@@ -166,13 +166,17 @@ class MediaOptimizer
                         if ($compressedSize < $file->getSize()) {
                             $result['original'] = '/storage/' . $compressedPath;
                             $result['size'] = $compressedSize;
-                            // Optionally delete the uncompressed original
                             Storage::disk('public')->delete($path);
                         } else {
                             @unlink($compressedFullPath);
                         }
                     }
+                } else {
+                    // Small videos: still apply faststart for streaming/seek support
+                    self::ensureStreamReady($storedPath, $ffmpeg);
                 }
+
+                $result['stream_ready'] = true;
             } catch (\Throwable $e) {
                 \Log::warning("MediaOptimizer: FFmpeg processing failed", ['error' => $e->getMessage()]);
             }
@@ -245,7 +249,12 @@ class MediaOptimizer
                             @unlink($compressedFullPath);
                         }
                     }
+                } else {
+                    // Small videos: still apply faststart for streaming/seek
+                    self::ensureStreamReady($storedFullPath, $ffmpeg);
                 }
+
+                $result['stream_ready'] = true;
             } catch (\Throwable $e) {
                 \Log::warning('MediaOptimizer: FFmpeg processing failed (job)', ['error' => $e->getMessage()]);
             }
@@ -274,6 +283,38 @@ class MediaOptimizer
             'size'     => $file->getSize(),
             'ext'      => strtolower($ext),
         ];
+    }
+
+    /**
+     * Apply -movflags +faststart to an existing MP4 file for HTTP streaming/seek.
+     * This moves the moov atom to the beginning of the file.
+     */
+    public static function ensureStreamReady(string $filePath, ?string $ffmpeg = null): bool
+    {
+        $ffmpeg = $ffmpeg ?? self::findFFmpeg();
+        if (!$ffmpeg || !file_exists($filePath)) {
+            return false;
+        }
+
+        try {
+            $tmpOut = $filePath . '.faststart.mp4';
+
+            $cmd = escapeshellcmd($ffmpeg) . ' -i ' . escapeshellarg($filePath)
+                . ' -c copy -movflags +faststart'
+                . ' ' . escapeshellarg($tmpOut) . ' -y 2>&1';
+            exec($cmd, $output, $returnCode);
+
+            if ($returnCode === 0 && file_exists($tmpOut)) {
+                rename($tmpOut, $filePath);
+                return true;
+            }
+
+            @unlink($tmpOut);
+        } catch (\Throwable $e) {
+            \Log::warning('MediaOptimizer: faststart remux failed', ['error' => $e->getMessage()]);
+        }
+
+        return false;
     }
 
     /**

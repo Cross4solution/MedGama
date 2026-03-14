@@ -22,8 +22,9 @@ class User extends Authenticatable
         'mobile_verified', 'email_verified', 'email_verification_code',
         'password_reset_code', 'password_reset_expires_at',
         'city_id', 'country_id', 'country', 'preferred_language',
-        'date_of_birth', 'gender', 'is_verified', 'last_login', 'clinic_id',
+        'date_of_birth', 'gender', 'is_verified', 'last_login', 'clinic_id', 'hospital_id',
         'medical_history', 'notification_preferences', 'clinic_name',
+        'is_crm_active', 'crm_expires_at',
     ];
 
     protected $hidden = [
@@ -42,6 +43,8 @@ class User extends Authenticatable
             'last_login'               => 'datetime',
             'medical_history'          => 'encrypted',
             'notification_preferences' => 'encrypted:array',
+            'is_crm_active'            => 'boolean',
+            'crm_expires_at'           => 'datetime',
         ];
     }
 
@@ -82,6 +85,16 @@ class User extends Authenticatable
         return $this->belongsTo(Clinic::class);
     }
 
+    public function hospital()
+    {
+        return $this->belongsTo(Hospital::class);
+    }
+
+    public function ownedHospital()
+    {
+        return $this->hasOne(Hospital::class, 'owner_id');
+    }
+
     public function ownedClinic()
     {
         return $this->hasOne(Clinic::class, 'owner_id');
@@ -115,6 +128,11 @@ class User extends Authenticatable
     public function crmTags()
     {
         return $this->hasMany(CrmTag::class, 'patient_id');
+    }
+
+    public function crmProcessStages()
+    {
+        return $this->hasMany(CrmProcessStage::class, 'patient_id');
     }
 
     public function doctorProfile()
@@ -164,5 +182,10 @@ class User extends Authenticatable
     public function isClinicOwner(): bool
     {
         return $this->role_id === 'clinicOwner';
+    }
+
+    public function isHospital(): bool
+    {
+        return $this->role_id === 'hospital';
     }
 }

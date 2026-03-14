@@ -4,11 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Clinic;
-use App\Models\Specialty;
-use App\Models\City;
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
-use App\Models\SymptomSpecialtyMapping;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -175,86 +172,9 @@ class DatabaseSeeder extends Seeder
             $this->command->warn('Appointments seed skipped: ' . $e->getMessage());
         }
 
-        // ── Specialties ──
-        $specialties = [
-            ['code' => 'CARD', 'display_order' => 1, 'translations' => ['en' => 'Cardiology', 'tr' => 'Kardiyoloji']],
-            ['code' => 'DERM', 'display_order' => 2, 'translations' => ['en' => 'Dermatology', 'tr' => 'Dermatoloji']],
-            ['code' => 'ENDO', 'display_order' => 3, 'translations' => ['en' => 'Endocrinology', 'tr' => 'Endokrinoloji']],
-            ['code' => 'GAST', 'display_order' => 4, 'translations' => ['en' => 'Gastroenterology', 'tr' => 'Gastroenteroloji']],
-            ['code' => 'NEUR', 'display_order' => 5, 'translations' => ['en' => 'Neurology', 'tr' => 'Nöroloji']],
-            ['code' => 'ONCO', 'display_order' => 6, 'translations' => ['en' => 'Oncology', 'tr' => 'Onkoloji']],
-            ['code' => 'OPHT', 'display_order' => 7, 'translations' => ['en' => 'Ophthalmology', 'tr' => 'Göz Hastalıkları']],
-            ['code' => 'ORTH', 'display_order' => 8, 'translations' => ['en' => 'Orthopedics', 'tr' => 'Ortopedi']],
-            ['code' => 'PEDI', 'display_order' => 9, 'translations' => ['en' => 'Pediatrics', 'tr' => 'Çocuk Hastalıkları']],
-            ['code' => 'PSYC', 'display_order' => 10, 'translations' => ['en' => 'Psychiatry', 'tr' => 'Psikiyatri']],
-            ['code' => 'PULM', 'display_order' => 11, 'translations' => ['en' => 'Pulmonology', 'tr' => 'Göğüs Hastalıkları']],
-            ['code' => 'UROL', 'display_order' => 12, 'translations' => ['en' => 'Urology', 'tr' => 'Üroloji']],
-            ['code' => 'GYNE', 'display_order' => 13, 'translations' => ['en' => 'Gynecology', 'tr' => 'Kadın Hastalıkları']],
-            ['code' => 'ENT', 'display_order' => 14, 'translations' => ['en' => 'ENT (Ear, Nose, Throat)', 'tr' => 'Kulak Burun Boğaz']],
-            ['code' => 'GENE', 'display_order' => 15, 'translations' => ['en' => 'General Surgery', 'tr' => 'Genel Cerrahi']],
-            ['code' => 'DENT', 'display_order' => 16, 'translations' => ['en' => 'Dentistry', 'tr' => 'Diş Hekimliği']],
-            ['code' => 'RHEU', 'display_order' => 17, 'translations' => ['en' => 'Rheumatology', 'tr' => 'Romatoloji']],
-            ['code' => 'NEPH', 'display_order' => 18, 'translations' => ['en' => 'Nephrology', 'tr' => 'Nefroloji']],
-            ['code' => 'ALLE', 'display_order' => 19, 'translations' => ['en' => 'Allergy & Immunology', 'tr' => 'Alerji ve İmmünoloji']],
-            ['code' => 'PLAS', 'display_order' => 20, 'translations' => ['en' => 'Plastic Surgery', 'tr' => 'Plastik Cerrahi']],
-        ];
-
-        $specialtyIds = [];
-        foreach ($specialties as $s) {
-            $spec = Specialty::updateOrCreate(
-                ['code' => $s['code']],
-                [
-                    'display_order' => $s['display_order'],
-                    'translations' => $s['translations'],
-                ]
-            );
-            $specialtyIds[$s['code']] = $spec->id;
-        }
-
-        // ── Cities (Turkey) ──
-        $cities = [
-            ['code' => 'IST', 'country_id' => 90, 'translations' => ['en' => 'Istanbul', 'tr' => 'İstanbul']],
-            ['code' => 'ANK', 'country_id' => 90, 'translations' => ['en' => 'Ankara', 'tr' => 'Ankara']],
-            ['code' => 'IZM', 'country_id' => 90, 'translations' => ['en' => 'Izmir', 'tr' => 'İzmir']],
-            ['code' => 'ANT', 'country_id' => 90, 'translations' => ['en' => 'Antalya', 'tr' => 'Antalya']],
-            ['code' => 'BUR', 'country_id' => 90, 'translations' => ['en' => 'Bursa', 'tr' => 'Bursa']],
-            ['code' => 'ADA', 'country_id' => 90, 'translations' => ['en' => 'Adana', 'tr' => 'Adana']],
-            ['code' => 'GAZ', 'country_id' => 90, 'translations' => ['en' => 'Gaziantep', 'tr' => 'Gaziantep']],
-            ['code' => 'KON', 'country_id' => 90, 'translations' => ['en' => 'Konya', 'tr' => 'Konya']],
-        ];
-
-        $citiesDE = [
-            ['code' => 'BER', 'country_id' => 49, 'translations' => ['en' => 'Berlin', 'de' => 'Berlin']],
-            ['code' => 'MUC', 'country_id' => 49, 'translations' => ['en' => 'Munich', 'de' => 'München']],
-        ];
-
-        foreach (array_merge($cities, $citiesDE) as $c) {
-            City::updateOrCreate(
-                ['code' => $c['code'], 'country_id' => $c['country_id']],
-                ['translations' => $c['translations']]
-            );
-        }
-
-        // ── Symptom-Specialty Mappings ──
-        $symptoms = [
-            ['symptom' => 'chest pain', 'specialty_code' => 'CARD'],
-            ['symptom' => 'shortness of breath', 'specialty_code' => 'PULM'],
-            ['symptom' => 'skin rash', 'specialty_code' => 'DERM'],
-            ['symptom' => 'stomach pain', 'specialty_code' => 'GAST'],
-            ['symptom' => 'headache', 'specialty_code' => 'NEUR'],
-            ['symptom' => 'joint pain', 'specialty_code' => 'RHEU'],
-            ['symptom' => 'vision problem', 'specialty_code' => 'OPHT'],
-            ['symptom' => 'tooth pain', 'specialty_code' => 'DENT'],
-            ['symptom' => 'anxiety', 'specialty_code' => 'PSYC'],
-            ['symptom' => 'urination pain', 'specialty_code' => 'UROL'],
-        ];
-
-        foreach ($symptoms as $s) {
-            SymptomSpecialtyMapping::updateOrCreate(
-                ['symptom' => $s['symptom']],
-                ['specialty_code' => $s['specialty_code']]
-            );
-        }
+        // ── Catalog data (Specialties, Cities, Diseases, Symptoms) ──
+        // Delegated to CatalogSeeder with multilingual name/description JSON columns
+        $this->call(CatalogSeeder::class);
 
         $this->command->info('');
         $this->command->info('╔══════════════════════════════════════════════════════════════╗');

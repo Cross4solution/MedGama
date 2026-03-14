@@ -424,6 +424,12 @@ class MessageController extends Controller
     /**
      * GET /api/messages/search
      * Search messages across all user's conversations.
+     *
+     * NOTE: Message body is encrypted at rest (encrypted cast). Database-level
+     * LIKE/ILIKE is not possible on ciphertext. We therefore load recent
+     * messages, let Eloquent decrypt them, and filter in application memory.
+     * A cursor-paginated window of the last 2000 messages is scanned per
+     * request to keep memory usage bounded.
      */
     public function search(Request $request)
     {
@@ -432,22 +438,27 @@ class MessageController extends Controller
         ]);
 
         $user = $request->user();
-        $query = $request->q;
+        $needle = mb_strtolower($request->q);
 
         $conversationIds = ConversationParticipant::where('user_id', $user->id)
             ->where('is_active', true)
             ->pluck('conversation_id');
 
-        $messages = Message::active()
+        // Fetch recent messages (decrypt happens via Eloquent encrypted cast)
+        $results = Message::active()
             ->whereIn('conversation_id', $conversationIds)
-            ->where('body', 'ilike', "%{$query}%")
             ->with([
                 'sender:id,fullname,avatar',
                 'conversation:id,type,title',
             ])
             ->orderByDesc('created_at')
-            ->limit(50)
+            ->limit(2000)
             ->get()
+            ->filter(fn($msg) =>
+                $msg->body && str_contains(mb_strtolower($msg->body), $needle)
+            )
+            ->take(50)
+            ->values()
             ->map(fn($msg) => [
                 'id' => $msg->id,
                 'conversation_id' => $msg->conversation_id,
@@ -459,7 +470,7 @@ class MessageController extends Controller
                 'created_at' => $msg->created_at,
             ]);
 
-        return response()->json(['results' => $messages]);
+        return response()->json(['results' => $results]);
     }
 
     // ────────────────────────────────────────────────────────────

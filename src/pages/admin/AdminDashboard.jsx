@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Calendar, FileText, ShieldCheck, ShieldAlert, AlertTriangle, TrendingUp, UserCheck, UserX } from 'lucide-react';
+import {
+  Users, Calendar, FileText, ShieldCheck, ShieldAlert, AlertTriangle,
+  TrendingUp, UserCheck, UserX, Building2, BarChart3,
+} from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 
 function StatCard({ icon: Icon, label, value, color = 'teal', sub }) {
@@ -26,13 +29,49 @@ function StatCard({ icon: Icon, label, value, color = 'teal', sub }) {
   );
 }
 
+// Simple bar chart component (no external dependency)
+function MiniBarChart({ data, dataKey, color = '#0D9488', label }) {
+  if (!data || data.length === 0) return null;
+  const maxVal = Math.max(...data.map(d => d[dataKey] || 0), 1);
+  return (
+    <div>
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{label}</p>
+      <div className="flex items-end gap-[3px] h-24">
+        {data.map((d, i) => {
+          const h = Math.max(((d[dataKey] || 0) / maxVal) * 100, 2);
+          return (
+            <div key={i} className="flex-1 group relative flex flex-col items-center">
+              <div className="absolute -top-5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap pointer-events-none z-10">
+                {d[dataKey] || 0}
+              </div>
+              <div
+                className="w-full rounded-t transition-all duration-300"
+                style={{ height: `${h}%`, backgroundColor: color, minHeight: '2px' }}
+              />
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex justify-between mt-1">
+        <span className="text-[9px] text-gray-400">{data[0]?.label}</span>
+        <span className="text-[9px] text-gray-400">{data[data.length - 1]?.label}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
+  const [growth, setGrowth] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    adminAPI.dashboard().then(res => {
-      setData(res?.data || res);
+    Promise.all([
+      adminAPI.dashboard().then(res => res?.data?.data || res?.data || res),
+      adminAPI.growthTrend().then(res => res?.data?.data || res?.data || res).catch(() => null),
+    ]).then(([dash, trend]) => {
+      setData(dash);
+      setGrowth(trend);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -45,6 +84,7 @@ export default function AdminDashboard() {
   }
 
   const u = data?.users || {};
+  const c = data?.clinics || {};
   const a = data?.appointments || {};
   const m = data?.medstream || {};
 
@@ -68,6 +108,15 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Clinics */}
+      <div>
+        <h2 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Clinics</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <StatCard icon={Building2} label="Total Clinics" value={c.total} color="blue" />
+          <StatCard icon={TrendingUp} label="New This Month" value={c.new_this_month} color="purple" />
+        </div>
+      </div>
+
       {/* Verification Alert */}
       {u.unverified_doctors > 0 && (
         <Link to="/admin/verification" className="block rounded-2xl border border-amber-200 bg-amber-50/80 p-4 hover:bg-amber-50 transition-colors">
@@ -79,6 +128,21 @@ export default function AdminDashboard() {
             </div>
           </div>
         </Link>
+      )}
+
+      {/* Growth Trend Chart */}
+      {growth && growth.length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <BarChart3 className="w-5 h-5 text-purple-600" />
+            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Monthly Growth Trend (Last 12 Months)</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <MiniBarChart data={growth} dataKey="users" color="#6366F1" label="New Users" />
+            <MiniBarChart data={growth} dataKey="doctors" color="#0D9488" label="New Doctors" />
+            <MiniBarChart data={growth} dataKey="clinics" color="#8B5CF6" label="New Clinics" />
+          </div>
+        </div>
       )}
 
       {/* Appointment Stats */}

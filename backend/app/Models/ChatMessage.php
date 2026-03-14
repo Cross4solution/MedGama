@@ -27,7 +27,9 @@ class ChatMessage extends Model
     protected function casts(): array
     {
         return [
-            'read_at' => 'datetime',
+            'content'        => 'encrypted',
+            'attachment_url' => 'encrypted',
+            'read_at'        => 'datetime',
         ];
     }
 

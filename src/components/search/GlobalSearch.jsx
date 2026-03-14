@@ -1,71 +1,13 @@
-import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { clinicAPI, doctorAPI } from '../../lib/api';
-
-const PLACEHOLDER_HINTS = [
-  'Search Clinics or Doctors',
-  'Acıbadem Hospital',
-  'Medipol Hospital',
-];
 
 export default function GlobalSearch() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
-  const [ph, setPh] = useState(PLACEHOLDER_HINTS[0]);
   const [activeIndex, setActiveIndex] = useState(-1);
   const wrapperRef = useRef(null);
-  const phIndexRef = useRef(0);
-  const phCharRef = useRef(0);
-  const phDirectionRef = useRef('deleting'); // 'typing' | 'deleting' | 'pause'
-  const phTimerRef = useRef(null);
-
-  // Lightweight typing animation for placeholder
-  const animatePlaceholder = useCallback(() => {
-    const dir = phDirectionRef.current;
-    const idx = phIndexRef.current;
-    const full = PLACEHOLDER_HINTS[idx];
-
-    if (dir === 'pause') {
-      // Wait then start deleting
-      phDirectionRef.current = 'deleting';
-      phTimerRef.current = setTimeout(animatePlaceholder, 1200);
-      return;
-    }
-
-    if (dir === 'deleting') {
-      if (phCharRef.current > 0) {
-        phCharRef.current -= 1;
-        setPh(full.slice(0, phCharRef.current));
-        phTimerRef.current = setTimeout(animatePlaceholder, 15);
-      } else {
-        // Move to next hint
-        phIndexRef.current = (idx + 1) % PLACEHOLDER_HINTS.length;
-        phDirectionRef.current = 'typing';
-        phTimerRef.current = setTimeout(animatePlaceholder, 200);
-      }
-      return;
-    }
-
-    // typing
-    const target = PLACEHOLDER_HINTS[phIndexRef.current];
-    if (phCharRef.current < target.length) {
-      phCharRef.current += 1;
-      setPh(target.slice(0, phCharRef.current));
-      phTimerRef.current = setTimeout(animatePlaceholder, 28);
-    } else {
-      phDirectionRef.current = 'pause';
-      phTimerRef.current = setTimeout(animatePlaceholder, 2000);
-    }
-  }, []);
-
-  useEffect(() => {
-    // Start animation after initial pause
-    phCharRef.current = PLACEHOLDER_HINTS[0].length;
-    phDirectionRef.current = 'pause';
-    phTimerRef.current = setTimeout(animatePlaceholder, 3000);
-    return () => clearTimeout(phTimerRef.current);
-  }, [animatePlaceholder]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -162,7 +104,7 @@ export default function GlobalSearch() {
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
-        placeholder={ph}
+        placeholder="Search Clinics or Doctors"
         className="w-full border border-gray-100 rounded-full pl-11 pr-11 py-3.5 text-base bg-white/95 backdrop-blur shadow-[0_6px_20px_-5px_rgba(28,106,131,0.35),0_2px_6px_-2px_rgba(2,6,23,0.2)] hover:shadow-[0_10px_30px_-10px_rgba(28,106,131,0.45),0_4px_12px_-3px_rgba(2,6,23,0.25)] focus:shadow-[0_12px_36px_-12px_rgba(28,106,131,0.55),0_6px_16px_-4px_rgba(2,6,23,0.3)] focus:outline-none focus:ring-4 focus:ring-[#1C6A83]/25 focus:border-transparent transition-shadow duration-200"
       />
       {query && (

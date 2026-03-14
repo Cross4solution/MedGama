@@ -19,6 +19,7 @@ import {
   Receipt,
   ExternalLink,
   Home,
+  Rss,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +36,7 @@ const getNavSections = (t, role) => {
   if (!isClinic) {
     mainItems.push({ label: t('crm.sidebar.examination'), icon: Stethoscope, path: '/crm/examination' });
   }
+  mainItems.push({ label: t('crm.sidebar.medstream', 'MedStream'), icon: Rss, path: '/crm/medstream' });
   // Clinic-only: staff management
   if (isClinic) {
     mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
@@ -89,7 +91,7 @@ const CRMLayout = ({ children }) => {
   };
 
   const handleLogout = () => {
-    logout?.();
+    logout?.({ skipConfirmation: true });
     navigate('/');
   };
 

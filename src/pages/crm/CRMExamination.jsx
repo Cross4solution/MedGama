@@ -1,51 +1,15 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Stethoscope, Search, Plus, X, Trash2, ChevronDown, ChevronUp,
   Upload, FileImage, File, Eye, Clock, User, Calendar, Pill,
-  ClipboardList, Save, Printer, AlertTriangle, CheckCircle2,
+  ClipboardList, ClipboardCheck, Save, Printer, AlertTriangle, CheckCircle2,
   Heart, Activity, Thermometer, GripHorizontal, ImageIcon,
-  ChevronLeft, ChevronRight, ZoomIn,
+  ChevronLeft, ChevronRight, ZoomIn, Download, Loader2,
+  ShieldAlert, TrendingUp, TrendingDown, FileText,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-// ─── ICD-10 Code Database (common codes) ───
-const ICD10_DATABASE = [
-  { code: 'A09', desc_en: 'Infectious gastroenteritis and colitis', desc_tr: 'Enfeksiyöz gastroenterit ve kolit', category: 'Infectious' },
-  { code: 'B34.9', desc_en: 'Viral infection, unspecified', desc_tr: 'Viral enfeksiyon, tanımlanmamış', category: 'Infectious' },
-  { code: 'E11', desc_en: 'Type 2 diabetes mellitus', desc_tr: 'Tip 2 diabetes mellitus', category: 'Endocrine' },
-  { code: 'E11.9', desc_en: 'Type 2 diabetes mellitus without complications', desc_tr: 'Komplikasyonsuz tip 2 diabetes mellitus', category: 'Endocrine' },
-  { code: 'E03.9', desc_en: 'Hypothyroidism, unspecified', desc_tr: 'Hipotiroidizm, tanımlanmamış', category: 'Endocrine' },
-  { code: 'E05.9', desc_en: 'Thyrotoxicosis, unspecified', desc_tr: 'Tirotoksikoz, tanımlanmamış', category: 'Endocrine' },
-  { code: 'E78.5', desc_en: 'Hyperlipidemia, unspecified', desc_tr: 'Hiperlipidemi, tanımlanmamış', category: 'Endocrine' },
-  { code: 'F32.9', desc_en: 'Major depressive disorder, single episode', desc_tr: 'Majör depresif bozukluk, tek epizod', category: 'Mental' },
-  { code: 'F41.1', desc_en: 'Generalized anxiety disorder', desc_tr: 'Yaygın anksiyete bozukluğu', category: 'Mental' },
-  { code: 'G43.9', desc_en: 'Migraine, unspecified', desc_tr: 'Migren, tanımlanmamış', category: 'Nervous' },
-  { code: 'H10.9', desc_en: 'Conjunctivitis, unspecified', desc_tr: 'Konjonktivit, tanımlanmamış', category: 'Eye' },
-  { code: 'I10', desc_en: 'Essential (primary) hypertension', desc_tr: 'Esansiyel (primer) hipertansiyon', category: 'Circulatory' },
-  { code: 'I25.1', desc_en: 'Atherosclerotic heart disease', desc_tr: 'Aterosklerotik kalp hastalığı', category: 'Circulatory' },
-  { code: 'I48.91', desc_en: 'Atrial fibrillation, unspecified', desc_tr: 'Atriyal fibrilasyon, tanımlanmamış', category: 'Circulatory' },
-  { code: 'I50.9', desc_en: 'Heart failure, unspecified', desc_tr: 'Kalp yetmezliği, tanımlanmamış', category: 'Circulatory' },
-  { code: 'J06.9', desc_en: 'Acute upper respiratory infection', desc_tr: 'Akut üst solunum yolu enfeksiyonu', category: 'Respiratory' },
-  { code: 'J18.9', desc_en: 'Pneumonia, unspecified organism', desc_tr: 'Pnömoni, tanımlanmamış organizma', category: 'Respiratory' },
-  { code: 'J20.9', desc_en: 'Acute bronchitis, unspecified', desc_tr: 'Akut bronşit, tanımlanmamış', category: 'Respiratory' },
-  { code: 'J30.1', desc_en: 'Allergic rhinitis due to pollen', desc_tr: 'Polene bağlı alerjik rinit', category: 'Respiratory' },
-  { code: 'J45.9', desc_en: 'Asthma, unspecified', desc_tr: 'Astım, tanımlanmamış', category: 'Respiratory' },
-  { code: 'K21.0', desc_en: 'Gastro-esophageal reflux disease with esophagitis', desc_tr: 'Özofajitli gastroözofageal reflü hastalığı', category: 'Digestive' },
-  { code: 'K29.7', desc_en: 'Gastritis, unspecified', desc_tr: 'Gastrit, tanımlanmamış', category: 'Digestive' },
-  { code: 'K58.9', desc_en: 'Irritable bowel syndrome', desc_tr: 'İrritabl bağırsak sendromu', category: 'Digestive' },
-  { code: 'K80.2', desc_en: 'Calculus of gallbladder without obstruction', desc_tr: 'Tıkanıklıksız safra kesesi taşı', category: 'Digestive' },
-  { code: 'L20.9', desc_en: 'Atopic dermatitis, unspecified', desc_tr: 'Atopik dermatit, tanımlanmamış', category: 'Skin' },
-  { code: 'L50.9', desc_en: 'Urticaria, unspecified', desc_tr: 'Ürtiker, tanımlanmamış', category: 'Skin' },
-  { code: 'M54.5', desc_en: 'Low back pain', desc_tr: 'Bel ağrısı', category: 'Musculoskeletal' },
-  { code: 'M79.3', desc_en: 'Panniculitis, unspecified', desc_tr: 'Pannikülit, tanımlanmamış', category: 'Musculoskeletal' },
-  { code: 'N39.0', desc_en: 'Urinary tract infection, site not specified', desc_tr: 'İdrar yolu enfeksiyonu, yeri belirtilmemiş', category: 'Genitourinary' },
-  { code: 'R05', desc_en: 'Cough', desc_tr: 'Öksürük', category: 'Symptoms' },
-  { code: 'R10.9', desc_en: 'Unspecified abdominal pain', desc_tr: 'Tanımlanmamış karın ağrısı', category: 'Symptoms' },
-  { code: 'R50.9', desc_en: 'Fever, unspecified', desc_tr: 'Ateş, tanımlanmamış', category: 'Symptoms' },
-  { code: 'R51', desc_en: 'Headache', desc_tr: 'Baş ağrısı', category: 'Symptoms' },
-  { code: 'Z00.0', desc_en: 'Encounter for general adult medical examination', desc_tr: 'Genel yetişkin tıbbi muayene', category: 'Factors' },
-  { code: 'Z23', desc_en: 'Encounter for immunization', desc_tr: 'Aşılama için başvuru', category: 'Factors' },
-];
+import { examinationAPI } from '../../lib/api';
 
 // ─── Medication Templates ───
 const MEDICATION_TEMPLATES = [
@@ -63,50 +27,99 @@ const MEDICATION_TEMPLATES = [
   { name: 'Sertraline 50mg', dosage: '1x daily', duration: '30 days', route: 'Oral' },
 ];
 
-// ─── Mock Past Examinations ───
-const MOCK_EXAMINATIONS = [
-  { id: 1, date: '2026-02-16', patient: 'Zeynep Kaya', age: 34, diagnosis: [{ code: 'J30.1', desc: 'Allergic rhinitis due to pollen' }], medications: [{ name: 'Cetirizine 10mg', dosage: '1x daily', duration: '14 days' }], vitals: { bp: '120/80', hr: 72, temp: 36.6, spo2: 98 }, status: 'completed', notes: 'Seasonal allergy symptoms. Follow-up in 2 weeks.' },
-  { id: 2, date: '2026-02-16', patient: 'Ali Yilmaz', age: 45, diagnosis: [{ code: 'M54.5', desc: 'Low back pain' }], medications: [{ name: 'Ibuprofen 400mg', dosage: '3x daily', duration: '7 days' }, { name: 'Omeprazole 20mg', dosage: '1x daily', duration: '7 days' }], vitals: { bp: '130/85', hr: 78, temp: 36.8, spo2: 97 }, status: 'completed', notes: 'Lumbar strain. Physical therapy recommended.' },
-  { id: 3, date: '2026-02-15', patient: 'Fatma Koc', age: 61, diagnosis: [{ code: 'E11', desc: 'Type 2 diabetes mellitus' }, { code: 'I10', desc: 'Essential hypertension' }], medications: [{ name: 'Metformin 1000mg', dosage: '2x daily', duration: '90 days' }, { name: 'Amlodipine 5mg', dosage: '1x daily', duration: '30 days' }], vitals: { bp: '145/90', hr: 82, temp: 36.5, spo2: 96 }, status: 'completed', notes: 'HbA1c: 7.2%. BP needs monitoring.' },
-  { id: 4, date: '2026-02-14', patient: 'Mehmet Ozkan', age: 52, diagnosis: [{ code: 'J06.9', desc: 'Acute upper respiratory infection' }], medications: [{ name: 'Paracetamol 500mg', dosage: 'Every 6 hours', duration: '5 days' }], vitals: { bp: '125/80', hr: 88, temp: 38.2, spo2: 97 }, status: 'completed', notes: 'Viral URI. Rest and fluids.' },
-  { id: 5, date: '2026-02-13', patient: 'Ayse Demir', age: 38, diagnosis: [{ code: 'G43.9', desc: 'Migraine, unspecified' }], medications: [{ name: 'Sumatriptan 50mg', dosage: 'As needed', duration: '30 days' }], vitals: { bp: '115/75', hr: 68, temp: 36.4, spo2: 99 }, status: 'completed', notes: 'Headache diary recommended.' },
-];
+// ═══════════════════════════════════════════════════
+// Vitals Alert Banner Component
+// ═══════════════════════════════════════════════════
+const VitalsAlertBanner = ({ vitalsAlert, t }) => {
+  if (!vitalsAlert || !vitalsAlert.is_alert) return null;
 
-// ─── Mock Patients ───
-const MOCK_PATIENTS = [
-  { id: 1, name: 'Zeynep Kaya', age: 34, gender: 'F', bloodType: 'A+' },
-  { id: 2, name: 'Ali Yilmaz', age: 45, gender: 'M', bloodType: 'O+' },
-  { id: 3, name: 'Fatma Koc', age: 61, gender: 'F', bloodType: 'B+' },
-  { id: 4, name: 'Mehmet Ozkan', age: 52, gender: 'M', bloodType: 'AB+' },
-  { id: 5, name: 'Ayse Demir', age: 38, gender: 'F', bloodType: 'A-' },
-  { id: 6, name: 'Elif Arslan', age: 42, gender: 'F', bloodType: 'O-' },
-  { id: 7, name: 'Deniz Korkmaz', age: 33, gender: 'M', bloodType: 'B-' },
-];
+  return (
+    <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-2xl p-4 space-y-3 animate-in fade-in">
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+          <ShieldAlert className="w-4.5 h-4.5 text-red-600" />
+        </div>
+        <div>
+          <p className="text-sm font-bold text-red-800">Vital Bulguları Uyarısı</p>
+          <p className="text-xs text-red-600">{vitalsAlert.alerts.length} değer normal aralık dışında</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {vitalsAlert.alerts.map((alert, i) => (
+          <div
+            key={i}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border ${
+              alert.status === 'high'
+                ? 'bg-red-50 border-red-200'
+                : 'bg-blue-50 border-blue-200'
+            }`}
+          >
+            {alert.status === 'high' ? (
+              <TrendingUp className="w-4 h-4 text-red-500 flex-shrink-0" />
+            ) : (
+              <TrendingDown className="w-4 h-4 text-blue-500 flex-shrink-0" />
+            )}
+            <div className="min-w-0">
+              <p className={`text-xs font-bold ${alert.status === 'high' ? 'text-red-700' : 'text-blue-700'}`}>
+                {alert.label}: {alert.value}{alert.unit}
+              </p>
+              <p className="text-[10px] text-gray-500">
+                Normal: {alert.normal} {alert.unit}
+              </p>
+            </div>
+            <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-md flex-shrink-0 ${
+              alert.status === 'high'
+                ? 'bg-red-100 text-red-700'
+                : 'bg-blue-100 text-blue-700'
+            }`}>
+              {alert.status === 'high' ? 'YÜKSEK' : 'DÜŞÜK'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 // ═══════════════════════════════════════════════════
-// ICD-10 Smart Search Component
+// ICD-10 Smart Search Component (API-backed)
 // ═══════════════════════════════════════════════════
 const ICD10Search = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
   const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef(null);
+  const debounceRef = useRef(null);
 
-  const results = useMemo(() => {
-    if (!query || query.length < 2) return [];
-    const q = query.toLowerCase();
-    return ICD10_DATABASE.filter(
-      (item) =>
-        item.code.toLowerCase().includes(q) ||
-        item.desc_en.toLowerCase().includes(q) ||
-        item.desc_tr.toLowerCase().includes(q)
-    ).slice(0, 8);
-  }, [query]);
+  const handleSearch = useCallback((term) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!term || term.length < 2) {
+      setResults([]);
+      return;
+    }
+    debounceRef.current = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const data = await examinationAPI.searchIcd10(term);
+        setResults(Array.isArray(data) ? data : (data?.data || []));
+      } catch {
+        setResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+  }, []);
 
   const handleSelect = (item) => {
+    const name = typeof item.name === 'object'
+      ? (item.name.en || item.name.tr || Object.values(item.name)[0])
+      : item.name;
     if (!selectedDiagnoses.find((d) => d.code === item.code)) {
-      onAdd({ code: item.code, desc: item.desc_en });
+      onAdd({ code: item.code, desc: name, category: item.category });
     }
     setQuery('');
+    setResults([]);
     setIsOpen(false);
     inputRef.current?.focus();
   };
@@ -150,13 +163,15 @@ const ICD10Search = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
             onChange={(e) => {
               setQuery(e.target.value);
               setIsOpen(true);
+              handleSearch(e.target.value);
             }}
             onFocus={() => query.length >= 2 && setIsOpen(true)}
             placeholder={t('crm.examination.searchICD10')}
             className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full"
           />
-          {query && (
-            <button onClick={() => { setQuery(''); setIsOpen(false); }} className="text-gray-400 hover:text-gray-600">
+          {isSearching && <Loader2 className="w-4 h-4 text-teal-500 animate-spin flex-shrink-0" />}
+          {query && !isSearching && (
+            <button onClick={() => { setQuery(''); setResults([]); setIsOpen(false); }} className="text-gray-400 hover:text-gray-600">
               <X className="w-3.5 h-3.5" />
             </button>
           )}
@@ -167,6 +182,8 @@ const ICD10Search = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
           <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto">
             {results.map((item) => {
               const isSelected = selectedDiagnoses.some((d) => d.code === item.code);
+              const nameEn = typeof item.name === 'object' ? (item.name.en || '') : item.name;
+              const nameTr = typeof item.name === 'object' ? (item.name.tr || '') : '';
               return (
                 <button
                   key={item.code}
@@ -180,8 +197,8 @@ const ICD10Search = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
                     {item.code}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{item.desc_en}</p>
-                    <p className="text-[11px] text-gray-400 truncate">{item.desc_tr}</p>
+                    <p className="text-sm font-medium text-gray-900 truncate">{nameEn}</p>
+                    {nameTr && <p className="text-[11px] text-gray-400 truncate">{nameTr}</p>}
                   </div>
                   <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded flex-shrink-0 mt-0.5">
                     {item.category}
@@ -192,7 +209,7 @@ const ICD10Search = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
           </div>
         )}
 
-        {isOpen && query.length >= 2 && results.length === 0 && (
+        {isOpen && query.length >= 2 && results.length === 0 && !isSearching && (
           <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl p-4 text-center">
             <p className="text-sm text-gray-500">{t('common.noResults')}</p>
             <p className="text-xs text-gray-400 mt-1">{t('crm.examination.tryDifferentSearch')}</p>
@@ -526,55 +543,176 @@ const FileUploadZone = ({ files, setFiles, t }) => {
 // ═══════════════════════════════════════════════════
 const CRMExamination = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+
+  // ─── Context from Patient360 navigation ───
+  const navState = location.state || {};
 
   // ─── Tab State ───
   const [activeTab, setActiveTab] = useState('new'); // 'new' | 'history'
 
   // ─── New Examination Form State ───
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [patientSearch, setPatientSearch] = useState('');
-  const [showPatientDropdown, setShowPatientDropdown] = useState(false);
+  const [patientId, setPatientId] = useState(navState.patientId || '');
+  const [patientName, setPatientName] = useState(navState.patientName || '');
+  const [clinicId, setClinicId] = useState(navState.clinicId || '');
+  const [appointmentId, setAppointmentId] = useState(navState.appointmentId || '');
   const [diagnoses, setDiagnoses] = useState([]);
   const [medications, setMedications] = useState([]);
-  const [vitals, setVitals] = useState({ bp: '', hr: '', temp: '', spo2: '', weight: '', height: '' });
-  const [examNotes, setExamNotes] = useState('');
-  const [chiefComplaint, setChiefComplaint] = useState('');
-  const [physicalExam, setPhysicalExam] = useState('');
-  const [plan, setPlan] = useState('');
+  const [vitals, setVitals] = useState({
+    systolic: '', diastolic: '', pulse: '', temperature: '', spo2: '', weight: '', height: '',
+  });
+  const [diagnosisNote, setDiagnosisNote] = useState('');
+  const [examinationNote, setExaminationNote] = useState('');
+  const [treatmentPlan, setTreatmentPlan] = useState('');
   const [files, setFiles] = useState([]);
   const [beforeImage, setBeforeImage] = useState(null);
   const [afterImage, setAfterImage] = useState(null);
   const [showBeforeAfter, setShowBeforeAfter] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [lastSavedExam, setLastSavedExam] = useState(null);
+  const [vitalsAlert, setVitalsAlert] = useState(null);
 
   // ─── History State ───
+  const [examinations, setExaminations] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [historySearch, setHistorySearch] = useState('');
   const [selectedExam, setSelectedExam] = useState(null);
+  const [selectedExamDetail, setSelectedExamDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
-  // ─── Patient Search ───
-  const filteredPatients = useMemo(() => {
-    if (!patientSearch) return MOCK_PATIENTS;
-    const q = patientSearch.toLowerCase();
-    return MOCK_PATIENTS.filter((p) => p.name.toLowerCase().includes(q));
-  }, [patientSearch]);
+  // ─── Load examinations on history tab ───
+  useEffect(() => {
+    if (activeTab === 'history') {
+      loadExaminations();
+    }
+  }, [activeTab]);
 
-  // ─── History Filter ───
-  const filteredHistory = useMemo(() => {
-    if (!historySearch) return MOCK_EXAMINATIONS;
-    const q = historySearch.toLowerCase();
-    return MOCK_EXAMINATIONS.filter(
-      (e) =>
-        e.patient.toLowerCase().includes(q) ||
-        e.diagnosis.some((d) => d.desc.toLowerCase().includes(q) || d.code.toLowerCase().includes(q))
-    );
-  }, [historySearch]);
+  const loadExaminations = async () => {
+    setHistoryLoading(true);
+    try {
+      const res = await examinationAPI.list({ per_page: 50 });
+      setExaminations(res?.data || []);
+    } catch {
+      setExaminations([]);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
 
-  // ─── Handlers ───
-  const handleSelectPatient = (patient) => {
-    setSelectedPatient(patient);
-    setPatientSearch(patient.name);
-    setShowPatientDropdown(false);
+  // ─── View single exam detail ───
+  const handleViewExam = async (exam) => {
+    setSelectedExam(exam);
+    setDetailLoading(true);
+    try {
+      const res = await examinationAPI.get(exam.id);
+      setSelectedExamDetail(res?.examination || res);
+    } catch {
+      setSelectedExamDetail(exam);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  // ─── Build vitals payload for API ───
+  const buildVitalsPayload = () => {
+    const v = {};
+    if (vitals.systolic) v.systolic = parseFloat(vitals.systolic);
+    if (vitals.diastolic) v.diastolic = parseFloat(vitals.diastolic);
+    if (vitals.pulse) v.pulse = parseFloat(vitals.pulse);
+    if (vitals.temperature) v.temperature = parseFloat(vitals.temperature);
+    if (vitals.spo2) v.spo2 = parseFloat(vitals.spo2);
+    if (vitals.weight) v.weight = parseFloat(vitals.weight);
+    if (vitals.height) v.height = parseFloat(vitals.height);
+    return Object.keys(v).length > 0 ? v : null;
+  };
+
+  // ─── Build prescriptions payload ───
+  const buildPrescriptionsPayload = () => {
+    if (medications.length === 0) return null;
+    return medications.map((m) => ({
+      drug_name: m.name,
+      dosage: m.dosage,
+      duration: m.duration || undefined,
+      route: m.route || undefined,
+    }));
+  };
+
+  // ─── Save Examination ───
+  const handleSave = async () => {
+    if (!patientId) {
+      setSaveError('Lütfen hasta ID giriniz.');
+      return;
+    }
+    setIsSaving(true);
+    setSaveError('');
+    try {
+      const payload = {
+        patient_id: patientId,
+        clinic_id: clinicId || undefined,
+        appointment_id: appointmentId || undefined,
+        icd10_code: diagnoses[0]?.code || undefined,
+        diagnosis_note: diagnosisNote || undefined,
+        vitals: buildVitalsPayload(),
+        examination_note: examinationNote || undefined,
+        treatment_plan: treatmentPlan || undefined,
+        prescriptions: buildPrescriptionsPayload(),
+      };
+
+      const res = await examinationAPI.create(payload);
+      const exam = res?.examination || res;
+      setLastSavedExam(exam);
+      setVitalsAlert(exam?.vitals_alert || null);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 5000);
+    } catch (err) {
+      setSaveError(err?.message || 'Kayıt sırasında hata oluştu.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // ─── PDF Download ───
+  const handleDownloadPdf = async (examId) => {
+    setPdfLoading(true);
+    try {
+      const blob = await examinationAPI.prescriptionPdf(examId);
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `recete-${examId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('PDF indirme sırasında hata oluştu.');
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  // ─── Reset Form ───
+  const handleReset = () => {
+    setPatientId('');
+    setPatientName('');
+    setClinicId('');
+    setAppointmentId('');
+    setDiagnoses([]);
+    setMedications([]);
+    setVitals({ systolic: '', diastolic: '', pulse: '', temperature: '', spo2: '', weight: '', height: '' });
+    setDiagnosisNote('');
+    setExaminationNote('');
+    setTreatmentPlan('');
+    setFiles([]);
+    setBeforeImage(null);
+    setAfterImage(null);
+    setShowBeforeAfter(false);
+    setLastSavedExam(null);
+    setVitalsAlert(null);
+    setSaveError('');
   };
 
   const handleBeforeImage = (e) => {
@@ -587,44 +725,27 @@ const CRMExamination = () => {
     if (file) setAfterImage(URL.createObjectURL(file));
   };
 
-  const handleSave = () => {
-    setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
-    }, 1500);
-  };
-
-  const handleReset = () => {
-    setSelectedPatient(null);
-    setPatientSearch('');
-    setDiagnoses([]);
-    setMedications([]);
-    setVitals({ bp: '', hr: '', temp: '', spo2: '', weight: '', height: '' });
-    setExamNotes('');
-    setChiefComplaint('');
-    setPhysicalExam('');
-    setPlan('');
-    setFiles([]);
-    setBeforeImage(null);
-    setAfterImage(null);
-    setShowBeforeAfter(false);
-  };
-
-  // ─── Stats ───
-  const stats = useMemo(() => ({
-    today: MOCK_EXAMINATIONS.filter((e) => e.date === '2026-02-16').length,
-    total: MOCK_EXAMINATIONS.length,
-    thisWeek: MOCK_EXAMINATIONS.filter((e) => e.date >= '2026-02-10').length,
-  }), []);
+  // ─── History filter ───
+  const filteredHistory = useMemo(() => {
+    if (!historySearch) return examinations;
+    const q = historySearch.toLowerCase();
+    return examinations.filter(
+      (e) =>
+        (e.patient?.fullname || '').toLowerCase().includes(q) ||
+        (e.icd10_code || '').toLowerCase().includes(q) ||
+        (e.diagnosis_note || '').toLowerCase().includes(q)
+    );
+  }, [historySearch, examinations]);
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.examination.title')}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <Stethoscope className="w-6 h-6 text-teal-600" />
+            {t('crm.examination.title')}
+          </h1>
           <p className="text-sm text-gray-500 mt-0.5">{t('crm.examination.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -653,115 +774,119 @@ const CRMExamination = () => {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { label: t('crm.examination.todayExams'), value: stats.today, bg: 'bg-teal-50 border-teal-200', color: 'text-teal-700', icon: Stethoscope },
-          { label: t('crm.examination.thisWeek'), value: stats.thisWeek, bg: 'bg-blue-50 border-blue-200', color: 'text-blue-700', icon: Calendar },
-          { label: t('crm.examination.totalExams'), value: stats.total, bg: 'bg-gray-50 border-gray-200', color: 'text-gray-900', icon: ClipboardList },
-        ].map((s) => (
-          <div key={s.label} className={`rounded-xl border px-4 py-3 flex items-center gap-3 ${s.bg}`}>
-            <s.icon className={`w-5 h-5 ${s.color} opacity-60`} />
-            <div>
-              <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
-              <p className="text-[11px] text-gray-500 font-medium">{s.label}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* ═══ NEW EXAMINATION TAB ═══ */}
       {activeTab === 'new' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: Main Form */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Patient Selection */}
+
+            {/* Vitals Alert Banner (after save) */}
+            <VitalsAlertBanner vitalsAlert={vitalsAlert} t={t} />
+
+            {/* Save Success Banner */}
+            {saveSuccess && lastSavedExam && (
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-bold text-emerald-800">Muayene kaydı başarıyla oluşturuldu</p>
+                    <p className="text-xs text-emerald-600">ID: {lastSavedExam.id}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleDownloadPdf(lastSavedExam.id)}
+                  disabled={pdfLoading}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-semibold hover:bg-emerald-700 transition-all shadow-sm disabled:opacity-60"
+                >
+                  {pdfLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                  Reçete PDF
+                </button>
+              </div>
+            )}
+
+            {/* Patient & Appointment IDs */}
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5 space-y-4">
               <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <User className="w-4 h-4 text-teal-500" />
                 {t('crm.examination.patientInfo')}
               </h2>
 
-              <div className="relative">
-                <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-xl px-3 py-2.5 focus-within:ring-2 focus-within:ring-teal-500 focus-within:border-transparent">
-                  <Search className="w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    value={patientSearch}
-                    onChange={(e) => {
-                      setPatientSearch(e.target.value);
-                      setShowPatientDropdown(true);
-                      if (!e.target.value) setSelectedPatient(null);
-                    }}
-                    onFocus={() => setShowPatientDropdown(true)}
-                    placeholder={t('crm.examination.searchPatient')}
-                    className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full"
-                  />
-                </div>
-
-                {showPatientDropdown && filteredPatients.length > 0 && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setShowPatientDropdown(false)} />
-                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl max-h-48 overflow-y-auto">
-                      {filteredPatients.map((p) => (
-                        <button
-                          key={p.id}
-                          onClick={() => handleSelectPatient(p)}
-                          className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 border-b border-gray-50 last:border-0"
-                        >
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                            {p.name.split(' ').map((n) => n[0]).join('')}
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">{p.name}</p>
-                            <p className="text-[11px] text-gray-400">{p.age} · {p.gender} · {p.bloodType}</p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {selectedPatient && (
-                <div className="bg-teal-50/50 rounded-xl border border-teal-200 px-4 py-3 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                    {selectedPatient.name.split(' ').map((n) => n[0]).join('')}
+              {/* Patient name banner (when navigated from Patient360) */}
+              {patientName && (
+                <div className="flex items-center gap-3 bg-violet-50 border border-violet-200 rounded-xl px-4 py-3">
+                  <div className="w-9 h-9 rounded-xl bg-violet-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                    {patientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{selectedPatient.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {t('crm.examination.age')}: {selectedPatient.age} · {t('crm.examination.gender')}: {selectedPatient.gender} · {t('crm.examination.bloodType')}: {selectedPatient.bloodType}
-                    </p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-violet-900 truncate">{patientName}</p>
+                    <p className="text-[10px] text-violet-500 font-mono">{patientId}</p>
                   </div>
+                  <CheckCircle2 className="w-4 h-4 text-violet-400 flex-shrink-0" />
                 </div>
               )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Hasta ID *</label>
+                  <input
+                    type="text"
+                    value={patientId}
+                    onChange={(e) => { setPatientId(e.target.value); if (!e.target.value) setPatientName(''); }}
+                    placeholder="Hasta UUID"
+                    readOnly={!!navState.patientId}
+                    className={`w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent ${navState.patientId ? 'bg-gray-50 text-gray-500' : ''}`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Klinik ID</label>
+                  <input
+                    type="text"
+                    value={clinicId}
+                    onChange={(e) => setClinicId(e.target.value)}
+                    placeholder="Opsiyonel"
+                    className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Randevu ID</label>
+                  <input
+                    type="text"
+                    value={appointmentId}
+                    onChange={(e) => setAppointmentId(e.target.value)}
+                    placeholder="Opsiyonel"
+                    className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Vitals */}
+            {/* Vitals — optimized grid */}
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5 space-y-4">
               <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <Activity className="w-4 h-4 text-red-500" />
                 {t('crm.examination.vitals')}
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { key: 'bp', label: t('crm.examination.bloodPressure'), placeholder: '120/80', icon: Heart, unit: 'mmHg' },
-                  { key: 'hr', label: t('crm.examination.heartRate'), placeholder: '72', icon: Activity, unit: 'bpm' },
-                  { key: 'temp', label: t('crm.examination.temperature'), placeholder: '36.6', icon: Thermometer, unit: '°C' },
-                  { key: 'spo2', label: 'SpO₂', placeholder: '98', icon: Activity, unit: '%' },
-                  { key: 'weight', label: t('crm.examination.weight'), placeholder: '70', icon: User, unit: 'kg' },
-                  { key: 'height', label: t('crm.examination.height'), placeholder: '175', icon: User, unit: 'cm' },
+                  { key: 'systolic', label: 'Sistolik', placeholder: '120', icon: Heart, unit: 'mmHg', color: 'border-red-200 focus:ring-red-400' },
+                  { key: 'diastolic', label: 'Diyastolik', placeholder: '80', icon: Heart, unit: 'mmHg', color: 'border-red-200 focus:ring-red-400' },
+                  { key: 'pulse', label: t('crm.examination.heartRate'), placeholder: '72', icon: Activity, unit: 'bpm', color: 'border-pink-200 focus:ring-pink-400' },
+                  { key: 'temperature', label: t('crm.examination.temperature'), placeholder: '36.6', icon: Thermometer, unit: '°C', color: 'border-orange-200 focus:ring-orange-400' },
+                  { key: 'spo2', label: 'SpO₂', placeholder: '98', icon: Activity, unit: '%', color: 'border-blue-200 focus:ring-blue-400' },
+                  { key: 'weight', label: t('crm.examination.weight'), placeholder: '70', icon: User, unit: 'kg', color: 'border-gray-200 focus:ring-teal-400' },
+                  { key: 'height', label: t('crm.examination.height'), placeholder: '175', icon: User, unit: 'cm', color: 'border-gray-200 focus:ring-teal-400' },
                 ].map((v) => (
-                  <div key={v.key}>
-                    <label className="block text-[10px] font-medium text-gray-500 mb-1">{v.label}</label>
+                  <div key={v.key} className="relative">
+                    <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1 tracking-wide">{v.label}</label>
                     <div className="relative">
+                      <v.icon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                       <input
-                        type="text"
+                        type="number"
+                        step="any"
                         value={vitals[v.key]}
                         onChange={(e) => setVitals({ ...vitals, [v.key]: e.target.value })}
                         placeholder={v.placeholder}
-                        className="w-full h-10 px-3 pr-12 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        className={`w-full h-10 pl-9 pr-12 border rounded-xl text-sm font-medium ${v.color} bg-white transition-all`}
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-medium">{v.unit}</span>
                     </div>
@@ -770,7 +895,7 @@ const CRMExamination = () => {
               </div>
             </div>
 
-            {/* Chief Complaint & Exam Notes */}
+            {/* Diagnosis Note & Examination Note */}
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5 space-y-4">
               <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <Stethoscope className="w-4 h-4 text-teal-500" />
@@ -778,46 +903,38 @@ const CRMExamination = () => {
               </h2>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.examination.chiefComplaint')}</label>
-                <input
-                  type="text"
-                  value={chiefComplaint}
-                  onChange={(e) => setChiefComplaint(e.target.value)}
-                  placeholder={t('crm.examination.chiefComplaintPlaceholder')}
-                  className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.examination.physicalExam')}</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">Tanı Notu</label>
                 <textarea
                   rows={3}
-                  value={physicalExam}
-                  onChange={(e) => setPhysicalExam(e.target.value)}
-                  placeholder={t('crm.examination.physicalExamPlaceholder')}
+                  value={diagnosisNote}
+                  onChange={(e) => setDiagnosisNote(e.target.value)}
+                  placeholder="Tanıya ilişkin notlar..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.examination.additionalNotes')}</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">Muayene Notu</label>
+                <textarea
+                  rows={4}
+                  value={examinationNote}
+                  onChange={(e) => setExaminationNote(e.target.value)}
+                  placeholder="Fizik muayene bulguları, şikayet, plan..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <ClipboardCheck className="w-3.5 h-3.5 text-emerald-500" />
+                  Tedavi Planı / Treatment Plan
+                </label>
                 <textarea
                   rows={3}
-                  value={examNotes}
-                  onChange={(e) => setExamNotes(e.target.value)}
-                  placeholder={t('crm.examination.additionalNotesPlaceholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.examination.plan')}</label>
-                <textarea
-                  rows={2}
-                  value={plan}
-                  onChange={(e) => setPlan(e.target.value)}
-                  placeholder={t('crm.examination.planPlaceholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
+                  value={treatmentPlan}
+                  onChange={(e) => setTreatmentPlan(e.target.value)}
+                  placeholder="Önerilen tedavi yaklaşımı, kontrol tarihi, yaşam tarzı önerileri..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
                 />
               </div>
             </div>
@@ -900,13 +1017,20 @@ const CRMExamination = () => {
 
             {/* Action Buttons */}
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5 space-y-3">
+              {saveError && (
+                <div className="bg-red-50 border border-red-200 rounded-xl px-3 py-2 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                  <p className="text-xs text-red-700">{saveError}</p>
+                </div>
+              )}
+
               <button
                 onClick={handleSave}
                 disabled={isSaving}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md disabled:opacity-60"
               >
                 {isSaving ? (
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 ) : saveSuccess ? (
                   <CheckCircle2 className="w-4 h-4" />
                 ) : (
@@ -916,10 +1040,16 @@ const CRMExamination = () => {
               </button>
 
               <div className="grid grid-cols-2 gap-3">
-                <button className="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-xs font-medium hover:bg-gray-50 transition-colors">
-                  <Printer className="w-3.5 h-3.5" />
-                  {t('common.print')}
-                </button>
+                {lastSavedExam && (
+                  <button
+                    onClick={() => handleDownloadPdf(lastSavedExam.id)}
+                    disabled={pdfLoading}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl text-xs font-medium hover:bg-blue-100 transition-colors disabled:opacity-60"
+                  >
+                    {pdfLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
+                    Reçete PDF
+                  </button>
+                )}
                 <button
                   onClick={handleReset}
                   className="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-xs font-medium hover:bg-gray-50 transition-colors"
@@ -946,63 +1076,88 @@ const CRMExamination = () => {
                 placeholder={t('crm.examination.searchHistory')}
                 className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none flex-1"
               />
+              <button
+                onClick={loadExaminations}
+                className="text-xs text-teal-600 hover:text-teal-700 font-medium px-2 py-1 rounded-lg hover:bg-teal-50 transition-colors"
+              >
+                Yenile
+              </button>
             </div>
 
             <div className="divide-y divide-gray-50">
-              {filteredHistory.length === 0 ? (
+              {historyLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                  <Loader2 className="w-8 h-8 animate-spin mb-2" />
+                  <p className="text-sm font-medium">Yükleniyor...</p>
+                </div>
+              ) : filteredHistory.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                   <Stethoscope className="w-10 h-10 mb-2 opacity-40" />
                   <p className="text-sm font-medium">{t('common.noResults')}</p>
                 </div>
               ) : (
-                filteredHistory.map((exam) => (
-                  <div
-                    key={exam.id}
-                    onClick={() => setSelectedExam(exam)}
-                    className="px-5 py-4 hover:bg-gray-50/50 transition-colors cursor-pointer group"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-3 flex-1 min-w-0">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5">
-                          {exam.patient.split(' ').map((n) => n[0]).join('')}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-sm font-semibold text-gray-900">{exam.patient}</p>
-                            <span className="text-[11px] text-gray-400">{exam.date}</span>
+                filteredHistory.map((exam) => {
+                  const patientName = exam.patient?.fullname || 'Hasta';
+                  const initials = patientName.split(' ').map((n) => n[0]).join('').slice(0, 2);
+                  const hasAlert = exam.vitals_alert?.is_alert;
+                  const vitalsData = exam.vitals || {};
+
+                  return (
+                    <div
+                      key={exam.id}
+                      onClick={() => handleViewExam(exam)}
+                      className={`px-5 py-4 hover:bg-gray-50/50 transition-colors cursor-pointer group ${hasAlert ? 'border-l-4 border-l-red-400' : ''}`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5 ${
+                            hasAlert
+                              ? 'bg-gradient-to-br from-red-400 to-orange-500'
+                              : 'bg-gradient-to-br from-teal-400 to-emerald-500'
+                          }`}>
+                            {initials}
                           </div>
-                          <div className="flex flex-wrap gap-1.5 mt-1.5">
-                            {exam.diagnosis.map((d) => (
-                              <span
-                                key={d.code}
-                                className="inline-flex items-center gap-1 text-[10px] font-medium bg-teal-50 text-teal-700 px-2 py-0.5 rounded-lg border border-teal-200"
-                              >
-                                <span className="font-bold">{d.code}</span> {d.desc}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="text-sm font-semibold text-gray-900">{patientName}</p>
+                              <span className="text-[11px] text-gray-400">{new Date(exam.created_at).toLocaleDateString('tr-TR')}</span>
+                              {hasAlert && (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded-md">
+                                  <AlertTriangle className="w-2.5 h-2.5" /> ALERT
+                                </span>
+                              )}
+                            </div>
+                            {exam.icd10_code && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-medium bg-teal-50 text-teal-700 px-2 py-0.5 rounded-lg border border-teal-200 mt-1">
+                                <span className="font-bold">{exam.icd10_code}</span>
                               </span>
-                            ))}
-                          </div>
-                          <div className="flex flex-wrap gap-1.5 mt-1.5">
-                            {exam.medications.map((m, i) => (
-                              <span
-                                key={i}
-                                className="inline-flex items-center gap-1 text-[10px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-lg border border-blue-200"
-                              >
-                                <Pill className="w-2.5 h-2.5" /> {m.name}
-                              </span>
-                            ))}
+                            )}
+                            {exam.prescriptions && exam.prescriptions.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                {exam.prescriptions.slice(0, 3).map((m, i) => (
+                                  <span key={i} className="inline-flex items-center gap-1 text-[10px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-lg border border-blue-200">
+                                    <Pill className="w-2.5 h-2.5" /> {m.drug_name}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <div className="text-right hidden sm:block">
-                          <p className="text-[10px] text-gray-400">{t('crm.examination.bloodPressure')}: <span className="font-medium text-gray-600">{exam.vitals.bp}</span></p>
-                          <p className="text-[10px] text-gray-400">HR: <span className="font-medium text-gray-600">{exam.vitals.hr}</span></p>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="text-right hidden sm:block">
+                            {vitalsData.systolic && (
+                              <p className="text-[10px] text-gray-400">BP: <span className="font-medium text-gray-600">{vitalsData.systolic}/{vitalsData.diastolic}</span></p>
+                            )}
+                            {vitalsData.pulse && (
+                              <p className="text-[10px] text-gray-400">HR: <span className="font-medium text-gray-600">{vitalsData.pulse}</span></p>
+                            )}
+                          </div>
+                          <Eye className="w-4 h-4 text-gray-300 group-hover:text-teal-500 transition-colors" />
                         </div>
-                        <Eye className="w-4 h-4 text-gray-300 group-hover:text-teal-500 transition-colors" />
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
@@ -1010,90 +1165,119 @@ const CRMExamination = () => {
           {/* Exam Detail Modal */}
           {selectedExam && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+              <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                   <h2 className="text-base font-bold text-gray-900">{t('crm.examination.examDetails')}</h2>
                   <button
-                    onClick={() => setSelectedExam(null)}
+                    onClick={() => { setSelectedExam(null); setSelectedExamDetail(null); }}
                     className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="px-6 py-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-base font-bold text-gray-900">{selectedExam.patient}</p>
-                      <p className="text-xs text-gray-500">{t('crm.examination.age')} {selectedExam.age} · {selectedExam.date}</p>
-                    </div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border capitalize bg-emerald-50 text-emerald-700 border-emerald-200">
-                      {selectedExam.status}
-                    </span>
-                  </div>
 
-                  {/* Vitals */}
-                  <div>
-                    <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('crm.examination.vitals')}</p>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[
-                        { label: 'BP', value: selectedExam.vitals.bp, unit: 'mmHg' },
-                        { label: 'HR', value: selectedExam.vitals.hr, unit: 'bpm' },
-                        { label: 'Temp', value: selectedExam.vitals.temp, unit: '°C' },
-                        { label: 'SpO₂', value: selectedExam.vitals.spo2, unit: '%' },
-                      ].map((v) => (
-                        <div key={v.label} className="bg-gray-50 rounded-lg px-3 py-2 text-center border border-gray-100">
-                          <p className="text-xs font-bold text-gray-900">{v.value}</p>
-                          <p className="text-[9px] text-gray-400">{v.label} ({v.unit})</p>
+                {detailLoading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
+                  </div>
+                ) : selectedExamDetail && (
+                  <div className="px-6 py-5 space-y-4">
+                    {/* Patient info */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-base font-bold text-gray-900">{selectedExamDetail.patient?.fullname || 'Hasta'}</p>
+                        <p className="text-xs text-gray-500">{new Date(selectedExamDetail.created_at).toLocaleDateString('tr-TR')}</p>
+                      </div>
+                      {selectedExamDetail.icd10_code && (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold border bg-teal-50 text-teal-700 border-teal-200">
+                          {selectedExamDetail.icd10_code}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Vitals Alert */}
+                    <VitalsAlertBanner vitalsAlert={selectedExamDetail.vitals_alert} t={t} />
+
+                    {/* Vitals Grid */}
+                    {selectedExamDetail.vitals && (
+                      <div>
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('crm.examination.vitals')}</p>
+                        <div className="grid grid-cols-4 gap-2">
+                          {[
+                            { label: 'Sistolik', value: selectedExamDetail.vitals.systolic, unit: 'mmHg' },
+                            { label: 'Diyastolik', value: selectedExamDetail.vitals.diastolic, unit: 'mmHg' },
+                            { label: 'Nabız', value: selectedExamDetail.vitals.pulse, unit: 'bpm' },
+                            { label: 'Ateş', value: selectedExamDetail.vitals.temperature, unit: '°C' },
+                            { label: 'SpO₂', value: selectedExamDetail.vitals.spo2, unit: '%' },
+                          ].filter(v => v.value).map((v) => (
+                            <div key={v.label} className="bg-gray-50 rounded-lg px-3 py-2 text-center border border-gray-100">
+                              <p className="text-xs font-bold text-gray-900">{v.value}</p>
+                              <p className="text-[9px] text-gray-400">{v.label} ({v.unit})</p>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                      </div>
+                    )}
 
-                  {/* Diagnoses */}
-                  <div>
-                    <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('crm.examination.diagnosis')}</p>
-                    <div className="space-y-1.5">
-                      {selectedExam.diagnosis.map((d) => (
-                        <div key={d.code} className="bg-teal-50 rounded-lg px-3 py-2 border border-teal-100">
-                          <span className="text-xs font-bold text-teal-700">{d.code}</span>
-                          <span className="text-xs text-teal-600 ml-2">{d.desc}</span>
+                    {/* Diagnosis note */}
+                    {selectedExamDetail.diagnosis_note && (
+                      <div>
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Tanı Notu</p>
+                        <p className="text-sm text-gray-600 bg-teal-50 rounded-xl px-3 py-2 border border-teal-100">{selectedExamDetail.diagnosis_note}</p>
+                      </div>
+                    )}
+
+                    {/* Medications */}
+                    {selectedExamDetail.prescriptions && selectedExamDetail.prescriptions.length > 0 && (
+                      <div>
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('crm.examination.medications')}</p>
+                        <div className="space-y-2">
+                          {selectedExamDetail.prescriptions.map((m, i) => (
+                            <div key={i} className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-100">
+                              <p className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                                <Pill className="w-3.5 h-3.5 text-teal-500" />{m.drug_name}
+                              </p>
+                              <div className="flex items-center gap-3 mt-1">
+                                <span className="text-[11px] text-gray-500">Doz: <strong className="text-gray-700">{m.dosage}</strong></span>
+                                {m.duration && <span className="text-[11px] text-gray-500">Süre: <strong className="text-gray-700">{m.duration}</strong></span>}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                      </div>
+                    )}
 
-                  {/* Medications */}
-                  <div>
-                    <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('crm.examination.medications')}</p>
-                    <div className="space-y-2">
-                      {selectedExam.medications.map((m, i) => (
-                        <div key={i} className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-100">
-                          <p className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
-                            <Pill className="w-3.5 h-3.5 text-teal-500" />{m.name}
-                          </p>
-                          <div className="flex items-center gap-3 mt-1">
-                            <span className="text-[11px] text-gray-500">{t('crm.prescriptions.dosage')}: <strong className="text-gray-700">{m.dosage}</strong></span>
-                            <span className="text-[11px] text-gray-500">{t('crm.prescriptions.duration')}: <strong className="text-gray-700">{m.duration}</strong></span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                    {/* Treatment plan */}
+                    {selectedExamDetail.treatment_plan && (
+                      <div>
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                          <ClipboardCheck className="w-3 h-3 text-emerald-500" /> Tedavi Planı
+                        </p>
+                        <p className="text-sm text-gray-600 bg-emerald-50 rounded-xl px-3 py-2 border border-emerald-100 whitespace-pre-wrap">{selectedExamDetail.treatment_plan}</p>
+                      </div>
+                    )}
 
-                  {/* Notes */}
-                  {selectedExam.notes && (
-                    <div>
-                      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('common.notes')}</p>
-                      <p className="text-sm text-gray-600 bg-amber-50 rounded-xl px-3 py-2 border border-amber-100">{selectedExam.notes}</p>
-                    </div>
-                  )}
-                </div>
+                    {/* Examination note */}
+                    {selectedExamDetail.examination_note && (
+                      <div>
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Muayene Notu</p>
+                        <p className="text-sm text-gray-600 bg-amber-50 rounded-xl px-3 py-2 border border-amber-100 whitespace-pre-wrap">{selectedExamDetail.examination_note}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
-                  <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-1.5">
-                    <Printer className="w-3.5 h-3.5" /> {t('common.print')}
+                  <button
+                    onClick={() => handleDownloadPdf(selectedExam.id)}
+                    disabled={pdfLoading}
+                    className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-xl transition-colors flex items-center gap-1.5 disabled:opacity-60"
+                  >
+                    {pdfLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                    Reçete PDF İndir
                   </button>
                   <button
-                    onClick={() => setSelectedExam(null)}
+                    onClick={() => { setSelectedExam(null); setSelectedExamDetail(null); }}
                     className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm"
                   >
                     {t('common.close')}

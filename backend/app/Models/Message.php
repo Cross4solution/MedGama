@@ -29,7 +29,8 @@ class Message extends Model
     protected function casts(): array
     {
         return [
-            'metadata' => 'array',
+            'body'      => 'encrypted',
+            'metadata'  => 'array',
             'is_edited' => 'boolean',
             'edited_at' => 'datetime',
             'is_active' => 'boolean',

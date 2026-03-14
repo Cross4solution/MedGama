@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { AlertTriangle, CheckCircle, Trash2, ChevronLeft, ChevronRight, Loader2, Eye, EyeOff } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Trash2, ChevronLeft, ChevronRight, Loader2, Eye, EyeOff, UserX } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 
 export default function AdminModeration() {
@@ -42,6 +42,16 @@ export default function AdminModeration() {
     try {
       await adminAPI.removeReport(id);
       setReports(prev => prev.map(r => r.id === id ? { ...r, admin_status: 'hidden' } : r));
+    } catch {}
+    setActionLoading(null);
+  };
+
+  const handleSuspend = async (userId, fullname) => {
+    if (!window.confirm(`Suspend user "${fullname}"? They will lose access to the platform.`)) return;
+    setActionLoading(userId);
+    try {
+      await adminAPI.suspendUser(userId, true);
+      alert(`User "${fullname}" has been suspended.`);
     } catch {}
     setActionLoading(null);
   };
@@ -151,6 +161,15 @@ export default function AdminModeration() {
                       >
                         <Trash2 className="w-3.5 h-3.5" /> Remove Post
                       </button>
+                      {r.post?.author_id && (
+                        <button
+                          onClick={() => handleSuspend(r.post.author_id, r.post.author?.fullname)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-orange-600 bg-orange-50 hover:bg-orange-100 border border-orange-200 transition-colors"
+                          title="Suspend the post author"
+                        >
+                          <UserX className="w-3.5 h-3.5" /> Suspend User
+                        </button>
+                      )}
                     </>
                   ) : (
                     <span className="text-xs text-gray-400 italic">Resolved</span>

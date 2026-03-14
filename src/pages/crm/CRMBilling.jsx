@@ -1,552 +1,682 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Receipt, CreditCard, Banknote, Building2, Plus, Search, Filter,
   ChevronLeft, ChevronRight, X, Check, AlertTriangle, Clock,
-  DollarSign, TrendingUp, Users, FileText, Download, Edit3, Trash2,
-  Wallet, ArrowUpRight, CircleDollarSign, BadgePercent,
+  TrendingUp, Users, FileText, Download, Loader2,
+  Wallet, CircleDollarSign, Eye, CalendarPlus,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import { billingAPI, patientAPI } from '../../lib/api';
 
-// ─── Mock: Procedure Price List ────────────────────────────────
-const INITIAL_PROCEDURES = [
-  { id: 1, name: 'General Consultation', category: 'Consultation', price: 350, currency: '€', active: true },
-  { id: 2, name: 'Follow-up Visit', category: 'Consultation', price: 200, currency: '€', active: true },
-  { id: 3, name: 'Check-up Package', category: 'Check-up', price: 450, currency: '€', active: true },
-  { id: 4, name: 'Blood Test Panel', category: 'Laboratory', price: 180, currency: '€', active: true },
-  { id: 5, name: 'X-Ray', category: 'Imaging', price: 250, currency: '€', active: true },
-  { id: 6, name: 'MRI Scan', category: 'Imaging', price: 1200, currency: '€', active: true },
-  { id: 7, name: 'Ultrasound', category: 'Imaging', price: 300, currency: '€', active: true },
-  { id: 8, name: 'Minor Surgery', category: 'Procedure', price: 2500, currency: '€', active: true },
-  { id: 9, name: 'Dental Cleaning', category: 'Dental', price: 150, currency: '€', active: true },
-  { id: 10, name: 'Physical Therapy Session', category: 'Therapy', price: 120, currency: '€', active: true },
-  { id: 11, name: 'Dermatology Consultation', category: 'Consultation', price: 400, currency: '€', active: true },
-  { id: 12, name: 'ECG', category: 'Cardiology', price: 200, currency: '€', active: true },
-];
-
-// ─── Mock: Payment Records ─────────────────────────────────────
-const INITIAL_PAYMENTS = [
-  { id: 1, date: '2026-02-16', patient: 'Zeynep Kaya', procedure: 'General Consultation', amount: 350, method: 'credit_card', status: 'completed', invoice: 'PAY-2026-0021' },
-  { id: 2, date: '2026-02-16', patient: 'Ali Yilmaz', procedure: 'MRI Scan', amount: 1200, paid: 600, method: 'bank_transfer', status: 'partial', invoice: 'PAY-2026-0020' },
-  { id: 3, date: '2026-02-15', patient: 'Selin Acar', procedure: 'Check-up Package', amount: 450, method: 'cash', status: 'completed', invoice: 'PAY-2026-0019' },
-  { id: 4, date: '2026-02-15', patient: 'Mehmet Ozkan', procedure: 'Blood Test Panel', amount: 180, method: 'credit_card', status: 'completed', invoice: 'PAY-2026-0018' },
-  { id: 5, date: '2026-02-14', patient: 'Ayse Demir', procedure: 'Minor Surgery', amount: 2500, paid: 1000, method: 'bank_transfer', status: 'partial', invoice: 'PAY-2026-0017' },
-  { id: 6, date: '2026-02-14', patient: 'Fatma Koc', procedure: 'Follow-up Visit', amount: 200, method: 'cash', status: 'completed', invoice: 'PAY-2026-0016' },
-  { id: 7, date: '2026-02-13', patient: 'Elif Arslan', procedure: 'Dental Cleaning', amount: 150, method: 'credit_card', status: 'completed', invoice: 'PAY-2026-0015' },
-  { id: 8, date: '2026-02-13', patient: 'Can Yildiz', procedure: 'Physical Therapy Session', amount: 120, method: 'cash', status: 'completed', invoice: 'PAY-2026-0014' },
-];
-
-// ─── Mock: Outstanding Balances ────────────────────────────────
-const OUTSTANDING_PATIENTS = [
-  { id: 1, patient: 'Ali Yilmaz', phone: '+90 532 111 2233', totalOwed: 600, procedures: [{ name: 'MRI Scan', date: '2026-02-16', total: 1200, paid: 600, remaining: 600 }], lastPayment: '2026-02-16', daysOverdue: 0 },
-  { id: 2, patient: 'Ayse Demir', phone: '+90 533 444 5566', totalOwed: 1500, procedures: [{ name: 'Minor Surgery', date: '2026-02-14', total: 2500, paid: 1000, remaining: 1500 }], lastPayment: '2026-02-14', daysOverdue: 2 },
-  { id: 3, patient: 'Burak Sahin', phone: '+90 535 777 8899', totalOwed: 450, procedures: [{ name: 'Check-up Package', date: '2026-02-10', total: 450, paid: 0, remaining: 450 }], lastPayment: null, daysOverdue: 6 },
-  { id: 4, patient: 'Deniz Korkmaz', phone: '+90 536 222 3344', totalOwed: 350, procedures: [{ name: 'General Consultation', date: '2026-02-08', total: 350, paid: 0, remaining: 350 }], lastPayment: null, daysOverdue: 8 },
-  { id: 5, patient: 'Pinar Dogan', phone: '+90 537 555 6677', totalOwed: 200, procedures: [{ name: 'Follow-up Visit', date: '2026-02-12', total: 200, paid: 0, remaining: 200 }], lastPayment: null, daysOverdue: 4 },
-];
-
-// ─── Patients list for payment form ────────────────────────────
-const PATIENT_LIST = [
-  'Zeynep Kaya', 'Ali Yilmaz', 'Selin Acar', 'Mehmet Ozkan', 'Ayse Demir',
-  'Fatma Koc', 'Elif Arslan', 'Can Yildiz', 'Burak Sahin', 'Deniz Korkmaz', 'Pinar Dogan',
-];
+// ─── Helpers ─────────────────────────────────────────────────
+const fmt = (v, currency = 'EUR') => {
+  const sym = { EUR: '€', USD: '$', TRY: '₺', GBP: '£' }[currency] || currency + ' ';
+  return `${sym}${Number(v || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
 
 const StatusBadge = ({ status }) => {
   const styles = {
-    completed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    partial: 'bg-amber-50 text-amber-700 border-amber-200',
-    unpaid: 'bg-red-50 text-red-700 border-red-200',
+    paid: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    pending: 'bg-amber-50 text-amber-700 border-amber-200',
+    partial: 'bg-blue-50 text-blue-700 border-blue-200',
+    cancelled: 'bg-gray-100 text-gray-500 border-gray-200',
   };
-  const labels = { completed: 'Paid', partial: 'Partial', unpaid: 'Unpaid' };
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border capitalize ${styles[status] || styles.unpaid}`}>{labels[status] || status}</span>;
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border capitalize ${styles[status] || styles.pending}`}>
+      {status}
+    </span>
+  );
 };
 
-const OverdueBadge = ({ days }) => {
-  if (days === 0) return <span className="text-xs text-gray-500">Today</span>;
-  if (days <= 3) return <span className="text-xs text-amber-600 font-medium">{days}d</span>;
-  return <span className="text-xs text-red-600 font-semibold">{days}d overdue</span>;
-};
+const StatCard = ({ label, value, icon: Icon, bg, iconColor, border }) => (
+  <div className={`bg-white rounded-2xl border ${border} p-4 sm:p-5 hover:shadow-md transition-shadow`}>
+    <div className="flex items-start justify-between mb-3">
+      <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center`}>
+        <Icon className={`w-5 h-5 ${iconColor}`} />
+      </div>
+    </div>
+    <p className="text-xl sm:text-2xl font-bold text-gray-900">{value}</p>
+    <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+  </div>
+);
 
-const CRMBilling = () => {
-  const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState('procedures');
-  const [procedures, setProcedures] = useState(INITIAL_PROCEDURES);
-  const [payments] = useState(INITIAL_PAYMENTS);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [showProcedureModal, setShowProcedureModal] = useState(false);
-  const [editingProcedure, setEditingProcedure] = useState(null);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const perPage = 8;
+// ─── Create Invoice Modal ────────────────────────────────────
+const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
+  const [loading, setLoading] = useState(false);
+  const [patients, setPatients] = useState([]);
+  const [patientsLoading, setPatientsLoading] = useState(true);
+  const [form, setForm] = useState({
+    patient_id: '',
+    tax_rate: '0',
+    discount_amount: '0',
+    currency: 'EUR',
+    payment_method: '',
+    notes: '',
+    issue_date: new Date().toISOString().slice(0, 10),
+    due_date: '',
+  });
+  const [items, setItems] = useState([{ description: '', category: '', quantity: 1, unit_price: '' }]);
 
-  // Procedure form state
-  const [procForm, setProcForm] = useState({ name: '', category: '', price: '', currency: '€' });
+  useEffect(() => {
+    setPatientsLoading(true);
+    patientAPI.list({ per_page: 200 })
+      .then(res => {
+        const data = res?.data || res;
+        setPatients(data.data || []);
+      })
+      .catch(() => {})
+      .finally(() => setPatientsLoading(false));
+  }, []);
 
-  // Payment form state
-  const [payForm, setPayForm] = useState({ patient: '', procedure: '', amount: '', method: 'cash', notes: '' });
-
-  const tabs = [
-    { key: 'procedures', label: t('crm.billing.procedures'), icon: Receipt },
-    { key: 'payment', label: t('crm.billing.receivePayment'), icon: Wallet },
-    { key: 'balances', label: t('crm.billing.outstandingBalances'), icon: Users },
-  ];
-
-  // ─── Stats ───────────────────────────────────────────────────
-  const stats = useMemo(() => {
-    const totalCollected = payments.filter(p => p.status === 'completed').reduce((s, p) => s + p.amount, 0);
-    const totalPartial = payments.filter(p => p.status === 'partial').reduce((s, p) => s + (p.paid || 0), 0);
-    const totalOutstanding = OUTSTANDING_PATIENTS.reduce((s, p) => s + p.totalOwed, 0);
-    const todayCollected = payments.filter(p => p.date === '2026-02-16' && p.status === 'completed').reduce((s, p) => s + p.amount, 0) +
-      payments.filter(p => p.date === '2026-02-16' && p.status === 'partial').reduce((s, p) => s + (p.paid || 0), 0);
-    return { totalCollected: totalCollected + totalPartial, totalOutstanding, todayCollected, debtorCount: OUTSTANDING_PATIENTS.length };
-  }, [payments]);
-
-  // ─── Filtered Procedures ─────────────────────────────────────
-  const categories = useMemo(() => Array.from(new Set(procedures.map(p => p.category))), [procedures]);
-
-  const filteredProcedures = useMemo(() => {
-    return procedures.filter(p => {
-      if (categoryFilter !== 'all' && p.category !== categoryFilter) return false;
-      if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-      return true;
-    });
-  }, [procedures, categoryFilter, searchQuery]);
-
-  // ─── Filtered Payments ───────────────────────────────────────
-  const filteredPayments = useMemo(() => {
-    return payments.filter(p => {
-      if (searchQuery && !p.patient.toLowerCase().includes(searchQuery.toLowerCase()) && !p.invoice.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-      return true;
-    });
-  }, [payments, searchQuery]);
-
-  const totalPages = Math.ceil((activeTab === 'procedures' ? filteredProcedures : filteredPayments).length / perPage);
-  const paginatedProcedures = filteredProcedures.slice((currentPage - 1) * perPage, currentPage * perPage);
-
-  // ─── Handlers ────────────────────────────────────────────────
-  const handleAddProcedure = () => {
-    setEditingProcedure(null);
-    setProcForm({ name: '', category: '', price: '', currency: '€' });
-    setShowProcedureModal(true);
+  const addItem = () => setItems(prev => [...prev, { description: '', category: '', quantity: 1, unit_price: '' }]);
+  const removeItem = (i) => setItems(prev => prev.filter((_, idx) => idx !== i));
+  const updateItem = (i, field, value) => {
+    setItems(prev => prev.map((item, idx) => idx === i ? { ...item, [field]: value } : item));
   };
 
-  const handleEditProcedure = (proc) => {
-    setEditingProcedure(proc);
-    setProcForm({ name: proc.name, category: proc.category, price: String(proc.price), currency: proc.currency });
-    setShowProcedureModal(true);
-  };
+  const subtotal = items.reduce((s, it) => s + (Number(it.quantity) || 1) * (Number(it.unit_price) || 0), 0);
+  const taxAmount = subtotal * (Number(form.tax_rate) || 0) / 100;
+  const discount = Number(form.discount_amount) || 0;
+  const grandTotal = Math.max(0, subtotal + taxAmount - discount);
 
-  const handleSaveProcedure = () => {
-    if (!procForm.name || !procForm.category || !procForm.price) return;
-    if (editingProcedure) {
-      setProcedures(prev => prev.map(p => p.id === editingProcedure.id ? { ...p, name: procForm.name, category: procForm.category, price: Number(procForm.price), currency: procForm.currency } : p));
-    } else {
-      const newId = Math.max(...procedures.map(p => p.id), 0) + 1;
-      setProcedures(prev => [...prev, { id: newId, name: procForm.name, category: procForm.category, price: Number(procForm.price), currency: procForm.currency, active: true }]);
+  const canSubmit = form.patient_id && items.length > 0 && items.every(it => it.description && Number(it.unit_price) > 0);
+
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+    setLoading(true);
+    try {
+      await billingAPI.createInvoice({
+        ...form,
+        tax_rate: Number(form.tax_rate) || 0,
+        discount_amount: Number(form.discount_amount) || 0,
+        items: items.map(it => ({
+          description: it.description,
+          category: it.category || null,
+          quantity: Number(it.quantity) || 1,
+          unit_price: Number(it.unit_price),
+        })),
+      });
+      onCreated();
+      onClose();
+    } catch (err) {
+      console.error('Create invoice error:', err);
+      alert('Failed to create invoice');
+    } finally {
+      setLoading(false);
     }
-    setShowProcedureModal(false);
-  };
-
-  const handleDeleteProcedure = (id) => {
-    setProcedures(prev => prev.filter(p => p.id !== id));
-  };
-
-  const handlePaymentSubmit = () => {
-    if (!payForm.patient || !payForm.procedure || !payForm.amount || !payForm.method) return;
-    // In production, this would POST to API
-    setShowPaymentModal(true);
-  };
-
-  const resetPaymentForm = () => {
-    setPayForm({ patient: '', procedure: '', amount: '', method: 'cash', notes: '' });
-    setShowPaymentModal(false);
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-teal-50 flex items-center justify-center"><Receipt className="w-4.5 h-4.5 text-teal-600" /></div>
+            <h2 className="text-base font-bold text-gray-900">{t('crm.billing.createInvoice', 'Create Invoice')}</h2>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400"><X className="w-4 h-4" /></button>
+        </div>
+
+        <div className="px-6 py-5 space-y-5">
+          {/* Patient */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('common.patient')} *</label>
+            {patientsLoading ? (
+              <div className="flex items-center gap-2 text-xs text-gray-400"><Loader2 className="w-3 h-3 animate-spin" /> Loading patients...</div>
+            ) : (
+              <select value={form.patient_id} onChange={e => setForm({ ...form, patient_id: e.target.value })}
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none">
+                <option value="">{t('crm.billing.selectPatient', 'Select Patient')}</option>
+                {patients.map(p => <option key={p.id} value={p.id}>{p.fullname} — {p.email || p.mobile || ''}</option>)}
+              </select>
+            )}
+          </div>
+
+          {/* Items */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-semibold text-gray-700">{t('crm.billing.serviceItems', 'Service Items')} *</label>
+              <button onClick={addItem} className="text-[11px] text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-0.5">
+                <Plus className="w-3 h-3" /> {t('crm.billing.addItem', 'Add Item')}
+              </button>
+            </div>
+            <div className="space-y-3">
+              {items.map((item, i) => (
+                <div key={i} className="flex items-start gap-2 bg-gray-50 rounded-xl p-3">
+                  <div className="flex-1 grid grid-cols-12 gap-2">
+                    <input type="text" placeholder="Description *" value={item.description}
+                      onChange={e => updateItem(i, 'description', e.target.value)}
+                      className="col-span-5 h-9 px-2.5 text-xs border border-gray-200 rounded-lg focus:ring-1 focus:ring-teal-400 focus:border-transparent" />
+                    <input type="text" placeholder="Category" value={item.category}
+                      onChange={e => updateItem(i, 'category', e.target.value)}
+                      className="col-span-3 h-9 px-2.5 text-xs border border-gray-200 rounded-lg focus:ring-1 focus:ring-teal-400 focus:border-transparent" />
+                    <input type="number" min="1" placeholder="Qty" value={item.quantity}
+                      onChange={e => updateItem(i, 'quantity', e.target.value)}
+                      className="col-span-1 h-9 px-2 text-xs border border-gray-200 rounded-lg text-center focus:ring-1 focus:ring-teal-400" />
+                    <input type="number" min="0" step="0.01" placeholder="Price *" value={item.unit_price}
+                      onChange={e => updateItem(i, 'unit_price', e.target.value)}
+                      className="col-span-2 h-9 px-2 text-xs border border-gray-200 rounded-lg text-right focus:ring-1 focus:ring-teal-400" />
+                    <div className="col-span-1 flex items-center justify-center">
+                      {items.length > 1 && (
+                        <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-600"><X className="w-3.5 h-3.5" /></button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Financial */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div>
+              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Currency</label>
+              <select value={form.currency} onChange={e => setForm({ ...form, currency: e.target.value })}
+                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg bg-white">
+                {['EUR', 'USD', 'TRY', 'GBP'].map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.billing.taxRate', 'Tax Rate')} (%)</label>
+              <input type="number" min="0" max="100" step="0.01" value={form.tax_rate}
+                onChange={e => setForm({ ...form, tax_rate: e.target.value })}
+                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg text-right" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.billing.discount', 'Discount')}</label>
+              <input type="number" min="0" step="0.01" value={form.discount_amount}
+                onChange={e => setForm({ ...form, discount_amount: e.target.value })}
+                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg text-right" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.billing.paymentMethod', 'Payment Method')}</label>
+              <select value={form.payment_method} onChange={e => setForm({ ...form, payment_method: e.target.value })}
+                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg bg-white">
+                <option value="">—</option>
+                <option value="cash">{t('crm.billing.cash', 'Cash')}</option>
+                <option value="credit_card">{t('crm.billing.creditCard', 'Credit Card')}</option>
+                <option value="bank_transfer">{t('crm.billing.bankTransfer', 'Bank Transfer')}</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Dates */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.billing.issueDate', 'Issue Date')}</label>
+              <input type="date" value={form.issue_date} onChange={e => setForm({ ...form, issue_date: e.target.value })}
+                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.billing.dueDate', 'Due Date')}</label>
+              <input type="date" value={form.due_date} onChange={e => setForm({ ...form, due_date: e.target.value })}
+                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg" />
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('common.notes')}</label>
+            <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2}
+              className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl resize-none focus:ring-1 focus:ring-teal-400" />
+          </div>
+
+          {/* Totals Summary */}
+          <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-1.5">
+            <div className="flex justify-between text-xs"><span className="text-gray-500">Subtotal</span><span className="font-medium">{fmt(subtotal, form.currency)}</span></div>
+            <div className="flex justify-between text-xs"><span className="text-gray-500">Tax ({form.tax_rate}%)</span><span className="font-medium">{fmt(taxAmount, form.currency)}</span></div>
+            {discount > 0 && <div className="flex justify-between text-xs"><span className="text-gray-500">Discount</span><span className="font-medium text-red-500">-{fmt(discount, form.currency)}</span></div>}
+            <div className="flex justify-between text-sm font-bold border-t border-gray-200 pt-2 mt-1">
+              <span className="text-gray-900">Grand Total</span>
+              <span className="text-teal-700">{fmt(grandTotal, form.currency)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl sticky bottom-0">
+          <button onClick={onClose} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl">{t('common.cancel')}</button>
+          <button onClick={handleSubmit} disabled={loading || !canSubmit}
+            className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 disabled:opacity-50 transition-all shadow-sm inline-flex items-center gap-2">
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Receipt className="w-4 h-4" />}
+            {t('crm.billing.createInvoice', 'Create Invoice')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Record Payment Modal ────────────────────────────────────
+const PaymentModal = ({ invoice, onClose, onUpdated, t }) => {
+  const [amount, setAmount] = useState('');
+  const [method, setMethod] = useState(invoice.payment_method || 'cash');
+  const [loading, setLoading] = useState(false);
+
+  const remaining = Number(invoice.grand_total) - Number(invoice.paid_amount);
+
+  const handleSubmit = async () => {
+    const paidAmount = Number(amount);
+    if (!paidAmount || paidAmount <= 0) return;
+    setLoading(true);
+    try {
+      const totalPaid = Number(invoice.paid_amount) + paidAmount;
+      await billingAPI.updateInvoice(invoice.id, {
+        paid_amount: totalPaid,
+        payment_method: method,
+        status: totalPaid >= Number(invoice.grand_total) ? 'paid' : 'partial',
+      });
+      onUpdated();
+      onClose();
+    } catch {
+      alert('Failed to record payment');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <h3 className="text-sm font-bold text-gray-900">{t('crm.billing.recordPayment', 'Record Payment')}</h3>
+          <button onClick={onClose} className="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400"><X className="w-4 h-4" /></button>
+        </div>
+        <div className="px-5 py-4 space-y-4">
+          <div className="bg-gray-50 rounded-xl px-4 py-3">
+            <p className="text-xs text-gray-500">{invoice.invoice_number}</p>
+            <p className="text-sm font-bold text-gray-900">{invoice.patient?.fullname}</p>
+            <div className="flex justify-between mt-2 text-xs">
+              <span className="text-gray-500">Grand Total: <strong>{fmt(invoice.grand_total, invoice.currency)}</strong></span>
+              <span className="text-amber-600">Remaining: <strong>{fmt(remaining, invoice.currency)}</strong></span>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('common.amount')} *</label>
+            <input type="number" min="0.01" max={remaining} step="0.01" value={amount}
+              onChange={e => setAmount(e.target.value)} placeholder={`Max: ${remaining.toFixed(2)}`}
+              className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('crm.billing.paymentMethod', 'Payment Method')}</label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { key: 'cash', label: 'Cash', icon: Banknote },
+                { key: 'credit_card', label: 'Card', icon: CreditCard },
+                { key: 'bank_transfer', label: 'Bank', icon: Building2 },
+              ].map(m => (
+                <button key={m.key} onClick={() => setMethod(m.key)}
+                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border-2 transition-all text-xs font-medium ${
+                    method === m.key ? 'border-teal-400 bg-teal-50 text-teal-700' : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+                  }`}>
+                  <m.icon className="w-4 h-4" />{m.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-1">
+            <button onClick={onClose} className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl">{t('common.cancel')}</button>
+            <button onClick={handleSubmit} disabled={loading || !amount || Number(amount) <= 0}
+              className="px-4 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 disabled:opacity-50 inline-flex items-center gap-1.5">
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+              {t('crm.billing.recordPayment', 'Record Payment')}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ═════════════════════════════════════════════════════════════
+//  MAIN COMPONENT
+// ═════════════════════════════════════════════════════════════
+const CRMBilling = () => {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // Data
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(null);
+  const [outstanding, setOutstanding] = useState([]);
+  const [pagination, setPagination] = useState({ total: 0, last_page: 1 });
+
+  // Filters
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const perPage = 12;
+  const searchRef = useRef(null);
+
+  // Modals
+  const [showCreate, setShowCreate] = useState(false);
+  const [paymentInvoice, setPaymentInvoice] = useState(null);
+
+  // Active tab
+  const [activeTab, setActiveTab] = useState('invoices');
+
+  // Currency
+  const [selectedCurrency, setSelectedCurrency] = useState('');
+  const availableCurrencies = stats?.available_currencies || [];
+
+  // ── Fetch invoices ──
+  const fetchInvoices = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = { per_page: perPage, page };
+      if (search) params.search = search;
+      if (statusFilter) params.status = statusFilter;
+      const res = await billingAPI.invoices(params);
+      const data = res?.data || res;
+      setInvoices(data.data || []);
+      setPagination({ total: data.total || 0, last_page: data.last_page || 1 });
+    } catch (err) {
+      console.error('Fetch invoices error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, search, statusFilter]);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const params = {};
+      if (selectedCurrency) params.currency = selectedCurrency;
+      const res = await billingAPI.stats(params);
+      setStats(res?.data || res);
+    } catch {}
+  }, [selectedCurrency]);
+
+  const fetchOutstanding = useCallback(async () => {
+    try {
+      const res = await billingAPI.outstanding({ limit: 20 });
+      setOutstanding(res?.data || res || []);
+    } catch {}
+  }, []);
+
+  useEffect(() => { fetchInvoices(); }, [fetchInvoices]);
+  useEffect(() => { fetchStats(); fetchOutstanding(); }, [fetchStats, fetchOutstanding]);
+
+  const handleSearch = (value) => {
+    if (searchRef.current) clearTimeout(searchRef.current);
+    searchRef.current = setTimeout(() => { setSearch(value); setPage(1); }, 400);
+  };
+
+  const handleRefresh = () => { fetchInvoices(); fetchStats(); fetchOutstanding(); };
+
+  const handleDownloadPdf = async (invoiceId) => {
+    try {
+      const res = await billingAPI.invoicePdf(invoiceId);
+      const blob = new Blob([res.data || res], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-${invoiceId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('PDF download error:', err);
+      alert('Failed to download PDF');
+    }
+  };
+
+  const currency = stats?.currency || 'EUR';
+
+  const tabs = [
+    { key: 'invoices', label: t('crm.billing.invoices', 'Invoices'), icon: Receipt },
+    { key: 'outstanding', label: t('crm.billing.outstandingBalances', 'Outstanding'), icon: AlertTriangle },
+  ];
+
+  return (
+    <div className="space-y-5">
+      {/* ─── Header ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.billing.title')}</h1>
           <p className="text-sm text-gray-500 mt-0.5">{t('crm.billing.subtitle')}</p>
         </div>
-        <button
-          onClick={() => { window.print(); }}
-          className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
-        >
-          <Download className="w-4 h-4" />
-          <span className="hidden sm:inline">{t('common.export')}</span>
+        <button onClick={() => setShowCreate(true)}
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md">
+          <Plus className="w-4 h-4" />
+          {t('crm.billing.createInvoice', 'Create Invoice')}
         </button>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {[
-          { label: t('crm.billing.todayCollected'), value: `€${stats.todayCollected.toLocaleString()}`, icon: CircleDollarSign, bg: 'bg-emerald-50', iconColor: 'text-emerald-600', border: 'border-emerald-100' },
-          { label: t('crm.billing.totalCollected'), value: `€${(stats.totalCollected / 1000).toFixed(1)}k`, icon: TrendingUp, bg: 'bg-blue-50', iconColor: 'text-blue-600', border: 'border-blue-100' },
-          { label: t('crm.billing.totalOutstanding'), value: `€${stats.totalOutstanding.toLocaleString()}`, icon: AlertTriangle, bg: 'bg-amber-50', iconColor: 'text-amber-600', border: 'border-amber-100' },
-          { label: t('crm.billing.debtorPatients'), value: stats.debtorCount, icon: Users, bg: 'bg-red-50', iconColor: 'text-red-600', border: 'border-red-100' },
-        ].map((s) => (
-          <div key={s.label} className={`bg-white rounded-2xl border ${s.border} p-4 sm:p-5 hover:shadow-md transition-shadow`}>
-            <div className="flex items-start justify-between mb-3">
-              <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center`}>
-                <s.icon className={`w-5 h-5 ${s.iconColor}`} />
-              </div>
+      {/* ─── KPI Stats ─── */}
+      {stats && (
+        <div className="space-y-3">
+        {/* Currency selector */}
+        {availableCurrencies.length > 1 && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('crm.billing.currency', 'Currency')}:</span>
+            <div className="flex items-center gap-1">
+              {availableCurrencies.map(cur => (
+                <button key={cur} onClick={() => setSelectedCurrency(cur)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    (selectedCurrency || stats.currency) === cur
+                      ? 'bg-teal-600 text-white shadow-sm'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}>
+                  {cur}
+                </button>
+              ))}
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-gray-900">{s.value}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+            {/* Mini per-currency summary */}
+            {stats.by_currency?.length > 1 && (
+              <div className="ml-auto flex items-center gap-3">
+                {stats.by_currency.map(bc => (
+                  <span key={bc.currency} className="text-[11px] text-gray-500">
+                    <strong className="text-gray-700">{bc.currency}</strong>: {fmt(bc.total_revenue, bc.currency)} collected · {fmt(bc.receivable_amount, bc.currency)} receivable
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-        ))}
-      </div>
+        )}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <StatCard label={t('crm.billing.totalCollected', 'Collected')} value={fmt(stats.total_revenue, stats.currency)} icon={CircleDollarSign} bg="bg-emerald-50" iconColor="text-emerald-600" border="border-emerald-100" />
+          <StatCard label={t('crm.billing.receivable', 'Receivable')} value={fmt(stats.receivable_amount, stats.currency)} icon={Wallet} bg="bg-amber-50" iconColor="text-amber-600" border="border-amber-100" />
+          <StatCard label={t('crm.billing.monthlyRevenue', 'Monthly Revenue')} value={fmt(stats.monthly_revenue, stats.currency)} icon={TrendingUp} bg="bg-blue-50" iconColor="text-blue-600" border="border-blue-100" />
+          <StatCard label={t('crm.billing.todayRevenue', "Today's Revenue")} value={fmt(stats.today_revenue, stats.currency)} icon={Clock} bg="bg-teal-50" iconColor="text-teal-600" border="border-teal-100" />
+          <StatCard label={t('crm.billing.overdueInvoices', 'Overdue')} value={stats.overdue_count} icon={AlertTriangle} bg="bg-red-50" iconColor="text-red-600" border="border-red-100" />
+        </div>
+        </div>
+      )}
 
-      {/* Tabs */}
+      {/* ─── Tabs Card ─── */}
       <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
         <div className="flex border-b border-gray-100">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => { setActiveTab(tab.key); setSearchQuery(''); setCurrentPage(1); setCategoryFilter('all'); }}
+          {tabs.map(tab => (
+            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium transition-colors border-b-2 ${
-                activeTab === tab.key
-                  ? 'border-teal-500 text-teal-700 bg-teal-50/30'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50/50'
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
+                activeTab === tab.key ? 'border-teal-500 text-teal-700 bg-teal-50/30' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50/50'
+              }`}>
+              <tab.icon className="w-4 h-4" />{tab.label}
+              {tab.key === 'outstanding' && outstanding.length > 0 && (
+                <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">{outstanding.length}</span>
+              )}
             </button>
           ))}
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
-            TAB 1: Procedure Price List
-           ═══════════════════════════════════════════════════════════ */}
-        {activeTab === 'procedures' && (
+        {/* ═══ TAB: Invoices ═══ */}
+        {activeTab === 'invoices' && (
           <div>
+            {/* Toolbar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
+              <div className="flex items-center gap-2 flex-1 max-w-md bg-gray-50 rounded-xl px-3 py-2">
+                <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <input type="text" placeholder={t('crm.billing.searchInvoices', 'Search invoices...')}
+                  defaultValue={search} onChange={e => handleSearch(e.target.value)}
+                  className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
+              </div>
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-1.5 max-w-xs">
-                  <Search className="w-3.5 h-3.5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder={t('crm.billing.searchProcedures')}
-                    value={searchQuery}
-                    onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                    className="bg-transparent text-xs text-gray-700 placeholder:text-gray-400 outline-none w-full"
-                  />
-                </div>
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1); }}
-                  className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600"
-                >
-                  <option value="all">{t('common.all')}</option>
-                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                {['', 'pending', 'partial', 'paid', 'cancelled'].map(s => (
+                  <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${
+                      statusFilter === s ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}>
+                    {s || t('common.all')}
+                  </button>
+                ))}
               </div>
             </div>
 
+            {/* Table */}
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[600px]">
+              <table className="w-full min-w-[800px]">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('crm.billing.procedureName')}</th>
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.billing.category')}</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.billing.price')}</th>
+                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('crm.billing.invoice', 'Invoice')}</th>
+                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.patient')}</th>
+                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.billing.date', 'Date')}</th>
+                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.amount')}</th>
+                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('crm.billing.paid', 'Paid')}</th>
                     <th className="text-center text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-3">{t('common.status')}</th>
+                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {paginatedProcedures.map((proc) => (
-                    <tr key={proc.id} className="hover:bg-gray-50/50 transition-colors group">
-                      <td className="px-5 py-3">
-                        <p className="text-sm font-medium text-gray-900">{proc.name}</p>
+                  {loading ? (
+                    <tr><td colSpan={7} className="text-center py-16"><Loader2 className="w-6 h-6 animate-spin text-teal-500 mx-auto" /></td></tr>
+                  ) : invoices.length === 0 ? (
+                    <tr><td colSpan={7} className="text-center py-16">
+                      <Receipt className="w-10 h-10 text-gray-200 mx-auto mb-2" />
+                      <p className="text-sm text-gray-400">{t('common.noResults')}</p>
+                      <button onClick={() => setShowCreate(true)} className="mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium">Create your first invoice</button>
+                    </td></tr>
+                  ) : invoices.map(inv => (
+                    <tr key={inv.id} className="hover:bg-gray-50/50 transition-colors group">
+                      <td className="px-5 py-3.5">
+                        <span className="text-sm font-mono font-semibold text-teal-600">{inv.invoice_number}</span>
                       </td>
-                      <td className="px-3 py-3">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-gray-100 text-[11px] font-medium text-gray-600">{proc.category}</span>
+                      <td className="px-3 py-3.5">
+                        <p className="text-sm font-medium text-gray-900">{inv.patient?.fullname || '—'}</p>
+                        <p className="text-[11px] text-gray-400">{inv.patient?.email || ''}</p>
                       </td>
-                      <td className="px-3 py-3 text-right">
-                        <span className="text-sm font-bold text-gray-900">{proc.currency}{proc.price.toLocaleString()}</span>
+                      <td className="px-3 py-3.5">
+                        <p className="text-xs text-gray-700">{inv.issue_date}</p>
+                        {inv.due_date && <p className="text-[10px] text-gray-400">Due: {inv.due_date}</p>}
                       </td>
-                      <td className="px-3 py-3 text-center">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${proc.active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
-                          {proc.active ? t('common.active') : t('common.inactive')}
-                        </span>
+                      <td className="px-3 py-3.5 text-right">
+                        <span className="text-sm font-bold text-gray-900">{fmt(inv.grand_total, inv.currency)}</span>
+                      </td>
+                      <td className="px-3 py-3.5 text-right">
+                        <span className="text-sm font-medium text-emerald-600">{fmt(inv.paid_amount, inv.currency)}</span>
+                      </td>
+                      <td className="px-3 py-3.5 text-center"><StatusBadge status={inv.status} /></td>
+                      <td className="px-5 py-3.5 text-right">
+                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => handleDownloadPdf(inv.id)}
+                            className="w-7 h-7 rounded-lg hover:bg-blue-50 flex items-center justify-center text-gray-400 hover:text-blue-600" title="Download PDF">
+                            <Download className="w-3.5 h-3.5" />
+                          </button>
+                          {inv.status !== 'paid' && inv.status !== 'cancelled' && (
+                            <button onClick={() => setPaymentInvoice(inv)}
+                              className="w-7 h-7 rounded-lg hover:bg-emerald-50 flex items-center justify-center text-gray-400 hover:text-emerald-600" title="Record Payment">
+                              <Wallet className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
-                  {paginatedProcedures.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="px-5 py-12 text-center text-sm text-gray-400">{t('common.noResults')}</td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
             </div>
 
-            {totalPages > 1 && (
+            {/* Pagination */}
+            {pagination.last_page > 1 && (
               <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50/30">
                 <p className="text-xs text-gray-500">
-                  {(currentPage - 1) * perPage + 1}–{Math.min(currentPage * perPage, filteredProcedures.length)} / {filteredProcedures.length}
+                  {((page - 1) * perPage) + 1}–{Math.min(page * perPage, pagination.total)} of {pagination.total}
                 </p>
                 <div className="flex items-center gap-1">
-                  <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 disabled:opacity-40"><ChevronLeft className="w-4 h-4" /></button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button key={page} onClick={() => setCurrentPage(page)} className={`w-8 h-8 rounded-lg text-xs font-medium ${page === currentPage ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>{page}</button>
-                  ))}
-                  <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 disabled:opacity-40"><ChevronRight className="w-4 h-4" /></button>
+                  <button disabled={page === 1} onClick={() => setPage(page - 1)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 disabled:opacity-40"><ChevronLeft className="w-4 h-4" /></button>
+                  {Array.from({ length: Math.min(pagination.last_page, 7) }, (_, i) => {
+                    let pn;
+                    if (pagination.last_page <= 7) pn = i + 1;
+                    else if (page <= 4) pn = i + 1;
+                    else if (page >= pagination.last_page - 3) pn = pagination.last_page - 6 + i;
+                    else pn = page - 3 + i;
+                    return (
+                      <button key={pn} onClick={() => setPage(pn)}
+                        className={`w-8 h-8 rounded-lg text-xs font-medium ${pn === page ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
+                        {pn}
+                      </button>
+                    );
+                  })}
+                  <button disabled={page === pagination.last_page} onClick={() => setPage(page + 1)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 disabled:opacity-40"><ChevronRight className="w-4 h-4" /></button>
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {/* ═══════════════════════════════════════════════════════════
-            TAB 2: Receive Payment
-           ═══════════════════════════════════════════════════════════ */}
-        {activeTab === 'payment' && (
-          <div className="p-5 sm:p-6">
-            <div className="max-w-2xl mx-auto">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center">
-                  <Wallet className="w-5 h-5 text-teal-600" />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-gray-900">{t('crm.billing.newPayment')}</h2>
-                  <p className="text-xs text-gray-500">{t('crm.billing.newPaymentDesc')}</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {/* Patient */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('common.patient')} *</label>
-                  <select
-                    value={payForm.patient}
-                    onChange={(e) => setPayForm({ ...payForm, patient: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none transition-all"
-                  >
-                    <option value="">{t('crm.billing.selectPatient')}</option>
-                    {PATIENT_LIST.map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                </div>
-
-                {/* Procedure */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('crm.billing.procedure')} *</label>
-                  <select
-                    value={payForm.procedure}
-                    onChange={(e) => {
-                      const proc = procedures.find(p => p.name === e.target.value);
-                      setPayForm({ ...payForm, procedure: e.target.value, amount: proc ? String(proc.price) : payForm.amount });
-                    }}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none transition-all"
-                  >
-                    <option value="">{t('crm.billing.selectProcedure')}</option>
-                    {procedures.filter(p => p.active).map(p => <option key={p.id} value={p.name}>{p.name} — {p.currency}{p.price}</option>)}
-                  </select>
-                </div>
-
-                {/* Amount */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('common.amount')} (€) *</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={payForm.amount}
-                    onChange={(e) => setPayForm({ ...payForm, amount: e.target.value })}
-                    placeholder="0.00"
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none transition-all"
-                  />
-                </div>
-
-                {/* Payment Method */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('crm.billing.paymentMethod')} *</label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { key: 'cash', label: t('crm.billing.cash'), icon: Banknote, color: 'emerald' },
-                      { key: 'credit_card', label: t('crm.billing.creditCard'), icon: CreditCard, color: 'blue' },
-                      { key: 'bank_transfer', label: t('crm.billing.bankTransfer'), icon: Building2, color: 'violet' },
-                    ].map((m) => (
-                      <button
-                        key={m.key}
-                        onClick={() => setPayForm({ ...payForm, method: m.key })}
-                        className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
-                          payForm.method === m.key
-                            ? `border-${m.color}-400 bg-${m.color}-50 shadow-sm`
-                            : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
-                        }`}
-                      >
-                        <m.icon className={`w-5 h-5 ${payForm.method === m.key ? `text-${m.color}-600` : 'text-gray-400'}`} />
-                        <span className={`text-xs font-medium ${payForm.method === m.key ? `text-${m.color}-700` : 'text-gray-600'}`}>{m.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Notes */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('common.notes')}</label>
-                  <textarea
-                    value={payForm.notes}
-                    onChange={(e) => setPayForm({ ...payForm, notes: e.target.value })}
-                    placeholder={t('crm.billing.paymentNotes')}
-                    rows={3}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none transition-all resize-none"
-                  />
-                </div>
-
-                {/* Submit */}
-                <div className="flex items-center gap-3 pt-2">
-                  <button
-                    onClick={handlePaymentSubmit}
-                    disabled={!payForm.patient || !payForm.procedure || !payForm.amount}
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Check className="w-4 h-4" />
-                    {t('crm.billing.recordPayment')}
-                  </button>
-                  <button
-                    onClick={resetPaymentForm}
-                    className="px-4 py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
-                  >
-                    {t('common.cancel')}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Recent Payments */}
-            <div className="mt-8 pt-6 border-t border-gray-100">
-              <h3 className="text-sm font-bold text-gray-900 mb-4">{t('crm.billing.recentPayments')}</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[600px]">
-                  <thead>
-                    <tr className="border-b border-gray-100">
-                      <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">{t('crm.billing.receipt')}</th>
-                      <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">{t('common.patient')}</th>
-                      <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">{t('crm.billing.procedure')}</th>
-                      <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">{t('crm.billing.paymentMethod')}</th>
-                      <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">{t('common.amount')}</th>
-                      <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">{t('common.status')}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {payments.slice(0, 5).map((p) => (
-                      <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-3 py-2.5"><span className="text-xs font-mono font-medium text-teal-600">{p.invoice}</span></td>
-                        <td className="px-3 py-2.5"><span className="text-sm font-medium text-gray-900">{p.patient}</span></td>
-                        <td className="px-3 py-2.5"><span className="text-xs text-gray-600">{p.procedure}</span></td>
-                        <td className="px-3 py-2.5">
-                          <span className="inline-flex items-center gap-1 text-xs text-gray-600">
-                            {p.method === 'cash' && <Banknote className="w-3 h-3" />}
-                            {p.method === 'credit_card' && <CreditCard className="w-3 h-3" />}
-                            {p.method === 'bank_transfer' && <Building2 className="w-3 h-3" />}
-                            {p.method === 'cash' ? t('crm.billing.cash') : p.method === 'credit_card' ? t('crm.billing.creditCard') : t('crm.billing.bankTransfer')}
-                          </span>
-                        </td>
-                        <td className="px-3 py-2.5 text-right"><span className="text-sm font-bold text-gray-900">€{p.status === 'partial' ? p.paid : p.amount}</span></td>
-                        <td className="px-3 py-2.5"><StatusBadge status={p.status} /></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ═══════════════════════════════════════════════════════════
-            TAB 3: Outstanding Balances
-           ═══════════════════════════════════════════════════════════ */}
-        {activeTab === 'balances' && (
+        {/* ═══ TAB: Outstanding Balances ═══ */}
+        {activeTab === 'outstanding' && (
           <div>
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
-                <h2 className="text-sm font-bold text-gray-900">{t('crm.billing.debtorList')}</h2>
-                <span className="text-xs text-gray-500">({OUTSTANDING_PATIENTS.length} {t('crm.billing.patients')})</span>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-gray-500">{t('crm.billing.totalOutstanding')}</p>
-                <p className="text-base font-bold text-red-600">€{stats.totalOutstanding.toLocaleString()}</p>
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.billing.debtorList', 'Outstanding Balances')}</h2>
+                <span className="text-xs text-gray-500">({outstanding.length} patients)</span>
               </div>
             </div>
-
-            <div className="divide-y divide-gray-100">
-              {OUTSTANDING_PATIENTS.sort((a, b) => b.totalOwed - a.totalOwed).map((patient) => (
-                <div key={patient.id} className="px-5 py-4 hover:bg-gray-50/50 transition-colors">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-100 to-amber-100 flex items-center justify-center text-red-600 text-sm font-bold flex-shrink-0">
-                        {patient.patient[0]}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <p className="text-sm font-semibold text-gray-900">{patient.patient}</p>
-                          <OverdueBadge days={patient.daysOverdue} />
+            {outstanding.length === 0 ? (
+              <div className="px-5 py-12 text-center">
+                <Check className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">{t('crm.billing.noOutstanding', 'No outstanding balances')}</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {outstanding.map((entry, idx) => (
+                  <div key={idx} className="px-5 py-4 hover:bg-gray-50/50 transition-colors">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-100 to-amber-100 flex items-center justify-center text-red-600 text-sm font-bold flex-shrink-0">
+                          {entry.patient?.fullname?.[0] || '?'}
                         </div>
-                        <p className="text-xs text-gray-500 mb-2">{patient.phone}</p>
-                        <div className="space-y-1.5">
-                          {patient.procedures.map((proc, idx) => (
-                            <div key={idx} className="flex items-center gap-3 text-xs">
-                              <span className="text-gray-600 flex-1">{proc.name}</span>
-                              <span className="text-gray-400">{proc.date}</span>
-                              <span className="text-gray-500">{t('common.total')}: €{proc.total}</span>
-                              <span className="text-emerald-600">{t('crm.billing.paidAmount')}: €{proc.paid}</span>
-                              <span className="text-red-600 font-semibold">{t('crm.billing.remaining')}: €{proc.remaining}</span>
-                            </div>
-                          ))}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-900">{entry.patient?.fullname}</p>
+                          <p className="text-xs text-gray-500 mb-2">{entry.patient?.mobile || entry.patient?.email || ''}</p>
+                          <div className="space-y-1.5">
+                            {(entry.invoices || []).map((inv, i) => (
+                              <div key={i} className="flex items-center gap-3 text-xs flex-wrap">
+                                <span className="font-mono text-teal-600 font-medium">{inv.invoice_number}</span>
+                                <span className="text-gray-400">{inv.issue_date}</span>
+                                <span className="text-gray-500">Total: {fmt(inv.grand_total)}</span>
+                                <span className="text-emerald-600">Paid: {fmt(inv.paid_amount)}</span>
+                                <span className="text-red-600 font-semibold">Remaining: {fmt(inv.remaining)}</span>
+                                {inv.overdue && <span className="text-[10px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">OVERDUE</span>}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <p className="text-lg font-bold text-red-600">€{patient.totalOwed.toLocaleString()}</p>
-                      <p className="text-[10px] text-gray-400 mt-0.5">
-                        {patient.lastPayment ? `${t('crm.billing.lastPayment')}: ${patient.lastPayment}` : t('crm.billing.noPaymentYet')}
-                      </p>
-                      <button className="mt-2 inline-flex items-center gap-1 px-3 py-1.5 bg-teal-600 text-white rounded-lg text-[11px] font-medium hover:bg-teal-700 transition-colors">
-                        <Wallet className="w-3 h-3" />
-                        {t('crm.billing.collectPayment')}
-                      </button>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-lg font-bold text-red-600">{fmt(entry.total_owed)}</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">{entry.invoice_count} invoice(s)</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-              {OUTSTANDING_PATIENTS.length === 0 && (
-                <div className="px-5 py-12 text-center">
-                  <Check className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">{t('crm.billing.noOutstanding')}</p>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════
-          MODAL: Payment Success
-         ═══════════════════════════════════════════════════════════ */}
-      {showPaymentModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={resetPaymentForm} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
-            <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-              <Check className="w-7 h-7 text-emerald-600" />
-            </div>
-            <h3 className="text-base font-bold text-gray-900 mb-1">{t('crm.billing.paymentRecorded')}</h3>
-            <p className="text-sm text-gray-500 mb-1">{payForm.patient} — {payForm.procedure}</p>
-            <p className="text-2xl font-bold text-emerald-600 mb-4">€{Number(payForm.amount).toLocaleString()}</p>
-            <p className="text-xs text-gray-400 mb-4">
-              {payForm.method === 'cash' ? t('crm.billing.cash') : payForm.method === 'credit_card' ? t('crm.billing.creditCard') : t('crm.billing.bankTransfer')}
-            </p>
-            <button onClick={resetPaymentForm} className="w-full px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors">
-              {t('common.close')}
-            </button>
-          </div>
-        </div>
+      {/* ─── Modals ─── */}
+      {showCreate && (
+        <CreateInvoiceModal onClose={() => setShowCreate(false)} onCreated={handleRefresh} t={t} />
+      )}
+      {paymentInvoice && (
+        <PaymentModal invoice={paymentInvoice} onClose={() => setPaymentInvoice(null)} onUpdated={handleRefresh} t={t} />
       )}
     </div>
   );

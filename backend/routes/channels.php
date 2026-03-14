@@ -19,3 +19,7 @@ Broadcast::channel('chat.{conversationId}', function ($user, string $conversatio
 
     return $conversation && $conversation->hasParticipant($user->id);
 });
+
+Broadcast::channel('notifications.{userId}', function ($user, string $userId) {
+    return $user->id === $userId;
+});

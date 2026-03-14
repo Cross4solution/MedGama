@@ -26,8 +26,9 @@ class ChatConversation extends Model
     protected function casts(): array
     {
         return [
-            'last_message_at' => 'datetime',
-            'is_active'       => 'boolean',
+            'last_message_content' => 'encrypted',
+            'last_message_at'      => 'datetime',
+            'is_active'            => 'boolean',
         ];
     }
 

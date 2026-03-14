@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Appointment;
+use App\Models\Clinic;
 use App\Models\MedStreamPost;
 use App\Models\MedStreamReport;
 use App\Models\User;
@@ -54,6 +55,10 @@ class SuperAdminService
                 ")
                 ->first();
 
+            // ── Clinic counts ──
+            $totalClinics = Clinic::active()->count();
+            $newClinicsThisMonth = Clinic::active()->whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
+
             // ── MedStream stats ──
             $postCount = MedStreamPost::where('is_active', true)->count();
             $pendingReports = MedStreamReport::where('admin_status', 'pending')->count();
@@ -71,6 +76,10 @@ class SuperAdminService
                     'verified_doctors'   => (int) $userCounts->verified_doctors,
                     'unverified_doctors' => (int) $userCounts->unverified_doctors,
                     'new_this_month'     => $newUsersThisMonth,
+                ],
+                'clinics' => [
+                    'total'          => $totalClinics,
+                    'new_this_month' => $newClinicsThisMonth,
                 ],
                 'appointments' => [
                     'total'     => (int) $appointmentStats->total,
@@ -172,5 +181,82 @@ class SuperAdminService
         });
 
         return $report->refresh();
+    }
+
+    /**
+     * Suspend or reactivate a user.
+     */
+    public function suspendUser(string $userId, bool $suspend): User
+    {
+        $user = User::findOrFail($userId);
+        $user->is_active = !$suspend;
+        $user->save();
+
+        Cache::forget('superadmin:dashboard');
+
+        return $user;
+    }
+
+    // ══════════════════════════════════════════════
+    //  GROWTH TREND (monthly registration chart)
+    // ══════════════════════════════════════════════
+
+    /**
+     * Monthly registration counts for the last 12 months: users, doctors, clinics.
+     */
+    public function getGrowthTrend(): array
+    {
+        return Cache::remember('superadmin:growth-trend', self::CACHE_TTL, function () {
+            $months = [];
+            for ($i = 11; $i >= 0; $i--) {
+                $date = Carbon::now()->subMonths($i);
+                $months[] = [
+                    'start' => $date->copy()->startOfMonth(),
+                    'end'   => $date->copy()->endOfMonth(),
+                    'label' => $date->format('M Y'),
+                    'key'   => $date->format('Y-m'),
+                ];
+            }
+
+            // Aggregate user registrations per month
+            $userRows = User::query()
+                ->where('created_at', '>=', $months[0]['start'])
+                ->selectRaw("
+                    TO_CHAR(created_at, 'YYYY-MM') as month,
+                    COUNT(*) as total,
+                    SUM(CASE WHEN role_id = 'doctor' THEN 1 ELSE 0 END) as doctors,
+                    SUM(CASE WHEN role_id = 'patient' THEN 1 ELSE 0 END) as patients
+                ")
+                ->groupBy(DB::raw("TO_CHAR(created_at, 'YYYY-MM')"))
+                ->get()
+                ->keyBy('month');
+
+            // Aggregate clinic registrations per month
+            $clinicRows = Clinic::query()
+                ->where('created_at', '>=', $months[0]['start'])
+                ->selectRaw("
+                    TO_CHAR(created_at, 'YYYY-MM') as month,
+                    COUNT(*) as total
+                ")
+                ->groupBy(DB::raw("TO_CHAR(created_at, 'YYYY-MM')"))
+                ->get()
+                ->keyBy('month');
+
+            $result = [];
+            foreach ($months as $m) {
+                $uRow = $userRows[$m['key']] ?? null;
+                $cRow = $clinicRows[$m['key']] ?? null;
+                $result[] = [
+                    'label'    => $m['label'],
+                    'month'    => $m['key'],
+                    'users'    => (int) ($uRow->total ?? 0),
+                    'doctors'  => (int) ($uRow->doctors ?? 0),
+                    'patients' => (int) ($uRow->patients ?? 0),
+                    'clinics'  => (int) ($cRow->total ?? 0),
+                ];
+            }
+
+            return $result;
+        });
     }
 }

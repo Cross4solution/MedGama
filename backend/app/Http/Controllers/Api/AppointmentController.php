@@ -41,7 +41,7 @@ class AppointmentController extends Controller
     {
         $appointments = $this->appointmentService->list(
             $request->user(),
-            $request->only(['status', 'date', 'doctor_id', 'patient_id', 'per_page']),
+            $request->only(['status', 'date', 'date_from', 'date_to', 'appointment_type', 'doctor_id', 'patient_id', 'per_page']),
         );
 
         return AppointmentResource::collection($appointments);

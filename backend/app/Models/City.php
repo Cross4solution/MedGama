@@ -2,23 +2,26 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class City extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, HasTranslations;
 
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $fillable = ['code', 'country_id', 'translations'];
+    public array $translatable = ['name'];
+
+    protected $fillable = ['code', 'name', 'country_id'];
 
     protected function casts(): array
     {
         return [
-            'translations' => 'array',
+            'name'      => 'array',
             'is_active' => 'boolean',
         ];
     }

@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff, LogOut, Shield, ChevronDown } from 'lucide-react';
+import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff, LogOut, Shield, ChevronDown, Globe } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../i18n';
+import { LANGUAGES } from '../../i18n';
 import { notificationAPI } from '../../lib/api';
+import { getEcho } from '../../lib/echo';
 
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout, hydrated } = useAuth();
@@ -18,6 +21,20 @@ const Header = () => {
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
   const [mobileLoginExpanded, setMobileLoginExpanded] = useState(false);
   const { pathname } = useLocation();
+
+  // ── Language switcher state ──
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef(null);
+  const currentLang = LANGUAGES.find(l => l.code === i18n.language) || LANGUAGES[1];
+
+  const handleLanguageChange = (code) => {
+    const lang = LANGUAGES.find(l => l.code === code);
+    i18n.changeLanguage(code);
+    localStorage.setItem('preferred_language', code);
+    localStorage.setItem('preferred_language_manual', '1');
+    document.documentElement.dir = lang?.dir === 'rtl' ? 'rtl' : 'ltr';
+    setLangOpen(false);
+  };
 
   // ── Notification state ──
   const [notifOpen, setNotifOpen] = useState(false);
@@ -44,11 +61,35 @@ const Header = () => {
     setNotifLoading(false);
   }, [user]);
 
-  // Poll unread count every 30s
+  // ── Real-time: Listen for notifications via Echo (WebSocket) ──
+  useEffect(() => {
+    if (!user?.id) return;
+    const echo = getEcho();
+    if (!echo) return;
+
+    const channel = echo.private(`notifications.${user.id}`);
+
+    channel.listen('.notification.new', (payload) => {
+      // Increment badge count
+      setUnreadCount(prev => prev + 1);
+      // Prepend to list if dropdown is open
+      setNotifications(prev => {
+        if (prev.some(n => n.id === payload.id)) return prev;
+        return [payload, ...prev].slice(0, 15);
+      });
+    });
+
+    return () => {
+      echo.leave(`notifications.${user.id}`);
+    };
+  }, [user?.id]);
+
+  // Poll unread count (slower when Echo is active, faster as fallback)
   useEffect(() => {
     if (!user) return;
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000);
+    const echo = getEcho();
+    const interval = setInterval(fetchUnreadCount, echo ? 60000 : 15000);
     return () => clearInterval(interval);
   }, [user, fetchUnreadCount]);
 
@@ -142,11 +183,12 @@ const Header = () => {
     setMobileLoginExpanded(false);
   };
 
-  // Close login dropdown on outside click
+  // Close login/lang dropdown on outside click
   useEffect(() => {
     const onClickOutside = (e) => {
       if (loginRef.current && !loginRef.current.contains(e.target)) setLoginOpen(false);
       if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
+      if (langRef.current && !langRef.current.contains(e.target)) setLangOpen(false);
     };
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
@@ -163,7 +205,7 @@ const Header = () => {
   return (
     <>
     <header className={`site-header fixed top-0 left-0 right-0 z-50 border-b border-gray-200/80 bg-white/95 backdrop-blur-sm`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="grid grid-cols-[auto,1fr,auto] items-center gap-3">
           {/* Logo */}
           {(() => {
@@ -173,7 +215,7 @@ const Header = () => {
                 <img
                   src="/images/logo/logo.svg"
                   alt="MedaGama Logo"
-                  className="h-8 md:h-9 w-auto object-contain"
+                  className="h-9 md:h-10 w-auto object-contain"
                   loading="eager"
                   decoding="async"
                 />
@@ -183,8 +225,11 @@ const Header = () => {
 
           {/* Logoya daha da yakın menü */}
           <nav className="hidden md:flex items-center space-x-6 ml-auto mr-20">
-            <Link to="/home-v2" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
-              {t('nav.home')}
+            <Link to="/for-clinics" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
+              For Clinics
+            </Link>
+            <Link to="/for-patients" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
+              For Patients
             </Link>
             <Link to="/vasco-ai" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               Vasco AI
@@ -196,6 +241,41 @@ const Header = () => {
 
           {/* Right cluster: actions (desktop) + mobile trigger */}
           <div className="flex items-center justify-end gap-2">
+            {/* Language Switcher (desktop) */}
+            <div className="relative hidden md:block" ref={langRef}>
+              <button
+                type="button"
+                onClick={() => setLangOpen(p => !p)}
+                className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all text-sm text-gray-600"
+                title="Language"
+              >
+                <span className="text-base leading-none">{currentLang.flag}</span>
+                <span className="text-xs font-medium hidden lg:inline">{currentLang.label}</span>
+                <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform ${langOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {langOpen && (
+                <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 py-1.5 max-h-80 overflow-y-auto">
+                  {LANGUAGES.map((lang, idx) => (
+                    <button
+                      key={lang.code}
+                      type="button"
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors ${
+                        currentLang.code === lang.code
+                          ? 'bg-teal-50 text-teal-700 font-semibold'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      } ${idx === 9 ? 'border-b border-gray-100 mb-1 pb-2.5' : ''}`}
+                    >
+                      <span className="text-base leading-none">{lang.flag}</span>
+                      <span>{lang.label}</span>
+                      {currentLang.code === lang.code && (
+                        <Check className="w-3.5 h-3.5 ml-auto text-teal-600" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="hidden md:flex items-center space-x-2.5">
               {!hydrated ? null : !user ? (
                 <>
@@ -475,7 +555,7 @@ const Header = () => {
           <p className="text-sm text-gray-600 mb-4">You are about to log out of your account. Are you sure?</p>
           <div className="flex justify-end gap-2">
             <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">{t('common.cancel')}</button>
-            <button onClick={()=>{ setConfirmLogoutOpen(false); logout(); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">{t('common.logout')}</button>
+            <button onClick={()=>{ setConfirmLogoutOpen(false); logout({ skipConfirmation: true }); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">{t('common.logout')}</button>
           </div>
         </div>
       </div>
@@ -488,6 +568,26 @@ const Header = () => {
         {/* Panel */}
         <div className="fixed top-14 left-0 right-0 z-50 mx-4 max-w-md md:hidden overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ring-1 ring-black/5">
           <nav className="divide-y divide-gray-100">
+            {/* Mobile Language Selector */}
+            <div className="px-4 pt-3 pb-2">
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                {LANGUAGES.slice(0, 10).map(lang => (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    onClick={() => handleLanguageChange(lang.code)}
+                    className={`flex-shrink-0 px-2 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                      currentLang.code === lang.code
+                        ? 'bg-teal-50 border-teal-200 text-teal-700'
+                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                    }`}
+                    title={lang.label}
+                  >
+                    <span className="text-sm">{lang.flag}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="p-4 grid grid-cols-2 gap-2">
               {!mobileLoginExpanded ? (
                 <>
@@ -593,6 +693,26 @@ const Header = () => {
                     </div>
                   </div>
                 </div>
+                {/* Mobile Language Selector */}
+                <div className="px-4 py-2 border-b border-gray-100">
+                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                    {LANGUAGES.slice(0, 10).map(lang => (
+                      <button
+                        key={lang.code}
+                        type="button"
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className={`flex-shrink-0 px-2 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                          currentLang.code === lang.code
+                            ? 'bg-teal-50 border-teal-200 text-teal-700'
+                            : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                        }`}
+                        title={lang.label}
+                      >
+                        <span className="text-sm">{lang.flag}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 {/* Menu items */}
                 <div className="p-2">
                   <div className="mb-2 px-3 pt-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Menu</div>
@@ -647,7 +767,7 @@ const Header = () => {
                 {/* Logout */}
                 <div className="px-3 pb-3 pt-2 border-t border-gray-100 mt-2">
                   <button
-                    onClick={() => { closeMenu(); logout(); }}
+                    onClick={() => { closeMenu(); logout({ skipConfirmation: true }); }}
                     className="w-full flex items-center justify-center gap-2 mt-2 px-3 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-600 hover:to-red-600 shadow-md shadow-rose-200/50 transition-all duration-200"
                   >
                     {t('common.logout')}
