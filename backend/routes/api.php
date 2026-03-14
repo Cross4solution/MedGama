@@ -106,7 +106,9 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
 */
 Route::prefix('catalog')->group(function () {
     Route::get('/specialties', [CatalogController::class, 'specialties']);
+    Route::get('/specialties/search', [CatalogController::class, 'specialtiesSearch']);
     Route::get('/cities', [CatalogController::class, 'cities']);
+    Route::get('/cities/search', [CatalogController::class, 'citiesSearch']);
     Route::get('/diseases', [CatalogController::class, 'diseases']);
     Route::get('/symptoms', [CatalogController::class, 'symptoms']);
 });

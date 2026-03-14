@@ -355,7 +355,9 @@ export const messageAPI = {
 // ── Catalog Service (Public) ──
 export const catalogAPI = {
   specialties: (params) => api.get('/catalog/specialties', { params }),
+  specialtiesSearch: (params) => api.get('/catalog/specialties/search', { params }),
   cities: (params) => api.get('/catalog/cities', { params }),
+  citiesSearch: (params) => api.get('/catalog/cities/search', { params }),
   diseases: (params) => api.get('/catalog/diseases', { params }),
   symptoms: (params) => api.get('/catalog/symptoms', { params }),
   createSpecialty: (payload) => api.post('/catalog/specialties', payload),

@@ -60,6 +60,58 @@ class CatalogController extends Controller
         return response()->json(['message' => 'Specialty deleted.']);
     }
 
+    /**
+     * GET /api/catalog/specialties/search — Lightweight for search bar autocomplete.
+     * Returns only id + resolved name (locale-aware). Cached 10 min.
+     */
+    public function specialtiesSearch(Request $request)
+    {
+        $locale = app()->getLocale();
+        $fallback = config('app.fallback_locale', 'en');
+
+        $items = cache()->remember("catalog:specialties:search:{$locale}", 600, function () use ($locale, $fallback) {
+            return Specialty::active()->ordered()->get()->map(fn($s) => [
+                'id'   => $s->id,
+                'code' => $s->code,
+                'name' => $s->getTranslation('name', $locale) ?? $s->getTranslation('name', $fallback),
+            ])->values();
+        });
+
+        // Optional client-side q filter
+        if ($q = $request->query('q')) {
+            $q = mb_strtolower($q);
+            $items = $items->filter(fn($i) => str_contains(mb_strtolower($i['name'] ?? ''), $q)
+                                           || str_contains(mb_strtolower($i['code'] ?? ''), $q))->values();
+        }
+
+        return response()->json(['specialties' => $items]);
+    }
+
+    /**
+     * GET /api/catalog/cities/search — Lightweight for search bar autocomplete.
+     * Returns only id + resolved name (locale-aware). Cached 10 min.
+     */
+    public function citiesSearch(Request $request)
+    {
+        $locale = app()->getLocale();
+        $fallback = config('app.fallback_locale', 'en');
+
+        $items = cache()->remember("catalog:cities:search:{$locale}", 600, function () use ($locale, $fallback) {
+            return City::active()->orderBy('name')->get()->map(fn($c) => [
+                'id'   => $c->id,
+                'code' => $c->code,
+                'name' => $c->getTranslation('name', $locale) ?? $c->getTranslation('name', $fallback),
+            ])->values();
+        });
+
+        if ($q = $request->query('q')) {
+            $q = mb_strtolower($q);
+            $items = $items->filter(fn($i) => str_contains(mb_strtolower($i['name'] ?? ''), $q))->values();
+        }
+
+        return response()->json(['cities' => $items]);
+    }
+
     // ── Cities ──
 
     public function cities(Request $request)

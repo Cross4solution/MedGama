@@ -38,6 +38,7 @@ const ClinicProfileEdit = React.lazy(() => import('./pages/ClinicProfileEdit.jsx
 const DoctorsDepartments = React.lazy(() => import('./pages/DoctorsDepartments.jsx'));
 const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage'));
 const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRightsPage'));
+const SearchResults = React.lazy(() => import('./pages/SearchResults'));
 const DashboardRedirect = React.lazy(() => import('./pages/DashboardRedirect'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 const ServerErrorPage = React.lazy(() => import('./pages/ServerErrorPage'));
@@ -90,6 +91,7 @@ function AppContent() {
       '/home-v2': 'MedaGama',
       '/explore': 'MedStream | MedaGama',
       '/saved': 'Saved Posts | MedaGama',
+      '/search': 'Search Doctors | MedaGama',
       '/doctors-departments': 'Doctors & Departments | MedaGama',
       '/clinic': 'Clinics | MedaGama',
       '/clinic-edit': 'Edit Clinic Profile | MedaGama',
@@ -230,7 +232,7 @@ function AppContent() {
   
   // Sayfa türüne göre padding ayarı
   const pagesWithOwnContainer = [
-    '/profile', '/notifications', '/doctors-departments', 
+    '/profile', '/notifications', '/doctors-departments', '/search', 
     '/patient-home', '/telehealth', '/telehealth-appointment',
     '/clinic', '/explore', '/post', '/doctor'
   ];
@@ -261,6 +263,7 @@ function AppContent() {
         <Route path="/explore" element={<ExploreTimeline />} />
         <Route path="/saved" element={<SavedPosts />} />
         <Route path="/saved-clinics" element={<SavedClinics />} />
+        <Route path="/search" element={<SearchResults />} />
         <Route path="/doctors-departments" element={<DoctorsDepartments />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />

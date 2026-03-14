@@ -3,27 +3,32 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Services\DoctorService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
+    public function __construct(private readonly DoctorService $doctorService) {}
+
     /**
-     * GET /api/doctors — Public list of doctors
+     * GET /api/doctors — Public list of doctors (Doc §3 / §8.3)
+     *
+     * Query params: search_text, specialty_id, city_id, language,
+     *               min_rating, gender, online_only, clinic_id,
+     *               verified, sort, per_page
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $query = User::where('role_id', 'doctor')
-            ->where('is_active', true)
-            ->with(['doctorProfile:id,user_id,title,specialty,experience_years,address,online_consultation,bio'])
-            ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified');
-
-        $query->when($request->clinic_id, fn($q, $v) => $q->where('clinic_id', $v))
-              ->when($request->city_id, fn($q, $v) => $q->where('city_id', $v))
-              ->when($request->search, fn($q, $v) => $q->where('fullname', 'like', "%{$v}%"))
-              ->when($request->specialty, fn($q, $v) => $q->whereHas('doctorProfile', fn($pq) => $pq->where('specialty', 'ilike', "%{$v}%")));
-
-        $doctors = $query->orderBy('fullname')->paginate($request->per_page ?? 50);
+        $doctors = $this->doctorService->listDoctors(
+            $request->only([
+                'search_text', 'specialty_id', 'city_id', 'language',
+                'min_rating', 'gender', 'online_only', 'clinic_id',
+                'verified', 'sort', 'per_page',
+                // Legacy compat
+                'search', 'specialty',
+            ]),
+        );
 
         return response()->json($doctors);
     }
@@ -31,13 +36,13 @@ class DoctorController extends Controller
     /**
      * GET /api/doctors/{id} — Public doctor profile (full detail)
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
-        $doctor = User::where('role_id', 'doctor')
-            ->where('is_active', true)
-            ->with(['doctorProfile', 'clinic:id,name,codename,avatar,address'])
-            ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
-            ->findOrFail($id);
+        $doctor = $this->doctorService->getDoctor($id);
+
+        if (!$doctor) {
+            return response()->json(['message' => 'Doctor not found.'], 404);
+        }
 
         return response()->json(['doctor' => $doctor]);
     }
