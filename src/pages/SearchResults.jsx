@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Search, MapPin, Star, Video, X, SlidersHorizontal,
   BadgeCheck, ChevronLeft, ChevronRight, Stethoscope, SearchX,
+  Lightbulb, TrendingUp, ArrowRight,
 } from 'lucide-react';
 import { doctorAPI, catalogAPI } from '../lib/api';
 
@@ -123,6 +124,10 @@ export default function SearchResults() {
   const [verified, setVerified] = useState(sp.get('verified') === '1');
   const [mobileFilter, setMobileFilter] = useState(false);
 
+  // suggestions ("did you mean?")
+  const [suggestions, setSuggestions] = useState(null);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
   // hero bar local
   const [heroQ, setHeroQ] = useState(sp.get('q') || '');
   const [heroSpec, setHeroSpec] = useState(sp.get('specialty_id') || '');
@@ -150,11 +155,25 @@ export default function SearchResults() {
         per_page: 20,
       });
       const d = res?.data?.data || res?.data || [];
-      setDoctors(Array.isArray(d) ? d : []);
-      setTotal(res?.data?.total || d.length || 0);
+      const list = Array.isArray(d) ? d : [];
+      setDoctors(list);
+      setTotal(res?.data?.total || list.length || 0);
       setLastPage(res?.data?.last_page || 1);
+
+      // If no results, fetch suggestions
+      if (list.length === 0 && (searchText || specId || cityId)) {
+        setLoadingSuggestions(true);
+        try {
+          const sRes = await doctorAPI.suggestions({ search_text: searchText || undefined, city_id: cityId || undefined });
+          setSuggestions(sRes?.data || null);
+        } catch { setSuggestions(null); }
+        finally { setLoadingSuggestions(false); }
+      } else {
+        setSuggestions(null);
+      }
     } catch {
       setDoctors([]);
+      setSuggestions(null);
     } finally {
       setLoading(false);
     }
@@ -357,13 +376,64 @@ export default function SearchResults() {
                 {Array.from({ length: 6 }).map((_, i) => <DoctorCardSkeleton key={i} />)}
               </div>
             ) : doctors.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <SearchX className="w-16 h-16 text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-gray-700 mb-1">{t('search.noResults')}</h3>
-                <p className="text-sm text-gray-500 mb-4">{t('search.noResultsHint')}</p>
-                <button onClick={clearFilters} className="text-sm font-semibold text-teal-600 hover:text-teal-700 underline underline-offset-2">
-                  {t('search.clearFilters')}
-                </button>
+              <div className="space-y-6">
+                {/* Empty state header */}
+                <div className="flex flex-col items-center justify-center py-10 text-center">
+                  <SearchX className="w-14 h-14 text-gray-300 mb-3" />
+                  <h3 className="text-lg font-bold text-gray-700 mb-1">{t('search.noResults')}</h3>
+                  <p className="text-sm text-gray-500 mb-3">{t('search.noResultsHint')}</p>
+                  <button onClick={clearFilters} className="text-sm font-semibold text-teal-600 hover:text-teal-700 underline underline-offset-2">
+                    {t('search.clearFilters')}
+                  </button>
+                </div>
+
+                {/* "Did you mean?" suggestions */}
+                {loadingSuggestions ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {Array.from({ length: 4 }).map((_, i) => <DoctorCardSkeleton key={i} />)}
+                  </div>
+                ) : suggestions && (
+                  <>
+                    {/* Similar specialties */}
+                    {suggestions.similar_specialties?.length > 0 && (
+                      <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-5">
+                        <h4 className="text-sm font-bold text-amber-800 flex items-center gap-2 mb-3">
+                          <Lightbulb className="w-4 h-4" /> {t('search.didYouMean')}
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {suggestions.similar_specialties.map((s) => (
+                            <button
+                              key={s.id}
+                              onClick={() => {
+                                setSpecId(s.id); setHeroSpec(s.id); setSearchText(''); setHeroQ('');
+                                setPage(1); syncUrl({ specialty_id: s.id, q: '' });
+                              }}
+                              className="inline-flex items-center gap-1.5 text-sm font-medium text-amber-900 bg-white border border-amber-200 rounded-full px-4 py-1.5 hover:bg-amber-100 hover:border-amber-300 transition-all shadow-sm"
+                            >
+                              <Stethoscope className="w-3.5 h-3.5" /> {s.name}
+                              <ArrowRight className="w-3 h-3 opacity-50" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Popular doctors */}
+                    {suggestions.popular_doctors?.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-3">
+                          <TrendingUp className="w-4 h-4 text-teal-600" />
+                          {cityId ? t('search.popularDoctorsInCity') : t('search.popularDoctors')}
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {suggestions.popular_doctors.map((d) => (
+                            <DoctorCard key={d.id} doctor={d} t={t} navigate={navigate} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

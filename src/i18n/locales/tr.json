@@ -891,6 +891,11 @@
       "speaks": "Diller"
     },
     "showing": "{{count}} doktor gösteriliyor",
-    "loadingDoctors": "Doktorlar yükleniyor..."
+    "loadingDoctors": "Doktorlar yükleniyor...",
+    "didYouMean": "Bunu mu demek istediniz?",
+    "similarSpecialties": "Benzer Uzmanlıklar",
+    "popularDoctorsInCity": "Bu Şehirdeki Popüler Doktorlar",
+    "popularDoctors": "Popüler Doktorlar",
+    "trySearching": "Şunu aramayı deneyin"
   }
 }

@@ -147,6 +147,97 @@ class DoctorService
     }
 
     /**
+     * "Did you mean?" suggestions when search returns 0 results.
+     *
+     * Returns:
+     *  - similar_specialties : specialties whose name is close to the search text (Levenshtein / partial match)
+     *  - popular_doctors     : up to 6 verified doctors in the same city (or globally if no city)
+     */
+    public function suggestions(array $filters): array
+    {
+        $locale  = app()->getLocale();
+        $fallback = config('app.fallback_locale', 'en');
+        $search  = mb_strtolower(trim($filters['search_text'] ?? ''));
+        $cityId  = $filters['city_id'] ?? null;
+
+        // ── Similar specialties (fuzzy) ──
+        $similarSpecialties = [];
+        if ($search) {
+            $allSpecs = Specialty::active()->ordered()->get();
+            $scored = [];
+
+            foreach ($allSpecs as $spec) {
+                $name = mb_strtolower(
+                    $spec->getTranslation('name', $locale)
+                    ?? $spec->getTranslation('name', $fallback)
+                    ?? ''
+                );
+                if (!$name) continue;
+
+                // Exact substring → highest priority
+                if (str_contains($name, $search) || str_contains($search, $name)) {
+                    $scored[] = ['spec' => $spec, 'name' => $spec->getTranslation('name', $locale) ?? $spec->getTranslation('name', $fallback), 'dist' => 0];
+                    continue;
+                }
+
+                // Levenshtein distance (cap at 200 chars for safety)
+                $dist = levenshtein(
+                    mb_substr($search, 0, 200),
+                    mb_substr($name, 0, 200)
+                );
+
+                // Also check all translations
+                $bestDist = $dist;
+                foreach ($spec->getTranslations('name') as $val) {
+                    if (!$val) continue;
+                    $d = levenshtein(mb_substr($search, 0, 200), mb_substr(mb_strtolower($val), 0, 200));
+                    $bestDist = min($bestDist, $d);
+                }
+
+                // Only include if reasonably close (threshold: max(4, 40% of search length))
+                $threshold = max(4, (int) ceil(mb_strlen($search) * 0.4));
+                if ($bestDist <= $threshold) {
+                    $scored[] = [
+                        'spec' => $spec,
+                        'name' => $spec->getTranslation('name', $locale) ?? $spec->getTranslation('name', $fallback),
+                        'dist' => $bestDist,
+                    ];
+                }
+            }
+
+            // Sort by distance, take top 5
+            usort($scored, fn($a, $b) => $a['dist'] <=> $b['dist']);
+            $similarSpecialties = array_map(fn($s) => [
+                'id'   => $s['spec']->id,
+                'code' => $s['spec']->code,
+                'name' => $s['name'],
+            ], array_slice($scored, 0, 5));
+        }
+
+        // ── Popular doctors in same city (or globally) ──
+        $dq = User::query()
+            ->where('role_id', 'doctor')
+            ->where('is_active', true)
+            ->with(['doctorProfile:id,user_id,title,specialty,experience_years,online_consultation,languages'])
+            ->select('id', 'fullname', 'avatar', 'city_id', 'is_verified', 'gender');
+
+        if ($cityId) {
+            $dq->where('city_id', $cityId);
+        }
+
+        $popularDoctors = $dq
+            ->orderByDesc('is_verified')
+            ->orderBy('fullname')
+            ->limit(6)
+            ->get();
+
+        return [
+            'similar_specialties' => $similarSpecialties,
+            'popular_doctors'     => $popularDoctors,
+        ];
+    }
+
+    /**
      * Search specialties table for matching translatable names.
      * Returns array of specialty codes.
      */

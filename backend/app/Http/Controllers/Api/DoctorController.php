@@ -34,6 +34,20 @@ class DoctorController extends Controller
     }
 
     /**
+     * GET /api/doctors/suggestions — "Did you mean?" when search returns 0
+     *
+     * Query params: search_text, city_id
+     */
+    public function suggestions(Request $request): JsonResponse
+    {
+        $data = $this->doctorService->suggestions(
+            $request->only(['search_text', 'city_id']),
+        );
+
+        return response()->json($data);
+    }
+
+    /**
      * GET /api/doctors/{id} — Public doctor profile (full detail)
      */
     public function show(string $id): JsonResponse

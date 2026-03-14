@@ -150,6 +150,7 @@ export const socialAPI = {
 // ── Doctor Service ──
 export const doctorAPI = {
   list: (params) => api.get('/doctors', { params }),
+  suggestions: (params) => api.get('/doctors/suggestions', { params }),
   get: (id) => api.get(`/doctors/${id}`),
 };
 

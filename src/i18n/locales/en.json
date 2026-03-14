@@ -891,6 +891,11 @@
       "speaks": "Speaks"
     },
     "showing": "Showing {{count}} doctors",
-    "loadingDoctors": "Loading doctors..."
+    "loadingDoctors": "Loading doctors...",
+    "didYouMean": "Did you mean?",
+    "similarSpecialties": "Similar Specialties",
+    "popularDoctorsInCity": "Popular Doctors in This City",
+    "popularDoctors": "Popular Doctors",
+    "trySearching": "Try searching for"
   }
 }
