@@ -567,9 +567,9 @@ export default function ExploreTimeline() {
   }, [hasMore, items.length]);
 
   return (
-    <div className="min-h-screen pt-0">
+    <div className="min-h-screen pt-20">
       <div className="min-h-screen w-full fixed top-0 left-0 -z-10"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-12 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 relative">
         {/* Hidden pickers for composer */}
         <input ref={imageInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=>{
           const files = Array.from(e?.target?.files || []);
