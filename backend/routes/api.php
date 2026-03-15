@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\MediaStreamController;
 use App\Http\Controllers\Api\ClinicAnalyticsController;
 use App\Http\Controllers\Api\SuperAdminController;
+use App\Http\Controllers\Api\TelehealthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -405,6 +406,18 @@ Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
     Route::get('/clinic/{clinicId}/doctors', [ClinicAnalyticsController::class, 'doctorPerformance']);
     Route::get('/clinic/{clinicId}/engagement', [ClinicAnalyticsController::class, 'engagement']);
     Route::get('/clinic/{clinicId}/appointment-trend', [ClinicAnalyticsController::class, 'appointmentTrend']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Telehealth — Daily.co Video + Deepgram Transcription (§4.4)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('telehealth')->middleware('auth:sanctum')->group(function () {
+    Route::get('/{appointmentId}/session', [TelehealthController::class, 'session']);
+    Route::get('/{appointmentId}/transcription-token', [TelehealthController::class, 'transcriptionToken']);
+    Route::get('/{appointmentId}/simulate-transcript', [TelehealthController::class, 'simulateTranscript']);
+    Route::put('/{appointmentId}/status', [TelehealthController::class, 'updateStatus']);
 });
 
 /*

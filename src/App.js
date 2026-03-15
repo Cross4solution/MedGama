@@ -57,6 +57,7 @@ const CRMPatient360 = React.lazy(() => import('./pages/crm/CRMPatient360'));
 const CRMBilling = React.lazy(() => import('./pages/crm/CRMBilling'));
 const CRMExamination = React.lazy(() => import('./pages/crm/CRMExamination'));
 const CRMMedStream = React.lazy(() => import('./pages/crm/CRMMedStream'));
+const CRMTelehealth = React.lazy(() => import('./pages/crm/CRMTelehealth'));
 
 // Admin Pages
 const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
@@ -125,6 +126,7 @@ function AppContent() {
       '/crm/billing': 'CRM Billing | MedaGama',
       '/crm/examination': 'CRM Examination | MedaGama',
       '/crm/medstream': 'MedStream | MedaGama',
+      '/crm/telehealth': 'Telehealth | MedaGama',
       '/crm/help': 'CRM Help | MedaGama',
       '/admin': 'Admin Dashboard | MedaGama',
       '/admin/verification': 'Doctor Verification | MedaGama',
@@ -304,6 +306,7 @@ function AppContent() {
         <Route path="/crm/billing" element={<CRMLayout><CRMBilling /></CRMLayout>} />
         <Route path="/crm/examination" element={<CRMLayout><CRMExamination /></CRMLayout>} />
         <Route path="/crm/medstream" element={<CRMLayout><CRMMedStream /></CRMLayout>} />
+        <Route path="/crm/telehealth" element={<CRMLayout><CRMTelehealth /></CRMLayout>} />
         <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />

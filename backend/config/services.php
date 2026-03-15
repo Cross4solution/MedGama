@@ -45,6 +45,37 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Daily.co — Telehealth Video Rooms (§4.4)
+    |--------------------------------------------------------------------------
+    |
+    | Set DAILY_API_KEY to enable production mode. Without it the service
+    | returns mock room URLs for development / testing.
+    |
+    */
+
+    'daily' => [
+        'api_key'  => env('DAILY_API_KEY'),
+        'base_url' => env('DAILY_BASE_URL', 'https://api.daily.co/v1'),
+        'domain'   => env('DAILY_DOMAIN', 'medgama'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Deepgram — Live Transcription / Subtitles (§4.4)
+    |--------------------------------------------------------------------------
+    |
+    | Set DEEPGRAM_API_KEY for production. Without it the service runs in
+    | simulation mode, returning random medical sentences for UI testing.
+    |
+    */
+
+    'deepgram' => [
+        'api_key'  => env('DEEPGRAM_API_KEY'),
+        'base_url' => env('DEEPGRAM_BASE_URL', 'https://api.deepgram.com/v1'),
+    ],
+
     'sms' => [
         'provider' => env('SMS_PROVIDER', 'log'),
 

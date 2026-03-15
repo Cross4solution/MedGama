@@ -440,6 +440,14 @@ export const analyticsAPI = {
   appointmentTrend: (clinicId) => api.get(`/analytics/clinic/${clinicId}/appointment-trend`),
 };
 
+// ── Telehealth — Daily.co + Deepgram (§4.4) ──
+export const telehealthAPI = {
+  session: (appointmentId) => api.get(`/telehealth/${appointmentId}/session`),
+  transcriptionToken: (appointmentId, lang = 'en') => api.get(`/telehealth/${appointmentId}/transcription-token`, { params: { lang } }),
+  simulateTranscript: (appointmentId, count = 1) => api.get(`/telehealth/${appointmentId}/simulate-transcript`, { params: { count } }),
+  updateStatus: (appointmentId, meetingStatus) => api.put(`/telehealth/${appointmentId}/status`, { meeting_status: meetingStatus }),
+};
+
 // ── Legacy compat (for existing code that imports { endpoints }) ──
 export const endpoints = {
   login: (payload) => authAPI.login(payload),
