@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\User;
+use App\Models\Appointment;
+use App\Models\CalendarSlot;
+use App\Models\DoctorReview;
 use App\Models\Specialty;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class DoctorService
@@ -135,15 +138,112 @@ class DoctorService
     }
 
     /**
-     * Get single doctor with full profile.
+     * Get single doctor with full profile + review stats (Doc §3.2).
      */
-    public function getDoctor(string $id): ?User
+    public function getDoctor(string $id): ?array
     {
-        return User::where('role_id', 'doctor')
+        $doctor = User::where('role_id', 'doctor')
             ->where('is_active', true)
             ->with(['doctorProfile', 'clinic:id,name,codename,avatar,address'])
             ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
             ->find($id);
+
+        if (!$doctor) return null;
+
+        // Review stats
+        $reviews = DoctorReview::where('doctor_id', $id)->visible();
+        $reviewCount = $reviews->count();
+        $avgRating   = $reviewCount > 0 ? round($reviews->avg('rating'), 1) : null;
+
+        // Upcoming availability summary (next 7 days)
+        $upcomingSlots = CalendarSlot::where('doctor_id', $id)
+            ->where('is_available', true)
+            ->where('slot_date', '>=', now()->toDateString())
+            ->where('slot_date', '<=', now()->addDays(7)->toDateString())
+            ->orderBy('slot_date')
+            ->orderBy('start_time')
+            ->limit(10)
+            ->get(['id', 'slot_date', 'start_time', 'duration_minutes']);
+
+        // Completed appointment count
+        $completedAppointments = Appointment::where('doctor_id', $id)
+            ->where('status', 'completed')
+            ->count();
+
+        return [
+            'doctor' => $doctor,
+            'review_stats' => [
+                'average_rating' => $avgRating,
+                'review_count'   => $reviewCount,
+            ],
+            'upcoming_slots' => $upcomingSlots,
+            'completed_appointments' => $completedAppointments,
+        ];
+    }
+
+    /**
+     * Get paginated reviews for a doctor (public).
+     */
+    public function getDoctorReviews(string $doctorId, int $perPage = 10): LengthAwarePaginator
+    {
+        return DoctorReview::where('doctor_id', $doctorId)
+            ->visible()
+            ->with(['patient:id,fullname,avatar'])
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
+    }
+
+    /**
+     * Get available slots for a doctor on a specific date range (public).
+     */
+    public function getDoctorAvailability(string $doctorId, ?string $date = null): array
+    {
+        $startDate = $date ?: now()->toDateString();
+        $endDate   = now()->parse($startDate)->addDays(30)->toDateString();
+
+        $slots = CalendarSlot::where('doctor_id', $doctorId)
+            ->where('is_available', true)
+            ->whereBetween('slot_date', [$startDate, $endDate])
+            ->orderBy('slot_date')
+            ->orderBy('start_time')
+            ->get(['id', 'slot_date', 'start_time', 'duration_minutes']);
+
+        // Group by date
+        $grouped = $slots->groupBy(fn($s) => $s->slot_date->format('Y-m-d'))
+            ->map(fn($daySlots) => $daySlots->map(fn($s) => [
+                'id'         => $s->id,
+                'start_time' => $s->start_time,
+                'duration'   => $s->duration_minutes,
+            ])->values())
+            ->toArray();
+
+        return $grouped;
+    }
+
+    /**
+     * Submit a review for a doctor (authenticated patient).
+     */
+    public function submitReview(User $patient, string $doctorId, array $data): DoctorReview
+    {
+        // Check if patient had a completed appointment with this doctor
+        $appointment = Appointment::where('patient_id', $patient->id)
+            ->where('doctor_id', $doctorId)
+            ->where('status', 'completed')
+            ->latest()
+            ->first();
+
+        return DoctorReview::updateOrCreate(
+            [
+                'doctor_id'  => $doctorId,
+                'patient_id' => $patient->id,
+            ],
+            [
+                'appointment_id' => $appointment?->id,
+                'rating'         => $data['rating'],
+                'comment'        => $data['comment'] ?? null,
+                'is_verified'    => $appointment !== null,
+            ]
+        );
     }
 
     /**

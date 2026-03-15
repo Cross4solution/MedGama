@@ -48,16 +48,61 @@ class DoctorController extends Controller
     }
 
     /**
-     * GET /api/doctors/{id} — Public doctor profile (full detail)
+     * GET /api/doctors/{id} — Public doctor profile (full detail + review stats)
      */
     public function show(string $id): JsonResponse
     {
-        $doctor = $this->doctorService->getDoctor($id);
+        $data = $this->doctorService->getDoctor($id);
 
-        if (!$doctor) {
+        if (!$data) {
             return response()->json(['message' => 'Doctor not found.'], 404);
         }
 
-        return response()->json(['doctor' => $doctor]);
+        return response()->json($data);
+    }
+
+    /**
+     * GET /api/doctors/{id}/reviews — Public reviews list (paginated)
+     */
+    public function reviews(Request $request, string $id): JsonResponse
+    {
+        $reviews = $this->doctorService->getDoctorReviews(
+            $id,
+            (int) $request->query('per_page', 10),
+        );
+
+        return response()->json($reviews);
+    }
+
+    /**
+     * POST /api/doctors/{id}/reviews — Submit a review (auth required)
+     */
+    public function submitReview(Request $request, string $id): JsonResponse
+    {
+        $request->validate([
+            'rating'  => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:2000',
+        ]);
+
+        $review = $this->doctorService->submitReview(
+            $request->user(),
+            $id,
+            $request->only(['rating', 'comment']),
+        );
+
+        return response()->json(['review' => $review->load('patient:id,fullname,avatar')], 201);
+    }
+
+    /**
+     * GET /api/doctors/{id}/availability — Public availability (slots grouped by date)
+     */
+    public function availability(Request $request, string $id): JsonResponse
+    {
+        $slots = $this->doctorService->getDoctorAvailability(
+            $id,
+            $request->query('date'),
+        );
+
+        return response()->json(['availability' => $slots]);
     }
 }

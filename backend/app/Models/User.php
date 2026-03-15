@@ -140,6 +140,16 @@ class User extends Authenticatable
         return $this->hasOne(DoctorProfile::class);
     }
 
+    public function doctorReviews()
+    {
+        return $this->hasMany(DoctorReview::class, 'doctor_id');
+    }
+
+    public function patientReviews()
+    {
+        return $this->hasMany(DoctorReview::class, 'patient_id');
+    }
+
     public function medStreamPosts()
     {
         return $this->hasMany(MedStreamPost::class, 'author_id');

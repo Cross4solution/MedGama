@@ -152,6 +152,9 @@ export const doctorAPI = {
   list: (params) => api.get('/doctors', { params }),
   suggestions: (params) => api.get('/doctors/suggestions', { params }),
   get: (id) => api.get(`/doctors/${id}`),
+  reviews: (id, params) => api.get(`/doctors/${id}/reviews`, { params }),
+  submitReview: (id, data) => api.post(`/doctors/${id}/reviews`, data),
+  availability: (id, params) => api.get(`/doctors/${id}/availability`, { params }),
 };
 
 // ── Doctor Profile (own profile management + onboarding) ──

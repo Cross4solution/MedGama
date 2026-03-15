@@ -154,6 +154,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/doctors/suggestions', [DoctorController::class, 'suggestions']);
 Route::get('/doctors/{id}', [DoctorController::class, 'show']);
+Route::get('/doctors/{id}/reviews', [DoctorController::class, 'reviews']);
+Route::get('/doctors/{id}/availability', [DoctorController::class, 'availability']);
+Route::post('/doctors/{id}/reviews', [DoctorController::class, 'submitReview'])->middleware('auth:sanctum');
 
 /*
 |--------------------------------------------------------------------------
