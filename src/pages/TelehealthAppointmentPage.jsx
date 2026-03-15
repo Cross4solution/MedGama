@@ -102,6 +102,7 @@ export default function TelehealthAppointmentPage() {
   const [paymentMethod, setPaymentMethod] = useState('credit');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [createdAppointmentId, setCreatedAppointmentId] = useState(null);
   const [error, setError] = useState('');
 
   const [doctors, setDoctors] = useState([]);
@@ -258,7 +259,9 @@ export default function TelehealthAppointmentPage() {
         payload.patient_id = user.id;
       }
 
-      await appointmentAPI.create(payload);
+      const res = await appointmentAPI.create(payload);
+      const created = res?.data || res;
+      setCreatedAppointmentId(created?.id || null);
       setSuccess(true);
     } catch (err) {
       // Slot conflict: backend returns 422 with slot_id error "This time slot is no longer available."
@@ -373,13 +376,24 @@ export default function TelehealthAppointmentPage() {
             </p>
           </div>
 
-          <div className="flex gap-3">
-            <button onClick={() => navigate(isDoctor ? '/crm/appointments' : '/telehealth')} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-all">
-              {isDoctor ? 'View Appointments' : 'My Appointments'}
-            </button>
-            <button onClick={() => navigate(isDoctor ? '/telehealth-appointment' : '/')} className="flex-1 bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:from-teal-700 hover:to-emerald-700 transition-all shadow-md shadow-teal-200/50">
-              {isDoctor ? 'Back to Appointments' : 'Back to Home'}
-            </button>
+          <div className="flex flex-col gap-2">
+            {appointmentType === 'online' && createdAppointmentId && (
+              <button
+                onClick={() => navigate(`/crm/telehealth?id=${createdAppointmentId}`)}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:from-teal-700 hover:to-emerald-700 transition-all shadow-md shadow-teal-200/50"
+              >
+                <Video className="w-4 h-4" />
+                Join Telehealth Room
+              </button>
+            )}
+            <div className="flex gap-3">
+              <button onClick={() => navigate(isDoctor ? '/crm/appointments' : '/telehealth')} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-all">
+                {isDoctor ? 'View Appointments' : 'My Appointments'}
+              </button>
+              <button onClick={() => navigate(isDoctor ? '/telehealth-appointment' : '/')} className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-all">
+                {isDoctor ? 'Back to Appointments' : 'Back to Home'}
+              </button>
+            </div>
           </div>
         </div>
       </div>

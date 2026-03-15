@@ -1,9 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { Video, Calendar, CheckCircle, XCircle, ChevronLeft, ChevronRight, X, AlertTriangle } from 'lucide-react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Video, Calendar, CheckCircle, XCircle, ChevronLeft, ChevronRight, X, AlertTriangle, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { appointmentAPI } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 const TelehealthPage = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // ── API State ──
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [cancelModal, setCancelModal] = useState({ open: false, session: null });
+  const [cancelling, setCancelling] = useState(false);
+
+  // ── Fetch appointments ──
+  useEffect(() => {
+    setLoading(true);
+    appointmentAPI.list({ per_page: 200 })
+      .then(res => {
+        const list = res?.data || [];
+        // Filter to online/telehealth appointments only
+        const telehealth = list.filter(a =>
+          a.appointment_type === 'online' || a.appointment_type === 'telehealth' || a.meeting_id
+        );
+        setAppointments(telehealth.length > 0 ? telehealth : list);
+      })
+      .catch(() => setAppointments([]))
+      .finally(() => setLoading(false));
+  }, []);
+
   // Helpers
   const fmtDateTime = (d) => {
     try {
@@ -17,30 +45,57 @@ const TelehealthPage = () => {
     }
   };
 
+  const getStartDate = useCallback((appt) => {
+    if (!appt) return new Date();
+    const d = appt.appointment_date || '';
+    const t = appt.appointment_time || '00:00';
+    return new Date(`${d}T${t}`);
+  }, []);
+
   const minutesUntil = (d) => Math.floor((new Date(d).getTime() - Date.now()) / 60000);
 
-  // Mock data (Date based)
-  const now = new Date();
-  const addHours = (h) => new Date(now.getTime() + h * 3600000);
+  // ── Categorize appointments ──
+  const scheduledSessions = useMemo(() =>
+    appointments
+      .filter(a => ['pending', 'confirmed'].includes(a.status))
+      .map(a => ({
+        id: a.id,
+        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || 'Patient',
+        start: getStartDate(a),
+        specialty: a.appointment_type === 'online' ? 'Online Telehealth' : (a.appointment_type || 'Consultation'),
+        raw: a,
+      }))
+      .sort((a, b) => a.start - b.start),
+    [appointments, getStartDate]
+  );
 
-  const scheduledSessions = [
-    { id: 3,  patient: 'Deniz Öztürk',   start: addHours(0.2),  specialty: 'Initial Consultation' },
-    { id: 4,  patient: 'Zeynep Kaya',    start: addHours(6),    specialty: 'Follow-up' },
-    { id: 5,  patient: 'Ali Şen',        start: addHours(30),   specialty: 'Preoperative' },
-    { id: 9,  patient: 'Mert Koç',       start: addHours(1.5),  specialty: 'Dermatology' },
-  ];
+  const completedSessions = useMemo(() =>
+    appointments
+      .filter(a => a.status === 'completed')
+      .map(a => ({
+        id: a.id,
+        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || 'Patient',
+        start: getStartDate(a),
+        durationMin: 30,
+        status: 'Completed',
+        raw: a,
+      }))
+      .sort((a, b) => b.start - a.start),
+    [appointments, getStartDate]
+  );
 
-  const [cancelModal, setCancelModal] = useState({ open: false, session: null });
-
-  const completedSessions = [
-    { id: 6, patient: 'Selin Acar',       start: addHours(-20), durationMin: 25, status: 'Completed' },
-    { id: 7, patient: 'Mehmet Özkan',     start: addHours(-48), durationMin: 32, status: 'Completed' },
-    { id: 8, patient: 'Fatma Yılmaz',     start: addHours(-72), durationMin: 18, status: 'Completed' },
-  ];
-
-  const canceledSessions = [
-    { id: 10, patient: 'Burcu Tekin',     start: addHours(-10), reason: 'Patient canceled' },
-  ];
+  const canceledSessions = useMemo(() =>
+    appointments
+      .filter(a => ['cancelled', 'canceled', 'no_show'].includes(a.status))
+      .map(a => ({
+        id: a.id,
+        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || 'Patient',
+        start: getStartDate(a),
+        reason: a.status === 'no_show' ? 'No show' : 'Cancelled',
+        raw: a,
+      })),
+    [appointments, getStartDate]
+  );
 
   const totals = {
     total: scheduledSessions.length + completedSessions.length + canceledSessions.length,
@@ -48,6 +103,25 @@ const TelehealthPage = () => {
     completed: completedSessions.length,
     canceled: canceledSessions.length,
   };
+
+  // ── Join handler → navigate to telehealth room ──
+  const handleJoin = useCallback((session) => {
+    navigate(`/crm/telehealth?id=${session.id}`);
+  }, [navigate]);
+
+  // ── Cancel handler ──
+  const handleCancel = useCallback(async () => {
+    if (!cancelModal.session) return;
+    setCancelling(true);
+    try {
+      await appointmentAPI.update(cancelModal.session.id, { status: 'cancelled' });
+      setAppointments(prev => prev.map(a =>
+        a.id === cancelModal.session.id ? { ...a, status: 'cancelled' } : a
+      ));
+    } catch { /* silent */ }
+    setCancelling(false);
+    setCancelModal({ open: false, session: null });
+  }, [cancelModal.session]);
 
   const stats = [
     { title: t('telehealthPage.totalSessions'), value: String(totals.total), subtitle: t('telehealthPage.allTime'), icon: Video, color: 'green' },
@@ -186,6 +260,7 @@ const TelehealthPage = () => {
                             return (
                               <>
                                 <button
+                                  onClick={() => handleJoin(session)}
                                   disabled={!canJoin}
                                   className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold transition-all duration-200 ${canJoin ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50 hover:shadow-lg' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
                                 >
@@ -233,30 +308,7 @@ const TelehealthPage = () => {
                           <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100/80 mt-0.5">{session.status}</span>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          {(() => {
-                            const m = minutesUntil(session.start);
-                            const canJoin = m <= 15 && m >= 0;
-                            const canCancel = m >= 240;
-                            return (
-                              <>
-                                <button
-                                  disabled={!canJoin}
-                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 ${canJoin ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
-                                >
-                                  <Video className="w-3.5 h-3.5" />
-                                  <span>{t('telehealthPage.join')}</span>
-                                </button>
-                                <button
-                                  disabled={!canCancel}
-                                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors ${canCancel ? 'text-rose-600 hover:bg-rose-50' : 'text-gray-300 cursor-not-allowed'}`}
-                                  title={canCancel ? '' : t('telehealthPage.cancellationNotice')}
-                                >
-                                  <XCircle className="w-3.5 h-3.5" />
-                                  <span>{t('common.cancel')}</span>
-                                </button>
-                              </>
-                            );
-                          })()}
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100/80">{session.status}</span>
                         </div>
                       </div>
                     </div>
@@ -309,10 +361,11 @@ const TelehealthPage = () => {
                   {t('telehealthPage.keep')}
                 </button>
                 <button
-                  onClick={() => setCancelModal({ open: false, session: null })}
-                  className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 rounded-xl shadow-md shadow-rose-200/50 transition-all duration-200"
+                  onClick={handleCancel}
+                  disabled={cancelling}
+                  className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 rounded-xl shadow-md shadow-rose-200/50 transition-all duration-200 disabled:opacity-50"
                 >
-                  {t('telehealthPage.confirmCancel')}
+                  {cancelling ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : t('telehealthPage.confirmCancel')}
                 </button>
               </div>
             </div>
