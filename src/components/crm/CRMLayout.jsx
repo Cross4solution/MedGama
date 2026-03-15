@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   CalendarDays,
+  CalendarCheck,
   Users,
   Settings,
   Bell,
@@ -21,6 +22,10 @@ import {
   Home,
   Rss,
   Video,
+  DollarSign,
+  LifeBuoy,
+  BookOpen,
+  Building2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +36,7 @@ const getNavSections = (t, role) => {
   const mainItems = [
     { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm' },
     { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments' },
+    { label: t('crm.sidebar.smartCalendar', 'Smart Calendar'), icon: CalendarCheck, path: '/crm/calendar' },
     { label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients' },
   ];
   // Doctor-only: examination
@@ -39,12 +45,14 @@ const getNavSections = (t, role) => {
   }
   mainItems.push({ label: t('crm.sidebar.medstream', 'MedStream'), icon: Rss, path: '/crm/medstream' });
   mainItems.push({ label: t('crm.sidebar.telehealth', 'Telehealth'), icon: Video, path: '/crm/telehealth' });
-  // Clinic-only: staff management
+  // Clinic-only: staff management + clinic manager panel
   if (isClinic) {
     mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
+    mainItems.push({ label: t('crm.sidebar.clinicManager', 'Clinic Management'), icon: Building2, path: '/crm/clinic-manager' });
   }
 
   const managementItems = [
+    { label: t('crm.sidebar.revenue', 'Revenue & Finance'), icon: DollarSign, path: '/crm/revenue' },
     { label: t('crm.sidebar.billing'), icon: Receipt, path: '/crm/billing' },
     { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports' },
     { label: t('crm.sidebar.integrations'), icon: Plug, path: '/crm/integrations' },
@@ -56,8 +64,9 @@ const getNavSections = (t, role) => {
     {
       title: t('crm.sidebar.system'),
       items: [
+        { label: t('crm.sidebar.support', 'Support'), icon: LifeBuoy, path: '/crm/support' },
+        { label: t('crm.sidebar.faq', 'FAQ'), icon: BookOpen, path: '/crm/faq' },
         { label: t('crm.sidebar.settings'), icon: Settings, path: '/crm/settings' },
-        { label: t('crm.sidebar.helpSupport'), icon: HelpCircle, path: '/crm/help' },
       ],
     },
   ];

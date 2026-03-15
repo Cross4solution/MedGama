@@ -205,4 +205,50 @@ class SuperAdminController extends Controller
 
         return response()->json(['data' => $data]);
     }
+
+    // ══════════════════════════════════════════════
+    //  FEATURE TOGGLES
+    // ══════════════════════════════════════════════
+
+    public function featureToggles(): JsonResponse
+    {
+        $data = $this->superAdminService->getFeatureToggles();
+
+        return response()->json(['data' => $data]);
+    }
+
+    public function updateFeatureToggle(Request $request): JsonResponse
+    {
+        $request->validate([
+            'key'   => 'required|string|max:100',
+            'value' => 'required',
+        ]);
+
+        $setting = $this->superAdminService->updateFeatureToggle(
+            $request->input('key'),
+            $request->input('value'),
+            $request->user()->id,
+        );
+
+        return response()->json([
+            'message' => 'Setting updated.',
+            'setting' => [
+                'key'   => $setting->key,
+                'value' => $setting->typed_value,
+            ],
+        ]);
+    }
+
+    // ══════════════════════════════════════════════
+    //  AUDIT LOGS
+    // ══════════════════════════════════════════════
+
+    public function auditLogs(Request $request): JsonResponse
+    {
+        $logs = $this->superAdminService->listAuditLogs(
+            $request->only(['action', 'resource_type', 'user_id', 'search', 'date_from', 'date_to', 'per_page', 'page']),
+        );
+
+        return response()->json($logs);
+    }
 }

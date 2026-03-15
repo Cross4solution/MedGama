@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Models\HealthDataAuditLog;
 use App\Models\Icd10Code;
+use App\Models\PatientDocument;
 use App\Models\PatientRecord;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ExaminationService
@@ -242,6 +244,34 @@ class ExaminationService
     {
         $record->vitals_alert = $this->analyzeVitals($record->vitals);
         return $record;
+    }
+
+    // ══════════════════════════════════════════════
+    //  PATIENT DOCUMENTS (Doctor access during exam)
+    // ══════════════════════════════════════════════
+
+    /**
+     * Get patient documents shared with the doctor.
+     * Used during examination to view patient's uploaded medical files.
+     */
+    public function getSharedPatientDocuments(string $patientId, User $doctor): Collection
+    {
+        $documents = PatientDocument::active()
+            ->forPatient($patientId)
+            ->sharedWith($doctor->id)
+            ->orderByDesc('document_date')
+            ->get();
+
+        // GDPR Audit
+        HealthDataAuditLog::log(
+            accessorId: $doctor->id,
+            patientId: $patientId,
+            resourceType: 'patient_documents',
+            resourceId: $patientId,
+            action: 'exam_view',
+        );
+
+        return $documents;
     }
 
     // ══════════════════════════════════════════════

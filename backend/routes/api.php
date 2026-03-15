@@ -18,10 +18,15 @@ use App\Http\Controllers\Api\DoctorProfileController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\FinanceController;
 use App\Http\Controllers\Api\MediaStreamController;
 use App\Http\Controllers\Api\ClinicAnalyticsController;
 use App\Http\Controllers\Api\SuperAdminController;
 use App\Http\Controllers\Api\TelehealthController;
+use App\Http\Controllers\Api\PatientDocumentController;
+use App\Http\Controllers\Api\TicketController;
+use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\ClinicManagerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -169,6 +174,11 @@ Route::prefix('doctor-profile')->middleware('auth:sanctum')->group(function () {
     Route::put('/', [DoctorProfileController::class, 'update']);
     Route::put('/onboarding', [DoctorProfileController::class, 'updateOnboarding']);
     Route::post('/gallery', [DoctorProfileController::class, 'uploadGallery']);
+    Route::delete('/gallery', [DoctorProfileController::class, 'deleteGalleryImage']);
+    Route::put('/gallery/reorder', [DoctorProfileController::class, 'reorderGallery']);
+    Route::put('/operating-hours', [DoctorProfileController::class, 'updateOperatingHours']);
+    Route::put('/services', [DoctorProfileController::class, 'updateServices']);
+    Route::put('/social', [DoctorProfileController::class, 'updateSocial']);
 });
 
 /*
@@ -177,6 +187,8 @@ Route::prefix('doctor-profile')->middleware('auth:sanctum')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/appointments/calendar-events', [AppointmentController::class, 'calendarEvents']);
+    Route::patch('/appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule']);
     Route::apiResource('appointments', AppointmentController::class);
 });
 
@@ -203,6 +215,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patient-records/{id}', [PatientRecordController::class, 'show']);
     Route::post('/patient-records', [PatientRecordController::class, 'store'])->middleware('role:doctor,clinicOwner,superAdmin');
     Route::delete('/patient-records/{id}', [PatientRecordController::class, 'destroy'])->middleware('role:doctor,clinicOwner,superAdmin');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Patient Documents — Medical Wallet (Bölüm 7.4)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('patient-documents')->middleware('auth:sanctum')->group(function () {
+    Route::get('/stats', [PatientDocumentController::class, 'stats']);
+    Route::get('/', [PatientDocumentController::class, 'index']);
+    Route::post('/', [PatientDocumentController::class, 'store']);
+    Route::get('/{id}', [PatientDocumentController::class, 'show']);
+    Route::put('/{id}', [PatientDocumentController::class, 'update']);
+    Route::delete('/{id}', [PatientDocumentController::class, 'destroy']);
+    Route::get('/{id}/download', [PatientDocumentController::class, 'download']);
+    Route::post('/{id}/share', [PatientDocumentController::class, 'share']);
+    Route::post('/{id}/revoke', [PatientDocumentController::class, 'revoke']);
+    // Doctor access to shared documents
+    Route::get('/shared/{patientId}', [PatientDocumentController::class, 'sharedWithDoctor'])
+        ->middleware('role:doctor,clinicOwner,superAdmin');
 });
 
 /*
@@ -266,6 +298,20 @@ Route::prefix('crm/billing')->middleware(['auth:sanctum', 'role:doctor,clinicOwn
     Route::get('/stats', [BillingController::class, 'stats']);
     Route::get('/revenue-chart', [BillingController::class, 'revenueChart']);
     Route::get('/outstanding', [BillingController::class, 'outstanding']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Finance / Analytics (Bölüm 7.5)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('finance')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospital,superAdmin,saasAdmin', 'crm.access'])->group(function () {
+    Route::get('/top-services', [FinanceController::class, 'topServices']);
+    Route::get('/payout', [FinanceController::class, 'payout']);
+    Route::get('/platform-overview', [FinanceController::class, 'platformOverview']);
+    Route::get('/exchange-rates', [FinanceController::class, 'exchangeRates']);
+    Route::post('/convert', [FinanceController::class, 'convert']);
+    Route::get('/export', [FinanceController::class, 'export']);
 });
 
 /*
@@ -410,6 +456,21 @@ Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| Clinic / Hospital Manager Panel (§8.2)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('clinic-manager')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/overview', [ClinicManagerController::class, 'overview']);
+    Route::get('/doctors', [ClinicManagerController::class, 'doctors']);
+    Route::get('/doctors/{doctorId}', [ClinicManagerController::class, 'doctorDetail']);
+    Route::post('/doctors/{doctorId}/add', [ClinicManagerController::class, 'addDoctor']);
+    Route::delete('/doctors/{doctorId}/remove', [ClinicManagerController::class, 'removeDoctor']);
+    Route::put('/doctors/{doctorId}/hours', [ClinicManagerController::class, 'updateDoctorHours']);
+    Route::get('/financials', [ClinicManagerController::class, 'financials']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | Telehealth — Daily.co Video + Deepgram Transcription (§4.4)
 |--------------------------------------------------------------------------
 */
@@ -442,6 +503,13 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     Route::put('/reports/{id}/approve', [SuperAdminController::class, 'approveReport']);
     Route::delete('/reports/{id}/remove', [SuperAdminController::class, 'removeReport']);
 
+    // Feature toggles (system settings)
+    Route::get('/feature-toggles', [SuperAdminController::class, 'featureToggles']);
+    Route::put('/feature-toggles', [SuperAdminController::class, 'updateFeatureToggle']);
+
+    // Audit logs
+    Route::get('/audit-logs', [SuperAdminController::class, 'auditLogs']);
+
     // Catalog management (admin CRUD)
     Route::prefix('catalog')->group(function () {
         Route::get('/specialties', [CatalogController::class, 'specialties']);
@@ -458,5 +526,36 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
         Route::post('/diseases', [CatalogController::class, 'storeDisease']);
         Route::put('/diseases/{id}', [CatalogController::class, 'updateDisease']);
     });
+
+    // FAQ management (admin)
+    Route::get('/faqs', [FaqController::class, 'adminIndex']);
+    Route::post('/faqs', [FaqController::class, 'store']);
+    Route::put('/faqs/{id}', [FaqController::class, 'update']);
+    Route::delete('/faqs/{id}', [FaqController::class, 'destroy']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Support / Help Center (Bölüm 12)
+|--------------------------------------------------------------------------
+*/
+// Public FAQ (no auth required)
+Route::get('/faqs', [FaqController::class, 'index']);
+
+// Authenticated support ticket routes
+Route::prefix('support')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/categories', [TicketController::class, 'categories']);
+    Route::get('/tickets', [TicketController::class, 'index']);
+    Route::post('/tickets', [TicketController::class, 'store']);
+    Route::get('/tickets/{ticket}', [TicketController::class, 'show']);
+    Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply']);
+    Route::patch('/tickets/{ticket}/status', [TicketController::class, 'updateStatus']);
+    Route::patch('/tickets/{ticket}/assign', [TicketController::class, 'assign']);
+    Route::get('/stats', [TicketController::class, 'stats']);
+
+    // Category management (admin)
+    Route::post('/categories', [TicketController::class, 'storeCategory']);
+    Route::put('/categories/{id}', [TicketController::class, 'updateCategory']);
+    Route::delete('/categories/{id}', [TicketController::class, 'destroyCategory']);
 });
 

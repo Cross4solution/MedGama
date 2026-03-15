@@ -25,6 +25,11 @@ import th from './locales/th.json';
 import az from './locales/az.json';
 import uz from './locales/uz.json';
 
+const SUPPORTED_LANGS = [
+  'en', 'tr', 'ar', 'ru', 'de', 'fr', 'es', 'it', 'az', 'uz',
+  'zh', 'hi', 'bn', 'pt', 'ja', 'ko', 'vi', 'th', 'pl', 'uk', 'ro', 'nl',
+];
+
 const resources = {
   en: { translation: en },
   tr: { translation: tr },
@@ -50,44 +55,24 @@ const resources = {
   uz: { translation: uz },
 };
 
-// One-time migration: clear stale auto-detected language so default becomes English
-try {
-  if (!localStorage.getItem('preferred_language_manual')) {
-    localStorage.removeItem('preferred_language');
-    localStorage.removeItem('i18nextLng');
-  }
-} catch {}
-
-const manualPreferenceDetector = {
-  name: 'manualPreference',
-  lookup() {
-    try {
-      const lang = localStorage.getItem('preferred_language');
-      const isManual = localStorage.getItem('preferred_language_manual') === '1';
-      return isManual && lang ? lang : 'en';
-    } catch {
-      return 'en';
-    }
-  },
-};
-
-const customDetector = new LanguageDetector();
-customDetector.addDetector(manualPreferenceDetector);
-
 i18n
-  .use(customDetector)
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
     fallbackLng: 'en',
+    supportedLngs: SUPPORTED_LANGS,
+    nonExplicitSupportedLngs: false,
     interpolation: {
       escapeValue: false,
     },
     detection: {
-      // Keep platform default in English.
-      // Only honor stored language when user selected it manually.
-      order: ['manualPreference'],
-      caches: ['localStorage'],
+      order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
+      lookupQuerystring: 'lang',
+      lookupCookie: 'i18next',
+      lookupLocalStorage: 'preferred_language',
+      caches: ['localStorage', 'cookie'],
+      cookieMinutes: 525600, // 1 year
     },
     react: {
       useSuspense: false,

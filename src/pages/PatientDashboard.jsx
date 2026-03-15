@@ -1,0 +1,326 @@
+import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
+import { appointmentAPI, patientDocumentAPI } from '../lib/api';
+import {
+  Activity, Calendar, Video, FileText, Clock, ChevronRight,
+  Pill, FolderHeart, Monitor, Stethoscope, AlertCircle, Loader2,
+  TrendingUp, Heart, Shield
+} from 'lucide-react';
+
+const PatientDashboard = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const [appointments, setAppointments] = useState([]);
+  const [docStats, setDocStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [apptRes, statsRes] = await Promise.allSettled([
+          appointmentAPI.list({ per_page: 100 }),
+          patientDocumentAPI.stats(),
+        ]);
+        if (apptRes.status === 'fulfilled') {
+          setAppointments(apptRes.value?.data || []);
+        }
+        if (statsRes.status === 'fulfilled') {
+          setDocStats(statsRes.value || null);
+        }
+      } catch { /* silent */ }
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
+
+  // ── Categorize appointments ──
+  const now = new Date();
+
+  const upcoming = useMemo(() =>
+    appointments
+      .filter(a => ['pending', 'confirmed'].includes(a.status))
+      .map(a => ({
+        ...a,
+        startDate: new Date(`${a.appointment_date}T${a.appointment_time || '00:00'}`),
+      }))
+      .filter(a => a.startDate >= new Date(now.getTime() - 3600000))
+      .sort((a, b) => a.startDate - b.startDate)
+      .slice(0, 5),
+    [appointments, now]
+  );
+
+  const completed = useMemo(() =>
+    appointments.filter(a => a.status === 'completed'),
+    [appointments]
+  );
+
+  const online = useMemo(() =>
+    appointments.filter(a => a.appointment_type === 'online'),
+    [appointments]
+  );
+
+  const fmtDate = (d) => {
+    try {
+      return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch { return d; }
+  };
+
+  const fmtTime = (t) => {
+    if (!t) return '';
+    return t.slice(0, 5);
+  };
+
+  const minutesUntil = (date) => Math.floor((date.getTime() - Date.now()) / 60000);
+
+  // ── Stats ──
+  const stats = [
+    {
+      label: t('patientDashboard.upcomingAppointments', 'Upcoming'),
+      value: upcoming.length,
+      icon: Calendar,
+      color: 'blue',
+      onClick: () => navigate('/telehealth-appointment'),
+    },
+    {
+      label: t('patientDashboard.completedVisits', 'Completed'),
+      value: completed.length,
+      icon: Stethoscope,
+      color: 'green',
+    },
+    {
+      label: t('patientDashboard.telehealthSessions', 'Telehealth'),
+      value: online.length,
+      icon: Monitor,
+      color: 'purple',
+      onClick: () => navigate('/telehealth'),
+    },
+    {
+      label: t('patientDashboard.medicalDocuments', 'Documents'),
+      value: docStats?.total_documents ?? 0,
+      icon: FolderHeart,
+      color: 'amber',
+      onClick: () => navigate('/medical-archive'),
+    },
+  ];
+
+  const colorMap = {
+    blue:   { bg: 'bg-blue-50', text: 'text-blue-600', icon: 'bg-blue-100' },
+    green:  { bg: 'bg-emerald-50', text: 'text-emerald-600', icon: 'bg-emerald-100' },
+    purple: { bg: 'bg-purple-50', text: 'text-purple-600', icon: 'bg-purple-100' },
+    amber:  { bg: 'bg-amber-50', text: 'text-amber-600', icon: 'bg-amber-100' },
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen pb-8">
+      <div className="px-4 pt-4 sm:px-6 sm:pt-6 max-w-6xl mx-auto">
+
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center shadow-md shadow-teal-200/50">
+              <Activity className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">
+                {t('patientDashboard.welcome', 'Welcome')}, {user?.fullname?.split(' ')[0] || t('common.patient')}
+              </h1>
+              <p className="text-xs text-gray-400 font-medium">
+                {t('patientDashboard.subtitle', 'Your health overview at a glance')}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/telehealth-appointment')}
+            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-sm font-semibold rounded-xl shadow-md shadow-teal-200/50 hover:shadow-lg transition-all"
+          >
+            <Calendar className="w-4 h-4" />
+            {t('patientDashboard.bookAppointment', 'Book Appointment')}
+          </button>
+        </div>
+
+        {/* ── Stats Grid ── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+          {stats.map((stat, i) => {
+            const c = colorMap[stat.color];
+            return (
+              <div
+                key={i}
+                onClick={stat.onClick}
+                className={`rounded-2xl border border-gray-200/60 bg-white shadow-sm hover:shadow-md transition-all duration-200 px-4 py-4 ${stat.onClick ? 'cursor-pointer' : ''}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{stat.label}</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                  </div>
+                  <div className={`w-10 h-10 rounded-xl ${c.icon} flex items-center justify-center`}>
+                    <stat.icon className={`w-5 h-5 ${c.text}`} />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── Two Column Layout ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* ── Left: Upcoming Appointments ── */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-teal-500 to-emerald-500" />
+                {t('patientDashboard.upcomingAppointments', 'Upcoming Appointments')}
+              </h2>
+              <button
+                onClick={() => navigate('/telehealth-appointment')}
+                className="text-xs text-teal-600 font-semibold hover:text-teal-700 flex items-center gap-1"
+              >
+                {t('common.viewAll', 'View All')} <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
+              {upcoming.length === 0 ? (
+                <div className="px-6 py-12 text-center">
+                  <Calendar className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                  <p className="text-sm text-gray-500 font-medium">{t('patientDashboard.noUpcoming', 'No upcoming appointments')}</p>
+                  <button
+                    onClick={() => navigate('/telehealth-appointment')}
+                    className="mt-3 text-xs font-semibold text-teal-600 hover:text-teal-700"
+                  >
+                    {t('patientDashboard.bookNow', 'Book your first appointment →')}
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  {upcoming.map((appt, idx) => {
+                    const m = minutesUntil(appt.startDate);
+                    const canJoin = appt.appointment_type === 'online' && m <= 15 && m >= -30;
+                    const isToday = appt.startDate.toDateString() === now.toDateString();
+                    const isTomorrow = appt.startDate.toDateString() === new Date(now.getTime() + 86400000).toDateString();
+                    const doctorName = appt.doctor?.fullname || appt.doctor_name || 'Doctor';
+                    const initials = doctorName.split(' ').map(n => n[0]).join('').slice(0, 2);
+
+                    return (
+                      <div key={appt.id} className={`px-4 py-3.5 hover:bg-gray-50/60 transition-colors ${idx > 0 ? 'border-t border-gray-100' : ''}`}>
+                        <div className="flex items-center gap-3 justify-between">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">
+                            {initials}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-semibold text-gray-900 truncate">{doctorName}</h4>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-[11px] text-teal-600 font-medium">
+                                {isToday ? t('common.today', 'Today') : isTomorrow ? t('common.tomorrow', 'Tomorrow') : fmtDate(appt.appointment_date)}
+                                {' · '}{fmtTime(appt.appointment_time)}
+                              </span>
+                              {appt.appointment_type === 'online' && (
+                                <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded-md border border-purple-100">
+                                  <Monitor className="w-2.5 h-2.5" /> Online
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                            {canJoin ? (
+                              <button
+                                onClick={() => navigate(`/crm/telehealth?id=${appt.id}`)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all"
+                              >
+                                <Video className="w-3.5 h-3.5" />
+                                {t('patientDashboard.joinNow', 'Join')}
+                              </button>
+                            ) : (
+                              <span className={`text-[10px] font-semibold px-2 py-1 rounded-lg ${
+                                isToday ? 'text-amber-600 bg-amber-50 border border-amber-100' : 'text-gray-500 bg-gray-50 border border-gray-100'
+                              }`}>
+                                {isToday ? (m > 0 ? `${m} min` : t('common.now', 'Now')) : fmtDate(appt.appointment_date)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── Right: Quick Actions + Health Summary ── */}
+          <div className="space-y-4">
+            {/* Quick Actions */}
+            <div>
+              <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-blue-500 to-indigo-500" />
+                {t('patientDashboard.quickActions', 'Quick Actions')}
+              </h2>
+              <div className="space-y-2">
+                {[
+                  { label: t('patientDashboard.bookAppointment', 'Book Appointment'), icon: Calendar, to: '/telehealth-appointment', color: 'from-teal-500 to-emerald-500' },
+                  { label: t('patientDashboard.myTelehealth', 'My Telehealth'), icon: Monitor, to: '/telehealth', color: 'from-purple-500 to-violet-500' },
+                  { label: t('patientDashboard.medicalArchive', 'Medical Archive'), icon: FolderHeart, to: '/medical-archive', color: 'from-amber-500 to-orange-500' },
+                  { label: t('patientDashboard.messages', 'Messages'), icon: FileText, to: '/doctor-chat', color: 'from-blue-500 to-indigo-500' },
+                ].map((action) => (
+                  <button
+                    key={action.to}
+                    onClick={() => navigate(action.to)}
+                    className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl border border-gray-200/60 bg-white hover:bg-gray-50/60 hover:shadow-sm transition-all group"
+                  >
+                    <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${action.color} flex items-center justify-center shadow-sm`}>
+                      <action.icon className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex-1 text-left">{action.label}</span>
+                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Health Tips */}
+            <div className="rounded-2xl border border-gray-200/60 bg-gradient-to-br from-teal-50/50 to-emerald-50/30 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Heart className="w-4 h-4 text-teal-600" />
+                <h3 className="text-xs font-bold text-teal-800 uppercase tracking-wider">
+                  {t('patientDashboard.healthTip', 'Health Tip')}
+                </h3>
+              </div>
+              <p className="text-xs text-teal-700 leading-relaxed">
+                {t('patientDashboard.healthTipText', 'Keep your medical documents organized in your Medical Archive. Share them with your doctors before appointments for better care.')}
+              </p>
+            </div>
+
+            {/* GDPR Notice */}
+            <div className="rounded-2xl border border-gray-200/60 bg-white p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Shield className="w-4 h-4 text-blue-600" />
+                <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  {t('patientDashboard.dataProtection', 'Data Protection')}
+                </h3>
+              </div>
+              <p className="text-[11px] text-gray-500 leading-relaxed">
+                {t('patientDashboard.gdprNotice', 'Your health data is encrypted and stored securely in compliance with GDPR Art. 9. You control who can access your medical documents.')}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PatientDashboard;

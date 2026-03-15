@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Models\Appointment;
+use App\Models\AuditLog;
 use App\Models\Clinic;
 use App\Models\MedStreamPost;
 use App\Models\MedStreamReport;
+use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
@@ -258,5 +260,113 @@ class SuperAdminService
 
             return $result;
         });
+    }
+
+    // ══════════════════════════════════════════════
+    //  FEATURE TOGGLES (System Settings)
+    // ══════════════════════════════════════════════
+
+    /**
+     * Get all system settings grouped by category.
+     */
+    public function getFeatureToggles(): array
+    {
+        $settings = SystemSetting::orderBy('group')->orderBy('key')->get();
+
+        // If no settings exist yet, seed defaults
+        if ($settings->isEmpty()) {
+            $this->seedDefaultSettings();
+            $settings = SystemSetting::orderBy('group')->orderBy('key')->get();
+        }
+
+        return $settings->map(fn(SystemSetting $s) => [
+            'id'          => $s->id,
+            'key'         => $s->key,
+            'value'       => $s->typed_value,
+            'type'        => $s->type,
+            'group'       => $s->group,
+            'label'       => $s->label,
+            'description' => $s->description,
+            'updated_at'  => $s->updated_at?->toISOString(),
+        ])->groupBy('group')->toArray();
+    }
+
+    /**
+     * Update a single feature toggle.
+     */
+    public function updateFeatureToggle(string $key, mixed $value, string $userId): SystemSetting
+    {
+        $setting = SystemSetting::where('key', $key)->firstOrFail();
+        $oldValue = $setting->value;
+
+        $setting->update([
+            'value'      => is_bool($value) ? ($value ? '1' : '0') : (string) $value,
+            'updated_by' => $userId,
+        ]);
+
+        // Audit the change
+        AuditLog::log(
+            action: 'system_setting.updated',
+            resourceType: 'SystemSetting',
+            resourceId: $setting->id,
+            oldValues: ['value' => $oldValue],
+            newValues: ['value' => $setting->value],
+            description: "Feature toggle '{$key}' changed",
+        );
+
+        Cache::forget('superadmin:dashboard');
+
+        return $setting->refresh();
+    }
+
+    /**
+     * Seed default feature toggle settings.
+     */
+    private function seedDefaultSettings(): void
+    {
+        $defaults = [
+            // Modules
+            ['key' => 'module.health_tourism',  'value' => '1', 'type' => 'boolean', 'group' => 'modules', 'label' => 'Health Tourism Mode',   'description' => 'Enable/disable health tourism features across the platform'],
+            ['key' => 'module.vasco_ai',        'value' => '1', 'type' => 'boolean', 'group' => 'modules', 'label' => 'Vasco AI',               'description' => 'Enable/disable Vasco AI assistant for patients'],
+            ['key' => 'module.online_payment',   'value' => '0', 'type' => 'boolean', 'group' => 'modules', 'label' => 'Online Payment',          'description' => 'Enable/disable online payment processing'],
+            ['key' => 'module.telehealth',       'value' => '1', 'type' => 'boolean', 'group' => 'modules', 'label' => 'Telehealth',              'description' => 'Enable/disable telehealth video consultations'],
+            ['key' => 'module.medstream',        'value' => '1', 'type' => 'boolean', 'group' => 'modules', 'label' => 'MedStream',               'description' => 'Enable/disable MedStream social feed'],
+            ['key' => 'module.patient_documents','value' => '1', 'type' => 'boolean', 'group' => 'modules', 'label' => 'Patient Documents',       'description' => 'Enable/disable patient medical archive uploads'],
+            // Platform
+            ['key' => 'platform.maintenance_mode', 'value' => '0', 'type' => 'boolean', 'group' => 'platform', 'label' => 'Maintenance Mode',   'description' => 'Put entire platform into maintenance mode'],
+            ['key' => 'platform.registration',     'value' => '1', 'type' => 'boolean', 'group' => 'platform', 'label' => 'User Registration',  'description' => 'Allow new user registrations'],
+            ['key' => 'platform.max_upload_mb',    'value' => '20','type' => 'integer', 'group' => 'platform', 'label' => 'Max Upload Size (MB)','description' => 'Maximum file upload size in megabytes'],
+        ];
+
+        foreach ($defaults as $setting) {
+            SystemSetting::firstOrCreate(['key' => $setting['key']], $setting);
+        }
+    }
+
+    // ══════════════════════════════════════════════
+    //  AUDIT LOGS
+    // ══════════════════════════════════════════════
+
+    /**
+     * List audit logs with filters.
+     */
+    public function listAuditLogs(array $filters): LengthAwarePaginator
+    {
+        return AuditLog::query()
+            ->with('user:id,fullname,email,avatar,role_id')
+            ->when($filters['action'] ?? null, fn($q, $v) => $q->where('action', 'ilike', "%{$v}%"))
+            ->when($filters['resource_type'] ?? null, fn($q, $v) => $q->where('resource_type', $v))
+            ->when($filters['user_id'] ?? null, fn($q, $v) => $q->where('user_id', $v))
+            ->when($filters['search'] ?? null, function ($q, $search) {
+                $q->where(function ($q2) use ($search) {
+                    $q2->where('action', 'ilike', "%{$search}%")
+                       ->orWhere('description', 'ilike', "%{$search}%")
+                       ->orWhere('resource_type', 'ilike', "%{$search}%");
+                });
+            })
+            ->when($filters['date_from'] ?? null, fn($q, $v) => $q->where('created_at', '>=', $v))
+            ->when($filters['date_to'] ?? null, fn($q, $v) => $q->where('created_at', '<=', $v))
+            ->orderByDesc('created_at')
+            ->paginate($filters['per_page'] ?? 25);
     }
 }

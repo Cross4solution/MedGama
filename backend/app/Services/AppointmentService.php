@@ -146,6 +146,117 @@ class AppointmentService
         });
     }
 
+    /**
+     * Return appointments formatted as FullCalendar events.
+     * Flat array (no pagination) filtered by date range.
+     */
+    public function calendarEvents(User $user, array $filters): array
+    {
+        $query = Appointment::query()
+            ->with(['patient:id,fullname,avatar,email,mobile', 'doctor:id,fullname,avatar', 'clinic:id,fullname']);
+
+        // Scope by role
+        if ($user->isDoctor()) {
+            $query->where('doctor_id', $user->id);
+        } elseif ($user->isPatient()) {
+            $query->where('patient_id', $user->id);
+        } elseif ($user->isClinicOwner()) {
+            $query->where('clinic_id', $user->clinic_id);
+        }
+
+        // Date range filter (required for calendar view)
+        $query->when($filters['start'] ?? null, fn($q, $v) => $q->whereDate('appointment_date', '>=', $v))
+              ->when($filters['end'] ?? null, fn($q, $v) => $q->whereDate('appointment_date', '<=', $v))
+              ->when($filters['status'] ?? null, fn($q, $v) => $q->where('status', $v));
+
+        $appointments = $query->orderBy('appointment_date')->orderBy('appointment_time')->get();
+
+        return $appointments->map(function ($apt) {
+            $date = $apt->appointment_date->format('Y-m-d');
+            $time = $apt->appointment_time;
+            $start = "{$date}T{$time}:00";
+
+            // Estimate end time: 30 min default
+            $endTs = strtotime($start) + 1800;
+            $end = date('Y-m-d\TH:i:s', $endTs);
+
+            $statusColor = match ($apt->status) {
+                'confirmed'  => ['bg' => '#ECFDF5', 'border' => '#10B981', 'text' => '#065F46'],
+                'pending'    => ['bg' => '#FFFBEB', 'border' => '#F59E0B', 'text' => '#92400E'],
+                'cancelled'  => ['bg' => '#FEF2F2', 'border' => '#EF4444', 'text' => '#991B1B'],
+                'completed'  => ['bg' => '#F3F4F6', 'border' => '#9CA3AF', 'text' => '#374151'],
+                default      => ['bg' => '#EFF6FF', 'border' => '#3B82F6', 'text' => '#1E40AF'],
+            };
+
+            return [
+                'id'              => $apt->id,
+                'title'           => $apt->patient?->fullname ?? 'Patient',
+                'start'           => $start,
+                'end'             => $end,
+                'backgroundColor' => $statusColor['bg'],
+                'borderColor'     => $statusColor['border'],
+                'textColor'       => $statusColor['text'],
+                'extendedProps'   => [
+                    'appointment_id'   => $apt->id,
+                    'patient_id'       => $apt->patient_id,
+                    'doctor_id'        => $apt->doctor_id,
+                    'clinic_id'        => $apt->clinic_id,
+                    'status'           => $apt->status,
+                    'appointment_type' => $apt->appointment_type,
+                    'appointment_date' => $date,
+                    'appointment_time' => $time,
+                    'confirmation_note'=> $apt->confirmation_note,
+                    'doctor_note'      => $apt->doctor_note,
+                    'video_conference_link' => $apt->video_conference_link,
+                    'patient' => $apt->patient ? [
+                        'id'       => $apt->patient->id,
+                        'fullname' => $apt->patient->fullname,
+                        'avatar'   => $apt->patient->avatar,
+                        'email'    => $apt->patient->email,
+                        'mobile'   => $apt->patient->mobile,
+                    ] : null,
+                    'doctor' => $apt->doctor ? [
+                        'id'       => $apt->doctor->id,
+                        'fullname' => $apt->doctor->fullname,
+                        'avatar'   => $apt->doctor->avatar,
+                    ] : null,
+                    'clinic' => $apt->clinic ? [
+                        'id'       => $apt->clinic->id,
+                        'fullname' => $apt->clinic->fullname,
+                    ] : null,
+                ],
+            ];
+        })->values()->toArray();
+    }
+
+    /**
+     * Reschedule an appointment (drag-drop from calendar).
+     * Updates date + time atomically and releases/locks slots if needed.
+     */
+    public function reschedule(User $user, Appointment $appointment, array $data): Appointment
+    {
+        DB::transaction(function () use ($appointment, $data) {
+            // Release old slot
+            if ($appointment->slot_id) {
+                CalendarSlot::where('id', $appointment->slot_id)
+                    ->update(['is_available' => true]);
+            }
+
+            $appointment->update([
+                'appointment_date' => $data['appointment_date'],
+                'appointment_time' => $data['appointment_time'],
+                'slot_id'          => $data['slot_id'] ?? null,
+            ]);
+
+            // Lock new slot if provided
+            if (!empty($data['slot_id'])) {
+                $this->lockSlot($data['slot_id'], $appointment->doctor_id);
+            }
+        });
+
+        return $appointment->refresh()->load(['patient:id,fullname,avatar,email,mobile', 'doctor:id,fullname,avatar', 'clinic:id,fullname']);
+    }
+
     // ── Private Helpers ──
 
     /**

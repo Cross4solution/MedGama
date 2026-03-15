@@ -5,6 +5,8 @@ import {
   ShieldCheck,
   AlertTriangle,
   BookOpen,
+  Settings2,
+  ScrollText,
   Menu,
   X,
   LogOut,
@@ -19,6 +21,8 @@ const NAV_ITEMS = [
   { label: 'Doctor Verification', icon: ShieldCheck, path: '/admin/verification' },
   { label: 'Content Moderation', icon: AlertTriangle, path: '/admin/moderation' },
   { label: 'Catalog Management', icon: BookOpen, path: '/admin/catalog' },
+  { label: 'Feature Toggles', icon: Settings2, path: '/admin/settings' },
+  { label: 'Audit Logs', icon: ScrollText, path: '/admin/audit-logs' },
 ];
 
 const AdminLayout = ({ children }) => {

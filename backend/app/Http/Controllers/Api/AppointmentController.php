@@ -175,4 +175,41 @@ class AppointmentController extends Controller
 
         return response()->json(['message' => 'Appointment deleted.']);
     }
+
+    /**
+     * GET /api/appointments/calendar-events
+     * Returns appointments formatted for FullCalendar (flat array, no pagination).
+     */
+    public function calendarEvents(Request $request): JsonResponse
+    {
+        $events = $this->appointmentService->calendarEvents(
+            $request->user(),
+            $request->only(['start', 'end', 'status']),
+        );
+
+        return response()->json(['events' => $events]);
+    }
+
+    /**
+     * PATCH /api/appointments/{appointment}/reschedule
+     * Drag-drop reschedule — updates date & time.
+     */
+    public function reschedule(Request $request, Appointment $appointment): JsonResponse
+    {
+        $this->authorize('update', $appointment);
+
+        $data = $request->validate([
+            'appointment_date' => 'required|date',
+            'appointment_time' => 'required|string|max:5',
+            'slot_id'          => 'nullable|string|uuid',
+        ]);
+
+        $appointment = $this->appointmentService->reschedule(
+            $request->user(),
+            $appointment,
+            $data,
+        );
+
+        return (new AppointmentResource($appointment))->response();
+    }
 }

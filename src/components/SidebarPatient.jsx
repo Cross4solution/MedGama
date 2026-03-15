@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, ArrowUpRight, Heart } from 'lucide-react';
+import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, ArrowUpRight, Heart, FolderHeart, Activity } from 'lucide-react';
 
 // Custom chat icon using public SVG (accepts className via props)
 const ChatRoundIcon = (props) => (
@@ -27,12 +27,14 @@ export default function SidebarPatient() {
 
   const patientItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
+    { to: '/patient-dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: Activity },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
+    { to: '/medical-archive', label: t('sidebar.medicalArchive', 'Medical Archive'), icon: FolderHeart },
     { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
     { to: '/profile', label: t('sidebar.profile'), icon: User },
   ];

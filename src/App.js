@@ -40,6 +40,8 @@ const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage'));
 const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRightsPage'));
 const SearchResults = React.lazy(() => import('./pages/SearchResults'));
 const DashboardRedirect = React.lazy(() => import('./pages/DashboardRedirect'));
+const PatientDashboard = React.lazy(() => import('./pages/PatientDashboard'));
+const MedicalArchive = React.lazy(() => import('./pages/MedicalArchive'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 const ServerErrorPage = React.lazy(() => import('./pages/ServerErrorPage'));
 const SavedPosts = React.lazy(() => import('./pages/SavedPosts'));
@@ -58,6 +60,11 @@ const CRMBilling = React.lazy(() => import('./pages/crm/CRMBilling'));
 const CRMExamination = React.lazy(() => import('./pages/crm/CRMExamination'));
 const CRMMedStream = React.lazy(() => import('./pages/crm/CRMMedStream'));
 const CRMTelehealth = React.lazy(() => import('./pages/crm/CRMTelehealth'));
+const CRMSmartCalendar = React.lazy(() => import('./pages/crm/CRMSmartCalendar'));
+const CRMRevenue = React.lazy(() => import('./pages/crm/CRMRevenue'));
+const CRMSupport = React.lazy(() => import('./pages/crm/CRMSupport'));
+const CRMFaq = React.lazy(() => import('./pages/crm/CRMFaq'));
+const CRMClinicManager = React.lazy(() => import('./pages/crm/CRMClinicManager'));
 
 // Admin Pages
 const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
@@ -65,6 +72,8 @@ const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminVerification = React.lazy(() => import('./pages/admin/AdminVerification'));
 const AdminModeration = React.lazy(() => import('./pages/admin/AdminModeration'));
 const AdminCatalog = React.lazy(() => import('./pages/admin/AdminCatalog'));
+const AdminFeatureToggles = React.lazy(() => import('./pages/admin/AdminFeatureToggles'));
+const AdminAuditLogs = React.lazy(() => import('./pages/admin/AdminAuditLogs'));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -127,6 +136,11 @@ function AppContent() {
       '/crm/examination': 'CRM Examination | MedaGama',
       '/crm/medstream': 'MedStream | MedaGama',
       '/crm/telehealth': 'Telehealth | MedaGama',
+      '/crm/calendar': 'Smart Calendar | MedaGama',
+      '/crm/revenue': 'Revenue & Finance | MedaGama',
+      '/crm/support': 'Help & Support | MedaGama',
+      '/crm/faq': 'FAQ | MedaGama',
+      '/crm/clinic-manager': 'Clinic Management | MedaGama',
       '/crm/help': 'CRM Help | MedaGama',
       '/admin': 'Admin Dashboard | MedaGama',
       '/admin/verification': 'Doctor Verification | MedaGama',
@@ -272,6 +286,8 @@ function AppContent() {
         <Route path="/clinic-edit" element={<ClinicProfileEdit />} />
         <Route path="/doctor-chat" element={<DoctorChatPage />} />
         <Route path="/telehealth" element={<TelehealthPage />} />
+        <Route path="/patient-dashboard" element={<PatientDashboard />} />
+        <Route path="/medical-archive" element={<MedicalArchive />} />
         <Route path="/telehealth-appointment" element={<TelehealthAppointmentPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
@@ -307,12 +323,19 @@ function AppContent() {
         <Route path="/crm/examination" element={<CRMLayout><CRMExamination /></CRMLayout>} />
         <Route path="/crm/medstream" element={<CRMLayout><CRMMedStream /></CRMLayout>} />
         <Route path="/crm/telehealth" element={<CRMLayout><CRMTelehealth /></CRMLayout>} />
+        <Route path="/crm/calendar" element={<CRMLayout><CRMSmartCalendar /></CRMLayout>} />
+        <Route path="/crm/revenue" element={<CRMLayout><CRMRevenue /></CRMLayout>} />
+        <Route path="/crm/support" element={<CRMLayout><CRMSupport /></CRMLayout>} />
+        <Route path="/crm/faq" element={<CRMLayout><CRMFaq /></CRMLayout>} />
+        <Route path="/crm/clinic-manager" element={<CRMLayout><CRMClinicManager /></CRMLayout>} />
         <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
         <Route path="/admin/verification" element={<AdminLayout><AdminVerification /></AdminLayout>} />
         <Route path="/admin/moderation" element={<AdminLayout><AdminModeration /></AdminLayout>} />
         <Route path="/admin/catalog" element={<AdminLayout><AdminCatalog /></AdminLayout>} />
+        <Route path="/admin/settings" element={<AdminLayout><AdminFeatureToggles /></AdminLayout>} />
+        <Route path="/admin/audit-logs" element={<AdminLayout><AdminAuditLogs /></AdminLayout>} />
         <Route path="/500" element={<ServerErrorPage />} />
         <Route path="*" element={<NotFoundPage />} />
         </Routes>

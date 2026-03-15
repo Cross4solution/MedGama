@@ -163,6 +163,11 @@ export const doctorProfileAPI = {
   update: (data) => api.put('/doctor-profile', data),
   updateOnboarding: (data) => api.put('/doctor-profile/onboarding', data),
   uploadGallery: (formData) => api.post('/doctor-profile/gallery', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  deleteGalleryImage: (url) => api.delete('/doctor-profile/gallery', { data: { url } }),
+  reorderGallery: (gallery) => api.put('/doctor-profile/gallery/reorder', { gallery }),
+  updateOperatingHours: (operating_hours) => api.put('/doctor-profile/operating-hours', { operating_hours }),
+  updateServices: (services) => api.put('/doctor-profile/services', { services }),
+  updateSocial: (data) => api.put('/doctor-profile/social', data),
 };
 
 // ── Appointment Service ──
@@ -172,6 +177,8 @@ export const appointmentAPI = {
   create: (payload) => api.post('/appointments', payload),
   update: (id, payload) => api.put(`/appointments/${id}`, payload),
   delete: (id) => api.delete(`/appointments/${id}`),
+  calendarEvents: (params) => api.get('/appointments/calendar-events', { params }),
+  reschedule: (id, payload) => api.patch(`/appointments/${id}/reschedule`, payload),
 };
 
 // ── Calendar Slot Service ──
@@ -189,6 +196,22 @@ export const patientRecordAPI = {
   get: (id) => api.get(`/patient-records/${id}`),
   create: (payload) => api.post('/patient-records', payload),
   delete: (id) => api.delete(`/patient-records/${id}`),
+};
+
+// ── Patient Documents — Medical Wallet (Bölüm 7.4) ──
+export const patientDocumentAPI = {
+  list: (params) => api.get('/patient-documents', { params }),
+  stats: () => api.get('/patient-documents/stats'),
+  get: (id) => api.get(`/patient-documents/${id}`),
+  upload: (formData) => api.post('/patient-documents', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  update: (id, payload) => api.put(`/patient-documents/${id}`, payload),
+  delete: (id) => api.delete(`/patient-documents/${id}`),
+  download: (id) => api.get(`/patient-documents/${id}/download`, { responseType: 'blob' }),
+  share: (id, doctorId) => api.post(`/patient-documents/${id}/share`, { doctor_id: doctorId }),
+  revoke: (id, doctorId) => api.post(`/patient-documents/${id}/revoke`, { doctor_id: doctorId }),
+  sharedWithDoctor: (patientId) => api.get(`/patient-documents/shared/${patientId}`),
 };
 
 // ── Digital Anamnesis Service ──
@@ -233,6 +256,50 @@ export const billingAPI = {
   stats: (params) => api.get('/crm/billing/stats', { params }),
   revenueChart: (params) => api.get('/crm/billing/revenue-chart', { params }),
   outstanding: (params) => api.get('/crm/billing/outstanding', { params }),
+};
+
+// ── Finance / Analytics (Bölüm 7.5) ──
+export const financeAPI = {
+  topServices: (params) => api.get('/finance/top-services', { params }),
+  payout: (params) => api.get('/finance/payout', { params }),
+  platformOverview: (params) => api.get('/finance/platform-overview', { params }),
+  exchangeRates: () => api.get('/finance/exchange-rates'),
+  convert: (payload) => api.post('/finance/convert', payload),
+  export: (params) => api.get('/finance/export', { params, responseType: 'blob' }),
+};
+
+// ── Support / Help Center (Bölüm 12) ──
+export const supportAPI = {
+  categories: () => api.get('/support/categories'),
+  tickets: (params) => api.get('/support/tickets', { params }),
+  getTicket: (id) => api.get(`/support/tickets/${id}`),
+  createTicket: (formData) => api.post('/support/tickets', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  reply: (id, formData) => api.post(`/support/tickets/${id}/reply`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  updateStatus: (id, status) => api.patch(`/support/tickets/${id}/status`, { status }),
+  assign: (id, assignedTo) => api.patch(`/support/tickets/${id}/assign`, { assigned_to: assignedTo }),
+  stats: () => api.get('/support/stats'),
+  storeCategory: (payload) => api.post('/support/categories', payload),
+  updateCategory: (id, payload) => api.put(`/support/categories/${id}`, payload),
+  deleteCategory: (id) => api.delete(`/support/categories/${id}`),
+};
+
+export const faqAPI = {
+  list: (params) => api.get('/faqs', { params }),
+  adminList: () => api.get('/admin/faqs'),
+  create: (payload) => api.post('/admin/faqs', payload),
+  update: (id, payload) => api.put(`/admin/faqs/${id}`, payload),
+  delete: (id) => api.delete(`/admin/faqs/${id}`),
+};
+
+// ── Clinic Manager Panel (§8.2) ──
+export const clinicManagerAPI = {
+  overview: () => api.get('/clinic-manager/overview'),
+  doctors: (params) => api.get('/clinic-manager/doctors', { params }),
+  doctorDetail: (id) => api.get(`/clinic-manager/doctors/${id}`),
+  addDoctor: (id) => api.post(`/clinic-manager/doctors/${id}/add`),
+  removeDoctor: (id) => api.delete(`/clinic-manager/doctors/${id}/remove`),
+  updateDoctorHours: (id, hours) => api.put(`/clinic-manager/doctors/${id}/hours`, { operating_hours: hours }),
+  financials: (params) => api.get('/clinic-manager/financials', { params }),
 };
 
 // ── CRM Service (Tags, Stages, Archives) ──
@@ -430,6 +497,11 @@ export const adminAPI = {
   diseases: (params) => api.get('/admin/catalog/diseases', { params }),
   createDisease: (payload) => api.post('/admin/catalog/diseases', payload),
   updateDisease: (id, payload) => api.put(`/admin/catalog/diseases/${id}`, payload),
+  // Feature Toggles
+  featureToggles: () => api.get('/admin/feature-toggles'),
+  updateFeatureToggle: (key, value) => api.put('/admin/feature-toggles', { key, value }),
+  // Audit Logs
+  auditLogs: (params) => api.get('/admin/audit-logs', { params }),
 };
 
 // ── Analytics Service (Clinic BI) ──

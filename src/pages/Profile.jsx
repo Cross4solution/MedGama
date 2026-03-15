@@ -113,13 +113,14 @@ export default function Profile() {
   const [avatarFileName, setAvatarFileName] = useState('');
   const [preferredLanguage, setPreferredLanguage] = useState(() => i18n.language || 'en');
 
-  const handleLanguageChange = (lang) => {
+  const handleLanguageChange = async (lang) => {
     setPreferredLanguage(lang);
     i18n.changeLanguage(lang);
+    const langObj = LANGUAGES.find(l => l.code === lang);
+    document.documentElement.dir = langObj?.dir === 'rtl' ? 'rtl' : 'ltr';
     try { localStorage.setItem('preferred_language', lang); } catch {}
     try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
-    // Layout always stays LTR — only the language text changes
-    document.documentElement.dir = 'ltr';
+    try { await authAPI.updateProfile({ preferred_language: lang }); } catch {}
   };
 
   // Mock preferences (persist localStorage)
@@ -313,10 +314,6 @@ export default function Profile() {
     const limitedName = (name || '').slice(0, 30).trim();
     const codeLower = countryCodes[countryName] || null;
     const codeUpper = codeLower ? codeLower.toUpperCase() : country;
-    try {
-      localStorage.setItem('preferred_language', preferredLanguage);
-      localStorage.setItem('preferred_language_manual', '1');
-    } catch {}
     setSaving(true);
     let avatarUrl = avatar;
     try {
@@ -549,16 +546,49 @@ export default function Profile() {
                   <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
                     <span className="flex items-center gap-1.5"><Globe className="w-3 h-3" /> {t('profile.preferredLanguage')}</span>
                   </label>
-                  <select
-                    value={preferredLanguage}
-                    onChange={(e) => handleLanguageChange(e.target.value)}
-                    className="w-full md:w-64 border border-gray-200 rounded-xl px-3 text-sm h-10 bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
-                  >
-                    {LANGUAGES.map((lang) => (
-                      <option key={lang.code} value={lang.code}>{lang.flag} {lang.label}</option>
-                    ))}
-                  </select>
-                  <p className="mt-1 text-[11px] text-gray-400">{t('profile.languageDesc')}</p>
+                  <p className="text-[11px] text-gray-400 mb-3">{t('profile.languageDesc')}</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    {LANGUAGES.slice(0, 10).map((lang) => {
+                      const isActive = preferredLanguage === lang.code;
+                      return (
+                        <button
+                          key={lang.code}
+                          type="button"
+                          onClick={() => handleLanguageChange(lang.code)}
+                          className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${
+                            isActive
+                              ? 'bg-teal-50 border-teal-300 text-teal-700 ring-1 ring-teal-200 shadow-sm'
+                              : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+                          }`}
+                        >
+                          <span className="text-lg leading-none">{lang.flag}</span>
+                          <span className="truncate">{lang.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {LANGUAGES.length > 10 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {LANGUAGES.slice(10).map(lang => {
+                        const isActive = preferredLanguage === lang.code;
+                        return (
+                          <button
+                            key={lang.code}
+                            type="button"
+                            onClick={() => handleLanguageChange(lang.code)}
+                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                              isActive
+                                ? 'bg-teal-50 border-teal-300 text-teal-700'
+                                : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+                            }`}
+                          >
+                            <span className="text-sm">{lang.flag}</span>
+                            <span>{lang.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
 

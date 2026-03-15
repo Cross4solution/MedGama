@@ -1,21 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Settings, User, Bell, Shield, Clock, Globe, Palette, Mail,
   Phone, MapPin, Camera, Save, Eye, EyeOff, Lock, Key,
   Monitor, Smartphone, LogOut, Trash2, ChevronRight, Building2,
   Stethoscope, Calendar, CreditCard, Loader2, CheckCircle, Plus, X,
+  Image, GripVertical, Upload, Coffee, Link2, MessageCircle,
+  Instagram, Facebook, Linkedin, Youtube, Twitter, ExternalLink,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../../i18n';
 import { useAuth } from '../../context/AuthContext';
-import { doctorProfileAPI } from '../../lib/api';
+import { doctorProfileAPI, authAPI } from '../../lib/api';
+
+const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+
+const DEFAULT_HOURS = DAYS.map(day => ({
+  day,
+  is_closed: ['saturday','sunday'].includes(day),
+  open: '09:00',
+  close: '18:00',
+  breaks: [],
+}));
 
 const TABS = [
   { key: 'profile', label: 'Profile', icon: User },
+  { key: 'gallery', label: 'Gallery', icon: Image },
+  { key: 'hours', label: 'Operating Hours', icon: Clock },
+  { key: 'services', label: 'Services & Pricing', icon: Stethoscope },
+  { key: 'social', label: 'Social & Contact', icon: Link2 },
   { key: 'clinic', label: 'Clinic Info', icon: Building2 },
   { key: 'notifications', label: 'Notifications', icon: Bell },
   { key: 'security', label: 'Security', icon: Shield },
-  { key: 'schedule', label: 'Schedule', icon: Clock },
   { key: 'billing', label: 'Billing', icon: CreditCard },
 ];
 
@@ -41,6 +56,32 @@ const CRMSettings = () => {
   const [doctorAddress, setDoctorAddress] = useState('');
   const [doctorWebsite, setDoctorWebsite] = useState('');
 
+  // Gallery state
+  const [gallery, setGallery] = useState([]);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const [dragIdx, setDragIdx] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // Operating hours state
+  const [operatingHours, setOperatingHours] = useState(DEFAULT_HOURS);
+  const [hoursSaving, setHoursSaving] = useState(false);
+  const [hoursSaved, setHoursSaved] = useState(false);
+
+  // Enhanced services state
+  const [enhancedServices, setEnhancedServices] = useState([]);
+  const [servicesSaving, setServicesSaving] = useState(false);
+  const [servicesSaved, setServicesSaved] = useState(false);
+
+  // Social & contact state
+  const [socialInfo, setSocialInfo] = useState({
+    phone: '', whatsapp: '', website: '', address: '',
+    map_coordinates: { lat: '', lng: '' },
+    social_links: { instagram: '', facebook: '', twitter: '', linkedin: '', youtube: '', tiktok: '' },
+  });
+  const [socialSaving, setSocialSaving] = useState(false);
+  const [socialSaved, setSocialSaved] = useState(false);
+
   // Load doctor profile from API
   useEffect(() => {
     const names = (user?.name || '').split(' ');
@@ -65,6 +106,17 @@ const CRMSettings = () => {
           setOnlineConsultation(!!dp.online_consultation);
           setDoctorAddress(dp.address || '');
           setDoctorWebsite(dp.website || '');
+          setGallery(dp.gallery || []);
+          setOperatingHours(dp.operating_hours?.length === 7 ? dp.operating_hours : DEFAULT_HOURS);
+          setEnhancedServices(dp.services || []);
+          setSocialInfo({
+            phone: dp.phone || '',
+            whatsapp: dp.whatsapp || '',
+            website: dp.website || '',
+            address: dp.address || '',
+            map_coordinates: dp.map_coordinates || { lat: '', lng: '' },
+            social_links: { instagram: '', facebook: '', twitter: '', linkedin: '', youtube: '', tiktok: '', ...(dp.social_links || {}) },
+          });
         }
       }).catch(() => {}).finally(() => setProfileLoading(false));
     } else {
@@ -98,6 +150,96 @@ const CRMSettings = () => {
     } finally {
       setProfileSaving(false);
     }
+  };
+
+  // ── Gallery handlers ──
+  const handleGalleryUpload = async (files) => {
+    if (!files?.length) return;
+    setGalleryUploading(true);
+    try {
+      const formData = new FormData();
+      Array.from(files).forEach(f => formData.append('images[]', f));
+      const res = await doctorProfileAPI.uploadGallery(formData);
+      setGallery(res?.gallery || res?.data?.gallery || gallery);
+    } catch (err) { console.error('Gallery upload failed:', err); }
+    finally { setGalleryUploading(false); }
+  };
+
+  const handleGalleryDelete = async (url) => {
+    try {
+      const res = await doctorProfileAPI.deleteGalleryImage(url);
+      setGallery(res?.gallery || res?.data?.gallery || gallery.filter(g => g !== url));
+    } catch (err) { console.error('Gallery delete failed:', err); }
+  };
+
+  const handleGalleryDragEnd = async (fromIdx, toIdx) => {
+    if (fromIdx === toIdx) return;
+    const items = [...gallery];
+    const [moved] = items.splice(fromIdx, 1);
+    items.splice(toIdx, 0, moved);
+    setGallery(items);
+    try { await doctorProfileAPI.reorderGallery(items); } catch {}
+  };
+
+  const onDrop = useCallback((e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const files = e.dataTransfer?.files;
+    if (files?.length) handleGalleryUpload(files);
+  }, [gallery]);
+
+  // ── Operating hours handlers ──
+  const updateHourField = (idx, field, value) => {
+    setOperatingHours(h => h.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+  };
+
+  const addBreak = (idx) => {
+    setOperatingHours(h => h.map((item, i) => i === idx ? { ...item, breaks: [...(item.breaks || []), { start: '12:00', end: '13:00' }] } : item));
+  };
+
+  const removeBreak = (dayIdx, breakIdx) => {
+    setOperatingHours(h => h.map((item, i) => i === dayIdx ? { ...item, breaks: item.breaks.filter((_, bi) => bi !== breakIdx) } : item));
+  };
+
+  const updateBreak = (dayIdx, breakIdx, field, value) => {
+    setOperatingHours(h => h.map((item, i) => i === dayIdx ? { ...item, breaks: item.breaks.map((b, bi) => bi === breakIdx ? { ...b, [field]: value } : b) } : item));
+  };
+
+  const saveOperatingHours = async () => {
+    setHoursSaving(true); setHoursSaved(false);
+    try {
+      await doctorProfileAPI.updateOperatingHours(operatingHours);
+      setHoursSaved(true); setTimeout(() => setHoursSaved(false), 3000);
+    } catch (err) { console.error('Save hours failed:', err); }
+    finally { setHoursSaving(false); }
+  };
+
+  // ── Enhanced services handlers ──
+  const addService = () => setEnhancedServices(s => [...s, { name: '', description: '', duration_minutes: 30, price: '', currency: '₺' }]);
+  const removeService = (idx) => setEnhancedServices(s => s.filter((_, i) => i !== idx));
+  const updateService = (idx, field, value) => setEnhancedServices(s => s.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+
+  const saveServices = async () => {
+    setServicesSaving(true); setServicesSaved(false);
+    try {
+      await doctorProfileAPI.updateServices(enhancedServices.filter(s => s.name));
+      setServicesSaved(true); setTimeout(() => setServicesSaved(false), 3000);
+    } catch (err) { console.error('Save services failed:', err); }
+    finally { setServicesSaving(false); }
+  };
+
+  // ── Social & contact handlers ──
+  const updateSocialField = (field, value) => setSocialInfo(s => ({ ...s, [field]: value }));
+  const updateSocialLink = (key, value) => setSocialInfo(s => ({ ...s, social_links: { ...s.social_links, [key]: value } }));
+  const updateMapCoord = (key, value) => setSocialInfo(s => ({ ...s, map_coordinates: { ...s.map_coordinates, [key]: value } }));
+
+  const saveSocial = async () => {
+    setSocialSaving(true); setSocialSaved(false);
+    try {
+      await doctorProfileAPI.updateSocial(socialInfo);
+      setSocialSaved(true); setTimeout(() => setSocialSaved(false), 3000);
+    } catch (err) { console.error('Save social failed:', err); }
+    finally { setSocialSaving(false); }
   };
 
   const [clinic, setClinic] = useState({
@@ -237,22 +379,70 @@ const CRMSettings = () => {
                         <span className="text-sm text-gray-700 font-medium">Online Consultation Available</span>
                       </label>
                     </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
-                        <Globe className="w-3.5 h-3.5 text-gray-400" /> Preferred Language
+                    {/* Language Preference — dedicated section */}
+                    <div className="col-span-1 sm:col-span-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-2 flex items-center gap-1.5">
+                        <Globe className="w-3.5 h-3.5 text-gray-400" /> {t('crm.settings.preferredLanguage', 'Preferred Language')}
                       </label>
-                      <select value={profile.language} onChange={(e) => {
-                        setProfile({...profile, language: e.target.value});
-                        i18n.changeLanguage(e.target.value);
-                        try { localStorage.setItem('preferred_language', e.target.value); } catch {}
-                        try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
-                        document.documentElement.dir = 'ltr';
-                      }}
-                        className="w-full sm:w-64 h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                        {LANGUAGES.map((lang) => (
-                          <option key={lang.code} value={lang.code}>{lang.flag} {lang.label}</option>
-                        ))}
-                      </select>
+                      <p className="text-[11px] text-gray-400 mb-3">{t('crm.settings.languageHint', 'This setting syncs across all your devices.')}</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                        {LANGUAGES.slice(0, 10).map((lang, idx) => {
+                          const isActive = profile.language === lang.code;
+                          return (
+                            <button
+                              key={lang.code}
+                              type="button"
+                              onClick={async () => {
+                                setProfile(p => ({...p, language: lang.code}));
+                                i18n.changeLanguage(lang.code);
+                                document.documentElement.dir = lang.dir === 'rtl' ? 'rtl' : 'ltr';
+                                try { localStorage.setItem('preferred_language', lang.code); } catch {}
+                                try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
+                                try { await authAPI.updateProfile({ preferred_language: lang.code }); } catch {}
+                              }}
+                              className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${
+                                isActive
+                                  ? 'bg-teal-50 border-teal-300 text-teal-700 ring-1 ring-teal-200 shadow-sm'
+                                  : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+                              }`}
+                            >
+                              <span className="text-lg leading-none">{lang.flag}</span>
+                              <span className="truncate">{lang.label}</span>
+                              {isActive && <CheckCircle className="w-3.5 h-3.5 ml-auto text-teal-600 flex-shrink-0" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {/* Remaining languages in a smaller row */}
+                      {LANGUAGES.length > 10 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {LANGUAGES.slice(10).map(lang => {
+                            const isActive = profile.language === lang.code;
+                            return (
+                              <button
+                                key={lang.code}
+                                type="button"
+                                onClick={async () => {
+                                  setProfile(p => ({...p, language: lang.code}));
+                                  i18n.changeLanguage(lang.code);
+                                  document.documentElement.dir = lang.dir === 'rtl' ? 'rtl' : 'ltr';
+                                  try { localStorage.setItem('preferred_language', lang.code); } catch {}
+                                  try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
+                                  try { await authAPI.updateProfile({ preferred_language: lang.code }); } catch {}
+                                }}
+                                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                                  isActive
+                                    ? 'bg-teal-50 border-teal-300 text-teal-700'
+                                    : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+                                }`}
+                              >
+                                <span className="text-sm">{lang.flag}</span>
+                                <span>{lang.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -327,6 +517,301 @@ const CRMSettings = () => {
                       <input value={edu.year} onChange={e => { const n = [...doctorEducation]; n[i].year = e.target.value; setDoctorEducation(n); }} placeholder="Year" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════ Gallery Tab ═══════════ */}
+          {activeTab === 'gallery' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.galleryTitle', 'Gallery Manager')}</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.galleryDesc', 'Upload and manage photos for your profile and clinic. Drag to reorder.')}</p>
+                </div>
+                <div className="px-6 py-5 space-y-4">
+                  {/* Drop zone */}
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={onDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${dragOver ? 'border-teal-400 bg-teal-50/50' : 'border-gray-300 hover:border-teal-300 hover:bg-gray-50'}`}
+                  >
+                    <input ref={fileInputRef} type="file" multiple accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => handleGalleryUpload(e.target.files)} />
+                    {galleryUploading ? (
+                      <Loader2 className="w-8 h-8 text-teal-500 animate-spin mx-auto" />
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-gray-600">{t('crm.settings.dropPhotos', 'Drop photos here or click to upload')}</p>
+                        <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP — max 5MB each, up to 10 files</p>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Gallery grid */}
+                  {gallery.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                      {gallery.map((url, idx) => (
+                        <div
+                          key={url}
+                          draggable
+                          onDragStart={() => setDragIdx(idx)}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (dragIdx !== null) { handleGalleryDragEnd(dragIdx, idx); setDragIdx(null); } }}
+                          className={`relative group rounded-xl overflow-hidden border-2 aspect-square ${dragIdx === idx ? 'border-teal-400 opacity-50' : 'border-gray-200'}`}
+                        >
+                          <img src={url} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <button onClick={() => handleGalleryDelete(url)} className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
+                            <GripVertical className="w-4 h-4 text-white drop-shadow-lg" />
+                          </div>
+                          {idx === 0 && (
+                            <span className="absolute bottom-2 left-2 text-[10px] font-bold text-white bg-teal-600 px-2 py-0.5 rounded-full">Cover</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {gallery.length === 0 && !galleryUploading && (
+                    <div className="text-center py-6">
+                      <Image className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                      <p className="text-xs text-gray-400">{t('crm.settings.noPhotos', 'No photos uploaded yet')}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════ Operating Hours Tab ═══════════ */}
+          {activeTab === 'hours' && (
+            <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100">
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.hoursTitle', 'Operating Hours')}</h2>
+                <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.hoursDesc', 'Set your weekly schedule. These hours sync with the booking widget.')}</p>
+              </div>
+              <div className="px-6 py-5 space-y-3">
+                {operatingHours.map((day, idx) => (
+                  <div key={day.day} className={`p-3 rounded-xl border transition-all ${day.is_closed ? 'bg-gray-50 border-gray-200' : 'bg-white border-gray-200'}`}>
+                    <div className="flex items-center gap-3">
+                      {/* Day name + toggle */}
+                      <div className="w-24 flex-shrink-0">
+                        <span className="text-sm font-semibold text-gray-800 capitalize">{t(`crm.settings.day_${day.day}`, day.day)}</span>
+                      </div>
+                      <button type="button" onClick={() => updateHourField(idx, 'is_closed', !day.is_closed)}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors flex-shrink-0 ${!day.is_closed ? 'bg-teal-500' : 'bg-gray-300'}`}>
+                        <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform ${!day.is_closed ? 'translate-x-4.5' : 'translate-x-1'}`} />
+                      </button>
+                      <span className={`text-xs font-medium ${day.is_closed ? 'text-red-500' : 'text-emerald-600'}`}>
+                        {day.is_closed ? t('crm.settings.closed', 'Closed') : t('crm.settings.open', 'Open')}
+                      </span>
+
+                      {!day.is_closed && (
+                        <>
+                          <input type="time" value={day.open} onChange={(e) => updateHourField(idx, 'open', e.target.value)}
+                            className="h-8 px-2 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-teal-500 focus:border-transparent" />
+                          <span className="text-xs text-gray-400">—</span>
+                          <input type="time" value={day.close} onChange={(e) => updateHourField(idx, 'close', e.target.value)}
+                            className="h-8 px-2 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-teal-500 focus:border-transparent" />
+                          <button type="button" onClick={() => addBreak(idx)} className="text-[10px] text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-0.5 ml-auto">
+                            <Coffee className="w-3 h-3" /> {t('crm.settings.addBreak', '+ Break')}
+                          </button>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Breaks */}
+                    {!day.is_closed && day.breaks?.length > 0 && (
+                      <div className="ml-28 mt-2 space-y-1.5">
+                        {day.breaks.map((brk, bIdx) => (
+                          <div key={bIdx} className="flex items-center gap-2 text-xs">
+                            <Coffee className="w-3 h-3 text-amber-500" />
+                            <span className="text-gray-500">{t('crm.settings.breakLabel', 'Break')}:</span>
+                            <input type="time" value={brk.start} onChange={(e) => updateBreak(idx, bIdx, 'start', e.target.value)}
+                              className="h-7 px-2 border border-gray-200 rounded-lg text-xs focus:ring-1 focus:ring-teal-500" />
+                            <span className="text-gray-400">—</span>
+                            <input type="time" value={brk.end} onChange={(e) => updateBreak(idx, bIdx, 'end', e.target.value)}
+                              className="h-7 px-2 border border-gray-200 rounded-lg text-xs focus:ring-1 focus:ring-teal-500" />
+                            <button type="button" onClick={() => removeBreak(idx, bIdx)} className="text-gray-400 hover:text-red-500"><X className="w-3 h-3" /></button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                <div className="mt-2 p-3 bg-teal-50/50 rounded-xl border border-teal-200/50">
+                  <p className="text-[11px] text-teal-700">
+                    <Clock className="w-3 h-3 inline mr-1" />
+                    {t('crm.settings.hoursNote', 'Operating hours are synced with your booking widget. Patients can only book appointments during open hours.')}
+                  </p>
+                </div>
+              </div>
+              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-end gap-3">
+                {hoursSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Saved</span>}
+                <button onClick={saveOperatingHours} disabled={hoursSaving}
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
+                  {hoursSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('crm.settings.saveHours', 'Save Hours')}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════ Services & Pricing Tab ═══════════ */}
+          {activeTab === 'services' && (
+            <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.servicesTitle', 'Services & Pricing')}</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.servicesDesc', 'Manage your services with estimated duration and pricing')}</p>
+                </div>
+                <button type="button" onClick={addService} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('crm.settings.addService', 'Add Service')}</button>
+              </div>
+              <div className="px-6 py-5 space-y-3">
+                {enhancedServices.length === 0 && (
+                  <div className="text-center py-8">
+                    <Stethoscope className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                    <p className="text-xs text-gray-400">{t('crm.settings.noServices', 'No services added yet. Click "Add Service" to get started.')}</p>
+                  </div>
+                )}
+                {enhancedServices.map((svc, i) => (
+                  <div key={i} className="p-4 bg-gray-50 rounded-xl border border-gray-200 relative">
+                    <button type="button" onClick={() => removeService(i)} className="absolute top-3 right-3 text-gray-400 hover:text-red-500"><X className="w-4 h-4" /></button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-medium text-gray-600 mb-1">{t('crm.settings.serviceName', 'Service Name')}</label>
+                        <input value={svc.name} onChange={(e) => updateService(i, 'name', e.target.value)} placeholder="e.g. Dental Whitening"
+                          className="w-full h-9 px-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-teal-400" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-medium text-gray-600 mb-1">{t('crm.settings.serviceDesc', 'Description')}</label>
+                        <input value={svc.description || ''} onChange={(e) => updateService(i, 'description', e.target.value)} placeholder="Brief description"
+                          className="w-full h-9 px-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-teal-400" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-medium text-gray-600 mb-1">{t('crm.settings.duration', 'Est. Duration (min)')}</label>
+                        <select value={svc.duration_minutes || 30} onChange={(e) => updateService(i, 'duration_minutes', parseInt(e.target.value))}
+                          className="w-full h-9 px-3 border border-gray-200 rounded-lg text-sm bg-white outline-none focus:border-teal-400">
+                          {[15,20,30,45,60,90,120,180,240].map(m => <option key={m} value={m}>{m} min</option>)}
+                        </select>
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <label className="block text-[11px] font-medium text-gray-600 mb-1">{t('crm.settings.price', 'Price')}</label>
+                          <input value={svc.price || ''} onChange={(e) => updateService(i, 'price', e.target.value)} placeholder="0.00" type="number" min="0"
+                            className="w-full h-9 px-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-teal-400" />
+                        </div>
+                        <div className="w-20">
+                          <label className="block text-[11px] font-medium text-gray-600 mb-1">{t('crm.settings.currency', 'Currency')}</label>
+                          <select value={svc.currency || '₺'} onChange={(e) => updateService(i, 'currency', e.target.value)}
+                            className="w-full h-9 px-2 border border-gray-200 rounded-lg text-sm bg-white outline-none focus:border-teal-400">
+                            <option value="₺">₺ TRY</option>
+                            <option value="€">€ EUR</option>
+                            <option value="$">$ USD</option>
+                            <option value="£">£ GBP</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-end gap-3">
+                {servicesSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Saved</span>}
+                <button onClick={saveServices} disabled={servicesSaving}
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
+                  {servicesSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('crm.settings.saveServices', 'Save Services')}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════ Social & Contact Tab ═══════════ */}
+          {activeTab === 'social' && (
+            <div className="space-y-4">
+              {/* Contact Information */}
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.contactTitle', 'Contact Information')}</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.contactDesc', 'Phone, WhatsApp and address details visible to patients')}</p>
+                </div>
+                <div className="px-6 py-5 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-gray-400" /> {t('crm.settings.phoneLabel', 'Phone')}</label>
+                      <input type="tel" value={socialInfo.phone} onChange={(e) => updateSocialField('phone', e.target.value)} placeholder="+90 555 000 0000"
+                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5"><MessageCircle className="w-3.5 h-3.5 text-green-500" /> WhatsApp</label>
+                      <input type="tel" value={socialInfo.whatsapp} onChange={(e) => updateSocialField('whatsapp', e.target.value)} placeholder="+90 555 000 0000"
+                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5"><Globe className="w-3.5 h-3.5 text-gray-400" /> {t('crm.settings.websiteLabel', 'Website')}</label>
+                    <input type="url" value={socialInfo.website} onChange={(e) => updateSocialField('website', e.target.value)} placeholder="https://www.example.com"
+                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-gray-400" /> {t('crm.settings.addressLabel', 'Full Address')}</label>
+                    <textarea rows={2} value={socialInfo.address} onChange={(e) => updateSocialField('address', e.target.value)} placeholder="Street, building, district, city, country"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.latitude', 'Latitude')}</label>
+                      <input type="number" step="any" value={socialInfo.map_coordinates?.lat || ''} onChange={(e) => updateMapCoord('lat', e.target.value)} placeholder="41.0082"
+                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.longitude', 'Longitude')}</label>
+                      <input type="number" step="any" value={socialInfo.map_coordinates?.lng || ''} onChange={(e) => updateMapCoord('lng', e.target.value)} placeholder="28.9784"
+                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Social Media Links */}
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.socialTitle', 'Social Media')}</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.socialDesc', 'Link your social media profiles')}</p>
+                </div>
+                <div className="px-6 py-5 space-y-3">
+                  {[
+                    { key: 'instagram', icon: Instagram, color: 'text-pink-500', placeholder: 'https://instagram.com/yourprofile' },
+                    { key: 'facebook', icon: Facebook, color: 'text-blue-600', placeholder: 'https://facebook.com/yourpage' },
+                    { key: 'twitter', icon: Twitter, color: 'text-sky-500', placeholder: 'https://twitter.com/yourhandle' },
+                    { key: 'linkedin', icon: Linkedin, color: 'text-blue-700', placeholder: 'https://linkedin.com/in/yourprofile' },
+                    { key: 'youtube', icon: Youtube, color: 'text-red-600', placeholder: 'https://youtube.com/@yourchannel' },
+                    { key: 'tiktok', icon: ExternalLink, color: 'text-gray-800', placeholder: 'https://tiktok.com/@yourhandle' },
+                  ].map(({ key, icon: Icon, color, placeholder }) => (
+                    <div key={key} className="flex items-center gap-3">
+                      <Icon className={`w-5 h-5 ${color} flex-shrink-0`} />
+                      <input value={socialInfo.social_links?.[key] || ''} onChange={(e) => updateSocialLink(key, e.target.value)} placeholder={placeholder}
+                        className="flex-1 h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <div className="flex items-center gap-3">
+                  {socialSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Saved</span>}
+                  <button onClick={saveSocial} disabled={socialSaving}
+                    className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
+                    {socialSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('crm.settings.saveSocial', 'Save Contact Info')}
+                  </button>
                 </div>
               </div>
             </div>

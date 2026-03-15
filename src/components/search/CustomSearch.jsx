@@ -6,7 +6,7 @@ import CityCombobox from '../forms/CityCombobox.jsx';
 import { catalogAPI } from '../../lib/api';
 import { useTranslation } from 'react-i18next';
 
-export default function CustomSearch() {
+export default function CustomSearch({ onSearch }) {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const lang = i18n.language || 'en';
@@ -64,11 +64,17 @@ export default function CustomSearch() {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    const cleanSpec = specialty.replace(/,\s*$/, '').trim();
+    const cleanSymp = symptom.replace(/,\s*$/, '').trim();
+    if (onSearch) {
+      onSearch({ country, city, specialty: cleanSpec, symptom: cleanSymp });
+      return;
+    }
     const params = new URLSearchParams();
     if (country) params.set('country', country);
     if (city) params.set('city', city);
-    if (specialty) params.set('specialty', specialty.replace(/,\s*$/, '').trim());
-    if (symptom) params.set('symptom', symptom.replace(/,\s*$/, '').trim());
+    if (cleanSpec) params.set('specialty', cleanSpec);
+    if (cleanSymp) params.set('symptom', cleanSymp);
     const qs = params.toString();
     navigate(qs ? `/clinics?${qs}` : '/clinics');
   };
