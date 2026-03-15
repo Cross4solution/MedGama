@@ -970,5 +970,28 @@
     "availableToday": "Bugün Müsait",
     "nextAvailable": "İlk Müsait",
     "selectTimeFirst": "Lütfen önce bir tarih seçin"
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "unread": "{{count}} okunmamış",
+    "markAllRead": "Tümünü okundu işaretle",
+    "noNotifications": "Henüz bildirim yok",
+    "noNotificationsHint": "Randevu güncellemelerini burada göreceksiniz",
+    "viewAll": "Tüm bildirimleri gör",
+    "justNow": "az önce",
+    "minutesAgo": "{{count}}dk önce",
+    "hoursAgo": "{{count}}sa önce",
+    "daysAgo": "{{count}}g önce",
+    "newNotification": "Yeni bildirim",
+    "appointmentBooked": "Yeni Randevu Talebi",
+    "appointmentConfirmed": "Randevu Onaylandı",
+    "appointmentCancelled": "Randevu İptal Edildi",
+    "appointmentReminder": "Randevu Hatırlatması",
+    "postLiked": "gönderinizi beğendi",
+    "postCommented": "gönderinize yorum yaptı",
+    "newChatMessage": "Yeni mesaj",
+    "deleteConfirm": "Bu bildirimi silmek istiyor musunuz?",
+    "markedAsRead": "Okundu olarak işaretlendi",
+    "allMarkedAsRead": "Tüm bildirimler okundu olarak işaretlendi"
   }
 }

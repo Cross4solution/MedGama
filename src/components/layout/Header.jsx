@@ -1,17 +1,19 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff, LogOut, Shield, ChevronDown, Globe } from 'lucide-react';
+import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff, LogOut, Shield, ChevronDown, Globe, Heart } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18n';
 import { LANGUAGES } from '../../i18n';
 import { notificationAPI } from '../../lib/api';
 import { getEcho } from '../../lib/echo';
+import { useToast } from '../../context/ToastContext';
 
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout, hydrated } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { notify: showToast } = useToast();
   const [isMenuOpen, setIsMenuOpen] = useState(false); // legacy (mobile menu removed)
   const [isScrolled, setIsScrolled] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
@@ -77,6 +79,14 @@ const Header = () => {
         if (prev.some(n => n.id === payload.id)) return prev;
         return [payload, ...prev].slice(0, 15);
       });
+      // Show toast notification
+      const data = payload?.data || payload || {};
+      const toastMsg = data.title || data.message || 'New notification';
+      const nType = String(data.type || '');
+      const toastType = nType.includes('cancelled') ? 'error'
+        : nType.includes('reminder') ? 'warning'
+        : 'info';
+      showToast({ type: toastType, message: toastMsg, timeout: 5000 });
     });
 
     return () => {
@@ -133,21 +143,25 @@ const Header = () => {
 
   const getNotifIcon = (type) => {
     if (!type) return Bell;
+    if (type.includes('post_liked') || type.includes('liked')) return Heart;
     if (type.includes('post_commented') || type.includes('comment')) return MessageCircle;
-    if (type.includes('Booked')) return CalendarClock;
-    if (type.includes('Confirmed')) return Check;
-    if (type.includes('Cancelled')) return X;
-    if (type.includes('Reminder')) return Clock;
+    if (type.includes('chat') || type.includes('new_chat_message')) return MessageCircle;
+    if (type.includes('Booked') || type.includes('booked')) return CalendarClock;
+    if (type.includes('Confirmed') || type.includes('confirmed')) return Check;
+    if (type.includes('Cancelled') || type.includes('cancelled')) return X;
+    if (type.includes('Reminder') || type.includes('reminder')) return Clock;
     return Bell;
   };
 
   const getNotifColor = (type) => {
     if (!type) return 'bg-gray-100 text-gray-500';
+    if (type.includes('post_liked') || type.includes('liked')) return 'bg-pink-100 text-pink-600';
     if (type.includes('post_commented') || type.includes('comment')) return 'bg-teal-100 text-teal-600';
-    if (type.includes('Booked')) return 'bg-blue-100 text-blue-600';
-    if (type.includes('Confirmed')) return 'bg-emerald-100 text-emerald-600';
-    if (type.includes('Cancelled')) return 'bg-red-100 text-red-600';
-    if (type.includes('Reminder')) return 'bg-amber-100 text-amber-600';
+    if (type.includes('chat') || type.includes('new_chat_message')) return 'bg-indigo-100 text-indigo-600';
+    if (type.includes('Booked') || type.includes('booked')) return 'bg-blue-100 text-blue-600';
+    if (type.includes('Confirmed') || type.includes('confirmed')) return 'bg-emerald-100 text-emerald-600';
+    if (type.includes('Cancelled') || type.includes('cancelled')) return 'bg-red-100 text-red-600';
+    if (type.includes('Reminder') || type.includes('reminder')) return 'bg-amber-100 text-amber-600';
     return 'bg-gray-100 text-gray-500';
   };
 
@@ -167,6 +181,10 @@ const Header = () => {
     const data = notif.data || {};
     if (data.post_id) {
       navigate(`/post/${encodeURIComponent(data.post_id)}`);
+      return;
+    }
+    if (data.conversation_id) {
+      navigate(`/doctor-chat`);
       return;
     }
     if (data.appointment_id) {
@@ -360,8 +378,8 @@ const Header = () => {
                         {/* Header */}
                         <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
                           <div>
-                            <h3 className="text-sm font-bold text-gray-900">Notifications</h3>
-                            {unreadCount > 0 && <p className="text-[11px] text-gray-400">{unreadCount} unread</p>}
+                            <h3 className="text-sm font-bold text-gray-900">{t('notifications.title')}</h3>
+                            {unreadCount > 0 && <p className="text-[11px] text-gray-400">{t('notifications.unread', { count: unreadCount })}</p>}
                           </div>
                           {unreadCount > 0 && (
                             <button
@@ -369,7 +387,7 @@ const Header = () => {
                               className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-teal-50 transition-colors"
                             >
                               <CheckCheck className="w-3.5 h-3.5" />
-                              Mark all read
+                              {t('notifications.markAllRead')}
                             </button>
                           )}
                         </div>
@@ -383,8 +401,8 @@ const Header = () => {
                           ) : notifications.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-10 text-gray-400">
                               <BellOff className="w-8 h-8 mb-2 text-gray-300" />
-                              <p className="text-sm font-medium">No notifications yet</p>
-                              <p className="text-[11px]">You'll see appointment updates here</p>
+                              <p className="text-sm font-medium">{t('notifications.noNotifications')}</p>
+                              <p className="text-[11px]">{t('notifications.noNotificationsHint')}</p>
                             </div>
                           ) : (
                             notifications.map((notif) => {
@@ -438,7 +456,7 @@ const Header = () => {
                               onClick={() => { setNotifOpen(false); navigate('/notifications'); }}
                               className="w-full text-center text-[12px] font-semibold text-teal-600 hover:text-teal-700 py-1 rounded-lg hover:bg-teal-50 transition-colors"
                             >
-                              View all notifications
+                              {t('notifications.viewAll')}
                             </button>
                           </div>
                         )}

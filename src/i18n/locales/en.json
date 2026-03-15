@@ -970,5 +970,28 @@
     "availableToday": "Available Today",
     "nextAvailable": "Next Available",
     "selectTimeFirst": "Please select a date first"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unread": "{{count}} unread",
+    "markAllRead": "Mark all read",
+    "noNotifications": "No notifications yet",
+    "noNotificationsHint": "You'll see appointment updates here",
+    "viewAll": "View all notifications",
+    "justNow": "just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "newNotification": "New notification",
+    "appointmentBooked": "New Appointment Request",
+    "appointmentConfirmed": "Appointment Confirmed",
+    "appointmentCancelled": "Appointment Cancelled",
+    "appointmentReminder": "Appointment Reminder",
+    "postLiked": "liked your post",
+    "postCommented": "commented on your post",
+    "newChatMessage": "New message",
+    "deleteConfirm": "Delete this notification?",
+    "markedAsRead": "Marked as read",
+    "allMarkedAsRead": "All notifications marked as read"
   }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Channels\SmsChannel;
 use App\Models\Appointment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,7 +20,26 @@ class AppointmentBookedNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        $channels = ['database', 'mail'];
+
+        if (config('services.sms.provider', 'log') !== 'log' && $notifiable->phone) {
+            $channels[] = SmsChannel::class;
+        }
+
+        return $channels;
+    }
+
+    public function toSms(object $notifiable): array
+    {
+        $appt = $this->appointment;
+        $date = $appt->appointment_date?->format('d M Y') ?? '';
+        $time = $appt->appointment_time ?? '';
+
+        $msg = $this->recipientRole === 'doctor'
+            ? "MedGama: New appointment from {$appt->patient?->fullname} on {$date} at {$time}"
+            : "MedGama: Your appointment with Dr. {$appt->doctor?->fullname} on {$date} at {$time} is booked.";
+
+        return ['to' => $notifiable->phone, 'message' => $msg];
     }
 
     public function toMail(object $notifiable): MailMessage

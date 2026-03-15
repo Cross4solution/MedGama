@@ -12,6 +12,7 @@ use App\Models\DoctorFollow;
 use App\Models\User;
 use App\Jobs\ProcessMedStreamVideo;
 use App\Notifications\PostCommentedNotification;
+use App\Notifications\PostLikedNotification;
 use App\Services\MediaOptimizer;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
@@ -258,7 +259,7 @@ class MedStreamService
      */
     public function toggleLike(string $userId, string $postId): array
     {
-        return DB::transaction(function () use ($userId, $postId) {
+        $result = DB::transaction(function () use ($userId, $postId) {
             $existing = MedStreamLike::where('post_id', $postId)
                 ->where('user_id', $userId)
                 ->first();
@@ -289,6 +290,13 @@ class MedStreamService
 
             return ['liked' => $liked, 'created' => $created, 'like_count' => $realCount];
         });
+
+        // Notify post author about the like (outside transaction, fire-and-forget)
+        if ($result['liked']) {
+            $this->notifyPostAuthorAboutLike($userId, $postId);
+        }
+
+        return $result;
     }
 
     // ══════════════════════════════════════════════
@@ -767,6 +775,25 @@ class MedStreamService
             }
         } catch (\Throwable $e) {
             \Log::warning('Post comment notification failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Notify post author about a new like (fire-and-forget).
+     */
+    private function notifyPostAuthorAboutLike(string $likerId, string $postId): void
+    {
+        try {
+            $post = MedStreamPost::with('author:id,fullname,avatar')->find($postId);
+            $liker = User::find($likerId);
+
+            if ($post && $liker && $post->author && $post->author_id !== $likerId) {
+                $post->author->notify(
+                    new PostLikedNotification($post, $liker)
+                );
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Post like notification failed: ' . $e->getMessage());
         }
     }
 }
