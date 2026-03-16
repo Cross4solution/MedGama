@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -26,9 +26,22 @@ import {
   LifeBuoy,
   BookOpen,
   Building2,
+  Star,
+  Check,
+  Clock,
+  Heart,
+  MessageCircle,
+  CalendarClock,
+  Loader2,
+  CheckCheck,
+  Trash2,
+  BellOff,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { notificationAPI } from '../../lib/api';
+import { getEcho } from '../../lib/echo';
+import { useToast } from '../../context/ToastContext';
 
 const getNavSections = (t, role) => {
   const isClinic = role === 'clinic' || role === 'clinicOwner';
@@ -43,7 +56,6 @@ const getNavSections = (t, role) => {
   if (!isClinic) {
     mainItems.push({ label: t('crm.sidebar.examination'), icon: Stethoscope, path: '/crm/examination' });
   }
-  mainItems.push({ label: t('crm.sidebar.medstream', 'MedStream'), icon: Rss, path: '/crm/medstream' });
   mainItems.push({ label: t('crm.sidebar.telehealth', 'Telehealth'), icon: Video, path: '/crm/telehealth' });
   // Clinic-only: staff management + clinic manager panel
   if (isClinic) {
@@ -54,6 +66,7 @@ const getNavSections = (t, role) => {
   const managementItems = [
     { label: t('crm.sidebar.revenue', 'Revenue & Finance'), icon: DollarSign, path: '/crm/revenue' },
     { label: t('crm.sidebar.billing'), icon: Receipt, path: '/crm/billing' },
+    { label: t('crm.sidebar.reviews', 'Reviews'), icon: Star, path: '/crm/reviews' },
     { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports' },
     { label: t('crm.sidebar.integrations'), icon: Plug, path: '/crm/integrations' },
   ];
@@ -74,6 +87,46 @@ const getNavSections = (t, role) => {
 
 const CRM_ALLOWED_ROLES = ['doctor', 'clinic', 'clinicOwner', 'superAdmin', 'saasAdmin'];
 
+// ── Notification helpers ──
+const getNotifIcon = (type) => {
+  if (!type) return Bell;
+  if (type.includes('review')) return Star;
+  if (type.includes('verification')) return Check;
+  if (type.includes('liked')) return Heart;
+  if (type.includes('comment')) return MessageCircle;
+  if (type.includes('chat') || type.includes('message')) return MessageCircle;
+  if (type.includes('booked') || type.includes('Booked')) return CalendarClock;
+  if (type.includes('confirmed') || type.includes('Confirmed')) return Check;
+  if (type.includes('cancelled') || type.includes('Cancelled')) return X;
+  if (type.includes('reminder') || type.includes('Reminder')) return Clock;
+  return Bell;
+};
+
+const getNotifColor = (type) => {
+  if (!type) return 'bg-gray-100 text-gray-500';
+  if (type.includes('new_review')) return 'bg-amber-100 text-amber-600';
+  if (type.includes('review_approved')) return 'bg-emerald-100 text-emerald-600';
+  if (type.includes('review_rejected') || type.includes('review_hidden')) return 'bg-red-100 text-red-600';
+  if (type.includes('review_response')) return 'bg-teal-100 text-teal-600';
+  if (type.includes('verification_approved')) return 'bg-emerald-100 text-emerald-600';
+  if (type.includes('verification_rejected')) return 'bg-red-100 text-red-600';
+  if (type.includes('booked') || type.includes('Booked')) return 'bg-blue-100 text-blue-600';
+  if (type.includes('confirmed') || type.includes('Confirmed')) return 'bg-emerald-100 text-emerald-600';
+  if (type.includes('cancelled') || type.includes('Cancelled')) return 'bg-red-100 text-red-600';
+  if (type.includes('reminder') || type.includes('Reminder')) return 'bg-amber-100 text-amber-600';
+  return 'bg-gray-100 text-gray-500';
+};
+
+const timeAgo = (dateStr) => {
+  if (!dateStr) return '';
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+  return new Date(dateStr).toLocaleDateString();
+};
+
 const CRMLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -81,8 +134,104 @@ const CRMLayout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { t } = useTranslation();
+  const { notify: showToast } = useToast();
   const userRole = user?.role || user?.role_id || 'doctor';
   const NAV_SECTIONS = getNavSections(t, userRole);
+
+  // ── Notification state ──
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [notifLoading, setNotifLoading] = useState(false);
+
+  const fetchUnreadCount = useCallback(async () => {
+    if (!user) return;
+    try {
+      const res = await notificationAPI.unreadCount();
+      setUnreadCount(res?.data?.unread_count ?? res?.data?.count ?? 0);
+    } catch {}
+  }, [user]);
+
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return;
+    setNotifLoading(true);
+    try {
+      const res = await notificationAPI.list({ per_page: 10 });
+      setNotifications(res?.data?.data || res?.data || []);
+    } catch {}
+    setNotifLoading(false);
+  }, [user]);
+
+  // Real-time via Echo
+  useEffect(() => {
+    if (!user?.id) return;
+    const echo = getEcho();
+    if (!echo) return;
+    const channel = echo.private(`notifications.${user.id}`);
+    channel.listen('.notification.new', (payload) => {
+      setUnreadCount(prev => prev + 1);
+      setNotifications(prev => {
+        if (prev.some(n => n.id === payload.id)) return prev;
+        return [payload, ...prev].slice(0, 10);
+      });
+      const data = payload?.data || payload || {};
+      const toastMsg = data.title || data.message || 'New notification';
+      const nType = String(data.type || '');
+      const toastType = nType.includes('cancelled') || nType.includes('rejected') ? 'error'
+        : nType.includes('reminder') ? 'warning' : 'info';
+      showToast({ type: toastType, message: toastMsg, timeout: 5000 });
+    });
+    return () => { echo.leave(`notifications.${user.id}`); };
+  }, [user?.id]);
+
+  // Polling fallback
+  useEffect(() => {
+    if (!user) return;
+    fetchUnreadCount();
+    const echo = getEcho();
+    const interval = setInterval(fetchUnreadCount, echo ? 60000 : 15000);
+    return () => clearInterval(interval);
+  }, [user, fetchUnreadCount]);
+
+  // Fetch list when dropdown opens
+  useEffect(() => {
+    if (notifOpen) fetchNotifications();
+  }, [notifOpen, fetchNotifications]);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleMarkRead = async (id) => {
+    try {
+      await notificationAPI.markAsRead(id);
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch {}
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await notificationAPI.markAllAsRead();
+      setNotifications(prev => prev.map(n => ({ ...n, read_at: n.read_at || new Date().toISOString() })));
+      setUnreadCount(0);
+    } catch {}
+  };
+
+  const handleNotifClick = (notif) => {
+    if (!notif.read_at) handleMarkRead(notif.id);
+    setNotifOpen(false);
+    const data = notif.data || {};
+    if (data.link) { navigate(data.link); return; }
+    if (data.appointment_id) { navigate('/crm/appointments'); return; }
+    if (data.review_id) { navigate('/crm/reviews'); return; }
+  };
 
   // CRM access control — redirect unauthorized users
   React.useEffect(() => {
@@ -231,10 +380,83 @@ const CRMLayout = ({ children }) => {
               <button className="sm:hidden w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors">
                 <Search className="w-4.5 h-4.5" />
               </button>
-              <button className="relative w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors">
-                <Bell className="w-4.5 h-4.5" />
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">5</span>
-              </button>
+              {/* Notification Bell */}
+              <div className="relative" ref={notifRef}>
+                <button onClick={() => setNotifOpen(p => !p)} className="relative w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors">
+                  <Bell className="w-4.5 h-4.5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center px-1">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {notifOpen && (
+                  <div className="absolute right-0 mt-2 w-96 bg-white rounded-2xl shadow-2xl border border-gray-200/60 z-50 overflow-hidden">
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                      <h3 className="text-sm font-bold text-gray-900">{t('notifications.title', 'Notifications')}</h3>
+                      <div className="flex items-center gap-2">
+                        {unreadCount > 0 && (
+                          <button onClick={handleMarkAllRead} className="text-[10px] font-medium text-teal-600 hover:text-teal-700 flex items-center gap-1">
+                            <CheckCheck className="w-3 h-3" /> {t('notifications.markAllRead', 'Mark all read')}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* List */}
+                    <div className="max-h-[380px] overflow-y-auto">
+                      {notifLoading ? (
+                        <div className="p-6 text-center"><Loader2 className="w-5 h-5 animate-spin text-gray-300 mx-auto" /></div>
+                      ) : notifications.length === 0 ? (
+                        <div className="p-8 text-center">
+                          <BellOff className="w-7 h-7 text-gray-300 mx-auto mb-2" />
+                          <p className="text-xs text-gray-400">{t('notifications.empty', 'No notifications yet')}</p>
+                        </div>
+                      ) : (
+                        notifications.map(notif => {
+                          const data = notif.data || {};
+                          const nType = data.type || '';
+                          const NIcon = getNotifIcon(nType);
+                          const iconColor = getNotifColor(nType);
+                          const isUnread = !notif.read_at;
+
+                          return (
+                            <div
+                              key={notif.id}
+                              onClick={() => handleNotifClick(notif)}
+                              className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-50 ${isUnread ? 'bg-teal-50/30' : ''}`}
+                            >
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${iconColor}`}>
+                                <NIcon className="w-4 h-4" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-xs leading-relaxed ${isUnread ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
+                                  {data.title || data.message || 'Notification'}
+                                </p>
+                                {data.message && data.title && (
+                                  <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-2">{data.message}</p>
+                                )}
+                                <p className="text-[10px] text-gray-400 mt-1">{timeAgo(notif.created_at)}</p>
+                              </div>
+                              {isUnread && <div className="w-2 h-2 rounded-full bg-teal-500 flex-shrink-0 mt-1.5" />}
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+
+                    {/* Footer */}
+                    <div className="border-t border-gray-100 px-4 py-2.5">
+                      <Link to="/notifications" onClick={() => setNotifOpen(false)}
+                        className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
+                        {t('notifications.viewAll', 'View All Notifications')} →
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Profile Dropdown */}
               <div className="relative">

@@ -100,6 +100,11 @@ class User extends Authenticatable
         return $this->hasOne(Clinic::class, 'owner_id');
     }
 
+    public function verificationRequests()
+    {
+        return $this->hasMany(VerificationRequest::class, 'doctor_id');
+    }
+
     public function doctorAppointments()
     {
         return $this->hasMany(Appointment::class, 'doctor_id');

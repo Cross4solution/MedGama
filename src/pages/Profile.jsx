@@ -8,6 +8,7 @@ import countryCodes from '../data/countryCodes';
 import { Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../i18n';
+import LangFlag from '../components/ui/LangFlag';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
@@ -561,7 +562,7 @@ export default function Profile() {
                               : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
                           }`}
                         >
-                          <span className="text-lg leading-none">{lang.flag}</span>
+                          <LangFlag lang={lang} size={20} />
                           <span className="truncate">{lang.label}</span>
                         </button>
                       );
@@ -582,7 +583,7 @@ export default function Profile() {
                                 : 'border-gray-200 text-gray-500 hover:bg-gray-50'
                             }`}
                           >
-                            <span className="text-sm">{lang.flag}</span>
+                            <LangFlag lang={lang} size={16} />
                             <span>{lang.label}</span>
                           </button>
                         );

@@ -251,4 +251,135 @@ class SuperAdminController extends Controller
 
         return response()->json($logs);
     }
+
+    // ══════════════════════════════════════════════
+    //  VERIFICATION REQUESTS (Doc §8.3)
+    // ══════════════════════════════════════════════
+
+    /**
+     * GET /api/admin/verification-requests — List all verification requests
+     */
+    public function verificationRequests(Request $request): JsonResponse
+    {
+        $data = $this->superAdminService->listVerificationRequests(
+            $request->only(['status', 'doctor_id', 'search', 'per_page']),
+        );
+
+        return response()->json($data);
+    }
+
+    /**
+     * GET /api/admin/verification-requests/stats — Summary counts
+     */
+    public function verificationStats(): JsonResponse
+    {
+        return response()->json($this->superAdminService->getVerificationStats());
+    }
+
+    /**
+     * PUT /api/admin/verification-requests/{id}/approve
+     */
+    public function approveVerification(Request $request, string $id): JsonResponse
+    {
+        $vr = $this->superAdminService->approveVerificationRequest($id, $request->user()->id);
+
+        return response()->json([
+            'message' => 'Verification request approved. Doctor is now verified.',
+            'verification_request' => $vr,
+        ]);
+    }
+
+    /**
+     * PUT /api/admin/verification-requests/{id}/reject
+     */
+    public function rejectVerification(Request $request, string $id): JsonResponse
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:2000',
+        ]);
+
+        $vr = $this->superAdminService->rejectVerificationRequest(
+            $id,
+            $request->user()->id,
+            $request->input('reason'),
+        );
+
+        return response()->json([
+            'message' => 'Verification request rejected.',
+            'verification_request' => $vr,
+        ]);
+    }
+
+    /**
+     * GET /api/admin/verification-requests/{id}/document — Download/preview document
+     */
+    public function verificationDocument(string $id): \Symfony\Component\HttpFoundation\StreamedResponse|JsonResponse
+    {
+        $vr = \App\Models\VerificationRequest::findOrFail($id);
+
+        if (!\Illuminate\Support\Facades\Storage::disk('local')->exists($vr->file_path)) {
+            return response()->json(['message' => 'Document file not found.'], 404);
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->download(
+            $vr->file_path,
+            $vr->file_name,
+            ['Content-Type' => $vr->mime_type ?? 'application/octet-stream'],
+        );
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  Review Moderation (Doc §10)
+    // ═══════════════════════════════════════════════════════════════
+
+    /**
+     * GET /api/admin/reviews — List all reviews with filters
+     */
+    public function listReviews(Request $request): JsonResponse
+    {
+        $reviews = $this->service->listReviews(
+            $request->only(['status', 'doctor_id', 'search', 'per_page']),
+        );
+
+        return response()->json($reviews);
+    }
+
+    /**
+     * GET /api/admin/reviews/stats — Review moderation statistics
+     */
+    public function reviewStats(): JsonResponse
+    {
+        return response()->json($this->service->getReviewStats());
+    }
+
+    /**
+     * PUT /api/admin/reviews/{id}/approve — Approve a review
+     */
+    public function approveReview(string $id): JsonResponse
+    {
+        $review = $this->service->approveReview($id, request()->user()->id);
+        return response()->json(['review' => $review]);
+    }
+
+    /**
+     * PUT /api/admin/reviews/{id}/reject — Reject a review (misleading)
+     */
+    public function rejectReview(Request $request, string $id): JsonResponse
+    {
+        $request->validate(['note' => 'nullable|string|max:1000']);
+
+        $review = $this->service->rejectReview($id, $request->user()->id, $request->input('note'));
+        return response()->json(['review' => $review]);
+    }
+
+    /**
+     * PUT /api/admin/reviews/{id}/hide — Hide a review temporarily
+     */
+    public function hideReview(Request $request, string $id): JsonResponse
+    {
+        $request->validate(['note' => 'nullable|string|max:1000']);
+
+        $review = $this->service->hideReview($id, $request->user()->id, $request->input('note'));
+        return response()->json(['review' => $review]);
+    }
 }

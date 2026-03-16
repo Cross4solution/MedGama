@@ -82,28 +82,42 @@ i18n
 export default i18n;
 
 // Primary 10 languages (Doc §11.1) listed first, then extras
+// countryCode = ISO 3166-1 alpha-2 for https://flagcdn.com/{w}x{h}/{code}.png
 export const LANGUAGES = [
-  { code: 'tr', label: 'Türkçe', flag: '🇹🇷', dir: 'ltr' },
-  { code: 'en', label: 'English', flag: '🇬🇧', dir: 'ltr' },
-  { code: 'ar', label: 'العربية', flag: '🇸🇦', dir: 'rtl' },
-  { code: 'ru', label: 'Русский', flag: '🇺', dir: 'ltr' },
-  { code: 'de', label: 'Deutsch', flag: '��', dir: 'ltr' },
-  { code: 'fr', label: 'Français', flag: '��', dir: 'ltr' },
-  { code: 'es', label: 'Español', flag: '🇪🇸', dir: 'ltr' },
-  { code: 'it', label: 'Italiano', flag: '��', dir: 'ltr' },
-  { code: 'az', label: 'Azərbaycanca', flag: '🇦🇿', dir: 'ltr' },
-  { code: 'uz', label: 'Oʻzbekcha', flag: '��', dir: 'ltr' },
+  { code: 'tr', label: 'Türkçe', countryCode: 'tr', dir: 'ltr' },
+  { code: 'en', label: 'English', countryCode: 'gb', dir: 'ltr' },
+  { code: 'ar', label: 'العربية', countryCode: 'sa', dir: 'rtl' },
+  { code: 'ru', label: 'Русский', countryCode: 'ru', dir: 'ltr' },
+  { code: 'de', label: 'Deutsch', countryCode: 'de', dir: 'ltr' },
+  { code: 'fr', label: 'Français', countryCode: 'fr', dir: 'ltr' },
+  { code: 'es', label: 'Español', countryCode: 'es', dir: 'ltr' },
+  { code: 'it', label: 'Italiano', countryCode: 'it', dir: 'ltr' },
+  { code: 'az', label: 'Azərbaycanca', countryCode: 'az', dir: 'ltr' },
+  { code: 'uz', label: 'Oʻzbekcha', countryCode: 'uz', dir: 'ltr' },
   // Additional languages
-  { code: 'zh', label: '中文', flag: '��', dir: 'ltr' },
-  { code: 'hi', label: 'हिन्दी', flag: '��', dir: 'ltr' },
-  { code: 'bn', label: 'বাংলা', flag: '��', dir: 'ltr' },
-  { code: 'pt', label: 'Português', flag: '��', dir: 'ltr' },
-  { code: 'ja', label: '日本語', flag: '��', dir: 'ltr' },
-  { code: 'ko', label: '한국어', flag: '��', dir: 'ltr' },
-  { code: 'vi', label: 'Tiếng Việt', flag: '��', dir: 'ltr' },
-  { code: 'th', label: 'ไทย', flag: '🇹🇭', dir: 'ltr' },
-  { code: 'pl', label: 'Polski', flag: '🇵🇱', dir: 'ltr' },
-  { code: 'uk', label: 'Українська', flag: '🇺🇦', dir: 'ltr' },
-  { code: 'ro', label: 'Română', flag: '🇷🇴', dir: 'ltr' },
-  { code: 'nl', label: 'Nederlands', flag: '🇳🇱', dir: 'ltr' },
+  { code: 'zh', label: '中文', countryCode: 'cn', dir: 'ltr' },
+  { code: 'hi', label: 'हिन्दी', countryCode: 'in', dir: 'ltr' },
+  { code: 'bn', label: 'বাংলা', countryCode: 'bd', dir: 'ltr' },
+  { code: 'pt', label: 'Português', countryCode: 'br', dir: 'ltr' },
+  { code: 'ja', label: '日本語', countryCode: 'jp', dir: 'ltr' },
+  { code: 'ko', label: '한국어', countryCode: 'kr', dir: 'ltr' },
+  { code: 'vi', label: 'Tiếng Việt', countryCode: 'vn', dir: 'ltr' },
+  { code: 'th', label: 'ไทย', countryCode: 'th', dir: 'ltr' },
+  { code: 'pl', label: 'Polski', countryCode: 'pl', dir: 'ltr' },
+  { code: 'uk', label: 'Українська', countryCode: 'ua', dir: 'ltr' },
+  { code: 'ro', label: 'Română', countryCode: 'ro', dir: 'ltr' },
+  { code: 'nl', label: 'Nederlands', countryCode: 'nl', dir: 'ltr' },
 ];
+
+/**
+ * Get FlagCDN URL for a language object or country code string.
+ * Usage: getFlagUrl('tr') or getFlagUrl(langObj)
+ * Returns: "https://flagcdn.com/24x18/tr.png"
+ */
+export function getFlagUrl(langOrCode, width = 24, height = 18) {
+  const cc = typeof langOrCode === 'string'
+    ? (LANGUAGES.find(l => l.code === langOrCode)?.countryCode || langOrCode)
+    : langOrCode?.countryCode;
+  if (!cc) return null;
+  return `https://flagcdn.com/${width}x${height}/${cc}.png`;
+}

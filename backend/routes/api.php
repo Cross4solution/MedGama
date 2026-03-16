@@ -163,6 +163,10 @@ Route::get('/doctors/{id}', [DoctorController::class, 'show']);
 Route::get('/doctors/{id}/reviews', [DoctorController::class, 'reviews']);
 Route::get('/doctors/{id}/availability', [DoctorController::class, 'availability']);
 Route::post('/doctors/{id}/reviews', [DoctorController::class, 'submitReview'])->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/doctors/my-reviews', [DoctorController::class, 'myReviews']);
+    Route::put('/doctors/reviews/{reviewId}/respond', [DoctorController::class, 'respondToReview']);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -179,6 +183,9 @@ Route::prefix('doctor-profile')->middleware('auth:sanctum')->group(function () {
     Route::put('/operating-hours', [DoctorProfileController::class, 'updateOperatingHours']);
     Route::put('/services', [DoctorProfileController::class, 'updateServices']);
     Route::put('/social', [DoctorProfileController::class, 'updateSocial']);
+    // Verification documents (Doc §8.3)
+    Route::get('/verification', [DoctorProfileController::class, 'verificationRequests']);
+    Route::post('/verification', [DoctorProfileController::class, 'submitVerification']);
 });
 
 /*
@@ -491,9 +498,23 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     Route::get('/dashboard', [SuperAdminController::class, 'dashboard']);
     Route::get('/growth-trend', [SuperAdminController::class, 'growthTrend']);
 
-    // Doctor verification
+    // Doctor verification (legacy simple toggle)
     Route::get('/doctors', [SuperAdminController::class, 'doctors']);
     Route::put('/doctors/{id}/verify', [SuperAdminController::class, 'verifyDoctor']);
+
+    // Verification requests (Doc §8.3 — document-based approval)
+    Route::get('/verification-requests', [SuperAdminController::class, 'verificationRequests']);
+    Route::get('/verification-requests/stats', [SuperAdminController::class, 'verificationStats']);
+    Route::put('/verification-requests/{id}/approve', [SuperAdminController::class, 'approveVerification']);
+    Route::put('/verification-requests/{id}/reject', [SuperAdminController::class, 'rejectVerification']);
+    Route::get('/verification-requests/{id}/document', [SuperAdminController::class, 'verificationDocument']);
+
+    // Review moderation (Doc §10)
+    Route::get('/reviews', [SuperAdminController::class, 'listReviews']);
+    Route::get('/reviews/stats', [SuperAdminController::class, 'reviewStats']);
+    Route::put('/reviews/{id}/approve', [SuperAdminController::class, 'approveReview']);
+    Route::put('/reviews/{id}/reject', [SuperAdminController::class, 'rejectReview']);
+    Route::put('/reviews/{id}/hide', [SuperAdminController::class, 'hideReview']);
 
     // User suspension
     Route::put('/users/{id}/suspend', [SuperAdminController::class, 'suspendUser']);

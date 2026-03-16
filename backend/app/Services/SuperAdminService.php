@@ -9,6 +9,10 @@ use App\Models\MedStreamPost;
 use App\Models\MedStreamReport;
 use App\Models\SystemSetting;
 use App\Models\User;
+use App\Models\VerificationRequest;
+use App\Notifications\ReviewModerationNotification;
+use App\Notifications\VerificationApprovedNotification;
+use App\Notifications\VerificationRejectedNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -368,5 +372,255 @@ class SuperAdminService
             ->when($filters['date_to'] ?? null, fn($q, $v) => $q->where('created_at', '<=', $v))
             ->orderByDesc('created_at')
             ->paginate($filters['per_page'] ?? 25);
+    }
+
+    // ══════════════════════════════════════════════
+    //  VERIFICATION REQUESTS (Doc §8.3)
+    // ══════════════════════════════════════════════
+
+    /**
+     * List verification requests with filters.
+     */
+    public function listVerificationRequests(array $filters): LengthAwarePaginator
+    {
+        return VerificationRequest::query()
+            ->with([
+                'doctor:id,fullname,email,avatar,is_verified,clinic_id',
+                'doctor.doctorProfile:id,user_id,specialty,title',
+                'reviewer:id,fullname',
+            ])
+            ->when($filters['status'] ?? null, fn($q, $v) => $q->where('status', $v))
+            ->when($filters['doctor_id'] ?? null, fn($q, $v) => $q->where('doctor_id', $v))
+            ->when($filters['search'] ?? null, function ($q, $search) {
+                $q->whereHas('doctor', function ($dq) use ($search) {
+                    $dq->where('fullname', 'ilike', "%{$search}%")
+                       ->orWhere('email', 'ilike', "%{$search}%");
+                });
+            })
+            ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+            ->orderByDesc('created_at')
+            ->paginate($filters['per_page'] ?? 20);
+    }
+
+    /**
+     * Approve a verification request → set is_verified = true on doctor.
+     */
+    public function approveVerificationRequest(string $requestId, string $reviewerId): VerificationRequest
+    {
+        $vr = VerificationRequest::findOrFail($requestId);
+
+        DB::transaction(function () use ($vr, $reviewerId) {
+            $vr->update([
+                'status'      => 'approved',
+                'reviewed_by' => $reviewerId,
+                'reviewed_at' => now(),
+            ]);
+
+            // Mark doctor as verified
+            User::where('id', $vr->doctor_id)->update(['is_verified' => true]);
+        });
+
+        // Send notification to doctor
+        $vr->doctor->notify(new VerificationApprovedNotification($vr));
+
+        // Audit log
+        AuditLog::log(
+            action: 'verification.approved',
+            resourceType: 'VerificationRequest',
+            resourceId: $vr->id,
+            newValues: ['doctor_id' => $vr->doctor_id, 'document_type' => $vr->document_type],
+            description: "Approved verification for doctor: {$vr->doctor->fullname}",
+        );
+
+        Cache::forget('superadmin:dashboard');
+
+        return $vr->refresh()->load(['doctor:id,fullname,email,avatar,is_verified', 'reviewer:id,fullname']);
+    }
+
+    /**
+     * Reject a verification request with reason.
+     */
+    public function rejectVerificationRequest(string $requestId, string $reviewerId, ?string $reason = null): VerificationRequest
+    {
+        $vr = VerificationRequest::findOrFail($requestId);
+
+        $vr->update([
+            'status'           => 'rejected',
+            'reviewed_by'      => $reviewerId,
+            'reviewed_at'      => now(),
+            'rejection_reason' => $reason,
+        ]);
+
+        // Send notification to doctor
+        $vr->doctor->notify(new VerificationRejectedNotification($vr));
+
+        // Audit log
+        AuditLog::log(
+            action: 'verification.rejected',
+            resourceType: 'VerificationRequest',
+            resourceId: $vr->id,
+            newValues: ['doctor_id' => $vr->doctor_id, 'reason' => $reason],
+            description: "Rejected verification for doctor: {$vr->doctor->fullname}",
+        );
+
+        return $vr->refresh()->load(['doctor:id,fullname,email,avatar,is_verified', 'reviewer:id,fullname']);
+    }
+
+    /**
+     * Get verification request statistics for dashboard.
+     */
+    public function getVerificationStats(): array
+    {
+        return [
+            'pending'  => VerificationRequest::pending()->count(),
+            'approved' => VerificationRequest::approved()->count(),
+            'rejected' => VerificationRequest::rejected()->count(),
+        ];
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  Review Moderation (Doc §10)
+    // ═══════════════════════════════════════════════════════════════
+
+    /**
+     * List reviews with filters (status, doctor_id, search).
+     */
+    public function listReviews(array $filters): LengthAwarePaginator
+    {
+        return DoctorReview::query()
+            ->with([
+                'doctor:id,fullname,email,avatar',
+                'patient:id,fullname,email,avatar',
+                'moderator:id,fullname',
+            ])
+            ->when($filters['status'] ?? null, fn($q, $v) => $q->where('moderation_status', $v))
+            ->when($filters['doctor_id'] ?? null, fn($q, $v) => $q->where('doctor_id', $v))
+            ->when($filters['search'] ?? null, function ($q, $s) {
+                $q->whereHas('patient', fn($pq) => $pq->where('fullname', 'ilike', "%{$s}%"))
+                  ->orWhereHas('doctor', fn($dq) => $dq->where('fullname', 'ilike', "%{$s}%"));
+            })
+            ->orderByDesc('created_at')
+            ->paginate($filters['per_page'] ?? 15);
+    }
+
+    /**
+     * Approve a review — makes it visible.
+     */
+    public function approveReview(string $reviewId, string $moderatorId): DoctorReview
+    {
+        $review = DoctorReview::findOrFail($reviewId);
+
+        $review->update([
+            'moderation_status' => 'approved',
+            'is_visible'        => true,
+            'moderated_by'      => $moderatorId,
+            'moderated_at'      => now(),
+        ]);
+
+        DoctorReview::recalculateAggregatedRating($review->doctor_id);
+
+        $this->logAudit(
+            userId: $moderatorId,
+            action: 'review_approved',
+            resourceType: 'doctor_review',
+            resourceId: $review->id,
+            description: "Approved review by {$review->patient->fullname} for {$review->doctor->fullname}",
+        );
+
+        $result = $review->refresh()->load(['doctor:id,fullname,avatar', 'patient:id,fullname,avatar', 'moderator:id,fullname']);
+
+        // Notify the doctor
+        $doctor = User::find($review->doctor_id);
+        if ($doctor) {
+            $doctor->notify(new ReviewModerationNotification($review, 'approved'));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Reject a review (misleading content) — hides it permanently.
+     */
+    public function rejectReview(string $reviewId, string $moderatorId, ?string $note = null): DoctorReview
+    {
+        $review = DoctorReview::findOrFail($reviewId);
+
+        $review->update([
+            'moderation_status' => 'rejected',
+            'is_visible'        => false,
+            'moderated_by'      => $moderatorId,
+            'moderated_at'      => now(),
+            'moderation_note'   => $note,
+        ]);
+
+        DoctorReview::recalculateAggregatedRating($review->doctor_id);
+
+        $this->logAudit(
+            userId: $moderatorId,
+            action: 'review_rejected',
+            resourceType: 'doctor_review',
+            resourceId: $review->id,
+            newValues: ['note' => $note],
+            description: "Rejected review by {$review->patient->fullname} for {$review->doctor->fullname}",
+        );
+
+        $result = $review->refresh()->load(['doctor:id,fullname,avatar', 'patient:id,fullname,avatar', 'moderator:id,fullname']);
+
+        // Notify the doctor
+        $doctor = User::find($review->doctor_id);
+        if ($doctor) {
+            $doctor->notify(new ReviewModerationNotification($review, 'rejected'));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Hide a review temporarily (soft hide without rejecting).
+     */
+    public function hideReview(string $reviewId, string $moderatorId, ?string $note = null): DoctorReview
+    {
+        $review = DoctorReview::findOrFail($reviewId);
+
+        $review->update([
+            'moderation_status' => 'hidden',
+            'is_visible'        => false,
+            'moderated_by'      => $moderatorId,
+            'moderated_at'      => now(),
+            'moderation_note'   => $note,
+        ]);
+
+        DoctorReview::recalculateAggregatedRating($review->doctor_id);
+
+        $this->logAudit(
+            userId: $moderatorId,
+            action: 'review_hidden',
+            resourceType: 'doctor_review',
+            resourceId: $review->id,
+            description: "Hidden review by {$review->patient->fullname} for {$review->doctor->fullname}",
+        );
+
+        $result = $review->refresh()->load(['doctor:id,fullname,avatar', 'patient:id,fullname,avatar', 'moderator:id,fullname']);
+
+        // Notify the doctor
+        $doctor = User::find($review->doctor_id);
+        if ($doctor) {
+            $doctor->notify(new ReviewModerationNotification($review, 'hidden'));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get review moderation statistics.
+     */
+    public function getReviewStats(): array
+    {
+        return [
+            'pending'  => DoctorReview::pending()->count(),
+            'approved' => DoctorReview::approved()->count(),
+            'rejected' => DoctorReview::rejected()->count(),
+            'hidden'   => DoctorReview::hidden()->count(),
+        ];
     }
 }

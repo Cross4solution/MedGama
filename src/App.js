@@ -65,6 +65,7 @@ const CRMRevenue = React.lazy(() => import('./pages/crm/CRMRevenue'));
 const CRMSupport = React.lazy(() => import('./pages/crm/CRMSupport'));
 const CRMFaq = React.lazy(() => import('./pages/crm/CRMFaq'));
 const CRMClinicManager = React.lazy(() => import('./pages/crm/CRMClinicManager'));
+const CRMReviews = React.lazy(() => import('./pages/crm/CRMReviews'));
 
 // Admin Pages
 const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
@@ -74,6 +75,7 @@ const AdminModeration = React.lazy(() => import('./pages/admin/AdminModeration')
 const AdminCatalog = React.lazy(() => import('./pages/admin/AdminCatalog'));
 const AdminFeatureToggles = React.lazy(() => import('./pages/admin/AdminFeatureToggles'));
 const AdminAuditLogs = React.lazy(() => import('./pages/admin/AdminAuditLogs'));
+const AdminReviews = React.lazy(() => import('./pages/admin/AdminReviews'));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -328,6 +330,7 @@ function AppContent() {
         <Route path="/crm/support" element={<CRMLayout><CRMSupport /></CRMLayout>} />
         <Route path="/crm/faq" element={<CRMLayout><CRMFaq /></CRMLayout>} />
         <Route path="/crm/clinic-manager" element={<CRMLayout><CRMClinicManager /></CRMLayout>} />
+        <Route path="/crm/reviews" element={<CRMLayout><CRMReviews /></CRMLayout>} />
         <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
@@ -336,6 +339,7 @@ function AppContent() {
         <Route path="/admin/catalog" element={<AdminLayout><AdminCatalog /></AdminLayout>} />
         <Route path="/admin/settings" element={<AdminLayout><AdminFeatureToggles /></AdminLayout>} />
         <Route path="/admin/audit-logs" element={<AdminLayout><AdminAuditLogs /></AdminLayout>} />
+        <Route path="/admin/reviews" element={<AdminLayout><AdminReviews /></AdminLayout>} />
         <Route path="/500" element={<ServerErrorPage />} />
         <Route path="*" element={<NotFoundPage />} />
         </Routes>

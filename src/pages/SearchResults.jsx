@@ -7,7 +7,6 @@ import {
   Lightbulb, TrendingUp, ArrowRight,
 } from 'lucide-react';
 import { doctorAPI, catalogAPI } from '../lib/api';
-import { CustomSearch } from '../components/search';
 
 /* ═══════════════════════════════════════════
    Skeleton Card (shimmer)
@@ -133,15 +132,6 @@ export default function SearchResults() {
   const [heroQ, setHeroQ] = useState(sp.get('q') || '');
   const [heroSpec, setHeroSpec] = useState(sp.get('specialty_id') || '');
   const [heroCity, setHeroCity] = useState(sp.get('city_id') || '');
-
-  // CustomSearch callback — maps text-based fields to doctor search
-  const handleCustomSearch = useCallback(({ country, city, specialty, symptom }) => {
-    const q = [specialty, symptom].filter(Boolean).join(' ').trim();
-    setSearchText(q);
-    setHeroQ(q);
-    setPage(1);
-    syncUrl({ q });
-  }, [syncUrl]);
 
   // load catalogs
   useEffect(() => {
@@ -291,15 +281,55 @@ export default function SearchResults() {
 
   return (
     <div className="min-h-screen bg-gray-50/60">
-      {/* ═══ Search Bar — CustomSearch ═══ */}
-      <section className="bg-gradient-to-b from-gray-50 to-white border-b border-gray-100 py-6 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-5">
-            <h1 className="text-xl md:text-2xl font-extrabold text-gray-900 tracking-tight">{t('search.heroTitle')}</h1>
-            <p className="text-gray-500 text-sm mt-1">{t('search.heroSubtitle')}</p>
-          </div>
-          <CustomSearch onSearch={handleCustomSearch} />
+      {/* ═══ Hero Search Bar ═══ */}
+      <section className="bg-gradient-to-br from-teal-700 via-teal-600 to-teal-800 py-10 px-4">
+        <div className="max-w-4xl mx-auto text-center mb-6">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">{t('search.heroTitle')}</h1>
+          <p className="text-teal-100 text-sm md:text-base mt-2">{t('search.heroSubtitle')}</p>
         </div>
+        <form onSubmit={heroSubmit} className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-2 flex flex-col md:flex-row gap-2">
+            {/* Text input */}
+            <div className="flex-1 relative">
+              <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                value={heroQ}
+                onChange={e => setHeroQ(e.target.value)}
+                placeholder={t('search.specialtyOrDoctorPlaceholder')}
+                className="w-full pl-10 pr-3 py-3 rounded-xl text-sm border border-gray-100 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none transition-all"
+              />
+            </div>
+            {/* Specialty select */}
+            <div className="md:w-48">
+              <select
+                value={heroSpec}
+                onChange={e => setHeroSpec(e.target.value)}
+                className="w-full border border-gray-100 rounded-xl px-3 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white"
+              >
+                <option value="">{t('search.allSpecialties')}</option>
+                {specialties.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+            {/* City select */}
+            <div className="md:w-44">
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <select
+                  value={heroCity}
+                  onChange={e => setHeroCity(e.target.value)}
+                  className="w-full border border-gray-100 rounded-xl pl-9 pr-3 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white appearance-none"
+                >
+                  <option value="">{t('search.allCities')}</option>
+                  {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+            </div>
+            {/* Submit */}
+            <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl px-6 py-3 flex items-center gap-2 text-sm transition-colors shadow-sm whitespace-nowrap">
+              <Search className="w-4 h-4" /> {t('search.searchButton')}
+            </button>
+          </div>
+        </form>
       </section>
 
       {/* ═══ Content ═══ */}

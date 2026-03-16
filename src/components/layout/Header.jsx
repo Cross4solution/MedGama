@@ -127,6 +127,8 @@ const Header = () => {
 
   const getNotifIcon = (type) => {
     if (!type) return Bell;
+    if (type.includes('review')) return Bookmark;
+    if (type.includes('verification')) return Shield;
     if (type.includes('post_liked') || type.includes('liked')) return Heart;
     if (type.includes('post_commented') || type.includes('comment')) return MessageCircle;
     if (type.includes('chat') || type.includes('new_chat_message')) return MessageCircle;
@@ -139,6 +141,12 @@ const Header = () => {
 
   const getNotifColor = (type) => {
     if (!type) return 'bg-gray-100 text-gray-500';
+    if (type.includes('new_review')) return 'bg-amber-100 text-amber-600';
+    if (type.includes('review_approved')) return 'bg-emerald-100 text-emerald-600';
+    if (type.includes('review_rejected') || type.includes('review_hidden')) return 'bg-red-100 text-red-600';
+    if (type.includes('review_response')) return 'bg-teal-100 text-teal-600';
+    if (type.includes('verification_approved')) return 'bg-emerald-100 text-emerald-600';
+    if (type.includes('verification_rejected')) return 'bg-red-100 text-red-600';
     if (type.includes('post_liked') || type.includes('liked')) return 'bg-pink-100 text-pink-600';
     if (type.includes('post_commented') || type.includes('comment')) return 'bg-teal-100 text-teal-600';
     if (type.includes('chat') || type.includes('new_chat_message')) return 'bg-indigo-100 text-indigo-600';
@@ -163,6 +171,7 @@ const Header = () => {
     if (!notif.read_at) handleMarkRead(notif.id);
     setNotifOpen(false);
     const data = notif.data || {};
+    if (data.link) { navigate(data.link); return; }
     if (data.post_id) {
       navigate(`/post/${encodeURIComponent(data.post_id)}`);
       return;
@@ -173,6 +182,11 @@ const Header = () => {
     }
     if (data.appointment_id) {
       navigate(user?.role === 'patient' ? '/telehealth' : '/crm/appointments');
+      return;
+    }
+    if (data.review_id) {
+      navigate(user?.role === 'patient' ? `/doctors/${data.doctor_id || ''}` : '/crm/reviews');
+      return;
     }
   };
 

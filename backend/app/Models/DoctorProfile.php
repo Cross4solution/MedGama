@@ -39,6 +39,8 @@ class DoctorProfile extends Model
         'insurance_providers',
         'onboarding_completed',
         'onboarding_step',
+        'avg_rating',
+        'review_count',
     ];
 
     protected function casts(): array

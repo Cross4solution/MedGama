@@ -4,19 +4,20 @@ import {
   Search, ChevronLeft, ChevronRight, Loader2, Globe,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
+import LangFlag from '../../components/ui/LangFlag';
 
 // Supported languages for multi-language catalog entries
 const LANGS = [
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'tr', label: 'Türkçe', flag: '🇹🇷' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
-  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
-  { code: 'nl', label: 'Nederlands', flag: '🇳🇱' },
-  { code: 'it', label: 'Italiano', flag: '🇮🇹' },
-  { code: 'pt', label: 'Português', flag: '🇵🇹' },
+  { code: 'en', label: 'English', countryCode: 'gb' },
+  { code: 'tr', label: 'Türkçe', countryCode: 'tr' },
+  { code: 'de', label: 'Deutsch', countryCode: 'de' },
+  { code: 'fr', label: 'Français', countryCode: 'fr' },
+  { code: 'ar', label: 'العربية', countryCode: 'sa' },
+  { code: 'ru', label: 'Русский', countryCode: 'ru' },
+  { code: 'es', label: 'Español', countryCode: 'es' },
+  { code: 'nl', label: 'Nederlands', countryCode: 'nl' },
+  { code: 'it', label: 'Italiano', countryCode: 'it' },
+  { code: 'pt', label: 'Português', countryCode: 'pt' },
 ];
 
 const TABS = [
@@ -42,7 +43,7 @@ function MultiLangInput({ value, onChange, label }) {
       <div className="grid grid-cols-2 gap-2 mb-1">
         {LANGS.slice(0, 2).map(lang => (
           <div key={lang.code} className="relative">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs">{lang.flag}</span>
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2"><LangFlag lang={lang} size={16} /></span>
             <input
               type="text"
               placeholder={`${lang.label} *`}
@@ -58,7 +59,7 @@ function MultiLangInput({ value, onChange, label }) {
         <div className="grid grid-cols-2 gap-2 mt-1">
           {LANGS.slice(2).map(lang => (
             <div key={lang.code} className="relative">
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs">{lang.flag}</span>
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2"><LangFlag lang={lang} size={14} /></span>
               <input
                 type="text"
                 placeholder={lang.label}
@@ -303,7 +304,7 @@ export default function AdminCatalog() {
             className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:ring-2 focus:ring-purple-500/20"
           >
             {LANGS.map(l => (
-              <option key={l.code} value={l.code}>{l.flag} {l.label}</option>
+              <option key={l.code} value={l.code}>{l.countryCode.toUpperCase()} {l.label}</option>
             ))}
           </select>
         </div>

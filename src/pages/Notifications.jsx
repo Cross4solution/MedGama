@@ -1,56 +1,153 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  AtSign,
   MessageCircle,
-  MessageSquare,
   Heart,
-  UserPlus,
   CalendarClock,
   Bell,
-  Info,
+  Check,
   CheckCheck,
   ExternalLink,
+  Star,
+  Clock,
+  X,
+  Shield,
+  Loader2,
+  BellOff,
+  Trash2,
 } from 'lucide-react';
+import { notificationAPI } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const TYPE_META = {
-  mention: { label: 'Mentions', icon: AtSign, color: 'text-purple-600', bg: 'bg-purple-100/80' },
-  message: { label: 'Messages', icon: MessageSquare, color: 'text-blue-600', bg: 'bg-blue-100/80' },
-  comment: { label: 'Comments', icon: MessageCircle, color: 'text-teal-600', bg: 'bg-teal-100/80' },
-  like: { label: 'Likes', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-100/80' },
-  follow: { label: 'Follows', icon: UserPlus, color: 'text-emerald-600', bg: 'bg-emerald-100/80' },
-  appointment: { label: 'Appointments', icon: CalendarClock, color: 'text-amber-600', bg: 'bg-amber-100/80' },
-  system: { label: 'System', icon: Info, color: 'text-gray-600', bg: 'bg-gray-100' },
+  appointment_booked:    { label: 'Appointment Booked', icon: CalendarClock, color: 'text-blue-600', bg: 'bg-blue-100/80', category: 'appointment' },
+  appointment_confirmed: { label: 'Appointment Confirmed', icon: Check, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'appointment' },
+  appointment_cancelled: { label: 'Appointment Cancelled', icon: X, color: 'text-red-600', bg: 'bg-red-100/80', category: 'appointment' },
+  appointment_reminder:  { label: 'Appointment Reminder', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-100/80', category: 'appointment' },
+  new_review:            { label: 'New Review', icon: Star, color: 'text-amber-600', bg: 'bg-amber-100/80', category: 'review' },
+  review_response:       { label: 'Doctor Response', icon: Star, color: 'text-teal-600', bg: 'bg-teal-100/80', category: 'review' },
+  review_approved:       { label: 'Review Approved', icon: Star, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'review' },
+  review_rejected:       { label: 'Review Rejected', icon: Star, color: 'text-red-600', bg: 'bg-red-100/80', category: 'review' },
+  review_hidden:         { label: 'Review Hidden', icon: Star, color: 'text-gray-600', bg: 'bg-gray-100', category: 'review' },
+  verification_approved: { label: 'Verification Approved', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'system' },
+  verification_rejected: { label: 'Verification Rejected', icon: Shield, color: 'text-red-600', bg: 'bg-red-100/80', category: 'system' },
+  post_liked:            { label: 'Post Liked', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-100/80', category: 'social' },
+  post_commented:        { label: 'Post Comment', icon: MessageCircle, color: 'text-teal-600', bg: 'bg-teal-100/80', category: 'social' },
+  new_chat_message:      { label: 'New Message', icon: MessageCircle, color: 'text-blue-600', bg: 'bg-blue-100/80', category: 'message' },
+  ticket_received:       { label: 'Support Ticket', icon: MessageCircle, color: 'text-purple-600', bg: 'bg-purple-100/80', category: 'support' },
+};
+
+const DEFAULT_META = { label: 'Notification', icon: Bell, color: 'text-gray-600', bg: 'bg-gray-100', category: 'system' };
+
+const CATEGORIES = [
+  { id: 'all', label: 'All', icon: Bell },
+  { id: 'appointment', label: 'Appointments', icon: CalendarClock },
+  { id: 'review', label: 'Reviews', icon: Star },
+  { id: 'social', label: 'Social', icon: Heart },
+  { id: 'message', label: 'Messages', icon: MessageCircle },
+  { id: 'system', label: 'System', icon: Shield },
+];
+
+const timeAgo = (dateStr) => {
+  if (!dateStr) return '';
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+  return new Date(dateStr).toLocaleDateString();
 };
 
 export default function Notifications() {
-  // Seed notifications (demo)
-  const [items, setItems] = useState([
-    { id: 'n1', type: 'mention', title: 'You were mentioned', body: 'Dr. Ahmet mentioned you in a discussion.', time: '2m', read: false, href: '/explore' },
-    { id: 'n2', type: 'message', title: 'New message', body: 'Clinic Support: "Hello, how can we help?"', time: '10m', read: false, href: '/doctor-chat' },
-    { id: 'n3', type: 'comment', title: 'New comment', body: 'Bir kullanıcı gönderinize yorum yaptı.', comment: 'Tedaviden sonra ağrılarım ciddi şekilde azaldı, teşekkür ederim. İlgili tavrınız ve hızlı dönüşünüz için ayrıca minnettarım.', time: '1h', read: false, href: '/explore' },
-    { id: 'n4', type: 'like', title: 'New like', body: 'Your update received 12 new likes.', time: '3h', read: true, href: '/explore' },
-    { id: 'n5', type: 'follow', title: 'New follower', body: 'Ayşe started following you.', time: 'yesterday', read: true, href: '/doctor/doc-3' },
-    { id: 'n6', type: 'appointment', title: 'Appointment reminder', body: 'Telehealth appointment at 14:30 tomorrow.', time: '2d', read: true, href: '/telehealth-appointment' },
-    { id: 'n7', type: 'system', title: 'System update', body: 'We have improved security and performance.', time: '3d', read: true },
-  ]);
-
-  const TABS = useMemo(() => ([
-    { id: 'all', label: 'All', icon: Bell, count: items.length },
-    { id: 'mention', label: TYPE_META.mention.label, icon: TYPE_META.mention.icon, count: items.filter(i=>i.type==='mention').length },
-    { id: 'message', label: TYPE_META.message.label, icon: TYPE_META.message.icon, count: items.filter(i=>i.type==='message').length },
-    { id: 'comment', label: TYPE_META.comment.label, icon: TYPE_META.comment.icon, count: items.filter(i=>i.type==='comment').length },
-    { id: 'like', label: TYPE_META.like.label, icon: TYPE_META.like.icon, count: items.filter(i=>i.type==='like').length },
-    { id: 'follow', label: TYPE_META.follow.label, icon: TYPE_META.follow.icon, count: items.filter(i=>i.type==='follow').length },
-    { id: 'appointment', label: TYPE_META.appointment.label, icon: TYPE_META.appointment.icon, count: items.filter(i=>i.type==='appointment').length },
-    { id: 'system', label: TYPE_META.system.label, icon: TYPE_META.system.icon, count: items.filter(i=>i.type==='system').length },
-  ]), [items]);
-
+  const { user } = useAuth();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('all');
-  const filtered = tab === 'all' ? items : items.filter(i => i.type === tab);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  const markAllAsRead = () => setItems(prev => prev.map(i => ({ ...i, read: true })));
+  const fetchNotifications = useCallback(async (pg = 1) => {
+    setLoading(true);
+    try {
+      const res = await notificationAPI.list({ per_page: 20, page: pg });
+      const data = res?.data;
+      setItems(data?.data || []);
+      setLastPage(data?.last_page || 1);
+      setPage(data?.current_page || 1);
+    } catch {}
+    setLoading(false);
+  }, []);
 
-  const unreadCount = items.filter(i => !i.read).length;
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const res = await notificationAPI.unreadCount();
+      setUnreadCount(res?.data?.unread_count ?? res?.data?.count ?? 0);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (user) { fetchNotifications(1); fetchUnreadCount(); }
+  }, [user, fetchNotifications, fetchUnreadCount]);
+
+  // Polling
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(() => { fetchUnreadCount(); }, 30000);
+    return () => clearInterval(interval);
+  }, [user, fetchUnreadCount]);
+
+  const handleMarkRead = async (id) => {
+    try {
+      await notificationAPI.markAsRead(id);
+      setItems(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch {}
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      await notificationAPI.markAllAsRead();
+      setItems(prev => prev.map(n => ({ ...n, read_at: n.read_at || new Date().toISOString() })));
+      setUnreadCount(0);
+    } catch {}
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await notificationAPI.delete(id);
+      setItems(prev => prev.filter(n => n.id !== id));
+      fetchUnreadCount();
+    } catch {}
+  };
+
+  const handleClick = (notif) => {
+    if (!notif.read_at) handleMarkRead(notif.id);
+    const data = notif.data || {};
+    if (data.link) { navigate(data.link); return; }
+    if (data.post_id) { navigate(`/post/${encodeURIComponent(data.post_id)}`); return; }
+    if (data.conversation_id) { navigate('/doctor-chat'); return; }
+    if (data.appointment_id) {
+      navigate(user?.role === 'patient' ? '/telehealth' : '/crm/appointments');
+      return;
+    }
+    if (data.review_id && user?.role !== 'patient') { navigate('/crm/reviews'); return; }
+  };
+
+  const getMeta = (notif) => {
+    const type = notif?.data?.type || '';
+    return TYPE_META[type] || DEFAULT_META;
+  };
+
+  const filtered = tab === 'all' ? items : items.filter(n => getMeta(n).category === tab);
+
+  const categoryCounts = CATEGORIES.reduce((acc, cat) => {
+    acc[cat.id] = cat.id === 'all' ? items.length : items.filter(n => getMeta(n).category === cat.id).length;
+    return acc;
+  }, {});
 
   return (
     <div className="min-h-screen">
@@ -62,34 +159,36 @@ export default function Notifications() {
               <Bell className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900">Notifications</h1>
-              {unreadCount > 0 && <p className="text-[11px] text-gray-400 font-medium">{unreadCount} unread</p>}
+              <h1 className="text-lg font-bold text-gray-900">{t('notifications.title', 'Notifications')}</h1>
+              {unreadCount > 0 && <p className="text-[11px] text-gray-400 font-medium">{unreadCount} {t('notifications.unread', 'unread')}</p>}
             </div>
           </div>
-          <button
-            onClick={markAllAsRead}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-200"
-          >
-            <CheckCheck className="w-3.5 h-3.5" />
-            Mark all as read
-          </button>
+          {unreadCount > 0 && (
+            <button
+              onClick={markAllAsRead}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-200"
+            >
+              <CheckCheck className="w-3.5 h-3.5" />
+              {t('notifications.markAllRead', 'Mark all as read')}
+            </button>
+          )}
         </div>
 
         {/* Mobile horizontal tabs */}
         <div className="md:hidden mb-4 -mx-4 px-4">
           <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide">
-            {TABS.map((t) => {
-              const Icon = t.icon;
-              const active = tab === t.id;
+            {CATEGORIES.map((c) => {
+              const Icon = c.icon;
+              const active = tab === c.id;
               return (
                 <button
-                  key={t.id}
-                  onClick={() => setTab(t.id)}
+                  key={c.id}
+                  onClick={() => setTab(c.id)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 ${active ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50' : 'bg-white text-gray-600 border border-gray-200/80 hover:border-gray-300'}`}
                 >
                   <Icon className="w-3.5 h-3.5" />
-                  {t.label}
-                  {t.count > 0 && <span className={`ml-0.5 text-[10px] ${active ? 'text-white/80' : 'text-gray-400'}`}>{t.count}</span>}
+                  {c.label}
+                  {categoryCounts[c.id] > 0 && <span className={`ml-0.5 text-[10px] ${active ? 'text-white/80' : 'text-gray-400'}`}>{categoryCounts[c.id]}</span>}
                 </button>
               );
             })}
@@ -97,27 +196,27 @@ export default function Notifications() {
         </div>
 
         <div className="grid grid-cols-12 gap-5">
-          {/* Left: Sidebar - Hidden on mobile */}
+          {/* Left: Sidebar */}
           <aside className="hidden md:block col-span-3">
             <div className="sticky top-24 rounded-2xl border border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-lg shadow-gray-200/40 overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
-                <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Categories</div>
+                <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('notifications.categories', 'Categories')}</div>
               </div>
               <nav className="p-2 space-y-0.5">
-                {TABS.map((t) => {
-                  const Icon = t.icon;
-                  const active = tab === t.id;
+                {CATEGORIES.map((c) => {
+                  const Icon = c.icon;
+                  const active = tab === c.id;
                   return (
                     <button
-                      key={t.id}
-                      onClick={() => setTab(t.id)}
+                      key={c.id}
+                      onClick={() => setTab(c.id)}
                       className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${active ? 'bg-gradient-to-r from-teal-50 to-emerald-50/60 text-teal-700 shadow-sm ring-1 ring-teal-100' : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-900'}`}
                     >
                       <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-teal-100/80' : 'bg-gray-100/80'} transition-colors`}>
                         <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500'}`} />
                       </span>
-                      <span className="flex-1 text-left">{t.label}</span>
-                      <span className={`text-[11px] font-semibold min-w-[20px] text-center ${active ? 'text-teal-600' : 'text-gray-400'}`}>{t.count}</span>
+                      <span className="flex-1 text-left">{c.label}</span>
+                      <span className={`text-[11px] font-semibold min-w-[20px] text-center ${active ? 'text-teal-600' : 'text-gray-400'}`}>{categoryCounts[c.id]}</span>
                     </button>
                   );
                 })}
@@ -128,57 +227,87 @@ export default function Notifications() {
           {/* Right: Notification List */}
           <section className="col-span-12 md:col-span-9">
             <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
-              <div className="h-[70vh] overflow-y-auto">
-                {filtered.length === 0 && (
+              <div className="min-h-[60vh] max-h-[70vh] overflow-y-auto">
+                {loading ? (
+                  <div className="p-12 text-center"><Loader2 className="w-6 h-6 animate-spin text-gray-300 mx-auto" /></div>
+                ) : filtered.length === 0 ? (
                   <div className="p-12 text-center">
                     <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
-                      <Bell className="w-5 h-5 text-gray-400" />
+                      <BellOff className="w-5 h-5 text-gray-400" />
                     </div>
-                    <p className="text-sm text-gray-500 font-medium">No notifications</p>
-                    <p className="text-xs text-gray-400 mt-1">You're all caught up!</p>
+                    <p className="text-sm text-gray-500 font-medium">{t('notifications.noNotifications', 'No notifications')}</p>
+                    <p className="text-xs text-gray-400 mt-1">{t('notifications.allCaughtUp', "You're all caught up!")}</p>
                   </div>
-                )}
-                {filtered.map((n, idx) => {
-                  const meta = TYPE_META[n.type] || TYPE_META.system;
-                  const Icon = meta.icon;
-                  return (
-                    <div
-                      key={n.id}
-                      className={`group px-4 sm:px-5 py-4 flex items-start gap-3.5 transition-colors duration-150 hover:bg-gray-50/60 ${idx > 0 ? 'border-t border-gray-100' : ''} ${!n.read ? 'bg-teal-50/30' : ''}`}
-                    >
-                      {/* Unread dot */}
-                      <div className="pt-3 flex-shrink-0">
-                        <div className={`w-2 h-2 rounded-full transition-colors ${n.read ? 'bg-gray-200' : 'bg-teal-500 shadow-sm shadow-teal-300/50'}`} />
-                      </div>
-                      {/* Icon */}
-                      <div className={`mt-0.5 flex-shrink-0 w-9 h-9 rounded-xl ${meta.bg} flex items-center justify-center shadow-sm`}>
-                        <Icon className={`w-4 h-4 ${meta.color}`} />
-                      </div>
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <div className={`text-sm font-semibold ${n.read ? 'text-gray-800' : 'text-gray-900'}`}>{n.title}</div>
-                            <div className="text-sm text-gray-500 mt-0.5 leading-relaxed">{n.body}</div>
-                          </div>
-                          <span className="text-[11px] text-gray-400 font-medium flex-shrink-0 mt-0.5">{n.time}</span>
+                ) : (
+                  filtered.map((n, idx) => {
+                    const meta = getMeta(n);
+                    const Icon = meta.icon;
+                    const data = n.data || {};
+                    const isUnread = !n.read_at;
+
+                    return (
+                      <div
+                        key={n.id}
+                        className={`group px-4 sm:px-5 py-4 flex items-start gap-3.5 transition-colors duration-150 hover:bg-gray-50/60 ${idx > 0 ? 'border-t border-gray-100' : ''} ${isUnread ? 'bg-teal-50/30' : ''}`}
+                      >
+                        {/* Unread dot */}
+                        <div className="pt-3 flex-shrink-0">
+                          <div className={`w-2 h-2 rounded-full transition-colors ${isUnread ? 'bg-teal-500 shadow-sm shadow-teal-300/50' : 'bg-gray-200'}`} />
                         </div>
-                        {n.type === 'comment' && n.comment && (
-                          <div className="mt-2.5">
-                            <div className="text-[11px] text-gray-400 font-medium mb-1">Comment:</div>
-                            <blockquote className="border-l-2 border-teal-200 rounded-r-lg bg-gray-50/80 text-gray-600 text-sm p-3 leading-relaxed italic">"{n.comment}"</blockquote>
+                        {/* Icon */}
+                        <div className={`mt-0.5 flex-shrink-0 w-9 h-9 rounded-xl ${meta.bg} flex items-center justify-center shadow-sm`}>
+                          <Icon className={`w-4 h-4 ${meta.color}`} />
+                        </div>
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className={`text-sm font-semibold ${isUnread ? 'text-gray-900' : 'text-gray-800'}`}>{data.title || meta.label}</div>
+                              {data.message && <div className="text-sm text-gray-500 mt-0.5 leading-relaxed">{data.message}</div>}
+                            </div>
+                            <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+                              <span className="text-[11px] text-gray-400 font-medium">{timeAgo(n.created_at)}</span>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleDelete(n.id); }}
+                                className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded-lg hover:bg-gray-200 flex items-center justify-center transition-all"
+                              >
+                                <Trash2 className="w-3 h-3 text-gray-400" />
+                              </button>
+                            </div>
                           </div>
-                        )}
-                        {n.href && (
-                          <a href={n.href} className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
-                            View <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
+                          <button
+                            onClick={() => handleClick(n)}
+                            className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors"
+                          >
+                            {t('notifications.view', 'View')} <ExternalLink className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
+
+              {/* Pagination */}
+              {lastPage > 1 && (
+                <div className="border-t border-gray-100 px-4 py-3 flex items-center justify-between">
+                  <button
+                    onClick={() => fetchNotifications(page - 1)}
+                    disabled={page <= 1}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {t('common.previous', 'Previous')}
+                  </button>
+                  <span className="text-xs text-gray-400">{page} / {lastPage}</span>
+                  <button
+                    onClick={() => fetchNotifications(page + 1)}
+                    disabled={page >= lastPage}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {t('common.next', 'Next')}
+                  </button>
+                </div>
+              )}
             </div>
           </section>
         </div>

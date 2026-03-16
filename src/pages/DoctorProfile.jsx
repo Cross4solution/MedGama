@@ -279,10 +279,26 @@ function ReviewCard({ review, t }) {
                 <span className="text-[9px] font-bold text-teal-700 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded-full">{t('doctorProfile.verifiedReview')}</span>
               )}
             </div>
-            <span className="text-[10px] text-gray-400 flex-shrink-0">{new Date(review.created_at).toLocaleDateString()}</span>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {review.treatment_type && (
+                <span className="text-[9px] font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-md">{review.treatment_type}</span>
+              )}
+              <span className="text-[10px] text-gray-400">{new Date(review.created_at).toLocaleDateString()}</span>
+            </div>
           </div>
           <StarRating rating={review.rating} size="w-3 h-3" />
           {review.comment && <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">{review.comment}</p>}
+
+          {/* Doctor Response */}
+          {review.doctor_response && (
+            <div className="mt-3 ml-2 pl-3 border-l-2 border-teal-200 bg-teal-50/40 rounded-r-lg p-2.5">
+              <p className="text-[10px] font-bold text-teal-700 mb-1">{t('doctorProfile.doctorResponse', 'Doctor\'s Response')}</p>
+              <p className="text-xs text-gray-600 leading-relaxed">{review.doctor_response}</p>
+              {review.doctor_response_at && (
+                <p className="text-[9px] text-gray-400 mt-1">{new Date(review.doctor_response_at).toLocaleDateString()}</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -314,8 +330,10 @@ const DoctorProfilePage = () => {
   // Review form
   const [newRating, setNewRating] = useState(0);
   const [newComment, setNewComment] = useState('');
+  const [newTreatmentType, setNewTreatmentType] = useState('');
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [reviewSort, setReviewSort] = useState('newest');
 
   // Message modal
   const [messageModal, setMessageModal] = useState(false);
@@ -347,10 +365,10 @@ const DoctorProfilePage = () => {
   }, [doctorId]);
 
   // Load reviews when tab switches
-  const loadReviews = useCallback((page = 1) => {
+  const loadReviews = useCallback((page = 1, sort = 'newest') => {
     if (!doctorId) return;
     setReviewsLoading(true);
-    doctorAPI.reviews(doctorId, { per_page: 10, page }).then(r => {
+    doctorAPI.reviews(doctorId, { per_page: 10, page, sort }).then(r => {
       const data = r?.data || r;
       setReviews(data?.data || []);
       setReviewLastPage(data?.last_page || 1);
@@ -358,8 +376,8 @@ const DoctorProfilePage = () => {
   }, [doctorId]);
 
   useEffect(() => {
-    if (activeTab === 'reviews') loadReviews(reviewPage);
-  }, [activeTab, reviewPage, loadReviews]);
+    if (activeTab === 'reviews') loadReviews(reviewPage, reviewSort);
+  }, [activeTab, reviewPage, reviewSort, loadReviews]);
 
   // Social
   const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('doctor', doctorId, initialSocial);
@@ -397,8 +415,8 @@ const DoctorProfilePage = () => {
   const handleReviewSubmit = () => {
     if (newRating < 1) return;
     setReviewSubmitting(true);
-    doctorAPI.submitReview(doctorId, { rating: newRating, comment: newComment || undefined })
-      .then(() => { setReviewSuccess(true); setNewRating(0); setNewComment(''); loadReviews(1); })
+    doctorAPI.submitReview(doctorId, { rating: newRating, comment: newComment || undefined, treatment_type: newTreatmentType || undefined })
+      .then(() => { setReviewSuccess(true); setNewRating(0); setNewComment(''); setNewTreatmentType(''); loadReviews(1, reviewSort); })
       .catch(() => {})
       .finally(() => setReviewSubmitting(false));
   };
@@ -670,11 +688,24 @@ const DoctorProfilePage = () => {
                       </div>
                     )}
 
+                    {/* Sort filter */}
+                    <div className="flex items-center gap-2">
+                      {['newest', 'highest', 'lowest'].map(s => (
+                        <button key={s} onClick={() => { setReviewSort(s); setReviewPage(1); }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${reviewSort === s ? 'bg-teal-50 text-teal-700 border-teal-200' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'}`}>
+                          {t(`doctorProfile.sort_${s}`, s === 'newest' ? 'Newest' : s === 'highest' ? 'Highest Rating' : 'Lowest Rating')}
+                        </button>
+                      ))}
+                    </div>
+
                     {/* Review form */}
                     {!reviewSuccess ? (
                       <div className="p-4 border border-gray-200 rounded-xl bg-gray-50/50">
                         <h4 className="text-sm font-bold text-gray-800 mb-2">{t('doctorProfile.writeReview')}</h4>
                         <StarRating rating={newRating} size="w-5 h-5" interactive onChange={setNewRating} />
+                        <input value={newTreatmentType} onChange={e => setNewTreatmentType(e.target.value)} placeholder={t('doctorProfile.treatmentTypePlaceholder', 'Treatment type (e.g. Dental Cleaning)')}
+                          className="w-full mt-2 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-200 focus:border-teal-400 outline-none"
+                        />
                         <textarea value={newComment} onChange={e => setNewComment(e.target.value)} placeholder={t('doctorProfile.reviewPlaceholder')} rows={2}
                           className="w-full mt-2 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-200 focus:border-teal-400 resize-none outline-none"
                         />

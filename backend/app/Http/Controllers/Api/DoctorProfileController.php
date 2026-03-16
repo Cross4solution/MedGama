@@ -301,6 +301,66 @@ class DoctorProfileController extends Controller
         ]);
     }
 
+    // ══════════════════════════════════════════════
+    //  VERIFICATION DOCUMENTS (Doc §8.3)
+    // ══════════════════════════════════════════════
+
+    /**
+     * GET /api/doctor-profile/verification — List my verification requests
+     */
+    public function verificationRequests(Request $request)
+    {
+        $user = $request->user();
+
+        if (!in_array($user->role_id, ['doctor', 'clinicOwner', 'superAdmin'])) {
+            return response()->json(['message' => 'Not a doctor'], 403);
+        }
+
+        $requests = \App\Models\VerificationRequest::where('doctor_id', $user->id)
+            ->orderByDesc('created_at')
+            ->get();
+
+        return response()->json(['verification_requests' => $requests]);
+    }
+
+    /**
+     * POST /api/doctor-profile/verification — Submit a new verification document
+     */
+    public function submitVerification(Request $request)
+    {
+        $user = $request->user();
+
+        if (!in_array($user->role_id, ['doctor', 'clinicOwner', 'superAdmin'])) {
+            return response()->json(['message' => 'Not a doctor'], 403);
+        }
+
+        $request->validate([
+            'document'       => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:10240', // 10MB
+            'document_type'  => 'required|string|in:diploma,specialty_certificate,clinic_license,id_card,other',
+            'document_label' => 'nullable|string|max:255',
+            'notes'          => 'nullable|string|max:2000',
+        ]);
+
+        $file = $request->file('document');
+        $path = $file->store('verification-documents/' . $user->id, 'local');
+
+        $vr = \App\Models\VerificationRequest::create([
+            'doctor_id'      => $user->id,
+            'document_type'  => $request->input('document_type'),
+            'document_label' => $request->input('document_label', $file->getClientOriginalName()),
+            'file_path'      => $path,
+            'file_name'      => $file->getClientOriginalName(),
+            'mime_type'      => $file->getMimeType(),
+            'notes'          => $request->input('notes'),
+            'status'         => 'pending',
+        ]);
+
+        return response()->json([
+            'message' => 'Verification document submitted for review.',
+            'verification_request' => $vr,
+        ], 201);
+    }
+
     /**
      * PUT /api/doctor-profile/social — Update social & contact info
      */

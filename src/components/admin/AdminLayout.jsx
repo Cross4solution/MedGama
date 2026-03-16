@@ -13,6 +13,7 @@ import {
   Shield,
   Home,
   ExternalLink,
+  Star,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { label: 'Catalog Management', icon: BookOpen, path: '/admin/catalog' },
   { label: 'Feature Toggles', icon: Settings2, path: '/admin/settings' },
   { label: 'Audit Logs', icon: ScrollText, path: '/admin/audit-logs' },
+  { label: 'Review Moderation', icon: Star, path: '/admin/reviews' },
 ];
 
 const AdminLayout = ({ children }) => {

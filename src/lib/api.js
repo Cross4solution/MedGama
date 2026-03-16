@@ -155,6 +155,8 @@ export const doctorAPI = {
   reviews: (id, params) => api.get(`/doctors/${id}/reviews`, { params }),
   submitReview: (id, data) => api.post(`/doctors/${id}/reviews`, data),
   availability: (id, params) => api.get(`/doctors/${id}/availability`, { params }),
+  myReviews: (params) => api.get('/doctors/my-reviews', { params }),
+  respondToReview: (reviewId, response) => api.put(`/doctors/reviews/${reviewId}/respond`, { response }),
 };
 
 // ── Doctor Profile (own profile management + onboarding) ──
@@ -168,6 +170,9 @@ export const doctorProfileAPI = {
   updateOperatingHours: (operating_hours) => api.put('/doctor-profile/operating-hours', { operating_hours }),
   updateServices: (services) => api.put('/doctor-profile/services', { services }),
   updateSocial: (data) => api.put('/doctor-profile/social', data),
+  // Verification documents (Doc §8.3)
+  getVerificationRequests: () => api.get('/doctor-profile/verification'),
+  submitVerification: (formData) => api.post('/doctor-profile/verification', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };
 
 // ── Appointment Service ──
@@ -502,6 +507,18 @@ export const adminAPI = {
   updateFeatureToggle: (key, value) => api.put('/admin/feature-toggles', { key, value }),
   // Audit Logs
   auditLogs: (params) => api.get('/admin/audit-logs', { params }),
+  // Verification Requests (Doc §8.3)
+  verificationRequests: (params) => api.get('/admin/verification-requests', { params }),
+  verificationStats: () => api.get('/admin/verification-requests/stats'),
+  approveVerification: (id) => api.put(`/admin/verification-requests/${id}/approve`),
+  rejectVerification: (id, reason) => api.put(`/admin/verification-requests/${id}/reject`, { reason }),
+  verificationDocumentUrl: (id) => `${api.defaults.baseURL}/admin/verification-requests/${id}/document`,
+  // Review moderation (Doc §10)
+  reviews: (params) => api.get('/admin/reviews', { params }),
+  reviewStats: () => api.get('/admin/reviews/stats'),
+  approveReview: (id) => api.put(`/admin/reviews/${id}/approve`),
+  rejectReview: (id, note) => api.put(`/admin/reviews/${id}/reject`, { note }),
+  hideReview: (id, note) => api.put(`/admin/reviews/${id}/hide`, { note }),
 };
 
 // ── Analytics Service (Clinic BI) ──

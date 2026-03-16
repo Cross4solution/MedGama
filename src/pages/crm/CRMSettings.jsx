@@ -6,9 +6,11 @@ import {
   Stethoscope, Calendar, CreditCard, Loader2, CheckCircle, Plus, X,
   Image, GripVertical, Upload, Coffee, Link2, MessageCircle,
   Instagram, Facebook, Linkedin, Youtube, Twitter, ExternalLink,
+  FileText, ShieldCheck, AlertTriangle,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../../i18n';
+import LangFlag from '../../components/ui/LangFlag';
 import { useAuth } from '../../context/AuthContext';
 import { doctorProfileAPI, authAPI } from '../../lib/api';
 
@@ -28,6 +30,7 @@ const TABS = [
   { key: 'hours', label: 'Operating Hours', icon: Clock },
   { key: 'services', label: 'Services & Pricing', icon: Stethoscope },
   { key: 'social', label: 'Social & Contact', icon: Link2 },
+  { key: 'verification', label: 'Verification', icon: ShieldCheck },
   { key: 'clinic', label: 'Clinic Info', icon: Building2 },
   { key: 'notifications', label: 'Notifications', icon: Bell },
   { key: 'security', label: 'Security', icon: Shield },
@@ -82,6 +85,13 @@ const CRMSettings = () => {
   const [socialSaving, setSocialSaving] = useState(false);
   const [socialSaved, setSocialSaved] = useState(false);
 
+  // Verification state
+  const [verificationRequests, setVerificationRequests] = useState([]);
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const [verificationUploading, setVerificationUploading] = useState(false);
+  const [verificationForm, setVerificationForm] = useState({ document_type: 'diploma', document_label: '', notes: '' });
+  const verificationFileRef = useRef(null);
+
   // Load doctor profile from API
   useEffect(() => {
     const names = (user?.name || '').split(' ');
@@ -123,6 +133,38 @@ const CRMSettings = () => {
       setProfileLoading(false);
     }
   }, [user]);
+
+  // Load verification requests when tab is active
+  const fetchVerificationRequests = useCallback(async () => {
+    setVerificationLoading(true);
+    try {
+      const res = await doctorProfileAPI.getVerificationRequests();
+      setVerificationRequests(res?.verification_requests || res?.data?.verification_requests || []);
+    } catch { setVerificationRequests([]); }
+    setVerificationLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'verification') fetchVerificationRequests();
+  }, [activeTab, fetchVerificationRequests]);
+
+  const handleVerificationUpload = async () => {
+    const file = verificationFileRef.current?.files?.[0];
+    if (!file) return;
+    setVerificationUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('document', file);
+      fd.append('document_type', verificationForm.document_type);
+      if (verificationForm.document_label) fd.append('document_label', verificationForm.document_label);
+      if (verificationForm.notes) fd.append('notes', verificationForm.notes);
+      await doctorProfileAPI.submitVerification(fd);
+      setVerificationForm({ document_type: 'diploma', document_label: '', notes: '' });
+      if (verificationFileRef.current) verificationFileRef.current.value = '';
+      fetchVerificationRequests();
+    } catch (err) { console.error('Verification upload failed:', err); }
+    setVerificationUploading(false);
+  };
 
   const saveProfile = async () => {
     setProfileSaving(true);
@@ -406,7 +448,7 @@ const CRMSettings = () => {
                                   : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
                               }`}
                             >
-                              <span className="text-lg leading-none">{lang.flag}</span>
+                              <LangFlag lang={lang} size={20} />
                               <span className="truncate">{lang.label}</span>
                               {isActive && <CheckCircle className="w-3.5 h-3.5 ml-auto text-teal-600 flex-shrink-0" />}
                             </button>
@@ -436,7 +478,7 @@ const CRMSettings = () => {
                                     : 'border-gray-200 text-gray-500 hover:bg-gray-50'
                                 }`}
                               >
-                                <span className="text-sm">{lang.flag}</span>
+                                <LangFlag lang={lang} size={16} />
                                 <span>{lang.label}</span>
                               </button>
                             );
@@ -813,6 +855,138 @@ const CRMSettings = () => {
                     {socialSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('crm.settings.saveSocial', 'Save Contact Info')}
                   </button>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Verification Tab */}
+          {activeTab === 'verification' && (
+            <div className="space-y-5">
+              {/* Current verification status */}
+              <div className={`rounded-2xl border shadow-sm overflow-hidden ${user?.is_verified ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
+                <div className="px-6 py-4 flex items-center gap-3">
+                  {user?.is_verified ? (
+                    <>
+                      <ShieldCheck className="w-6 h-6 text-emerald-600" />
+                      <div>
+                        <h2 className="text-sm font-bold text-emerald-800">{t('crm.settings.verifiedTitle', 'Verified Professional')}</h2>
+                        <p className="text-xs text-emerald-600 mt-0.5">{t('crm.settings.verifiedDesc', 'Your profile displays a verified badge visible to all patients.')}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <AlertTriangle className="w-6 h-6 text-amber-600" />
+                      <div>
+                        <h2 className="text-sm font-bold text-amber-800">{t('crm.settings.notVerifiedTitle', 'Not Yet Verified')}</h2>
+                        <p className="text-xs text-amber-600 mt-0.5">{t('crm.settings.notVerifiedDesc', 'Upload your professional documents below to get verified.')}</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Upload new document */}
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.uploadDocument', 'Upload Verification Document')}</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.uploadDocumentDesc', 'Upload diploma, specialty certificate, clinic license or ID card (PDF, JPG, PNG — max 10MB)')}</p>
+                </div>
+                <div className="px-6 py-5 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('crm.settings.documentType', 'Document Type')}</label>
+                      <select
+                        value={verificationForm.document_type}
+                        onChange={e => setVerificationForm(f => ({ ...f, document_type: e.target.value }))}
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
+                      >
+                        <option value="diploma">{t('crm.settings.docDiploma', 'Diploma')}</option>
+                        <option value="specialty_certificate">{t('crm.settings.docSpecialtyCert', 'Specialty Certificate')}</option>
+                        <option value="clinic_license">{t('crm.settings.docClinicLicense', 'Clinic License')}</option>
+                        <option value="id_card">{t('crm.settings.docIdCard', 'ID Card')}</option>
+                        <option value="other">{t('crm.settings.docOther', 'Other')}</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('crm.settings.documentLabel', 'Label (optional)')}</label>
+                      <input
+                        type="text"
+                        value={verificationForm.document_label}
+                        onChange={e => setVerificationForm(f => ({ ...f, document_label: e.target.value }))}
+                        placeholder={t('crm.settings.documentLabelPlaceholder', 'e.g. Cardiology Board Certificate')}
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('crm.settings.notesToAdmin', 'Notes to Admin (optional)')}</label>
+                    <textarea
+                      value={verificationForm.notes}
+                      onChange={e => setVerificationForm(f => ({ ...f, notes: e.target.value }))}
+                      placeholder={t('crm.settings.notesPlaceholder', 'Any additional information for the reviewer...')}
+                      rows={2}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all resize-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('crm.settings.selectFile', 'Select File')}</label>
+                    <input
+                      ref={verificationFileRef}
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png,.webp"
+                      className="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 transition-all"
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={handleVerificationUpload}
+                      disabled={verificationUploading}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition-colors disabled:opacity-50"
+                    >
+                      {verificationUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                      {t('crm.settings.submitForReview', 'Submit for Review')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Previous submissions */}
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.submittedDocuments', 'Submitted Documents')}</h2>
+                </div>
+                {verificationLoading ? (
+                  <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 text-teal-500 animate-spin" /></div>
+                ) : verificationRequests.length === 0 ? (
+                  <div className="px-6 py-8 text-center text-sm text-gray-400">{t('crm.settings.noDocuments', 'No documents submitted yet.')}</div>
+                ) : (
+                  <div className="divide-y divide-gray-100">
+                    {verificationRequests.map(vr => (
+                      <div key={vr.id} className="px-6 py-3.5 flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-gray-400 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{vr.document_label || vr.file_name}</p>
+                          <p className="text-[11px] text-gray-400">
+                            {vr.document_type?.replace(/_/g, ' ')} · {vr.created_at ? new Date(vr.created_at).toLocaleDateString() : ''}
+                          </p>
+                        </div>
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${
+                          vr.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                          vr.status === 'rejected' ? 'bg-red-50 text-red-700 border border-red-200' :
+                          'bg-amber-50 text-amber-700 border border-amber-200'
+                        }`}>
+                          {vr.status === 'approved' ? <CheckCircle className="w-3 h-3" /> :
+                           vr.status === 'rejected' ? <X className="w-3 h-3" /> :
+                           <Loader2 className="w-3 h-3" />}
+                          {vr.status.charAt(0).toUpperCase() + vr.status.slice(1)}
+                        </span>
+                        {vr.status === 'rejected' && vr.rejection_reason && (
+                          <p className="text-[10px] text-red-500 max-w-[160px] truncate" title={vr.rejection_reason}>{vr.rejection_reason}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

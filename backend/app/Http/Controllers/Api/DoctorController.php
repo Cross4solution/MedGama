@@ -62,35 +62,68 @@ class DoctorController extends Controller
     }
 
     /**
-     * GET /api/doctors/{id}/reviews — Public reviews list (paginated)
+     * GET /api/doctors/{id}/reviews — Public reviews list (paginated, sortable)
      */
     public function reviews(Request $request, string $id): JsonResponse
     {
         $reviews = $this->doctorService->getDoctorReviews(
             $id,
             (int) $request->query('per_page', 10),
+            $request->query('sort', 'newest'),
         );
 
         return response()->json($reviews);
     }
 
     /**
-     * POST /api/doctors/{id}/reviews — Submit a review (auth required)
+     * POST /api/doctors/{id}/reviews — Submit a review (auth required, completed appointment check)
      */
     public function submitReview(Request $request, string $id): JsonResponse
     {
         $request->validate([
-            'rating'  => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string|max:2000',
+            'rating'         => 'required|integer|min:1|max:5',
+            'comment'        => 'nullable|string|max:2000',
+            'treatment_type' => 'nullable|string|max:255',
         ]);
 
         $review = $this->doctorService->submitReview(
             $request->user(),
             $id,
-            $request->only(['rating', 'comment']),
+            $request->only(['rating', 'comment', 'treatment_type']),
         );
 
         return response()->json(['review' => $review->load('patient:id,fullname,avatar')], 201);
+    }
+
+    /**
+     * PUT /api/doctors/reviews/{reviewId}/respond — Doctor responds to a review
+     */
+    public function respondToReview(Request $request, string $reviewId): JsonResponse
+    {
+        $request->validate([
+            'response' => 'required|string|max:2000',
+        ]);
+
+        $review = $this->doctorService->doctorRespondToReview(
+            $request->user(),
+            $reviewId,
+            $request->input('response'),
+        );
+
+        return response()->json(['review' => $review->load('patient:id,fullname,avatar')]);
+    }
+
+    /**
+     * GET /api/doctors/my-reviews — Doctor's own reviews (CRM)
+     */
+    public function myReviews(Request $request): JsonResponse
+    {
+        $reviews = $this->doctorService->getDoctorOwnReviews(
+            $request->user()->id,
+            (int) $request->query('per_page', 15),
+        );
+
+        return response()->json($reviews);
     }
 
     /**

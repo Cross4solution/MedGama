@@ -7,6 +7,8 @@ use App\Models\CalendarSlot;
 use App\Models\DoctorReview;
 use App\Models\Specialty;
 use App\Models\User;
+use App\Notifications\NewReviewNotification;
+use App\Notifications\ReviewResponseNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class DoctorService
@@ -183,14 +185,21 @@ class DoctorService
 
     /**
      * Get paginated reviews for a doctor (public).
+     * Supports sort: newest (default), highest, lowest
      */
-    public function getDoctorReviews(string $doctorId, int $perPage = 10): LengthAwarePaginator
+    public function getDoctorReviews(string $doctorId, int $perPage = 10, string $sort = 'newest'): LengthAwarePaginator
     {
-        return DoctorReview::where('doctor_id', $doctorId)
+        $query = DoctorReview::where('doctor_id', $doctorId)
             ->visible()
-            ->with(['patient:id,fullname,avatar'])
-            ->orderByDesc('created_at')
-            ->paginate($perPage);
+            ->with(['patient:id,fullname,avatar']);
+
+        match ($sort) {
+            'highest' => $query->orderByDesc('rating')->orderByDesc('created_at'),
+            'lowest'  => $query->orderBy('rating')->orderByDesc('created_at'),
+            default   => $query->orderByDesc('created_at'),
+        };
+
+        return $query->paginate($perPage);
     }
 
     /**
@@ -222,28 +231,80 @@ class DoctorService
 
     /**
      * Submit a review for a doctor (authenticated patient).
+     * Only patients with at least one completed appointment can review (Doc §10).
      */
     public function submitReview(User $patient, string $doctorId, array $data): DoctorReview
     {
-        // Check if patient had a completed appointment with this doctor
+        // Strict check: patient must have a completed appointment
         $appointment = Appointment::where('patient_id', $patient->id)
             ->where('doctor_id', $doctorId)
             ->where('status', 'completed')
             ->latest()
             ->first();
 
-        return DoctorReview::updateOrCreate(
+        if (!$appointment) {
+            abort(403, 'You can only review a doctor after a completed appointment.');
+        }
+
+        $review = DoctorReview::updateOrCreate(
             [
                 'doctor_id'  => $doctorId,
                 'patient_id' => $patient->id,
             ],
             [
-                'appointment_id' => $appointment?->id,
-                'rating'         => $data['rating'],
-                'comment'        => $data['comment'] ?? null,
-                'is_verified'    => $appointment !== null,
+                'appointment_id'    => $appointment->id,
+                'rating'            => $data['rating'],
+                'comment'           => $data['comment'] ?? null,
+                'treatment_type'    => $data['treatment_type'] ?? null,
+                'is_verified'       => true,
+                'moderation_status' => 'pending',
             ]
         );
+
+        // Recalculate aggregated rating
+        DoctorReview::recalculateAggregatedRating($doctorId);
+
+        // Notify the doctor about the new review
+        $doctor = User::find($doctorId);
+        if ($doctor) {
+            $doctor->notify(new NewReviewNotification($review->load('patient:id,fullname')));
+        }
+
+        return $review;
+    }
+
+    /**
+     * Doctor responds to a review on their profile (Doc §10).
+     */
+    public function doctorRespondToReview(User $doctor, string $reviewId, string $response): DoctorReview
+    {
+        $review = DoctorReview::where('doctor_id', $doctor->id)->findOrFail($reviewId);
+
+        $review->update([
+            'doctor_response'    => $response,
+            'doctor_response_at' => now(),
+        ]);
+
+        $review->refresh()->load('doctor:id,fullname');
+
+        // Notify the patient about the doctor's response
+        $patient = User::find($review->patient_id);
+        if ($patient) {
+            $patient->notify(new ReviewResponseNotification($review));
+        }
+
+        return $review;
+    }
+
+    /**
+     * Get reviews for the authenticated doctor (CRM view).
+     */
+    public function getDoctorOwnReviews(string $doctorId, int $perPage = 15): LengthAwarePaginator
+    {
+        return DoctorReview::where('doctor_id', $doctorId)
+            ->with(['patient:id,fullname,avatar', 'appointment:id,appointment_date,status'])
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
     }
 
     /**
