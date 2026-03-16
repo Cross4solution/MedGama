@@ -6,6 +6,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// ── SEO: Dynamic sitemap ──
+Route::get('/sitemap.xml', [\App\Http\Controllers\Api\SitemapController::class, 'index'])
+    ->middleware('cache.headers:static');
+
 // Health check for Railway / load balancers — NO DB dependency
 Route::get('/health', function () {
     return response('ok', 200)->header('Content-Type', 'text/plain');

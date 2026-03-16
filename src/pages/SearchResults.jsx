@@ -7,6 +7,7 @@ import {
   Lightbulb, TrendingUp, ArrowRight,
 } from 'lucide-react';
 import { doctorAPI, catalogAPI } from '../lib/api';
+import SEOHead from '../components/seo/SEOHead';
 
 /* ═══════════════════════════════════════════
    Skeleton Card (shimmer)
@@ -281,6 +282,12 @@ export default function SearchResults() {
 
   return (
     <div className="min-h-screen bg-gray-50/60">
+      <SEOHead
+        title={searchText ? `${searchText} — ${t('search.heroTitle', 'Find a Doctor')}` : t('search.heroTitle', 'Find a Doctor')}
+        description={t('search.heroSubtitle', 'Search doctors by specialty, location and availability on MedaGama.')}
+        canonical={`/search${searchText ? `?q=${encodeURIComponent(searchText)}` : ''}`}
+        noIndex={!searchText}
+      />
       {/* ═══ Hero Search Bar ═══ */}
       <section className="bg-gradient-to-br from-teal-700 via-teal-600 to-teal-800 py-10 px-4">
         <div className="max-w-4xl mx-auto text-center mb-6">

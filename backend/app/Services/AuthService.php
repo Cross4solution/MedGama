@@ -147,9 +147,9 @@ class AuthService
      */
     public function uploadAvatar(User $user, UploadedFile $file): array
     {
-        $path = $file->store('avatars', 'public');
-        // Use relative URL so it works through Vercel proxy (/storage/...)
-        $url  = '/storage/' . $path;
+        // Optimise → WebP with thumb/medium/original variants
+        $result = ImageService::optimiseAvatar($file, 'avatars');
+        $url = $result['url']; // medium variant (best for display)
 
         $user->update(['avatar' => $url]);
 

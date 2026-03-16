@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\DoctorProfile;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -167,8 +168,8 @@ class DoctorProfileController extends Controller
         $gallery = $profile->gallery ?? [];
 
         foreach ($request->file('images') as $image) {
-            $path = $image->store('doctor-gallery/' . $user->id, 'public');
-            $gallery[] = '/storage/' . $path;
+            $result = ImageService::optimiseGalleryImage($image, 'doctor-gallery/' . $user->id);
+            $gallery[] = $result['url'];
         }
 
         $profile->update(['gallery' => $gallery]);

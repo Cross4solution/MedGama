@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'optional.auth' => \App\Http\Middleware\OptionalAuth::class,
             'crm.access'    => \App\Http\Middleware\CheckCrmAccess::class,
             'set.locale'    => \App\Http\Middleware\SetLocale::class,
+            'cache.headers' => \App\Http\Middleware\CacheHeaders::class,
         ]);
 
         // CORS handled by Laravel HandleCors (default global middleware).

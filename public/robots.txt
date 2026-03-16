@@ -1,3 +1,20 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# Private / authenticated areas
+Disallow: /crm/
+Disallow: /admin/
+Disallow: /profile/
+Disallow: /notifications
+Disallow: /doctor-chat
+Disallow: /telehealth
+Disallow: /dashboard
+Disallow: /medical-archive
+Disallow: /saved-posts
+Disallow: /saved-clinics
+
+# API
+Disallow: /api/
+
+Sitemap: https://medagama.com/sitemap.xml

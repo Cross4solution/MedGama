@@ -110,7 +110,7 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
 | Catalog Routes (Public — read only)
 |--------------------------------------------------------------------------
 */
-Route::prefix('catalog')->group(function () {
+Route::prefix('catalog')->middleware('cache.headers:public')->group(function () {
     Route::get('/specialties', [CatalogController::class, 'specialties']);
     Route::get('/specialties/search', [CatalogController::class, 'specialtiesSearch']);
     Route::get('/cities', [CatalogController::class, 'cities']);
@@ -142,8 +142,8 @@ Route::prefix('catalog')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin
 | Clinic Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/clinics', [ClinicController::class, 'index']);
-Route::get('/clinics/{codename}', [ClinicController::class, 'show']);
+Route::get('/clinics', [ClinicController::class, 'index'])->middleware('cache.headers:public');
+Route::get('/clinics/{codename}', [ClinicController::class, 'show'])->middleware('cache.headers:public');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/clinics', [ClinicController::class, 'store'])->middleware('role:superAdmin,saasAdmin');
@@ -157,11 +157,11 @@ Route::middleware('auth:sanctum')->group(function () {
 | Doctor Routes (Public)
 |--------------------------------------------------------------------------
 */
-Route::get('/doctors', [DoctorController::class, 'index']);
-Route::get('/doctors/suggestions', [DoctorController::class, 'suggestions']);
-Route::get('/doctors/{id}', [DoctorController::class, 'show']);
-Route::get('/doctors/{id}/reviews', [DoctorController::class, 'reviews']);
-Route::get('/doctors/{id}/availability', [DoctorController::class, 'availability']);
+Route::get('/doctors', [DoctorController::class, 'index'])->middleware('cache.headers:public');
+Route::get('/doctors/suggestions', [DoctorController::class, 'suggestions'])->middleware('cache.headers:public');
+Route::get('/doctors/{id}', [DoctorController::class, 'show'])->middleware('cache.headers:public');
+Route::get('/doctors/{id}/reviews', [DoctorController::class, 'reviews'])->middleware('cache.headers:public');
+Route::get('/doctors/{id}/availability', [DoctorController::class, 'availability'])->middleware('cache.headers:public');
 Route::post('/doctors/{id}/reviews', [DoctorController::class, 'submitReview'])->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/doctors/my-reviews', [DoctorController::class, 'myReviews']);

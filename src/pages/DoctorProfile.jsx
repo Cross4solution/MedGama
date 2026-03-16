@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import SEOHead, { buildPhysicianSchema } from '../components/seo/SEOHead';
 import LeafletMap from 'components/map/LeafletMap';
 import {
   Award, Stethoscope, Heart, CheckCircle, Shield, Users, MapPin, X,
@@ -449,30 +449,24 @@ const DoctorProfilePage = () => {
   return (
     <div className="min-h-screen bg-gray-50/50">
       {/* ═══ SEO Meta + Schema.org ═══ */}
-      <Helmet>
-        <title>{`${doctorTitle ? doctorTitle + ' ' : ''}${doctorName} | MedGama`}</title>
-        <meta name="description" content={`${doctorName} — ${specialty}. ${bio?.slice(0, 150) || ''}`} />
-        <meta property="og:title" content={`${doctorName} | MedGama`} />
-        <meta property="og:description" content={specialty} />
-        {avatarUrl && <meta property="og:image" content={avatarUrl} />}
-        <script type="application/ld+json">{JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'Physician',
-          name: doctorName,
+      <SEOHead
+        title={`${doctorTitle ? doctorTitle + ' ' : ''}${doctorName} — ${specialty}`}
+        description={`${doctorName} — ${specialty}. ${bio?.slice(0, 150) || ''}`}
+        canonical={`/doctor/${doctorId}`}
+        image={avatarUrl}
+        type="profile"
+        jsonLd={buildPhysicianSchema({
+          name: `${doctorTitle ? doctorTitle + ' ' : ''}${doctorName}`,
           image: avatarUrl,
-          description: bio?.slice(0, 300),
-          medicalSpecialty: specialty,
-          ...(reviewStats.average_rating && {
-            aggregateRating: {
-              '@type': 'AggregateRating',
-              ratingValue: reviewStats.average_rating,
-              reviewCount: reviewStats.review_count,
-            },
-          }),
-          ...(locationAddress && { address: { '@type': 'PostalAddress', streetAddress: locationAddress } }),
-          ...(languages.length > 0 && { knowsLanguage: languages }),
-        })}</script>
-      </Helmet>
+          description: bio,
+          specialty,
+          rating: reviewStats.average_rating,
+          reviewCount: reviewStats.review_count,
+          address: locationAddress,
+          languages,
+          url: `https://medagama.com/doctor/${doctorId}`,
+        })}
+      />
 
       {/* ═══ Hero Section ═══ */}
       <div className="relative h-36 md:h-44 bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600">
