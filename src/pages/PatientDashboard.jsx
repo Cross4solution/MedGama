@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { appointmentAPI, patientDocumentAPI } from '../lib/api';
+import EmptyState from '../components/common/EmptyState';
 import {
   Activity, Calendar, Video, FileText, Clock, ChevronRight,
   Pill, FolderHeart, Monitor, Stethoscope, AlertCircle, Loader2,
@@ -195,16 +196,13 @@ const PatientDashboard = () => {
 
             <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
               {upcoming.length === 0 ? (
-                <div className="px-6 py-12 text-center">
-                  <Calendar className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                  <p className="text-sm text-gray-500 font-medium">{t('patientDashboard.noUpcoming', 'No upcoming appointments')}</p>
-                  <button
-                    onClick={() => navigate('/telehealth-appointment')}
-                    className="mt-3 text-xs font-semibold text-teal-600 hover:text-teal-700"
-                  >
-                    {t('patientDashboard.bookNow', 'Book your first appointment →')}
-                  </button>
-                </div>
+                <EmptyState
+                  type="appointments"
+                  title={t('patientDashboard.noUpcoming', 'No upcoming appointments')}
+                  description={t('patientDashboard.noUpcomingDesc', 'Book an appointment with a specialist to get started on your health journey.')}
+                  actionLabel={t('patientDashboard.bookNow', 'Book an Appointment')}
+                  actionUrl="/telehealth-appointment"
+                />
               ) : (
                 <div>
                   {upcoming.map((appt, idx) => {

@@ -28,6 +28,7 @@ export default function Footer() {
     { label: t('footer.privacyPolicy'), href: '/privacy-policy' },
     { label: t('footer.cookiePolicy'), href: '/cookie-policy' },
     { label: t('footer.termsOfService'), href: '/terms-of-service' },
+    { label: 'KVKK', href: '/kvkk' },
     { label: t('footer.dataRights') + ' (GDPR)', href: '/data-rights' },
   ];
 
