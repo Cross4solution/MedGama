@@ -204,6 +204,86 @@ class SuperAdminService
     }
 
     // ══════════════════════════════════════════════
+    //  USER MANAGEMENT (Doc §14)
+    // ══════════════════════════════════════════════
+
+    /**
+     * List all users with filters: role, search, status, pagination.
+     */
+    public function listUsers(array $filters): LengthAwarePaginator
+    {
+        return User::query()
+            ->with('clinic:id,fullname')
+            ->when($filters['role'] ?? null, fn($q, $v) => $q->where('role_id', $v))
+            ->when(isset($filters['is_active']), fn($q) => $q->where('is_active', filter_var($filters['is_active'], FILTER_VALIDATE_BOOLEAN)))
+            ->when(isset($filters['is_verified']), fn($q) => $q->where('is_verified', filter_var($filters['is_verified'], FILTER_VALIDATE_BOOLEAN)))
+            ->when($filters['search'] ?? null, function ($q, $search) {
+                $q->where(function ($q2) use ($search) {
+                    $q2->where('fullname', 'ilike', "%{$search}%")
+                       ->orWhere('email', 'ilike', "%{$search}%")
+                       ->orWhere('mobile', 'ilike', "%{$search}%");
+                });
+            })
+            ->select('id', 'fullname', 'email', 'avatar', 'role_id', 'mobile', 'is_verified', 'is_active', 'clinic_id', 'created_at', 'last_login')
+            ->orderByDesc('created_at')
+            ->paginate($filters['per_page'] ?? 25);
+    }
+
+    /**
+     * Update user role.
+     */
+    public function updateUserRole(string $userId, string $newRole, string $adminId): User
+    {
+        $user = User::findOrFail($userId);
+        $oldRole = $user->role_id;
+
+        $user->update(['role_id' => $newRole]);
+
+        AuditLog::log(
+            action: 'user.role_changed',
+            resourceType: 'User',
+            resourceId: $user->id,
+            oldValues: ['role_id' => $oldRole],
+            newValues: ['role_id' => $newRole],
+            description: "Role changed for {$user->fullname}: {$oldRole} → {$newRole}",
+        );
+
+        Cache::forget('superadmin:dashboard');
+
+        return $user->refresh();
+    }
+
+    /**
+     * User management stats.
+     */
+    public function getUserStats(): array
+    {
+        return Cache::remember('superadmin:user-stats', 300, function () {
+            $counts = User::query()
+                ->selectRaw("
+                    COUNT(*) as total,
+                    SUM(CASE WHEN role_id = 'doctor' THEN 1 ELSE 0 END) as doctors,
+                    SUM(CASE WHEN role_id = 'patient' THEN 1 ELSE 0 END) as patients,
+                    SUM(CASE WHEN role_id = 'clinicOwner' THEN 1 ELSE 0 END) as clinic_owners,
+                    SUM(CASE WHEN role_id = 'superAdmin' THEN 1 ELSE 0 END) as admins,
+                    SUM(CASE WHEN is_active = false THEN 1 ELSE 0 END) as suspended,
+                    SUM(CASE WHEN role_id = 'doctor' AND is_verified = false THEN 1 ELSE 0 END) as unverified_doctors
+                ")
+                ->first();
+
+            return [
+                'total'              => (int) $counts->total,
+                'doctors'            => (int) $counts->doctors,
+                'patients'           => (int) $counts->patients,
+                'clinic_owners'      => (int) $counts->clinic_owners,
+                'admins'             => (int) $counts->admins,
+                'suspended'          => (int) $counts->suspended,
+                'unverified_doctors' => (int) $counts->unverified_doctors,
+            ];
+        });
+    }
+
+    // ══════════════════════════════════════════════
     //  GROWTH TREND (monthly registration chart)
     // ══════════════════════════════════════════════
 
@@ -340,6 +420,12 @@ class SuperAdminService
             ['key' => 'platform.maintenance_mode', 'value' => '0', 'type' => 'boolean', 'group' => 'platform', 'label' => 'Maintenance Mode',   'description' => 'Put entire platform into maintenance mode'],
             ['key' => 'platform.registration',     'value' => '1', 'type' => 'boolean', 'group' => 'platform', 'label' => 'User Registration',  'description' => 'Allow new user registrations'],
             ['key' => 'platform.max_upload_mb',    'value' => '20','type' => 'integer', 'group' => 'platform', 'label' => 'Max Upload Size (MB)','description' => 'Maximum file upload size in megabytes'],
+            // Branding & Meta
+            ['key' => 'branding.site_title',       'value' => 'MedaGama',                                 'type' => 'string',  'group' => 'branding', 'label' => 'Site Title',        'description' => 'Main site title displayed in browser tab and header'],
+            ['key' => 'branding.site_description',  'value' => 'Modern healthcare platform for patients and doctors', 'type' => 'string',  'group' => 'branding', 'label' => 'Meta Description',  'description' => 'Default meta description for SEO'],
+            ['key' => 'branding.site_logo_url',     'value' => '/images/logo.svg',                         'type' => 'string',  'group' => 'branding', 'label' => 'Logo URL',           'description' => 'Path or URL for the site logo'],
+            ['key' => 'branding.primary_color',     'value' => '#0D9488',                                  'type' => 'string',  'group' => 'branding', 'label' => 'Primary Color',      'description' => 'Primary brand color (hex)'],
+            ['key' => 'branding.support_email',     'value' => 'support@medgama.com',                      'type' => 'string',  'group' => 'branding', 'label' => 'Support Email',      'description' => 'Public support contact email'],
         ];
 
         foreach ($defaults as $setting) {
@@ -372,6 +458,36 @@ class SuperAdminService
             ->when($filters['date_to'] ?? null, fn($q, $v) => $q->where('created_at', '<=', $v))
             ->orderByDesc('created_at')
             ->paginate($filters['per_page'] ?? 25);
+    }
+
+    /**
+     * Audit log summary stats.
+     */
+    public function auditLogStats(): array
+    {
+        $total = AuditLog::count();
+        $today = AuditLog::whereDate('created_at', today())->count();
+        $thisWeek = AuditLog::where('created_at', '>=', now()->startOfWeek())->count();
+
+        $topActions = AuditLog::selectRaw("action, count(*) as count")
+            ->groupBy('action')
+            ->orderByDesc('count')
+            ->limit(5)
+            ->pluck('count', 'action');
+
+        $topResourceTypes = AuditLog::selectRaw("resource_type, count(*) as count")
+            ->groupBy('resource_type')
+            ->orderByDesc('count')
+            ->limit(5)
+            ->pluck('count', 'resource_type');
+
+        return [
+            'total'             => $total,
+            'today'             => $today,
+            'this_week'         => $thisWeek,
+            'top_actions'       => $topActions,
+            'top_resource_types' => $topResourceTypes,
+        ];
     }
 
     // ══════════════════════════════════════════════
@@ -464,6 +580,64 @@ class SuperAdminService
         );
 
         return $vr->refresh()->load(['doctor:id,fullname,email,avatar,is_verified', 'reviewer:id,fullname']);
+    }
+
+    /**
+     * Get full doctor verification detail: profile + all verification requests.
+     */
+    public function getDoctorVerificationDetail(string $doctorId): array
+    {
+        $doctor = User::with([
+            'doctorProfile:id,user_id,specialty,title,bio,experience_years,languages,education',
+            'clinic:id,fullname',
+        ])->findOrFail($doctorId);
+
+        $requests = VerificationRequest::where('doctor_id', $doctorId)
+            ->with('reviewer:id,fullname')
+            ->orderByDesc('created_at')
+            ->get();
+
+        return [
+            'doctor' => [
+                'id'           => $doctor->id,
+                'fullname'     => $doctor->fullname,
+                'email'        => $doctor->email,
+                'avatar'       => $doctor->avatar,
+                'mobile'       => $doctor->mobile,
+                'role_id'      => $doctor->role_id,
+                'is_verified'  => $doctor->is_verified,
+                'is_active'    => $doctor->is_active,
+                'created_at'   => $doctor->created_at?->toISOString(),
+                'clinic'       => $doctor->clinic ? ['id' => $doctor->clinic->id, 'fullname' => $doctor->clinic->fullname] : null,
+                'profile'      => $doctor->doctorProfile ? [
+                    'specialty'        => $doctor->doctorProfile->specialty,
+                    'title'            => $doctor->doctorProfile->title,
+                    'bio'              => $doctor->doctorProfile->bio,
+                    'experience_years' => $doctor->doctorProfile->experience_years,
+                    'languages'        => $doctor->doctorProfile->languages,
+                    'education'        => $doctor->doctorProfile->education,
+                ] : null,
+            ],
+            'verification_requests' => $requests->map(fn($vr) => [
+                'id'               => $vr->id,
+                'document_type'    => $vr->document_type,
+                'document_label'   => $vr->document_label,
+                'file_name'        => $vr->file_name,
+                'mime_type'        => $vr->mime_type,
+                'status'           => $vr->status,
+                'notes'            => $vr->notes,
+                'rejection_reason' => $vr->rejection_reason,
+                'reviewer'         => $vr->reviewer ? ['id' => $vr->reviewer->id, 'fullname' => $vr->reviewer->fullname] : null,
+                'reviewed_at'      => $vr->reviewed_at?->toISOString(),
+                'created_at'       => $vr->created_at?->toISOString(),
+            ])->toArray(),
+            'stats' => [
+                'total'    => $requests->count(),
+                'pending'  => $requests->where('status', 'pending')->count(),
+                'approved' => $requests->where('status', 'approved')->count(),
+                'rejected' => $requests->where('status', 'rejected')->count(),
+            ],
+        ];
     }
 
     /**

@@ -23,20 +23,18 @@ class VerificationRejectedNotification extends Notification implements ShouldQue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $mail = (new MailMessage)
-            ->subject('MedaGama — Verification Request Update')
-            ->greeting("Hello, {$notifiable->fullname}")
-            ->line('Unfortunately, your verification request could not be approved at this time.')
-            ->line("**Document:** {$this->verificationRequest->document_label}");
+        $locale = $notifiable->preferred_language ?? 'en';
+        $frontendUrl = config('app.frontend_url', 'https://medgama.com');
 
-        if ($this->verificationRequest->rejection_reason) {
-            $mail->line("**Reason:** {$this->verificationRequest->rejection_reason}");
-        }
-
-        return $mail
-            ->line('You can upload corrected documents and resubmit your verification request.')
-            ->action('Upload New Documents', url('/crm/settings'))
-            ->line('If you have questions, please contact our support team.');
+        return (new MailMessage)
+            ->subject('MedGama — ' . trans('email.verify_rejected_subject', [], $locale))
+            ->view('emails.verification-rejected-v2', [
+                'locale'          => $locale,
+                'userName'        => $notifiable->fullname ?? $notifiable->email,
+                'documentLabel'   => $this->verificationRequest->document_label,
+                'rejectionReason' => $this->verificationRequest->rejection_reason ?? '',
+                'actionUrl'       => $frontendUrl . '/crm/settings',
+            ]);
     }
 
     public function toArray(object $notifiable): array

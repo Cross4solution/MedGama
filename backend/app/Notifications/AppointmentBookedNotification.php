@@ -45,35 +45,33 @@ class AppointmentBookedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $appt = $this->appointment;
+        $locale = $notifiable->preferred_language ?? 'en';
+        $isDoctor = $this->recipientRole === 'doctor';
         $date = $appt->appointment_date?->format('d M Y') ?? $appt->appointment_date;
         $time = $appt->appointment_time;
-        $type = ucfirst($appt->appointment_type ?? 'online');
+        $frontendUrl = config('app.frontend_url', 'https://medgama.com');
 
-        if ($this->recipientRole === 'doctor') {
-            $patientName = $appt->patient?->fullname ?? 'A patient';
-            return (new MailMessage)
-                ->subject('MedaGama — New Appointment Request')
-                ->greeting("Hello, Dr. {$notifiable->fullname}!")
-                ->line("{$patientName} has booked an appointment with you.")
-                ->line("**Date:** {$date}")
-                ->line("**Time:** {$time}")
-                ->line("**Type:** {$type}")
-                ->line($appt->confirmation_note ? "**Patient Note:** {$appt->confirmation_note}" : '')
-                ->action('View Appointments', url('/crm/appointments'))
-                ->line('Please confirm or manage this appointment from your dashboard.');
-        }
+        $subject = $isDoctor
+            ? trans('email.appt_booked_subject_doctor', ['date' => $date], $locale)
+            : trans('email.appt_booked_subject', ['date' => $date], $locale);
 
-        $doctorName = $appt->doctor?->fullname ?? 'Your doctor';
         return (new MailMessage)
-            ->subject('MedaGama — Appointment Booked')
-            ->greeting("Hello, {$notifiable->fullname}!")
-            ->line('Your appointment has been successfully booked.')
-            ->line("**Doctor:** {$doctorName}")
-            ->line("**Date:** {$date}")
-            ->line("**Time:** {$time}")
-            ->line("**Type:** {$type}")
-            ->action('View My Appointments', url('/telehealth'))
-            ->line('Your appointment is pending confirmation. You will receive another notification once the doctor confirms.');
+            ->subject("MedGama — {$subject}")
+            ->view('emails.appointment-booked-v2', [
+                'locale'          => $locale,
+                'isDoctor'        => $isDoctor,
+                'userName'        => $notifiable->fullname ?? $notifiable->email,
+                'counterpartName' => $isDoctor
+                    ? ($appt->patient?->fullname ?? 'A patient')
+                    : ($appt->doctor?->fullname ?? 'Your doctor'),
+                'date'            => $date,
+                'time'            => $time,
+                'type'            => $appt->appointment_type ?? 'online',
+                'patientNote'     => $appt->confirmation_note ?? '',
+                'actionUrl'       => $isDoctor
+                    ? $frontendUrl . '/crm/appointments'
+                    : $frontendUrl . '/telehealth',
+            ]);
     }
 
     public function toArray(object $notifiable): array

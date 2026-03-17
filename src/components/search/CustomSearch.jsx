@@ -4,6 +4,7 @@ import { listCountriesAll, loadPreferredAdminOrCities, getFlagCode, listTurkeyPr
 import CountryCombobox from '../forms/CountryCombobox.jsx';
 import CityCombobox from '../forms/CityCombobox.jsx';
 import { catalogAPI } from '../../lib/api';
+import GlobalSuggest from '../forms/GlobalSuggest';
 import { useTranslation } from 'react-i18next';
 
 export default function CustomSearch() {
@@ -70,7 +71,7 @@ export default function CustomSearch() {
     if (specialty) params.set('specialty', specialty.replace(/,\s*$/, '').trim());
     if (symptom) params.set('symptom', symptom.replace(/,\s*$/, '').trim());
     const qs = params.toString();
-    navigate(qs ? `/clinics?${qs}` : '/clinics');
+    navigate(qs ? `/search?${qs}` : '/search');
   };
 
   // Dış API ile ülke listesi/flag kodu alma kaldırıldı; veriler utils/geo içinden geliyor.
@@ -141,63 +142,8 @@ export default function CustomSearch() {
     };
   }, [country]);
 
-  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  const filterOptions = (list, q) => {
-    const n = normalize(q || '');
-    if (!n) return [];
-    return list.filter((x) => normalize(x).includes(n)).slice(0, 8);
-  };
-
   const disableSymptom = specialty.trim().length > 0;
   const disableSpecialty = symptom.trim().length > 0;
-
-  const [symptomQuery, setSymptomQuery] = useState('');
-  const [specialtyQuery, setSpecialtyQuery] = useState('');
-  const [symptomActiveIndex, setSymptomActiveIndex] = useState(-1);
-  const [specialtyActiveIndex, setSpecialtyActiveIndex] = useState(-1);
-
-  const getLastToken = React.useCallback((s) => {
-    if (!s) return '';
-    const parts = s.split(',');
-    return (parts[parts.length - 1] || '').trim();
-  }, []);
-  const replaceLastToken = React.useCallback((s, token, keepTrailingComma = true) => {
-    const parts = (s || '').split(',');
-    parts[parts.length - 1] = ` ${token}`;
-    let out = parts.join(',').replace(/^\s+/, '');
-    if (keepTrailingComma) {
-      if (!out.trim().endsWith(',')) out = out.replace(/\s*$/, '') + ', ';
-    } else {
-      out = out.replace(/\s+$/, '');
-    }
-    return out;
-  }, []);
-  const listTokens = React.useCallback((s) => (s || '')
-    .split(',')
-    .map((x) => x.trim())
-    .filter((x) => x.length > 0), []);
-  const removeToken = React.useCallback((s, tokenToRemove) => {
-    const tokens = listTokens(s).filter((t) => t !== tokenToRemove);
-    return tokens.length ? tokens.join(', ') + ', ' : '';
-  }, [listTokens]);
-
-  React.useEffect(() => {
-    const t = setTimeout(() => setSymptomQuery(getLastToken(symptom)), 200);
-    return () => clearTimeout(t);
-  }, [symptom, getLastToken]);
-  React.useEffect(() => {
-    const t = setTimeout(() => setSpecialtyQuery(getLastToken(specialty)), 200);
-    return () => clearTimeout(t);
-  }, [specialty, getLastToken]);
-
-  const symptomMatches = useMemo(() => {
-    const merged = [...symptoms, ...procedures];
-    return filterOptions(merged, symptomQuery);
-  }, [symptoms, procedures, symptomQuery]);
-  const specialtyMatches = useMemo(() => {
-    const merged = [...specialties, ...procedures];
-    return filterOptions(merged, specialtyQuery);
-  }, [specialties, procedures, specialtyQuery]);
 
   return (
     <form onSubmit={onSubmit}>
@@ -237,93 +183,20 @@ export default function CustomSearch() {
         {/* 3. Symptom */}
         <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
           <label className="block text-xs font-medium text-gray-500 mb-1.5">Symptom / Procedure</label>
-          <div
-            className={`border border-gray-300 rounded-xl px-2.5 py-1.5 text-sm flex items-center flex-wrap gap-1.5 min-h-[2.5rem] transition-all ${disableSymptom ? 'bg-gray-50 cursor-not-allowed opacity-60' : 'bg-white hover:border-gray-400 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-400'}`}
-          >
-            {listTokens(symptom).map((tok) => (
-              <span key={tok} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-800 border border-teal-200">
-                {tok}
-                <button
-                  type="button"
-                  className="ml-0.5 text-teal-700 hover:text-teal-900"
-                  onClick={() => setSymptom((s) => removeToken(s, tok))}
-                  aria-label={`Remove ${tok}`}
-                  disabled={disableSymptom}
-                >
-                  ✕
-                </button>
-              </span>
-            ))}
-            <input
-              type="text"
-              value={getLastToken(symptom)}
-              onChange={(e) => { setSymptom((s) => replaceLastToken(s, e.target.value, false)); setSymptomActiveIndex(-1); }}
-              disabled={disableSymptom}
-              placeholder={listTokens(symptom).length > 0 ? '' : "Symptom or Procedure (e.g., nasal congestion)"}
-              className={`flex-1 min-w-[8ch] border-0 outline-none px-1 py-1 text-base md:text-sm bg-transparent ${disableSymptom ? 'placeholder:text-gray-400' : ''}`}
-              onKeyDown={(e) => {
-                if (disableSymptom) return;
-                if ((e.key === 'Enter' || e.key === ',') && symptom.trim().length > 0) {
-                  e.preventDefault();
-                  if (symptomActiveIndex >= 0 && symptomActiveIndex < symptomMatches.length) {
-                    setSymptom((s) => replaceLastToken(s, symptomMatches[symptomActiveIndex], true));
-                  } else {
-                    setSymptom((s) => (s || '').replace(/\s*,?\s*$/, '') + ', ');
-                  }
-                  setSymptomActiveIndex(-1);
-                  return;
-                }
-                if (e.key === 'Tab') {
-                  if (symptomActiveIndex >= 0 && symptomActiveIndex < symptomMatches.length) {
-                    e.preventDefault();
-                    setSymptom((s) => replaceLastToken(s, symptomMatches[symptomActiveIndex], true));
-                    setSymptomActiveIndex(-1);
-                  }
-                }
-                if (e.key === 'ArrowDown') {
-                  e.preventDefault();
-                  setSymptomActiveIndex((i) => Math.min(i + 1, Math.max(symptomMatches.length - 1, 0)));
-                } else if (e.key === 'ArrowUp') {
-                  e.preventDefault();
-                  setSymptomActiveIndex((i) => Math.max(i - 1, -1));
-                } else if (e.key === 'Enter') {
-                  if (symptomActiveIndex >= 0 && symptomActiveIndex < symptomMatches.length) {
-                    setSymptom((s) => replaceLastToken(s, symptomMatches[symptomActiveIndex], true));
-                    setSymptomActiveIndex(-1);
-                  }
-                } else if (e.key === 'Escape') {
-                  setSymptomActiveIndex(-1);
-                }
-              }}
-            />
-            {symptom && (
-              <button type="button" onClick={() => setSymptom('')} className="ml-auto text-gray-400 hover:text-gray-600" disabled={disableSymptom}>
-                ✕
-              </button>
-            )}
-          </div>
-          {symptom && !disableSymptom && symptomQuery.trim().length > 0 && symptomMatches.length > 0 && (
-            <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow max-h-56 overflow-auto text-sm">
-              {symptomMatches.map((s, idx) => (
-                <li key={s}>
-                  <button
-                    type="button"
-                    className={`w-full text-left px-3 py-2 rounded-md transition-colors ${idx === symptomActiveIndex ? 'bg-teal-50 text-teal-800' : 'hover:bg-teal-50 hover:text-teal-800'}`}
-                    onClick={() => setSymptom((prev) => replaceLastToken(prev, s, true))}
-                  >
-                    {s}
-                    <span className="ml-2 text-xs text-gray-500">{procedures.includes(s) ? '(procedure)' : '(symptom)'}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <GlobalSuggest
+            type="symptom"
+            value={symptom}
+            onChange={setSymptom}
+            disabled={disableSymptom}
+            placeholder="Symptom or Procedure (e.g., nasal congestion)"
+            allowCustom={true}
+          />
         </div>
 
-        <div className="flex items-center justify-center col-span-1 sm:col-span-2 md:col-span-1 md:pt-6 py-1 md:py-0">
+        <div className="flex items-center justify-center col-span-1 sm:col-span-2 md:col-span-1 md:pt-8 py-1 md:py-0">
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="flex-1 h-px bg-gray-200 md:hidden"></div>
-            <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">or</span>
+            <span className="text-xs font-medium text-gray-400 tracking-wider">or</span>
             <div className="flex-1 h-px bg-gray-200 md:hidden"></div>
           </div>
         </div>
@@ -331,87 +204,14 @@ export default function CustomSearch() {
         {/* 4. Specialty */}
         <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
           <label className="block text-xs font-medium text-gray-500 mb-1.5">Specialty / Disease</label>
-          <div
-            className={`border border-gray-300 rounded-xl px-2.5 py-1.5 text-sm flex items-center flex-wrap gap-1.5 min-h-[2.5rem] transition-all ${disableSpecialty ? 'bg-gray-50 cursor-not-allowed opacity-60' : 'bg-white hover:border-gray-400 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-400'}`}
-          >
-            {listTokens(specialty).map((tok) => (
-              <span key={tok} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-800 border border-teal-200">
-                {tok}
-                <button
-                  type="button"
-                  className="ml-0.5 text-teal-700 hover:text-teal-900"
-                  onClick={() => setSpecialty((s) => removeToken(s, tok))}
-                  aria-label={`Remove ${tok}`}
-                  disabled={disableSpecialty}
-                >
-                  ✕
-                </button>
-              </span>
-            ))}
-            <input
-              type="text"
-              value={getLastToken(specialty)}
-              onChange={(e) => { setSpecialty((s) => replaceLastToken(s, e.target.value, false)); setSpecialtyActiveIndex(-1); }}
-              disabled={disableSpecialty}
-              placeholder={listTokens(specialty).length > 0 ? '' : "Type a specialty (e.g., ENT)"}
-              className={`flex-1 min-w-[8ch] border-0 outline-none px-1 py-1 text-base md:text-sm bg-transparent ${disableSpecialty ? 'placeholder:text-gray-400' : ''}`}
-              onKeyDown={(e) => {
-                if (disableSpecialty) return;
-                if ((e.key === 'Enter' || e.key === ',') && specialty.trim().length > 0) {
-                  e.preventDefault();
-                  if (specialtyActiveIndex >= 0 && specialtyActiveIndex < specialtyMatches.length) {
-                    setSpecialty((s) => replaceLastToken(s, specialtyMatches[specialtyActiveIndex], true));
-                  } else {
-                    setSpecialty((s) => (s || '').replace(/\s*,?\s*$/, '') + ', ');
-                  }
-                  setSpecialtyActiveIndex(-1);
-                  return;
-                }
-                if (e.key === 'Tab') {
-                  if (specialtyActiveIndex >= 0 && specialtyActiveIndex < specialtyMatches.length) {
-                    e.preventDefault();
-                    setSpecialty((s) => replaceLastToken(s, specialtyMatches[specialtyActiveIndex], true));
-                    setSpecialtyActiveIndex(-1);
-                  }
-                }
-                if (e.key === 'ArrowDown') {
-                  e.preventDefault();
-                  setSpecialtyActiveIndex((i) => Math.min(i + 1, Math.max(specialtyMatches.length - 1, 0)));
-                } else if (e.key === 'ArrowUp') {
-                  e.preventDefault();
-                  setSpecialtyActiveIndex((i) => Math.max(i - 1, -1));
-                } else if (e.key === 'Enter') {
-                  if (specialtyActiveIndex >= 0 && specialtyActiveIndex < specialtyMatches.length) {
-                    setSpecialty((s) => replaceLastToken(s, specialtyMatches[specialtyActiveIndex], true));
-                    setSpecialtyActiveIndex(-1);
-                  }
-                } else if (e.key === 'Escape') {
-                  setSpecialtyActiveIndex(-1);
-                }
-              }}
-            />
-            {specialty && (
-              <button type="button" onClick={() => setSpecialty('')} className="ml-auto text-gray-400 hover:text-gray-600" disabled={disableSpecialty}>
-                ✕
-              </button>
-            )}
-          </div>
-          {specialty && !disableSpecialty && specialtyQuery.trim().length > 0 && specialtyMatches.length > 0 && (
-            <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow max-h-56 overflow-auto text-sm">
-              {specialtyMatches.map((s, idx) => (
-                <li key={s}>
-                  <button
-                    type="button"
-                    className={`w-full text-left px-3 py-2 rounded-md transition-colors ${idx === specialtyActiveIndex ? 'bg-teal-50 text-teal-800' : 'hover:bg-teal-50 hover:text-teal-800'}`}
-                    onClick={() => setSpecialty((prev) => replaceLastToken(prev, s, true))}
-                  >
-                    {s}
-                    <span className="ml-2 text-xs text-gray-500">{procedures.includes(s) ? '(procedure)' : '(specialty)'}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <GlobalSuggest
+            type="specialty"
+            value={specialty}
+            onChange={setSpecialty}
+            disabled={disableSpecialty}
+            placeholder="Type a specialty (e.g., ENT)"
+            allowCustom={true}
+          />
         </div>
 
         {/* 5. Search button */}

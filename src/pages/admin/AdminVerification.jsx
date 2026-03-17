@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ShieldCheck, ShieldX, Search, ChevronLeft, ChevronRight, CheckCircle, XCircle,
-  Loader2, FileText, Eye, Clock, X, Download, AlertTriangle,
+  Loader2, FileText, Eye, Clock, X, Download, AlertTriangle, ExternalLink,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 
@@ -115,6 +116,7 @@ function RejectModal({ vr, onClose, onConfirm, loading }) {
    MAIN PAGE
    ═══════════════════════════════════════════ */
 export default function AdminVerification() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState('requests'); // requests | doctors
   const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0 });
 
@@ -297,9 +299,18 @@ export default function AdminVerification() {
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <button onClick={() => setPreviewVr(vr)} className="inline-flex items-center gap-1.5 text-teal-600 hover:text-teal-700 hover:underline text-xs font-medium">
-                              <Eye className="w-3.5 h-3.5" /> {vr.document_label || vr.file_name}
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button onClick={() => setPreviewVr(vr)} className="inline-flex items-center gap-1.5 text-teal-600 hover:text-teal-700 hover:underline text-xs font-medium">
+                                <Eye className="w-3.5 h-3.5" /> {vr.document_label || vr.file_name}
+                              </button>
+                              <button
+                                onClick={() => navigate(`/admin/verification/review?id=${vr.doctor_id}`)}
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors"
+                                title="Open full review"
+                              >
+                                <ExternalLink className="w-2.5 h-2.5" /> Review
+                              </button>
+                            </div>
                           </td>
                           <td className="px-4 py-3">
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">

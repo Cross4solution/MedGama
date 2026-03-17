@@ -21,25 +21,18 @@ class TicketReceivedNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $locale = $notifiable->preferred_language ?? 'en';
-        $isEn = $locale === 'en';
+        $frontendUrl = config('app.frontend_url', 'https://medgama.com');
 
         return (new MailMessage)
-            ->subject($isEn ? "Support Ticket Received — {$this->ticket->ticket_number}" : "Destek Talebiniz Alındı — {$this->ticket->ticket_number}")
-            ->greeting($isEn ? "Hello {$notifiable->fullname}," : "Merhaba {$notifiable->fullname},")
-            ->line($isEn
-                ? "Your support ticket **{$this->ticket->ticket_number}** has been received. Our team will review it shortly."
-                : "**{$this->ticket->ticket_number}** numaralı destek talebiniz alınmıştır. Ekibimiz en kısa sürede inceleyecektir.")
-            ->line($isEn
-                ? "**Subject:** {$this->ticket->subject}"
-                : "**Konu:** {$this->ticket->subject}")
-            ->line($isEn
-                ? "**Priority:** " . ucfirst($this->ticket->priority)
-                : "**Öncelik:** " . ucfirst($this->ticket->priority))
-            ->action(
-                $isEn ? 'View Ticket' : 'Talebi Görüntüle',
-                config('app.frontend_url', 'http://localhost:3000') . '/crm/support'
-            )
-            ->line($isEn ? 'Thank you for contacting us.' : 'Bize ulaştığınız için teşekkür ederiz.');
+            ->subject('MedGama — ' . trans('email.ticket_received_subject', ['number' => $this->ticket->ticket_number], $locale))
+            ->view('emails.ticket-received-v2', [
+                'locale'         => $locale,
+                'userName'       => $notifiable->fullname ?? $notifiable->email,
+                'ticketNumber'   => $this->ticket->ticket_number,
+                'ticketSubject'  => $this->ticket->subject,
+                'ticketPriority' => $this->ticket->priority,
+                'actionUrl'      => $frontendUrl . '/crm/support',
+            ]);
     }
 
     public function toArray(object $notifiable): array

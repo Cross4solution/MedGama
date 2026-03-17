@@ -1,5 +1,5 @@
-import React, { Suspense, useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
+import React, { Suspense, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType, useNavigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import SidebarPatient from './components/SidebarPatient';
 import { useAuth } from './context/AuthContext';
@@ -11,7 +11,7 @@ import { ToastProvider } from './context/ToastContext';
 import { CookieConsentProvider } from './context/CookieConsentContext';
 import scrollConfig from './config/scroll';
 import ScrollToTopButton from './components/common/ScrollToTopButton';
-import DoctorOnboardingModal from './pages/DoctorOnboarding.jsx';
+const OnboardingWizard = React.lazy(() => import('./pages/DoctorOnboarding.jsx'));
 
 // Lazy-loaded pages for code splitting
 const HomeV2 = React.lazy(() => import('./pages/HomeV2'));
@@ -37,6 +37,7 @@ const DoctorProfilePage = React.lazy(() => import('./pages/DoctorProfile.jsx'));
 const ClinicProfileEdit = React.lazy(() => import('./pages/ClinicProfileEdit.jsx'));
 const DoctorsDepartments = React.lazy(() => import('./pages/DoctorsDepartments.jsx'));
 const CookiePolicyPage = React.lazy(() => import('./pages/CookiePolicyPage'));
+const KVKKPage = React.lazy(() => import('./pages/KVKKPage'));
 const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRightsPage'));
 const SearchResults = React.lazy(() => import('./pages/SearchResults'));
 const DashboardRedirect = React.lazy(() => import('./pages/DashboardRedirect'));
@@ -76,6 +77,10 @@ const AdminCatalog = React.lazy(() => import('./pages/admin/AdminCatalog'));
 const AdminFeatureToggles = React.lazy(() => import('./pages/admin/AdminFeatureToggles'));
 const AdminAuditLogs = React.lazy(() => import('./pages/admin/AdminAuditLogs'));
 const AdminReviews = React.lazy(() => import('./pages/admin/AdminReviews'));
+const AdminSupport = React.lazy(() => import('./pages/admin/AdminSupport'));
+const AdminUserManagement = React.lazy(() => import('./pages/admin/AdminUserManagement'));
+const AdminVerificationReview = React.lazy(() => import('./pages/admin/AdminVerificationReview'));
+const AdminSystemSettings = React.lazy(() => import('./pages/admin/AdminSystemSettings'));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -113,6 +118,9 @@ function AppContent() {
       '/terms-of-service': 'Terms of Service | MedaGama',
       '/privacy-policy': 'Privacy Policy | MedaGama',
       '/cookie-policy': 'Cookie Policy | MedaGama',
+      '/kvkk': 'KVKK | MedaGama',
+      '/terms': 'Terms of Service | MedaGama',
+      '/privacy': 'Privacy Policy | MedaGama',
       '/data-rights': 'Data Privacy Rights | MedaGama',
       '/auth': 'Sign In | MedaGama',
       '/login': 'Sign In | MedaGama',
@@ -144,10 +152,12 @@ function AppContent() {
       '/crm/faq': 'FAQ | MedaGama',
       '/crm/clinic-manager': 'Clinic Management | MedaGama',
       '/crm/help': 'CRM Help | MedaGama',
+      '/onboarding': 'Setup Wizard | MedaGama',
       '/admin': 'Admin Dashboard | MedaGama',
       '/admin/verification': 'Doctor Verification | MedaGama',
       '/admin/moderation': 'Content Moderation | MedaGama',
       '/admin/catalog': 'Catalog Management | MedaGama',
+      '/admin/support': 'Support Tickets | MedaGama',
       '/500': 'Server Error | MedaGama',
     };
 
@@ -241,7 +251,7 @@ function AppContent() {
   }, [location.pathname, navType]);
   
   // Auth ve CRM sayfalarında header ve cookie banner'ı gizle
-  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/verify-email', '/forgot-password', '/dashboard'];
+  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/verify-email', '/forgot-password', '/dashboard', '/onboarding'];
   const isAuthPage = hideOnAuthPages.includes(location.pathname);
   const isCRMPage = location.pathname.startsWith('/crm');
   const isAdminPage = location.pathname.startsWith('/admin');
@@ -294,11 +304,15 @@ function AppContent() {
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+        <Route path="/kvkk" element={<KVKKPage />} />
+        <Route path="/terms" element={<TermsOfServicePage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/data-rights" element={<DataPrivacyRightsPage />} />
         <Route path="/auth" element={<LoginPage role="patient" />} />
         <Route path="/login" element={<LoginPage role="patient" />} />
         <Route path="/register" element={<LoginPage role="patient" />} />
         <Route path="/dashboard" element={<DashboardRedirect />} />
+        <Route path="/onboarding" element={<OnboardingWizard />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -337,9 +351,13 @@ function AppContent() {
         <Route path="/admin/verification" element={<AdminLayout><AdminVerification /></AdminLayout>} />
         <Route path="/admin/moderation" element={<AdminLayout><AdminModeration /></AdminLayout>} />
         <Route path="/admin/catalog" element={<AdminLayout><AdminCatalog /></AdminLayout>} />
-        <Route path="/admin/settings" element={<AdminLayout><AdminFeatureToggles /></AdminLayout>} />
+        <Route path="/admin/settings" element={<AdminLayout><AdminSystemSettings /></AdminLayout>} />
+        <Route path="/admin/feature-toggles" element={<AdminLayout><AdminFeatureToggles /></AdminLayout>} />
+        <Route path="/admin/verification/review" element={<AdminLayout><AdminVerificationReview /></AdminLayout>} />
         <Route path="/admin/audit-logs" element={<AdminLayout><AdminAuditLogs /></AdminLayout>} />
         <Route path="/admin/reviews" element={<AdminLayout><AdminReviews /></AdminLayout>} />
+        <Route path="/admin/support" element={<AdminLayout><AdminSupport /></AdminLayout>} />
+        <Route path="/admin/users" element={<AdminLayout><AdminUserManagement /></AdminLayout>} />
         <Route path="/500" element={<ServerErrorPage />} />
         <Route path="*" element={<NotFoundPage />} />
         </Routes>
@@ -349,34 +367,30 @@ function AppContent() {
       {showFooter && <Footer />}
       {showCookieBanner && <CookieBanner />}
       {!isAuthPage && <ScrollToTopButton />}
-      <DoctorOnboardingGate />
+      <OnboardingGate />
     </div>
   );
 }
 
-function DoctorOnboardingGate() {
-  const { user, updateUser } = useAuth();
-  const [showOnboarding, setShowOnboarding] = useState(false);
+function OnboardingGate() {
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) { setShowOnboarding(false); return; }
-    const isDoctor = user?.role === 'doctor' || user?.role_id === 'doctor';
-    // Show onboarding for any doctor whose onboarding_completed is explicitly false.
-    // Once onboarding_completed is true in DB, modal never appears.
-    if (isDoctor && user?.onboarding_completed === false) {
-      setShowOnboarding(true);
-    } else {
-      setShowOnboarding(false);
+    if (!user) return;
+    const needsOnboarding = (user.role === 'doctor' || user.role_id === 'doctor' || user.role_id === 'clinicOwner')
+      && user.onboarding_completed === false;
+    const isOnboardingPage = location.pathname === '/onboarding';
+    const isPublicPage = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login',
+      '/verify-email', '/forgot-password', '/terms-of-service', '/privacy-policy',
+      '/cookie-policy', '/kvkk', '/data-rights'].includes(location.pathname);
+    if (needsOnboarding && !isOnboardingPage && !isPublicPage) {
+      navigate('/onboarding', { replace: true });
     }
-  }, [user]);
+  }, [user, location.pathname, navigate]);
 
-  const handleComplete = useCallback(() => {
-    setShowOnboarding(false);
-    updateUser({ onboarding_completed: true });
-    try { sessionStorage.removeItem('doctor_just_registered'); } catch {}
-  }, [updateUser]);
-
-  return <DoctorOnboardingModal open={showOnboarding} onComplete={handleComplete} />;
+  return null;
 }
 
 function App() {

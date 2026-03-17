@@ -8,6 +8,7 @@ use App\Models\MedStreamComment;
 use App\Models\MedStreamLike;
 use App\Models\MedStreamBookmark;
 use App\Mail\VerificationCodeMail;
+use App\Notifications\WelcomeNotification;
 use Illuminate\Http\UploadedFile;
 use App\Mail\PasswordResetMail;
 use Illuminate\Support\Facades\DB;
@@ -71,6 +72,13 @@ class AuthService
         }
 
         $token = $user->createToken('auth-token')->plainTextToken;
+
+        // Send welcome email
+        try {
+            $user->notify(new WelcomeNotification($user->role_id ?? 'patient'));
+        } catch (\Throwable $e) {
+            \Log::warning('Welcome notification failed: ' . $e->getMessage());
+        }
 
         return ['user' => $user, 'token' => $token, 'auto_verified' => $isDemoMail];
     }

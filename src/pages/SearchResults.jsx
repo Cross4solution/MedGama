@@ -116,9 +116,9 @@ export default function SearchResults() {
   const [cities, setCities] = useState([]);
 
   // filters (synced with URL)
-  const [searchText, setSearchText] = useState(sp.get('q') || '');
+  const [searchText, setSearchText] = useState(sp.get('q') || sp.get('specialty') || sp.get('symptom') || '');
   const [specId, setSpecId] = useState(sp.get('specialty_id') || '');
-  const [cityId, setCityId] = useState(sp.get('city_id') || '');
+  const [cityId, setCityId] = useState(sp.get('city_id') || sp.get('city') || '');
   const [lang, setLang] = useState(sp.get('language') || '');
   const [minRating, setMinRating] = useState(sp.get('min_rating') || '');
   const [online, setOnline] = useState(sp.get('online_only') === '1');
@@ -130,9 +130,9 @@ export default function SearchResults() {
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   // hero bar local
-  const [heroQ, setHeroQ] = useState(sp.get('q') || '');
+  const [heroQ, setHeroQ] = useState(sp.get('q') || sp.get('specialty') || sp.get('symptom') || '');
   const [heroSpec, setHeroSpec] = useState(sp.get('specialty_id') || '');
-  const [heroCity, setHeroCity] = useState(sp.get('city_id') || '');
+  const [heroCity, setHeroCity] = useState(sp.get('city_id') || sp.get('city') || '');
 
   // load catalogs
   useEffect(() => {

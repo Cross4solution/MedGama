@@ -428,8 +428,14 @@ export const messageAPI = {
   unreadCount: () => api.get('/messages/unread-count'),
 };
 
+// ── Live Search (Public — autocomplete) ──
+export const searchAPI = {
+  live: (q) => api.get('/search/live', { params: { q } }),
+};
+
 // ── Catalog Service (Public) ──
 export const catalogAPI = {
+  search: (type, q) => api.get('/catalog/search', { params: { type, q } }),
   specialties: (params) => api.get('/catalog/specialties', { params }),
   specialtiesSearch: (params) => api.get('/catalog/specialties/search', { params }),
   cities: (params) => api.get('/catalog/cities', { params }),
@@ -486,6 +492,10 @@ export const adminAPI = {
   growthTrend: () => api.get('/admin/growth-trend'),
   doctors: (params) => api.get('/admin/doctors', { params }),
   verifyDoctor: (id, verified) => api.put(`/admin/doctors/${id}/verify`, { verified }),
+  // User management (Doc §14)
+  users: (params) => api.get('/admin/users', { params }),
+  userStats: () => api.get('/admin/users/stats'),
+  updateUserRole: (id, role) => api.put(`/admin/users/${id}/role`, { role }),
   suspendUser: (id, suspend) => api.put(`/admin/users/${id}/suspend`, { suspend }),
   reports: (params) => api.get('/admin/reports', { params }),
   approveReport: (id) => api.put(`/admin/reports/${id}/approve`),
@@ -507,7 +517,10 @@ export const adminAPI = {
   updateFeatureToggle: (key, value) => api.put('/admin/feature-toggles', { key, value }),
   // Audit Logs
   auditLogs: (params) => api.get('/admin/audit-logs', { params }),
+  auditLogStats: () => api.get('/admin/audit-logs/stats'),
+  searchUsers: (q) => api.get('/admin/users/search', { params: { q } }),
   // Verification Requests (Doc §8.3)
+  doctorVerificationDetail: (doctorId) => api.get(`/admin/verification-requests/doctor/${doctorId}`),
   verificationRequests: (params) => api.get('/admin/verification-requests', { params }),
   verificationStats: () => api.get('/admin/verification-requests/stats'),
   approveVerification: (id) => api.put(`/admin/verification-requests/${id}/approve`),

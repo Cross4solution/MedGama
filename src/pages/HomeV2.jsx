@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Compass } from 'lucide-react';
 import { SearchSections } from '../components/search';
 import CoreBoxes from '../components/CoreBoxes';
 import PopularClinicsShowcase from '../components/PopularClinicsShowcase';
@@ -80,8 +81,8 @@ export default function HomeV2() {
               aria-hidden="true"
             />
             {/* Removed white bottom gradient as requested */}
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <div className="grid grid-cols-1 gap-8 items-center">
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+              <div className="grid grid-cols-1 gap-5 items-center">
                 <div>
                   <h1
                     className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md antialiased"
@@ -89,26 +90,22 @@ export default function HomeV2() {
                     {t('home.heroTitle')}
                   </h1>
                   <p
-                    className="mt-4 text-white md:text-lg font-medium drop-shadow-sm antialiased"
+                    className="mt-3 text-white md:text-lg font-medium drop-shadow-sm antialiased"
                   >
                     {t('home.heroSubtitle')}
                   </p>
-                  <div className="mt-6 flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => navigate('/search')}
-                      className="inline-flex items-center gap-2 bg-teal-600 text-white px-5 py-2.5 rounded-full hover:bg-teal-700 hover:shadow-lg text-sm font-semibold transition-all shadow-md"
-                    >
-                      {t('search.heroTitle')}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => document.getElementById('discover-services')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                      className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm text-teal-700 px-5 py-2.5 rounded-full hover:bg-white hover:shadow-lg text-sm font-semibold transition-all shadow-md"
-                    >
-                      {t('home.explore')}
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => {
+                      const target = document.getElementById('services-overview');
+                      if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
+                    className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-white/95 backdrop-blur-sm text-teal-600 rounded-xl text-sm font-medium hover:bg-teal-50 transition-all border-[0.5px] border-teal-400/60 hover:border-teal-500 shadow-sm hover:shadow-md"
+                  >
+                    <Compass className="w-4 h-4" />
+                    <span>Explore</span>
+                  </button>
                 </div>
               </div>
             </div>

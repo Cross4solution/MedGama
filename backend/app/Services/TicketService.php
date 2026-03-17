@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
+use App\Notifications\NewTicketAdminNotification;
 use App\Notifications\TicketReceivedNotification;
+use App\Notifications\TicketReplyNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -76,12 +78,15 @@ class TicketService
                 'attachments' => $attachments ?: null,
             ]);
 
-            // Auto-response notification
+            // Auto-response notification to ticket creator
             try {
                 $user->notify(new TicketReceivedNotification($ticket));
             } catch (\Throwable $e) {
                 \Log::warning('Ticket notification failed: ' . $e->getMessage());
             }
+
+            // Notify all admins about the new ticket
+            $this->notifyAdmins($ticket);
 
             return $ticket->load(['user:id,fullname,avatar,email', 'category', 'messages.user:id,fullname,avatar']);
         });
@@ -124,6 +129,15 @@ class TicketService
         // Auto-set to in_progress when admin replies
         if (in_array($user->role_id, ['superAdmin', 'saasAdmin']) && $ticket->status === 'open') {
             $ticket->update(['status' => 'in_progress']);
+        }
+
+        // Notify the ticket owner when an admin/staff replies
+        if ($user->id !== $ticket->user_id) {
+            try {
+                $ticket->user?->notify(new TicketReplyNotification($ticket, $message, $user));
+            } catch (\Throwable $e) {
+                \Log::warning('Ticket reply notification failed: ' . $e->getMessage());
+            }
         }
 
         return $message->load('user:id,fullname,avatar,role_id');
@@ -194,6 +208,21 @@ class TicketService
     {
         if (!in_array($user->role_id, ['superAdmin', 'saasAdmin'])) {
             abort(403, 'Only admins can perform this action');
+        }
+    }
+
+    /**
+     * Notify all superAdmin/saasAdmin users about a new ticket.
+     */
+    private function notifyAdmins(Ticket $ticket): void
+    {
+        try {
+            $admins = User::whereIn('role_id', ['superAdmin', 'saasAdmin'])->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new NewTicketAdminNotification($ticket));
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Admin ticket notification failed: ' . $e->getMessage());
         }
     }
 

@@ -18,7 +18,7 @@ import {
 import PhoneNumberInput from '../forms/PhoneNumberInput';
 import { listCountriesAll, getFlagCode } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox';
-import MedicalHistoryTags from './MedicalHistoryTags';
+import GlobalSuggest from '../forms/GlobalSuggest';
 import DateOfBirthPicker from '../forms/DateOfBirthPicker';
 import { useTranslation } from 'react-i18next';
 // getFlagCode imported above with listCountriesAll
@@ -134,7 +134,7 @@ const RegisterForm = ({
                })}
              </div>
            </div>
-            <div className="grid grid-cols-1 gap-1 w-full max-w-md">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-md">
         <div>
           <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left md:text-left">
             {t('auth.firstName')}
@@ -346,9 +346,12 @@ const RegisterForm = ({
               <label className="block text-xs font-medium text-gray-700 mb-1 text-left">
                 {t('profile.medicalHistory')} <span className="font-normal text-gray-400">({t('auth.medicalHistoryHint')})</span>
               </label>
-              <MedicalHistoryTags
+              <GlobalSuggest
+                type="disease"
                 value={fd.medicalHistory ?? ''}
                 onChange={(val) => handleInputChange({ target: { name: 'medicalHistory', value: val } })}
+                placeholder="e.g., Diabetes Type 2, Hypertension, Asthma..."
+                allowCustom={true}
               />
             </div>
           )}

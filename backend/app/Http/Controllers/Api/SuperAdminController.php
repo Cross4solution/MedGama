@@ -175,9 +175,53 @@ class SuperAdminController extends Controller
     }
 
     // ══════════════════════════════════════════════
-    //  USER SUSPENSION
+    //  USER MANAGEMENT (Doc §14)
     // ══════════════════════════════════════════════
 
+    /**
+     * GET /api/admin/users — List all users with filters
+     */
+    public function listUsers(Request $request): JsonResponse
+    {
+        $users = $this->superAdminService->listUsers(
+            $request->only(['role', 'search', 'is_active', 'is_verified', 'per_page', 'page']),
+        );
+
+        return response()->json($users);
+    }
+
+    /**
+     * GET /api/admin/users/stats — User management summary stats
+     */
+    public function userStats(): JsonResponse
+    {
+        return response()->json($this->superAdminService->getUserStats());
+    }
+
+    /**
+     * PUT /api/admin/users/{id}/role — Update user role
+     */
+    public function updateUserRole(Request $request, string $id): JsonResponse
+    {
+        $request->validate([
+            'role' => 'required|string|in:patient,doctor,clinicOwner,superAdmin',
+        ]);
+
+        $user = $this->superAdminService->updateUserRole(
+            $id,
+            $request->input('role'),
+            $request->user()->id,
+        );
+
+        return response()->json([
+            'message' => "User role updated to {$user->role_id}.",
+            'user'    => $user->only('id', 'fullname', 'email', 'role_id'),
+        ]);
+    }
+
+    /**
+     * PUT /api/admin/users/{id}/suspend — Suspend or reactivate a user
+     */
     public function suspendUser(Request $request, string $id): JsonResponse
     {
         $request->validate(['suspend' => 'required|boolean']);
@@ -252,9 +296,43 @@ class SuperAdminController extends Controller
         return response()->json($logs);
     }
 
+    /**
+     * GET /api/admin/audit-logs/stats — Summary stats for audit log dashboard
+     */
+    public function auditLogStats(): JsonResponse
+    {
+        return response()->json($this->superAdminService->auditLogStats());
+    }
+
+    /**
+     * GET /api/admin/users/search?q=john — Lightweight user search for filters
+     */
+    public function searchUsers(Request $request): JsonResponse
+    {
+        $q = $request->input('q', '');
+        $users = \App\Models\User::query()
+            ->where(function ($query) use ($q) {
+                $query->where('fullname', 'ilike', "%{$q}%")
+                      ->orWhere('email', 'ilike', "%{$q}%");
+            })
+            ->select('id', 'fullname', 'email', 'role_id', 'avatar')
+            ->limit(20)
+            ->get();
+
+        return response()->json($users);
+    }
+
     // ══════════════════════════════════════════════
     //  VERIFICATION REQUESTS (Doc §8.3)
     // ══════════════════════════════════════════════
+
+    /**
+     * GET /api/admin/verification-requests/doctor/{doctorId} — Full doctor review detail
+     */
+    public function doctorVerificationDetail(string $doctorId): JsonResponse
+    {
+        return response()->json($this->superAdminService->getDoctorVerificationDetail($doctorId));
+    }
 
     /**
      * GET /api/admin/verification-requests — List all verification requests

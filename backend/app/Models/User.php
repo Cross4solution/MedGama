@@ -8,11 +8,16 @@ use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Traits\LogsActivity;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasUuids, MassPrunable, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, HasUuids, LogsActivity, MassPrunable, Notifiable, SoftDeletes;
+
+    protected static string $auditResourceLabel = 'User';
+    protected static array $auditMaskedFields = ['password', 'email_verification_code', 'password_reset_code'];
+    protected static array $auditExcludedFields = ['updated_at', 'created_at', 'last_login'];
 
     protected $keyType = 'string';
     public $incrementing = false;

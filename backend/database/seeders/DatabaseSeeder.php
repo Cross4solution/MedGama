@@ -135,7 +135,7 @@ class DatabaseSeeder extends Seeder
                     'appointment_time' => '10:00',
                 ],
                 [
-                    'appointment_type' => 'in_person',
+                    'appointment_type' => 'inPerson',
                     'status' => 'confirmed',
                     'created_by' => $patient->id,
                 ]
@@ -149,7 +149,7 @@ class DatabaseSeeder extends Seeder
                     'appointment_time' => '14:30',
                 ],
                 [
-                    'appointment_type' => 'video',
+                    'appointment_type' => 'online',
                     'status' => 'pending',
                     'created_by' => $patient2->id,
                 ]
@@ -163,7 +163,7 @@ class DatabaseSeeder extends Seeder
                     'appointment_time' => '09:00',
                 ],
                 [
-                    'appointment_type' => 'in_person',
+                    'appointment_type' => 'inPerson',
                     'status' => 'completed',
                     'created_by' => $patient->id,
                 ]

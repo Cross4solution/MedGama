@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\PatientDocumentController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ClinicManagerController;
+use App\Http\Controllers\Api\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -107,10 +108,18 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| Live Search (Public — autocomplete)
+|--------------------------------------------------------------------------
+*/
+Route::get('/search/live', [SearchController::class, 'live']);
+
+/*
+|--------------------------------------------------------------------------
 | Catalog Routes (Public — read only)
 |--------------------------------------------------------------------------
 */
 Route::prefix('catalog')->middleware('cache.headers:public')->group(function () {
+    Route::get('/search', [CatalogController::class, 'search']);
     Route::get('/specialties', [CatalogController::class, 'specialties']);
     Route::get('/specialties/search', [CatalogController::class, 'specialtiesSearch']);
     Route::get('/cities', [CatalogController::class, 'cities']);
@@ -505,6 +514,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     // Verification requests (Doc §8.3 — document-based approval)
     Route::get('/verification-requests', [SuperAdminController::class, 'verificationRequests']);
     Route::get('/verification-requests/stats', [SuperAdminController::class, 'verificationStats']);
+    Route::get('/verification-requests/doctor/{doctorId}', [SuperAdminController::class, 'doctorVerificationDetail']);
     Route::put('/verification-requests/{id}/approve', [SuperAdminController::class, 'approveVerification']);
     Route::put('/verification-requests/{id}/reject', [SuperAdminController::class, 'rejectVerification']);
     Route::get('/verification-requests/{id}/document', [SuperAdminController::class, 'verificationDocument']);
@@ -516,7 +526,10 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     Route::put('/reviews/{id}/reject', [SuperAdminController::class, 'rejectReview']);
     Route::put('/reviews/{id}/hide', [SuperAdminController::class, 'hideReview']);
 
-    // User suspension
+    // User management (Doc §14)
+    Route::get('/users', [SuperAdminController::class, 'listUsers']);
+    Route::get('/users/stats', [SuperAdminController::class, 'userStats']);
+    Route::put('/users/{id}/role', [SuperAdminController::class, 'updateUserRole']);
     Route::put('/users/{id}/suspend', [SuperAdminController::class, 'suspendUser']);
 
     // Content moderation
@@ -530,6 +543,10 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
 
     // Audit logs
     Route::get('/audit-logs', [SuperAdminController::class, 'auditLogs']);
+    Route::get('/audit-logs/stats', [SuperAdminController::class, 'auditLogStats']);
+
+    // User search (for audit log filters)
+    Route::get('/users/search', [SuperAdminController::class, 'searchUsers']);
 
     // Catalog management (admin CRUD)
     Route::prefix('catalog')->group(function () {

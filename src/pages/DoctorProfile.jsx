@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import SEOHead, { buildPhysicianSchema } from '../components/seo/SEOHead';
 import LeafletMap from 'components/map/LeafletMap';
 import {
   Award, Stethoscope, Heart, CheckCircle, Shield, Users, MapPin, X,
   ChevronLeft, ChevronRight, Minus, Video, Loader2, GraduationCap, Globe,
   Star, Calendar, Clock, Phone, BadgeCheck, MessageSquare, Briefcase, Send,
+  Settings, Eye, ImageOff,
 } from 'lucide-react';
 import { doctorAPI, appointmentAPI } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 import useAuthGuard from '../hooks/useAuthGuard';
 import useSocial from '../hooks/useSocial';
 import { useTranslation } from 'react-i18next';
@@ -313,6 +315,8 @@ const DoctorProfilePage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { guardAction } = useAuthGuard();
+  const { user: authUser } = useAuth();
+  const isOwner = authUser && (authUser.id === doctorId);
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [doctor, setDoctor] = useState(null);
@@ -397,6 +401,7 @@ const DoctorProfilePage = () => {
   const languages = profile?.languages || [];
   const locationAddress = profile?.address || '';
   const onlineConsultation = profile?.online_consultation || false;
+  const operatingHours = profile?.operating_hours || null;
   const hasProfile = profile && profile.onboarding_completed;
 
   // Gallery keyboard
@@ -467,6 +472,22 @@ const DoctorProfilePage = () => {
           url: `https://medagama.com/doctor/${doctorId}`,
         })}
       />
+
+      {/* ═══ Owner Preview Bar ═══ */}
+      {isOwner && (
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-200 sticky top-0 z-40">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <Eye className="w-4 h-4 text-amber-600" />
+              <span className="text-amber-800 font-medium">{t('doctorProfile.ownerBarText')}</span>
+            </div>
+            <Link to="/crm/settings"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-amber-200 rounded-lg text-xs font-semibold text-amber-700 hover:bg-amber-50 transition-colors shadow-sm">
+              <Settings className="w-3.5 h-3.5" /> {t('doctorProfile.editSettings')}
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* ═══ Hero Section ═══ */}
       <div className="relative h-36 md:h-44 bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600">
@@ -645,6 +666,29 @@ const DoctorProfilePage = () => {
                         </div>
                       </div>
                     )}
+
+                    {/* Operating Hours */}
+                    {operatingHours && Object.keys(operatingHours).length > 0 && (
+                      <div>
+                        <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2"><Clock className="w-4 h-4 text-teal-600" /> {t('doctorProfile.operatingHours')}</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(day => {
+                            const d = operatingHours[day];
+                            const isOpen = d?.enabled !== false && d?.start && d?.end;
+                            return (
+                              <div key={day} className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border ${isOpen ? 'bg-white border-gray-200' : 'bg-gray-50 border-gray-100'}`}>
+                                <span className={`text-sm font-semibold ${isOpen ? 'text-gray-800' : 'text-gray-400'}`}>{t(`onboarding.${day}`)}</span>
+                                {isOpen ? (
+                                  <span className="text-sm text-teal-700 font-medium">{d.start} – {d.end}</span>
+                                ) : (
+                                  <span className="text-xs text-gray-400 italic">{t('onboarding.closed')}</span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -776,7 +820,15 @@ const DoctorProfilePage = () => {
                           </div>
                         )}
                       </>
-                    ) : <p className="text-sm text-gray-400 italic">{t('doctorProfile.noGalleryYet')}</p>}
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-12 bg-gradient-to-b from-gray-50 to-white rounded-2xl border-2 border-dashed border-gray-200">
+                        <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                          <ImageOff className="w-7 h-7 text-gray-300" />
+                        </div>
+                        <p className="text-sm font-semibold text-gray-500">{t('doctorProfile.galleryComingSoon')}</p>
+                        <p className="text-xs text-gray-400 mt-1 max-w-[260px] text-center">{t('doctorProfile.galleryComingSoonHint')}</p>
+                      </div>
+                    )}
                   </div>
                 )}
 

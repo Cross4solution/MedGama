@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Traits\HasTranslations;
+use App\Models\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 

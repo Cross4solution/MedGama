@@ -9,7 +9,8 @@ import {
   ShieldAlert, TrendingUp, TrendingDown, FileText,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { examinationAPI } from '../../lib/api';
+import { examinationAPI, catalogAPI } from '../../lib/api';
+import GlobalSuggest from '../../components/forms/GlobalSuggest';
 
 // ─── Medication Templates ───
 const MEDICATION_TEMPLATES = [
@@ -330,12 +331,17 @@ const PrescriptionBuilder = ({ medications, setMedications, t }) => {
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
-              <input
-                type="text"
-                value={med.name}
-                onChange={(e) => updateMedication(med.id, 'name', e.target.value)}
+              <GlobalSuggest
+                type="medication"
+                value={med.name || ''}
+                onChange={(val) => {
+                  // val can be comma-separated string or array; extract first name
+                  const name = Array.isArray(val) ? (val[0]?.name || '') : (val || '').split(',')[0]?.trim() || '';
+                  updateMedication(med.id, 'name', name);
+                }}
+                multi={false}
+                allowCustom={true}
                 placeholder={t('crm.examination.medicationNamePlaceholder')}
-                className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white"
               />
               <div className="grid grid-cols-3 gap-3">
                 <input
@@ -539,6 +545,197 @@ const FileUploadZone = ({ files, setFiles, t }) => {
 };
 
 // ═══════════════════════════════════════════════════
+// Printable Examination Report (hidden on screen, visible on print)
+// ═══════════════════════════════════════════════════
+const PrintableReport = ({ exam, t }) => {
+  if (!exam) return null;
+
+  const patient = exam.patient || {};
+  const doctor = exam.doctor || {};
+  const vitals = exam.vitals || {};
+  const prescriptions = exam.prescriptions || [];
+  const diagnoses = exam.diagnoses || [];
+  const icd10 = exam.icd10_code;
+  const reportDate = exam.created_at ? new Date(exam.created_at) : new Date();
+
+  const age = patient.date_of_birth
+    ? Math.floor((Date.now() - new Date(patient.date_of_birth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+    : null;
+
+  const vitalsEntries = [
+    { label: t('crm.examination.print.systolic', 'Systolic'), value: vitals.systolic, unit: 'mmHg' },
+    { label: t('crm.examination.print.diastolic', 'Diastolic'), value: vitals.diastolic, unit: 'mmHg' },
+    { label: t('crm.examination.print.pulse', 'Pulse'), value: vitals.pulse, unit: 'bpm' },
+    { label: t('crm.examination.print.temperature', 'Temperature'), value: vitals.temperature, unit: '°C' },
+    { label: 'SpO₂', value: vitals.spo2, unit: '%' },
+    { label: t('crm.examination.print.weight', 'Weight'), value: vitals.weight, unit: 'kg' },
+    { label: t('crm.examination.print.height', 'Height'), value: vitals.height, unit: 'cm' },
+  ].filter(v => v.value);
+
+  return (
+    <div className="print-exam-report" style={{ display: 'none' }}>
+      {/* ── Report Header (Letterhead) ── */}
+      <div className="print-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10pt' }}>
+          <img
+            src="/images/logo.svg"
+            alt="MedGama"
+            className="print-header-logo"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+          <div>
+            <div style={{ fontSize: '14pt', fontWeight: 700, color: '#111' }}>
+              {exam.clinic?.name || 'MedGama'}
+            </div>
+            <div style={{ fontSize: '9pt', color: '#666' }}>
+              {t('crm.examination.print.examReport', 'Examination Report')}
+            </div>
+          </div>
+        </div>
+        <div className="print-header-right">
+          <div style={{ fontWeight: 600 }}>
+            {t('crm.examination.print.date', 'Date')}: {reportDate.toLocaleDateString()}
+          </div>
+          <div>
+            {t('crm.examination.print.time', 'Time')}: {reportDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </div>
+          <div style={{ marginTop: '2pt', fontFamily: 'monospace', fontSize: '8pt', color: '#999' }}>
+            ID: {exam.id}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Patient Information ── */}
+      <div className="print-section">
+        <div className="print-section-title">
+          {t('crm.examination.print.patientInfo', 'Patient Information')}
+        </div>
+        <table className="print-table">
+          <tbody>
+            <tr>
+              <td style={{ fontWeight: 600, width: '25%' }}>{t('crm.examination.print.fullname', 'Full Name')}</td>
+              <td>{patient.fullname || '—'}</td>
+              <td style={{ fontWeight: 600, width: '15%' }}>{t('crm.examination.print.age', 'Age')}</td>
+              <td style={{ width: '15%' }}>{age !== null ? `${age} ${t('crm.examination.print.yearsOld', 'y/o')}` : '—'}</td>
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 600 }}>{t('crm.examination.print.email', 'Email')}</td>
+              <td>{patient.email || '—'}</td>
+              <td style={{ fontWeight: 600 }}>{t('crm.examination.print.phone', 'Phone')}</td>
+              <td>{patient.mobile || patient.phone || '—'}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── Vitals ── */}
+      {vitalsEntries.length > 0 && (
+        <div className="print-section">
+          <div className="print-section-title">
+            {t('crm.examination.print.vitals', 'Vital Signs')}
+          </div>
+          <div className="print-vitals-grid">
+            {vitalsEntries.map(v => (
+              <div key={v.label} className="print-vital-box">
+                <div className="print-vital-value">{v.value}</div>
+                <div className="print-vital-label">{v.label} ({v.unit})</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Diagnoses (ICD-10) ── */}
+      {(icd10 || diagnoses.length > 0) && (
+        <div className="print-section">
+          <div className="print-section-title">
+            {t('crm.examination.print.diagnoses', 'Diagnoses')} (ICD-10)
+          </div>
+          {icd10 && <span className="print-icd-badge">{icd10}</span>}
+          {diagnoses.map((d, i) => (
+            <span key={i} className="print-icd-badge">{d.code} — {d.desc}</span>
+          ))}
+          {exam.diagnosis_note && (
+            <div className="print-note" style={{ marginTop: '6pt' }}>
+              {exam.diagnosis_note}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Examination Notes ── */}
+      {exam.examination_note && (
+        <div className="print-section">
+          <div className="print-section-title">
+            {t('crm.examination.print.examNotes', 'Examination Notes')}
+          </div>
+          <div className="print-note">{exam.examination_note}</div>
+        </div>
+      )}
+
+      {/* ── Prescriptions ── */}
+      {prescriptions.length > 0 && (
+        <div className="print-section">
+          <div className="print-section-title">
+            {t('crm.examination.print.prescriptions', 'Prescriptions')}
+          </div>
+          <table className="print-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>{t('crm.examination.print.medication', 'Medication')}</th>
+                <th>{t('crm.examination.print.dosage', 'Dosage')}</th>
+                <th>{t('crm.examination.print.duration', 'Duration')}</th>
+                <th>{t('crm.examination.print.route', 'Route')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {prescriptions.map((rx, i) => (
+                <tr key={i}>
+                  <td>{i + 1}</td>
+                  <td style={{ fontWeight: 600 }}>{rx.drug_name}</td>
+                  <td>{rx.dosage || '—'}</td>
+                  <td>{rx.duration || '—'}</td>
+                  <td>{rx.route || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ── Treatment Plan ── */}
+      {exam.treatment_plan && (
+        <div className="print-section">
+          <div className="print-section-title">
+            {t('crm.examination.print.treatmentPlan', 'Treatment Plan & Recommendations')}
+          </div>
+          <div className="print-note">{exam.treatment_plan}</div>
+        </div>
+      )}
+
+      {/* ── Doctor Signature ── */}
+      <div className="print-signature">
+        <div className="print-signature-box">
+          <div style={{ marginBottom: '4pt', fontWeight: 600, color: '#111' }}>
+            {doctor.fullname || t('crm.examination.print.attendingPhysician', 'Attending Physician')}
+          </div>
+          {doctor.title && <div>{doctor.title}</div>}
+          <div>{t('crm.examination.print.signature', 'Signature / Stamp')}</div>
+        </div>
+      </div>
+
+      {/* ── Footer ── */}
+      <div className="print-footer">
+        {t('crm.examination.print.footer', 'This report was generated by MedGama Healthcare Platform. For questions contact support@medgama.com')}
+        <br />
+        {t('crm.examination.print.confidential', 'CONFIDENTIAL — This document contains protected health information.')}
+      </div>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════
 // Main CRMExamination Component
 // ═══════════════════════════════════════════════════
 const CRMExamination = () => {
@@ -693,6 +890,24 @@ const CRMExamination = () => {
       setPdfLoading(false);
     }
   };
+
+  // ─── Print Examination Summary ───
+  const handlePrintExam = useCallback((exam) => {
+    if (!exam) return;
+    document.body.classList.add('print-exam-active');
+    // Small delay to ensure the class is applied and print-exam-report is rendered
+    requestAnimationFrame(() => {
+      window.print();
+      // Clean up after print dialog closes
+      const cleanup = () => {
+        document.body.classList.remove('print-exam-active');
+        window.removeEventListener('afterprint', cleanup);
+      };
+      window.addEventListener('afterprint', cleanup);
+      // Fallback: remove class after 2s if afterprint doesn't fire
+      setTimeout(() => document.body.classList.remove('print-exam-active'), 2000);
+    });
+  }, []);
 
   // ─── Reset Form ───
   const handleReset = () => {
@@ -1041,14 +1256,23 @@ const CRMExamination = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 {lastSavedExam && (
-                  <button
-                    onClick={() => handleDownloadPdf(lastSavedExam.id)}
-                    disabled={pdfLoading}
-                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl text-xs font-medium hover:bg-blue-100 transition-colors disabled:opacity-60"
-                  >
-                    {pdfLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
-                    Reçete PDF
-                  </button>
+                  <>
+                    <button
+                      onClick={() => handlePrintExam(lastSavedExam)}
+                      className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-xl text-xs font-medium hover:bg-gray-100 transition-colors"
+                    >
+                      <Printer className="w-3.5 h-3.5" />
+                      {t('crm.examination.print.printSummary', 'Print Summary')}
+                    </button>
+                    <button
+                      onClick={() => handleDownloadPdf(lastSavedExam.id)}
+                      disabled={pdfLoading}
+                      className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl text-xs font-medium hover:bg-blue-100 transition-colors disabled:opacity-60"
+                    >
+                      {pdfLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
+                      Reçete PDF
+                    </button>
+                  </>
                 )}
                 <button
                   onClick={handleReset}
@@ -1062,6 +1286,9 @@ const CRMExamination = () => {
           </div>
         </div>
       )}
+
+      {/* Printable Report for newly saved exam — hidden on screen */}
+      {lastSavedExam && <PrintableReport exam={lastSavedExam} t={t} />}
 
       {/* ═══ HISTORY TAB ═══ */}
       {activeTab === 'history' && (
@@ -1269,6 +1496,13 @@ const CRMExamination = () => {
 
                 <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
                   <button
+                    onClick={() => handlePrintExam(selectedExamDetail)}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-colors flex items-center gap-1.5"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                    {t('crm.examination.print.printSummary', 'Print Summary')}
+                  </button>
+                  <button
                     onClick={() => handleDownloadPdf(selectedExam.id)}
                     disabled={pdfLoading}
                     className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-xl transition-colors flex items-center gap-1.5 disabled:opacity-60"
@@ -1284,6 +1518,9 @@ const CRMExamination = () => {
                   </button>
                 </div>
               </div>
+
+              {/* Printable Report — hidden on screen, visible on print */}
+              <PrintableReport exam={selectedExamDetail} t={t} />
             </div>
           )}
         </div>

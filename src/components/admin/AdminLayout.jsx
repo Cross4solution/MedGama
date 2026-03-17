@@ -14,6 +14,8 @@ import {
   Home,
   ExternalLink,
   Star,
+  LifeBuoy,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -22,9 +24,11 @@ const NAV_ITEMS = [
   { label: 'Doctor Verification', icon: ShieldCheck, path: '/admin/verification' },
   { label: 'Content Moderation', icon: AlertTriangle, path: '/admin/moderation' },
   { label: 'Catalog Management', icon: BookOpen, path: '/admin/catalog' },
-  { label: 'Feature Toggles', icon: Settings2, path: '/admin/settings' },
+  { label: 'System Settings', icon: Settings2, path: '/admin/settings' },
   { label: 'Audit Logs', icon: ScrollText, path: '/admin/audit-logs' },
+  { label: 'User Management', icon: Users, path: '/admin/users' },
   { label: 'Review Moderation', icon: Star, path: '/admin/reviews' },
+  { label: 'Support Tickets', icon: LifeBuoy, path: '/admin/support' },
 ];
 
 const AdminLayout = ({ children }) => {

@@ -24,25 +24,22 @@ class AppointmentConfirmedNotification extends Notification implements ShouldQue
     public function toMail(object $notifiable): MailMessage
     {
         $appt = $this->appointment;
+        $locale = $notifiable->preferred_language ?? 'en';
         $date = $appt->appointment_date?->format('d M Y') ?? $appt->appointment_date;
         $time = $appt->appointment_time;
-        $doctorName = $appt->doctor?->fullname ?? 'Your doctor';
+        $frontendUrl = config('app.frontend_url', 'https://medgama.com');
 
-        $mail = (new MailMessage)
-            ->subject('MedaGama — Appointment Confirmed')
-            ->greeting("Great news, {$notifiable->fullname}!")
-            ->line('Your appointment has been confirmed by the doctor.')
-            ->line("**Doctor:** {$doctorName}")
-            ->line("**Date:** {$date}")
-            ->line("**Time:** {$time}");
-
-        if ($appt->video_conference_link) {
-            $mail->action('Join Video Call', $appt->video_conference_link);
-        } else {
-            $mail->action('View My Appointments', url('/telehealth'));
-        }
-
-        return $mail->line('Please make sure to be available at the scheduled time.');
+        return (new MailMessage)
+            ->subject('MedGama — ' . trans('email.appt_confirmed_subject', [], $locale))
+            ->view('emails.appointment-confirmed-v2', [
+                'locale'     => $locale,
+                'userName'   => $notifiable->fullname ?? $notifiable->email,
+                'doctorName' => $appt->doctor?->fullname ?? 'Your doctor',
+                'date'       => $date,
+                'time'       => $time,
+                'videoLink'  => $appt->video_conference_link ?? '',
+                'actionUrl'  => $appt->video_conference_link ?: $frontendUrl . '/telehealth',
+            ]);
     }
 
     public function toArray(object $notifiable): array

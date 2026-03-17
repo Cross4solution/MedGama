@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Allergy;
+use App\Models\Medication;
 use App\Models\Specialty;
 use App\Models\City;
 use App\Models\DiseaseCondition;
 use App\Models\SymptomSpecialtyMapping;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CatalogController extends Controller
@@ -238,5 +241,85 @@ class CatalogController extends Controller
         $mapping->update($validated);
 
         return response()->json(['symptom' => $mapping->fresh()]);
+    }
+
+    // ── Unified Catalog Search ──
+
+    /**
+     * GET /api/catalog/search?type=disease&q=diab
+     *
+     * Supported types: disease, allergy, medication, specialty, symptom, procedure
+     * Returns locale-aware name + code, max 15 results.
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $type = $request->query('type', 'disease');
+        $q    = mb_strtolower(trim($request->query('q', '')));
+
+        if (mb_strlen($q) < 1) {
+            return response()->json(['results' => []]);
+        }
+
+        $locale   = app()->getLocale();
+        $fallback = config('app.fallback_locale', 'en');
+        $limit    = 15;
+
+        $results = match ($type) {
+            'disease'    => $this->searchTranslatable(DiseaseCondition::active(), $q, $locale, $fallback, $limit),
+            'allergy'    => $this->searchTranslatable(Allergy::active(), $q, $locale, $fallback, $limit, true),
+            'medication' => $this->searchTranslatable(Medication::active(), $q, $locale, $fallback, $limit, true),
+            'specialty'  => $this->searchTranslatable(Specialty::active()->ordered(), $q, $locale, $fallback, $limit),
+            'symptom', 'procedure' => $this->searchSymptoms($q, $locale, $fallback, $limit),
+            default      => collect(),
+        };
+
+        return response()->json(['results' => $results->values()]);
+    }
+
+    /**
+     * Search models that use HasTranslations trait (name column is JSONB).
+     */
+    private function searchTranslatable($query, string $q, string $locale, string $fallback, int $limit, bool $withCategory = false)
+    {
+        return $query->get()->map(function ($item) use ($locale, $fallback, $withCategory) {
+            $name = $item->getTranslation('name', $locale)
+                 ?? $item->getTranslation('name', $fallback)
+                 ?? '';
+            $row = [
+                'id'   => $item->id,
+                'code' => $item->code,
+                'name' => $name,
+            ];
+            if ($withCategory && isset($item->category)) {
+                $row['category'] = $item->category;
+            }
+            if (isset($item->form)) {
+                $row['form'] = $item->form;
+            }
+            return $row;
+        })->filter(function ($item) use ($q) {
+            return str_contains(mb_strtolower($item['name'] ?? ''), $q)
+                || str_contains(mb_strtolower($item['code'] ?? ''), $q);
+        })->take($limit);
+    }
+
+    /**
+     * Search symptom_specialty_mappings (name is JSONB, also has symptom string column).
+     */
+    private function searchSymptoms(string $q, string $locale, string $fallback, int $limit)
+    {
+        return SymptomSpecialtyMapping::active()->get()->map(function ($item) use ($locale, $fallback) {
+            $name = $item->getTranslation('name', $locale)
+                 ?? $item->getTranslation('name', $fallback)
+                 ?? $item->symptom;
+            return [
+                'id'   => $item->id,
+                'code' => $item->symptom,
+                'name' => $name,
+            ];
+        })->filter(function ($item) use ($q) {
+            return str_contains(mb_strtolower($item['name'] ?? ''), $q)
+                || str_contains(mb_strtolower($item['code'] ?? ''), $q);
+        })->take($limit);
     }
 }

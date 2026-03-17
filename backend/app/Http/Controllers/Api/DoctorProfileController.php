@@ -131,8 +131,8 @@ class DoctorProfileController extends Controller
         $profile->fill($data);
         $profile->onboarding_step = max($profile->onboarding_step, $step + 1);
 
-        // If step >= 3 (last step), mark onboarding as completed
-        if ($step >= 3) {
+        // If step >= 2 (last step), mark onboarding as completed
+        if ($step >= 2) {
             $profile->onboarding_completed = true;
         }
 

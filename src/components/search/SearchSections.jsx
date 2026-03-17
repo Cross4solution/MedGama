@@ -10,9 +10,9 @@ export default function SearchSections() {
   return (
     <>
       {/* Custom Search (Country → City → Speciality → Symptom/Procedure) */}
-      <section className="pt-5 pb-5 bg-gradient-to-b from-gray-50 to-white border-b border-gray-100">
+      <section className="pt-4 pb-4 bg-gradient-to-b from-gray-50 to-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Search</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">Search</h2>
           <CustomSearch />
         </div>
       </section>

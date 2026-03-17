@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { patientDocumentAPI } from '../lib/api';
+import EmptyState from '../components/common/EmptyState';
 import {
   FolderHeart, Upload, FileText, Image, File, Trash2, Download,
   Search, Filter, X, ChevronLeft, ChevronRight, Eye, Share2,
@@ -240,17 +241,16 @@ const MedicalArchive = () => {
             <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
           </div>
         ) : documents.length === 0 ? (
-          <div className="rounded-2xl border border-gray-200/60 bg-white px-6 py-16 text-center">
-            <FolderHeart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-base font-semibold text-gray-700 mb-1">{t('medicalArchive.empty', 'No documents yet')}</h3>
-            <p className="text-sm text-gray-400 mb-4">{t('medicalArchive.emptyDesc', 'Upload your medical documents to keep them organized and secure.')}</p>
-            <button
-              onClick={() => setShowUploadModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
-            >
-              <Upload className="w-4 h-4" />
-              {t('medicalArchive.uploadFirst', 'Upload Your First Document')}
-            </button>
+          <div className="rounded-2xl border border-gray-200/60 bg-white">
+            <EmptyState
+              type="vault"
+              title={t('medicalArchive.empty', 'No documents yet')}
+              description={t('medicalArchive.emptyDesc', 'Upload your medical documents to keep them organized and secure. Your files are encrypted and always accessible.')}
+              actionLabel={t('medicalArchive.uploadFirst', 'Upload Your First Document')}
+              onAction={() => setShowUploadModal(true)}
+              secondaryLabel={t('medicalArchive.learnMore', 'Learn More')}
+              secondaryUrl="/for-patients"
+            />
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

@@ -25,7 +25,7 @@ export default function CoreBoxes() {
   ];
 
   return (
-    <section id="features" className="pt-2 pb-10">
+    <section id="services-overview" className="pt-2 pb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {items.slice(0, 6).map((f, i) => {

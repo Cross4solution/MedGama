@@ -23,14 +23,17 @@ class VerificationApprovedNotification extends Notification implements ShouldQue
 
     public function toMail(object $notifiable): MailMessage
     {
+        $locale = $notifiable->preferred_language ?? 'en';
+        $frontendUrl = config('app.frontend_url', 'https://medgama.com');
+
         return (new MailMessage)
-            ->subject('MedaGama — Your Verification Has Been Approved!')
-            ->greeting("Congratulations, {$notifiable->fullname}!")
-            ->line('Your professional verification request has been approved.')
-            ->line("**Document:** {$this->verificationRequest->document_label}")
-            ->line('You now have a **Verified Professional** badge on your profile, visible to all patients.')
-            ->action('Go to Your Dashboard', url('/crm'))
-            ->line('Thank you for being a trusted professional on MedaGama.');
+            ->subject('MedGama — ' . trans('email.verify_approved_subject', [], $locale))
+            ->view('emails.verification-approved-v2', [
+                'locale'        => $locale,
+                'userName'      => $notifiable->fullname ?? $notifiable->email,
+                'documentLabel' => $this->verificationRequest->document_label,
+                'actionUrl'     => $frontendUrl . '/crm',
+            ]);
     }
 
     public function toArray(object $notifiable): array

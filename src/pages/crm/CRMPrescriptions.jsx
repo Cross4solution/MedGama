@@ -5,6 +5,7 @@ import {
   Clock, FileText, Copy,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import GlobalSuggest from '../../components/forms/GlobalSuggest';
 
 const MOCK_PRESCRIPTIONS = [
   { id: 1, date: '2026-02-16', patient: 'Zeynep Kaya', age: 34, diagnosis: 'Seasonal Allergies', medications: [{ name: 'Cetirizine 10mg', dosage: '1x daily', duration: '14 days' }, { name: 'Fluticasone Nasal Spray', dosage: '2 puffs/nostril daily', duration: '30 days' }], status: 'active', notes: 'Avoid allergens. Follow-up in 2 weeks.' },
@@ -192,11 +193,21 @@ const CRMPrescriptions = () => {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.prescriptions.diagnosis')} *</label>
-                <input type="text" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="e.g. Type 2 Diabetes" />
+                <GlobalSuggest
+                  type="disease"
+                  multi={false}
+                  allowCustom={true}
+                  placeholder="e.g. Type 2 Diabetes"
+                />
               </div>
               <div className="border border-gray-200 rounded-xl p-4 space-y-3">
                 <p className="text-xs font-semibold text-gray-700">Medication #1</p>
-                <input type="text" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Medication name & strength" />
+                <GlobalSuggest
+                  type="medication"
+                  multi={false}
+                  allowCustom={true}
+                  placeholder="Medication name & strength"
+                />
                 <div className="grid grid-cols-2 gap-3">
                   <input type="text" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Dosage (e.g. 2x daily)" />
                   <input type="text" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" placeholder="Duration (e.g. 30 days)" />

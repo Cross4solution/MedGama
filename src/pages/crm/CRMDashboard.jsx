@@ -27,6 +27,7 @@ import {
   MessageSquare,
   UserPlus,
   RefreshCw,
+  ExternalLink,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -164,6 +165,13 @@ const CRMDashboard = () => {
           <p className="text-sm text-gray-500 mt-0.5">{formatDate(TODAY)}</p>
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            to={`/doctor/${user?.id}`}
+            className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-teal-200 text-teal-700 bg-teal-50 rounded-xl text-sm font-medium hover:bg-teal-100 transition-colors"
+          >
+            <ExternalLink className="w-4 h-4" />
+            <span className="hidden sm:inline">{t('doctorProfile.viewPublicProfile')}</span>
+          </Link>
           <Link
             to="/crm/appointments"
             className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md"

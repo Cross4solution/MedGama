@@ -26,33 +26,28 @@ class AppointmentCancelledNotification extends Notification implements ShouldQue
     public function toMail(object $notifiable): MailMessage
     {
         $appt = $this->appointment;
+        $locale = $notifiable->preferred_language ?? 'en';
+        $isDoctor = $this->recipientRole === 'doctor';
         $date = $appt->appointment_date?->format('d M Y') ?? $appt->appointment_date;
         $time = $appt->appointment_time;
+        $frontendUrl = config('app.frontend_url', 'https://medgama.com');
 
-        if ($this->recipientRole === 'doctor') {
-            $patientName = $appt->patient?->fullname ?? 'A patient';
-            return (new MailMessage)
-                ->subject('MedaGama — Appointment Cancelled')
-                ->greeting("Hello, Dr. {$notifiable->fullname}")
-                ->line("An appointment has been cancelled.")
-                ->line("**Patient:** {$patientName}")
-                ->line("**Date:** {$date}")
-                ->line("**Time:** {$time}")
-                ->line("**Cancelled by:** {$this->cancelledBy}")
-                ->action('View Appointments', url('/crm/appointments'))
-                ->line('The time slot has been released and is now available for new bookings.');
-        }
-
-        $doctorName = $appt->doctor?->fullname ?? 'Your doctor';
         return (new MailMessage)
-            ->subject('MedaGama — Appointment Cancelled')
-            ->greeting("Hello, {$notifiable->fullname}")
-            ->line('We\'re sorry to inform you that your appointment has been cancelled.')
-            ->line("**Doctor:** {$doctorName}")
-            ->line("**Date:** {$date}")
-            ->line("**Time:** {$time}")
-            ->action('Book New Appointment', url('/telehealth-appointment'))
-            ->line('If you\'d like to reschedule, please visit our platform.');
+            ->subject('MedGama — ' . trans('email.appt_cancelled_subject', [], $locale))
+            ->view('emails.appointment-cancelled-v2', [
+                'locale'          => $locale,
+                'isDoctor'        => $isDoctor,
+                'userName'        => $notifiable->fullname ?? $notifiable->email,
+                'counterpartName' => $isDoctor
+                    ? ($appt->patient?->fullname ?? 'A patient')
+                    : ($appt->doctor?->fullname ?? 'Your doctor'),
+                'date'            => $date,
+                'time'            => $time,
+                'cancelledBy'     => $this->cancelledBy,
+                'actionUrl'       => $isDoctor
+                    ? $frontendUrl . '/crm/appointments'
+                    : $frontendUrl . '/telehealth-appointment',
+            ]);
     }
 
     public function toArray(object $notifiable): array
