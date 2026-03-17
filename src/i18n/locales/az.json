@@ -1072,7 +1072,21 @@
   "chat": {
     "emptyTitle": "Hələ söhbət yoxdur",
     "emptyDesc": "Xəstələriniz sizə mesaj göndərdikdə söhbətlər burada görünəcək. Xəstələrinizlə əlaqə qurmağa başlayın!",
-    "exploreDoctors": "Həkimləri kəşf et"
+    "exploreDoctors": "Həkimləri kəşf edin",
+    "appointmentRequired": "Yalnız randevunuz olan həkimlərə mesaj göndərə bilərsiniz.",
+    "typing": "yazır...",
+    "online": "Onlayn",
+    "offline": "Oflayn",
+    "sendMessage": "Mesaj göndər",
+    "typeMessage": "Mesaj yazın...",
+    "attachFile": "Fayl əlavə et",
+    "attachImage": "Şəkil əlavə et",
+    "messageSent": "Mesaj göndərildi!",
+    "messageSentDesc": "Mesajınız {{name}} şəxsinə uğurla göndərildi.",
+    "goToMessages": "Mesajlara keç",
+    "newMessage": "Yeni mesajınız var",
+    "photo": "Şəkil",
+    "document": "Sənəd"
   },
   "review": {
     "rateExperience": "Təcrübənizi qiymətləndirin",

@@ -1424,7 +1424,21 @@
   "chat": {
     "emptyTitle": "Henüz konuşma yok",
     "emptyDesc": "Hastalarınız size mesaj gönderdiğinde konuşmalar burada görünecektir. Hastalarınızla bağlantı kurmaya başlayın!",
-    "exploreDoctors": "Doktorları Keşfet"
+    "exploreDoctors": "Doktorları Keşfet",
+    "appointmentRequired": "Sadece randevulu doktorlarınızla mesajlaşabilirsiniz.",
+    "typing": "yazıyor...",
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı",
+    "sendMessage": "Mesaj Gönder",
+    "typeMessage": "Bir mesaj yazın...",
+    "attachFile": "Dosya Ekle",
+    "attachImage": "Resim Ekle",
+    "messageSent": "Mesaj Gönderildi!",
+    "messageSentDesc": "Mesajınız {{name}} kişisine başarıyla iletildi.",
+    "goToMessages": "Mesajlara Git",
+    "newMessage": "Yeni bir mesajınız var",
+    "photo": "Fotoğraf",
+    "document": "Belge"
   },
   "medicalArchive": {
     "empty": "Henüz belge yok",

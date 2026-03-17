@@ -1424,7 +1424,21 @@
   "chat": {
     "emptyTitle": "No conversations yet",
     "emptyDesc": "When patients send you a message, their conversations will appear here. Start connecting with your patients!",
-    "exploreDoctors": "Explore Doctors"
+    "exploreDoctors": "Explore Doctors",
+    "appointmentRequired": "You can only message doctors you have an appointment with.",
+    "typing": "typing...",
+    "online": "Online",
+    "offline": "Offline",
+    "sendMessage": "Send Message",
+    "typeMessage": "Type a message...",
+    "attachFile": "Attach File",
+    "attachImage": "Attach Image",
+    "messageSent": "Message Sent!",
+    "messageSentDesc": "Your message has been sent to {{name}}.",
+    "goToMessages": "Go to Messages",
+    "newMessage": "You have a new message",
+    "photo": "Photo",
+    "document": "Document"
   },
   "medicalArchive": {
     "empty": "No documents yet",

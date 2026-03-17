@@ -1022,7 +1022,21 @@
   "chat": {
     "emptyTitle": "لا توجد محادثات بعد",
     "emptyDesc": "عندما يرسل لك المرضى رسالة، ستظهر المحادثات هنا. ابدأ التواصل مع مرضاك!",
-    "exploreDoctors": "استكشاف الأطباء"
+    "exploreDoctors": "استكشف الأطباء",
+    "appointmentRequired": "يمكنك فقط مراسلة الأطباء الذين لديك موعد معهم.",
+    "typing": "يكتب...",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "sendMessage": "إرسال رسالة",
+    "typeMessage": "اكتب رسالة...",
+    "attachFile": "إرفاق ملف",
+    "attachImage": "إرفاق صورة",
+    "messageSent": "تم إرسال الرسالة!",
+    "messageSentDesc": "تم إرسال رسالتك إلى {{name}} بنجاح.",
+    "goToMessages": "الذهاب إلى الرسائل",
+    "newMessage": "لديك رسالة جديدة",
+    "photo": "صورة",
+    "document": "مستند"
   },
   "review": {
     "rateExperience": "قيّم تجربتك",

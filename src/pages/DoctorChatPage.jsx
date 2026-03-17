@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import ThreadsSidebar from 'components/chat/ThreadsSidebar';
 import ChatHeader from 'components/chat/ChatHeader';
 import ChatMessageList from 'components/chat/ChatMessageList';
@@ -102,6 +103,7 @@ const DoctorChatPage = () => {
   const { t } = useTranslation();
   const { user, hydrated } = useAuth();
   const { notify } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [message, setMessage] = useState('');
   const [channelFilter, setChannelFilter] = useState('All');
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
@@ -122,6 +124,7 @@ const DoctorChatPage = () => {
   const [typingUser, setTypingUser] = useState(null);
   const typingTimeoutRef = useRef(null);
   const lastTypingSentRef = useRef(0);
+  const startWithHandled = useRef(false);
 
   const currentUserId = user?.id || null;
   const hasStoredToken = useMemo(() => {
@@ -172,6 +175,38 @@ const DoctorChatPage = () => {
     if (!hydrated) return;
     fetchConversations();
   }, [hydrated, fetchConversations]);
+
+  // Handle ?startWith=doctorId — auto-start conversation from DoctorProfile
+  useEffect(() => {
+    if (startWithHandled.current) return;
+    const startWith = searchParams.get('startWith');
+    if (!startWith || !currentUserId || !isApiMode || loadingConvs) return;
+
+    startWithHandled.current = true;
+    // Remove the param from URL
+    setSearchParams({}, { replace: true });
+
+    (async () => {
+      try {
+        const res = await chatAPI.startConversation({ recipient_id: startWith });
+        const conv = res?.data || res;
+        if (conv?.id) {
+          await fetchConversations();
+          setActiveThreadId(conv.id);
+          setMobileChatOpen(true);
+        }
+      } catch (err) {
+        if (err?.response?.status === 403 || err?.status === 403) {
+          notify({
+            type: 'error',
+            message: t('chat.appointmentRequired', 'You can only message doctors you have an appointment with.'),
+          });
+        } else {
+          notify({ type: 'error', message: err?.message || 'Failed to start conversation.' });
+        }
+      }
+    })();
+  }, [searchParams, setSearchParams, currentUserId, isApiMode, loadingConvs, fetchConversations, notify, t]);
 
   // Fetch messages for active conversation
   const fetchMessages = useCallback(async (convId) => {

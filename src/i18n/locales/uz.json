@@ -1070,9 +1070,23 @@
     "subtitle": "6698-sonli Shaxsiy Ma'lumotlarni Himoya Qilish Qonuni"
   },
   "chat": {
-    "emptyTitle": "Hali suhbat yo'q",
-    "emptyDesc": "Bemorlaringiz sizga xabar yuborganida suhbatlar bu yerda ko'rinadi. Bemorlaringiz bilan aloqa o'rnatishni boshlang!",
-    "exploreDoctors": "Shifokorlarni o'rganing"
+    "emptyTitle": "Hali suhbatlar yo'q",
+    "emptyDesc": "Bemorlar sizga xabar yuborganida suhbatlar bu yerda ko'rinadi. Bemorlaringiz bilan bog'lanishni boshlang!",
+    "exploreDoctors": "Shifokorlarni kashf eting",
+    "appointmentRequired": "Faqat uchrashuvingiz bor shifokorlarga xabar yuborishingiz mumkin.",
+    "typing": "yozmoqda...",
+    "online": "Onlayn",
+    "offline": "Oflayn",
+    "sendMessage": "Xabar yuborish",
+    "typeMessage": "Xabar yozing...",
+    "attachFile": "Fayl biriktirish",
+    "attachImage": "Rasm biriktirish",
+    "messageSent": "Xabar yuborildi!",
+    "messageSentDesc": "Xabaringiz {{name}} ga muvaffaqiyatli yuborildi.",
+    "goToMessages": "Xabarlarga o'tish",
+    "newMessage": "Yangi xabaringiz bor",
+    "photo": "Rasm",
+    "document": "Hujjat"
   },
   "review": {
     "rateExperience": "Tajribangizni baholang",

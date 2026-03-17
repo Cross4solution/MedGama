@@ -552,7 +552,7 @@ const DoctorProfilePage = () => {
               >
                 <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
               </button>
-              <button onClick={guardAction(() => setMessageModal(true))}
+              <button onClick={guardAction(() => navigate(`/doctor-chat?startWith=${doctorId}`))}
                 className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-violet-50 hover:text-violet-600 hover:border-violet-200 transition-all"
               >
                 <MessageSquare className="w-5 h-5" />
@@ -871,7 +871,7 @@ const DoctorProfilePage = () => {
 
             {/* Quick Contact */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 space-y-2.5">
-              <button onClick={guardAction(() => setMessageModal(true))} className="w-full py-2.5 bg-violet-600 text-white rounded-xl font-semibold text-sm hover:bg-violet-700 transition-colors flex items-center justify-center gap-2 shadow-sm">
+              <button onClick={guardAction(() => navigate(`/doctor-chat?startWith=${doctorId}`))} className="w-full py-2.5 bg-violet-600 text-white rounded-xl font-semibold text-sm hover:bg-violet-700 transition-colors flex items-center justify-center gap-2 shadow-sm">
                 <MessageSquare className="w-4 h-4" /> {t('doctorProfile.sendMessage')}
               </button>
             </div>

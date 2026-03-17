@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { X, Send, Loader2, CheckCircle2, Paperclip, Image } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { messageAPI } from '../../lib/api';
+import { useNavigate } from 'react-router-dom';
+import { chatAPI } from '../../lib/api';
 
 export default function SendMessageModal({ open, onClose, targetId, targetName, targetType = 'doctor' }) {
   const { i18n } = useTranslation();
+  const navigate = useNavigate();
   const isTr = i18n.language?.startsWith('tr');
 
   const [message, setMessage] = useState('');
@@ -19,31 +21,24 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
     setError(null);
 
     try {
-      // Try real API first
-      const convRes = await messageAPI.conversations({ participant_id: targetId });
-      let conversationId;
-      const existing = (convRes?.data || convRes || []).find(c =>
-        (c.participants || []).some(p => p.id === targetId)
-      );
-
-      if (existing) {
-        conversationId = existing.id;
-      } else {
-        const createRes = await messageAPI.createConversation({
-          type: 'direct',
-          participant_ids: [targetId],
-        });
-        conversationId = createRes?.data?.id || createRes?.id;
-      }
+      // Start or find existing conversation via chatAPI
+      const convRes = await chatAPI.startConversation({ recipient_id: targetId });
+      const conv = convRes?.data || convRes;
+      const conversationId = conv?.id;
 
       if (conversationId) {
-        await messageAPI.sendMessage(conversationId, { body: message.trim(), type: 'text' });
+        await chatAPI.sendMessage(conversationId, { content: message.trim() });
       }
       setSent(true);
-    } catch {
-      // Fallback: simulate success for demo
-      await new Promise(r => setTimeout(r, 800));
-      setSent(true);
+    } catch (err) {
+      const status = err?.response?.status || err?.status;
+      if (status === 403) {
+        setError(isTr
+          ? 'Sadece randevulu doktorlarınızla mesajlaşabilirsiniz.'
+          : 'You can only message doctors you have an appointment with.');
+      } else {
+        setError(isTr ? 'Mesaj gönderilemedi.' : 'Failed to send message.');
+      }
     } finally {
       setSending(false);
     }
@@ -92,7 +87,7 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
                   {isTr ? 'Kapat' : 'Close'}
                 </button>
                 <button
-                  onClick={() => { handleClose(); window.location.href = '/doctor-chat'; }}
+                  onClick={() => { handleClose(); navigate('/doctor-chat'); }}
                   className="flex-1 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors"
                 >
                   {isTr ? 'Mesajlara Git' : 'Go to Messages'}

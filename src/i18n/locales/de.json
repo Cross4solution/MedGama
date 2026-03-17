@@ -1020,9 +1020,23 @@
     "subtitle": "Gesetz Nr. 6698 zum Schutz personenbezogener Daten"
   },
   "chat": {
-    "emptyTitle": "Noch keine Gespräche",
-    "emptyDesc": "Wenn Patienten Ihnen eine Nachricht senden, erscheinen die Gespräche hier. Beginnen Sie mit Ihren Patienten zu kommunizieren!",
-    "exploreDoctors": "Ärzte entdecken"
+    "emptyTitle": "Noch keine Unterhaltungen",
+    "emptyDesc": "Wenn Patienten Ihnen eine Nachricht senden, erscheinen die Unterhaltungen hier. Beginnen Sie, sich mit Ihren Patienten zu verbinden!",
+    "exploreDoctors": "Ärzte entdecken",
+    "appointmentRequired": "Sie können nur Ärzten schreiben, bei denen Sie einen Termin haben.",
+    "typing": "schreibt...",
+    "online": "Online",
+    "offline": "Offline",
+    "sendMessage": "Nachricht senden",
+    "typeMessage": "Nachricht eingeben...",
+    "attachFile": "Datei anhängen",
+    "attachImage": "Bild anhängen",
+    "messageSent": "Nachricht gesendet!",
+    "messageSentDesc": "Ihre Nachricht wurde erfolgreich an {{name}} gesendet.",
+    "goToMessages": "Zu Nachrichten gehen",
+    "newMessage": "Sie haben eine neue Nachricht",
+    "photo": "Foto",
+    "document": "Dokument"
   },
   "review": {
     "rateExperience": "Bewerten Sie Ihre Erfahrung",

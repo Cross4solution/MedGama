@@ -1020,9 +1020,23 @@
     "subtitle": "Legge n. 6698 sulla protezione dei dati personali"
   },
   "chat": {
-    "emptyTitle": "Nessuna conversazione",
-    "emptyDesc": "Quando i pazienti ti invieranno un messaggio, le conversazioni appariranno qui. Inizia a comunicare con i tuoi pazienti!",
-    "exploreDoctors": "Esplora medici"
+    "emptyTitle": "Nessuna conversazione ancora",
+    "emptyDesc": "Quando i pazienti ti invieranno un messaggio, le conversazioni appariranno qui. Inizia a connetterti con i tuoi pazienti!",
+    "exploreDoctors": "Esplora medici",
+    "appointmentRequired": "Puoi scrivere solo ai medici con cui hai un appuntamento.",
+    "typing": "sta scrivendo...",
+    "online": "Online",
+    "offline": "Offline",
+    "sendMessage": "Invia messaggio",
+    "typeMessage": "Scrivi un messaggio...",
+    "attachFile": "Allega file",
+    "attachImage": "Allega immagine",
+    "messageSent": "Messaggio inviato!",
+    "messageSentDesc": "Il tuo messaggio è stato inviato a {{name}} con successo.",
+    "goToMessages": "Vai ai messaggi",
+    "newMessage": "Hai un nuovo messaggio",
+    "photo": "Foto",
+    "document": "Documento"
   },
   "review": {
     "rateExperience": "Valuta la tua esperienza",

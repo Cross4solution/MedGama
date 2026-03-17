@@ -150,10 +150,15 @@ class ChatService
         if ($attachment) {
             $messageType = $this->detectMessageType($attachment);
             $folder = 'chat/attachments/' . $conversation->id;
-            $filename = Str::uuid() . '.' . ($attachment->getClientOriginalExtension() ?: 'bin');
-            $attachment->storeAs($folder, $filename, 'public');
-            $attachmentUrl = '/storage/' . $folder . '/' . $filename;
             $attachmentName = $attachment->getClientOriginalName();
+
+            if ($messageType === 'image') {
+                $attachmentUrl = $this->optimizeAndStoreImage($attachment, $folder);
+            } else {
+                $filename = Str::uuid() . '.' . ($attachment->getClientOriginalExtension() ?: 'bin');
+                $attachment->storeAs($folder, $filename, 'public');
+                $attachmentUrl = '/storage/' . $folder . '/' . $filename;
+            }
         }
 
         $contentPreview = $data['content'] ?? null;
@@ -246,6 +251,56 @@ class ChatService
         }
 
         return 'document';
+    }
+
+    /**
+     * Optimize an uploaded image: resize if too large, convert to WebP, compress.
+     * Returns the public URL path to the stored image.
+     */
+    private function optimizeAndStoreImage(UploadedFile $file, string $folder): string
+    {
+        $maxWidth  = 1920;
+        $maxHeight = 1920;
+        $quality   = 82;
+
+        $image = @imagecreatefromstring(file_get_contents($file->getRealPath()));
+        if (!$image) {
+            // GD can't process — store as-is
+            $filename = Str::uuid() . '.' . ($file->getClientOriginalExtension() ?: 'bin');
+            $file->storeAs($folder, $filename, 'public');
+            return '/storage/' . $folder . '/' . $filename;
+        }
+
+        $origW = imagesx($image);
+        $origH = imagesy($image);
+
+        // Resize if exceeds max dimensions
+        if ($origW > $maxWidth || $origH > $maxHeight) {
+            $ratio = min($maxWidth / $origW, $maxHeight / $origH);
+            $newW  = (int) round($origW * $ratio);
+            $newH  = (int) round($origH * $ratio);
+            $resized = imagecreatetruecolor($newW, $newH);
+            imagealphablending($resized, false);
+            imagesavealpha($resized, true);
+            imagecopyresampled($resized, $image, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+            imagedestroy($image);
+            $image = $resized;
+        }
+
+        // Save as WebP
+        $filename    = Str::uuid() . '.webp';
+        $storagePath = $folder . '/' . $filename;
+        $fullPath    = Storage::disk('public')->path($storagePath);
+
+        $dirPath = dirname($fullPath);
+        if (!is_dir($dirPath)) {
+            mkdir($dirPath, 0755, true);
+        }
+
+        imagewebp($image, $fullPath, $quality);
+        imagedestroy($image);
+
+        return '/storage/' . $storagePath;
     }
 
     /**

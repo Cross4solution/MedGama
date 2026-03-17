@@ -1021,8 +1021,22 @@
   },
   "chat": {
     "emptyTitle": "Aún no hay conversaciones",
-    "emptyDesc": "Cuando los pacientes le envíen un mensaje, las conversaciones aparecerán aquí. ¡Comience a conectar con sus pacientes!",
-    "exploreDoctors": "Explorar médicos"
+    "emptyDesc": "Cuando los pacientes le envíen un mensaje, las conversaciones aparecerán aquí. ¡Comience a conectarse con sus pacientes!",
+    "exploreDoctors": "Explorar médicos",
+    "appointmentRequired": "Solo puede enviar mensajes a médicos con los que tenga una cita.",
+    "typing": "escribiendo...",
+    "online": "En línea",
+    "offline": "Desconectado",
+    "sendMessage": "Enviar mensaje",
+    "typeMessage": "Escribe un mensaje...",
+    "attachFile": "Adjuntar archivo",
+    "attachImage": "Adjuntar imagen",
+    "messageSent": "¡Mensaje enviado!",
+    "messageSentDesc": "Su mensaje se ha enviado a {{name}} correctamente.",
+    "goToMessages": "Ir a mensajes",
+    "newMessage": "Tiene un nuevo mensaje",
+    "photo": "Foto",
+    "document": "Documento"
   },
   "review": {
     "rateExperience": "Califique su experiencia",
