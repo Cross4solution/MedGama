@@ -157,6 +157,7 @@ export const doctorAPI = {
   availability: (id, params) => api.get(`/doctors/${id}/availability`, { params }),
   myReviews: (params) => api.get('/doctors/my-reviews', { params }),
   respondToReview: (reviewId, response) => api.put(`/doctors/reviews/${reviewId}/respond`, { response }),
+  reviewableAppointments: () => api.get('/doctors/reviewable-appointments'),
 };
 
 // ── Doctor Profile (own profile management + onboarding) ──

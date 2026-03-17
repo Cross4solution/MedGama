@@ -1431,5 +1431,19 @@
     "emptyDesc": "Tıbbi belgelerinizi düzenli ve güvenli tutmak için yükleyin. Dosyalarınız şifreli ve her zaman erişilebilir.",
     "uploadFirst": "İlk Belgenizi Yükleyin",
     "learnMore": "Daha Fazla Bilgi"
+  },
+  "review": {
+    "rateExperience": "Deneyiminizi Puanlayın",
+    "rateNow": "Puanla",
+    "rateDoctor": "Doktorunuzu Puanlayın",
+    "submitReview": "Değerlendirme Gönder",
+    "commentPlaceholder": "Deneyiminizi paylaşın (isteğe bağlı)...",
+    "thankYou": "Teşekkürler!",
+    "submitted": "Değerlendirmeniz başarıyla gönderildi.",
+    "terrible": "Çok Kötü",
+    "poor": "Kötü",
+    "okay": "Fena Değil",
+    "good": "İyi",
+    "excellent": "Mükemmel"
   }
 }

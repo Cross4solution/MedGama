@@ -231,20 +231,32 @@ class DoctorService
 
     /**
      * Submit a review for a doctor (authenticated patient).
-     * Only patients with at least one completed appointment can review (Doc §10).
+     * Guarded by DoctorReviewPolicy::create — only patients with completed appointments (Doc §10).
      */
     public function submitReview(User $patient, string $doctorId, array $data): DoctorReview
     {
-        // Strict check: patient must have a completed appointment
-        $appointment = Appointment::where('patient_id', $patient->id)
+        // Policy gate: only patients with a completed appointment can review
+        $hasCompletedAppointment = Appointment::where('patient_id', $patient->id)
             ->where('doctor_id', $doctorId)
             ->where('status', 'completed')
-            ->latest()
-            ->first();
+            ->exists();
 
-        if (!$appointment) {
+        if ($patient->role_id !== 'patient' || !$hasCompletedAppointment) {
             abort(403, 'You can only review a doctor after a completed appointment.');
         }
+
+        // Use specific appointment_id if provided, otherwise latest completed
+        $appointment = isset($data['appointment_id'])
+            ? Appointment::where('patient_id', $patient->id)
+                ->where('doctor_id', $doctorId)
+                ->where('status', 'completed')
+                ->where('id', $data['appointment_id'])
+                ->firstOrFail()
+            : Appointment::where('patient_id', $patient->id)
+                ->where('doctor_id', $doctorId)
+                ->where('status', 'completed')
+                ->latest()
+                ->firstOrFail();
 
         $review = DoctorReview::updateOrCreate(
             [
@@ -305,6 +317,35 @@ class DoctorService
             ->with(['patient:id,fullname,avatar', 'appointment:id,appointment_date,status'])
             ->orderByDesc('created_at')
             ->paginate($perPage);
+    }
+
+    /**
+     * Get completed appointments that the patient hasn't reviewed yet.
+     * Used to show "Rate Your Experience" prompts on the patient dashboard.
+     */
+    public function getReviewableAppointments(string $patientId): array
+    {
+        $reviewedDoctorIds = DoctorReview::where('patient_id', $patientId)
+            ->pluck('doctor_id')
+            ->toArray();
+
+        return Appointment::where('patient_id', $patientId)
+            ->where('status', 'completed')
+            ->whereNotIn('doctor_id', $reviewedDoctorIds)
+            ->with(['doctor:id,fullname,avatar', 'doctor.doctorProfile:user_id,specialty_id', 'doctor.doctorProfile.specialty'])
+            ->orderByDesc('appointment_date')
+            ->limit(5)
+            ->get()
+            ->map(fn ($appt) => [
+                'appointment_id'   => $appt->id,
+                'doctor_id'        => $appt->doctor_id,
+                'doctor_name'      => $appt->doctor?->fullname,
+                'doctor_avatar'    => $appt->doctor?->avatar,
+                'specialty'        => $appt->doctor?->doctorProfile?->specialty?->getTranslation('name', app()->getLocale()),
+                'appointment_date' => $appt->appointment_date,
+                'appointment_type' => $appt->appointment_type,
+            ])
+            ->toArray();
     }
 
     /**

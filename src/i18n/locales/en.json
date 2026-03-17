@@ -1431,5 +1431,19 @@
     "emptyDesc": "Upload your medical documents to keep them organized and secure. Your files are encrypted and always accessible.",
     "uploadFirst": "Upload Your First Document",
     "learnMore": "Learn More"
+  },
+  "review": {
+    "rateExperience": "Rate Your Experience",
+    "rateNow": "Rate Now",
+    "rateDoctor": "Rate Your Doctor",
+    "submitReview": "Submit Review",
+    "commentPlaceholder": "Share your experience (optional)...",
+    "thankYou": "Thank You!",
+    "submitted": "Your review has been submitted successfully.",
+    "terrible": "Terrible",
+    "poor": "Poor",
+    "okay": "Okay",
+    "good": "Good",
+    "excellent": "Excellent"
   }
 }

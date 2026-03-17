@@ -1023,5 +1023,19 @@
     "emptyTitle": "Aún no hay conversaciones",
     "emptyDesc": "Cuando los pacientes le envíen un mensaje, las conversaciones aparecerán aquí. ¡Comience a conectar con sus pacientes!",
     "exploreDoctors": "Explorar médicos"
+  },
+  "review": {
+    "rateExperience": "Califique su experiencia",
+    "rateNow": "Calificar",
+    "rateDoctor": "Califique a su médico",
+    "submitReview": "Enviar reseña",
+    "commentPlaceholder": "Comparta su experiencia (opcional)...",
+    "thankYou": "¡Gracias!",
+    "submitted": "Su reseña se envió correctamente.",
+    "terrible": "Terrible",
+    "poor": "Malo",
+    "okay": "Regular",
+    "good": "Bueno",
+    "excellent": "Excelente"
   }
 }

@@ -1073,5 +1073,19 @@
     "emptyTitle": "Hələ söhbət yoxdur",
     "emptyDesc": "Xəstələriniz sizə mesaj göndərdikdə söhbətlər burada görünəcək. Xəstələrinizlə əlaqə qurmağa başlayın!",
     "exploreDoctors": "Həkimləri kəşf et"
+  },
+  "review": {
+    "rateExperience": "Təcrübənizi qiymətləndirin",
+    "rateNow": "İndi qiymətləndir",
+    "rateDoctor": "Həkiminizi qiymətləndirin",
+    "submitReview": "Rəy göndər",
+    "commentPlaceholder": "Təcrübənizi paylaşın (isteğe bağlı)...",
+    "thankYou": "Təşəkkürlər!",
+    "submitted": "Rəyiniz uğurla göndərildi.",
+    "terrible": "Çox pis",
+    "poor": "Pis",
+    "okay": "Normal",
+    "good": "Yaxşı",
+    "excellent": "Əla"
   }
 }

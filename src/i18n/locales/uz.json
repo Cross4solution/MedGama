@@ -1073,5 +1073,19 @@
     "emptyTitle": "Hali suhbat yo'q",
     "emptyDesc": "Bemorlaringiz sizga xabar yuborganida suhbatlar bu yerda ko'rinadi. Bemorlaringiz bilan aloqa o'rnatishni boshlang!",
     "exploreDoctors": "Shifokorlarni o'rganing"
+  },
+  "review": {
+    "rateExperience": "Tajribangizni baholang",
+    "rateNow": "Hozir baholang",
+    "rateDoctor": "Shifokoringizni baholang",
+    "submitReview": "Sharh yuborish",
+    "commentPlaceholder": "Tajribangizni ulashing (ixtiyoriy)...",
+    "thankYou": "Rahmat!",
+    "submitted": "Sharhingiz muvaffaqiyatli yuborildi.",
+    "terrible": "Juda yomon",
+    "poor": "Yomon",
+    "okay": "Qoniqarli",
+    "good": "Yaxshi",
+    "excellent": "A'lo"
   }
 }

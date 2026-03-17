@@ -81,15 +81,16 @@ class DoctorController extends Controller
     public function submitReview(Request $request, string $id): JsonResponse
     {
         $request->validate([
-            'rating'         => 'required|integer|min:1|max:5',
-            'comment'        => 'nullable|string|max:2000',
-            'treatment_type' => 'nullable|string|max:255',
+            'rating'          => 'required|integer|min:1|max:5',
+            'comment'         => 'nullable|string|max:2000',
+            'treatment_type'  => 'nullable|string|max:255',
+            'appointment_id'  => 'nullable|uuid',
         ]);
 
         $review = $this->doctorService->submitReview(
             $request->user(),
             $id,
-            $request->only(['rating', 'comment', 'treatment_type']),
+            $request->only(['rating', 'comment', 'treatment_type', 'appointment_id']),
         );
 
         return response()->json(['review' => $review->load('patient:id,fullname,avatar')], 201);
@@ -124,6 +125,18 @@ class DoctorController extends Controller
         );
 
         return response()->json($reviews);
+    }
+
+    /**
+     * GET /api/doctors/reviewable-appointments — Completed appointments not yet reviewed (patient)
+     */
+    public function reviewableAppointments(Request $request): JsonResponse
+    {
+        $appointments = $this->doctorService->getReviewableAppointments(
+            $request->user()->id,
+        );
+
+        return response()->json(['data' => $appointments]);
     }
 
     /**

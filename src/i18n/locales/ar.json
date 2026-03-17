@@ -1023,5 +1023,19 @@
     "emptyTitle": "لا توجد محادثات بعد",
     "emptyDesc": "عندما يرسل لك المرضى رسالة، ستظهر المحادثات هنا. ابدأ التواصل مع مرضاك!",
     "exploreDoctors": "استكشاف الأطباء"
+  },
+  "review": {
+    "rateExperience": "قيّم تجربتك",
+    "rateNow": "قيّم الآن",
+    "rateDoctor": "قيّم طبيبك",
+    "submitReview": "إرسال التقييم",
+    "commentPlaceholder": "شارك تجربتك (اختياري)...",
+    "thankYou": "شكراً لك!",
+    "submitted": "تم إرسال تقييمك بنجاح.",
+    "terrible": "سيء جداً",
+    "poor": "سيء",
+    "okay": "مقبول",
+    "good": "جيد",
+    "excellent": "ممتاز"
   }
 }

@@ -1023,5 +1023,19 @@
     "emptyTitle": "Noch keine Gespräche",
     "emptyDesc": "Wenn Patienten Ihnen eine Nachricht senden, erscheinen die Gespräche hier. Beginnen Sie mit Ihren Patienten zu kommunizieren!",
     "exploreDoctors": "Ärzte entdecken"
+  },
+  "review": {
+    "rateExperience": "Bewerten Sie Ihre Erfahrung",
+    "rateNow": "Jetzt bewerten",
+    "rateDoctor": "Bewerten Sie Ihren Arzt",
+    "submitReview": "Bewertung absenden",
+    "commentPlaceholder": "Teilen Sie Ihre Erfahrung (optional)...",
+    "thankYou": "Vielen Dank!",
+    "submitted": "Ihre Bewertung wurde erfolgreich gesendet.",
+    "terrible": "Schrecklich",
+    "poor": "Schlecht",
+    "okay": "In Ordnung",
+    "good": "Gut",
+    "excellent": "Ausgezeichnet"
   }
 }

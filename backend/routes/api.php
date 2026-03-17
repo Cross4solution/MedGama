@@ -174,6 +174,7 @@ Route::get('/doctors/{id}/availability', [DoctorController::class, 'availability
 Route::post('/doctors/{id}/reviews', [DoctorController::class, 'submitReview'])->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/doctors/my-reviews', [DoctorController::class, 'myReviews']);
+    Route::get('/doctors/reviewable-appointments', [DoctorController::class, 'reviewableAppointments']);
     Route::put('/doctors/reviews/{reviewId}/respond', [DoctorController::class, 'respondToReview']);
 });
 

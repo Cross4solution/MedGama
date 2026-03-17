@@ -2,12 +2,12 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
-import { appointmentAPI, patientDocumentAPI } from '../lib/api';
+import { appointmentAPI, patientDocumentAPI, doctorAPI } from '../lib/api';
 import EmptyState from '../components/common/EmptyState';
 import {
   Activity, Calendar, Video, FileText, Clock, ChevronRight,
   Pill, FolderHeart, Monitor, Stethoscope, AlertCircle, Loader2,
-  TrendingUp, Heart, Shield
+  TrendingUp, Heart, Shield, Star, X, Send
 } from 'lucide-react';
 
 const PatientDashboard = () => {
@@ -19,19 +19,32 @@ const PatientDashboard = () => {
   const [docStats, setDocStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Reviewable appointments
+  const [reviewable, setReviewable] = useState([]);
+  const [reviewModal, setReviewModal] = useState(null);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewHover, setReviewHover] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewSuccess, setReviewSuccess] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [apptRes, statsRes] = await Promise.allSettled([
+        const [apptRes, statsRes, reviewableRes] = await Promise.allSettled([
           appointmentAPI.list({ per_page: 100 }),
           patientDocumentAPI.stats(),
+          doctorAPI.reviewableAppointments(),
         ]);
         if (apptRes.status === 'fulfilled') {
           setAppointments(apptRes.value?.data || []);
         }
         if (statsRes.status === 'fulfilled') {
           setDocStats(statsRes.value || null);
+        }
+        if (reviewableRes.status === 'fulfilled') {
+          setReviewable(reviewableRes.value?.data || []);
         }
       } catch { /* silent */ }
       setLoading(false);
@@ -77,6 +90,29 @@ const PatientDashboard = () => {
   };
 
   const minutesUntil = (date) => Math.floor((date.getTime() - Date.now()) / 60000);
+
+  // ── Review submit handler ──
+  const handleReviewSubmit = async () => {
+    if (!reviewModal || reviewRating < 1) return;
+    setReviewSubmitting(true);
+    try {
+      await doctorAPI.submitReview(reviewModal.doctor_id, {
+        rating: reviewRating,
+        comment: reviewComment || undefined,
+        appointment_id: reviewModal.appointment_id,
+      });
+      setReviewSuccess(true);
+      setReviewable(prev => prev.filter(r => r.appointment_id !== reviewModal.appointment_id));
+      setTimeout(() => {
+        setReviewModal(null);
+        setReviewRating(0);
+        setReviewHover(0);
+        setReviewComment('');
+        setReviewSuccess(false);
+      }, 1800);
+    } catch { /* silent */ }
+    setReviewSubmitting(false);
+  };
 
   // ── Stats ──
   const stats = [
@@ -175,6 +211,117 @@ const PatientDashboard = () => {
             );
           })}
         </div>
+
+        {/* ── Rate Your Experience Prompt ── */}
+        {reviewable.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-amber-400 to-orange-500" />
+              {t('review.rateExperience', 'Rate Your Experience')}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {reviewable.map(item => (
+                <div key={item.appointment_id} className="group relative rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50/80 to-orange-50/40 p-4 hover:shadow-md hover:border-amber-300 transition-all">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">
+                      {(item.doctor_name || 'D').split(' ').map(n => n[0]).join('').slice(0, 2)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-semibold text-gray-900 truncate">{item.doctor_name}</h4>
+                      <p className="text-[11px] text-gray-500">{item.specialty || t('common.doctor', 'Doctor')}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-gray-400">
+                      {new Date(item.appointment_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                    <button
+                      onClick={() => { setReviewModal(item); setReviewRating(0); setReviewComment(''); setReviewSuccess(false); }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm hover:shadow-md transition-all"
+                    >
+                      <Star className="w-3.5 h-3.5" />
+                      {t('review.rateNow', 'Rate Now')}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Review Modal ── */}
+        {reviewModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => !reviewSubmitting && setReviewModal(null)}>
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
+              <button onClick={() => !reviewSubmitting && setReviewModal(null)} className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-gray-100 text-gray-400">
+                <X className="w-4 h-4" />
+              </button>
+
+              {reviewSuccess ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+                    <Star className="w-8 h-8 text-emerald-600 fill-emerald-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">{t('review.thankYou', 'Thank You!')}</h3>
+                  <p className="text-sm text-gray-500">{t('review.submitted', 'Your review has been submitted successfully.')}</p>
+                </div>
+              ) : (
+                <>
+                  <div className="text-center mb-6">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold text-lg shadow-md mx-auto mb-3">
+                      {(reviewModal.doctor_name || 'D').split(' ').map(n => n[0]).join('').slice(0, 2)}
+                    </div>
+                    <h3 className="text-base font-bold text-gray-900">{t('review.rateDoctor', 'Rate Your Doctor')}</h3>
+                    <p className="text-sm text-gray-500 mt-0.5">{reviewModal.doctor_name}</p>
+                    {reviewModal.specialty && <p className="text-xs text-teal-600 font-medium">{reviewModal.specialty}</p>}
+                  </div>
+
+                  {/* Star rating */}
+                  <div className="flex justify-center gap-1.5 mb-5">
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <button
+                        key={n}
+                        onMouseEnter={() => setReviewHover(n)}
+                        onMouseLeave={() => setReviewHover(0)}
+                        onClick={() => setReviewRating(n)}
+                        className="transition-transform hover:scale-110"
+                      >
+                        <Star className={`w-8 h-8 ${
+                          n <= (reviewHover || reviewRating)
+                            ? 'text-amber-400 fill-amber-400'
+                            : 'text-gray-200'
+                        } transition-colors`} />
+                      </button>
+                    ))}
+                  </div>
+                  {reviewRating > 0 && (
+                    <p className="text-center text-xs font-medium text-amber-600 mb-4">
+                      {[t('review.terrible','Terrible'), t('review.poor','Poor'), t('review.okay','Okay'), t('review.good','Good'), t('review.excellent','Excellent')][reviewRating - 1]}
+                    </p>
+                  )}
+
+                  {/* Comment */}
+                  <textarea
+                    value={reviewComment}
+                    onChange={e => setReviewComment(e.target.value)}
+                    placeholder={t('review.commentPlaceholder', 'Share your experience (optional)...')}
+                    rows={3}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-200 focus:border-teal-400 resize-none outline-none mb-4"
+                  />
+
+                  <button
+                    onClick={handleReviewSubmit}
+                    disabled={reviewRating < 1 || reviewSubmitting}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg disabled:opacity-40 transition-all"
+                  >
+                    {reviewSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    {t('review.submitReview', 'Submit Review')}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* ── Two Column Layout ── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

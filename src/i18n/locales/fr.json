@@ -1023,5 +1023,19 @@
     "emptyTitle": "Pas encore de conversations",
     "emptyDesc": "Lorsque les patients vous envoient un message, les conversations apparaîtront ici. Commencez à communiquer avec vos patients !",
     "exploreDoctors": "Explorer les médecins"
+  },
+  "review": {
+    "rateExperience": "Évaluez votre expérience",
+    "rateNow": "Évaluer",
+    "rateDoctor": "Évaluez votre médecin",
+    "submitReview": "Envoyer l'avis",
+    "commentPlaceholder": "Partagez votre expérience (facultatif)...",
+    "thankYou": "Merci !",
+    "submitted": "Votre avis a été envoyé avec succès.",
+    "terrible": "Terrible",
+    "poor": "Mauvais",
+    "okay": "Correct",
+    "good": "Bien",
+    "excellent": "Excellent"
   }
 }
