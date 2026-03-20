@@ -217,7 +217,7 @@ const AdminLayout = () => {
       {/* Bottom section — pushed down with mt-auto */}
       <div className="mt-auto flex-shrink-0">
         {/* Main Site link */}
-        <div className="px-3 mb-1">
+        <div className="px-3 pb-3">
           <NavLink
             to="/"
             className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 group"
@@ -228,28 +228,6 @@ const AdminLayout = () => {
             <span className="flex-1">Main Site</span>
             <ExternalLink className="w-3.5 h-3.5 text-gray-600 group-hover:text-gray-400" />
           </NavLink>
-        </div>
-
-        {/* User card */}
-        <div className="border-t border-white/5 px-4 py-3">
-          <div className="flex items-center gap-3 px-1">
-            <img
-              src={resolveStorageUrl(user?.avatar)}
-              alt={user?.fullname || 'Admin'}
-              className="w-9 h-9 rounded-full object-cover flex-shrink-0 border border-purple-500/30"
-              onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextSibling.style.display = 'flex'; }}
-            />
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-violet-600 items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-lg shadow-purple-500/20 hidden">
-              {(user?.fullname || user?.name || 'A')[0].toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">{user?.fullname || user?.name || 'Admin'}</p>
-              <p className="text-[11px] text-purple-300/50 font-medium truncate">SuperAdmin</p>
-            </div>
-            <button onClick={handleLogout} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-red-400 transition-colors" title="Logout">
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
         </div>
       </div>
     </div>
