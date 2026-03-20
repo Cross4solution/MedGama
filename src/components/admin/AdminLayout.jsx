@@ -64,7 +64,6 @@ const NAV_SECTIONS = [
     title: 'System',
     items: [
       { label: 'Catalog Management', icon: BookOpen, path: '/admin/catalog' },
-      { label: 'Feature Toggles', icon: Zap, path: '/admin/feature-toggles' },
       { label: 'System Settings', icon: Settings2, path: '/admin/settings' },
       { label: 'Audit Logs', icon: ScrollText, path: '/admin/audit-logs' },
       { label: 'Support Tickets', icon: LifeBuoy, path: '/admin/support' },
