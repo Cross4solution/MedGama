@@ -254,7 +254,7 @@ export default function AdminVerificationReview() {
   const profile = doctor.profile || {};
 
   return (
-    <div className="space-y-5">
+    <div className="px-4 lg:px-6 space-y-5">
       {/* Breadcrumb / Back */}
       <button
         onClick={() => navigate('/admin/verification')}

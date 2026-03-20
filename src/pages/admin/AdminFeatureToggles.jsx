@@ -109,7 +109,7 @@ export default function AdminFeatureToggles() {
   const groupKeys = Object.keys(groups);
 
   return (
-    <div className="space-y-6">
+    <div className="px-4 lg:px-6 space-y-6">
       <div>
         <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
           <Settings2 className="w-5 h-5 text-purple-600" />

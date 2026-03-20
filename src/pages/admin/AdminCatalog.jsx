@@ -367,7 +367,7 @@ export default function AdminCatalog() {
   const activeTabObj = TABS.find(t => t.key === activeTab);
 
   return (
-    <div className="space-y-5">
+    <div className="px-4 lg:px-6 space-y-5">
       <SuccessToast message={toastMsg} show={showToast} onClose={() => setShowToast(false)} />
 
       {/* Header */}

@@ -311,7 +311,7 @@ export default function AdminModeration() {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="px-4 lg:px-6 space-y-5">
       <SuccessToast message={toastMsg} show={showToast} onClose={() => setShowToast(false)} />
 
       {/* Header */}

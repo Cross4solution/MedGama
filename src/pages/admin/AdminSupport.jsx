@@ -311,7 +311,7 @@ export default function AdminSupport() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="px-4 lg:px-6 space-y-5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>

@@ -237,7 +237,7 @@ export default function AdminVerification() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="px-4 lg:px-6 space-y-5">
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">

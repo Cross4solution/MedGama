@@ -216,7 +216,7 @@ export default function AdminSystemSettings() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="px-4 lg:px-6 space-y-6">
       <SuccessToast message={toastMsg} show={showToast} onClose={() => setShowToast(false)} />
 
       {/* Header */}

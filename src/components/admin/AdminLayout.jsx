@@ -321,7 +321,7 @@ const AdminLayout = () => {
         </header>
 
         {/* Page content — fills remaining width, no max-w constraint */}
-        <main className="flex-1 p-4 lg:p-6">
+        <main className="flex-1 py-4 lg:py-6">
           <Outlet />
         </main>
       </div>
