@@ -370,17 +370,11 @@ export default function AdminAuditLogs() {
 
           {/* Date range — always visible */}
           <div className="flex items-center gap-1.5">
-            <div className="relative">
-              <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-              <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
-                className="pl-8 pr-2 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none" />
-            </div>
+            <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+              className="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none w-36" />
             <span className="text-gray-400 text-xs">—</span>
-            <div className="relative">
-              <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-              <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
-                className="pl-8 pr-2 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none" />
-            </div>
+            <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+              className="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none w-36" />
           </div>
 
           {hasActiveFilters && (
