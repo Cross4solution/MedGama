@@ -380,19 +380,21 @@ function AppContent() {
         <Route path="/crm/messages" element={<CRMLayout><CRMMessages /></CRMLayout>} />
         <Route path="/crm/documents" element={<CRMLayout><CRMDocuments /></CRMLayout>} />
         <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
-        <Route path="/admin/verification" element={<AdminLayout><AdminVerification /></AdminLayout>} />
-        <Route path="/admin/moderation" element={<AdminLayout><AdminModeration /></AdminLayout>} />
-        <Route path="/admin/catalog" element={<AdminLayout><AdminCatalog /></AdminLayout>} />
-        <Route path="/admin/settings" element={<AdminLayout><AdminSystemSettings /></AdminLayout>} />
-        <Route path="/admin/feature-toggles" element={<AdminLayout><AdminFeatureToggles /></AdminLayout>} />
-        <Route path="/admin/verification/review" element={<AdminLayout><AdminVerificationReview /></AdminLayout>} />
-        <Route path="/admin/audit-logs" element={<AdminLayout><AdminAuditLogs /></AdminLayout>} />
-        <Route path="/admin/reviews" element={<AdminLayout><AdminReviews /></AdminLayout>} />
-        <Route path="/admin/support" element={<AdminLayout><AdminSupport /></AdminLayout>} />
-        <Route path="/admin/users" element={<AdminLayout><AdminUserManagement /></AdminLayout>} />
-        <Route path="/admin/financials" element={<AdminLayout><AdminFinancials /></AdminLayout>} />
+        {/* Admin Routes — nested under AdminLayout (Outlet pattern, zero remount) */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="verification" element={<AdminVerification />} />
+          <Route path="verification/review" element={<AdminVerificationReview />} />
+          <Route path="moderation" element={<AdminModeration />} />
+          <Route path="catalog" element={<AdminCatalog />} />
+          <Route path="settings" element={<AdminSystemSettings />} />
+          <Route path="feature-toggles" element={<AdminFeatureToggles />} />
+          <Route path="audit-logs" element={<AdminAuditLogs />} />
+          <Route path="reviews" element={<AdminReviews />} />
+          <Route path="support" element={<AdminSupport />} />
+          <Route path="users" element={<AdminUserManagement />} />
+          <Route path="financials" element={<AdminFinancials />} />
+        </Route>
         <Route path="/500" element={<ServerErrorPage />} />
         <Route path="*" element={<NotFoundPage />} />
         </Routes>

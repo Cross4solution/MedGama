@@ -41,7 +41,7 @@ export default function AdminFinancials() {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [lastPage, setLastPage] = useState(1);
+  const perPage = 10;
 
   // Mock data for now — will connect to real API when backend endpoints are ready
   useEffect(() => {
@@ -81,6 +81,35 @@ export default function AdminFinancials() {
     return true;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
+
+  // ── Export CSV ──
+  const handleExportCSV = () => {
+    if (filtered.length === 0) return;
+    const headers = ['Name', 'Email', 'Role', 'Plan', 'Amount', 'Status', 'Started', 'Next Billing'];
+    const rows = filtered.map(s => [
+      s.user.name,
+      s.user.email,
+      s.user.role,
+      s.plan,
+      s.amount,
+      (STATUS_MAP[s.status] || STATUS_MAP.active).label,
+      s.startedAt,
+      s.nextBilling,
+    ]);
+    const csvContent = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `medagama-financials-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -100,9 +129,13 @@ export default function AdminFinancials() {
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">Pro subscriptions, revenue, and billing overview</p>
         </div>
-        <button className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">
+        <button
+          onClick={handleExportCSV}
+          disabled={filtered.length === 0}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+        >
           <Download className="w-3.5 h-3.5" />
-          Export CSV
+          Export CSV {filtered.length > 0 && `(${filtered.length})`}
         </button>
       </div>
 
@@ -118,17 +151,17 @@ export default function AdminFinancials() {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
           {[
-            { key: 'all', label: 'All' },
-            { key: 'active', label: 'Active' },
-            { key: 'past_due', label: 'Past Due' },
-            { key: 'cancelled', label: 'Cancelled' },
+            { key: 'all', label: 'All', count: subscriptions.length },
+            { key: 'active', label: 'Active', count: subscriptions.filter(s => s.status === 'active').length },
+            { key: 'past_due', label: 'Past Due', count: subscriptions.filter(s => s.status === 'past_due').length },
+            { key: 'cancelled', label: 'Cancelled', count: subscriptions.filter(s => s.status === 'cancelled').length },
           ].map(f => (
             <button
               key={f.key}
               onClick={() => { setFilter(f.key); setPage(1); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${filter === f.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
-              {f.label}
+              {f.label} <span className="ml-1 opacity-60">{f.count}</span>
             </button>
           ))}
         </div>
@@ -139,8 +172,13 @@ export default function AdminFinancials() {
             placeholder="Search by name or email..."
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
+            className="w-full pl-9 pr-8 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
           />
+          {search && (
+            <button onClick={() => { setSearch(''); setPage(1); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <XCircle className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -162,7 +200,7 @@ export default function AdminFinancials() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filtered.map(sub => {
+                {paginated.map(sub => {
                   const st = STATUS_MAP[sub.status] || STATUS_MAP.active;
                   const StIcon = st.icon;
                   return (
@@ -196,6 +234,32 @@ export default function AdminFinancials() {
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-1">
+          <p className="text-xs text-gray-400">
+            Showing {(page - 1) * perPage + 1}–{Math.min(page * perPage, filtered.length)} of {filtered.length}
+          </p>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs font-medium text-gray-600 min-w-[60px] text-center">{page} / {totalPages}</span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}
