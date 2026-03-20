@@ -6,14 +6,17 @@ import {
   Award, Stethoscope, Heart, CheckCircle, Shield, Users, MapPin, X,
   ChevronLeft, ChevronRight, Minus, Video, Loader2, GraduationCap, Globe,
   Star, Calendar, Clock, Phone, BadgeCheck, MessageSquare, Briefcase, Send,
-  Settings, Eye, ImageOff,
+  Settings, Eye, ImageOff, Building2,
 } from 'lucide-react';
-import { doctorAPI, appointmentAPI } from '../lib/api';
+import { doctorAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import useAuthGuard from '../hooks/useAuthGuard';
 import useSocial from '../hooks/useSocial';
 import { useTranslation } from 'react-i18next';
 import SendMessageModal from '../components/modals/SendMessageModal';
+import DoctorBookingModal from '../components/modals/DoctorBookingModal';
+import resolveStorageUrl from '../utils/resolveStorageUrl';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
@@ -35,234 +38,6 @@ function StarRating({ rating, size = 'w-4 h-4', interactive, onChange }) {
   );
 }
 
-/* ═══════════════════════════════════════════
-   Booking Widget (Sticky Sidebar)
-   ═══════════════════════════════════════════ */
-function BookingWidget({ doctorId, doctorName, t, guardAction }) {
-  const [step, setStep] = useState(0); // 0=collapsed, 1-4=steps
-  const [apptType, setApptType] = useState(null);
-  const [selDate, setSelDate] = useState(null);
-  const [selSlot, setSelSlot] = useState(null);
-  const [note, setNote] = useState('');
-  const [availability, setAvailability] = useState({});
-  const [loadingSlots, setLoadingSlots] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  // Calendar nav
-  const today = new Date();
-  const [calMonth, setCalMonth] = useState(today.getMonth());
-  const [calYear, setCalYear] = useState(today.getFullYear());
-
-  const daysInMonth = useMemo(() => new Date(calYear, calMonth + 1, 0).getDate(), [calYear, calMonth]);
-  const firstDay = useMemo(() => { const d = new Date(calYear, calMonth, 1).getDay(); return d === 0 ? 6 : d - 1; }, [calYear, calMonth]);
-
-  const dayNames = [t('common.mon') || 'Mo', t('common.tue') || 'Tu', t('common.wed') || 'We', t('common.thu') || 'Th', t('common.fri') || 'Fr', t('common.sat') || 'Sa', t('common.sun') || 'Su'];
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-  // Fetch availability when step reaches 2
-  useEffect(() => {
-    if (step < 2) return;
-    setLoadingSlots(true);
-    doctorAPI.availability(doctorId).then(r => {
-      setAvailability(r?.data?.availability || r?.availability || {});
-    }).catch(() => {}).finally(() => setLoadingSlots(false));
-  }, [step, doctorId]);
-
-  const dateStr = selDate ? `${selDate.getFullYear()}-${String(selDate.getMonth()+1).padStart(2,'0')}-${String(selDate.getDate()).padStart(2,'0')}` : null;
-  const daySlots = dateStr ? (availability[dateStr] || []) : [];
-
-  const isPast = (day) => new Date(calYear, calMonth, day) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const hasSlots = (day) => {
-    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    return (availability[ds] || []).length > 0;
-  };
-
-  const TYPES = [
-    { id: 'in_person', icon: MapPin, color: 'bg-blue-50 text-blue-600 border-blue-200' },
-    { id: 'video', icon: Video, color: 'bg-teal-50 text-teal-600 border-teal-200' },
-    { id: 'phone', icon: Phone, color: 'bg-violet-50 text-violet-600 border-violet-200' },
-  ];
-
-  const handleSubmit = () => {
-    setSubmitting(true);
-    const payload = {
-      doctor_id: doctorId,
-      appointment_type: apptType === 'in_person' ? 'inPerson' : 'online',
-      slot_id: selSlot?.id,
-      appointment_date: dateStr,
-      appointment_time: selSlot?.start_time,
-      confirmation_note: note || undefined,
-    };
-    appointmentAPI.create(payload)
-      .then(() => setSubmitted(true))
-      .catch(() => setSubmitted(true)) // still show success UI for demo
-      .finally(() => setSubmitting(false));
-  };
-
-  const reset = () => { setStep(0); setApptType(null); setSelDate(null); setSelSlot(null); setNote(''); setSubmitted(false); };
-
-  // Next available date hint
-  const nextAvailDate = Object.keys(availability).sort()[0];
-
-  if (submitted) {
-    return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 text-center">
-        <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
-          <CheckCircle className="w-7 h-7 text-teal-600" />
-        </div>
-        <h3 className="text-base font-bold text-gray-900 mb-1">{t('booking.appointmentRequested')}</h3>
-        <p className="text-xs text-gray-500 mb-4">{t('booking.appointmentConfirmMsg', { name: doctorName })}</p>
-        <button onClick={reset} className="w-full py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700">{t('booking.done')}</button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-t-2xl">
-        <h3 className="text-sm font-bold text-white flex items-center gap-2"><Calendar className="w-4 h-4" /> {t('booking.title')}</h3>
-        {nextAvailDate && step === 0 && (
-          <p className="text-[11px] text-teal-100 mt-0.5">{t('booking.nextAvailable')}: {nextAvailDate}</p>
-        )}
-      </div>
-
-      {step === 0 && (
-        <div className="p-4">
-          <button onClick={() => guardAction(() => setStep(1))()} className="w-full py-3 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors shadow-sm flex items-center justify-center gap-2">
-            <Calendar className="w-4 h-4" /> {t('doctorProfile.bookAppointment')}
-          </button>
-        </div>
-      )}
-
-      {/* Step 1: Type */}
-      {step === 1 && (
-        <div className="p-4 space-y-2">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('booking.step1Title')}</p>
-          {TYPES.map(tp => (
-            <button key={tp.id} onClick={() => { setApptType(tp.id); setStep(2); }}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left ${apptType === tp.id ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'}`}
-            >
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${tp.color}`}><tp.icon className="w-4 h-4" /></div>
-              <span className="text-sm font-semibold text-gray-800">{t(`booking.${tp.id === 'in_person' ? 'inPerson' : tp.id}`)}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Step 2: Date & Time */}
-      {step === 2 && (
-        <div className="p-4 space-y-3">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('booking.step2Title')}</p>
-          {loadingSlots ? (
-            <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 text-teal-600 animate-spin" /></div>
-          ) : (
-            <>
-              {/* Mini Calendar */}
-              <div className="border border-gray-200 rounded-xl p-2.5">
-                <div className="flex items-center justify-between mb-2">
-                  <button onClick={() => calMonth === 0 ? (setCalMonth(11), setCalYear(y=>y-1)) : setCalMonth(m=>m-1)} className="w-6 h-6 rounded hover:bg-gray-100 flex items-center justify-center"><ChevronLeft className="w-3.5 h-3.5 text-gray-500" /></button>
-                  <span className="text-xs font-bold text-gray-800">{monthNames[calMonth]} {calYear}</span>
-                  <button onClick={() => calMonth === 11 ? (setCalMonth(0), setCalYear(y=>y+1)) : setCalMonth(m=>m+1)} className="w-6 h-6 rounded hover:bg-gray-100 flex items-center justify-center"><ChevronRight className="w-3.5 h-3.5 text-gray-500" /></button>
-                </div>
-                <div className="grid grid-cols-7 gap-0.5 mb-1">
-                  {dayNames.map(d => <div key={d} className="text-center text-[9px] font-semibold text-gray-400 py-0.5">{d}</div>)}
-                </div>
-                <div className="grid grid-cols-7 gap-0.5">
-                  {Array.from({ length: firstDay }).map((_, i) => <div key={`e-${i}`} />)}
-                  {Array.from({ length: daysInMonth }).map((_, i) => {
-                    const day = i + 1;
-                    const past = isPast(day);
-                    const sel = selDate?.getDate() === day && selDate?.getMonth() === calMonth && selDate?.getFullYear() === calYear;
-                    const avail = hasSlots(day);
-                    return (
-                      <button key={day} disabled={past}
-                        onClick={() => { setSelDate(new Date(calYear, calMonth, day)); setSelSlot(null); }}
-                        className={`w-full aspect-square rounded text-[10px] font-medium transition-all relative ${
-                          sel ? 'bg-teal-600 text-white shadow-sm' :
-                          past ? 'text-gray-300 cursor-not-allowed' :
-                          'text-gray-700 hover:bg-teal-50'
-                        }`}
-                      >
-                        {day}
-                        {avail && !sel && !past && <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-teal-500" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Time Slots */}
-              {selDate && (
-                <div>
-                  <p className="text-[10px] font-semibold text-gray-500 uppercase mb-1.5">{t('booking.availableTimes')}</p>
-                  {daySlots.length > 0 ? (
-                    <div className="grid grid-cols-3 gap-1">
-                      {daySlots.map((s, i) => (
-                        <button key={i} onClick={() => setSelSlot(s)}
-                          className={`py-1.5 rounded-lg text-[11px] font-medium transition-all ${selSlot?.id === s.id ? 'bg-teal-600 text-white shadow-sm' : 'bg-gray-50 text-gray-700 hover:bg-teal-50 border border-gray-200'}`}
-                        >{s.start_time?.slice(0, 5)}</button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-gray-400 italic py-2">{t('booking.noSlotsAvailable')}</p>
-                  )}
-                </div>
-              )}
-            </>
-          )}
-          <div className="flex gap-2 pt-1">
-            <button onClick={() => setStep(1)} className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-xl text-xs font-semibold hover:bg-gray-200">{t('booking.back')}</button>
-            <button onClick={() => setStep(3)} disabled={!selSlot}
-              className="flex-1 py-2 bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-teal-700 disabled:opacity-40">{t('booking.next')}</button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 3: Note */}
-      {step === 3 && (
-        <div className="p-4 space-y-3">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('booking.step3Title')}</p>
-          <textarea value={note} onChange={e => setNote(e.target.value)} placeholder={t('booking.complaintPlaceholder')} rows={3}
-            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-teal-200 focus:border-teal-400 resize-none outline-none"
-          />
-          <div className="flex gap-2">
-            <button onClick={() => setStep(2)} className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-xl text-xs font-semibold hover:bg-gray-200">{t('booking.back')}</button>
-            <button onClick={() => setStep(4)} className="flex-1 py-2 bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-teal-700">{t('booking.next')}</button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 4: Confirmation */}
-      {step === 4 && (
-        <div className="p-4 space-y-3">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('booking.step4Title')}</p>
-          <div className="bg-gray-50 rounded-xl p-3 space-y-2 text-sm">
-            <div className="flex items-center gap-2"><Calendar className="w-3.5 h-3.5 text-teal-600" /> <span className="text-gray-700">{selDate?.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div>
-            <div className="flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-teal-600" /> <span className="text-gray-700">{selSlot?.start_time?.slice(0, 5)}</span></div>
-            <div className="flex items-center gap-2">{apptType === 'video' ? <Video className="w-3.5 h-3.5 text-teal-600" /> : apptType === 'phone' ? <Phone className="w-3.5 h-3.5 text-teal-600" /> : <MapPin className="w-3.5 h-3.5 text-teal-600" />} <span className="text-gray-700">{t(`booking.${apptType === 'in_person' ? 'inPerson' : apptType}`)}</span></div>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={() => setStep(3)} className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-xl text-xs font-semibold hover:bg-gray-200">{t('booking.back')}</button>
-            <button onClick={handleSubmit} disabled={submitting}
-              className="flex-1 py-2 bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-teal-700 disabled:opacity-60 flex items-center justify-center gap-1.5">
-              {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />} {t('booking.bookNow')}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Step indicator */}
-      {step >= 1 && step <= 4 && (
-        <div className="px-4 pb-3 flex items-center gap-1 justify-center">
-          {[1, 2, 3, 4].map(s => (
-            <div key={s} className={`h-1 rounded-full transition-all ${s <= step ? 'bg-teal-500 w-6' : 'bg-gray-200 w-4'}`} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 /* ═══════════════════════════════════════════
    Review Card
@@ -272,7 +47,7 @@ function ReviewCard({ review, t }) {
   return (
     <div className="p-4 border border-gray-100 rounded-xl hover:border-gray-200 transition-all">
       <div className="flex items-start gap-3">
-        <img src={patient.avatar || DEFAULT_AVATAR} alt={patient.fullname} className="w-9 h-9 rounded-full object-cover border border-gray-100 flex-shrink-0" />
+        <img src={resolveStorageUrl(patient.avatar)} alt={patient.fullname} className="w-9 h-9 rounded-full object-cover border border-gray-100 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
@@ -316,6 +91,7 @@ const DoctorProfilePage = () => {
   const { t } = useTranslation();
   const { guardAction } = useAuthGuard();
   const { user: authUser } = useAuth();
+  const { notify } = useToast();
   const isOwner = authUser && (authUser.id === doctorId);
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
@@ -337,10 +113,14 @@ const DoctorProfilePage = () => {
   const [newTreatmentType, setNewTreatmentType] = useState('');
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [reviewError, setReviewError] = useState(null);
   const [reviewSort, setReviewSort] = useState('newest');
+  const [canReview, setCanReview] = useState(false);
 
   // Message modal
   const [messageModal, setMessageModal] = useState(false);
+  const [bookModal, setBookModal] = useState(false);
+  const [onlineBookModal, setOnlineBookModal] = useState(false);
 
   // Gallery
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -359,6 +139,7 @@ const DoctorProfilePage = () => {
         setProfile(d.doctor_profile || null);
         setReviewStats(data.review_stats || { average_rating: null, review_count: 0 });
         setCompletedAppts(data.completed_appointments || 0);
+        setCanReview(!!data.can_review);
         setInitialSocial({
           isFollowing: !!d.is_followed,
           isFavorited: !!d.is_favorited,
@@ -384,13 +165,27 @@ const DoctorProfilePage = () => {
   }, [activeTab, reviewPage, reviewSort, loadReviews]);
 
   // Social
-  const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('doctor', doctorId, initialSocial);
+  const doctorMeta = {
+    name: doctor?.fullname || '',
+    avatar: doctor?.avatar || '',
+  };
+  const socialCallbacks = {
+    onFavoriteChange: (favorited) => {
+      notify({
+        type: 'success',
+        message: favorited
+          ? t('doctorProfile.addedToFavorites', 'Added to favorites')
+          : t('doctorProfile.removedFromFavorites', 'Removed from favorites'),
+      });
+    },
+  };
+  const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('doctor', doctorId, initialSocial, doctorMeta, socialCallbacks);
 
   // Derived
   const doctorName = doctor?.fullname || 'Doctor';
   const doctorTitle = profile?.title || '';
   const specialty = profile?.specialty || '';
-  const avatarUrl = doctor?.avatar || DEFAULT_AVATAR;
+  const avatarUrl = resolveStorageUrl(doctor?.avatar);
   const bio = profile?.bio || '';
   const experienceYears = profile?.experience_years || '';
   const services = profile?.services || [];
@@ -418,11 +213,18 @@ const DoctorProfilePage = () => {
 
   // Submit review
   const handleReviewSubmit = () => {
-    if (newRating < 1) return;
+    if (newRating < 1 || newComment.trim().length < 10) return;
     setReviewSubmitting(true);
-    doctorAPI.submitReview(doctorId, { rating: newRating, comment: newComment || undefined, treatment_type: newTreatmentType || undefined })
-      .then(() => { setReviewSuccess(true); setNewRating(0); setNewComment(''); setNewTreatmentType(''); loadReviews(1, reviewSort); })
-      .catch(() => {})
+    setReviewError(null);
+    doctorAPI.submitReview(doctorId, { rating: newRating, comment: newComment, treatment_type: newTreatmentType || undefined })
+      .then(() => { setReviewSuccess(true); setCanReview(false); setNewRating(0); setNewComment(''); setNewTreatmentType(''); loadReviews(1, reviewSort); })
+      .catch((err) => {
+        const status = err?.response?.status || err?.status;
+        if (status === 403) setReviewError(t('doctorProfile.reviewNeedAppointment', 'You must have a completed appointment to review this doctor.'));
+        else if (status === 409) setReviewError(t('doctorProfile.reviewAlreadyExists', 'You have already reviewed this doctor.'));
+        else if (status === 429) setReviewError(t('doctorProfile.reviewFloodLimit', 'Please wait 24 hours between reviews.'));
+        else setReviewError(t('doctorProfile.reviewSubmitError', 'Failed to submit review. Please try again.'));
+      })
       .finally(() => setReviewSubmitting(false));
   };
 
@@ -481,7 +283,7 @@ const DoctorProfilePage = () => {
               <Eye className="w-4 h-4 text-amber-600" />
               <span className="text-amber-800 font-medium">{t('doctorProfile.ownerBarText')}</span>
             </div>
-            <Link to="/crm/settings"
+            <Link to="/settings"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-amber-200 rounded-lg text-xs font-semibold text-amber-700 hover:bg-amber-50 transition-colors shadow-sm">
               <Settings className="w-3.5 h-3.5" /> {t('doctorProfile.editSettings')}
             </Link>
@@ -512,7 +314,15 @@ const DoctorProfilePage = () => {
                     </span>
                   )}
                 </div>
-                {specialty && <p className="text-sm text-teal-700 font-semibold mb-2">{specialty}</p>}
+                {specialty && <p className="text-sm text-teal-700 font-semibold mb-1">{specialty}</p>}
+
+                {/* Clinic Affiliation */}
+                {doctor.clinic && doctor.clinic.codename && (
+                  <Link to={`/clinic/${doctor.clinic.codename}`} className="inline-flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-700 font-medium mb-1.5 group">
+                    <Building2 className="w-3.5 h-3.5 text-indigo-400 group-hover:text-indigo-500" />
+                    {t('doctorProfile.workingAt', 'Working at')} <span className="font-semibold underline decoration-dotted">{doctor.clinic.fullname || doctor.clinic.name}</span>
+                  </Link>
+                )}
 
                 {/* Rating */}
                 <div className="flex items-center gap-3 flex-wrap mb-2">
@@ -535,10 +345,10 @@ const DoctorProfilePage = () => {
 
                 {/* Languages */}
                 {languages.length > 0 && (
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <Globe className="w-3.5 h-3.5 text-gray-400" />
+                  <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                    <Globe className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
                     {languages.map((l, i) => (
-                      <span key={i} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 uppercase">{l}</span>
+                      <span key={i} className="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600">{l}</span>
                     ))}
                   </div>
                 )}
@@ -563,7 +373,7 @@ const DoctorProfilePage = () => {
                 } ${followLoading ? 'opacity-60' : ''}`}
               >
                 {followLoading ? <Loader2 className="w-4 h-4 animate-spin" /> :
-                  isFollowing ? <><Minus className="w-4 h-4" />{t('doctorProfile.following')}</> : <>{t('doctorProfile.follow')}</>
+                  isFollowing ? <><CheckCircle className="w-4 h-4" />{t('doctorProfile.following')}</> : <>{t('doctorProfile.follow')}</>
                 }
               </button>
             </div>
@@ -629,8 +439,12 @@ const DoctorProfilePage = () => {
                       )}
                       {languages.length > 0 && (
                         <div className="flex items-center gap-2.5 p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-50 text-amber-600"><Globe className="w-4 h-4" /></div>
-                          <span className="text-xs font-semibold text-gray-700 truncate">{languages.join(', ')}</span>
+                          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-50 text-amber-600 flex-shrink-0"><Globe className="w-4 h-4" /></div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {languages.map((l, i) => (
+                              <span key={i} className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white text-gray-700 border border-gray-200">{l}</span>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -737,26 +551,50 @@ const DoctorProfilePage = () => {
                     </div>
 
                     {/* Review form */}
-                    {!reviewSuccess ? (
+                    {reviewSuccess ? (
+                      <div className="p-5 border border-teal-200 rounded-xl bg-gradient-to-br from-teal-50 to-emerald-50 text-center">
+                        <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center mx-auto mb-2">
+                          <CheckCircle className="w-6 h-6 text-teal-600" />
+                        </div>
+                        <p className="text-sm font-bold text-teal-800 mb-1">{t('doctorProfile.reviewSuccess', 'Thank you for your review!')}</p>
+                        <p className="text-xs text-teal-600">{t('doctorProfile.reviewSuccessDesc', 'Your review has been submitted and will be visible after moderation.')}</p>
+                      </div>
+                    ) : canReview ? (
                       <div className="p-4 border border-gray-200 rounded-xl bg-gray-50/50">
                         <h4 className="text-sm font-bold text-gray-800 mb-2">{t('doctorProfile.writeReview')}</h4>
                         <StarRating rating={newRating} size="w-5 h-5" interactive onChange={setNewRating} />
                         <input value={newTreatmentType} onChange={e => setNewTreatmentType(e.target.value)} placeholder={t('doctorProfile.treatmentTypePlaceholder', 'Treatment type (e.g. Dental Cleaning)')}
                           className="w-full mt-2 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-200 focus:border-teal-400 outline-none"
                         />
-                        <textarea value={newComment} onChange={e => setNewComment(e.target.value)} placeholder={t('doctorProfile.reviewPlaceholder')} rows={2}
+                        <textarea value={newComment} onChange={e => setNewComment(e.target.value)} placeholder={t('doctorProfile.reviewPlaceholder', 'Share your experience (min. 10 characters)...')} rows={3}
                           className="w-full mt-2 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-200 focus:border-teal-400 resize-none outline-none"
                         />
-                        <button onClick={guardAction(handleReviewSubmit)} disabled={newRating < 1 || reviewSubmitting}
-                          className="mt-2 px-4 py-2 bg-teal-600 text-white rounded-lg text-xs font-semibold hover:bg-teal-700 disabled:opacity-40 flex items-center gap-1.5">
+                        {newComment.length > 0 && newComment.trim().length < 10 && (
+                          <p className="text-[10px] text-amber-600 mt-1">{t('doctorProfile.reviewMinChars', 'Please write at least 10 characters.')}</p>
+                        )}
+                        {reviewError && (
+                          <div className="mt-2 p-2.5 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-xs text-red-600 font-medium">{reviewError}</p>
+                          </div>
+                        )}
+                        <button onClick={guardAction(handleReviewSubmit)} disabled={newRating < 1 || newComment.trim().length < 10 || reviewSubmitting}
+                          className="mt-2 px-4 py-2 bg-teal-600 text-white rounded-lg text-xs font-semibold hover:bg-teal-700 disabled:opacity-40 flex items-center gap-1.5 transition-colors">
                           {reviewSubmitting && <Loader2 className="w-3 h-3 animate-spin" />}
                           <Send className="w-3 h-3" /> {t('doctorProfile.submitReview')}
                         </button>
                       </div>
                     ) : (
-                      <div className="p-4 border border-teal-200 rounded-xl bg-teal-50 text-center">
-                        <CheckCircle className="w-6 h-6 text-teal-600 mx-auto mb-1" />
-                        <p className="text-sm font-semibold text-teal-800">{t('doctorProfile.reviewSuccess')}</p>
+                      <div className="relative p-5 border border-gray-200 rounded-xl bg-gray-50/80 backdrop-blur-sm text-center overflow-hidden">
+                        <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px]" />
+                        <div className="relative z-10">
+                          <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-2">
+                            <Shield className="w-5 h-5 text-gray-400" />
+                          </div>
+                          <p className="text-sm font-semibold text-gray-700 mb-1">{t('doctorProfile.reviewGateTitle', 'Verified Reviews Only')}</p>
+                          <p className="text-xs text-gray-500 leading-relaxed max-w-sm mx-auto">
+                            {t('doctorProfile.reviewGateDesc', 'Only patients who have completed an appointment with this doctor can share their experience. Complete your appointment and come back to leave a review.')}
+                          </p>
+                        </div>
                       </div>
                     )}
 
@@ -848,8 +686,22 @@ const DoctorProfilePage = () => {
 
           {/* ═══ Sticky Sidebar ═══ */}
           <div className="lg:w-80 space-y-4 lg:sticky lg:top-20 h-max">
-            {/* Booking Widget */}
-            <BookingWidget doctorId={doctorId} doctorName={doctorName} t={t} guardAction={guardAction} />
+            {/* Booking CTA */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-t-2xl">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2"><Calendar className="w-4 h-4" /> {t('booking.title')}</h3>
+              </div>
+              <div className="p-4 space-y-2.5">
+                <button onClick={guardAction(() => setBookModal(true))} className="w-full py-3 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+                  <Calendar className="w-4 h-4" /> {t('doctorProfile.bookAppointment')}
+                </button>
+                {onlineConsultation && (
+                  <button onClick={guardAction(() => setOnlineBookModal(true))} className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+                    <Video className="w-4 h-4" /> {t('doctorProfile.onlineConsultation')}
+                  </button>
+                )}
+              </div>
+            </div>
 
             {/* Price Range */}
             {prices.length > 0 && (
@@ -879,7 +731,9 @@ const DoctorProfilePage = () => {
         </div>
       </div>
 
-      {/* Message Modal */}
+      {/* Modals */}
+      <DoctorBookingModal open={bookModal} onClose={() => setBookModal(false)} doctorId={doctorId} doctorName={doctorName} />
+      <DoctorBookingModal open={onlineBookModal} onClose={() => setOnlineBookModal(false)} doctorId={doctorId} doctorName={doctorName} initialType="video" />
       <SendMessageModal open={messageModal} onClose={() => setMessageModal(false)} targetId={doctorId} targetName={doctorName} targetType="doctor" />
     </div>
   );

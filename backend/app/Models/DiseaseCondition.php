@@ -16,7 +16,7 @@ class DiseaseCondition extends Model
 
     public array $translatable = ['name', 'description'];
 
-    protected $fillable = ['code', 'name', 'description', 'recommended_specialty_ids'];
+    protected $fillable = ['code', 'name', 'description', 'recommended_specialty_ids', 'is_popular'];
 
     protected function casts(): array
     {
@@ -25,6 +25,7 @@ class DiseaseCondition extends Model
             'description'              => 'array',
             'recommended_specialty_ids' => 'array',
             'is_active'                => 'boolean',
+            'is_popular'               => 'boolean',
         ];
     }
 

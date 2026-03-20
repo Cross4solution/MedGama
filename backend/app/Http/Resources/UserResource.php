@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
 {
+    use Concerns\ResolvesMediaUrls;
+
     /**
      * Indicates if the resource should preserve its keys.
      */
@@ -28,12 +30,18 @@ class UserResource extends JsonResource
 
     public function toArray(Request $request): array
     {
+        // Use raw DB values (bypass model accessor which prepends APP_URL)
+        // Frontend resolveStorageUrl() handles origin resolution per environment
+        $rawAvatar = $this->resource->getRawOriginal('avatar')
+                  ?: $this->resource->getRawOriginal('profile_image');
+        $avatar = self::resolveMediaUrl($rawAvatar);
+
         $data = [
             'id'                 => $this->id,
             'fullname'           => $this->fullname,
             'email'              => $this->email,
-            'avatar'             => $this->avatar ?: $this->profile_image,
-            'profile_image'      => $this->profile_image ?: $this->avatar,
+            'avatar'             => $avatar,
+            'profile_image'      => $avatar,
             'role_id'            => $this->role_id,
             'mobile'             => $this->mobile,
             'mobile_verified'    => (bool) $this->mobile_verified,
@@ -49,15 +57,23 @@ class UserResource extends JsonResource
             'last_login'         => $this->last_login?->toISOString(),
             'clinic_id'          => $this->clinic_id,
             'clinic_name'        => $this->clinic_name,
+            'added_by_clinic'    => (bool) $this->added_by_clinic,
             'created_at'         => $this->created_at?->toISOString(),
             'updated_at'         => $this->updated_at?->toISOString(),
         ];
 
-        // Include clinic when loaded
-        if ($this->relationLoaded('clinic') && $this->clinic) {
+        // Include clinic when loaded or available
+        $clinic = $this->relationLoaded('clinic') ? $this->clinic : null;
+        if (!$clinic && $this->clinic_id) {
+            $clinic = $this->clinic;
+        }
+        if ($clinic) {
             $data['clinic'] = [
-                'id'       => $this->clinic->id,
-                'fullname' => $this->clinic->fullname,
+                'id'          => $clinic->id,
+                'name'        => $clinic->name,
+                'fullname'    => $clinic->fullname,
+                'codename'    => $clinic->codename,
+                'is_verified' => (bool) $clinic->is_verified,
             ];
         }
 

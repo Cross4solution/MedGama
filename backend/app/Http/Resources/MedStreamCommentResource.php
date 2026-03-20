@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class MedStreamCommentResource extends JsonResource
 {
+    use Concerns\ResolvesMediaUrls;
+
     public function toArray(Request $request): array
     {
         return [
@@ -23,7 +25,7 @@ class MedStreamCommentResource extends JsonResource
             'author' => $this->whenLoaded('author', fn() => [
                 'id'       => $this->author->id,
                 'fullname' => $this->author->fullname,
-                'avatar'   => $this->author->avatar,
+                'avatar'   => self::resolveMediaUrl($this->author->avatar),
             ]),
 
             'replies' => $this->whenLoaded('allReplies',

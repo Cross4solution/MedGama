@@ -135,8 +135,26 @@ class SuperAdminService
     public function updateDoctorVerification(string $doctorId, bool $verified): User
     {
         $doctor = User::where('role_id', 'doctor')->findOrFail($doctorId);
+        $oldValue = (bool) $doctor->is_verified;
         $doctor->is_verified = $verified;
         $doctor->save();
+
+        // Audit log
+        AuditLog::log(
+            action: $verified ? 'doctor.verified' : 'doctor.unverified',
+            resourceType: 'User',
+            resourceId: $doctor->id,
+            oldValues: ['is_verified' => $oldValue],
+            newValues: ['is_verified' => $verified],
+            description: ($verified ? 'Verified' : 'Unverified') . " doctor: {$doctor->fullname}",
+        );
+
+        // Send notification to doctor
+        if ($verified && !$oldValue) {
+            $doctor->notify(new \App\Notifications\VerificationApprovedNotification(
+                $doctor->verificationRequests()->latest()->first()
+            ));
+        }
 
         // Clear dashboard cache
         Cache::forget('superadmin:dashboard');

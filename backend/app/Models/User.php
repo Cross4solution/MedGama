@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Traits\LogsActivity;
@@ -29,7 +30,7 @@ class User extends Authenticatable
         'city_id', 'country_id', 'country', 'preferred_language',
         'date_of_birth', 'gender', 'is_verified', 'last_login', 'clinic_id', 'hospital_id',
         'medical_history', 'notification_preferences', 'clinic_name',
-        'is_crm_active', 'crm_expires_at',
+        'is_crm_active', 'crm_expires_at', 'added_by_clinic',
     ];
 
     protected $hidden = [
@@ -50,7 +51,50 @@ class User extends Authenticatable
             'notification_preferences' => 'encrypted:array',
             'is_crm_active'            => 'boolean',
             'crm_expires_at'           => 'datetime',
+            'added_by_clinic'          => 'boolean',
         ];
+    }
+
+    // ── Media URL resolution ──
+
+    private static function resolveStoragePath(?string $value): ?string
+    {
+        if (!$value) return null;
+
+        // External URLs (e.g. gravatar) — keep as-is
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            // Strip APP_URL prefix if present → return relative
+            $appUrl = rtrim(config('app.url'), '/');
+            if ($appUrl && str_starts_with($value, $appUrl . '/')) {
+                $value = substr($value, strlen($appUrl));
+            } else {
+                return $value;
+            }
+        }
+
+        // Normalize: ensure /storage/ prefix
+        $path = ltrim($value, '/');
+        if (!str_starts_with($path, 'storage/')) {
+            $path = 'storage/' . $path;
+        }
+        // Deduplicate /storage/storage/ if legacy data
+        $path = preg_replace('#^storage/storage/#', 'storage/', $path);
+
+        return '/' . $path;
+    }
+
+    protected function avatar(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => self::resolveStoragePath($value),
+        );
+    }
+
+    protected function profileImage(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => self::resolveStoragePath($value),
+        );
     }
 
     // ── Prunable (GDPR Art. 5(1)(e) — 3 year retention after account deletion) ──
@@ -180,6 +224,53 @@ class User extends Authenticatable
     public function sentMessages()
     {
         return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function favoriteClinics()
+    {
+        return $this->belongsToMany(Clinic::class, 'clinic_favorites')
+            ->withTimestamps();
+    }
+
+    // ── Social: Follow Relations ──
+
+    /**
+     * Doctors this user follows (via doctor_follows table).
+     */
+    public function followingDoctors()
+    {
+        return $this->belongsToMany(User::class, 'doctor_follows', 'follower_id', 'following_id')
+            ->wherePivot('is_active', true)
+            ->withTimestamps();
+    }
+
+    /**
+     * Clinics this user follows (via clinic owner in doctor_follows table).
+     */
+    public function followingClinics()
+    {
+        return $this->belongsToMany(User::class, 'doctor_follows', 'follower_id', 'following_id')
+            ->where('role_id', 'clinicOwner')
+            ->wherePivot('is_active', true)
+            ->withTimestamps();
+    }
+
+    /**
+     * Users who follow this user.
+     */
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'doctor_follows', 'following_id', 'follower_id')
+            ->wherePivot('is_active', true)
+            ->withTimestamps();
+    }
+
+    /**
+     * Polymorphic favorites (doctors + clinics).
+     */
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
     }
 
     // ── Helpers ──

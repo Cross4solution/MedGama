@@ -8,12 +8,13 @@ import Modal from '../common/Modal';
 import { medStreamAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
 function AvatarImg({ src, alt, className }) {
   const [failed, setFailed] = React.useState(false);
-  const imgSrc = failed || !src ? DEFAULT_AVATAR : src;
+  const imgSrc = failed || !src ? DEFAULT_AVATAR : resolveStorageUrl(src, DEFAULT_AVATAR);
   return (
     <img
       src={imgSrc}
@@ -106,9 +107,14 @@ function NestedReply({ r, depth, authUser, replyTo, setReplyTo, replyText, setRe
   );
 }
 
+function resolveMediaUrl(m) {
+  return m.medium || m.original || m.url || m.thumb || '';
+}
+
 function getMediaType(m) {
-  if (m.type === 'video' || /\.(mp4|webm|mov|avi)$/i.test(m.url || '')) return 'video';
-  if (m.type === 'document' || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.url || '') || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.name || '')) return 'document';
+  const src = resolveMediaUrl(m);
+  if (m.type === 'video' || /\.(mp4|webm|mov|avi)$/i.test(src)) return 'video';
+  if (m.type === 'document' || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(src) || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.name || '')) return 'document';
   return 'image';
 }
 
@@ -135,7 +141,7 @@ function formatTimeAgo(dateStr) {
 }
 
 function getFileExt(m) {
-  const name = m.name || m.url || '';
+  const name = m.name || resolveMediaUrl(m) || '';
   const match = name.match(/\.([a-zA-Z0-9]+)$/);
   return match ? match[1].toUpperCase() : 'FILE';
 }
@@ -147,7 +153,7 @@ function isUUID(str) {
 function getFileName(m) {
   if (m.name) return m.name;
   try {
-    const raw = decodeURIComponent((m.url || '').split('/').pop().split('?')[0]);
+    const raw = decodeURIComponent((resolveMediaUrl(m) || '').split('/').pop().split('?')[0]);
     // If filename is a UUID (backend-generated), show a friendly name instead
     const nameWithoutExt = raw.replace(/\.[^.]+$/, '');
     if (isUUID(nameWithoutExt)) {
@@ -171,11 +177,28 @@ function DocumentPreview({ m, className, onClick }) {
   const textColor = EXT_TEXT_COLORS[ext] || 'text-gray-600';
   const bgLight = EXT_BG_LIGHT[ext] || 'bg-gray-50';
   const borderColor = EXT_BORDER[ext] || 'border-gray-200';
-  const fileUrl = m.url;
+  const rawPath = m.original || m.url || resolveMediaUrl(m);
+  const fileUrl = resolveStorageUrl(rawPath, '');
 
-  const handleDownload = (e) => {
+  const handleDownload = async (e) => {
     e.stopPropagation();
-    if (fileUrl) window.open(fileUrl, '_blank');
+    if (!rawPath) return;
+    try {
+      // Use secure download endpoint for forced browser download
+      const res = await medStreamAPI.downloadFile(rawPath, name);
+      const blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name || `document.${ext.toLowerCase()}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+    } catch {
+      // Fallback: open resolved URL in new tab
+      if (fileUrl) window.open(fileUrl, '_blank');
+    }
   };
 
   return (
@@ -291,15 +314,16 @@ function MediaItem({ m, alt, className, onClick = undefined }) {
   const type = getMediaType(m);
   if (type === 'document') return <DocumentPreview m={m} className={className} onClick={onClick} />;
   if (type === 'video') return <VideoPreview m={m} className={className} />;
-  return <MediaImg src={m.url} alt={alt} className={className} onClick={onClick} />;
+  return <MediaImg src={resolveMediaUrl(m)} alt={alt} className={className} onClick={onClick} />;
 }
 
 function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
-  const avatarUrl = item.avatar || '/images/default/default-avatar.svg';
+  const avatarUrl = resolveStorageUrl(item.avatar);
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
   const { t } = useTranslation();
   const isGuest = !authUser;
+  const isUnverifiedDoctor = !!(authUser && (authUser.role === 'doctor' || authUser.role_id === 'doctor') && !authUser.is_verified);
   const [expanded, setExpanded] = useState(false);
   const [showCommentsPreview, setShowCommentsPreview] = useState(false);
   const [liked, setLiked] = useState(!!item?.is_liked);
@@ -334,7 +358,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     author_id: c.author_id || c.author?.id,
     name: c.author?.fullname || 'User',
     title: '',
-    avatar: c.author?.avatar || '/images/default/default-avatar.svg',
+    avatar: resolveStorageUrl(c.author?.avatar),
     text: c.content || '',
     time: c.created_at || '',
     parent_id: c.parent_id || null,
@@ -433,7 +457,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       author_id: authUser?.id,
       name: authUser?.name || 'You',
       title: '',
-      avatar: authUser?.avatar || '/images/default/default-avatar.svg',
+      avatar: resolveStorageUrl(authUser?.avatar),
       text,
       time: 'Just now',
       parent_id: parentId,
@@ -533,6 +557,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     e?.stopPropagation?.();
     if (disabledActions) return;
     if (isGuest) { showSuccessToast(loginRequiredMsg); return; }
+    if (isUnverifiedDoctor) { showSuccessToast(t('medstream.verifyToLike', 'Verify your account to like posts.')); return; }
     const prev = likedRef.current;
     const next = !prev;
     likedRef.current = next;
@@ -837,12 +862,12 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             <div className="px-3 pb-3 mt-0 border-t border-gray-100 pt-2.5 relative min-h-0 transform-gpu">
               {/* New comment input */}
               <div className="flex items-center gap-2">
-                <AvatarImg src={authUser?.avatar || '/images/default/default-avatar.svg'} alt="Your avatar" className="w-6 h-6 rounded-full object-cover" />
+                <AvatarImg src={resolveStorageUrl(authUser?.avatar)} alt="Your avatar" className="w-6 h-6 rounded-full object-cover" />
                 <div className="relative flex-1">
                   <input
-                    placeholder={(disabledActions || isGuest) ? 'Sign in to comment…' : 'Add a comment…'}
-                    className={`w-full border border-gray-300 rounded-full pl-3 ${commentText.trim() ? 'pr-[4.5rem]' : 'pr-9'} py-1.5 text-[13px] transition-all ${(disabledActions || isGuest) ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-transparent hover:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:border-gray-400'}`}
-                    disabled={disabledActions || isGuest}
+                    placeholder={(disabledActions || isGuest || isUnverifiedDoctor) ? (isUnverifiedDoctor ? 'Comments disabled — verification pending' : 'Sign in to comment…') : 'Add a comment…'}
+                    className={`w-full border border-gray-300 rounded-full pl-3 ${commentText.trim() ? 'pr-[4.5rem]' : 'pr-9'} py-1.5 text-[13px] transition-all ${(disabledActions || isGuest || isUnverifiedDoctor) ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-transparent hover:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:border-gray-400'}`}
+                    disabled={disabledActions || isGuest || isUnverifiedDoctor}
                     onFocus={() => { if (isGuest) showSuccessToast(loginRequiredMsg); }}
                     value={commentText}
                     onChange={(e)=>setCommentText(e.target.value)}
@@ -852,7 +877,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         if (isGuest) { showSuccessToast(loginRequiredMsg); return; }
                         const newComment = commentText.trim();
                         const tempId = 'lc-' + Date.now();
-                        setLocalComments(prev => [...prev, { id: tempId, author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
+                        setLocalComments(prev => [...prev, { id: tempId, author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: resolveStorageUrl(authUser?.avatar), text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
                         setCommentCount(c => c + 1);
                         setVisibleCommentCount(v => v + 1);
                         setCommentText('');
@@ -891,7 +916,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                           if (!commentText.trim() || !item?.id) return;
                           const newComment = commentText.trim();
                           const tempId = 'lc-' + Date.now();
-                          setLocalComments(prev => [...prev, { id: tempId, author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: authUser?.avatar || '/images/default/default-avatar.svg', text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
+                          setLocalComments(prev => [...prev, { id: tempId, author_id: authUser?.id, name: authUser?.name || 'You', title: '', avatar: resolveStorageUrl(authUser?.avatar), text: newComment, time: 'Just now', parent_id: null, replies: [] }]);
                           setCommentCount(c => c + 1);
                           setVisibleCommentCount(v => v + 1);
                           setCommentText('');

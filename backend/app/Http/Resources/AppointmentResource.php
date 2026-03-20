@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppointmentResource extends JsonResource
 {
+    use Concerns\ResolvesMediaUrls;
+
     public function toArray(Request $request): array
     {
         return [
@@ -30,14 +32,14 @@ class AppointmentResource extends JsonResource
             'patient' => $this->whenLoaded('patient', fn() => [
                 'id'       => $this->patient->id,
                 'fullname' => $this->patient->fullname,
-                'avatar'   => $this->patient->avatar,
+                'avatar'   => self::resolveMediaUrl($this->patient->avatar),
                 'email'    => $this->patient->email,
                 'mobile'   => $this->patient->mobile,
             ]),
             'doctor' => $this->whenLoaded('doctor', fn() => [
                 'id'       => $this->doctor->id,
                 'fullname' => $this->doctor->fullname,
-                'avatar'   => $this->doctor->avatar,
+                'avatar'   => self::resolveMediaUrl($this->doctor->avatar),
             ]),
             'clinic' => $this->whenLoaded('clinic', fn() => [
                 'id'       => $this->clinic->id,

@@ -70,11 +70,14 @@ class ChatMedStreamTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        $this->assertDatabaseHas('chat_messages', [
-            'conversation_id' => $conversation->id,
-            'sender_id'       => $doctor->id,
-            'content'         => 'Hello patient, how are you?',
-        ]);
+
+        // content is encrypted at rest — use Eloquent to decrypt & verify
+        $message = ChatMessage::where('conversation_id', $conversation->id)
+            ->where('sender_id', $doctor->id)
+            ->first();
+
+        $this->assertNotNull($message, 'Chat message should exist in database');
+        $this->assertEquals('Hello patient, how are you?', $message->content);
     }
 
     public function test_outsider_cannot_send_message(): void

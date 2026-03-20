@@ -8,6 +8,7 @@ import ChatMessageList from 'components/chat/ChatMessageList';
 import ChatInput from 'components/chat/ChatInput';
 import EmptyState from '../components/common/EmptyState';
 import { chatAPI } from '../lib/api';
+import resolveStorageUrl from '../utils/resolveStorageUrl';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { getEcho } from '../lib/echo';
@@ -33,13 +34,14 @@ function formatTime(dateStr) {
 
 /**
  * Convert API conversation (ChatConversationResource) to thread format used by ThreadsSidebar.
+ * Stores raw `lastMessageAt` so timeAgo can be recomputed dynamically.
  */
 function convToThread(conv) {
   const other = conv.other_user;
   const name = other?.fullname || 'Unknown';
   const avatar = other?.avatar || '/images/default/default-avatar.svg';
   const last = conv.last_message_content || '';
-  const when = timeAgo(conv.last_message_at || conv.created_at);
+  const rawDate = conv.last_message_at || conv.created_at;
   const tags = [];
   if (conv.unread_count > 0) tags.push(`${conv.unread_count} new`);
 
@@ -49,24 +51,58 @@ function convToThread(conv) {
     channel: 'Chat',
     online: false,
     last,
-    when,
+    when: timeAgo(rawDate),
+    lastMessageAt: rawDate,
     avatar,
     tags,
+    unread_count: conv.unread_count || 0,
     _raw: conv,
   };
+}
+
+/**
+ * Guess MIME type from file extension for attachment display.
+ */
+function guessMime(name) {
+  if (!name) return 'application/octet-stream';
+  const ext = name.split('.').pop()?.toLowerCase();
+  const map = {
+    jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif',
+    webp: 'image/webp', svg: 'image/svg+xml', heic: 'image/heic',
+    pdf: 'application/pdf', doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    xls: 'application/vnd.ms-excel', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    mp4: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm',
+    mp3: 'audio/mpeg', wav: 'audio/wav', ogg: 'audio/ogg',
+  };
+  return map[ext] || 'application/octet-stream';
 }
 
 /**
  * Convert API message (ChatMessageResource) to the format used by ChatMessage component.
  */
 function apiMsgToLocal(msg, currentUserId) {
+  const attachments = [];
+  if (msg.attachment_url) {
+    const resolvedUrl = resolveStorageUrl(msg.attachment_url, null);
+    const mime = msg.message_type === 'image' ? (guessMime(msg.attachment_name) || 'image/jpeg') : guessMime(msg.attachment_name);
+    attachments.push({
+      id: msg.id + '-att',
+      url: resolvedUrl,
+      thumb_url: resolvedUrl,
+      file_name: msg.attachment_name || 'file',
+      file_type: mime,
+      file_size: null,
+    });
+  }
+
   return {
     id: msg.id,
     sender: msg.sender_id === currentUserId ? 'doctor' : 'patient',
     text: msg.content || '',
     time: formatTime(msg.created_at),
-    status: 'sent',
-    attachments: msg.attachment_url ? [{ url: msg.attachment_url, name: msg.attachment_name }] : [],
+    rawCreatedAt: msg.created_at,
+    status: msg.read_at ? 'read' : 'sent',
+    attachments,
     senderName: msg.sender?.fullname || '',
     senderAvatar: msg.sender?.avatar || '/images/default/default-avatar.svg',
     _raw: msg,
@@ -298,6 +334,16 @@ const DoctorChatPage = () => {
     return () => clearInterval(pollRef.current);
   }, [isApiMode, activeThreadId, fetchConversations, fetchMessages]);
 
+  // Dynamic timestamp refresh: recompute `when` every 30s so sidebar stays live
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setThreads(prev => prev.map(t => t.lastMessageAt ? { ...t, when: timeAgo(t.lastMessageAt) } : t));
+      setTick(n => n + 1);
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
   const activeContact = useMemo(() => threads.find(t => t.id === activeThreadId), [threads, activeThreadId]);
 
   const filteredThreads = useMemo(() => {
@@ -340,13 +386,24 @@ const DoctorChatPage = () => {
     sendTyping(false);
 
     if (isApiMode && activeThreadId) {
+      // Build optimistic attachment previews (local blob URLs) so there's no style jump
+      const optAttachments = hasFiles ? attachments.map((f, i) => ({
+        id: 'opt-att-' + i,
+        url: f.type?.startsWith('image/') ? URL.createObjectURL(f) : null,
+        thumb_url: f.type?.startsWith('image/') ? URL.createObjectURL(f) : null,
+        file_name: f.name || 'file',
+        file_type: f.type || 'application/octet-stream',
+        file_size: f.size || null,
+      })) : [];
+
       const optimistic = {
         id: 'opt-' + Date.now(),
         sender: 'doctor',
-        text: text || (hasFiles ? `📎 ${attachments.length} file${attachments.length > 1 ? 's' : ''}` : ''),
+        text: text || '',
         time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        rawCreatedAt: new Date().toISOString(),
         status: 'sending',
-        attachments: [],
+        attachments: optAttachments,
       };
       setMessages(prev => [...prev, optimistic]);
       setMessage('');
@@ -357,8 +414,13 @@ const DoctorChatPage = () => {
           content: text || undefined,
           attachment: hasFiles ? attachments[0] : undefined,
         });
-        const real = apiMsgToLocal(res, currentUserId);
-        setMessages(prev => prev.map(m => m.id === optimistic.id ? real : m));
+        const msgData = res?.data || res;
+        const real = apiMsgToLocal(msgData, currentUserId);
+        // Revoke blob URLs from optimistic attachments
+        optAttachments.forEach(a => { if (a.url?.startsWith('blob:')) URL.revokeObjectURL(a.url); });
+        setMessages(prev => prev.map(m => m.id === optimistic.id ? { ...real, status: 'sent' } : m));
+        // Refresh conversation sidebar to update last message & time
+        fetchConversations();
       } catch {
         setMessages(prev => prev.map(m => m.id === optimistic.id ? { ...m, status: 'failed' } : m));
       }
@@ -470,7 +532,7 @@ const DoctorChatPage = () => {
                     >
                       <div className="flex items-start gap-3">
                         <div className="relative flex-shrink-0">
-                          <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-sm" loading="lazy" />
+                          <img src={resolveStorageUrl(t.avatar)} alt={t.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-sm" loading="lazy" onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                           <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 ${t.online ? 'bg-emerald-500' : 'bg-gray-300'} rounded-full border-2 border-white`} />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -550,8 +612,6 @@ const DoctorChatPage = () => {
                     type="messages"
                     title={t('chat.emptyTitle', 'No conversations yet')}
                     description={t('chat.emptyDesc', 'When patients send you a message, their conversations will appear here. Start connecting with your patients!')}
-                    actionLabel={t('chat.exploreDoctors', 'Explore Doctors')}
-                    actionUrl="/doctors-departments"
                   />
                 </div>
               )}
@@ -595,8 +655,6 @@ const DoctorChatPage = () => {
                       type="messages"
                       title={t('chat.emptyTitle', 'No conversations yet')}
                       description={t('chat.emptyDesc', 'When patients send you a message, their conversations will appear here. Start connecting with your patients!')}
-                      actionLabel={t('chat.exploreDoctors', 'Explore Doctors')}
-                      actionUrl="/doctors-departments"
                     />
                   )}
                 </div>

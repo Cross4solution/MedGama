@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class MedStreamPostResource extends JsonResource
 {
+    use Concerns\ResolvesMediaUrls;
+
     public function toArray(Request $request): array
     {
         $isAnon = (bool) $this->is_anonymous;
@@ -39,18 +41,18 @@ class MedStreamPostResource extends JsonResource
             ] : [
                 'id'       => $this->author->id,
                 'fullname' => $this->author->fullname,
-                'avatar'   => $this->author->avatar,
+                'avatar'   => self::resolveMediaUrl($this->author->avatar),
                 'role_id'  => $this->author->role_id,
             ]),
             'clinic' => $this->whenLoaded('clinic', fn() => [
                 'id'       => $this->clinic->id,
                 'fullname' => $this->clinic->fullname,
-                'avatar'   => $this->clinic->avatar ?? null,
+                'avatar'   => self::resolveMediaUrl($this->clinic->avatar ?? null),
             ]),
             'hospital' => $this->whenLoaded('hospital', fn() => [
                 'id'     => $this->hospital->id,
                 'name'   => $this->hospital->name,
-                'avatar' => $this->hospital->avatar ?? null,
+                'avatar' => self::resolveMediaUrl($this->hospital->avatar ?? null),
             ]),
             'specialty' => $this->whenLoaded('specialty', fn() => [
                 'id'   => $this->specialty->id,
@@ -64,6 +66,7 @@ class MedStreamPostResource extends JsonResource
             'comments' => MedStreamCommentResource::collection($this->whenLoaded('comments')),
 
             // Computed flags (set by service layer)
+            'engagement_score' => (int) ($this->engagement_score ?? 0),
             'is_liked'      => $this->is_liked ?? false,
             'is_bookmarked' => $this->is_bookmarked ?? false,
         ];

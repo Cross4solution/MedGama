@@ -30,7 +30,7 @@ function DocumentPreviewModal({ vr, onClose, token }) {
   const isImage = vr.mime_type?.startsWith('image/');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 lg:left-64 lg:w-[calc(100%-16rem)] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
           <div>
@@ -77,7 +77,7 @@ function RejectModal({ vr, onClose, onConfirm, loading }) {
   if (!vr) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 lg:left-64 lg:w-[calc(100%-16rem)] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
@@ -123,6 +123,7 @@ export default function AdminVerification() {
   // ── Verification Requests state ──
   const [requests, setRequests] = useState([]);
   const [reqLoading, setReqLoading] = useState(true);
+  const [reqError, setReqError] = useState('');
   const [reqFilter, setReqFilter] = useState('pending');
   const [reqSearch, setReqSearch] = useState('');
   const [reqPage, setReqPage] = useState(1);
@@ -134,13 +135,19 @@ export default function AdminVerification() {
   // ── Doctors list state (legacy) ──
   const [doctors, setDoctors] = useState([]);
   const [docLoading, setDocLoading] = useState(true);
+  const [docError, setDocError] = useState('');
   const [docFilter, setDocFilter] = useState('all');
   const [docSearch, setDocSearch] = useState('');
   const [docPage, setDocPage] = useState(1);
   const [docLastPage, setDocLastPage] = useState(1);
 
   // Auth token for document preview
-  const token = localStorage.getItem('auth_token') || '';
+  let token = '';
+  try {
+    const saved = localStorage.getItem('auth_state');
+    if (saved) token = JSON.parse(saved)?.token || '';
+  } catch {}
+  if (!token) token = localStorage.getItem('auth_token') || '';
 
   // ── Fetch stats ──
   useEffect(() => {
@@ -152,6 +159,7 @@ export default function AdminVerification() {
   // ── Fetch verification requests ──
   const fetchRequests = useCallback(async () => {
     setReqLoading(true);
+    setReqError('');
     try {
       const params = { per_page: 15, page: reqPage };
       if (reqFilter !== 'all') params.status = reqFilter;
@@ -159,7 +167,13 @@ export default function AdminVerification() {
       const res = await adminAPI.verificationRequests(params);
       setRequests(res?.data || []);
       setReqLastPage(res?.last_page || res?.meta?.last_page || 1);
-    } catch { setRequests([]); }
+    } catch (err) {
+      setRequests([]);
+      const status = err?.response?.status || err?.status;
+      if (status === 403) setReqError('Access denied. SuperAdmin privileges required.');
+      else if (status === 401) setReqError('Not authenticated. Please log in again.');
+      else setReqError(err?.message || 'Failed to load verification requests.');
+    }
     setReqLoading(false);
   }, [reqFilter, reqSearch, reqPage]);
 
@@ -169,6 +183,7 @@ export default function AdminVerification() {
   // ── Fetch doctors (legacy) ──
   const fetchDoctors = useCallback(async () => {
     setDocLoading(true);
+    setDocError('');
     try {
       const params = { per_page: 15, page: docPage };
       if (docFilter === 'pending') params.verified = false;
@@ -177,7 +192,13 @@ export default function AdminVerification() {
       const res = await adminAPI.doctors(params);
       setDoctors(res?.data || []);
       setDocLastPage(res?.last_page || res?.meta?.last_page || 1);
-    } catch { setDoctors([]); }
+    } catch (err) {
+      setDoctors([]);
+      const status = err?.response?.status || err?.status;
+      if (status === 403) setDocError('Access denied. SuperAdmin privileges required.');
+      else if (status === 401) setDocError('Not authenticated. Please log in again.');
+      else setDocError(err?.message || 'Failed to load doctors list.');
+    }
     setDocLoading(false);
   }, [docFilter, docSearch, docPage]);
 
@@ -219,7 +240,10 @@ export default function AdminVerification() {
     <div className="space-y-5">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold text-gray-900">Doctor Verification</h1>
+        <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <ShieldCheck className="w-5 h-5 text-purple-600" />
+          Verification Hub
+        </h1>
         <p className="text-sm text-gray-500 mt-0.5">Review documents and verify doctor registrations</p>
       </div>
 
@@ -265,9 +289,17 @@ export default function AdminVerification() {
             </div>
           </div>
 
+          {reqError && (
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700">
+              <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+              <p className="text-sm font-medium flex-1">{reqError}</p>
+              <button onClick={fetchRequests} className="text-xs font-medium underline hover:text-red-800">Retry</button>
+            </div>
+          )}
+
           {reqLoading ? (
             <div className="flex justify-center py-12"><div className="w-7 h-7 border-3 border-teal-200 border-t-teal-600 rounded-full animate-spin" /></div>
-          ) : requests.length === 0 ? (
+          ) : !reqError && requests.length === 0 ? (
             <div className="text-center py-12 text-gray-400 text-sm">No verification requests found.</div>
           ) : (
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
@@ -384,9 +416,17 @@ export default function AdminVerification() {
             </div>
           </div>
 
+          {docError && (
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700">
+              <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+              <p className="text-sm font-medium flex-1">{docError}</p>
+              <button onClick={fetchDoctors} className="text-xs font-medium underline hover:text-red-800">Retry</button>
+            </div>
+          )}
+
           {docLoading ? (
             <div className="flex justify-center py-12"><div className="w-7 h-7 border-3 border-teal-200 border-t-teal-600 rounded-full animate-spin" /></div>
-          ) : doctors.length === 0 ? (
+          ) : !docError && doctors.length === 0 ? (
             <div className="text-center py-12 text-gray-400 text-sm">No doctors found.</div>
           ) : (
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">

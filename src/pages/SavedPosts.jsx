@@ -128,8 +128,7 @@ export default function SavedPosts() {
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <Bookmark className="w-5 h-5 text-amber-500" fill="currentColor" />
+            <h1 className="text-xl font-bold text-gray-900">
               {t('common.savedPosts', 'Saved Posts')}
             </h1>
             <p className="text-sm text-gray-500">{total} {total === 1 ? 'post' : 'posts'} saved</p>

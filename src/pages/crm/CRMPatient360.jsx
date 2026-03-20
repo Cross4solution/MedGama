@@ -8,7 +8,9 @@ import {
   Image, File, Tag, Layers, CalendarPlus, Receipt,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { patientAPI } from '../../lib/api';
+import { patientAPI, clinicVerificationAPI } from '../../lib/api';
+import ClinicVerificationModal from '../../components/crm/ClinicVerificationModal';
+import ProTeaser from '../../components/crm/ProTeaser';
 
 // ─── Helpers ─────────────────────────────────────────────────
 const getInitials = (name) => {
@@ -157,7 +159,7 @@ const TimelineCard = ({ entry, isLast, t }) => {
 const CRMPatient360 = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isPro } = useAuth();
   const [searchParams] = useSearchParams();
   const patientId = searchParams.get('id');
 
@@ -176,6 +178,21 @@ const CRMPatient360 = () => {
   const [addTagValue, setAddTagValue] = useState('');
   const [addingTag, setAddingTag] = useState(false);
   const [showTagInput, setShowTagInput] = useState(false);
+
+  // Clinic verification gating
+  const isClinicOwner = user?.role_id === 'clinicOwner';
+  const [clinicVerificationStatus, setClinicVerificationStatus] = useState(null);
+  const [showClinicVerifyModal, setShowClinicVerifyModal] = useState(false);
+
+  useEffect(() => {
+    if (!isClinicOwner) return;
+    clinicVerificationAPI.status().then(res => {
+      const d = res?.data || res;
+      setClinicVerificationStatus(d.verification_status || 'unverified');
+    }).catch(() => {});
+  }, [isClinicOwner]);
+
+  const clinicNeedsVerification = isClinicOwner && clinicVerificationStatus && clinicVerificationStatus !== 'verified';
 
   // ── Fetch profile (triggers GDPR audit log on backend) ──
   const fetchProfile = useCallback(async () => {
@@ -250,6 +267,9 @@ const CRMPatient360 = () => {
     try { await patientAPI.setStage(patientId, stage); fetchProfile(); } catch { /* ignore */ }
   };
 
+  // ── Pro gate ──
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="patient360" />;
+
   // ── Guards ──
   if (!patientId) return <div className="flex items-center justify-center h-64"><p className="text-gray-400">No patient ID provided</p></div>;
   if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="w-6 h-6 animate-spin text-teal-500" /></div>;
@@ -280,7 +300,16 @@ const CRMPatient360 = () => {
           <p className="text-sm text-gray-500 mt-0.5">{t('crm.patient360.subtitle', 'Complete medical & commercial patient profile')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => navigate('/crm/appointments')} className="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-all shadow-sm">
+          <button
+            onClick={() => {
+              if (user?.role_id === 'doctor' && !user?.is_verified) return;
+              if (clinicNeedsVerification) { setShowClinicVerifyModal(true); return; }
+              navigate('/crm/appointments');
+            }}
+            disabled={user?.role_id === 'doctor' && !user?.is_verified}
+            title={(user?.role_id === 'doctor' && !user?.is_verified) || clinicNeedsVerification ? t('crm.verificationBanner.restrictedFeature', 'Verification required to use this feature') : undefined}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm ${(user?.role_id === 'doctor' && !user?.is_verified) || clinicNeedsVerification ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+          >
             <CalendarPlus className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{t('crm.patients.bookAppointment', 'New Appointment')}</span>
           </button>
@@ -585,6 +614,12 @@ const CRMPatient360 = () => {
           </div>
         </div>
       </div>
+      {/* Clinic Verification Modal */}
+      <ClinicVerificationModal
+        isOpen={showClinicVerifyModal}
+        onClose={() => setShowClinicVerifyModal(false)}
+        onStatusChange={(status) => setClinicVerificationStatus(status)}
+      />
     </div>
   );
 };

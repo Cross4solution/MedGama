@@ -27,6 +27,11 @@ class TicketController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        // Normalise empty-string category_id from FormData to null
+        if ($request->has('category_id') && $request->input('category_id') === '') {
+            $request->merge(['category_id' => null]);
+        }
+
         $data = $request->validate([
             'subject'     => 'required|string|max:255',
             'body'        => 'required|string|max:5000',

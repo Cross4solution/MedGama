@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ToggleLeft, ToggleRight, Loader2, Settings2, Blocks, Server, Save, Hash } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
+import { blockNonNumericInt } from '../../utils/numericInput';
 
 const GROUP_META = {
   modules: { label: 'Module Toggles', icon: Blocks, description: 'Enable or disable platform modules globally' },
@@ -40,6 +41,7 @@ function IntegerInput({ value, onChange, loading }) {
           type="number"
           value={val}
           onChange={e => { setVal(e.target.value); setDirty(true); }}
+          onKeyDown={blockNonNumericInt}
           className="w-24 pl-8 pr-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
         />
       </div>

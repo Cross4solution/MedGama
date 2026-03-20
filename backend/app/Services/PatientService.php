@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\TurkishStr;
 
 class PatientService
 {
@@ -43,8 +44,8 @@ class PatientService
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
-                $q->where('fullname', 'ilike', "%{$search}%")
-                  ->orWhere('email', 'ilike', "%{$search}%")
+                TurkishStr::addNormalizedSearch($q, 'fullname', $search, 'or');
+                $q->orWhere('email', 'ilike', "%{$search}%")
                   ->orWhere('mobile', 'ilike', "%{$search}%");
             });
         }

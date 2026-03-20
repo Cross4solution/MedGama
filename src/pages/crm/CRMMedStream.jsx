@@ -9,6 +9,7 @@ import {
   Eye, EyeOff, Shield, Clock, TrendingUp, Filter, Search,
   ThumbsUp, UserPlus, UserCheck, Camera, FileText,
 } from 'lucide-react';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 // ═══════════════════════════════════════════════════
 // CreatePostModal
@@ -280,7 +281,7 @@ const ReportModal = ({ open, onClose, postId, t }) => {
 // ═══════════════════════════════════════════════════
 // CommentSection
 // ═══════════════════════════════════════════════════
-const CommentSection = ({ postId, initialCount, t }) => {
+const CommentSection = ({ postId, initialCount, t, isVerified = true }) => {
   const [open, setOpen] = useState(false);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -328,7 +329,7 @@ const CommentSection = ({ postId, initialCount, t }) => {
                 <div key={c.id} className="flex gap-2">
                   <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
                     {c.author?.avatar ? (
-                      <img src={c.author.avatar} alt="" className="w-7 h-7 rounded-full object-cover" />
+                      <img src={resolveStorageUrl(c.author.avatar)} alt="" className="w-7 h-7 rounded-full object-cover" onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                     ) : (
                       <span className="text-[9px] font-bold text-gray-500">{c.author?.fullname?.[0] || '?'}</span>
                     )}
@@ -343,23 +344,27 @@ const CommentSection = ({ postId, initialCount, t }) => {
           )}
 
           {/* New comment input */}
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Yorum yaz..."
-              className="flex-1 h-9 px-3 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-            />
-            <button
-              onClick={handleSend}
-              disabled={!newComment.trim() || sending}
-              className="h-9 px-3 bg-teal-600 text-white rounded-xl text-xs font-semibold disabled:opacity-50 flex items-center gap-1"
-            >
-              {sending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-            </button>
-          </div>
+          {isVerified ? (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                placeholder="Yorum yaz..."
+                className="flex-1 h-9 px-3 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              />
+              <button
+                onClick={handleSend}
+                disabled={!newComment.trim() || sending}
+                className="h-9 px-3 bg-teal-600 text-white rounded-xl text-xs font-semibold disabled:opacity-50 flex items-center gap-1"
+              >
+                {sending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+              </button>
+            </div>
+          ) : (
+            <p className="text-[11px] text-amber-600 text-center py-1">{t('crm.verificationBanner.interactionLocked', 'Account verification required for interactions')}</p>
+          )}
         </div>
       )}
     </div>
@@ -369,7 +374,7 @@ const CommentSection = ({ postId, initialCount, t }) => {
 // ═══════════════════════════════════════════════════
 // PostCard
 // ═══════════════════════════════════════════════════
-const PostCard = ({ post, onLike, onBookmark, onReport, t }) => {
+const PostCard = ({ post, onLike, onBookmark, onReport, t, isVerified = true }) => {
   const author = post.author || {};
   const ec = post.engagement_counter || {};
   const media = Array.isArray(post.media) && post.media.length > 0 ? post.media : (post.media_url ? [{ url: post.media_url, type: 'image' }] : []);
@@ -381,7 +386,7 @@ const PostCard = ({ post, onLike, onBookmark, onReport, t }) => {
       <div className="flex items-center gap-3 px-5 pt-4 pb-2">
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center flex-shrink-0 overflow-hidden">
           {author.avatar ? (
-            <img src={author.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+            <img src={resolveStorageUrl(author.avatar)} alt="" className="w-10 h-10 rounded-full object-cover" onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
           ) : (
             <span className="text-sm font-bold text-white">{post.is_anonymous ? '?' : (author.fullname?.[0] || '?')}</span>
           )}
@@ -441,18 +446,22 @@ const PostCard = ({ post, onLike, onBookmark, onReport, t }) => {
       <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100">
         <div className="flex items-center gap-5">
           <button
-            onClick={() => onLike?.(post.id)}
-            className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${post.is_liked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
+            onClick={() => { if (!isVerified) return; onLike?.(post.id); }}
+            disabled={!isVerified}
+            title={!isVerified ? t('crm.verificationBanner.interactionLocked', 'Account verification required for interactions') : undefined}
+            className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${!isVerified ? 'text-gray-300 cursor-not-allowed' : post.is_liked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
           >
             <Heart className={`w-4 h-4 ${post.is_liked ? 'fill-current' : ''}`} />
             {post.is_liked ? 'Beğenildi' : 'Beğen'}
           </button>
 
-          <CommentSection postId={post.id} initialCount={ec.comment_count} t={t} />
+          <CommentSection postId={post.id} initialCount={ec.comment_count} t={t} isVerified={isVerified} />
 
           <button
-            onClick={() => onBookmark?.(post.id)}
-            className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${post.is_bookmarked ? 'text-amber-500' : 'text-gray-500 hover:text-amber-500'}`}
+            onClick={() => { if (!isVerified) return; onBookmark?.(post.id); }}
+            disabled={!isVerified}
+            title={!isVerified ? t('crm.verificationBanner.interactionLocked', 'Account verification required for interactions') : undefined}
+            className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${!isVerified ? 'text-gray-300 cursor-not-allowed' : post.is_bookmarked ? 'text-amber-500' : 'text-gray-500 hover:text-amber-500'}`}
           >
             <Bookmark className={`w-4 h-4 ${post.is_bookmarked ? 'fill-current' : ''}`} />
           </button>
@@ -476,6 +485,7 @@ const CRMMedStream = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [feedMode, setFeedMode] = useState('feed'); // 'feed' | 'all' | 'my'
+  const [feedSort, setFeedSort] = useState('recent'); // 'recent' | 'top'
   const [specialtyFilter, setSpecialtyFilter] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [reportPostId, setReportPostId] = useState(null);
@@ -487,7 +497,7 @@ const CRMMedStream = () => {
     if (reset) setPage(1);
     setLoading(true);
     try {
-      const params = { per_page: 15, page: p };
+      const params = { per_page: 15, page: p, sort: feedSort };
       if (specialtyFilter) params.specialty_id = specialtyFilter;
 
       let res;
@@ -511,9 +521,9 @@ const CRMMedStream = () => {
     } finally {
       setLoading(false);
     }
-  }, [feedMode, specialtyFilter, page, user?.id]);
+  }, [feedMode, feedSort, specialtyFilter, page, user?.id]);
 
-  useEffect(() => { loadPosts(true); }, [feedMode, specialtyFilter]);
+  useEffect(() => { loadPosts(true); }, [feedMode, feedSort, specialtyFilter]);
 
   const handleLike = async (postId) => {
     try {
@@ -542,7 +552,7 @@ const CRMMedStream = () => {
   };
 
   return (
-    <div className="space-y-5 max-w-3xl mx-auto">
+    <div className="space-y-3 max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
@@ -553,8 +563,10 @@ const CRMMedStream = () => {
           <p className="text-sm text-gray-500 mt-0.5">{t('crm.medstream.subtitle', 'Doktor vaka paylaşım ağı')}</p>
         </div>
         <button
-          onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm"
+          onClick={() => { if (user?.role_id === 'doctor' && !user?.is_verified) return; setShowCreateModal(true); }}
+          disabled={user?.role_id === 'doctor' && !user?.is_verified}
+          title={user?.role_id === 'doctor' && !user?.is_verified ? t('crm.verificationBanner.restrictedFeature', 'Verification required to use this feature') : undefined}
+          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm ${user?.role_id === 'doctor' && !user?.is_verified ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70' : 'bg-teal-600 text-white hover:bg-teal-700'}`}
         >
           <Plus className="w-4 h-4" /> Yeni Paylaşım
         </button>
@@ -575,6 +587,24 @@ const CRMMedStream = () => {
                 onClick={() => setFeedMode(key)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   feedMode === key ? 'bg-white text-teal-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" /> {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Sort Tabs */}
+          <div className="flex bg-gray-100 rounded-xl p-0.5">
+            {[
+              { key: 'recent', label: t('crm.medstream.sortRecent', 'En Yeniler'), icon: Clock },
+              { key: 'top', label: t('crm.medstream.sortTop', 'Popülerler'), icon: TrendingUp },
+            ].map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                onClick={() => { setFeedSort(key); setPage(1); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  feedSort === key ? 'bg-white text-teal-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" /> {label}
@@ -630,6 +660,7 @@ const CRMMedStream = () => {
                 onBookmark={handleBookmark}
                 onReport={(id) => setReportPostId(id)}
                 t={t}
+                isVerified={!(user?.role_id === 'doctor' && !user?.is_verified)}
               />
             ))}
 

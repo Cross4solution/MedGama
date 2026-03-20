@@ -28,6 +28,9 @@ use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ClinicManagerController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\SocialController;
+use App\Http\Controllers\Api\ContactMessageController;
+use App\Http\Controllers\Api\ClinicVerificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,6 +123,7 @@ Route::get('/search/live', [SearchController::class, 'live']);
 */
 Route::prefix('catalog')->middleware('cache.headers:public')->group(function () {
     Route::get('/search', [CatalogController::class, 'search']);
+    Route::get('/popular', [CatalogController::class, 'popular']);
     Route::get('/specialties', [CatalogController::class, 'specialties']);
     Route::get('/specialties/search', [CatalogController::class, 'specialtiesSearch']);
     Route::get('/cities', [CatalogController::class, 'cities']);
@@ -148,17 +152,53 @@ Route::prefix('catalog')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin
 
 /*
 |--------------------------------------------------------------------------
+| Social Routes (Follow / Favorite) — Authenticated
+|--------------------------------------------------------------------------
+*/
+Route::prefix('social')->middleware('auth:sanctum')->group(function () {
+    Route::post('/follow', [SocialController::class, 'follow']);
+    Route::post('/unfollow', [SocialController::class, 'unfollow']);
+    Route::post('/toggle-follow', [SocialController::class, 'toggleFollow']);
+    Route::get('/is-following', [SocialController::class, 'isFollowing']);
+    Route::get('/followers', [SocialController::class, 'followers']);
+    Route::get('/following', [SocialController::class, 'following']);
+    Route::post('/favorite', [SocialController::class, 'favorite']);
+    Route::post('/unfavorite', [SocialController::class, 'unfavorite']);
+    Route::post('/toggle-favorite', [SocialController::class, 'toggleFavorite']);
+    Route::get('/is-favorited', [SocialController::class, 'isFavorited']);
+    Route::get('/favorites', [SocialController::class, 'favorites']);
+    Route::get('/favorites/count', [SocialController::class, 'favoritesCount']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | Clinic Routes
 |--------------------------------------------------------------------------
 */
 Route::get('/clinics', [ClinicController::class, 'index'])->middleware('cache.headers:public');
 Route::get('/clinics/{codename}', [ClinicController::class, 'show'])->middleware('cache.headers:public');
 
+// Clinic reviews — public read (optional auth for can_review flag)
+Route::get('/clinics/{id}/reviews', [ClinicController::class, 'reviews']);
+Route::middleware('optional.auth')->group(function () {
+    Route::get('/clinics/{id}/review-stats', [ClinicController::class, 'reviewStats']);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
+    // Clinic Onboarding
+    Route::get('/clinic-onboarding', [ClinicController::class, 'onboardingProfile']);
+    Route::put('/clinic-onboarding', [ClinicController::class, 'updateOnboarding']);
+    Route::post('/clinic-onboarding/logo', [ClinicController::class, 'uploadLogo']);
+
     Route::post('/clinics', [ClinicController::class, 'store'])->middleware('role:superAdmin,saasAdmin');
     Route::put('/clinics/{id}', [ClinicController::class, 'update']);
     Route::get('/clinics/{id}/staff', [ClinicController::class, 'staff']);
     Route::post('/clinics/{id}/staff', [ClinicController::class, 'createStaff']);
+    Route::post('/clinics/{id}/reviews', [ClinicController::class, 'submitReview']);
+
+    // Clinic Verification
+    Route::get('/clinic-verification/status', [ClinicVerificationController::class, 'status']);
+    Route::post('/clinic-verification/submit', [ClinicVerificationController::class, 'submit']);
 });
 
 /*
@@ -205,8 +245,12 @@ Route::prefix('doctor-profile')->middleware('auth:sanctum')->group(function () {
 */
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/appointments/calendar-events', [AppointmentController::class, 'calendarEvents']);
-    Route::patch('/appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule']);
-    Route::apiResource('appointments', AppointmentController::class);
+    Route::patch('/appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->middleware('verified.doctor');
+    Route::get('/appointments', [AppointmentController::class, 'index']);
+    Route::get('/appointments/{appointment}', [AppointmentController::class, 'show']);
+    Route::post('/appointments', [AppointmentController::class, 'store'])->middleware('verified.doctor');
+    Route::put('/appointments/{appointment}', [AppointmentController::class, 'update'])->middleware('verified.doctor');
+    Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->middleware('verified.doctor');
 });
 
 /*
@@ -364,23 +408,26 @@ Route::prefix('medstream')->group(function () {
         Route::get('/posts/{post}/comments', [MedStreamController::class, 'comments']);
     });
 
+    // Secure file download (path-validated, no auth needed for public posts)
+    Route::get('/download', [MedStreamController::class, 'download']);
+
     // Protected write
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/feed', [MedStreamController::class, 'feed']);
 
-        Route::post('/posts', [MedStreamController::class, 'storePost']);
-        Route::put('/posts/{post}', [MedStreamController::class, 'updatePost']);
-        Route::delete('/posts/{post}', [MedStreamController::class, 'destroyPost']);
+        Route::post('/posts', [MedStreamController::class, 'storePost'])->middleware('verified.doctor');
+        Route::put('/posts/{post}', [MedStreamController::class, 'updatePost'])->middleware('verified.doctor');
+        Route::delete('/posts/{post}', [MedStreamController::class, 'destroyPost'])->middleware('verified.doctor');
 
-        Route::post('/posts/{post}/comments', [MedStreamController::class, 'storeComment']);
-        Route::put('/comments/{comment}', [MedStreamController::class, 'updateComment']);
-        Route::delete('/comments/{comment}', [MedStreamController::class, 'destroyComment']);
+        Route::post('/posts/{post}/comments', [MedStreamController::class, 'storeComment'])->middleware('verified.doctor');
+        Route::put('/comments/{comment}', [MedStreamController::class, 'updateComment'])->middleware('verified.doctor');
+        Route::delete('/comments/{comment}', [MedStreamController::class, 'destroyComment'])->middleware('verified.doctor');
 
-        Route::post('/posts/{post}/like', [MedStreamController::class, 'toggleLike']);
+        Route::post('/posts/{post}/like', [MedStreamController::class, 'toggleLike'])->middleware('verified.doctor');
         Route::post('/posts/{post}/report', [MedStreamController::class, 'storeReport']);
 
         Route::get('/bookmarks', [MedStreamController::class, 'bookmarks']);
-        Route::post('/bookmarks', [MedStreamController::class, 'toggleBookmark']);
+        Route::post('/bookmarks', [MedStreamController::class, 'toggleBookmark'])->middleware('verified.doctor');
 
         Route::post('/follow/{userId}', [MedStreamController::class, 'toggleFollow']);
         Route::get('/follow-counts/{userId}', [MedStreamController::class, 'followCounts']);
@@ -520,6 +567,11 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     Route::put('/verification-requests/{id}/reject', [SuperAdminController::class, 'rejectVerification']);
     Route::get('/verification-requests/{id}/document', [SuperAdminController::class, 'verificationDocument']);
 
+    // Clinic verification (document-based)
+    Route::get('/clinic-verifications', [ClinicVerificationController::class, 'adminList']);
+    Route::put('/clinic-verifications/{id}/approve', [ClinicVerificationController::class, 'approve']);
+    Route::put('/clinic-verifications/{id}/reject', [ClinicVerificationController::class, 'reject']);
+
     // Review moderation (Doc §10)
     Route::get('/reviews', [SuperAdminController::class, 'listReviews']);
     Route::get('/reviews/stats', [SuperAdminController::class, 'reviewStats']);
@@ -532,6 +584,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     Route::get('/users/stats', [SuperAdminController::class, 'userStats']);
     Route::put('/users/{id}/role', [SuperAdminController::class, 'updateUserRole']);
     Route::put('/users/{id}/suspend', [SuperAdminController::class, 'suspendUser']);
+    Route::put('/users/{id}/reset-password', [SuperAdminController::class, 'resetPassword']);
 
     // Content moderation
     Route::get('/reports', [SuperAdminController::class, 'reports']);
@@ -598,3 +651,16 @@ Route::prefix('support')->middleware(['auth:sanctum'])->group(function () {
     Route::delete('/categories/{id}', [TicketController::class, 'destroyCategory']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Contact Messages — Patient → Clinic/Doctor inquiries (with attachments)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('contact-messages')->middleware('auth:sanctum')->group(function () {
+    Route::post('/', [ContactMessageController::class, 'store']);
+    Route::get('/inbox', [ContactMessageController::class, 'inbox']);
+    Route::get('/unread-count', [ContactMessageController::class, 'unreadCount']);
+    Route::get('/{id}', [ContactMessageController::class, 'show']);
+    Route::delete('/{id}', [ContactMessageController::class, 'destroy']);
+    Route::get('/{id}/download/{attachmentId}', [ContactMessageController::class, 'downloadAttachment']);
+});

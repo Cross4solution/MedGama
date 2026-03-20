@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import GlobalSuggest from '../../components/forms/GlobalSuggest';
+import { useAuth } from '../../context/AuthContext';
+import ProTeaser from '../../components/crm/ProTeaser';
 
 const MOCK_PRESCRIPTIONS = [
   { id: 1, date: '2026-02-16', patient: 'Zeynep Kaya', age: 34, diagnosis: 'Seasonal Allergies', medications: [{ name: 'Cetirizine 10mg', dosage: '1x daily', duration: '14 days' }, { name: 'Fluticasone Nasal Spray', dosage: '2 puffs/nostril daily', duration: '30 days' }], status: 'active', notes: 'Avoid allergens. Follow-up in 2 weeks.' },
@@ -25,7 +27,9 @@ const PrescriptionStatusBadge = ({ status }) => {
 
 const CRMPrescriptions = () => {
   const { t } = useTranslation();
+  const { user, isPro } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedRx, setSelectedRx] = useState(null);
   const [showNewModal, setShowNewModal] = useState(false);
@@ -43,6 +47,8 @@ const CRMPrescriptions = () => {
     active: MOCK_PRESCRIPTIONS.filter(p => p.status === 'active').length,
     expired: MOCK_PRESCRIPTIONS.filter(p => p.status === 'expired').length,
   }), []);
+
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="prescriptions" />;
 
   return (
     <div className="space-y-6">

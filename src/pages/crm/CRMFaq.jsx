@@ -6,6 +6,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { faqAPI } from '../../lib/api';
+import { blockNonNumericInt } from '../../utils/numericInput';
 
 // ─── FAQ Accordion Item ──────────────────────────────────────
 const FaqItem = ({ faq, isOpen, onToggle, isAdmin, onEdit, onDelete, lang }) => {
@@ -117,6 +118,7 @@ const FaqEditorModal = ({ faq, onClose, onSaved, t }) => {
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">{t('crm.support.sortOrder', 'Sort Order')}</label>
               <input type="number" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: e.target.value }))}
+                onKeyDown={blockNonNumericInt}
                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none" />
             </div>
           </div>

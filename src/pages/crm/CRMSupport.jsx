@@ -3,11 +3,12 @@ import {
   HelpCircle, Plus, Search, Filter, ChevronLeft, ChevronRight, X,
   Send, Paperclip, Clock, AlertTriangle, CheckCircle2, Circle,
   Loader2, MessageSquare, User as UserIcon, Tag, ArrowUpRight,
-  LifeBuoy, ShieldCheck, Users, BarChart3, FileText, ChevronDown,
+  LifeBuoy, ShieldCheck, Users, BarChart3, FileText, ChevronDown, Upload,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { supportAPI } from '../../lib/api';
+import CRMModal, { ModalLabel, ModalInput, ModalSelect, ModalTextarea, ModalPrimaryButton, ModalCancelButton } from '../../components/crm/CRMModal';
 
 // ─── Helpers ─────────────────────────────────────────────────
 const STATUS_CONFIG = {
@@ -62,6 +63,8 @@ const CreateTicketModal = ({ onClose, onCreated, t }) => {
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState({ subject: '', body: '', category_id: '', priority: 'medium' });
   const [files, setFiles] = useState([]);
+  const [error, setError] = useState('');
+  const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef(null);
 
   useEffect(() => {
@@ -72,7 +75,7 @@ const CreateTicketModal = ({ onClose, onCreated, t }) => {
   }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
     if (!form.subject.trim() || !form.body.trim()) return;
     setLoading(true);
     try {
@@ -87,6 +90,8 @@ const CreateTicketModal = ({ onClose, onCreated, t }) => {
       onClose();
     } catch (err) {
       console.error('Create ticket error:', err);
+      const msg = err?.message || err?.errors?.subject?.[0] || t('crm.support.createError', 'Failed to create ticket. Please try again.');
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -96,77 +101,118 @@ const CreateTicketModal = ({ onClose, onCreated, t }) => {
     setFiles(prev => [...prev, ...Array.from(e.target.files)]);
   };
 
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const dropped = Array.from(e.dataTransfer.files);
+    if (dropped.length) setFiles(prev => [...prev, ...dropped]);
+  };
+
   const removeFile = (idx) => setFiles(prev => prev.filter((_, i) => i !== idx));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-base font-bold text-gray-900">{t('crm.support.createTicket', 'Create Support Ticket')}</h2>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center"><X className="w-4 h-4 text-gray-500" /></button>
+    <CRMModal
+      isOpen={true}
+      onClose={onClose}
+      title={t('crm.support.createTicket', 'Create Support Ticket')}
+      subtitle={t('crm.support.createTicketDesc', 'Describe your issue and our team will help you')}
+      icon={LifeBuoy}
+      maxWidth="max-w-[500px]"
+      footer={
+        <>
+          <ModalCancelButton onClick={onClose}>{t('common.cancel', 'Cancel')}</ModalCancelButton>
+          <ModalPrimaryButton onClick={handleSubmit} disabled={loading}>
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            {t('crm.support.submit', 'Submit Ticket')}
+          </ModalPrimaryButton>
+        </>
+      }
+    >
+      <div className="px-7 py-7 space-y-6">
+        {/* Subject */}
+        <div>
+          <ModalLabel required icon={Tag}>{t('crm.support.subject', 'Subject')}</ModalLabel>
+          <ModalInput
+            type="text"
+            value={form.subject}
+            onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
+            placeholder={t('crm.support.subjectPlaceholder', 'Briefly describe your issue...')}
+          />
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+
+        {/* Category + Priority */}
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">{t('crm.support.subject', 'Subject')}</label>
-            <input type="text" value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
-              placeholder={t('crm.support.subjectPlaceholder', 'Briefly describe your issue...')} required />
+            <ModalLabel icon={Filter}>{t('crm.support.category', 'Category')}</ModalLabel>
+            <ModalSelect value={form.category_id} onChange={e => setForm(f => ({ ...f, category_id: e.target.value }))}>
+              <option value="">{t('crm.support.selectCategory', 'Select...')}</option>
+              {categories.map(c => (
+                <option key={c.id} value={c.id}>
+                  {typeof c.name === 'string' ? c.name : (c.name_translations?.en || c.name_translations?.tr || c.slug)}
+                </option>
+              ))}
+            </ModalSelect>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">{t('crm.support.category', 'Category')}</label>
-              <select value={form.category_id} onChange={e => setForm(f => ({ ...f, category_id: e.target.value }))}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-teal-500 outline-none">
-                <option value="">{t('crm.support.selectCategory', 'Select category...')}</option>
-                {categories.map(c => <option key={c.id} value={c.id}>{c.name?.en || c.name?.tr || c.slug}</option>)}
-              </select>
+          <div>
+            <ModalLabel icon={AlertTriangle}>{t('crm.support.priority', 'Priority')}</ModalLabel>
+            <ModalSelect value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}>
+              {['low', 'medium', 'high', 'urgent'].map(p => (
+                <option key={p} value={p}>{t(`crm.support.priority_${p}`, p.charAt(0).toUpperCase() + p.slice(1))}</option>
+              ))}
+            </ModalSelect>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <ModalLabel required icon={MessageSquare}>{t('crm.support.description', 'Description')}</ModalLabel>
+          <ModalTextarea
+            value={form.body}
+            onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
+            rows={4}
+            placeholder={t('crm.support.descriptionPlaceholder', 'Provide details about your issue...')}
+          />
+        </div>
+
+        {/* Drag & Drop File Upload */}
+        <div>
+          <ModalLabel icon={Paperclip}>{t('crm.support.attachFiles', 'Attachments')}</ModalLabel>
+          <div
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            onClick={() => fileRef.current?.click()}
+            className={`flex flex-col items-center justify-center gap-2.5 p-6 border-2 border-dashed rounded-xl cursor-pointer transition-all ${
+              dragOver ? 'border-[#0A6E6F] bg-[#0A6E6F]/5' : 'border-gray-200 hover:border-[#0A6E6F]/40 hover:bg-[#0A6E6F]/[0.02]'
+            }`}
+          >
+            <Upload className={`w-7 h-7 ${dragOver ? 'text-[#0A6E6F]' : 'text-gray-300'}`} />
+            <p className={`text-xs text-center font-medium ${dragOver ? 'text-[#0A6E6F]' : 'text-gray-400'}`}>
+              {t('crm.support.dragDrop', 'Drag & drop files here or click to browse')}
+            </p>
+            <p className="text-[10px] text-gray-400">PNG, JPG, PDF, DOC (max 10MB)</p>
+          </div>
+          <input ref={fileRef} type="file" multiple accept="image/*,.pdf,.doc,.docx,.txt" onChange={handleFileChange} className="hidden" />
+          {files.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {files.map((f, i) => (
+                <span key={i} className="inline-flex items-center gap-1.5 bg-gray-100 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-gray-600">
+                  <FileText className="w-3 h-3 text-gray-400" />{f.name}
+                  <button type="button" onClick={() => removeFile(i)} className="ml-0.5 text-gray-400 hover:text-red-500 transition-colors"><X className="w-3 h-3" /></button>
+                </span>
+              ))}
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">{t('crm.support.priority', 'Priority')}</label>
-              <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-teal-500 outline-none">
-                {['low', 'medium', 'high', 'urgent'].map(p => (
-                  <option key={p} value={p}>{t(`crm.support.priority_${p}`, p.charAt(0).toUpperCase() + p.slice(1))}</option>
-                ))}
-              </select>
-            </div>
+          )}
+        </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5 text-xs text-red-600 flex items-center gap-2">
+            <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+            {error}
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">{t('crm.support.description', 'Description')}</label>
-            <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} rows={5}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none resize-none"
-              placeholder={t('crm.support.descriptionPlaceholder', 'Provide details about your issue...')} required />
-          </div>
-          {/* Attachments */}
-          <div>
-            <button type="button" onClick={() => fileRef.current?.click()}
-              className="inline-flex items-center gap-1.5 px-3 py-2 border border-dashed border-gray-300 rounded-xl text-xs text-gray-500 hover:border-teal-400 hover:text-teal-600 transition-colors">
-              <Paperclip className="w-3.5 h-3.5" />
-              {t('crm.support.attachFiles', 'Attach files / screenshots')}
-            </button>
-            <input ref={fileRef} type="file" multiple accept="image/*,.pdf,.doc,.docx,.txt" onChange={handleFileChange} className="hidden" />
-            {files.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {files.map((f, i) => (
-                  <span key={i} className="inline-flex items-center gap-1 bg-gray-100 rounded-lg px-2 py-1 text-[10px] text-gray-600">
-                    <FileText className="w-3 h-3" />{f.name}
-                    <button type="button" onClick={() => removeFile(i)} className="ml-1 text-gray-400 hover:text-red-500"><X className="w-3 h-3" /></button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">{t('common.cancel', 'Cancel')}</button>
-            <button type="submit" disabled={loading}
-              className="px-5 py-2.5 bg-teal-600 text-white text-sm font-semibold rounded-xl hover:bg-teal-700 disabled:opacity-50 transition-colors inline-flex items-center gap-2">
-              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {t('crm.support.submit', 'Submit Ticket')}
-            </button>
-          </div>
-        </form>
+        )}
       </div>
-    </div>
+    </CRMModal>
   );
 };
 
@@ -348,9 +394,10 @@ const CRMSupport = () => {
       if (searchQuery) params.search = searchQuery;
 
       const res = await supportAPI.tickets(params);
-      const d = res?.data || res;
-      setTickets(d?.data || []);
-      setTotal(d?.total || 0);
+      // Interceptor already unwraps response.data → res IS the paginated object
+      const paginated = res?.current_page !== undefined ? res : (res?.data || res);
+      setTickets(Array.isArray(paginated?.data) ? paginated.data : []);
+      setTotal(paginated?.total || 0);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   }, [page, statusFilter, priorityFilter, searchQuery]);
 
@@ -472,7 +519,7 @@ const CRMSupport = () => {
                     <p className="text-sm font-semibold text-gray-900 mt-1 truncate group-hover:text-teal-700 transition-colors">{ticket.subject}</p>
                     <div className="flex items-center gap-3 mt-1.5 text-[10px] text-gray-400">
                       {isAdmin && ticket.user && <span>{ticket.user.fullname}</span>}
-                      {ticket.category && <span className="flex items-center gap-0.5"><Tag className="w-3 h-3" />{ticket.category?.name?.en || ticket.category?.slug}</span>}
+                      {ticket.category && <span className="flex items-center gap-0.5"><Tag className="w-3 h-3" />{typeof ticket.category?.name === 'string' ? ticket.category.name : (ticket.category?.name_translations?.en || ticket.category?.slug)}</span>}
                       <span>{timeAgo(ticket.created_at)}</span>
                       {ticket.latest_message && <span className="truncate max-w-[200px]">{ticket.latest_message.body?.substring(0, 50)}{ticket.latest_message.body?.length > 50 ? '...' : ''}</span>}
                       {ticket.assignee && <span className="flex items-center gap-0.5"><UserIcon className="w-3 h-3" />{ticket.assignee.fullname}</span>}

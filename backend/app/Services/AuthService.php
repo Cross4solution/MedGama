@@ -44,7 +44,7 @@ class AuthService
         $verificationCode = '123456';
 
         $user = DB::transaction(function () use ($data, $clinicId, $verificationCode) {
-            return User::create([
+            $user = User::create([
                 'email'                   => $data['email'],
                 'password'                => $data['password'],
                 'fullname'                => $data['fullname'],
@@ -56,10 +56,27 @@ class AuthService
                 'gender'                  => $data['gender'] ?? null,
                 'clinic_id'               => $clinicId,
                 'clinic_name'             => $data['clinic_name'] ?? null,
+                'medical_history'         => $data['medical_history'] ?? null,
                 'avatar'                  => null,
                 'email_verified'          => false,
                 'email_verification_code' => $verificationCode,
             ]);
+
+            // Auto-create Clinic record for clinicOwner registrations
+            if (($data['role_id'] ?? 'patient') === 'clinicOwner') {
+                $clinicName = $data['clinic_name'] ?? ($data['fullname'] . ' Clinic');
+                $clinic = \App\Models\Clinic::create([
+                    'name'        => $clinicName,
+                    'fullname'    => $clinicName,
+                    'codename'    => \Illuminate\Support\Str::slug($clinicName) . '-' . \Illuminate\Support\Str::random(4),
+                    'owner_id'    => $user->id,
+                    'is_verified' => false,
+                    'is_active'   => true,
+                ]);
+                $user->update(['clinic_id' => $clinic->id]);
+            }
+
+            return $user;
         });
 
         // In demo/log mode, auto-verify email so users go straight to dashboard
@@ -157,9 +174,11 @@ class AuthService
     {
         // Optimise → WebP with thumb/medium/original variants
         $result = ImageService::optimiseAvatar($file, 'avatars');
-        $url = $result['url']; // medium variant (best for display)
+        $url = $result['url']; // e.g. "/storage/avatars/uuid_medium.webp"
 
-        $user->update(['avatar' => $url]);
+        // Store ONLY the storage-relative path in DB (strip /storage/ prefix)
+        $dbPath = preg_replace('#^/storage/#', '', $url); // "avatars/uuid_medium.webp"
+        $user->update(['avatar' => $dbPath]);
 
         return ['url' => $url, 'user' => $user->refresh()];
     }
@@ -344,7 +363,18 @@ class AuthService
 
     public function updateMedicalHistory(User $user, array $conditions): void
     {
+        $oldConditions = json_decode($user->medical_history ?? '[]', true);
         $user->update(['medical_history' => json_encode($conditions)]);
+
+        \App\Models\AuditLog::log(
+            user: $user,
+            action: 'medical_history_updated',
+            resourceType: 'user',
+            resourceId: $user->id,
+            oldValues: ['medical_history' => $oldConditions],
+            newValues: ['medical_history' => $conditions],
+            description: 'Patient updated medical history',
+        );
     }
 
     // ── Notification Preferences ──

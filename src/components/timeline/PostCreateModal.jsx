@@ -110,7 +110,6 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
   const specialty = user?.specialty || user?.dept || 'Doctor';
 
   async function handlePost() {
-    console.log('[PostCreateModal] handlePost called, posting:', posting, 'canPost:', text.trim() || photoUrls.length > 0 || videoUrls.length > 0);
     if (posting) return;
     setPosting(true);
     setPostError('');
@@ -126,7 +125,6 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
         videos: videos,
         papers: papers,
       });
-      console.log('[PostCreateModal] Post created:', res);
       onPost?.(res?.post || res);
       // Success — close modal and reset
       setPosting(false);

@@ -64,7 +64,7 @@ export function AuthProvider({ children }) {
         if (parsed.user && parsed.token) {
           const av = parsed.user?.avatar;
           const isPlaceholder = typeof av === 'string' && (av.includes('gravatar.com') || av.includes('identicon') || av.includes('ui-avatars.com'));
-          if (isPlaceholder || !av) parsed.user.avatar = '/images/default/default-avatar.svg';
+          if (isPlaceholder || !av) parsed.user.avatar = null;
           // Re-evaluate role from role_id to fix stale cached roles
           const rid = parsed.user?.role_id || parsed.user?.role || '';
           if (rid === 'doctor' || rid === 'clinic' || rid === 'clinicOwner') {
@@ -99,16 +99,21 @@ export function AuthProvider({ children }) {
 
   // Update user fields without touching token (for profile edits)
   const updateUser = useCallback((updatedFields, newCountry) => {
-    setUser(prev => ({ ...prev, ...updatedFields }));
+    setUser(prev => {
+      const merged = { ...prev, ...updatedFields };
+      // Normalize avatar if it was updated
+      if ('avatar' in updatedFields && updatedFields.avatar) {
+        merged.avatar = normalizeAvatar(updatedFields.avatar);
+      }
+      return merged;
+    });
     if (newCountry) setCountry(newCountry);
   }, []);
 
-  const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
   const normalizeAvatar = (url) => {
-    if (!url) return DEFAULT_AVATAR;
-    if (typeof url !== 'string') return DEFAULT_AVATAR;
+    if (!url || typeof url !== 'string') return null;
     const lower = url.toLowerCase();
-    if (lower.includes('gravatar.com') || lower.includes('identicon') || lower.includes('ui-avatars.com')) return DEFAULT_AVATAR;
+    if (lower.includes('gravatar.com') || lower.includes('identicon') || lower.includes('ui-avatars.com')) return null;
     return url;
   };
 
@@ -339,12 +344,22 @@ export function AuthProvider({ children }) {
     });
   }, [performLogout]);
 
+  // Compute is_pro: doctors need an active subscription; other CRM roles (clinicOwner, superAdmin, saasAdmin) are always pro
+  const isPro = useMemo(() => {
+    if (!user) return false;
+    const role = user.role_id || user.role || '';
+    if (['clinicOwner', 'superAdmin', 'saasAdmin', 'clinic'].includes(role)) return true;
+    if (role === 'doctor') return !!(user.subscription_plan === 'pro' || user.is_pro);
+    return false;
+  }, [user]);
+
   const value = useMemo(() => ({
     user,
     setUser,
     token,
     country,
     setCountry,
+    isPro,
     login,
     updateUser,
     applyApiAuth,
@@ -357,7 +372,7 @@ export function AuthProvider({ children }) {
     sidebarMobileOpen,
     setSidebarMobileOpen,
     hydrated,
-  }), [user, token, country, sidebarMobileOpen, hydrated, login, updateUser, applyApiAuth, fetchCurrentUser, demoLogin, register, registerDoctor, logout]);
+  }), [user, token, country, isPro, sidebarMobileOpen, hydrated, login, updateUser, applyApiAuth, fetchCurrentUser, demoLogin, register, registerDoctor, logout]);
 
   // If we have a token (from fallback) but no user yet, try to fetch current user once
   useEffect(() => {

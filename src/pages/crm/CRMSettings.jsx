@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Settings, User, Bell, Shield, Clock, Globe, Palette, Mail,
-  Phone, MapPin, Camera, Save, Eye, EyeOff, Lock, Key,
+  Phone, MapPin, Camera, Save, Eye, EyeOff, Lock as LockIcon, Key,
   Monitor, Smartphone, LogOut, Trash2, ChevronRight, Building2,
   Stethoscope, Calendar, CreditCard, Loader2, CheckCircle, Plus, X,
   Image, GripVertical, Upload, Coffee, Link2, MessageCircle,
   Instagram, Facebook, Linkedin, Youtube, Twitter, ExternalLink,
-  FileText, ShieldCheck, AlertTriangle,
+  FileText, ShieldCheck, AlertTriangle, ArrowLeft,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../../i18n';
 import LangFlag from '../../components/ui/LangFlag';
 import { useAuth } from '../../context/AuthContext';
 import { doctorProfileAPI, authAPI } from '../../lib/api';
+import { blockNonNumeric } from '../../utils/numericInput';
+import GlobalSuggest from '../../components/forms/GlobalSuggest';
 
 const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 
@@ -24,23 +27,32 @@ const DEFAULT_HOURS = DAYS.map(day => ({
   breaks: [],
 }));
 
-const TABS = [
+const ALL_TABS = [
   { key: 'profile', label: 'Profile', icon: User },
   { key: 'gallery', label: 'Gallery', icon: Image },
   { key: 'hours', label: 'Operating Hours', icon: Clock },
   { key: 'services', label: 'Services & Pricing', icon: Stethoscope },
   { key: 'social', label: 'Social & Contact', icon: Link2 },
   { key: 'verification', label: 'Verification', icon: ShieldCheck },
-  { key: 'clinic', label: 'Clinic Info', icon: Building2 },
+  { key: 'clinic', label: 'Clinic Info', icon: Building2, crmOnly: true },
   { key: 'notifications', label: 'Notifications', icon: Bell },
   { key: 'security', label: 'Security', icon: Shield },
-  { key: 'billing', label: 'Billing', icon: CreditCard },
+  { key: 'billing', label: 'Billing', icon: CreditCard, crmOnly: true },
 ];
 
-const CRMSettings = () => {
+const CRMSettings = ({ standalone = false }) => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('profile');
+  const location = useLocation();
+  const hasCrm = !!(user?.is_crm_active);
+  const TABS = ALL_TABS.map(tab => ({
+    ...tab,
+    locked: tab.crmOnly && !hasCrm && standalone,
+  }));
+
+  // Read ?tab= from URL to auto-switch (e.g. from verification banner)
+  const urlTab = new URLSearchParams(location.search).get('tab');
+  const [activeTab, setActiveTab] = useState(urlTab && ALL_TABS.some(t => t.key === urlTab) ? urlTab : 'profile');
   const [showPassword, setShowPassword] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileSaving, setProfileSaving] = useState(false);
@@ -302,11 +314,18 @@ const CRMSettings = () => {
     autoConfirm: false, bufferTime: '5',
   });
 
-  return (
+  const content = (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Manage your account, clinic and preferences</p>
+      <div className="flex items-center gap-3">
+        {standalone && (
+          <button onClick={() => window.history.back()} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        )}
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.settings.title', 'Settings')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t('crm.settings.subtitle', 'Manage your account, clinic and preferences')}</p>
+        </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
@@ -317,15 +336,20 @@ const CRMSettings = () => {
               {TABS.map((tab) => (
                 <button
                   key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
+                  data-tab={tab.key}
+                  onClick={() => { if (!tab.locked) setActiveTab(tab.key); }}
+                  disabled={tab.locked}
                   className={`flex items-center gap-2.5 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors w-full text-left ${
-                    activeTab === tab.key
-                      ? 'bg-teal-50 text-teal-700 border-l-2 border-l-teal-500 lg:border-l-2'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
+                    tab.locked
+                      ? 'text-gray-400 cursor-not-allowed opacity-60'
+                      : activeTab === tab.key
+                        ? 'bg-teal-50 text-teal-700 border-l-2 border-l-teal-500 lg:border-l-2'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
                   }`}
                 >
-                  <tab.icon className={`w-4 h-4 flex-shrink-0 ${activeTab === tab.key ? 'text-teal-600' : 'text-gray-400'}`} />
+                  <tab.icon className={`w-4 h-4 flex-shrink-0 ${tab.locked ? 'text-gray-300' : activeTab === tab.key ? 'text-teal-600' : 'text-gray-400'}`} />
                   {tab.label}
+                  {tab.locked && <LockIcon className="w-3 h-3 ml-auto text-gray-400" />}
                 </button>
               ))}
             </div>
@@ -421,6 +445,19 @@ const CRMSettings = () => {
                         <span className="text-sm text-gray-700 font-medium">Online Consultation Available</span>
                       </label>
                     </div>
+                    {/* Spoken Languages — GlobalSuggest */}
+                    <div>
+                      <GlobalSuggest
+                        type="language"
+                        label={t('crm.settings.spokenLanguages', 'Spoken Languages')}
+                        value={doctorLanguages.map(l => typeof l === 'string' ? { name: l } : l)}
+                        onChange={(newVal) => setDoctorLanguages(newVal)}
+                        multi={true}
+                        allowCustom={true}
+                        maxTags={15}
+                        placeholder={t('onboarding.searchLanguages', 'Search languages...')}
+                      />
+                    </div>
                     {/* Language Preference — dedicated section */}
                     <div className="col-span-1 sm:col-span-2">
                       <label className="block text-xs font-medium text-gray-700 mb-2 flex items-center gap-1.5">
@@ -489,7 +526,7 @@ const CRMSettings = () => {
                   </div>
                 )}
                 <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-end gap-3">
-                  {profileSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Saved</span>}
+                  {profileSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> {t('crm.settings.profileSaved', 'Profile updated successfully')}</span>}
                   <button onClick={saveProfile} disabled={profileSaving}
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
                     {profileSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save Changes
@@ -533,8 +570,8 @@ const CRMSettings = () => {
                     <div key={i} className="grid grid-cols-4 gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100 relative">
                       <button type="button" onClick={() => setDoctorPrices(p => p.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
                       <input value={pr.label} onChange={e => { const n = [...doctorPrices]; n[i].label = e.target.value; setDoctorPrices(n); }} placeholder="Service" className="col-span-2 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
-                      <input value={pr.min} onChange={e => { const n = [...doctorPrices]; n[i].min = e.target.value; setDoctorPrices(n); }} placeholder="Min ₺" type="number" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
-                      <input value={pr.max} onChange={e => { const n = [...doctorPrices]; n[i].max = e.target.value; setDoctorPrices(n); }} placeholder="Max ₺" type="number" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={pr.min} onChange={e => { const n = [...doctorPrices]; n[i].min = e.target.value; setDoctorPrices(n); }} placeholder="Min ₺" type="number" onKeyDown={blockNonNumeric} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={pr.max} onChange={e => { const n = [...doctorPrices]; n[i].max = e.target.value; setDoctorPrices(n); }} placeholder="Max ₺" type="number" onKeyDown={blockNonNumeric} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
                     </div>
                   ))}
                 </div>
@@ -749,6 +786,7 @@ const CRMSettings = () => {
                         <div className="flex-1">
                           <label className="block text-[11px] font-medium text-gray-600 mb-1">{t('crm.settings.price', 'Price')}</label>
                           <input value={svc.price || ''} onChange={(e) => updateService(i, 'price', e.target.value)} placeholder="0.00" type="number" min="0"
+                            onKeyDown={blockNonNumeric}
                             className="w-full h-9 px-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-teal-400" />
                         </div>
                         <div className="w-20">
@@ -812,11 +850,13 @@ const CRMSettings = () => {
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.latitude', 'Latitude')}</label>
                       <input type="number" step="any" value={socialInfo.map_coordinates?.lat || ''} onChange={(e) => updateMapCoord('lat', e.target.value)} placeholder="41.0082"
+                        onKeyDown={blockNonNumeric}
                         className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.longitude', 'Longitude')}</label>
                       <input type="number" step="any" value={socialInfo.map_coordinates?.lng || ''} onChange={(e) => updateMapCoord('lng', e.target.value)} placeholder="28.9784"
+                        onKeyDown={blockNonNumeric}
                         className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                     </div>
                   </div>
@@ -1056,19 +1096,14 @@ const CRMSettings = () => {
               </div>
               <div className="px-6 py-5 space-y-6">
                 {[
-                  { title: 'Email Notifications', items: [
-                    { key: 'emailAppointments', label: 'Appointment confirmations & reminders' },
-                    { key: 'emailMessages', label: 'New patient messages' },
-                    { key: 'emailReports', label: 'Weekly reports & analytics' },
-                  ]},
                   { title: 'Push Notifications', items: [
                     { key: 'pushAppointments', label: 'Upcoming appointments' },
                     { key: 'pushMessages', label: 'New messages' },
                     { key: 'pushUrgent', label: 'Urgent alerts & critical results' },
                   ]},
-                  { title: 'SMS Notifications', items: [
-                    { key: 'smsReminders', label: 'Appointment reminders to patients' },
-                    { key: 'smsMarketing', label: 'Marketing & promotional messages' },
+                  { title: 'Appointment Reminders', items: [
+                    { key: 'emailAppointments', label: 'Appointment confirmations & reminders' },
+                    { key: 'emailMessages', label: 'New patient messages' },
                   ]},
                 ].map((section) => (
                   <div key={section.title}>
@@ -1283,6 +1318,18 @@ const CRMSettings = () => {
       </div>
     </div>
   );
+
+  if (standalone) {
+    return (
+      <div className="min-h-screen bg-gray-50/80">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+          {content}
+        </div>
+      </div>
+    );
+  }
+
+  return content;
 };
 
 export default CRMSettings;

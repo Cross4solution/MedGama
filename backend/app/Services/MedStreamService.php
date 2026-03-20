@@ -27,11 +27,25 @@ class MedStreamService
     // ══════════════════════════════════════════════
 
     /**
+     * Engagement score SQL fragment: (likes * 2) + (comments * 5)
+     */
+    private function engagementScoreSql(): string
+    {
+        return '(COALESCE((SELECT like_count FROM med_stream_engagement_counters WHERE post_id = med_stream_posts.id), 0) * 2
+              + COALESCE((SELECT comment_count FROM med_stream_engagement_counters WHERE post_id = med_stream_posts.id), 0) * 5)';
+    }
+
+    /**
      * List visible posts with engagement flags for the authenticated user.
+     *
+     * sort=recent  → Followed first (chrono), then global (chrono)
+     * sort=top     → Last 30 days, followed first (score DESC), then global (score DESC)
      */
     public function listPosts(?string $userId, array $filters): LengthAwarePaginator
     {
-        $posts = MedStreamPost::query()
+        $sort = $filters['sort'] ?? 'recent';
+
+        $query = MedStreamPost::query()
             ->with([
                 'author:id,fullname,avatar,role_id',
                 'clinic:id,fullname,avatar',
@@ -48,9 +62,47 @@ class MedStreamService
             ->when($filters['clinic_id'] ?? null, fn($q, $v) => $q->where('clinic_id', $v))
             ->when($filters['hospital_id'] ?? null, fn($q, $v) => $q->where('hospital_id', $v))
             ->when($filters['post_type'] ?? null, fn($q, $v) => $q->where('post_type', $v))
-            ->when($filters['specialty_id'] ?? null, fn($q, $v) => $q->where('specialty_id', $v))
-            ->orderByDesc('created_at')
-            ->paginate($filters['per_page'] ?? 20);
+            ->when($filters['specialty_id'] ?? null, fn($q, $v) => $q->where('specialty_id', $v));
+
+        // Top Posts: restrict to last 30 days
+        if ($sort === 'top') {
+            $query->where('med_stream_posts.created_at', '>=', now()->subDays(30));
+        }
+
+        // Add is_followed_author subselect + engagement_score computed column
+        if ($userId) {
+            $query->addSelect(['med_stream_posts.*'])
+                ->selectSub(
+                    DoctorFollow::selectRaw('1')
+                        ->whereColumn('following_id', 'med_stream_posts.author_id')
+                        ->where('follower_id', $userId)
+                        ->where('is_active', true)
+                        ->limit(1),
+                    'is_followed_author'
+                )
+                ->selectRaw($this->engagementScoreSql() . ' as engagement_score');
+
+            // Primary: followed authors first
+            $query->orderByRaw('is_followed_author DESC NULLS LAST');
+
+            // Secondary: by sort mode
+            if ($sort === 'top') {
+                $query->orderByRaw('engagement_score DESC');
+            } else {
+                $query->orderByDesc('med_stream_posts.created_at');
+            }
+        } else {
+            // Guest user — no follow prioritization
+            $query->selectRaw('med_stream_posts.*, ' . $this->engagementScoreSql() . ' as engagement_score');
+
+            if ($sort === 'top') {
+                $query->orderByRaw('engagement_score DESC');
+            } else {
+                $query->orderByDesc('med_stream_posts.created_at');
+            }
+        }
+
+        $posts = $query->paginate($filters['per_page'] ?? 20);
 
         if ($userId) {
             $this->appendEngagementFlags($posts, $userId);
@@ -485,14 +537,21 @@ class MedStreamService
 
     /**
      * Smart feed: followed doctors first, then popular/recent posts.
-     * Returns a mixed, deduplicated feed paginated.
+     * When user follows nobody → Explore mode (global only).
+     *
+     * sort=recent  → Followed first (chrono), then global (chrono)
+     * sort=top     → Last 30 days, followed first (score DESC), then global (score DESC)
      */
-    public function feed(string $userId, array $filters): LengthAwarePaginator
+    public function feed(string $userId, array $filters): array
     {
+        $sort = $filters['sort'] ?? 'recent';
+
         $followingIds = DoctorFollow::where('follower_id', $userId)
             ->where('is_active', true)
             ->pluck('following_id')
             ->toArray();
+
+        $isExplore = empty($followingIds);
 
         $baseQuery = MedStreamPost::query()
             ->with([
@@ -509,8 +568,16 @@ class MedStreamService
             ->when($filters['specialty_id'] ?? null, fn($q, $v) => $q->where('specialty_id', $v))
             ->when($filters['post_type'] ?? null, fn($q, $v) => $q->where('post_type', $v));
 
-        // Sort: followed-first hybrid scoring
-        if (!empty($followingIds)) {
+        // Top Posts: restrict to last 30 days
+        if ($sort === 'top') {
+            $baseQuery->where('med_stream_posts.created_at', '>=', now()->subDays(30));
+        }
+
+        // Compute engagement_score column
+        $baseQuery->selectRaw('med_stream_posts.*, ' . $this->engagementScoreSql() . ' as engagement_score');
+
+        if (!$isExplore) {
+            // Primary: followed authors first
             $placeholders = implode(',', array_fill(0, count($followingIds), '?'));
             $baseQuery->orderByRaw(
                 "CASE WHEN author_id IN ({$placeholders}) THEN 0 ELSE 1 END ASC",
@@ -518,21 +585,22 @@ class MedStreamService
             );
         }
 
-        // Secondary: popularity score (likes * 3 + comments * 2 + views)
-        $baseQuery->orderByRaw(
-            '(COALESCE((SELECT like_count FROM med_stream_engagement_counters WHERE post_id = med_stream_posts.id), 0) * 3 
-              + COALESCE((SELECT comment_count FROM med_stream_engagement_counters WHERE post_id = med_stream_posts.id), 0) * 2 
-              + COALESCE(view_count, 0)) DESC'
-        );
-
-        // Tertiary: newest
-        $baseQuery->orderByDesc('created_at');
+        // Secondary: by sort mode
+        if ($sort === 'top') {
+            $baseQuery->orderByRaw('engagement_score DESC');
+        } else {
+            $baseQuery->orderByDesc('med_stream_posts.created_at');
+        }
 
         $posts = $baseQuery->paginate($filters['per_page'] ?? 20);
 
         $this->appendEngagementFlags($posts, $userId);
 
-        return $posts;
+        return [
+            'posts'       => $posts,
+            'is_explore'  => $isExplore,
+            'following_count' => count($followingIds),
+        ];
     }
 
     // ══════════════════════════════════════════════
@@ -673,7 +741,13 @@ class MedStreamService
 
         // Videos (async — save to temp, dispatch job later)
         foreach ($files['videos'] ?? [] as $file) {
-            $tempName = Str::uuid() . '.' . ($file->getClientOriginalExtension() ?: 'mp4');
+            // Capture metadata BEFORE move() — UploadedFile loses access to the
+            // original tmp path after move, causing getSize()/getClientOriginalName() to throw.
+            $originalName = $file->getClientOriginalName();
+            $originalSize = $file->getSize();
+            $originalExt  = $file->getClientOriginalExtension() ?: 'mp4';
+
+            $tempName = Str::uuid() . '.' . $originalExt;
             $tempPath = storage_path('app/temp/' . $tempName);
 
             // Ensure temp directory exists
@@ -686,8 +760,8 @@ class MedStreamService
             $placeholder = [
                 'id'     => Str::uuid()->toString(),
                 'type'   => 'video',
-                'name'   => $file->getClientOriginalName(),
-                'size'   => $file->getSize() ?: filesize($tempPath),
+                'name'   => $originalName,
+                'size'   => $originalSize ?: filesize($tempPath),
                 'status' => 'processing',
             ];
 

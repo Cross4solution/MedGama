@@ -239,6 +239,31 @@ class SuperAdminController extends Controller
         ]);
     }
 
+    /**
+     * PUT /api/admin/users/{id}/reset-password — Force reset user password
+     */
+    public function resetPassword(Request $request, string $id): JsonResponse
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|max:100',
+        ]);
+
+        $user = \App\Models\User::findOrFail($id);
+        $user->update(['password' => bcrypt($request->input('password'))]);
+
+        \App\Models\AuditLog::log(
+            action: 'user.password_reset',
+            resourceType: 'User',
+            resourceId: $user->id,
+            description: "Password reset by admin for: {$user->fullname}",
+        );
+
+        return response()->json([
+            'message' => 'Password has been reset successfully.',
+            'user'    => $user->only('id', 'fullname', 'email'),
+        ]);
+    }
+
     // ══════════════════════════════════════════════
     //  GROWTH TREND
     // ══════════════════════════════════════════════
@@ -415,7 +440,7 @@ class SuperAdminController extends Controller
      */
     public function listReviews(Request $request): JsonResponse
     {
-        $reviews = $this->service->listReviews(
+        $reviews = $this->superAdminService->listReviews(
             $request->only(['status', 'doctor_id', 'search', 'per_page']),
         );
 
@@ -427,7 +452,7 @@ class SuperAdminController extends Controller
      */
     public function reviewStats(): JsonResponse
     {
-        return response()->json($this->service->getReviewStats());
+        return response()->json($this->superAdminService->getReviewStats());
     }
 
     /**
@@ -435,7 +460,7 @@ class SuperAdminController extends Controller
      */
     public function approveReview(string $id): JsonResponse
     {
-        $review = $this->service->approveReview($id, request()->user()->id);
+        $review = $this->superAdminService->approveReview($id, request()->user()->id);
         return response()->json(['review' => $review]);
     }
 
@@ -446,7 +471,7 @@ class SuperAdminController extends Controller
     {
         $request->validate(['note' => 'nullable|string|max:1000']);
 
-        $review = $this->service->rejectReview($id, $request->user()->id, $request->input('note'));
+        $review = $this->superAdminService->rejectReview($id, $request->user()->id, $request->input('note'));
         return response()->json(['review' => $review]);
     }
 
@@ -457,7 +482,7 @@ class SuperAdminController extends Controller
     {
         $request->validate(['note' => 'nullable|string|max:1000']);
 
-        $review = $this->service->hideReview($id, $request->user()->id, $request->input('note'));
+        $review = $this->superAdminService->hideReview($id, $request->user()->id, $request->input('note'));
         return response()->json(['review' => $review]);
     }
 }

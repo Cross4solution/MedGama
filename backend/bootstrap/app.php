@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role'          => \App\Http\Middleware\CheckRole::class,
             'optional.auth' => \App\Http\Middleware\OptionalAuth::class,
             'crm.access'    => \App\Http\Middleware\CheckCrmAccess::class,
+            'verified.doctor' => \App\Http\Middleware\EnsureDoctorVerified::class,
             'set.locale'    => \App\Http\Middleware\SetLocale::class,
             'cache.headers' => \App\Http\Middleware\CacheHeaders::class,
         ]);

@@ -16,13 +16,14 @@ class Medication extends Model
 
     public array $translatable = ['name'];
 
-    protected $fillable = ['code', 'name', 'category', 'form', 'is_active'];
+    protected $fillable = ['code', 'name', 'category', 'form', 'is_active', 'is_popular'];
 
     protected function casts(): array
     {
         return [
             'name'      => 'array',
-            'is_active' => 'boolean',
+            'is_active'  => 'boolean',
+            'is_popular' => 'boolean',
         ];
     }
 

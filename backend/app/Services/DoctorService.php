@@ -5,11 +5,13 @@ namespace App\Services;
 use App\Models\Appointment;
 use App\Models\CalendarSlot;
 use App\Models\DoctorReview;
+use App\Models\Favorite;
 use App\Models\Specialty;
 use App\Models\User;
 use App\Notifications\NewReviewNotification;
 use App\Notifications\ReviewResponseNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Helpers\TurkishStr;
 
 class DoctorService
 {
@@ -49,10 +51,10 @@ class DoctorService
         // ── Free-text search (name OR specialty translations) ──
         if ($search = trim($filters['search_text'] ?? '')) {
             $query->where(function ($q) use ($search) {
-                $q->where('fullname', 'ilike', "%{$search}%")
-                  ->orWhereHas('doctorProfile', function ($pq) use ($search) {
-                      $pq->where('specialty', 'ilike', "%{$search}%");
-                  });
+                TurkishStr::addNormalizedSearch($q, 'fullname', $search, 'or');
+                $q->orWhereHas('doctorProfile', function ($pq) use ($search) {
+                    TurkishStr::addNormalizedSearch($pq, 'specialty', $search, 'or');
+                });
 
                 // Also search translatable specialty names in the specialties table
                 $matchingSpecialtyIds = $this->findSpecialtyIdsByText($search);
@@ -146,7 +148,7 @@ class DoctorService
     {
         $doctor = User::where('role_id', 'doctor')
             ->where('is_active', true)
-            ->with(['doctorProfile', 'clinic:id,name,codename,avatar,address'])
+            ->with(['doctorProfile', 'clinic:id,name,fullname,codename,avatar,address,is_verified'])
             ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
             ->find($id);
 
@@ -172,6 +174,42 @@ class DoctorService
             ->where('status', 'completed')
             ->count();
 
+        // Determine social flags for the authenticated user
+        $canReview = false;
+        $authUser = auth('sanctum')->user();
+        if ($authUser && $authUser->role_id === 'patient') {
+            $hasCompleted = Appointment::where('patient_id', $authUser->id)
+                ->where('doctor_id', $id)
+                ->where('status', 'completed')
+                ->exists();
+            $alreadyReviewed = DoctorReview::where('patient_id', $authUser->id)
+                ->where('doctor_id', $id)
+                ->exists();
+            $canReview = $hasCompleted && !$alreadyReviewed;
+        }
+
+        // Favorite & follow flags
+        $isFavorited = false;
+        $isFollowed  = false;
+        if ($authUser) {
+            $isFavorited = Favorite::forUser($authUser->id)
+                ->where('favoritable_id', $id)
+                ->where('favoritable_type', 'doctor')
+                ->exists();
+            $isFollowed = \App\Models\DoctorFollow::where('follower_id', $authUser->id)
+                ->where('following_id', $id)
+                ->where('is_active', true)
+                ->exists();
+        }
+
+        $followersCount = \App\Models\DoctorFollow::where('following_id', $id)
+            ->where('is_active', true)
+            ->count();
+
+        $doctor->is_favorited    = $isFavorited;
+        $doctor->is_followed     = $isFollowed;
+        $doctor->followers_count = $followersCount;
+
         return [
             'doctor' => $doctor,
             'review_stats' => [
@@ -180,6 +218,7 @@ class DoctorService
             ],
             'upcoming_slots' => $upcomingSlots,
             'completed_appointments' => $completedAppointments,
+            'can_review' => $canReview,
         ];
     }
 
@@ -245,6 +284,22 @@ class DoctorService
             abort(403, 'You can only review a doctor after a completed appointment.');
         }
 
+        // Duplicate check: one review per doctor per patient
+        $existing = DoctorReview::where('patient_id', $patient->id)
+            ->where('doctor_id', $doctorId)
+            ->exists();
+        if ($existing) {
+            abort(409, 'You have already reviewed this doctor.');
+        }
+
+        // Flood protection: max one review every 24 hours (across all doctors)
+        $recentReview = DoctorReview::where('patient_id', $patient->id)
+            ->where('created_at', '>=', now()->subDay())
+            ->exists();
+        if ($recentReview) {
+            abort(429, 'Please wait 24 hours between reviews.');
+        }
+
         // Use specific appointment_id if provided, otherwise latest completed
         $appointment = isset($data['appointment_id'])
             ? Appointment::where('patient_id', $patient->id)
@@ -258,20 +313,16 @@ class DoctorService
                 ->latest()
                 ->firstOrFail();
 
-        $review = DoctorReview::updateOrCreate(
-            [
-                'doctor_id'  => $doctorId,
-                'patient_id' => $patient->id,
-            ],
-            [
-                'appointment_id'    => $appointment->id,
-                'rating'            => $data['rating'],
-                'comment'           => $data['comment'] ?? null,
-                'treatment_type'    => $data['treatment_type'] ?? null,
-                'is_verified'       => true,
-                'moderation_status' => 'pending',
-            ]
-        );
+        $review = DoctorReview::create([
+            'doctor_id'         => $doctorId,
+            'patient_id'        => $patient->id,
+            'appointment_id'    => $appointment->id,
+            'rating'            => $data['rating'],
+            'comment'           => $data['comment'] ?? null,
+            'treatment_type'    => $data['treatment_type'] ?? null,
+            'is_verified'       => true,
+            'moderation_status' => 'pending',
+        ]);
 
         // Recalculate aggregated rating
         DoctorReview::recalculateAggregatedRating($doctorId);

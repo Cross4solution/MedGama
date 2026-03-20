@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Building2, Loader2, ArrowLeft, Trash2, MapPin, Star, Heart } from 'lucide-react';
 import { socialAPI, clinicAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { useFavorites } from '../context/FavoritesContext';
 import { useTranslation } from 'react-i18next';
+import resolveStorageUrl from '../utils/resolveStorageUrl';
 
 const LS_KEY = 'saved_clinics';
 
@@ -17,6 +19,7 @@ function writeLS(arr) {
 export default function SavedClinics() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { decrement: favDecrement, setCount: setFavCount } = useFavorites();
   useTranslation();
   const [clinics, setClinics] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +48,7 @@ export default function SavedClinics() {
           };
         });
         setClinics(mapped);
+        setFavCount(mapped.length);
         setLoading(false);
         return;
       }
@@ -97,6 +101,7 @@ export default function SavedClinics() {
     setConfirmRemove(null);
     setRemoving(clinic.id);
     setClinics(prev => prev.filter(c => c.id !== clinic.id));
+    favDecrement();
     try {
       await socialAPI.unfavorite('clinic', clinic.id);
     } catch {
@@ -133,8 +138,7 @@ export default function SavedClinics() {
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <Heart className="w-5 h-5 text-rose-500" fill="currentColor" />
+            <h1 className="text-xl font-bold text-gray-900">
               Saved Clinics
             </h1>
             <p className="text-sm text-gray-500">{clinics.length} {clinics.length === 1 ? 'clinic' : 'clinics'} saved</p>
@@ -167,7 +171,7 @@ export default function SavedClinics() {
                   {/* Avatar */}
                   <div className="flex-shrink-0">
                     <img
-                      src={clinic.avatar || '/images/default/default-clinic.svg'}
+                      src={resolveStorageUrl(clinic.avatar) || '/images/default/default-clinic.svg'}
                       alt={clinic.name}
                       className="w-14 h-14 rounded-xl object-cover border border-gray-100"
                       onError={(e) => { e.target.src = '/images/default/default-avatar.svg'; }}

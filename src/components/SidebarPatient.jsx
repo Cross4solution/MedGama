@@ -2,7 +2,9 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, ArrowUpRight, Heart, FolderHeart, Activity } from 'lucide-react';
+import { useFavorites } from '../context/FavoritesContext';
+import { useNotifications } from '../context/NotificationsContext';
+import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, Heart, FolderHeart, Activity } from 'lucide-react';
 
 // Custom chat icon using public SVG (accepts className via props)
 const ChatRoundIcon = (props) => (
@@ -14,11 +16,12 @@ const ChatRoundIcon = (props) => (
 );
 
 export default function SidebarPatient() {
-  const { user, logout, sidebarMobileOpen, setSidebarMobileOpen } = useAuth();
+  const { user, logout, sidebarMobileOpen, setSidebarMobileOpen, isPro } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  // Mobile drawer state is managed globally in AuthContext
+  const { count: favCount } = useFavorites();
+  const { unreadCount: notifCount } = useNotifications();
 
   if (!user) return null;
 
@@ -30,43 +33,43 @@ export default function SidebarPatient() {
     { to: '/patient-dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: Activity },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
-    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart, badge: favCount || undefined },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
     { to: '/medical-archive', label: t('sidebar.medicalArchive', 'Medical Archive'), icon: FolderHeart },
-    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
+    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: notifCount || undefined },
     { to: '/profile', label: t('sidebar.profile'), icon: User },
   ];
 
-  // Requested order: Medstream -> Appointments -> Messages -> Telehealth -> Notifications -> Profile
+  // Requested order: Dashboard -> Medstream -> Appointments -> Messages -> Telehealth -> Notifications -> Profile
   const doctorItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
+    { to: '/doctor/dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: LayoutDashboard },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
-    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart, badge: favCount || undefined },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
-    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
+    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: notifCount || undefined },
     { to: '/profile', label: t('sidebar.profile'), icon: User },
   ];
 
   const clinicItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
+    { to: '/clinic/dashboard', label: t('sidebar.clinicDashboard', 'Clinic Dashboard'), icon: LayoutDashboard },
+    { to: '/clinic/team', label: t('sidebar.myTeam', 'My Team'), icon: Building2 },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
-    { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
-    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
-    { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
-    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: 3 },
-    { to: '/clinic-edit', label: t('sidebar.profile'), icon: User },
+    { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: notifCount || undefined },
+    { to: '/clinic-edit', label: t('sidebar.clinicProfile', 'Clinic Profile'), icon: User },
   ];
 
   const isClinic = role === 'clinic' || role === 'clinicOwner';
   const items = role === 'patient' ? patientItems : (isClinic ? clinicItems : doctorItems);
-  const showCRM = role === 'doctor' || role === 'clinic' || role === 'clinicOwner';
+  const showCRM = isPro && (role === 'doctor' || role === 'clinic' || role === 'clinicOwner');
 
   const NavItem = ({ to = undefined, href = undefined, icon: Icon, label, badge = undefined, external = false }) => {
     const active = to ? (pathname === to || (to.includes('?') && pathname === to.split('?')[0])) : false;
@@ -111,9 +114,8 @@ export default function SidebarPatient() {
         <div className="h-full">
           <div className="h-full border-r border-gray-200/60 bg-white flex flex-col overflow-hidden">
             {/* Navigation */}
-            <div className="flex-1 overflow-y-auto pb-3 pt-2">
+            <div className="flex-1 overflow-y-auto pb-3 pt-6">
               <div className="px-3">
-                <div className="mb-2 px-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu') || 'Menu'}</div>
                 <nav className="space-y-1">
                   {items.map((it, idx) => (
                     <NavItem key={`${it.to || it.href || it.label || 'item'}-${idx}`} {...it} />
@@ -121,12 +123,9 @@ export default function SidebarPatient() {
                 </nav>
                 {showCRM && (
                   <>
-                    <div className="my-2 border-t border-gray-100" />
-                    <div className="px-1 mb-1.5 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Pro Tools</div>
-                    <a
-                      href="/crm"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <div className="my-3 border-t border-gray-100" />
+                    <Link
+                      to="/crm"
                       className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 text-gray-600 hover:bg-gradient-to-r hover:from-violet-50 hover:to-purple-50 hover:text-violet-700"
                     >
                       <span className="flex items-center gap-2.5">
@@ -137,9 +136,9 @@ export default function SidebarPatient() {
                       </span>
                       <span className="inline-flex items-center gap-1">
                         <span className="text-[9px] font-bold text-violet-600 bg-violet-100 px-1.5 py-0.5 rounded-full">PRO</span>
-                        <ArrowUpRight className="w-3 h-3 text-gray-400" />
+                        <ChevronRight className="w-3 h-3 text-gray-400" />
                       </span>
-                    </a>
+                    </Link>
                   </>
                 )}
               </div>
@@ -162,8 +161,7 @@ export default function SidebarPatient() {
           <div className="fixed left-0 top-0 bottom-0 w-3/4 max-w-[16rem] z-[80]">
             <div className="h-full bg-white shadow-2xl flex flex-col border-r border-gray-200/60">
               {/* Mobile Nav */}
-              <div className="px-3 py-3 flex-1 overflow-y-auto">
-                <div className="mb-2 px-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu') || 'Menu'}</div>
+              <div className="px-3 py-6 flex-1 overflow-y-auto">
                 <nav className="space-y-1">
                   {items.map((it) => {
                     const active = it.to ? pathname === it.to : false;
@@ -212,12 +210,9 @@ export default function SidebarPatient() {
 
                 {showCRM && (
                   <>
-                    <div className="my-2 border-t border-gray-100" />
-                    <div className="px-1 mb-1.5 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Pro Tools</div>
-                    <a
-                      href="/crm"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <div className="my-3 border-t border-gray-100" />
+                    <Link
+                      to="/crm"
                       onClick={() => setSidebarMobileOpen(false)}
                       className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 text-gray-600 hover:bg-gradient-to-r hover:from-violet-50 hover:to-purple-50 hover:text-violet-700"
                     >
@@ -229,9 +224,9 @@ export default function SidebarPatient() {
                       </span>
                       <span className="inline-flex items-center gap-1">
                         <span className="text-[9px] font-bold text-violet-600 bg-violet-100 px-1.5 py-0.5 rounded-full">PRO</span>
-                        <ArrowUpRight className="w-3 h-3 text-gray-400" />
+                        <ChevronRight className="w-3 h-3 text-gray-400" />
                       </span>
-                    </a>
+                    </Link>
                   </>
                 )}
 

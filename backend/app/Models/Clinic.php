@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\MassPrunable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\LogsActivity;
@@ -20,8 +21,10 @@ class Clinic extends Model
 
     protected $fillable = [
         'name', 'codename', 'fullname', 'avatar', 'owner_id', 'hospital_id',
-        'address', 'biography', 'map_coordinates', 'website', 'is_verified',
-        'is_crm_active', 'crm_expires_at',
+        'address', 'phone', 'biography', 'map_coordinates', 'website', 'is_verified',
+        'is_crm_active', 'crm_expires_at', 'specialties',
+        'onboarding_completed', 'onboarding_step',
+        'verification_status',
     ];
 
     protected function casts(): array
@@ -32,7 +35,23 @@ class Clinic extends Model
             'is_active'      => 'boolean',
             'is_crm_active'  => 'boolean',
             'crm_expires_at' => 'datetime',
+            'specialties'    => 'array',
+            'onboarding_completed' => 'boolean',
+            'verification_status' => 'string',
         ];
+    }
+
+    // ── Media URL resolution ──
+
+    protected function avatar(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value) {
+                if (!$value) return null;
+                if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) return $value;
+                return rtrim(config('app.url'), '/') . '/' . ltrim($value, '/');
+            },
+        );
     }
 
     // ── Prunable (GDPR Art. 5(1)(e) — 3 year retention after soft-delete) ──
@@ -84,5 +103,26 @@ class Clinic extends Model
     public function archivedRecords()
     {
         return $this->hasMany(ArchivedClinicRecord::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(ClinicReview::class);
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'clinic_favorites')
+            ->withTimestamps();
+    }
+
+    public function verifications()
+    {
+        return $this->hasMany(ClinicVerification::class)->orderByDesc('created_at');
+    }
+
+    public function latestVerification()
+    {
+        return $this->hasOne(ClinicVerification::class)->latestOfMany();
     }
 }

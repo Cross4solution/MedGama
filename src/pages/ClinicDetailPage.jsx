@@ -5,6 +5,7 @@ import Tabs from '../components/tabs/Tabs';
 import ContactActions from '../components/clinic/ContactActions';
 import PriceRangeList from '../components/pricing/PriceRangeList';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import useAuthGuard from '../hooks/useAuthGuard';
 import useSocial from '../hooks/useSocial';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +13,6 @@ import { clinicAPI } from '../lib/api';
 import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
 import SEOHead, { buildMedicalBusinessSchema } from '../components/seo/SEOHead';
 import BookAppointmentModal from '../components/modals/BookAppointmentModal';
-import OnlineConsultationModal from '../components/modals/OnlineConsultationModal';
 import SendMessageModal from '../components/modals/SendMessageModal';
 
 // Tab Components
@@ -30,7 +30,6 @@ import {
   aboutData,
   servicesData,
   departmentsData,
-  reviewsData,
   galleryData,
   beforeAfterData,
   priceRangesData,
@@ -39,6 +38,7 @@ import {
 
 const ClinicDetailPage = () => {
   const { user } = useAuth();
+  const { notify } = useToast();
   const { guardAction } = useAuthGuard();
   const { t } = useTranslation();
   const { id: clinicParam } = useParams();
@@ -47,7 +47,7 @@ const ClinicDetailPage = () => {
 
   // Modal states
   const [bookModal, setBookModal] = useState(false);
-  const [consultModal, setConsultModal] = useState(false);
+  const [onlineBookModal, setOnlineBookModal] = useState(false);
   const [messageModal, setMessageModal] = useState(false);
 
   useEffect(() => {
@@ -78,7 +78,17 @@ const ClinicDetailPage = () => {
     reviewCount: resolveClinicReviewCount(apiClinic, clinicInfo.reviewCount),
     specialty: apiClinic?.specialty || '',
   };
-  const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('clinic', apiClinic?.id, initialSocial, clinicMeta);
+  const socialCallbacks = {
+    onFavoriteChange: (favorited) => {
+      notify({
+        type: 'success',
+        message: favorited
+          ? t('clinicDetail.addedToFavorites', 'Added to favorites')
+          : t('clinicDetail.removedFromFavorites', 'Removed from favorites'),
+      });
+    },
+  };
+  const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('clinic', apiClinic?.id, initialSocial, clinicMeta, socialCallbacks);
 
   // UI State
   const [activeTab, setActiveTab] = useState('genel-bakis');
@@ -122,7 +132,7 @@ const ClinicDetailPage = () => {
           />
         );
       case 'degerlendirmeler':
-        return <ReviewsTab reviews={reviewsData} />;
+        return <ReviewsTab clinicId={apiClinic?.id} guardAction={guardAction} />;
       case 'galeri':
         return (
           <GalleryTab
@@ -200,7 +210,7 @@ const ClinicDetailPage = () => {
 
           {/* Sidebar */}
           <div className="lg:w-80 space-y-4 lg:sticky lg:top-24 h-max">
-            <ContactActions onTelehealth={guardAction(() => setConsultModal(true))} onBook={guardAction(() => setBookModal(true))} onMessage={guardAction(() => setMessageModal(true))} />
+            <ContactActions onTelehealth={guardAction(() => setOnlineBookModal(true))} onBook={guardAction(() => setBookModal(true))} onMessage={guardAction(() => setMessageModal(true))} />
             <PriceRangeList items={priceRangesData} />
           </div>
         </div>
@@ -213,12 +223,13 @@ const ClinicDetailPage = () => {
         targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
         targetType="clinic"
       />
-      <OnlineConsultationModal
-        open={consultModal}
-        onClose={() => setConsultModal(false)}
+      <BookAppointmentModal
+        open={onlineBookModal}
+        onClose={() => setOnlineBookModal(false)}
         targetId={apiClinic?.id}
         targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
         targetType="clinic"
+        initialType="video"
       />
       <SendMessageModal
         open={messageModal}

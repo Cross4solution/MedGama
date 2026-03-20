@@ -347,10 +347,10 @@ const RegisterForm = ({
                 {t('profile.medicalHistory')} <span className="font-normal text-gray-400">({t('auth.medicalHistoryHint')})</span>
               </label>
               <GlobalSuggest
-                type="disease"
+                type="medical_history"
                 value={fd.medicalHistory ?? ''}
                 onChange={(val) => handleInputChange({ target: { name: 'medicalHistory', value: val } })}
-                placeholder="e.g., Diabetes Type 2, Hypertension, Asthma..."
+                placeholder={t('auth.medicalHistorySearch', 'Search diseases, allergies, medications...')}
                 allowCustom={true}
               />
             </div>

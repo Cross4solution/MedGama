@@ -21,12 +21,12 @@ function getFirstDayOfMonth(year, month) {
   return new Date(year, month, 1).getDay();
 }
 
-export default function BookAppointmentModal({ open, onClose, targetId, targetName, targetType = 'doctor' }) {
+export default function BookAppointmentModal({ open, onClose, targetId, targetName, targetType = 'doctor', initialType = null }) {
   const { i18n } = useTranslation();
   const isTr = i18n.language?.startsWith('tr');
 
-  const [step, setStep] = useState(1);
-  const [appointmentType, setAppointmentType] = useState(null);
+  const [step, setStep] = useState(initialType ? 2 : 1);
+  const [appointmentType, setAppointmentType] = useState(initialType);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [note, setNote] = useState('');
@@ -79,8 +79,8 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
   };
 
   const handleClose = () => {
-    setStep(1);
-    setAppointmentType(null);
+    setStep(initialType ? 2 : 1);
+    setAppointmentType(initialType || null);
     setSelectedDate(null);
     setSelectedTime(null);
     setNote('');
@@ -100,7 +100,11 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 rounded-t-2xl flex items-center justify-between z-10">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">{isTr ? 'Randevu Al' : 'Book Appointment'}</h2>
+            <h2 className="text-lg font-bold text-gray-900">
+              {initialType === 'video'
+                ? (isTr ? 'Online Görüşme Randevusu' : 'Online Consultation Booking')
+                : (isTr ? 'Randevu Al' : 'Book Appointment')}
+            </h2>
             <p className="text-xs text-gray-500 mt-0.5">{targetName}</p>
           </div>
           <button onClick={handleClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
@@ -133,12 +137,12 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
           <div className="p-5">
             {/* Step indicator */}
             <div className="flex items-center gap-2 mb-5">
-              {[1, 2, 3].map(s => (
+              {(initialType ? [2, 3] : [1, 2, 3]).map((s, idx, arr) => (
                 <div key={s} className="flex items-center gap-2 flex-1">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                     step === s ? 'bg-teal-600 text-white' : step > s ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-400'
-                  }`}>{step > s ? '✓' : s}</div>
-                  {s < 3 && <div className={`flex-1 h-0.5 rounded ${step > s ? 'bg-teal-300' : 'bg-gray-200'}`} />}
+                  }`}>{step > s ? '✓' : idx + 1}</div>
+                  {idx < arr.length - 1 && <div className={`flex-1 h-0.5 rounded ${step > s ? 'bg-teal-300' : 'bg-gray-200'}`} />}
                 </div>
               ))}
             </div>
@@ -220,9 +224,11 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
 
                 {/* Navigation */}
                 <div className="flex gap-3 pt-1">
-                  <button onClick={() => setStep(1)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
-                    {isTr ? 'Geri' : 'Back'}
-                  </button>
+                  {!initialType && (
+                    <button onClick={() => setStep(1)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
+                      {isTr ? 'Geri' : 'Back'}
+                    </button>
+                  )}
                   <button
                     onClick={() => setStep(3)}
                     disabled={!selectedDate || !selectedTime}

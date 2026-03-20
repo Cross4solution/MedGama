@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { blockNonNumericInt } from '../../utils/numericInput';
 import {
   Stethoscope, MapPin, FileText, Plus, Pencil, Trash2, X, Save,
   Search, ChevronLeft, ChevronRight, Loader2, Globe,
@@ -160,6 +161,7 @@ function CatalogModal({ type, item, onClose, onSaved }) {
                 type="number"
                 value={form.country_id}
                 onChange={e => setForm(f => ({ ...f, country_id: parseInt(e.target.value) || 1 }))}
+                onKeyDown={blockNonNumericInt}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
               />
             </div>
@@ -173,6 +175,7 @@ function CatalogModal({ type, item, onClose, onSaved }) {
                 type="number"
                 value={form.display_order}
                 onChange={e => setForm(f => ({ ...f, display_order: parseInt(e.target.value) || 0 }))}
+                onKeyDown={blockNonNumericInt}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
               />
             </div>

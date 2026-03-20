@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronLeft } from 'lucide-react';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 export default function ChatHeader({ activeContact, onVideoCall, onCall, onBack, typingUser }) {
   return (
@@ -16,7 +17,8 @@ export default function ChatHeader({ activeContact, onVideoCall, onCall, onBack,
         )}
         <div className="relative flex-shrink-0">
           <img 
-            src={activeContact?.avatar || '/images/default/default-avatar.svg'} 
+            src={resolveStorageUrl(activeContact?.avatar)}
+            onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} 
             alt={activeContact?.name || 'Contact'} 
             className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-md"
             style={{ objectPosition: 'center 20%' }}

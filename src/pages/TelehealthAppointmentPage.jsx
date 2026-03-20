@@ -8,9 +8,10 @@ import {
   User, Clock, Video, Shield, Star, FileText, CreditCard,
   Building2, ArrowRight, ArrowLeft, Stethoscope, BadgeCheck,
   Mail, Phone, CalendarDays, Sparkles, Info, Heart, Plus,
-  Users, ClipboardList, TrendingUp
+  Users, ClipboardList, TrendingUp, Search, AlertTriangle, ShieldAlert, X
 } from 'lucide-react';
-import { doctorAPI, appointmentAPI, calendarSlotAPI } from '../lib/api';
+import { doctorAPI, appointmentAPI, calendarSlotAPI, catalogAPI } from '../lib/api';
+import { useTranslation } from 'react-i18next';
 import DoctorAppointmentManager from '../components/doctor/DoctorAppointmentManager';
 
 // ─── Doctor Appointment Dashboard (metrics + big requests) ───
@@ -74,6 +75,7 @@ const STEPS_DOCTOR = [
 ];
 
 export default function TelehealthAppointmentPage() {
+  const { t, i18n } = useTranslation();
   const { formatCurrency, country, user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -85,7 +87,17 @@ export default function TelehealthAppointmentPage() {
   }, [user, navigate]);
 
   const isDoctor = user?.role_id === 'doctor' || user?.role_id === 'clinicOwner';
+  const isVerified = !!user?.is_verified;
+  const [showVerificationWarning, setShowVerificationWarning] = useState(false);
   const STEPS = isDoctor ? STEPS_DOCTOR : STEPS_PATIENT;
+
+  // Gate: redirect unverified doctors away from ?create=1
+  useEffect(() => {
+    if (isDoctor && isCreateMode && !isVerified) {
+      navigate('/telehealth-appointment', { replace: true });
+      setShowVerificationWarning(true);
+    }
+  }, [isDoctor, isCreateMode, isVerified, navigate]);
 
   const [step, setStep] = useState(0);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -106,10 +118,16 @@ export default function TelehealthAppointmentPage() {
   const [error, setError] = useState('');
 
   const [doctors, setDoctors] = useState([]);
-  const [loadingDoctors, setLoadingDoctors] = useState(true);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
-  const [selectedSpecialty, setSelectedSpecialty] = useState('');
+  const [selectedSpecialty, setSelectedSpecialty] = useState(null);
+
+  // Specialties from catalog API
+  const [specialties, setSpecialties] = useState([]);
+  const [loadingSpecialties, setLoadingSpecialties] = useState(true);
+  const [specialtiesError, setSpecialtiesError] = useState(false);
+  const [specialtySearch, setSpecialtySearch] = useState('');
 
   const [allCountries, setAllCountries] = useState([]);
   useEffect(() => {
@@ -141,21 +159,38 @@ export default function TelehealthAppointmentPage() {
     }
   }, [isDoctor, user]);
 
+  // Fetch specialties from catalog
+  const fetchSpecialties = useCallback(() => {
+    setLoadingSpecialties(true);
+    setSpecialtiesError(false);
+    catalogAPI.specialties().then(res => {
+      const list = res?.specialties || res?.data?.specialties || [];
+      setSpecialties(list);
+    }).catch(() => {
+      setSpecialtiesError(true);
+      setSpecialties([]);
+    }).finally(() => setLoadingSpecialties(false));
+  }, []);
+
+  useEffect(() => { fetchSpecialties(); }, [fetchSpecialties]);
+
+  // Fetch doctors — filtered by selected specialty
   useEffect(() => {
+    if (!selectedSpecialty) { setDoctors([]); return; }
     setLoadingDoctors(true);
-    doctorAPI.list({ per_page: 50 }).then(res => {
+    doctorAPI.list({ per_page: 50, specialty_id: selectedSpecialty }).then(res => {
       const list = res?.data || [];
       setDoctors(list.map(d => ({
         id: d.id,
         name: d.fullname,
         avatar: d.avatar || '/images/caroline-lm-uqved8dypum-unsplash_720.jpg',
-        specialty: d.specialty || 'General Practitioner',
+        specialty: d.doctor_profile?.specialty || d.specialty || '',
         is_verified: d.is_verified,
         rating: d.rating || 4.8,
-        experience: d.experience || '5+ years',
+        experience: d.doctor_profile?.experience_years || d.experience || '',
       })));
-    }).catch(() => {}).finally(() => setLoadingDoctors(false));
-  }, []);
+    }).catch(() => setDoctors([])).finally(() => setLoadingDoctors(false));
+  }, [selectedSpecialty]);
 
   useEffect(() => {
     if (!selectedDoctor || !selectedDate) return;
@@ -409,16 +444,73 @@ export default function TelehealthAppointmentPage() {
           <div className="flex items-center justify-between mb-6">
             <div />
             <button
-              onClick={() => navigate('/telehealth-appointment?create=1')}
+              onClick={() => {
+                if (!isVerified) {
+                  setShowVerificationWarning(true);
+                  return;
+                }
+                navigate('/telehealth-appointment?create=1');
+              }}
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-xl text-sm font-bold hover:from-teal-700 hover:to-emerald-700 transition-all shadow-md shadow-teal-200/50 hover:shadow-lg"
             >
               <Plus className="w-4 h-4" />
-              Create New Appointment
+              {t('appointment.createNew', 'Create New Appointment')}
             </button>
           </div>
 
           {/* Metrics Cards */}
           <DoctorAppointmentDashboard />
+
+          {/* Verification Warning Modal */}
+          {showVerificationWarning && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setShowVerificationWarning(false)}>
+              <div className="bg-white rounded-2xl shadow-2xl border border-gray-200/60 w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+                {/* Header */}
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 px-6 py-5 border-b border-amber-100/60">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                      <ShieldAlert className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-base font-bold text-gray-900">{t('appointment.verificationRequired', 'Verification Required')}</h3>
+                      <p className="text-xs text-amber-700/80 mt-0.5">{t('appointment.verificationRequiredSubtitle', 'Your account needs to be verified first')}</p>
+                    </div>
+                    <button onClick={() => setShowVerificationWarning(false)} className="w-8 h-8 rounded-lg hover:bg-amber-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                {/* Body */}
+                <div className="px-6 py-5">
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {t('appointment.verificationMessage', 'To ensure patient safety and platform trust, you must complete the verification process before creating appointments. Please submit your professional documents for review.')}
+                  </p>
+                  <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+                      <span>{t('appointment.verificationNote', 'Verification usually takes 24-48 hours after document submission.')}</span>
+                    </div>
+                  </div>
+                </div>
+                {/* Actions */}
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/40 flex items-center justify-end gap-3">
+                  <button
+                    onClick={() => setShowVerificationWarning(false)}
+                    className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                  >
+                    {t('common.close', 'Close')}
+                  </button>
+                  <button
+                    onClick={() => { setShowVerificationWarning(false); navigate('/doctor/dashboard?tab=verification'); }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-xl text-sm font-semibold hover:from-teal-700 hover:to-emerald-700 transition-all shadow-md shadow-teal-200/50"
+                  >
+                    <Shield className="w-4 h-4" />
+                    {t('appointment.goToVerification', 'Go to Verification')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -533,35 +625,89 @@ export default function TelehealthAppointmentPage() {
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
                     <Stethoscope className="w-4 h-4 text-teal-600" />
-                    Select Specialty
+                    {t('appointment.selectSpecialty', 'Select Specialty')}
                   </h3>
-                  <p className="text-xs text-gray-400 mb-4">Choose a medical specialty to find the right doctor for you</p>
-                  {loadingDoctors ? (
+                  <p className="text-xs text-gray-400 mb-3">{t('appointment.selectSpecialtyDesc', 'Choose a medical specialty to find the right doctor for you')}</p>
+
+                  {/* Search */}
+                  {!loadingSpecialties && !specialtiesError && specialties.length > 0 && (
+                    <div className="relative mb-3">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                      <input
+                        type="text"
+                        value={specialtySearch}
+                        onChange={e => setSpecialtySearch(e.target.value)}
+                        placeholder={t('appointment.searchSpecialty', 'Search specialty...')}
+                        className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-gray-200 bg-gray-50/60 text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+                      />
+                    </div>
+                  )}
+
+                  {loadingSpecialties ? (
                     <div className="flex items-center justify-center py-8">
                       <Loader2 className="w-6 h-6 animate-spin text-teal-500 mr-2" />
-                      <span className="text-sm text-gray-400">Loading specialties...</span>
+                      <span className="text-sm text-gray-400">{t('appointment.loadingSpecialties', 'Loading specialties...')}</span>
                     </div>
-                  ) : (() => {
-                    const specs = [...new Set(doctors.map(d => d.specialty).filter(Boolean))].sort();
-                    return specs.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {specs.map(sp => (
-                          <button
-                            key={sp}
-                            onClick={() => { setSelectedSpecialty(sp); setSelectedDoctor(null); }}
-                            className={`px-3 py-3 rounded-xl text-xs font-semibold border-2 text-left transition-all ${
-                              selectedSpecialty === sp ? 'bg-teal-50 text-teal-700 border-teal-500 shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300 hover:bg-teal-50/50'
-                            }`}
-                          >
-                            <Stethoscope className={`w-4 h-4 mb-1.5 ${selectedSpecialty === sp ? 'text-teal-600' : 'text-gray-400'}`} />
-                            {sp}
-                          </button>
-                        ))}
+                  ) : specialtiesError ? (
+                    <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                      <Stethoscope className="w-10 h-10 mb-3 text-gray-300" />
+                      <p className="text-sm font-medium text-gray-500">{t('appointment.specialtiesLoadError', 'Could not load specialties. Please check your connection.')}</p>
+                      <button
+                        onClick={fetchSpecialties}
+                        className="mt-3 px-4 py-2 text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200 rounded-xl hover:bg-teal-100 transition-colors"
+                      >
+                        {t('common.retry', 'Try Again')}
+                      </button>
+                    </div>
+                  ) : specialties.length > 0 ? (() => {
+                    const lang = i18n.language?.split('-')[0] || 'en';
+                    const q = specialtySearch.trim().toLowerCase();
+                    const filtered = q
+                      ? specialties.filter(sp => {
+                          const n = (sp.name || sp.name_translations?.[lang] || sp.name_translations?.en || sp.code || '').toLowerCase();
+                          return n.includes(q);
+                        })
+                      : specialties;
+                    return filtered.length > 0 ? (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-1.5">
+                        {filtered.map(sp => {
+                          const spName = sp.name || sp.name_translations?.[lang] || sp.name_translations?.en || sp.code;
+                          const isActive = selectedSpecialty === sp.id;
+                          return (
+                            <button
+                              key={sp.id}
+                              onClick={() => { setSelectedSpecialty(sp.id); setSelectedDoctor(null); setSpecialtySearch(''); }}
+                              className={`group flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-[11px] font-semibold border transition-all duration-150 text-left leading-tight ${
+                                isActive
+                                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-200/50'
+                                  : 'bg-white text-gray-600 border-gray-200/80 hover:border-emerald-500 hover:shadow-md hover:shadow-emerald-100/40 hover:bg-emerald-50/40'
+                              }`}
+                            >
+                              <Stethoscope className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-white/80' : 'text-gray-400 group-hover:text-emerald-500'}`} />
+                              <span className="truncate">{spName}</span>
+                            </button>
+                          );
+                        })}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-400 text-center py-4">No specialties available</p>
+                      <div className="flex flex-col items-center justify-center py-8 text-gray-400">
+                        <Search className="w-8 h-8 mb-2 text-gray-300" />
+                        <p className="text-sm font-medium text-gray-500">{t('appointment.noMatchingSpecialties', 'No matching specialties')}</p>
+                        <button onClick={() => setSpecialtySearch('')} className="mt-2 text-xs font-medium text-teal-600 hover:underline">{t('common.clearSearch', 'Clear search')}</button>
+                      </div>
                     );
-                  })()}
+                  })() : (
+                    <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                      <Stethoscope className="w-10 h-10 mb-3 text-gray-300" />
+                      <p className="text-sm font-medium text-gray-500">{t('appointment.noSpecialties', 'No specialties available at the moment.')}</p>
+                      <button
+                        onClick={fetchSpecialties}
+                        className="mt-3 px-4 py-2 text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200 rounded-xl hover:bg-teal-100 transition-colors"
+                      >
+                        {t('common.retry', 'Try Again')}
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Step 2: Doctor Cards (shown only after specialty selection) */}
@@ -570,19 +716,24 @@ export default function TelehealthAppointmentPage() {
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                       <Users className="w-4 h-4 text-teal-600" />
-                      Doctors — {selectedSpecialty}
+                      {t('appointment.doctors', 'Doctors')} — {(() => { const s = specialties.find(s => s.id === selectedSpecialty); const lang = i18n.language?.split('-')[0] || 'en'; return s?.name || s?.name_translations?.[lang] || s?.name_translations?.en || ''; })()}
                     </h3>
-                    <button onClick={() => { setSelectedSpecialty(''); setSelectedDoctor(null); }} className="text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline transition-colors">Change specialty</button>
+                    <button onClick={() => { setSelectedSpecialty(null); setSelectedDoctor(null); }} className="text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline transition-colors">{t('appointment.changeSpecialty', 'Change specialty')}</button>
                   </div>
-                  {doctors.filter(d => d.specialty === selectedSpecialty).length === 0 ? (
+                  {loadingDoctors ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-teal-500 mr-2" />
+                      <span className="text-sm text-gray-400">{t('appointment.loadingDoctors', 'Loading doctors...')}</span>
+                    </div>
+                  ) : doctors.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                       <Stethoscope className="w-10 h-10 mb-3 text-gray-300" />
-                      <p className="text-sm font-medium text-gray-500">No doctors available for this specialty</p>
-                      <p className="text-xs text-gray-400 mt-1">Please try a different specialty</p>
+                      <p className="text-sm font-medium text-gray-500">{t('appointment.noDoctors', 'No doctors available for this specialty')}</p>
+                      <p className="text-xs text-gray-400 mt-1">{t('appointment.tryDifferent', 'Please try a different specialty')}</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {doctors.filter(d => d.specialty === selectedSpecialty).map((doctor) => {
+                      {doctors.map((doctor) => {
                         const isSelected = selectedDoctor === doctor.id;
                         return (
                           <button

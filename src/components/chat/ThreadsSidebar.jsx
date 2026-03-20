@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 export default function ThreadsSidebar({
   threads = [],
@@ -56,7 +57,7 @@ export default function ThreadsSidebar({
               >
                 <div className="flex items-start gap-3">
                   <div className="relative flex-shrink-0">
-                    <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-sm" loading="lazy" />
+                    <img src={resolveStorageUrl(t.avatar)} alt={t.name} className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-sm" loading="lazy" onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                     <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${t.online ? 'bg-emerald-500' : 'bg-gray-300'}`} />
                   </div>
                   <div className="flex-1 min-w-0">

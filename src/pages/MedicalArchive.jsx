@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { patientDocumentAPI } from '../lib/api';
 import EmptyState from '../components/common/EmptyState';
 import {
@@ -27,6 +28,7 @@ const CATEGORIES = [
 const MedicalArchive = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { notify } = useToast();
   const fileInputRef = useRef(null);
 
   // ── State ──
@@ -51,6 +53,7 @@ const MedicalArchive = () => {
     category: 'other',
     document_date: '',
   });
+  const [uploadError, setUploadError] = useState('');
 
   // ── Fetch documents ──
   const fetchDocuments = useCallback(async () => {
@@ -86,6 +89,7 @@ const MedicalArchive = () => {
     if (!uploadForm.file || !uploadForm.title) return;
 
     setUploading(true);
+    setUploadError('');
     try {
       const formData = new FormData();
       formData.append('file', uploadForm.file);
@@ -97,9 +101,21 @@ const MedicalArchive = () => {
       await patientDocumentAPI.upload(formData);
       setShowUploadModal(false);
       setUploadForm({ file: null, title: '', description: '', category: 'other', document_date: '' });
+      setUploadError('');
+      notify({ type: 'success', message: t('medicalArchive.uploadSuccess', 'Document uploaded successfully') });
       fetchDocuments();
       fetchStats();
-    } catch { /* silent */ }
+    } catch (err) {
+      const res = err?.response?.data;
+      const validationErrors = res?.errors;
+      if (validationErrors) {
+        const firstField = Object.keys(validationErrors)[0];
+        setUploadError(validationErrors[firstField]?.[0] || res?.message || t('medicalArchive.uploadFailed', 'Upload failed'));
+      } else {
+        setUploadError(res?.message || err?.message || t('medicalArchive.uploadFailed', 'Upload failed'));
+      }
+      notify({ type: 'error', message: t('medicalArchive.uploadFailed', 'Upload failed') });
+    }
     setUploading(false);
   };
 
@@ -111,7 +127,10 @@ const MedicalArchive = () => {
       await patientDocumentAPI.delete(deleteModal.doc.id);
       setDocuments(prev => prev.filter(d => d.id !== deleteModal.doc.id));
       fetchStats();
-    } catch { /* silent */ }
+      notify({ type: 'success', message: t('medicalArchive.deleteSuccess', 'Document deleted') });
+    } catch (err) {
+      notify({ type: 'error', message: err?.response?.data?.message || t('medicalArchive.deleteFailed', 'Delete failed') });
+    }
     setDeleting(false);
     setDeleteModal({ open: false, doc: null });
   };
@@ -367,6 +386,13 @@ const MedicalArchive = () => {
               </div>
 
               <form onSubmit={handleUpload} className="px-5 py-4 space-y-4">
+                {/* Upload Error */}
+                {uploadError && (
+                  <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <span>{uploadError}</span>
+                  </div>
+                )}
                 {/* File Input */}
                 <div>
                   <label className="text-xs font-semibold text-gray-700 mb-1.5 block">{t('medicalArchive.file', 'File')} *</label>

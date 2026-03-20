@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Traits\LogsActivity;
 
 class DigitalAnamnesis extends Model
 {
-    use HasFactory, HasUuids, MassPrunable, SoftDeletes;
+    use HasFactory, HasUuids, LogsActivity, MassPrunable, SoftDeletes;
+
+    protected static string $auditResourceLabel = 'DigitalAnamnesis';
 
     protected $keyType = 'string';
     public $incrementing = false;

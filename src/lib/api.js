@@ -132,19 +132,54 @@ export const clinicAPI = {
   update: (id, payload) => api.put(`/clinics/${id}`, payload),
   staff: (id, params) => api.get(`/clinics/${id}/staff`, { params }),
   createStaff: (id, payload) => api.post(`/clinics/${id}/staff`, payload),
+  // Reviews
+  reviews: (id, params) => api.get(`/clinics/${id}/reviews`, { params }),
+  reviewStats: (id) => api.get(`/clinics/${id}/review-stats`),
+  submitReview: (id, payload) => api.post(`/clinics/${id}/reviews`, payload),
+  // Onboarding
+  onboardingProfile: () => api.get('/clinic-onboarding'),
+  updateOnboarding: (payload) => api.put('/clinic-onboarding', payload),
+  uploadLogo: (file) => {
+    const fd = new FormData();
+    fd.append('logo', file);
+    return api.post('/clinic-onboarding/logo', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
+};
+
+// ── Clinic Verification ──
+export const clinicVerificationAPI = {
+  status: () => api.get('/clinic-verification/status'),
+  submit: (formData) => api.post('/clinic-verification/submit', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  // Admin
+  adminList: (params) => api.get('/admin/clinic-verifications', { params }),
+  approve: (id, notes) => api.put(`/admin/clinic-verifications/${id}/approve`, { notes }),
+  reject: (id, notes) => api.put(`/admin/clinic-verifications/${id}/reject`, { notes }),
 };
 
 // ── Social Service (Follow / Favorite) ──
 export const socialAPI = {
   follow: (targetType, targetId) => api.post('/social/follow', { target_type: targetType, target_id: targetId }),
   unfollow: (targetType, targetId) => api.post('/social/unfollow', { target_type: targetType, target_id: targetId }),
+  toggleFollow: (targetType, targetId) => api.post('/social/toggle-follow', { target_type: targetType, target_id: targetId }),
   isFollowing: (targetType, targetId) => api.get('/social/is-following', { params: { target_type: targetType, target_id: targetId } }),
   followers: (targetType, targetId, params) => api.get('/social/followers', { params: { target_type: targetType, target_id: targetId, ...params } }),
   following: (params) => api.get('/social/following', { params }),
   favorite: (targetType, targetId) => api.post('/social/favorite', { target_type: targetType, target_id: targetId }),
   unfavorite: (targetType, targetId) => api.post('/social/unfavorite', { target_type: targetType, target_id: targetId }),
+  toggleFavorite: (targetType, targetId) => api.post('/social/toggle-favorite', { target_type: targetType, target_id: targetId }),
   isFavorited: (targetType, targetId) => api.get('/social/is-favorited', { params: { target_type: targetType, target_id: targetId } }),
   favorites: (params) => api.get('/social/favorites', { params }),
+  favoritesCount: () => api.get('/social/favorites/count'),
+};
+
+// ── Contact Messages (Patient → Clinic/Doctor inquiries) ──
+export const contactMessageAPI = {
+  send: (formData) => api.post('/contact-messages', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  inbox: (params) => api.get('/contact-messages/inbox', { params }),
+  show: (id) => api.get(`/contact-messages/${id}`),
+  remove: (id) => api.delete(`/contact-messages/${id}`),
+  unreadCount: () => api.get('/contact-messages/unread-count'),
+  downloadUrl: (msgId, attId) => `${BASE_URL}/contact-messages/${msgId}/download/${attId}`,
 };
 
 // ── Doctor Service ──
@@ -388,6 +423,12 @@ export const medStreamAPI = {
   feed: (params) => api.get('/medstream/feed', { params }),
   toggleFollow: (userId) => api.post(`/medstream/follow/${userId}`),
   followCounts: (userId) => api.get(`/medstream/follow-counts/${userId}`),
+
+  // Secure file download (forces browser download)
+  downloadFile: (path, filename) => api.get('/medstream/download', {
+    params: { path, filename },
+    responseType: 'blob',
+  }),
 };
 
 // ── Messaging Service ──
@@ -437,6 +478,7 @@ export const searchAPI = {
 // ── Catalog Service (Public) ──
 export const catalogAPI = {
   search: (type, q) => api.get('/catalog/search', { params: { type, q } }),
+  popular: (type, limit) => api.get('/catalog/popular', { params: { type, limit } }),
   specialties: (params) => api.get('/catalog/specialties', { params }),
   specialtiesSearch: (params) => api.get('/catalog/specialties/search', { params }),
   cities: (params) => api.get('/catalog/cities', { params }),
@@ -478,7 +520,6 @@ export const chatAPI = {
     if (content) fd.append('content', content);
     fd.append('attachment', attachment);
     return api.post(`/chat/conversations/${conversationId}/messages`, fd, {
-      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 60000,
     });
   },
@@ -498,6 +539,7 @@ export const adminAPI = {
   userStats: () => api.get('/admin/users/stats'),
   updateUserRole: (id, role) => api.put(`/admin/users/${id}/role`, { role }),
   suspendUser: (id, suspend) => api.put(`/admin/users/${id}/suspend`, { suspend }),
+  resetPassword: (id, password) => api.put(`/admin/users/${id}/reset-password`, { password }),
   reports: (params) => api.get('/admin/reports', { params }),
   approveReport: (id) => api.put(`/admin/reports/${id}/approve`),
   removeReport: (id) => api.delete(`/admin/reports/${id}/remove`),

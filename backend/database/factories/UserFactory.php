@@ -45,6 +45,11 @@ class UserFactory extends Factory
         return $this->state(['role_id' => 'clinicOwner']);
     }
 
+    public function unverified(): static
+    {
+        return $this->state(['is_verified' => false]);
+    }
+
     public function admin(): static
     {
         return $this->state(['role_id' => 'superAdmin']);

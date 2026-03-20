@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import EmojiPicker from '../components/EmojiPicker';
 import { medStreamAPI } from '../lib/api';
+import resolveStorageUrl from '../utils/resolveStorageUrl';
 
 function toStreamUrl(url) {
   if (!url || typeof url !== 'string') return url;
@@ -40,21 +41,26 @@ function formatTimeAgo(dateStr) {
   } catch { return dateStr; }
 }
 
+function resolveMediaUrl(m) {
+  return m.medium || m.original || m.url || m.thumb || '';
+}
+
 function getMediaType(m) {
-  if (m.type === 'video' || /\.(mp4|webm|mov|avi)$/i.test(m.url || '')) return 'video';
-  if (m.type === 'document' || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.url || '') || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.name || '')) return 'document';
+  const src = resolveMediaUrl(m);
+  if (m.type === 'video' || /\.(mp4|webm|mov|avi)$/i.test(src)) return 'video';
+  if (m.type === 'document' || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(src) || /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|csv)$/i.test(m.name || '')) return 'document';
   return 'image';
 }
 
 function getFileExt(m) {
-  const name = m.name || m.url || '';
+  const name = m.name || resolveMediaUrl(m) || '';
   const match = name.match(/\.([a-zA-Z0-9]+)(\?|$)/);
   return match ? match[1].toUpperCase() : 'FILE';
 }
 
 function getFileName(m) {
   if (m.name) return m.name;
-  try { return decodeURIComponent((m.url || '').split('/').pop().split('?')[0]); } catch { return 'Document'; }
+  try { return decodeURIComponent((resolveMediaUrl(m) || '').split('/').pop().split('?')[0]); } catch { return 'Document'; }
 }
 
 const EXT_COLORS = { PDF: 'bg-red-500', DOC: 'bg-blue-500', DOCX: 'bg-blue-500', XLS: 'bg-green-600', XLSX: 'bg-green-600', PPT: 'bg-orange-500', PPTX: 'bg-orange-500', CSV: 'bg-emerald-500' };
@@ -66,7 +72,7 @@ function DetailNestedReply({ r, depth, user, replyTo, setReplyTo, replyText, set
   return (
     <div>
       <div className="flex items-start gap-2">
-        <img src={r.avatar} alt={r.name} className={`${avatarSize} rounded-full object-cover flex-shrink-0`} />
+        <img src={resolveStorageUrl(r.avatar)} alt={r.name} className={`${avatarSize} rounded-full object-cover flex-shrink-0`} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
         <div className="flex-1 min-w-0">
           <div className="bg-gray-50/60 rounded-lg px-3 py-2">
             <div className="flex items-baseline justify-between gap-2">
@@ -146,7 +152,7 @@ export default function PostDetail() {
   const stateItem = state?.item;
   const stateHasBlob = stateItem && (
     (stateItem.img && stateItem.img.startsWith('blob:')) ||
-    (Array.isArray(stateItem.media) && stateItem.media.some(m => m.url && m.url.startsWith('blob:')))
+    (Array.isArray(stateItem.media) && stateItem.media.some(m => { const src = m.url || m.medium || m.original || ''; return src.startsWith('blob:'); }))
   );
 
   // Fetch from API if no state item or has blob URLs
@@ -171,7 +177,7 @@ export default function PostDetail() {
             role: p.author?.role_id || 'doctor',
             name: p.author?.fullname || 'Doctor',
             title: '',
-            avatarUrl: p.author?.avatar || '/images/default/default-avatar.svg',
+            avatarUrl: resolveStorageUrl(p.author?.avatar),
           },
           timeAgo: p.created_at ? new Date(p.created_at).toLocaleDateString() : '',
           visibility: 'public',
@@ -195,7 +201,7 @@ export default function PostDetail() {
 
   // Image gallery state
   const mediaList = Array.isArray(item?.media) && item?.media.length > 0
-    ? item.media.filter(m => m.url && !m.url.startsWith('blob:'))
+    ? item.media.filter(m => resolveMediaUrl(m) && !resolveMediaUrl(m).startsWith('blob:'))
     : [];
   const initialMediaIndex = state?.mediaIndex || 0;
   const [imgIndex, setImgIndex] = React.useState(initialMediaIndex);
@@ -433,7 +439,7 @@ export default function PostDetail() {
     id: c.id,
     author_id: c.author_id || c.author?.id,
     name: c.author?.fullname || 'User',
-    avatar: c.author?.avatar || '/images/default/default-avatar.svg',
+    avatar: resolveStorageUrl(c.author?.avatar),
     text: c.content || '',
     time: c.created_at || '',
     parent_id: c.parent_id || null,
@@ -458,7 +464,7 @@ export default function PostDetail() {
       id: 'dc-' + Date.now(),
       author_id: user?.id,
       name: user?.name || item?.actor?.name || 'You',
-      avatar: user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg',
+      avatar: resolveStorageUrl(user?.avatar || item?.actor?.avatarUrl),
       text,
       time: 'Just now',
       parent_id: null,
@@ -512,7 +518,7 @@ export default function PostDetail() {
       id: tempId,
       author_id: user?.id,
       name: user?.name || item?.actor?.name || 'You',
-      avatar: user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg',
+      avatar: resolveStorageUrl(user?.avatar || item?.actor?.avatarUrl),
       text,
       time: 'Just now',
       parent_id: parentId,
@@ -575,7 +581,7 @@ export default function PostDetail() {
 
           {/* Subtle blurred bg — only for images */}
           {mediaList.length > 0 && getMediaType(mediaList[imgIndex]) === 'image' && (
-            <img src={mediaList[imgIndex]?.url} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover blur-3xl scale-125 opacity-30" />
+            <img src={resolveMediaUrl(mediaList[imgIndex])} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover blur-3xl scale-125 opacity-30" />
           )}
 
           {/* Close button */}
@@ -659,7 +665,7 @@ export default function PostDetail() {
                 onMouseLeave={onMouseUpPan}
               >
                 <img
-                  src={currentMedia?.url}
+                  src={resolveMediaUrl(currentMedia)}
                   alt={item.title}
                   className={`max-w-full max-h-full select-none object-contain ${zoom === 1 ? 'cursor-zoom-in' : 'cursor-grab active:cursor-grabbing'}`}
                   style={{
@@ -699,7 +705,7 @@ export default function PostDetail() {
 
           {/* Header — sticky */}
           <div className="px-5 py-3.5 border-b border-gray-100/80 flex items-center gap-3 bg-white/95 backdrop-blur-sm flex-shrink-0">
-            <img src={item.actor?.avatarUrl || item.avatar || '/images/default/default-avatar.svg'} alt={item.actor?.name || item.title} className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-100/80 flex-shrink-0" />
+            <img src={resolveStorageUrl(item.actor?.avatarUrl || item.avatar)} alt={item.actor?.name || item.title} className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-100/80 flex-shrink-0" onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
             <div className="min-w-0 flex-1">
               <h1 className="text-[15px] font-semibold text-gray-900 truncate leading-tight">{item.actor?.name || item.title}</h1>
               <p className="text-xs text-gray-500 truncate mt-0.5 leading-tight">{actorSubtitle}</p>

@@ -7,6 +7,8 @@ const MONTHS = [
 ];
 
 const DAYS_IN_MONTH = (year, month) => new Date(year, month + 1, 0).getDate();
+const MIN_YEAR = 1930;
+const MAX_YEAR = new Date().getFullYear();
 
 /**
  * DateOfBirthPicker — keyboard-typeable (DD/MM/YYYY) + dropdown calendar with quick year/month selection.
@@ -81,6 +83,11 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
 
   const handleYearChange = (e) => {
     let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length === 4) {
+      const num = parseInt(v);
+      if (num < MIN_YEAR) v = String(MIN_YEAR);
+      if (num > MAX_YEAR) v = String(MAX_YEAR);
+    }
     setYearStr(v);
     emitChange(dayStr, monthStr, v);
   };
@@ -244,7 +251,7 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
                 <button type="button" onClick={() => setYearRangeStart(yearRangeStart + 20)} className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100">{yearRangeStart + 20}s →</button>
               </div>
               <div className="grid grid-cols-4 gap-1">
-                {Array.from({ length: 20 }, (_, i) => yearRangeStart + i).map((y) => (
+                {Array.from({ length: 20 }, (_, i) => yearRangeStart + i).filter(y => y >= MIN_YEAR && y <= MAX_YEAR).map((y) => (
                   <button
                     key={y}
                     type="button"

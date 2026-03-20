@@ -6,6 +6,8 @@ import {
   Eye, EyeOff, Save, TestTube, History, X, Info, Lock,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import ProTeaser from '../../components/crm/ProTeaser';
 
 // ─── Integration Definitions ─────────────────────────────────
 const INTEGRATIONS = [
@@ -147,7 +149,9 @@ const StatusIndicator = ({ status }) => {
 // ─── Main Component ──────────────────────────────────────────
 const CRMIntegrations = () => {
   const { t } = useTranslation();
+  const { user, isPro } = useAuth();
   const [selectedIntegration, setSelectedIntegration] = useState(null);
+
   const [showPasswords, setShowPasswords] = useState({});
   const [activeDetailTab, setActiveDetailTab] = useState('overview');
 
@@ -164,6 +168,8 @@ const CRMIntegrations = () => {
     setActiveDetailTab('overview');
     setShowPasswords({});
   };
+
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="integrations" />;
 
   return (
     <div className="space-y-6">

@@ -7,6 +7,7 @@ use App\Models\Clinic;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Helpers\TurkishStr;
 
 class SearchController extends Controller
 {
@@ -27,7 +28,7 @@ class SearchController extends Controller
             ]);
         }
 
-        $term = mb_strtolower($q);
+        $term = $q;
 
         // ── Doctors: search users with role=doctor, LEFT JOIN doctor_profiles for extras ──
         $doctors = User::query()
@@ -35,8 +36,8 @@ class SearchController extends Controller
             ->where('users.is_active', true)
             ->where('users.role_id', 'doctor')
             ->where(function ($query) use ($term) {
-                $query->whereRaw('LOWER(users.fullname) LIKE ?', ["%{$term}%"])
-                      ->orWhereRaw('LOWER(COALESCE(doctor_profiles.specialty, \'\')) LIKE ?', ["%{$term}%"]);
+                TurkishStr::addNormalizedSearch($query, 'users.fullname', $term, 'or');
+                TurkishStr::addNormalizedSearch($query, "COALESCE(doctor_profiles.specialty, '')", $term, 'or');
             })
             ->select([
                 'users.id',
@@ -62,8 +63,8 @@ class SearchController extends Controller
         // ── Clinics: search by fullname or name ──
         $clinics = Clinic::active()
             ->where(function ($query) use ($term) {
-                $query->whereRaw('LOWER(fullname) LIKE ?', ["%{$term}%"])
-                      ->orWhereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
+                TurkishStr::addNormalizedSearch($query, 'fullname', $term, 'or');
+                TurkishStr::addNormalizedSearch($query, 'name', $term, 'or');
             })
             ->select(['id', 'name', 'codename', 'fullname', 'avatar', 'address', 'is_verified'])
             ->limit(5)

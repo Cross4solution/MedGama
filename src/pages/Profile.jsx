@@ -11,15 +11,14 @@ import { LANGUAGES } from '../i18n';
 import LangFlag from '../components/ui/LangFlag';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { Link, useSearchParams } from 'react-router-dom';
+import GlobalSuggest from '../components/forms/GlobalSuggest';
 import { jsPDF } from 'jspdf';
+import resolveStorageUrl from '../utils/resolveStorageUrl';
 import autoTable from 'jspdf-autotable';
 function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
   const [prefs, setPrefs] = React.useState({
-    email_notifications: true,
-    sms_notifications: false,
     push_notifications: true,
     appointment_reminders: true,
-    marketing_messages: false,
   });
   const [loaded, setLoaded] = React.useState(false);
 
@@ -42,10 +41,8 @@ function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
   };
 
   const toggleItems = [
-    { key: 'sms_notifications', label: t('profile.smsNotifications'), desc: t('profile.smsNotificationsDesc') },
     { key: 'push_notifications', label: t('profile.pushNotifications'), desc: t('profile.pushNotificationsDesc') },
     { key: 'appointment_reminders', label: t('profile.appointmentReminders'), desc: t('profile.appointmentRemindersDesc') },
-    { key: 'marketing_messages', label: t('profile.marketingMessages'), desc: t('profile.marketingMessagesDesc') },
   ];
 
   return (
@@ -150,27 +147,9 @@ export default function Profile() {
 
   // Connections removed
 
-  // Patient medical history (frontend-only persistence) - now as tags
-  const [medicalConditions, setMedicalConditions] = useState([]);
-  const [conditionInput, setConditionInput] = useState('');
-  const [showConditionSuggestions, setShowConditionSuggestions] = useState(false);
-  const conditionInputRef = useRef(null);
-  
-  // Common medical conditions suggestions
-  const commonConditions = [
-    'Hypertension', 'Diabetes Type 2', 'Diabetes Type 1', 'Asthma', 
-    'Arthritis', 'Depression', 'Anxiety', 'Migraine', 'COPD',
-    'Heart Disease', 'High Cholesterol', 'Thyroid Disorder',
-    'Penicillin Allergy', 'Pollen Allergy', 'Food Allergy'
-  ];
+  // Patient medical history — synced with DB via GlobalSuggest (comma-separated string)
+  const [medicalHistoryValue, setMedicalHistoryValue] = useState('');
 
-  const filteredConditions = conditionInput.trim() 
-    ? commonConditions.filter(c => 
-        c.toLowerCase().includes(conditionInput.toLowerCase()) && 
-        !medicalConditions.includes(c)
-      )
-    : [];
-  
   useEffect(() => {
     let cancelled = false;
     const loadMedical = async () => {
@@ -180,7 +159,7 @@ export default function Profile() {
           const res = await authAPI.getMedicalHistory();
           const conditions = res?.conditions || res?.data?.conditions;
           if (!cancelled && Array.isArray(conditions) && conditions.length > 0) {
-            setMedicalConditions(conditions);
+            setMedicalHistoryValue(conditions.join(', '));
             return;
           }
         } catch {}
@@ -193,10 +172,9 @@ export default function Profile() {
           if (raw) {
             const obj = JSON.parse(raw);
             if (obj && typeof obj.medicalHistory === 'string' && obj.medicalHistory) {
-              const converted = obj.medicalHistory.split(',').map(s => s.trim()).filter(Boolean);
-              if (!cancelled) setMedicalConditions(converted);
+              if (!cancelled) setMedicalHistoryValue(obj.medicalHistory);
             } else if (obj && Array.isArray(obj.medicalConditions)) {
-              if (!cancelled) setMedicalConditions(obj.medicalConditions);
+              if (!cancelled) setMedicalHistoryValue(obj.medicalConditions.join(', '));
             }
           }
         }
@@ -206,49 +184,32 @@ export default function Profile() {
     return () => { cancelled = true; };
   }, [user?.email, user?.role]);
 
-  const addCondition = (text) => {
-    const trimmed = text.trim();
-    if (trimmed && !medicalConditions.includes(trimmed)) {
-      setMedicalConditions([...medicalConditions, trimmed]);
-    }
-    setConditionInput('');
-    setShowConditionSuggestions(false);
-  };
-
-  const removeCondition = (index) => {
-    setMedicalConditions(medicalConditions.filter((_, i) => i !== index));
-  };
-
-  const handleConditionKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      const text = conditionInput.replace(/,$/, ''); // Remove trailing comma
-      if (filteredConditions.length > 0 && text.trim()) {
-        // If there are suggestions and input matches the first one, use it
-        const exactMatch = filteredConditions.find(c => c.toLowerCase() === text.toLowerCase());
-        addCondition(exactMatch || text);
-      } else if (text) {
-        addCondition(text);
-      }
-    } else if (e.key === 'Backspace' && !conditionInput && medicalConditions.length > 0) {
-      // Remove last tag on backspace if input is empty
-      removeCondition(medicalConditions.length - 1);
-    }
-  };
-
-  const clearAllConditions = () => {
-    setMedicalConditions([]);
-  };
-
   const saveMedical = async (e) => {
     e?.preventDefault?.();
     setSaving(true);
+    // Parse conditions — handle both string and array formats from GlobalSuggest
+    let conditions = [];
+    if (Array.isArray(medicalHistoryValue)) {
+      conditions = medicalHistoryValue.map(t => (typeof t === 'string' ? t : t?.name || '')).filter(Boolean);
+    } else if (typeof medicalHistoryValue === 'string' && medicalHistoryValue.trim()) {
+      conditions = medicalHistoryValue.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    let savedToServer = false;
     try {
-      await authAPI.updateMedicalHistory({ conditions: medicalConditions });
-      showToast('Medical conditions saved');
+      await authAPI.updateMedicalHistory({ conditions });
+      savedToServer = true;
+      showToast(t('profile.medicalHistorySaved', 'Medical conditions saved'));
     } catch (err) {
-      console.warn('[Profile] Medical history API failed, saving locally:', err?.message);
-      showToast('Saved locally (server unavailable)', 'error');
+      const status = err?.response?.status;
+      const detail = err?.response?.data?.message || err?.message || '';
+      console.warn('[Profile] Medical history API failed:', { status, detail, conditions });
+      if (status === 422) {
+        showToast(t('profile.validationError', 'Invalid data. Please check your entries.'), 'error');
+      } else if (status === 401 || status === 403) {
+        showToast(t('profile.authError', 'Please log in again to save.'), 'error');
+      } else {
+        showToast(t('profile.savedLocally', 'Saved locally (server unavailable)'), 'error');
+      }
     }
     // Always persist locally as fallback
     try {
@@ -256,7 +217,8 @@ export default function Profile() {
         const key = `patient_profile_extra_${user.email}`;
         const raw = localStorage.getItem(key);
         const prev = raw ? JSON.parse(raw) : {};
-        const next = { ...prev, medicalConditions };
+        const valStr = Array.isArray(medicalHistoryValue) ? medicalHistoryValue.map(t => typeof t === 'string' ? t : t?.name || '').join(', ') : medicalHistoryValue;
+        const next = { ...prev, medicalHistory: valStr, medicalConditions: conditions };
         localStorage.setItem(key, JSON.stringify(next));
       }
     } catch {}
@@ -469,9 +431,10 @@ export default function Profile() {
                 <div className="flex items-center gap-5">
                   <div className="relative group">
                     <img
-                      src={avatar || user.avatar || '/images/default/default-avatar.svg'}
+                      src={avatar || resolveStorageUrl(user.avatar)}
                       alt={user.name}
                       className="w-16 h-16 rounded-xl object-cover ring-2 ring-white shadow-md"
+                      onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }}
                     />
                     <button
                       type="button"
@@ -685,77 +648,16 @@ export default function Profile() {
                 {t('profile.medicalHistory')}
               </h2>
               <p className="text-sm text-gray-600 mb-3">{t('profile.medicalConditionsDesc')}</p>
-              
-              {/* Inline tags + input wrapper */}
-              <div className="relative">
-                <div className="border border-gray-300 rounded-lg px-2 py-1 text-base md:text-sm flex items-center flex-wrap gap-2 bg-white min-h-[42px]">
-                  {/* Tags */}
-                  {medicalConditions.map((condition, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-800 border border-teal-200"
-                    >
-                      {condition}
-                      <button
-                        type="button"
-                        onClick={() => removeCondition(index)}
-                        className="ml-0.5 text-teal-700 hover:text-teal-900"
-                        aria-label={`Remove ${condition}`}
-                      >
-                        ✕
-                      </button>
-                    </span>
-                  ))}
-                  
-                  {/* Inline input */}
-                  <input
-                    ref={conditionInputRef}
-                    placeholder={medicalConditions.length === 0 ? "Type condition and press Enter..." : ""}
-                    className="flex-1 min-w-[8ch] border-0 outline-none px-1 py-1 text-base md:text-sm bg-transparent"
-                    type="text"
-                    value={conditionInput}
-                    onChange={(e) => {
-                      setConditionInput(e.target.value);
-                      setShowConditionSuggestions(e.target.value.trim().length > 0);
-                    }}
-                    onKeyDown={handleConditionKeyDown}
-                    onFocus={() => conditionInput.trim() && setShowConditionSuggestions(true)}
-                    onBlur={() => setTimeout(() => setShowConditionSuggestions(false), 200)}
-                  />
-                  
-                  {/* Clear all button */}
-                  {medicalConditions.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={clearAllConditions}
-                      className="ml-auto text-gray-400 hover:text-gray-600"
-                      aria-label="Clear all"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
 
-                {/* Suggestions dropdown */}
-                {showConditionSuggestions && filteredConditions.length > 0 && (
-                  <ul className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-56 overflow-auto text-sm">
-                    {filteredConditions.map((condition, idx) => (
-                      <li key={idx}>
-                        <button
-                          type="button"
-                          onClick={() => addCondition(condition)}
-                          className="w-full text-left px-3 py-2 hover:bg-teal-50 hover:text-teal-800 transition-colors"
-                        >
-                          {condition}
-                          <span className="ml-2 text-xs text-gray-500">(condition)</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              <GlobalSuggest
+                type="medical_history"
+                value={medicalHistoryValue}
+                onChange={(val) => setMedicalHistoryValue(val)}
+                placeholder={t('auth.medicalHistorySearch', 'Search diseases, allergies, medications...')}
+                allowCustom={true}
+              />
 
-              <p className="text-xs text-gray-500 mt-1.5">Press <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">Enter</kbd> or <kbd className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">,</kbd> to add</p>
+              <p className="text-xs text-gray-500 mt-1.5">{t('profile.medicalHistoryHint', 'Search and select your conditions, or type custom entries.')}</p>
               
               <div className="flex justify-end mt-4">
                 <button onClick={saveMedical} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? 'Saving...' : t('common.save')}</button>

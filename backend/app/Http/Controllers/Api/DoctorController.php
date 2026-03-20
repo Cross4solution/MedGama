@@ -82,7 +82,7 @@ class DoctorController extends Controller
     {
         $request->validate([
             'rating'          => 'required|integer|min:1|max:5',
-            'comment'         => 'nullable|string|max:2000',
+            'comment'         => 'required|string|min:10|max:2000',
             'treatment_type'  => 'nullable|string|max:255',
             'appointment_id'  => 'nullable|uuid',
         ]);

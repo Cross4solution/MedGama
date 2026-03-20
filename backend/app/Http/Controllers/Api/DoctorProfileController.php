@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\DoctorProfile;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
@@ -99,7 +100,18 @@ class DoctorProfileController extends Controller
             ['onboarding_step' => 0, 'onboarding_completed' => false]
         );
 
+        $oldValues = $profile->only(array_keys($validated));
         $profile->update($validated);
+
+        // Audit log
+        AuditLog::log(
+            action: 'profile.updated',
+            resourceType: 'DoctorProfile',
+            resourceId: $profile->id,
+            oldValues: $oldValues,
+            newValues: $validated,
+            description: "Doctor profile updated: {$user->fullname}",
+        );
 
         return response()->json([
             'profile' => $profile->refresh(),

@@ -47,7 +47,7 @@ class MedStreamController extends Controller
     {
         $posts = $this->medStreamService->listPosts(
             $request->user()?->id,
-            $request->only(['author_id', 'clinic_id', 'hospital_id', 'post_type', 'per_page']),
+            $request->only(['author_id', 'clinic_id', 'hospital_id', 'post_type', 'per_page', 'sort', 'specialty_id']),
         );
 
         return MedStreamPostResource::collection($posts);
@@ -406,14 +406,24 @@ class MedStreamController extends Controller
             new OA\Response(response: 200, description: 'Personalized feed (MedStreamPostResource)'),
         ]
     )]
-    public function feed(Request $request): AnonymousResourceCollection
+    public function feed(Request $request): \Illuminate\Http\JsonResponse
     {
-        $posts = $this->medStreamService->feed(
+        $result = $this->medStreamService->feed(
             $request->user()->id,
-            $request->only(['specialty_id', 'post_type', 'per_page']),
+            $request->only(['specialty_id', 'post_type', 'per_page', 'sort']),
         );
 
-        return MedStreamPostResource::collection($posts);
+        return response()->json([
+            'data'            => MedStreamPostResource::collection($result['posts']),
+            'is_explore'      => $result['is_explore'],
+            'following_count'  => $result['following_count'],
+            'meta' => [
+                'current_page' => $result['posts']->currentPage(),
+                'last_page'    => $result['posts']->lastPage(),
+                'per_page'     => $result['posts']->perPage(),
+                'total'        => $result['posts']->total(),
+            ],
+        ]);
     }
 
     // ── Follows ──
@@ -435,6 +445,41 @@ class MedStreamController extends Controller
         $result = $this->medStreamService->toggleFollow($request->user()->id, $userId);
 
         return response()->json($result);
+    }
+
+    /**
+     * GET /api/medstream/download — Secure file download.
+     * Accepts ?path=/storage/medstream/papers/uuid.pdf
+     * Forces browser download instead of navigation.
+     */
+    public function download(Request $request)
+    {
+        $request->validate(['path' => 'required|string']);
+
+        $rawPath = $request->input('path');
+
+        // Strip /storage/ prefix to get the disk-relative path
+        $diskPath = preg_replace('#^/?storage/#', '', $rawPath);
+
+        // Security: only allow medstream/ paths to prevent directory traversal
+        if (!str_starts_with($diskPath, 'medstream/')) {
+            return response()->json(['message' => 'Invalid file path.'], 403);
+        }
+
+        // Sanitize: block path traversal
+        if (str_contains($diskPath, '..')) {
+            return response()->json(['message' => 'Invalid file path.'], 403);
+        }
+
+        $disk = \Illuminate\Support\Facades\Storage::disk('public');
+
+        if (!$disk->exists($diskPath)) {
+            return response()->json(['message' => 'File not found.'], 404);
+        }
+
+        $filename = $request->input('filename', basename($diskPath));
+
+        return $disk->download($diskPath, $filename);
     }
 
     #[OA\Get(

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import ProTeaser from '../../components/crm/ProTeaser';
 import useTelehealth from '../../hooks/useTelehealth';
 import {
   Video, VideoOff, Mic, MicOff, Monitor, PhoneOff, Captions,
@@ -12,7 +13,7 @@ import {
 
 function CRMTelehealth() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, isPro } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const appointmentId = searchParams.get('id');
@@ -38,6 +39,9 @@ function CRMTelehealth() {
       transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
     }
   }, [transcripts]);
+
+  // Pro gate
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="telehealth" />;
 
   // No appointment ID
   if (!appointmentId) {

@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Users, Search, ChevronLeft, ChevronRight, Filter, Shield, ShieldCheck, ShieldX,
-  UserPlus, UserX, Stethoscope, Building2, Crown, Loader2, MoreHorizontal,
-  Ban, RotateCcw, ChevronDown,
+  Users, Search, ChevronLeft, ChevronRight, Shield, ShieldCheck, ShieldX,
+  UserPlus, Stethoscope, Building2, Crown, Loader2,
+  Ban, RotateCcw, ChevronDown, KeyRound, Eye, X, AlertTriangle, ExternalLink,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 
@@ -14,24 +15,170 @@ const ROLES = [
   { key: 'superAdmin',  label: 'Super Admin',   icon: Crown,       color: 'bg-amber-50 text-amber-600 border-amber-200' },
 ];
 
+const TABS = [
+  { key: '',            label: 'All Users',  icon: Users },
+  { key: 'doctor',      label: 'Doctors',    icon: Stethoscope },
+  { key: 'patient',     label: 'Patients',   icon: UserPlus },
+  { key: 'clinicOwner', label: 'Clinics',    icon: Building2 },
+];
+
 const getRoleMeta = (roleId) => ROLES.find(r => r.key === roleId) || ROLES[0];
 
+/* ═══════════════════════════════════════════
+   Password Reset Modal
+   ═══════════════════════════════════════════ */
+function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  if (!targetUser) return null;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
+    setLoading(true);
+    setError('');
+    try {
+      await adminAPI.resetPassword(targetUser.id, password);
+      onSuccess?.();
+      onClose();
+    } catch (err) {
+      setError(err?.message || 'Failed to reset password');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="px-5 py-4 border-b border-gray-100">
+          <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+            <KeyRound className="w-4 h-4 text-indigo-600" /> Reset Password
+          </h3>
+          <p className="text-xs text-gray-500 mt-1">Set a new password for <strong>{targetUser.fullname}</strong></p>
+        </div>
+        <form onSubmit={handleSubmit} className="px-5 py-4 space-y-3">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">New Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Min 8 characters..."
+              minLength={8}
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
+              autoFocus
+            />
+          </div>
+          {error && <p className="text-xs text-red-600">{error}</p>}
+          <div className="flex justify-end gap-2 pt-1">
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button
+              type="submit"
+              disabled={loading || password.length < 8}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors disabled:opacity-50"
+            >
+              {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <KeyRound className="w-3.5 h-3.5" />} Reset
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   User Detail Drawer
+   ═══════════════════════════════════════════ */
+function UserDetailDrawer({ user: u, onClose }) {
+  if (!u) return null;
+  const roleMeta = getRoleMeta(u.role_id);
+  const RoleIcon = roleMeta.icon;
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/40" onClick={onClose}>
+      <div className="w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto animate-slide-in-right" onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between z-10">
+          <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2"><Eye className="w-4 h-4 text-indigo-600" /> User Profile</h3>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"><X className="w-4 h-4 text-gray-500" /></button>
+        </div>
+        <div className="p-5 space-y-5">
+          {/* Avatar + Name */}
+          <div className="text-center">
+            <img src={u.avatar || '/images/default/default-avatar.svg'} alt="" className="w-20 h-20 rounded-2xl object-cover mx-auto border-2 border-gray-100 shadow-sm" />
+            <h4 className="text-lg font-bold text-gray-900 mt-3">{u.fullname}</h4>
+            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${roleMeta.color} mt-1.5`}>
+              <RoleIcon className="w-3 h-3" /> {roleMeta.label}
+            </span>
+          </div>
+          {/* Info Grid */}
+          <div className="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
+            <InfoRow label="Email" value={u.email} />
+            <InfoRow label="Phone" value={u.mobile || '—'} />
+            <InfoRow label="Clinic" value={u.clinic?.fullname || '—'} />
+            <InfoRow label="Registered" value={u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'} />
+            <InfoRow label="Last Login" value={u.last_login ? new Date(u.last_login).toLocaleString() : '—'} />
+            <InfoRow label="Verified" value={u.is_verified ? '✅ Yes' : '❌ No'} />
+            <InfoRow label="Status" value={u.is_active ? '🟢 Active' : '🔴 Suspended'} />
+          </div>
+          <div className="text-[10px] text-gray-400 text-center">ID: {u.id}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-gray-500 text-xs font-medium">{label}</span>
+      <span className="text-gray-900 text-xs font-semibold text-right max-w-[60%] truncate">{value}</span>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   MAIN PAGE
+   ═══════════════════════════════════════════ */
 export default function AdminUserManagement() {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [users, setUsers] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || '');
   const [statusFilter, setStatusFilter] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
   const [roleDropdown, setRoleDropdown] = useState(null);
+  const [passwordModal, setPasswordModal] = useState(null);
+  const [detailUser, setDetailUser] = useState(null);
+  const dropdownRef = useRef(null);
 
-  // Fetch stats on mount
+  // Sync activeTab with URL query param
+  useEffect(() => {
+    const urlTab = searchParams.get('tab') || '';
+    if (urlTab !== activeTab) setActiveTab(urlTab);
+  }, [searchParams]);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (tab) setSearchParams({ tab });
+    else setSearchParams({});
+  };
+
+  // Close role dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => { if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setRoleDropdown(null); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Fetch stats
   useEffect(() => {
     adminAPI.userStats().then(res => {
       setStats(res?.data || res);
@@ -40,10 +187,11 @@ export default function AdminUserManagement() {
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
+    setError('');
     try {
       const params = { per_page: 25, page };
       if (search.trim()) params.search = search.trim();
-      if (roleFilter) params.role = roleFilter;
+      if (activeTab) params.role = activeTab;
       if (statusFilter === 'active') params.is_active = true;
       if (statusFilter === 'suspended') params.is_active = false;
       if (statusFilter === 'verified') params.is_verified = true;
@@ -53,21 +201,25 @@ export default function AdminUserManagement() {
       setUsers(res?.data || []);
       setLastPage(res?.last_page || res?.meta?.last_page || 1);
       setTotal(res?.total || res?.meta?.total || 0);
-    } catch {
+    } catch (err) {
       setUsers([]);
+      const status = err?.response?.status || err?.status;
+      if (status === 403) setError('Access denied. You need SuperAdmin privileges.');
+      else if (status === 401) setError('Not authenticated. Please log in again.');
+      else setError(err?.message || 'Failed to load users. Please check your connection.');
     }
     setLoading(false);
-  }, [page, search, roleFilter, statusFilter]);
+  }, [page, search, activeTab, statusFilter]);
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
-  useEffect(() => { setPage(1); }, [search, roleFilter, statusFilter]);
+  useEffect(() => { setPage(1); }, [search, activeTab, statusFilter]);
 
   const handleRoleChange = async (userId, newRole) => {
     setActionLoading(userId);
     try {
       await adminAPI.updateUserRole(userId, newRole);
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, role_id: newRole } : u));
-    } catch { /* keep old value */ }
+    } catch {}
     setActionLoading(null);
     setRoleDropdown(null);
   };
@@ -75,54 +227,40 @@ export default function AdminUserManagement() {
   const handleSuspendToggle = async (userId, currentlyActive) => {
     setActionLoading(userId);
     try {
-      await adminAPI.suspendUser(userId, currentlyActive); // suspend=true if currently active
+      await adminAPI.suspendUser(userId, currentlyActive);
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_active: !currentlyActive } : u));
-    } catch { /* noop */ }
+    } catch {}
     setActionLoading(null);
   };
-
-  const hasActiveFilters = roleFilter || statusFilter;
 
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <Users className="w-5 h-5 text-indigo-600" />
-            {t('admin.users.title', 'Kullanıcı Yönetimi')}
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">{t('admin.users.subtitle', 'Tüm kullanıcıları görüntüle, rollerini yönet')}</p>
-        </div>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-            showFilters || hasActiveFilters
-              ? 'bg-indigo-100 text-indigo-700 border border-indigo-200'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-        >
-          <Filter className="w-3.5 h-3.5" />
-          {t('admin.users.filters', 'Filtreler')}
-          {hasActiveFilters && <span className="ml-1 w-2 h-2 rounded-full bg-indigo-500 inline-block" />}
-        </button>
+      <div>
+        <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <Users className="w-5 h-5 text-indigo-600" />
+          {t('admin.users.title', 'User Management')}
+        </h1>
+        <p className="text-sm text-gray-500 mt-0.5">{t('admin.users.subtitle', 'Manage all platform users, roles and access')}</p>
       </div>
 
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           {[
-            { label: t('admin.users.total', 'Toplam'), value: stats.total, icon: Users, color: 'text-gray-600' },
-            { label: t('admin.users.doctors', 'Doktor'), value: stats.doctors, icon: Stethoscope, color: 'text-teal-600' },
-            { label: t('admin.users.patients', 'Hasta'), value: stats.patients, icon: UserPlus, color: 'text-blue-600' },
-            { label: t('admin.users.clinicOwners', 'Klinik'), value: stats.clinic_owners, icon: Building2, color: 'text-purple-600' },
-            { label: t('admin.users.admins', 'Admin'), value: stats.admins, icon: Crown, color: 'text-amber-600' },
-            { label: t('admin.users.suspended', 'Askıda'), value: stats.suspended, icon: Ban, color: 'text-red-600' },
-            { label: t('admin.users.unverified', 'Onaysız'), value: stats.unverified_doctors, icon: ShieldX, color: 'text-orange-600' },
+            { label: 'Total', value: stats.total, icon: Users, color: 'text-gray-600', bg: 'bg-gray-50' },
+            { label: 'Doctors', value: stats.doctors, icon: Stethoscope, color: 'text-teal-600', bg: 'bg-teal-50' },
+            { label: 'Patients', value: stats.patients, icon: UserPlus, color: 'text-blue-600', bg: 'bg-blue-50' },
+            { label: 'Clinics', value: stats.clinic_owners, icon: Building2, color: 'text-purple-600', bg: 'bg-purple-50' },
+            { label: 'Admins', value: stats.admins, icon: Crown, color: 'text-amber-600', bg: 'bg-amber-50' },
+            { label: 'Suspended', value: stats.suspended, icon: Ban, color: 'text-red-600', bg: 'bg-red-50' },
+            { label: 'Unverified', value: stats.unverified_doctors, icon: ShieldX, color: 'text-orange-600', bg: 'bg-orange-50' },
           ].map((s, i) => (
             <div key={i} className="bg-white rounded-2xl border border-gray-200/60 p-3.5">
               <div className="flex items-center gap-1.5 mb-1">
-                <s.icon className={`w-3.5 h-3.5 ${s.color}`} />
+                <div className={`w-6 h-6 rounded-lg ${s.bg} flex items-center justify-center`}>
+                  <s.icon className={`w-3.5 h-3.5 ${s.color}`} />
+                </div>
                 <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">{s.label}</span>
               </div>
               <p className="text-xl font-bold text-gray-900">{(s.value || 0).toLocaleString()}</p>
@@ -131,90 +269,86 @@ export default function AdminUserManagement() {
         </div>
       )}
 
-      {/* Search + Filters */}
-      <div className="space-y-3">
-        <div className="relative max-w-lg">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder={t('admin.users.searchPlaceholder', 'İsim, e-posta veya telefon ara...')}
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
-          />
+      {/* Tabs (Doctor / Patient / Clinic segmentation) */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+        <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+          {TABS.map(tab => {
+            const TabIcon = tab.icon;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => handleTabChange(tab.key)}
+                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === tab.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <TabIcon className="w-3.5 h-3.5" />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
-        {showFilters && (
-          <div className="flex flex-wrap gap-3 p-4 bg-white rounded-xl border border-gray-200/60">
-            <div>
-              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 block">
-                {t('admin.users.role', 'Rol')}
-              </label>
-              <select
-                value={roleFilter}
-                onChange={e => setRoleFilter(e.target.value)}
-                className="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-indigo-500/20 min-w-[160px]"
-              >
-                <option value="">{t('admin.users.allRoles', 'Tüm Roller')}</option>
-                {ROLES.map(r => (
-                  <option key={r.key} value={r.key}>{r.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 block">
-                {t('admin.users.status', 'Durum')}
-              </label>
-              <select
-                value={statusFilter}
-                onChange={e => setStatusFilter(e.target.value)}
-                className="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-indigo-500/20 min-w-[160px]"
-              >
-                <option value="">{t('admin.users.allStatuses', 'Tümü')}</option>
-                <option value="active">{t('admin.users.activeOnly', 'Aktif')}</option>
-                <option value="suspended">{t('admin.users.suspendedOnly', 'Askıda')}</option>
-                <option value="verified">{t('admin.users.verifiedOnly', 'Doğrulanmış')}</option>
-                <option value="unverified">{t('admin.users.unverifiedOnly', 'Doğrulanmamış')}</option>
-              </select>
-            </div>
-            {hasActiveFilters && (
-              <div className="flex items-end">
-                <button
-                  onClick={() => { setRoleFilter(''); setStatusFilter(''); }}
-                  className="text-xs text-red-500 hover:text-red-700 underline pb-1.5"
-                >
-                  {t('admin.users.clearFilters', 'Filtreleri Temizle')}
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Status filter */}
+        <select
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}
+          className="text-xs border border-gray-200 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-indigo-500/20 min-w-[140px]"
+        >
+          <option value="">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="suspended">Suspended</option>
+          <option value="verified">Verified</option>
+          <option value="unverified">Unverified</option>
+        </select>
       </div>
+
+      {/* Search */}
+      <div className="relative max-w-lg">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search by name, email or phone..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
+        />
+      </div>
+
+      {/* Error banner */}
+      {error && (
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="text-sm font-medium">{error}</p>
+          </div>
+          <button onClick={fetchUsers} className="text-xs font-medium underline hover:text-red-800">Retry</button>
+        </div>
+      )}
 
       {/* Users Table */}
       {loading ? (
         <div className="flex justify-center py-12">
           <div className="w-7 h-7 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
         </div>
-      ) : users.length === 0 ? (
+      ) : !error && users.length === 0 ? (
         <div className="text-center py-16">
           <Users className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-          <p className="text-sm text-gray-500">{t('admin.users.noUsers', 'Kullanıcı bulunamadı')}</p>
+          <p className="text-sm text-gray-500">No users found{search ? ` matching "${search}"` : ''}.</p>
         </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+      ) : users.length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden" ref={dropdownRef}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('admin.users.colUser', 'Kullanıcı')}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('admin.users.colEmail', 'E-posta')}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('admin.users.colRole', 'Rol')}</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('admin.users.colVerified', 'Doğrulama')}</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('admin.users.colStatus', 'Durum')}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('admin.users.colClinic', 'Klinik')}</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 w-[110px]">{t('admin.users.colRegistered', 'Kayıt')}</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600 w-[120px]">{t('admin.users.colActions', 'İşlemler')}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">User</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Email</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Role</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600">Verified</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600">Status</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Registered</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600 w-[220px]">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -225,14 +359,9 @@ export default function AdminUserManagement() {
 
                   return (
                     <tr key={u.id} className="hover:bg-gray-50/40 transition-colors">
-                      {/* User */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
-                          <img
-                            src={u.avatar || '/images/default/default-avatar.svg'}
-                            alt=""
-                            className="w-8 h-8 rounded-full object-cover border border-gray-200"
-                          />
+                          <img src={u.avatar || '/images/default/default-avatar.svg'} alt="" className="w-8 h-8 rounded-full object-cover border border-gray-200" />
                           <div>
                             <p className="text-sm font-medium text-gray-900 leading-tight">{u.fullname}</p>
                             {u.mobile && <p className="text-[10px] text-gray-400">{u.mobile}</p>}
@@ -240,10 +369,9 @@ export default function AdminUserManagement() {
                         </div>
                       </td>
 
-                      {/* Email */}
                       <td className="px-4 py-3 text-gray-600 text-xs">{u.email}</td>
 
-                      {/* Role — with inline dropdown */}
+                      {/* Role — inline dropdown */}
                       <td className="px-4 py-3 relative">
                         <button
                           onClick={() => setRoleDropdown(roleDropdown === u.id ? null : u.id)}
@@ -273,61 +401,73 @@ export default function AdminUserManagement() {
                         )}
                       </td>
 
-                      {/* Verified */}
                       <td className="px-4 py-3 text-center">
                         {u.is_verified ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <ShieldCheck className="w-3 h-3" /> {t('admin.users.verified', 'Doğrulanmış')}
+                            <ShieldCheck className="w-3 h-3" /> Yes
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-500 border border-gray-200">
-                            <ShieldX className="w-3 h-3" /> {t('admin.users.notVerified', 'Bekliyor')}
+                            <ShieldX className="w-3 h-3" /> No
                           </span>
                         )}
                       </td>
 
-                      {/* Status */}
                       <td className="px-4 py-3 text-center">
                         {u.is_active ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            {t('admin.users.active', 'Aktif')}
-                          </span>
+                          <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" title="Active" />
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-50 text-red-600 border border-red-200">
-                            <Ban className="w-3 h-3" /> {t('admin.users.suspendedLabel', 'Askıda')}
+                            <Ban className="w-3 h-3" /> Suspended
                           </span>
                         )}
                       </td>
 
-                      {/* Clinic */}
-                      <td className="px-4 py-3 text-xs text-gray-500">{u.clinic?.fullname || '—'}</td>
-
-                      {/* Registered */}
                       <td className="px-4 py-3 text-xs text-gray-500">
                         {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
                       </td>
 
                       {/* Actions */}
-                      <td className="px-4 py-3 text-center">
-                        {isLoadingThis ? (
-                          <Loader2 className="w-4 h-4 text-gray-400 animate-spin mx-auto" />
-                        ) : u.is_active ? (
-                          <button
-                            onClick={() => handleSuspendToggle(u.id, true)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors"
-                            title={t('admin.users.suspend', 'Askıya Al')}
-                          >
-                            <Ban className="w-3 h-3" /> {t('admin.users.suspend', 'Askıya Al')}
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleSuspendToggle(u.id, false)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors"
-                            title={t('admin.users.reactivate', 'Aktif Et')}
-                          >
-                            <RotateCcw className="w-3 h-3" /> {t('admin.users.reactivate', 'Aktif Et')}
-                          </button>
-                        )}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-1">
+                          {isLoadingThis ? (
+                            <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => setDetailUser(u)}
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                                title="View Profile"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => setPasswordModal(u)}
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                                title="Reset Password"
+                              >
+                                <KeyRound className="w-3.5 h-3.5" />
+                              </button>
+                              {u.is_active ? (
+                                <button
+                                  onClick={() => handleSuspendToggle(u.id, true)}
+                                  className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors"
+                                  title="Suspend"
+                                >
+                                  <Ban className="w-3 h-3" /> Block
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleSuspendToggle(u.id, false)}
+                                  className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors"
+                                  title="Reactivate"
+                                >
+                                  <RotateCcw className="w-3 h-3" /> Unblock
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -337,29 +477,17 @@ export default function AdminUserManagement() {
           </div>
 
           {/* Pagination */}
-          {lastPage > 1 && (
-            <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
-              <span className="text-xs text-gray-400">
-                {t('admin.users.pageInfo', 'Sayfa {{page}} / {{lastPage}} — {{total}} kullanıcı', { page, lastPage, total })}
-              </span>
+          <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
+            <span className="text-xs text-gray-400">
+              Page {page} of {lastPage} — {total.toLocaleString()} users
+            </span>
+            {lastPage > 1 && (
               <div className="flex gap-1">
-                <button
-                  disabled={page <= 1}
-                  onClick={() => setPage(p => p - 1)}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  disabled={page >= lastPage}
-                  onClick={() => setPage(p => p + 1)}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+                <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 transition-colors"><ChevronLeft className="w-4 h-4" /></button>
+                <button disabled={page >= lastPage} onClick={() => setPage(p => p + 1)} className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 transition-colors"><ChevronRight className="w-4 h-4" /></button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 
@@ -368,13 +496,17 @@ export default function AdminUserManagement() {
         <div className="flex items-start gap-3">
           <Shield className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-indigo-800">{t('admin.users.securityTitle', 'Güvenlik & Denetim')}</p>
+            <p className="text-sm font-semibold text-indigo-800">Security & Audit</p>
             <p className="text-xs text-indigo-600 mt-0.5">
-              {t('admin.users.securityDesc', 'Tüm rol değişiklikleri ve askıya alma işlemleri Denetim Günlükleri\'nde kayıt altına alınır. Yetkisiz değişikliklere karşı düzenli kontrol yapınız.')}
+              All role changes, suspensions, and password resets are recorded in Audit Logs. Review regularly for unauthorized changes.
             </p>
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <PasswordResetModal user={passwordModal} onClose={() => setPasswordModal(null)} />
+      <UserDetailDrawer user={detailUser} onClose={() => setDetailUser(null)} />
     </div>
   );
 }

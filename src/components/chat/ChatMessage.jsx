@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { FileText, Film, Music, File, Download, X, ExternalLink } from 'lucide-react';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 function formatSize(bytes) {
   if (!bytes) return '';
@@ -154,16 +155,16 @@ function ChatMessage({ message, leftAvatar, rightAvatar }) {
     <div className={`flex ${isDoctor ? 'justify-end' : 'justify-start'}`}>
       <div className={`flex items-end max-w-xs lg:max-w-md gap-2.5 ${isDoctor ? 'flex-row-reverse' : ''}`}>
         {!isDoctor && (
-          <img src={leftAvatar} alt="Contact" className="w-8 h-8 rounded-lg object-cover ring-1 ring-white shadow-sm flex-shrink-0" loading="lazy" style={{ objectPosition: 'center 20%' }} />
+          <img src={resolveStorageUrl(leftAvatar)} alt="Contact" className="w-8 h-8 rounded-lg object-cover ring-1 ring-white shadow-sm flex-shrink-0" loading="lazy" style={{ objectPosition: 'center 20%' }} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
         )}
         {isDoctor && (
-          <img src={rightAvatar} alt="You" className="w-8 h-8 rounded-lg object-cover ring-1 ring-white shadow-sm flex-shrink-0" loading="lazy" style={{ objectPosition: 'center 20%' }} />
+          <img src={resolveStorageUrl(rightAvatar)} alt="You" className="w-8 h-8 rounded-lg object-cover ring-1 ring-white shadow-sm flex-shrink-0" loading="lazy" style={{ objectPosition: 'center 20%' }} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
         )}
-        <div className={`rounded-2xl px-4 py-2.5 shadow-sm ${
+        <div className={`rounded-2xl px-4 py-2.5 shadow-sm transition-opacity duration-200 ${
           isDoctor
             ? 'bg-gradient-to-br from-teal-600 to-emerald-600 text-white rounded-br-md'
             : 'bg-white border border-gray-100 text-gray-800 rounded-bl-md'
-        } ${isSending ? 'opacity-70' : ''} ${isFailed ? 'ring-2 ring-red-300' : ''}`}>
+        } ${isSending ? 'opacity-60' : 'opacity-100'} ${isFailed ? 'ring-2 ring-red-300' : ''}`}>
           {hasText && (
             <p className="text-[13px] leading-relaxed whitespace-pre-line">{message.text}</p>
           )}
@@ -181,11 +182,11 @@ function ChatMessage({ message, leftAvatar, rightAvatar }) {
             <span>{message.time}</span>
             {isSending && <span className="italic">Sending...</span>}
             {isFailed && <span className="text-red-300 font-medium">Failed</span>}
-            {!isDoctor && !isSending && !isFailed && (
+            {isDoctor && !isSending && !isFailed && (
               <span className="inline-flex items-center gap-1">
                 {message.status === 'sent' && <span title="Sent">✓</span>}
                 {message.status === 'delivered' && <span title="Delivered">✓✓</span>}
-                {message.status === 'read' && <span title="Read" className="text-teal-500">✓✓</span>}
+                {message.status === 'read' && <span title="Read" className="text-teal-300">✓✓</span>}
               </span>
             )}
           </p>

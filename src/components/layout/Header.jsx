@@ -6,9 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { notificationAPI } from '../../lib/api';
 import { getEcho } from '../../lib/echo';
 import { useToast } from '../../context/ToastContext';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 const Header = () => {
-  const { user, sidebarMobileOpen, setSidebarMobileOpen, logout, hydrated } = useAuth();
+  const { user, sidebarMobileOpen, setSidebarMobileOpen, logout, hydrated, isPro } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { notify: showToast } = useToast();
@@ -181,11 +182,11 @@ const Header = () => {
       return;
     }
     if (data.appointment_id) {
-      navigate(user?.role === 'patient' ? '/telehealth' : '/crm/appointments');
+      navigate(user?.role === 'patient' ? '/telehealth' : (isPro ? '/crm/appointments' : '/doctor/dashboard'));
       return;
     }
     if (data.review_id) {
-      navigate(user?.role === 'patient' ? `/doctors/${data.doctor_id || ''}` : '/crm/reviews');
+      navigate(user?.role === 'patient' ? `/doctors/${data.doctor_id || ''}` : (isPro ? '/crm/reviews' : '/doctor/dashboard'));
       return;
     }
   };
@@ -435,9 +436,10 @@ const Header = () => {
                       title={user.name}
                     >
                       <img
-                        src={user.avatar || '/images/default/default-avatar.svg'}
+                        src={resolveStorageUrl(user.avatar)}
                         alt={user.name}
                         className="w-7 h-7 rounded-full object-cover border border-gray-200"
+                        onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }}
                       />
                       <span className="text-[13px] text-gray-700 font-medium max-w-[140px] truncate">{user.name}</span>
                       <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
@@ -506,9 +508,10 @@ const Header = () => {
                   title={user.name}
                 >
                   <img
-                    src={user.avatar || '/images/default/default-avatar.svg'}
+                    src={resolveStorageUrl(user.avatar)}
                     alt={user.name}
                     className="w-7 h-7 rounded-full object-cover"
+                    onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }}
                   />
                 </button>
               </div>
@@ -637,7 +640,7 @@ const Header = () => {
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/profile', label: 'Profile', icon: User },
             ];
-            const showCRM = role === 'doctor' || role === 'clinic' || role === 'clinicOwner';
+            const showCRM = isPro && (role === 'doctor' || role === 'clinic' || role === 'clinicOwner');
             const items = role === 'clinic' ? clinicItems : (role === 'doctor' ? doctorItems : patientItems);
             return (
               <nav>

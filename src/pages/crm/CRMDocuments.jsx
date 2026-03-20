@@ -5,6 +5,8 @@ import {
   ChevronRight, MoreVertical, Star, Share2,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import ProTeaser from '../../components/crm/ProTeaser';
 
 const MOCK_DOCUMENTS = [
   { id: 1, name: 'Lab Results - Mehmet Ozkan', type: 'pdf', size: '2.4 MB', patient: 'Mehmet Ozkan', category: 'Lab Results', uploadedAt: '2026-02-16', uploadedBy: 'System', starred: true },
@@ -30,7 +32,9 @@ const FileIcon = ({ type }) => {
 
 const CRMDocuments = () => {
   const { t } = useTranslation();
+  const { user, isPro } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [showUploadModal, setShowUploadModal] = useState(false);
 
@@ -47,6 +51,8 @@ const CRMDocuments = () => {
     totalSize: '20.5 MB',
     categories: new Set(MOCK_DOCUMENTS.map(d => d.category)).size,
   }), []);
+
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="documents" />;
 
   return (
     <div className="space-y-6">

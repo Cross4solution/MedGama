@@ -107,6 +107,15 @@ class AppointmentController extends Controller
     )]
     public function store(StoreAppointmentRequest $request): JsonResponse
     {
+        // Unverified doctors cannot create appointments
+        $user = $request->user();
+        if ($user && in_array($user->role_id, ['doctor', 'clinicOwner']) && !$user->is_verified) {
+            return response()->json([
+                'message' => 'Your account must be verified before you can create appointments. Please complete the verification process first.',
+                'error_code' => 'doctor_not_verified',
+            ], 403);
+        }
+
         $appointment = $this->appointmentService->store(
             $request->user(),
             $request->validated(),

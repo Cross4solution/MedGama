@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Allergy;
+use App\Models\LanguageCatalog;
 use App\Models\Medication;
 use App\Models\Specialty;
 use App\Models\City;
@@ -264,11 +265,17 @@ class CatalogController extends Controller
         $fallback = config('app.fallback_locale', 'en');
         $limit    = 15;
 
+        if ($type === 'medical_history') {
+            $results = $this->searchMedicalHistory($q, $locale, $fallback, $limit);
+            return response()->json(['results' => $results->values()]);
+        }
+
         $results = match ($type) {
             'disease'    => $this->searchTranslatable(DiseaseCondition::active(), $q, $locale, $fallback, $limit),
             'allergy'    => $this->searchTranslatable(Allergy::active(), $q, $locale, $fallback, $limit, true),
             'medication' => $this->searchTranslatable(Medication::active(), $q, $locale, $fallback, $limit, true),
             'specialty'  => $this->searchTranslatable(Specialty::active()->ordered(), $q, $locale, $fallback, $limit),
+            'language'   => $this->searchTranslatable(LanguageCatalog::active()->ordered(), $q, $locale, $fallback, $limit),
             'symptom', 'procedure' => $this->searchSymptoms($q, $locale, $fallback, $limit),
             default      => collect(),
         };
@@ -277,11 +284,58 @@ class CatalogController extends Controller
     }
 
     /**
+     * GET /api/catalog/popular?type=medical_history
+     *
+     * Returns the most common items (is_popular = true) for initial suggestions.
+     */
+    public function popular(Request $request): JsonResponse
+    {
+        $type     = $request->query('type', 'disease');
+        $locale   = app()->getLocale();
+        $fallback = config('app.fallback_locale', 'en');
+        $limit    = (int) $request->query('limit', 5);
+
+        if ($type === 'medical_history') {
+            $diseases    = $this->getPopularItems(DiseaseCondition::active()->where('is_popular', true), $locale, $fallback, 'disease');
+            $allergies   = $this->getPopularItems(Allergy::active()->where('is_popular', true), $locale, $fallback, 'allergy');
+            $medications = $this->getPopularItems(Medication::active()->where('is_popular', true), $locale, $fallback, 'medication');
+
+            $results = $diseases->concat($allergies)->concat($medications)->take($limit);
+            return response()->json(['results' => $results->values()]);
+        }
+
+        $query = match ($type) {
+            'disease'    => DiseaseCondition::active()->where('is_popular', true),
+            'allergy'    => Allergy::active()->where('is_popular', true),
+            'medication' => Medication::active()->where('is_popular', true),
+            'language'   => LanguageCatalog::active()->where('is_popular', true)->ordered(),
+            default      => null,
+        };
+
+        if (!$query) {
+            return response()->json(['results' => []]);
+        }
+
+        $results = $this->getPopularItems($query, $locale, $fallback, $type)->take($limit);
+        return response()->json(['results' => $results->values()]);
+    }
+
+    /**
      * Search models that use HasTranslations trait (name column is JSONB).
      */
     private function searchTranslatable($query, string $q, string $locale, string $fallback, int $limit, bool $withCategory = false)
     {
-        return $query->get()->map(function ($item) use ($locale, $fallback, $withCategory) {
+        // Fuzzy search: filter by ILIKE on JSONB name column for both locale and fallback
+        $filtered = $query
+            ->where(function ($builder) use ($q, $locale, $fallback) {
+                $builder->whereRaw("LOWER(name->>?) LIKE ?", [$locale, "%{$q}%"])
+                        ->orWhereRaw("LOWER(name->>?) LIKE ?", [$fallback, "%{$q}%"])
+                        ->orWhereRaw("LOWER(code) LIKE ?", ["%{$q}%"]);
+            })
+            ->limit($limit)
+            ->get();
+
+        return $filtered->map(function ($item) use ($locale, $fallback, $withCategory) {
             $name = $item->getTranslation('name', $locale)
                  ?? $item->getTranslation('name', $fallback)
                  ?? '';
@@ -297,10 +351,75 @@ class CatalogController extends Controller
                 $row['form'] = $item->form;
             }
             return $row;
-        })->filter(function ($item) use ($q) {
-            return str_contains(mb_strtolower($item['name'] ?? ''), $q)
-                || str_contains(mb_strtolower($item['code'] ?? ''), $q);
-        })->take($limit);
+        });
+    }
+
+    /**
+     * Multi-type search across diseases, allergies, and medications.
+     */
+    private function searchMedicalHistory(string $q, string $locale, string $fallback, int $limit)
+    {
+        $diseases = $this->searchTranslatableWithType(DiseaseCondition::active(), $q, $locale, $fallback, 'disease');
+        $allergies = $this->searchTranslatableWithType(Allergy::active(), $q, $locale, $fallback, 'allergy');
+        $medications = $this->searchTranslatableWithType(Medication::active(), $q, $locale, $fallback, 'medication');
+
+        return $diseases->concat($allergies)->concat($medications)->take($limit);
+    }
+
+    /**
+     * Search translatable model and tag each result with its source type.
+     */
+    private function searchTranslatableWithType($query, string $q, string $locale, string $fallback, string $sourceType)
+    {
+        $filtered = $query
+            ->where(function ($builder) use ($q, $locale, $fallback) {
+                $builder->whereRaw("LOWER(name->>?) LIKE ?", [$locale, "%{$q}%"])
+                        ->orWhereRaw("LOWER(name->>?) LIKE ?", [$fallback, "%{$q}%"])
+                        ->orWhereRaw("LOWER(code) LIKE ?", ["%{$q}%"]);
+            })
+            ->limit(5)
+            ->get();
+
+        return $filtered->map(function ($item) use ($locale, $fallback, $sourceType) {
+            $name = $item->getTranslation('name', $locale)
+                 ?? $item->getTranslation('name', $fallback)
+                 ?? '';
+            $row = [
+                'id'         => $item->id,
+                'code'       => $item->code,
+                'name'       => $name,
+                'sourceType' => $sourceType,
+            ];
+            if (isset($item->category)) {
+                $row['category'] = $item->category;
+            }
+            if (isset($item->form)) {
+                $row['form'] = $item->form;
+            }
+            return $row;
+        });
+    }
+
+    /**
+     * Get popular items from a query and tag with source type.
+     */
+    private function getPopularItems($query, string $locale, string $fallback, string $sourceType)
+    {
+        return $query->get()->map(function ($item) use ($locale, $fallback, $sourceType) {
+            $name = $item->getTranslation('name', $locale)
+                 ?? $item->getTranslation('name', $fallback)
+                 ?? '';
+            $row = [
+                'id'         => $item->id,
+                'code'       => $item->code,
+                'name'       => $name,
+                'sourceType' => $sourceType,
+            ];
+            if (isset($item->category)) {
+                $row['category'] = $item->category;
+            }
+            return $row;
+        });
     }
 
     /**

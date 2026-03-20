@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { notificationAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationsContext';
 import { useTranslation } from 'react-i18next';
 
 const TYPE_META = {
@@ -60,9 +61,10 @@ const timeAgo = (dateStr) => {
 };
 
 export default function Notifications() {
-  const { user } = useAuth();
+  const { user, isPro } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { decrement: globalDecrement, reset: globalReset, setCount: globalSetCount } = useNotifications();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('all');
@@ -85,9 +87,11 @@ export default function Notifications() {
   const fetchUnreadCount = useCallback(async () => {
     try {
       const res = await notificationAPI.unreadCount();
-      setUnreadCount(res?.data?.unread_count ?? res?.data?.count ?? 0);
+      const c = res?.data?.unread_count ?? res?.data?.count ?? 0;
+      setUnreadCount(c);
+      globalSetCount(c);
     } catch {}
-  }, []);
+  }, [globalSetCount]);
 
   useEffect(() => {
     if (user) { fetchNotifications(1); fetchUnreadCount(); }
@@ -105,6 +109,7 @@ export default function Notifications() {
       await notificationAPI.markAsRead(id);
       setItems(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
       setUnreadCount(prev => Math.max(0, prev - 1));
+      globalDecrement(1);
     } catch {}
   };
 
@@ -113,14 +118,19 @@ export default function Notifications() {
       await notificationAPI.markAllAsRead();
       setItems(prev => prev.map(n => ({ ...n, read_at: n.read_at || new Date().toISOString() })));
       setUnreadCount(0);
+      globalReset();
     } catch {}
   };
 
   const handleDelete = async (id) => {
     try {
+      const wasUnread = !items.find(n => n.id === id)?.read_at;
       await notificationAPI.delete(id);
       setItems(prev => prev.filter(n => n.id !== id));
-      fetchUnreadCount();
+      if (wasUnread) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+        globalDecrement(1);
+      }
     } catch {}
   };
 
@@ -131,10 +141,10 @@ export default function Notifications() {
     if (data.post_id) { navigate(`/post/${encodeURIComponent(data.post_id)}`); return; }
     if (data.conversation_id) { navigate('/doctor-chat'); return; }
     if (data.appointment_id) {
-      navigate(user?.role === 'patient' ? '/telehealth' : '/crm/appointments');
+      navigate(user?.role === 'patient' ? '/telehealth' : (isPro ? '/crm/appointments' : '/doctor/dashboard'));
       return;
     }
-    if (data.review_id && user?.role !== 'patient') { navigate('/crm/reviews'); return; }
+    if (data.review_id && user?.role !== 'patient') { navigate(isPro ? '/crm/reviews' : '/doctor/dashboard'); return; }
   };
 
   const getMeta = (notif) => {

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useFavorites } from '../context/FavoritesContext';
 import { socialAPI } from '../lib/api';
 
 /**
@@ -10,9 +11,12 @@ import { socialAPI } from '../lib/api';
  * @param {'doctor'|'clinic'} targetType
  * @param {string|null}       targetId
  * @param {object}            initial  — { isFollowing, isFavorited, followerCount }
+ * @param {object}            targetMeta — { name, codename, avatar, ... }
+ * @param {object}            callbacks — { onFavoriteChange: (favorited) => void }
  */
-export default function useSocial(targetType, targetId, initial = {}, targetMeta = {}) {
+export default function useSocial(targetType, targetId, initial = {}, targetMeta = {}, callbacks = {}) {
   const { user, token } = useAuth();
+  const { increment: favIncrement, decrement: favDecrement } = useFavorites();
   const isLoggedIn = !!(user && (token || localStorage.getItem('auth_state')));
 
   // ── Local storage key helpers ──
@@ -50,11 +54,7 @@ export default function useSocial(targetType, targetId, initial = {}, targetMeta
 
     try {
       if (isLoggedIn) {
-        if (wasFollowing) {
-          await socialAPI.unfollow(targetType, targetId);
-        } else {
-          await socialAPI.follow(targetType, targetId);
-        }
+        await socialAPI.toggleFollow(targetType, targetId);
       }
     } catch {
       // Revert on error
@@ -75,6 +75,8 @@ export default function useSocial(targetType, targetId, initial = {}, targetMeta
     // Optimistic update
     setIsFavorited(!wasFavorited);
     writeLS('favorite', !wasFavorited);
+    // Sidebar count sync
+    if (wasFavorited) favDecrement(); else favIncrement();
 
     // Also maintain a localStorage list of favorited clinics for offline access
     if (targetType === 'clinic') {
@@ -107,20 +109,20 @@ export default function useSocial(targetType, targetId, initial = {}, targetMeta
 
     try {
       if (isLoggedIn) {
-        if (wasFavorited) {
-          await socialAPI.unfavorite(targetType, targetId);
-        } else {
-          await socialAPI.favorite(targetType, targetId);
-        }
+        await socialAPI.toggleFavorite(targetType, targetId);
       }
+      // Notify caller of successful change
+      callbacks.onFavoriteChange?.(!wasFavorited);
     } catch {
       // Revert on error
       setIsFavorited(wasFavorited);
       writeLS('favorite', wasFavorited);
+      // Revert sidebar count
+      if (wasFavorited) favIncrement(); else favDecrement();
     } finally {
       setFavoriteLoading(false);
     }
-  }, [targetId, isFavorited, favoriteLoading, isLoggedIn, targetType, targetMeta, writeLS]);
+  }, [targetId, isFavorited, favoriteLoading, isLoggedIn, targetType, targetMeta, writeLS, callbacks, favIncrement, favDecrement]);
 
   return {
     isFollowing,

@@ -11,6 +11,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { examinationAPI, catalogAPI } from '../../lib/api';
 import GlobalSuggest from '../../components/forms/GlobalSuggest';
+import { useAuth } from '../../context/AuthContext';
+import ProTeaser from '../../components/crm/ProTeaser';
 
 // ─── Medication Templates ───
 const MEDICATION_TEMPLATES = [
@@ -740,6 +742,7 @@ const PrintableReport = ({ exam, t }) => {
 // ═══════════════════════════════════════════════════
 const CRMExamination = () => {
   const { t } = useTranslation();
+  const { user, isPro } = useAuth();
   const location = useLocation();
 
   // ─── Context from Patient360 navigation ───
@@ -951,6 +954,8 @@ const CRMExamination = () => {
         (e.diagnosis_note || '').toLowerCase().includes(q)
     );
   }, [historySearch, examinations]);
+
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="examination" />;
 
   return (
     <div className="space-y-6">

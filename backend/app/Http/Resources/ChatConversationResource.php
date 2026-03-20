@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ChatConversationResource extends JsonResource
 {
+    use Concerns\ResolvesMediaUrls;
+
     public function toArray(Request $request): array
     {
         $authId = $request->user()?->id;
@@ -33,7 +35,7 @@ class ChatConversationResource extends JsonResource
                 return [
                     'id'       => $other->id,
                     'fullname' => $other->fullname,
-                    'avatar'   => $other->avatar,
+                    'avatar'   => self::resolveMediaUrl($other->avatar),
                     'role_id'  => $other->role_id,
                 ];
             }),

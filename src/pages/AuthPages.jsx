@@ -119,6 +119,7 @@ const AuthPages = () => {
           city_id: formData.city ? parseInt(formData.city) : undefined,
           date_of_birth: formData.birthDate || undefined,
           ...(formData.role === 'clinic' ? { role_id: 'clinicOwner', clinic_name: formData.clinicName || undefined } : {}),
+          ...(formData.role === 'patient' && formData.medicalHistory ? { medical_history: String(formData.medicalHistory).trim() } : {}),
         };
         const res = await doRegister(payload);
         try {
@@ -128,9 +129,11 @@ const AuthPages = () => {
             localStorage.setItem(key, JSON.stringify(extras));
           }
         } catch {}
-        // If auto-verified (demo mode), go straight to dashboard/crm
+        // If auto-verified (demo mode), go straight to appropriate dashboard
         const needsVerification = res?.requires_email_verification ?? res?.data?.requires_email_verification;
-        const redirectTo = (roleId === 'doctor' || roleId === 'clinicOwner') ? '/crm' : '/dashboard';
+        const redirectTo = (roleId === 'doctor') ? '/onboarding'
+          : (roleId === 'clinicOwner') ? '/doctor/dashboard'
+          : '/dashboard';
         if (needsVerification === false) {
           notify({ type: 'success', message: 'Kayıt başarılı! E-posta adresiniz otomatik olarak doğrulandı.' });
           navigate(redirectTo);

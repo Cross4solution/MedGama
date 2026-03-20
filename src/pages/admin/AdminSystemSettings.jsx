@@ -5,6 +5,7 @@ import {
   Save, Hash, Globe, Shield, AlertTriangle, Type, Image, Mail, Paintbrush,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
+import { blockNonNumericInt } from '../../utils/numericInput';
 
 const GROUP_META = {
   modules:  { label: 'Module Toggles',     labelKey: 'admin.settings.modules',     icon: Blocks,   description: 'Enable or disable platform modules globally',  descKey: 'admin.settings.modulesDesc',  color: 'purple' },
@@ -57,6 +58,7 @@ function IntegerInput({ value, onChange, loading }) {
           type="number"
           value={val}
           onChange={e => { setVal(e.target.value); setDirty(true); }}
+          onKeyDown={blockNonNumericInt}
           className="w-24 pl-8 pr-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
         />
       </div>

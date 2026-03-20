@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CalendarSlotResource extends JsonResource
 {
+    use Concerns\ResolvesMediaUrls;
+
     public function toArray(Request $request): array
     {
         return [
@@ -24,7 +26,7 @@ class CalendarSlotResource extends JsonResource
             'doctor' => $this->whenLoaded('doctor', fn() => [
                 'id'       => $this->doctor->id,
                 'fullname' => $this->doctor->fullname,
-                'avatar'   => $this->doctor->avatar,
+                'avatar'   => self::resolveMediaUrl($this->doctor->avatar),
             ]),
             'clinic' => $this->whenLoaded('clinic', fn() => [
                 'id'       => $this->clinic->id,

@@ -18,9 +18,11 @@ const DashboardRedirect = () => {
       navigate('/admin', { replace: true });
     } else if (role === 'patient') {
       navigate('/', { replace: true });
+    } else if (role === 'doctor' && user?.onboarding_completed === false) {
+      navigate('/onboarding', { replace: true });
     } else {
-      // Doctors and clinics land on MedStream
-      navigate('/explore', { replace: true });
+      // Doctors and clinics land on MedaGama panel
+      navigate('/doctor/dashboard', { replace: true });
     }
   }, [user, navigate]);
 

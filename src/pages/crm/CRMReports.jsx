@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   PieChart, BarChart3, TrendingUp, Download, Calendar, Users, DollarSign,
   CalendarDays, Clock, Activity, FileText, ArrowUpRight, Filter, Lock,
+  FileSpreadsheet, Loader2,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import ProTeaser from '../../components/crm/ProTeaser';
+import { exportPDF, exportExcel } from '../../utils/exportUtils';
 
 const REPORT_CARDS = [
   { title: 'Patient Demographics', description: 'Age, gender, location distribution of your patient base', icon: Users, color: 'bg-violet-50 text-violet-600 border-violet-200', stats: '1,284 patients' },
@@ -36,8 +40,85 @@ const TOP_DIAGNOSES = [
 
 const CRMReports = () => {
   const { t } = useTranslation();
+  const { user, isPro } = useAuth();
   const [period, setPeriod] = useState('month');
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const exportRef = useRef(null);
 
+  // Close export dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => { if (exportRef.current && !exportRef.current.contains(e.target)) setExportOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // ── Build export data from page content ──
+  const buildExportData = () => {
+    const summaryCards = MONTHLY_OVERVIEW.map(m => ({
+      label: m.label,
+      value: `${m.value} (${m.change})`,
+    }));
+
+    const tables = [
+      {
+        title: 'Monthly Overview KPIs',
+        headers: ['Metric', 'Value', 'Change', 'Trend'],
+        rows: MONTHLY_OVERVIEW.map(m => [m.label, m.value, m.change, m.trend]),
+      },
+      {
+        title: 'Top Diagnoses',
+        headers: ['#', 'Diagnosis', 'Count', 'Percentage'],
+        rows: TOP_DIAGNOSES.map((d, i) => [String(i + 1), d.name, String(d.count), `${d.percent}%`]),
+      },
+      {
+        title: 'Available Reports',
+        headers: ['Report', 'Description', 'Stats'],
+        rows: REPORT_CARDS.map(r => [r.title, r.description, r.stats]),
+      },
+    ];
+
+    return { summaryCards, tables };
+  };
+
+  const handleExportPDF = () => {
+    setExporting(true);
+    setExportOpen(false);
+    try {
+      const { summaryCards, tables } = buildExportData();
+      exportPDF({
+        title: 'Reports & Analytics',
+        subtitle: `Period: ${period} — ${new Date().toLocaleDateString()}`,
+        summary: summaryCards,
+        tables,
+        filename: `reports-analytics-${period}-${new Date().toISOString().slice(0, 10)}.pdf`,
+      });
+    } catch (err) {
+      console.error('PDF Export error:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleExportExcel = () => {
+    setExporting(true);
+    setExportOpen(false);
+    try {
+      const { summaryCards, tables } = buildExportData();
+      exportExcel({
+        title: 'Reports & Analytics',
+        summary: summaryCards,
+        tables,
+        filename: `reports-analytics-${period}-${new Date().toISOString().slice(0, 10)}.xlsx`,
+      });
+    } catch (err) {
+      console.error('Excel Export error:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="reports" />;
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -51,9 +132,27 @@ const CRMReports = () => {
               <button key={p} onClick={() => setPeriod(p)} className={`px-3 py-1.5 rounded-md text-xs font-medium capitalize transition-colors ${period === p ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{p}</button>
             ))}
           </div>
-          <button disabled className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-400 rounded-xl text-sm font-medium cursor-not-allowed opacity-60">
-            <Download className="w-4 h-4" /> {t('common.export')}
-          </button>
+          <div className="relative" ref={exportRef}>
+            <button onClick={() => setExportOpen(p => !p)} disabled={exporting}
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50">
+              {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              <span className="hidden sm:inline">{t('common.export', 'Export')}</span>
+            </button>
+            {exportOpen && (
+              <div className="absolute right-0 mt-1.5 w-48 bg-white rounded-xl shadow-xl border border-gray-200/60 z-30 overflow-hidden animate-fadeIn">
+                <button onClick={handleExportPDF}
+                  className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                  <FileText className="w-4 h-4 text-red-500" />
+                  <span className="font-medium">Export as PDF</span>
+                </button>
+                <button onClick={handleExportExcel}
+                  className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100">
+                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                  <span className="font-medium">Export as Excel</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { doctorAPI, catalogAPI } from '../lib/api';
 import SEOHead from '../components/seo/SEOHead';
+import resolveStorageUrl from '../utils/resolveStorageUrl';
 
 /* ═══════════════════════════════════════════
    Skeleton Card (shimmer)
@@ -47,9 +48,10 @@ function DoctorCard({ doctor, t, navigate }) {
     <div className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-lg hover:border-gray-200 transition-all group">
       <div className="flex gap-4">
         <img
-          src={doctor.avatar || '/images/default/default-avatar.svg'}
+          src={resolveStorageUrl(doctor.avatar)}
           alt={doctor.fullname}
           className="w-16 h-16 rounded-xl object-cover border border-gray-100 flex-shrink-0"
+          onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }}
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">

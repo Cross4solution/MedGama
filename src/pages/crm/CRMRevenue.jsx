@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   DollarSign, TrendingUp, Download, CreditCard, Banknote,
   ChevronLeft, ChevronRight, Search, PieChart as PieChartIcon,
   BarChart3, Receipt, Loader2, RefreshCw, Wallet, ArrowRightLeft,
+  FileSpreadsheet, FileText,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { billingAPI, financeAPI } from '../../lib/api';
+import ProTeaser from '../../components/crm/ProTeaser';
+import { exportPDF, exportExcel } from '../../utils/exportUtils';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
@@ -40,7 +43,8 @@ const PaymentStatusBadge = ({ status }) => {
 // ─── Main Component ──────────────────────────────────────────
 const CRMRevenue = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, isPro } = useAuth();
+
   const isSuperAdmin = user?.role === 'superAdmin' || user?.role_id === 'superAdmin' || user?.role === 'saasAdmin' || user?.role_id === 'saasAdmin';
 
   // State
@@ -59,7 +63,16 @@ const CRMRevenue = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [exporting, setExporting] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportRef = useRef(null);
   const perPage = 8;
+
+  // Close export dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => { if (exportRef.current && !exportRef.current.contains(e.target)) setExportOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   // ── Fetch all data ──
   const fetchData = useCallback(async () => {
@@ -117,22 +130,96 @@ const CRMRevenue = () => {
 
   const totalPages = Math.ceil(invoiceTotal / perPage);
 
-  // ── Export CSV ──
-  const handleExport = async () => {
+  // ── Build export payload from current data ──
+  const buildExportData = () => {
+    const sym = CURRENCY_SYMBOLS[currency] || currency;
+    const summaryCards = [
+      { label: 'Total Revenue', value: `${sym}${Number(stats?.total_revenue || 0).toLocaleString()}` },
+      { label: 'This Month', value: `${sym}${Number(stats?.monthly_revenue || 0).toLocaleString()}` },
+      { label: 'Pending', value: fmt(stats?.pending_amount || 0, currency) },
+      { label: 'Receivable', value: fmt(stats?.receivable_amount || 0, currency) },
+    ];
+
+    const tables = [];
+
+    // Revenue Trend table
+    if (chartData.length > 0) {
+      tables.push({
+        title: 'Revenue Trend',
+        headers: ['Period', `Revenue (${currency})`],
+        rows: chartData.map(d => [d.label || '', fmt(d.total || 0, currency)]),
+      });
+    }
+
+    // Top Services table
+    if (topServices.length > 0) {
+      tables.push({
+        title: 'Top Services',
+        headers: ['Service', `Revenue (${currency})`, 'Share (%)'],
+        rows: topServices.map(s => [s.category || 'Other', fmt(s.total_revenue, currency), `${s.percent || 0}%`]),
+      });
+    }
+
+    // Payout breakdown
+    if (payout?.monthly?.length > 0) {
+      tables.push({
+        title: 'Payout Summary',
+        headers: ['Period', 'Gross', 'Commission', 'Net', 'Invoices'],
+        rows: payout.monthly.map(m => [m.period, fmt(m.gross, currency), fmt(m.commission, currency), fmt(m.net, currency), String(m.invoice_count || 0)]),
+      });
+    }
+
+    // Recent Invoices table
+    if (invoices.length > 0) {
+      tables.push({
+        title: 'Recent Invoices',
+        headers: ['Invoice #', 'Patient', 'Date', 'Amount', 'Paid', 'Status'],
+        rows: invoices.map(inv => [
+          inv.invoice_number || '',
+          inv.patient?.fullname || '—',
+          inv.issue_date || '',
+          fmt(inv.grand_total, inv.currency),
+          fmt(inv.paid_amount, inv.currency),
+          inv.status || '',
+        ]),
+      });
+    }
+
+    return { summaryCards, tables };
+  };
+
+  const handleExportPDF = () => {
     setExporting(true);
+    setExportOpen(false);
     try {
-      const res = await financeAPI.export({ currency });
-      const blob = res instanceof Blob ? res : new Blob([res?.data || res], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `finance-export-${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      const { summaryCards, tables } = buildExportData();
+      exportPDF({
+        title: 'Revenue & Finance Report',
+        subtitle: `Currency: ${currency} — Period: ${period} — ${new Date().toLocaleDateString()}`,
+        summary: summaryCards,
+        tables,
+        filename: `revenue-report-${currency.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`,
+      });
     } catch (err) {
-      console.error('Export error:', err);
+      console.error('PDF Export error:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleExportExcel = () => {
+    setExporting(true);
+    setExportOpen(false);
+    try {
+      const { summaryCards, tables } = buildExportData();
+      exportExcel({
+        title: 'Revenue & Finance',
+        summary: summaryCards,
+        tables,
+        filename: `revenue-report-${currency.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.xlsx`,
+      });
+    } catch (err) {
+      console.error('Excel Export error:', err);
     } finally {
       setExporting(false);
     }
@@ -146,6 +233,8 @@ const CRMRevenue = () => {
       color: PIE_COLORS[i % PIE_COLORS.length],
     }));
   }, [topServices]);
+
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="revenue" />;
 
   if (loading && !stats) {
     return (
@@ -183,12 +272,28 @@ const CRMRevenue = () => {
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${period === p.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>{p.label}</button>
             ))}
           </div>
-          {/* Export */}
-          <button onClick={handleExport} disabled={exporting}
-            className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50">
-            {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            <span className="hidden sm:inline">{t('common.export', 'Export')}</span>
-          </button>
+          {/* Export Dropdown */}
+          <div className="relative" ref={exportRef}>
+            <button onClick={() => setExportOpen(p => !p)} disabled={exporting}
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50">
+              {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              <span className="hidden sm:inline">{t('common.export', 'Export')}</span>
+            </button>
+            {exportOpen && (
+              <div className="absolute right-0 mt-1.5 w-48 bg-white rounded-xl shadow-xl border border-gray-200/60 z-30 overflow-hidden animate-fadeIn">
+                <button onClick={handleExportPDF}
+                  className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                  <FileText className="w-4 h-4 text-red-500" />
+                  <span className="font-medium">Export as PDF</span>
+                </button>
+                <button onClick={handleExportExcel}
+                  className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100">
+                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                  <span className="font-medium">Export as Excel</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

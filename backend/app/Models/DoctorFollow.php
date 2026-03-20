@@ -13,7 +13,7 @@ class DoctorFollow extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $fillable = ['follower_id', 'following_id', 'is_active'];
+    protected $fillable = ['follower_id', 'following_id', 'following_type', 'is_active'];
 
     protected function casts(): array
     {
@@ -32,6 +32,9 @@ class DoctorFollow extends Model
 
     public function following()
     {
+        if ($this->following_type === 'clinic') {
+            return $this->belongsTo(Clinic::class, 'following_id');
+        }
         return $this->belongsTo(User::class, 'following_id');
     }
 }

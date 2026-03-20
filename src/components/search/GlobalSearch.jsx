@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Stethoscope, Building2, BadgeCheck, ArrowRight, Loader2 } from 'lucide-react';
 import { searchAPI } from '../../lib/api';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 export default function GlobalSearch() {
   const navigate = useNavigate();
@@ -166,7 +167,7 @@ export default function GlobalSearch() {
                         {/* Avatar */}
                         <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-100 flex items-center justify-center overflow-hidden">
                           {d.avatar ? (
-                            <img src={d.avatar} alt="" className="w-full h-full object-cover rounded-full" loading="lazy" />
+                            <img src={resolveStorageUrl(d.avatar)} alt="" className="w-full h-full object-cover rounded-full" loading="lazy" onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                           ) : (
                             <Stethoscope className="w-5 h-5 text-blue-400" />
                           )}
@@ -220,7 +221,7 @@ export default function GlobalSearch() {
                         {/* Avatar */}
                         <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-teal-50 to-teal-100 border border-teal-100 flex items-center justify-center overflow-hidden">
                           {c.avatar ? (
-                            <img src={c.avatar} alt="" className="w-full h-full object-cover rounded-xl" loading="lazy" />
+                            <img src={resolveStorageUrl(c.avatar)} alt="" className="w-full h-full object-cover rounded-xl" loading="lazy" onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                           ) : (
                             <Building2 className="w-5 h-5 text-teal-400" />
                           )}

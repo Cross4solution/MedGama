@@ -209,6 +209,114 @@ class CatalogSeeder extends Seeder
                     'tr' => 'Anestezi uygulaması, ağrı yönetimi ve yoğun bakım.',
                 ],
             ],
+            [
+                'code' => 'RADI',
+                'display_order' => 21,
+                'name' => ['en' => 'Radiology', 'tr' => 'Radyoloji'],
+                'description' => [
+                    'en' => 'Medical imaging for diagnosis including X-ray, MRI, and CT.',
+                    'tr' => 'Röntgen, MR ve BT dahil tanısal tıbbi görüntüleme.',
+                ],
+            ],
+            [
+                'code' => 'EMER',
+                'display_order' => 22,
+                'name' => ['en' => 'Emergency Medicine', 'tr' => 'Acil Tıp'],
+                'description' => [
+                    'en' => 'Immediate medical care for acute illnesses and injuries.',
+                    'tr' => 'Akut hastalık ve yaralanmalar için acil tıbbi bakım.',
+                ],
+            ],
+            [
+                'code' => 'FMED',
+                'display_order' => 23,
+                'name' => ['en' => 'Family Medicine', 'tr' => 'Aile Hekimliği'],
+                'description' => [
+                    'en' => 'Comprehensive health care for individuals and families of all ages.',
+                    'tr' => 'Her yaştan birey ve aile için kapsamlı sağlık bakımı.',
+                ],
+            ],
+            [
+                'code' => 'IMED',
+                'display_order' => 24,
+                'name' => ['en' => 'Internal Medicine', 'tr' => 'Dahiliye (İç Hastalıkları)'],
+                'description' => [
+                    'en' => 'Diagnosis and nonsurgical treatment of diseases in adults.',
+                    'tr' => 'Yetişkinlerde hastalıkların tanı ve cerrahi dışı tedavisi.',
+                ],
+            ],
+            [
+                'code' => 'HEMA',
+                'display_order' => 25,
+                'name' => ['en' => 'Hematology', 'tr' => 'Hematoloji'],
+                'description' => [
+                    'en' => 'Diagnosis and treatment of blood disorders.',
+                    'tr' => 'Kan hastalıklarının tanı ve tedavisi.',
+                ],
+            ],
+            [
+                'code' => 'INFD',
+                'display_order' => 26,
+                'name' => ['en' => 'Infectious Diseases', 'tr' => 'Enfeksiyon Hastalıkları'],
+                'description' => [
+                    'en' => 'Diagnosis and treatment of infections caused by bacteria, viruses, fungi, and parasites.',
+                    'tr' => 'Bakteri, virüs, mantar ve parazitlerin neden olduğu enfeksiyonların tanı ve tedavisi.',
+                ],
+            ],
+            [
+                'code' => 'PHYS',
+                'display_order' => 27,
+                'name' => ['en' => 'Physical Medicine & Rehabilitation', 'tr' => 'Fizik Tedavi ve Rehabilitasyon'],
+                'description' => [
+                    'en' => 'Restoring functional ability and quality of life after injury or illness.',
+                    'tr' => 'Yaralanma veya hastalık sonrası fonksiyonel yeteneğin ve yaşam kalitesinin geri kazanılması.',
+                ],
+            ],
+            [
+                'code' => 'NEUS',
+                'display_order' => 28,
+                'name' => ['en' => 'Neurosurgery', 'tr' => 'Beyin ve Sinir Cerrahisi'],
+                'description' => [
+                    'en' => 'Surgical treatment of disorders of the brain and nervous system.',
+                    'tr' => 'Beyin ve sinir sistemi hastalıklarının cerrahi tedavisi.',
+                ],
+            ],
+            [
+                'code' => 'CVSURG',
+                'display_order' => 29,
+                'name' => ['en' => 'Cardiovascular Surgery', 'tr' => 'Kalp ve Damar Cerrahisi'],
+                'description' => [
+                    'en' => 'Surgical treatment of heart and blood vessel disorders.',
+                    'tr' => 'Kalp ve damar hastalıklarının cerrahi tedavisi.',
+                ],
+            ],
+            [
+                'code' => 'NUTR',
+                'display_order' => 30,
+                'name' => ['en' => 'Nutrition & Dietetics', 'tr' => 'Beslenme ve Diyetetik'],
+                'description' => [
+                    'en' => 'Dietary planning and nutritional management for health and disease.',
+                    'tr' => 'Sağlık ve hastalık için diyet planlama ve beslenme yönetimi.',
+                ],
+            ],
+            [
+                'code' => 'PCAR',
+                'display_order' => 31,
+                'name' => ['en' => 'Pediatric Surgery', 'tr' => 'Çocuk Cerrahisi'],
+                'description' => [
+                    'en' => 'Surgical care for infants, children, and adolescents.',
+                    'tr' => 'Bebek, çocuk ve ergenlerin cerrahi bakımı.',
+                ],
+            ],
+            [
+                'code' => 'ALLS',
+                'display_order' => 32,
+                'name' => ['en' => 'Allergy & Immunology', 'tr' => 'Alerji ve İmmünoloji'],
+                'description' => [
+                    'en' => 'Diagnosis and treatment of allergic and immune system disorders.',
+                    'tr' => 'Alerjik ve bağışıklık sistemi bozukluklarının tanı ve tedavisi.',
+                ],
+            ],
         ];
 
         foreach ($specialties as $data) {
@@ -266,110 +374,70 @@ class CatalogSeeder extends Seeder
     private function seedDiseases(): void
     {
         $diseases = [
-            [
-                'code' => 'DIAB',
-                'name' => ['en' => 'Diabetes Mellitus', 'tr' => 'Diyabet (Şeker Hastalığı)'],
-                'description' => [
-                    'en' => 'A chronic metabolic disease characterized by elevated blood sugar levels.',
-                    'tr' => 'Kan şekeri seviyesinin yükselmesiyle karakterize kronik bir metabolik hastalık.',
-                ],
-            ],
-            [
-                'code' => 'HYPER',
-                'name' => ['en' => 'Hypertension', 'tr' => 'Hipertansiyon (Yüksek Tansiyon)'],
-                'description' => [
-                    'en' => 'Persistently elevated arterial blood pressure.',
-                    'tr' => 'Sürekli yüksek seyreden arter kan basıncı.',
-                ],
-            ],
-            [
-                'code' => 'ASTHM',
-                'name' => ['en' => 'Asthma', 'tr' => 'Astım'],
-                'description' => [
-                    'en' => 'A chronic respiratory condition causing airway inflammation and breathing difficulty.',
-                    'tr' => 'Hava yolu iltihabı ve nefes darlığına neden olan kronik solunum hastalığı.',
-                ],
-            ],
-            [
-                'code' => 'MIGR',
-                'name' => ['en' => 'Migraine', 'tr' => 'Migren'],
-                'description' => [
-                    'en' => 'A neurological condition with recurring severe headaches, often with nausea and light sensitivity.',
-                    'tr' => 'Tekrarlayan şiddetli baş ağrısı, bulantı ve ışık hassasiyeti ile seyreden nörolojik bir durum.',
-                ],
-            ],
-            [
-                'code' => 'ARTH',
-                'name' => ['en' => 'Arthritis', 'tr' => 'Artrit (Eklem İltihabı)'],
-                'description' => [
-                    'en' => 'Inflammation of one or more joints, causing pain and stiffness.',
-                    'tr' => 'Bir veya daha fazla eklemin iltihaplanması, ağrı ve sertliğe neden olur.',
-                ],
-            ],
-            [
-                'code' => 'DEPR',
-                'name' => ['en' => 'Depression', 'tr' => 'Depresyon'],
-                'description' => [
-                    'en' => 'A mood disorder causing persistent feelings of sadness and loss of interest.',
-                    'tr' => 'Sürekli üzüntü ve ilgi kaybına neden olan bir duygudurum bozukluğu.',
-                ],
-            ],
-            [
-                'code' => 'GERD',
-                'name' => ['en' => 'Gastroesophageal Reflux Disease (GERD)', 'tr' => 'Gastroözofageal Reflü Hastalığı (GÖRH)'],
-                'description' => [
-                    'en' => 'A digestive disorder where stomach acid frequently flows back into the esophagus.',
-                    'tr' => 'Mide asidinin sıklıkla yemek borusuna geri aktığı bir sindirim bozukluğu.',
-                ],
-            ],
-            [
-                'code' => 'ECZM',
-                'name' => ['en' => 'Eczema (Atopic Dermatitis)', 'tr' => 'Egzama (Atopik Dermatit)'],
-                'description' => [
-                    'en' => 'A condition that causes the skin to become inflamed, itchy, and cracked.',
-                    'tr' => 'Cildin iltihaplanmasına, kaşıntı ve çatlaklara neden olan bir durum.',
-                ],
-            ],
-            [
-                'code' => 'UTI',
-                'name' => ['en' => 'Urinary Tract Infection (UTI)', 'tr' => 'İdrar Yolu Enfeksiyonu (İYE)'],
-                'description' => [
-                    'en' => 'An infection in any part of the urinary system — kidneys, bladder, or urethra.',
-                    'tr' => 'Üriner sistemin herhangi bir bölgesindeki enfeksiyon — böbrek, mesane veya üretra.',
-                ],
-            ],
-            [
-                'code' => 'ALLER',
-                'name' => ['en' => 'Allergic Rhinitis', 'tr' => 'Alerjik Rinit (Saman Nezlesi)'],
-                'description' => [
-                    'en' => 'Inflammation of the nasal passages caused by an allergic reaction to airborne substances.',
-                    'tr' => 'Havadaki maddelere alerjik reaksiyon sonucu burun mukozasının iltihaplanması.',
-                ],
-            ],
-            [
-                'code' => 'THYR',
-                'name' => ['en' => 'Thyroid Disorders', 'tr' => 'Tiroid Hastalıkları'],
-                'description' => [
-                    'en' => 'Conditions affecting the thyroid gland, including hypothyroidism and hyperthyroidism.',
-                    'tr' => 'Hipotiroidi ve hipertiroidi dahil tiroid bezini etkileyen durumlar.',
-                ],
-            ],
-            [
-                'code' => 'PNEU',
-                'name' => ['en' => 'Pneumonia', 'tr' => 'Pnömoni (Zatürre)'],
-                'description' => [
-                    'en' => 'An infection that inflames the air sacs in one or both lungs.',
-                    'tr' => 'Bir veya her iki akciğerdeki hava keseciklerini iltihaplandıran enfeksiyon.',
-                ],
-            ],
+            // ── Top 5 Popular (is_popular = true) ──
+            ['code' => 'DIAB',  'is_popular' => true,  'name' => ['en' => 'Diabetes Mellitus', 'tr' => 'Diyabet (Şeker Hastalığı)'], 'description' => ['en' => 'A chronic metabolic disease characterized by elevated blood sugar levels.', 'tr' => 'Kan şekeri seviyesinin yükselmesiyle karakterize kronik bir metabolik hastalık.']],
+            ['code' => 'HYPER', 'is_popular' => true,  'name' => ['en' => 'Hypertension', 'tr' => 'Hipertansiyon (Yüksek Tansiyon)'], 'description' => ['en' => 'Persistently elevated arterial blood pressure.', 'tr' => 'Sürekli yüksek seyreden arter kan basıncı.']],
+            ['code' => 'ASTHM', 'is_popular' => true,  'name' => ['en' => 'Asthma', 'tr' => 'Astım'], 'description' => ['en' => 'A chronic respiratory condition causing airway inflammation and breathing difficulty.', 'tr' => 'Hava yolu iltihabı ve nefes darlığına neden olan kronik solunum hastalığı.']],
+            ['code' => 'DEPR',  'is_popular' => true,  'name' => ['en' => 'Depression', 'tr' => 'Depresyon'], 'description' => ['en' => 'A mood disorder causing persistent feelings of sadness and loss of interest.', 'tr' => 'Sürekli üzüntü ve ilgi kaybına neden olan bir duygudurum bozukluğu.']],
+            ['code' => 'ALLER', 'is_popular' => true,  'name' => ['en' => 'Allergic Rhinitis', 'tr' => 'Alerjik Rinit (Saman Nezlesi)'], 'description' => ['en' => 'Inflammation of the nasal passages caused by an allergic reaction.', 'tr' => 'Havadaki maddelere alerjik reaksiyon sonucu burun mukozasının iltihaplanması.']],
+            // ── Remaining diseases ──
+            ['code' => 'MIGR',  'name' => ['en' => 'Migraine', 'tr' => 'Migren'], 'description' => ['en' => 'A neurological condition with recurring severe headaches.', 'tr' => 'Tekrarlayan şiddetli baş ağrısı ile seyreden nörolojik bir durum.']],
+            ['code' => 'ARTH',  'name' => ['en' => 'Arthritis', 'tr' => 'Artrit (Eklem İltihabı)'], 'description' => ['en' => 'Inflammation of one or more joints, causing pain and stiffness.', 'tr' => 'Bir veya daha fazla eklemin iltihaplanması.']],
+            ['code' => 'GERD',  'name' => ['en' => 'Gastroesophageal Reflux Disease (GERD)', 'tr' => 'Gastroözofageal Reflü Hastalığı (GÖRH)'], 'description' => ['en' => 'Stomach acid frequently flows back into the esophagus.', 'tr' => 'Mide asidinin yemek borusuna geri aktığı sindirim bozukluğu.']],
+            ['code' => 'ECZM',  'name' => ['en' => 'Eczema (Atopic Dermatitis)', 'tr' => 'Egzama (Atopik Dermatit)'], 'description' => ['en' => 'A condition causing inflamed, itchy, and cracked skin.', 'tr' => 'Cildin iltihaplanmasına, kaşıntı ve çatlaklara neden olan durum.']],
+            ['code' => 'UTI',   'name' => ['en' => 'Urinary Tract Infection (UTI)', 'tr' => 'İdrar Yolu Enfeksiyonu (İYE)'], 'description' => ['en' => 'An infection in any part of the urinary system.', 'tr' => 'Üriner sistemin herhangi bir bölgesindeki enfeksiyon.']],
+            ['code' => 'THYR',  'name' => ['en' => 'Thyroid Disorders', 'tr' => 'Tiroid Hastalıkları'], 'description' => ['en' => 'Conditions affecting the thyroid gland.', 'tr' => 'Tiroid bezini etkileyen durumlar.']],
+            ['code' => 'PNEU',  'name' => ['en' => 'Pneumonia', 'tr' => 'Pnömoni (Zatürre)'], 'description' => ['en' => 'An infection that inflames the air sacs in one or both lungs.', 'tr' => 'Akciğerdeki hava keseciklerini iltihaplandıran enfeksiyon.']],
+            ['code' => 'ANXI',  'name' => ['en' => 'Anxiety Disorder', 'tr' => 'Anksiyete Bozukluğu'], 'description' => ['en' => 'Excessive worry and fear affecting daily activities.', 'tr' => 'Günlük aktiviteleri etkileyen aşırı endişe ve korku.']],
+            ['code' => 'COPD',  'name' => ['en' => 'Chronic Obstructive Pulmonary Disease (COPD)', 'tr' => 'Kronik Obstrüktif Akciğer Hastalığı (KOAH)'], 'description' => ['en' => 'A group of lung diseases that block airflow.', 'tr' => 'Hava akışını engelleyen akciğer hastalıkları grubu.']],
+            ['code' => 'CHF',   'name' => ['en' => 'Heart Failure', 'tr' => 'Kalp Yetmezliği'], 'description' => ['en' => 'The heart cannot pump blood efficiently.', 'tr' => 'Kalbin kanı yeterince pompalayamaması.']],
+            ['code' => 'CAD',   'name' => ['en' => 'Coronary Artery Disease', 'tr' => 'Koroner Arter Hastalığı'], 'description' => ['en' => 'Narrowing of the coronary arteries.', 'tr' => 'Koroner arterlerin daralması.']],
+            ['code' => 'STRK',  'name' => ['en' => 'Stroke', 'tr' => 'İnme (Felç)'], 'description' => ['en' => 'Brain damage caused by interrupted blood supply.', 'tr' => 'Kan akışının kesilmesiyle oluşan beyin hasarı.']],
+            ['code' => 'EPIL',  'name' => ['en' => 'Epilepsy', 'tr' => 'Epilepsi (Sara)'], 'description' => ['en' => 'A neurological disorder with recurrent seizures.', 'tr' => 'Tekrarlayan nöbetlerle seyreden nörolojik bozukluk.']],
+            ['code' => 'PARK',  'name' => ['en' => 'Parkinson Disease', 'tr' => 'Parkinson Hastalığı'], 'description' => ['en' => 'A progressive nervous system disorder affecting movement.', 'tr' => 'Hareketi etkileyen ilerleyici sinir sistemi hastalığı.']],
+            ['code' => 'ALZH',  'name' => ['en' => 'Alzheimer Disease', 'tr' => 'Alzheimer Hastalığı'], 'description' => ['en' => 'A progressive brain disorder causing memory loss.', 'tr' => 'Hafıza kaybına neden olan ilerleyici beyin hastalığı.']],
+            ['code' => 'OSTE',  'name' => ['en' => 'Osteoporosis', 'tr' => 'Osteoporoz (Kemik Erimesi)'], 'description' => ['en' => 'Bones become weak and brittle.', 'tr' => 'Kemiklerin zayıflaması ve kırılganlaşması.']],
+            ['code' => 'ANEMIA','name' => ['en' => 'Anemia', 'tr' => 'Anemi (Kansızlık)'], 'description' => ['en' => 'A condition with insufficient healthy red blood cells.', 'tr' => 'Yeterli sağlıklı kırmızı kan hücresi bulunmaması.']],
+            ['code' => 'IBS',   'name' => ['en' => 'Irritable Bowel Syndrome (IBS)', 'tr' => 'İrritabl Bağırsak Sendromu (İBS)'], 'description' => ['en' => 'A disorder affecting the large intestine.', 'tr' => 'Kalın bağırsağı etkileyen bir bozukluk.']],
+            ['code' => 'CROHN', 'name' => ['en' => 'Crohn Disease', 'tr' => 'Crohn Hastalığı'], 'description' => ['en' => 'Chronic inflammatory disease of the digestive tract.', 'tr' => 'Sindirim sisteminin kronik iltihabı.']],
+            ['code' => 'ULCER', 'name' => ['en' => 'Peptic Ulcer', 'tr' => 'Peptik Ülser'], 'description' => ['en' => 'Sores on the stomach or small intestine lining.', 'tr' => 'Mide veya ince bağırsak iç yüzeyindeki yaralar.']],
+            ['code' => 'HEPA',  'name' => ['en' => 'Hepatitis', 'tr' => 'Hepatit'], 'description' => ['en' => 'Inflammation of the liver.', 'tr' => 'Karaciğer iltihabı.']],
+            ['code' => 'CIRR',  'name' => ['en' => 'Liver Cirrhosis', 'tr' => 'Karaciğer Sirozu'], 'description' => ['en' => 'Late stage of scarring of the liver.', 'tr' => 'Karaciğer hasarının ileri aşaması.']],
+            ['code' => 'CKD',   'name' => ['en' => 'Chronic Kidney Disease', 'tr' => 'Kronik Böbrek Hastalığı'], 'description' => ['en' => 'Gradual loss of kidney function.', 'tr' => 'Böbrek fonksiyonlarının kademeli kaybı.']],
+            ['code' => 'GOUT',  'name' => ['en' => 'Gout', 'tr' => 'Gut (Damla) Hastalığı'], 'description' => ['en' => 'A form of arthritis caused by excess uric acid.', 'tr' => 'Aşırı ürik asit birikiminin neden olduğu artrit.']],
+            ['code' => 'LUPUS', 'name' => ['en' => 'Systemic Lupus Erythematosus (SLE)', 'tr' => 'Sistemik Lupus Eritematozus (SLE)'], 'description' => ['en' => 'An autoimmune disease that affects multiple organ systems.', 'tr' => 'Birden fazla organ sistemini etkileyen otoimmün hastalık.']],
+            ['code' => 'FIBRO', 'name' => ['en' => 'Fibromyalgia', 'tr' => 'Fibromiyalji'], 'description' => ['en' => 'Widespread musculoskeletal pain.', 'tr' => 'Yaygın kas-iskelet sistemi ağrısı.']],
+            ['code' => 'PSOR',  'name' => ['en' => 'Psoriasis', 'tr' => 'Sedef Hastalığı (Psoriazis)'], 'description' => ['en' => 'A skin disease causing red, itchy scaly patches.', 'tr' => 'Kırmızı, kaşıntılı ve pullu cilt lekeleri oluşturan hastalık.']],
+            ['code' => 'VITIL', 'name' => ['en' => 'Vitiligo', 'tr' => 'Vitiligo'], 'description' => ['en' => 'Loss of skin color in patches.', 'tr' => 'Ciltte leke şeklinde renk kaybı.']],
+            ['code' => 'HYPOT', 'name' => ['en' => 'Hypothyroidism', 'tr' => 'Hipotiroidi'], 'description' => ['en' => 'Underactive thyroid gland.', 'tr' => 'Tiroid bezinin az çalışması.']],
+            ['code' => 'HYPERT','name' => ['en' => 'Hyperthyroidism', 'tr' => 'Hipertiroidi'], 'description' => ['en' => 'Overactive thyroid gland.', 'tr' => 'Tiroid bezinin aşırı çalışması.']],
+            ['code' => 'OBESI', 'name' => ['en' => 'Obesity', 'tr' => 'Obezite'], 'description' => ['en' => 'Excessive body fat accumulation.', 'tr' => 'Aşırı vücut yağı birikimi.']],
+            ['code' => 'SLEEP', 'name' => ['en' => 'Sleep Apnea', 'tr' => 'Uyku Apnesi'], 'description' => ['en' => 'Breathing repeatedly stops during sleep.', 'tr' => 'Uyku sırasında nefes alma tekrarlayan şekilde durur.']],
+            ['code' => 'INSOM', 'name' => ['en' => 'Insomnia', 'tr' => 'Uykusuzluk (İnsomni)'], 'description' => ['en' => 'Difficulty falling or staying asleep.', 'tr' => 'Uykuya dalma veya uykuda kalma güçlüğü.']],
+            ['code' => 'DVT',   'name' => ['en' => 'Deep Vein Thrombosis (DVT)', 'tr' => 'Derin Ven Trombozu (DVT)'], 'description' => ['en' => 'Blood clot in a deep vein, usually in the leg.', 'tr' => 'Genellikle bacakta derin bir damarda kan pıhtısı.']],
+            ['code' => 'AFIB',  'name' => ['en' => 'Atrial Fibrillation', 'tr' => 'Atriyal Fibrilasyon'], 'description' => ['en' => 'Irregular and often rapid heart rate.', 'tr' => 'Düzensiz ve genellikle hızlı kalp atışı.']],
+            ['code' => 'PCOS',  'name' => ['en' => 'Polycystic Ovary Syndrome (PCOS)', 'tr' => 'Polikistik Over Sendromu (PKOS)'], 'description' => ['en' => 'A hormonal disorder common in women of reproductive age.', 'tr' => 'Üreme çağındaki kadınlarda yaygın hormonal bozukluk.']],
+            ['code' => 'ENDO',  'name' => ['en' => 'Endometriosis', 'tr' => 'Endometriozis'], 'description' => ['en' => 'Tissue similar to the uterine lining grows outside the uterus.', 'tr' => 'Rahim iç tabakasına benzer dokunun rahim dışında büyümesi.']],
+            ['code' => 'BPH',   'name' => ['en' => 'Benign Prostatic Hyperplasia', 'tr' => 'İyi Huylu Prostat Büyümesi'], 'description' => ['en' => 'Non-cancerous enlargement of the prostate gland.', 'tr' => 'Prostat bezinin kanser dışı büyümesi.']],
+            ['code' => 'GLAU',  'name' => ['en' => 'Glaucoma', 'tr' => 'Glokom (Göz Tansiyonu)'], 'description' => ['en' => 'Increased pressure in the eye damaging the optic nerve.', 'tr' => 'Göz içi basıncının artarak optik sinire zarar vermesi.']],
+            ['code' => 'CATAR', 'name' => ['en' => 'Cataracts', 'tr' => 'Katarakt'], 'description' => ['en' => 'Clouding of the eye lens.', 'tr' => 'Göz merceğinin bulanıklaşması.']],
+            ['code' => 'OTITIS','name' => ['en' => 'Otitis Media (Middle Ear Infection)', 'tr' => 'Otitis Media (Orta Kulak İltihabı)'], 'description' => ['en' => 'Infection of the middle ear.', 'tr' => 'Orta kulak enfeksiyonu.']],
+            ['code' => 'SINUSI','name' => ['en' => 'Sinusitis', 'tr' => 'Sinüzit'], 'description' => ['en' => 'Inflammation of the sinuses.', 'tr' => 'Sinüslerin iltihaplanması.']],
+            ['code' => 'BRNCH', 'name' => ['en' => 'Bronchitis', 'tr' => 'Bronşit'], 'description' => ['en' => 'Inflammation of the bronchial tubes.', 'tr' => 'Bronş tüplerinin iltihaplanması.']],
+            ['code' => 'HERNIA','name' => ['en' => 'Hernia', 'tr' => 'Fıtık'], 'description' => ['en' => 'An organ pushes through an opening in surrounding tissue.', 'tr' => 'Bir organın çevresindeki dokudan dışarı çıkması.']],
+            ['code' => 'HEMOR', 'name' => ['en' => 'Hemorrhoids', 'tr' => 'Hemoroid (Basur)'], 'description' => ['en' => 'Swollen veins in the lower rectum and anus.', 'tr' => 'Alt rektum ve anüsteki şişmiş damarlar.']],
+            ['code' => 'VARIC', 'name' => ['en' => 'Varicose Veins', 'tr' => 'Varis'], 'description' => ['en' => 'Enlarged, swollen, and twisting veins.', 'tr' => 'Genişlemiş, şişmiş ve kıvrımlı damarlar.']],
         ];
 
         foreach ($diseases as $data) {
+            $isPopular = $data['is_popular'] ?? false;
+            unset($data['is_popular']);
             DiseaseCondition::updateOrCreate(
                 ['code' => $data['code']],
                 [
                     'name'        => $data['name'],
                     'description' => $data['description'],
+                    'is_popular'  => $isPopular,
                 ]
             );
         }

@@ -21,7 +21,7 @@ class UpdateProfileRequest extends FormRequest
             'country_id'         => 'sometimes|integer',
             'country'            => 'sometimes|string|max:5',
             'preferred_language' => 'sometimes|string|max:10',
-            'date_of_birth'     => 'sometimes|date',
+            'date_of_birth'     => 'sometimes|date|after_or_equal:1930-01-01|before_or_equal:today',
             'gender'             => 'sometimes|in:male,female,other',
         ];
     }

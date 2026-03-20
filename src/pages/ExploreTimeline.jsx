@@ -12,6 +12,7 @@ import VirtualizedFeed from 'components/timeline/VirtualizedFeed';
 import SPECIALTIES from '../data/specialties';
 import { medStreamAPI } from '../lib/api';
 import { resizeImages } from '../utils/imageResize';
+import resolveStorageUrl from '../utils/resolveStorageUrl';
 
 // Basit mock feed üretici: guest için random, user için follow-first + location mix simülasyonu
 
@@ -23,7 +24,10 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
   const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
-    medStreamAPI.posts({ per_page: 50 }).then((res) => {
+    setApiLoaded(false);
+    const params = { per_page: 50, sort };
+    if (specialtyFilter) params.specialty_id = specialtyFilter;
+    medStreamAPI.posts(params).then((res) => {
       const list = res?.data || [];
       if (list.length) {
         const apiIds = list.map(p => p.id);
@@ -50,13 +54,14 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
               role: authorRole,
               name: p.author?.fullname || 'Doctor',
               title: clinicName || (authorRole === 'doctor' ? 'Doctor' : ''),
-              avatarUrl: p.author?.avatar || '/images/default/default-avatar.svg',
+              avatarUrl: resolveStorageUrl(p.author?.avatar),
             },
             socialContext: '',
             created_at: p.created_at || null,
             timeAgo: p.time_ago || (p.created_at ? new Date(p.created_at).toLocaleDateString() : ''),
             visibility: 'public',
             media_processing: !!p.media_processing,
+            engagement_score: p.engagement_score || 0,
             media: (() => {
               // If backend returned uploaded media array, use it
               if (Array.isArray(p.media) && p.media.length > 0) {
@@ -71,10 +76,12 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
             is_bookmarked: !!p.is_bookmarked,
           };
         }));
+      } else {
+        setApiPosts([]);
       }
       setApiLoaded(true);
     }).catch(() => setApiLoaded(true));
-  }, [refreshKey]);
+  }, [refreshKey, sort]);
 
   // Kaynak data — mock fallback
   const base = useMemo(() => {
@@ -155,39 +162,16 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     const pinned = source.filter(x => injectedIds.has(x.id));
     let list = source.filter(x => !injectedIds.has(x.id));
 
-    // Ülke adı -> ülke koduna çeviri (countryCodes)
+    // Client-side text/country filters (backend handles sort + follow priority)
     const codeLower = countryName ? (countryCodes[countryName] || '').toLowerCase() : '';
     if (codeLower) list = list.filter(x => !x.countryCode || (x.countryCode || '').toLowerCase() === codeLower);
-    if (specialtyFilter) list = list.filter(x => !x.specialty || x.specialty === specialtyFilter);
     if (textQuery) {
       const q = textQuery.toLowerCase();
       list = list.filter(x => (x.title + ' ' + x.subtitle + ' ' + x.text).toLowerCase().includes(q));
     }
-    // Tab ve mode etkisi
-    if (tab === 'for-you') {
-      if (mode === 'user') {
-        const followed = list.filter((_, idx) => idx % 3 !== 0);
-        const others = list.filter((_, idx) => idx % 3 === 0);
-        list = [...followed, ...others];
-      }
-    } else if (tab === 'latest') {
-      list = [...list].reverse();
-    }
-    // Sıralama
-    if (sort === 'top') {
-      // Engagement score: likes * 1 + comments * 2
-      list = [...list].sort((a,b) => ((b.likes || 0) + (b.comments || 0) * 2) - ((a.likes || 0) + (a.comments || 0) * 2));
-    } else if (sort === 'recent') {
-      // Most Recent: created_at DESC
-      list = [...list].sort((a, b) => {
-        const da = a.created_at ? new Date(a.created_at).getTime() : 0;
-        const db = b.created_at ? new Date(b.created_at).getTime() : 0;
-        return db - da;
-      });
-    }
     // Pinned (injected) posts always first
     return [...pinned, ...list];
-  }, [source, injectedPosts, countryName, specialtyFilter, textQuery, mode, sort, tab]);
+  }, [source, injectedPosts, countryName, textQuery]);
 
   const paged = useMemo(() => {
     const start = 0;
@@ -222,7 +206,10 @@ export default function ExploreTimeline() {
     if (clean.img && clean.img.startsWith('blob:')) clean.img = PLACEHOLDER_IMG;
     if (Array.isArray(clean.media)) {
       clean.media = clean.media
-        .filter(m => m.url && !m.url.startsWith('blob:'));
+        .filter(m => {
+          const src = m.url || m.medium || m.original || '';
+          return src && !src.startsWith('blob:');
+        });
     }
     delete clean._uploading;
     delete clean._uploadFailed;
@@ -397,7 +384,7 @@ export default function ExploreTimeline() {
             role: p.author?.role_id || user?.role || 'doctor',
             name: p.author?.fullname || user?.name || 'Doctor',
             title: clinicName || '',
-            avatarUrl: p.author?.avatar || '/images/portrait-candid-male-doctor_720.jpg',
+            avatarUrl: resolveStorageUrl(p.author?.avatar),
           },
           socialContext: '',
           created_at: p.created_at || new Date().toISOString(),
@@ -567,7 +554,7 @@ export default function ExploreTimeline() {
   }, [hasMore, items.length]);
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-8">
       <div className="min-h-screen w-full fixed top-0 left-0 -z-10"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 relative">
         {/* Hidden pickers for composer */}
@@ -614,7 +601,7 @@ export default function ExploreTimeline() {
           <TimelineControls
             user={user}
             sort={sort}
-            onSortChange={setSort}
+            onSortChange={(s) => { setSort(s); setPage(1); }}
             onUseLocation={askGeo}
             geo={geo}
             showSort={true}
@@ -643,16 +630,24 @@ export default function ExploreTimeline() {
                 const isDoctor = !!(user && (user.role === 'doctor' || (user?.specialty || user?.hospital || user?.access)));
                 const isClinic = !!(user && (user.role === 'clinic' || user.role === 'clinicOwner'));
                 if (!isDoctor && !isClinic) return null;
+                const isUnverifiedDoctor = isDoctor && !user?.is_verified;
                 return (
-                  <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 mb-4">
+                  <div className={`bg-white rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow duration-300 mb-4 ${isUnverifiedDoctor ? 'border-amber-200 opacity-80' : 'border-gray-100'}`}>
+                    {isUnverifiedDoctor && (
+                      <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-amber-600 flex-shrink-0"><path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.871L13.637 3.591a1.914 1.914 0 0 0-3.274 0z"/><path d="M12 17h.01"/></svg>
+                        <span className="text-xs font-medium text-amber-800">Your account is under review. Posting is disabled until admin approval.</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 ring-2 ring-teal-100 ring-offset-1">
-                        <img alt={user?.name || 'User'} loading="lazy" className="w-full h-full object-cover object-center" src={user?.avatar || '/images/default/default-avatar.svg'} />
+                        <img alt={user?.name || 'User'} loading="lazy" className="w-full h-full object-cover object-center" src={resolveStorageUrl(user?.avatar)} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                       </div>
-                      <button type="button" onClick={()=>setIsComposerOpen(true)} className="flex-1 text-left px-4 py-3 bg-gray-50/80 rounded-xl border border-gray-200/60 focus:outline-none focus:ring-2 focus:ring-teal-500/30 text-gray-500 hover:bg-gray-100/80 hover:border-gray-300/60 transition-all duration-200 text-sm">
-                        Make a Post...
+                      <button type="button" onClick={()=>{ if (!isUnverifiedDoctor) setIsComposerOpen(true); }} disabled={isUnverifiedDoctor} className={`flex-1 text-left px-4 py-3 bg-gray-50/80 rounded-xl border border-gray-200/60 focus:outline-none focus:ring-2 focus:ring-teal-500/30 text-gray-500 transition-all duration-200 text-sm ${isUnverifiedDoctor ? 'cursor-not-allowed opacity-60' : 'hover:bg-gray-100/80 hover:border-gray-300/60'}`}>
+                        {isUnverifiedDoctor ? 'Posting disabled — verification pending' : 'Make a Post...'}
                       </button>
                     </div>
+                    {!isUnverifiedDoctor && (
                     <div className="border-t border-gray-100 mt-4 pt-3">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-0.5 sm:gap-1 flex-1 min-w-0 overflow-x-auto">
@@ -676,6 +671,7 @@ export default function ExploreTimeline() {
                         <button type="button" onClick={()=>setIsComposerOpen(true)} className="px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200 flex-shrink-0">Post</button>
                       </div>
                     </div>
+                    )}
                   </div>
                 );
               })()}
@@ -756,7 +752,7 @@ export default function ExploreTimeline() {
               </div>
               <div className="px-4 sm:px-5 pt-4">
                 <div className="flex items-center gap-3">
-                  <img alt={user?.name || 'User'} loading="lazy" className="w-10 h-10 rounded-full object-cover border" src={user?.avatar || '/images/default/default-avatar.svg'} />
+                  <img alt={user?.name || 'User'} loading="lazy" className="w-10 h-10 rounded-full object-cover border" src={resolveStorageUrl(user?.avatar)} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                   <div>
                     <div className="text-sm font-medium text-gray-900">{user?.name || 'Guest'}</div>
                     <span className="inline-flex items-center gap-1 text-xs text-teal-800 bg-teal-50 border border-teal-100 px-2 py-1 rounded-md">{(user?.role === 'clinic' || user?.role === 'clinicOwner') ? 'Clinic' : 'Doctor'}</span>

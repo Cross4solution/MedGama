@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { appointmentAPI } from '../../lib/api';
+import { appointmentAPI, clinicVerificationAPI } from '../../lib/api';
 import {
   CalendarDays,
   Clock,
@@ -28,11 +28,15 @@ import {
   UserPlus,
   RefreshCw,
   ExternalLink,
+  Crown,
+  Lock,
+  Shield,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import AiInsightBanner from '../../components/crm/AiInsightBanner';
+import ClinicVerificationModal from '../../components/crm/ClinicVerificationModal';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const TODAY = new Date();
@@ -115,13 +119,30 @@ const RiskBadge = ({ risk }) => {
   return <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${config[risk] || config.low}`}>{risk}</span>;
 };
 
+// ─── Upgrade Banner (empty state CTA for free doctors) ───────
+const UpgradeBanner = ({ t, label }) => (
+  <div className="flex flex-col items-center justify-center py-6 text-center">
+    <Lock className="w-8 h-8 text-gray-300 mb-2" />
+    <p className="text-xs text-gray-400 mb-3">{label || t('crm.dashboard.upgradeHint', 'Upgrade to Professional to unlock live data')}</p>
+    <Link
+      to="/crm/billing"
+      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-lg text-xs font-bold hover:from-teal-700 hover:to-emerald-600 transition-all shadow-sm"
+    >
+      <Crown className="w-3.5 h-3.5" />
+      {t('pro.teaser.upgradeCta', 'Upgrade to Professional')}
+    </Link>
+  </div>
+);
+
 // ─── Main Dashboard ──────────────────────────────────────────
 
 const CRMDashboard = () => {
-  const { user } = useAuth();
+  const { user, isPro } = useAuth();
   const { t } = useTranslation();
   const [appointmentFilter, setAppointmentFilter] = useState('all');
   const [apiAppointments, setApiAppointments] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     appointmentAPI.list({ per_page: 50 }).then(res => {
@@ -151,8 +172,37 @@ const CRMDashboard = () => {
     return appointments.filter((a) => a.status === appointmentFilter);
   }, [appointmentFilter, appointments]);
 
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+  const paginatedAppointments = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredAppointments.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredAppointments, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [appointmentFilter]);
+
   const maxRevenue = Math.max(...WEEKLY_REVENUE.map((d) => d.amount), 1);
   const todayIndex = TODAY.getDay() === 0 ? 6 : TODAY.getDay() - 1; // Mon=0
+
+  const isFreeDoctor = user?.role_id === 'doctor' && !isPro;
+
+  // ── Clinic Verification ──
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [clinicVerificationStatus, setClinicVerificationStatus] = useState(null);
+
+  const isClinicOwner = user?.role_id === 'clinicOwner';
+
+  useEffect(() => {
+    if (!isClinicOwner) return;
+    clinicVerificationAPI.status().then(res => {
+      const d = res?.data || res;
+      setClinicVerificationStatus(d.verification_status || 'unverified');
+    }).catch(() => {});
+  }, [isClinicOwner]);
+
+  const clinicNeedsVerification = isClinicOwner && clinicVerificationStatus && clinicVerificationStatus !== 'verified';
 
   return (
     <div className="space-y-6">
@@ -172,19 +222,75 @@ const CRMDashboard = () => {
             <ExternalLink className="w-4 h-4" />
             <span className="hidden sm:inline">{t('doctorProfile.viewPublicProfile')}</span>
           </Link>
-          <Link
-            to="/crm/appointments"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md"
-          >
-            <Plus className="w-4 h-4" />
-            {t('crm.dashboard.newAppointment')}
-          </Link>
+          {(user?.role_id === 'doctor' && !user?.is_verified) || clinicNeedsVerification ? (
+            <button
+              onClick={() => clinicNeedsVerification ? setShowVerifyModal(true) : null}
+              title={t('crm.verificationBanner.restrictedFeature', 'Verification required to use this feature')}
+              className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold ${
+                clinicNeedsVerification
+                  ? 'bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors cursor-pointer'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70'
+              }`}
+            >
+              {clinicNeedsVerification ? <Shield className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              {clinicNeedsVerification ? t('crm.clinicVerification.verifyNow', 'Verify Now') : t('crm.dashboard.newAppointment')}
+            </button>
+          ) : (
+            <Link
+              to="/crm/appointments"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md"
+            >
+              <Plus className="w-4 h-4" />
+              {t('crm.dashboard.newAppointment')}
+            </Link>
+          )}
           <button className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
             <RefreshCw className="w-4 h-4" />
             <span className="hidden sm:inline">{t('common.refresh')}</span>
           </button>
         </div>
       </div>
+
+      {/* Clinic Verification Banner */}
+      {clinicNeedsVerification && (
+        <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${
+          clinicVerificationStatus === 'pending_review'
+            ? 'bg-blue-50 border-blue-200'
+            : clinicVerificationStatus === 'rejected'
+              ? 'bg-red-50 border-red-200'
+              : 'bg-amber-50 border-amber-200'
+        }`}>
+          <Shield className={`w-5 h-5 flex-shrink-0 ${
+            clinicVerificationStatus === 'pending_review' ? 'text-blue-600' : clinicVerificationStatus === 'rejected' ? 'text-red-600' : 'text-amber-600'
+          }`} />
+          <div className="flex-1 min-w-0">
+            <p className={`text-sm font-semibold ${
+              clinicVerificationStatus === 'pending_review' ? 'text-blue-700' : clinicVerificationStatus === 'rejected' ? 'text-red-700' : 'text-amber-700'
+            }`}>
+              {clinicVerificationStatus === 'pending_review'
+                ? t('crm.clinicVerification.statusPending', 'Your documents are under review')
+                : clinicVerificationStatus === 'rejected'
+                  ? t('crm.clinicVerification.statusRejected', 'Your verification was rejected')
+                  : t('crm.clinicVerification.statusUnverified', 'Your clinic is not yet verified')}
+            </p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {clinicVerificationStatus === 'pending_review'
+                ? t('crm.clinicVerification.pendingDesc', 'Our team is reviewing your documents. This usually takes 1-2 business days.')
+                : t('crm.clinicVerification.verifyDesc', 'Verify your clinic to unlock all features including appointments.')}
+            </p>
+          </div>
+          {clinicVerificationStatus !== 'pending_review' && (
+            <button
+              onClick={() => setShowVerifyModal(true)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white rounded-xl shadow-sm hover:shadow-md transition-all flex-shrink-0"
+              style={{ backgroundColor: '#0A6E6F' }}
+            >
+              <Shield className="w-4 h-4" />
+              {t('crm.clinicVerification.verifyNow', 'Verify Now')}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* AI Insight Banner */}
       <AiInsightBanner
@@ -197,26 +303,55 @@ const CRMDashboard = () => {
       {/* KPI Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {MOCK_STATS.map((stat) => (
-          <div key={stat.label} className={`bg-white rounded-2xl border ${stat.borderColor} p-4 sm:p-5 hover:shadow-md transition-shadow`}>
-            <div className="flex items-start justify-between mb-3">
-              <div className={`w-10 h-10 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
-                <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
+          <div key={stat.label} className={`bg-white rounded-xl border ${stat.borderColor} p-3 sm:p-4 hover:shadow-md transition-shadow`}>
+            <div className="flex items-center gap-2.5 mb-2">
+              <div className={`w-9 h-9 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
+                <stat.icon className={`w-4.5 h-4.5 ${stat.iconColor}`} />
               </div>
-              <span className={`inline-flex items-center gap-0.5 text-xs font-semibold ${stat.trend === 'up' ? 'text-emerald-600' : 'text-red-500'}`}>
-                {stat.trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                {stat.change}
-              </span>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-gray-900">{stat.value}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{stat.label}</p>
+            {isFreeDoctor ? (
+              <>
+                <p className="text-xl sm:text-2xl font-bold text-gray-300 select-none">—</p>
+                <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
+              </>
+            )}
           </div>
         ))}
       </div>
+      {isFreeDoctor && (
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-teal-100 p-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center">
+                <Crown className="w-4.5 h-4.5 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-gray-900">{t('crm.dashboard.unlockInsights', 'Unlock Real-Time Insights')}</p>
+                <p className="text-xs text-gray-500">{t('crm.dashboard.upgradeHint', 'Upgrade to Professional to unlock live data')}</p>
+              </div>
+            </div>
+            <Link
+              to="/crm/billing"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-xl text-xs font-bold hover:from-teal-700 hover:to-emerald-600 transition-all shadow-lg shadow-teal-200/50"
+            >
+              <Crown className="w-3.5 h-3.5" />
+              {t('pro.teaser.upgradeCta', 'Upgrade to Professional')}
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Main Grid: Appointments + Right Panel */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
-        {/* Appointments List — 2 cols */}
-        <div className="xl:col-span-2 bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+        {/* Left Column: Appointments + Quick Actions */}
+        <div className="xl:col-span-2 space-y-4 sm:space-y-6">
+          {/* Appointments List */}
+          <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-4 border-b border-gray-100">
             <div className="flex items-center gap-2.5">
@@ -252,14 +387,16 @@ const CRMDashboard = () => {
           </div>
 
           {/* Appointment Rows */}
-          <div className="divide-y divide-gray-50 max-h-[520px] overflow-y-auto">
-            {filteredAppointments.length === 0 ? (
+          <div className="divide-y divide-gray-50 min-h-0">
+            {isFreeDoctor ? (
+              <UpgradeBanner t={t} label={t('crm.dashboard.upgradeAppointments', 'Upgrade to see your live appointment schedule')} />
+            ) : filteredAppointments.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                 <CalendarDays className="w-10 h-10 mb-2 opacity-40" />
                 <p className="text-sm font-medium">{t('crm.dashboard.noAppointments')}</p>
               </div>
             ) : (
-              filteredAppointments.map((apt) => (
+              paginatedAppointments.map((apt) => (
                 <div
                   key={apt.id}
                   className={`flex items-center gap-3 sm:gap-4 px-5 py-3.5 hover:bg-gray-50/50 transition-colors group ${
@@ -310,11 +447,59 @@ const CRMDashboard = () => {
             )}
           </div>
 
-          {/* Footer */}
+          {/* Footer with Pagination */}
           <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
-            <Link to="/crm/appointments" className="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
-              {t('crm.dashboard.viewAll')} <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
+            <div className="flex items-center justify-between">
+              <Link to="/crm/appointments" className="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
+                {t('crm.dashboard.viewAll')} <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+              {!isFreeDoctor && totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5 rotate-180" />
+                  </button>
+                  <span className="text-xs text-gray-500 font-medium">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+            <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.dashboard.quickActions')}</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+              {[
+                { label: 'New Patient', icon: UserPlus, color: 'bg-blue-50 text-blue-600 hover:bg-blue-100', path: '/crm/patients' },
+                { label: 'Write Prescription', icon: ClipboardCheck, color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100', path: '/crm/prescriptions' },
+                { label: 'Start Video Call', icon: Video, color: 'bg-sky-50 text-sky-600 hover:bg-sky-100', path: '/crm/appointments' },
+                { label: 'View Reports', icon: FileText, color: 'bg-violet-50 text-violet-600 hover:bg-violet-100', path: '/crm/reports' },
+                { label: 'Send Message', icon: MessageSquare, color: 'bg-amber-50 text-amber-600 hover:bg-amber-100', path: '/crm/messages' },
+                { label: 'Revenue Report', icon: DollarSign, color: 'bg-pink-50 text-pink-600 hover:bg-pink-100', path: '/crm/revenue' },
+              ].map((action) => (
+                <Link
+                  key={action.label}
+                  to={action.path}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${action.color} border border-transparent hover:border-gray-200 hover:shadow-sm`}
+                >
+                  <action.icon className="w-5 h-5" />
+                  <span className="text-[11px] font-semibold text-center leading-tight">{action.label}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -333,32 +518,38 @@ const CRMDashboard = () => {
                 {MOCK_URGENT_NOTES.filter((n) => !n.read).length} new
               </span>
             </div>
-            <div className="divide-y divide-gray-50 max-h-72 overflow-y-auto">
-              {MOCK_URGENT_NOTES.map((note) => (
-                <div key={note.id} className={`px-5 py-3 hover:bg-gray-50/50 transition-colors ${!note.read ? 'bg-red-50/20' : ''}`}>
-                  <div className="flex items-start gap-2.5">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                      note.type === 'critical' ? 'bg-red-100' : note.type === 'warning' ? 'bg-amber-100' : 'bg-blue-100'
-                    }`}>
-                      {note.type === 'critical' ? <AlertTriangle className="w-3 h-3 text-red-600" /> :
-                       note.type === 'warning' ? <AlertTriangle className="w-3 h-3 text-amber-600" /> :
-                       <Activity className="w-3 h-3 text-blue-600" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-[11px] font-semibold text-gray-700">{note.from}</span>
-                        <span className="text-[10px] text-gray-400">{note.time}</span>
-                        {!note.read && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
+            {isFreeDoctor ? (
+              <UpgradeBanner t={t} label={t('crm.dashboard.upgradeAlerts', 'Upgrade to receive real-time alerts')} />
+            ) : (
+              <>
+                <div className="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+                  {MOCK_URGENT_NOTES.map((note) => (
+                    <div key={note.id} className={`px-5 py-3 hover:bg-gray-50/50 transition-colors ${!note.read ? 'bg-red-50/20' : ''}`}>
+                      <div className="flex items-start gap-2.5">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                          note.type === 'critical' ? 'bg-red-100' : note.type === 'warning' ? 'bg-amber-100' : 'bg-blue-100'
+                        }`}>
+                          {note.type === 'critical' ? <AlertTriangle className="w-3 h-3 text-red-600" /> :
+                           note.type === 'warning' ? <AlertTriangle className="w-3 h-3 text-amber-600" /> :
+                           <Activity className="w-3 h-3 text-blue-600" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <span className="text-[11px] font-semibold text-gray-700">{note.from}</span>
+                            <span className="text-[10px] text-gray-400">{note.time}</span>
+                            {!note.read && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
+                          </div>
+                          <p className="text-xs text-gray-600 leading-relaxed">{note.message}</p>
+                        </div>
                       </div>
-                      <p className="text-xs text-gray-600 leading-relaxed">{note.message}</p>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
-              <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('crm.dashboard.viewAll')}</button>
-            </div>
+                <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
+                  <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('crm.dashboard.viewAll')}</button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Weekly Revenue Chart */}
@@ -372,29 +563,33 @@ const CRMDashboard = () => {
               </div>
               <span className="text-xs font-semibold text-emerald-600">€8,400</span>
             </div>
-            <div className="px-5 py-4">
-              <div className="flex items-end justify-between gap-2 h-28">
-                {WEEKLY_REVENUE.map((d, i) => {
-                  const h = d.amount > 0 ? Math.max(12, (d.amount / maxRevenue) * 100) : 4;
-                  const isToday = i === todayIndex;
-                  return (
-                    <div key={d.day} className="flex-1 flex flex-col items-center gap-1.5">
-                      <span className="text-[10px] font-semibold text-gray-500">
-                        {d.amount > 0 ? `€${(d.amount / 1000).toFixed(1)}k` : '—'}
-                      </span>
-                      <div
-                        className={`w-full max-w-[32px] rounded-lg transition-all ${
-                          isToday ? 'bg-gradient-to-t from-teal-600 to-teal-400 shadow-sm shadow-teal-200' :
-                          d.amount > 0 ? 'bg-gray-200 hover:bg-gray-300' : 'bg-gray-100'
-                        }`}
-                        style={{ height: `${h}%` }}
-                      />
-                      <span className={`text-[10px] font-medium ${isToday ? 'text-teal-600 font-bold' : 'text-gray-400'}`}>{d.day}</span>
-                    </div>
-                  );
-                })}
+            {isFreeDoctor ? (
+              <UpgradeBanner t={t} label={t('crm.dashboard.upgradeRevenue', 'Upgrade to track your weekly revenue')} />
+            ) : (
+              <div className="px-5 py-4">
+                <div className="flex items-end justify-between gap-2 h-28">
+                  {WEEKLY_REVENUE.map((d, i) => {
+                    const h = d.amount > 0 ? Math.max(12, (d.amount / maxRevenue) * 100) : 4;
+                    const isToday = i === todayIndex;
+                    return (
+                      <div key={d.day} className="flex-1 flex flex-col items-center gap-1.5">
+                        <span className="text-[10px] font-semibold text-gray-500">
+                          {d.amount > 0 ? `€${(d.amount / 1000).toFixed(1)}k` : '—'}
+                        </span>
+                        <div
+                          className={`w-full max-w-[32px] rounded-lg transition-all ${
+                            isToday ? 'bg-gradient-to-t from-teal-600 to-teal-400 shadow-sm shadow-teal-200' :
+                            d.amount > 0 ? 'bg-gray-200 hover:bg-gray-300' : 'bg-gray-100'
+                          }`}
+                          style={{ height: `${h}%` }}
+                        />
+                        <span className={`text-[10px] font-medium ${isToday ? 'text-teal-600 font-bold' : 'text-gray-400'}`}>{d.day}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Recent Patients */}
@@ -408,47 +603,33 @@ const CRMDashboard = () => {
               </div>
               <Link to="/crm/patients" className="text-xs font-semibold text-teal-600 hover:text-teal-700">{t('crm.dashboard.viewAll')}</Link>
             </div>
-            <div className="divide-y divide-gray-50">
-              {MOCK_RECENT_PATIENTS.map((p, i) => (
-                <div key={i} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/50 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 text-[10px] font-bold flex-shrink-0">
-                    {p.name.split(' ').map((n) => n[0]).join('')}
+            {isFreeDoctor ? (
+              <UpgradeBanner t={t} label={t('crm.dashboard.upgradePatients', 'Upgrade to see your recent patients')} />
+            ) : (
+              <div className="divide-y divide-gray-50">
+                {MOCK_RECENT_PATIENTS.map((p, i) => (
+                  <div key={i} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/50 transition-colors">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 text-[10px] font-bold flex-shrink-0">
+                      {p.name.split(' ').map((n) => n[0]).join('')}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-gray-900 truncate">{p.name}</p>
+                      <p className="text-[10px] text-gray-400">{p.lastVisit} · {p.condition}</p>
+                    </div>
+                    <RiskBadge risk={p.risk} />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-900 truncate">{p.name}</p>
-                    <p className="text-[10px] text-gray-400">{p.lastVisit} · {p.condition}</p>
-                  </div>
-                  <RiskBadge risk={p.risk} />
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Quick Actions */}
-      <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
-        <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.dashboard.quickActions')}</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-          {[
-            { label: 'New Patient', icon: UserPlus, color: 'bg-blue-50 text-blue-600 hover:bg-blue-100', path: '/crm/patients' },
-            { label: 'Write Prescription', icon: ClipboardCheck, color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100', path: '/crm/prescriptions' },
-            { label: 'Start Video Call', icon: Video, color: 'bg-sky-50 text-sky-600 hover:bg-sky-100', path: '/crm/appointments' },
-            { label: 'View Reports', icon: FileText, color: 'bg-violet-50 text-violet-600 hover:bg-violet-100', path: '/crm/reports' },
-            { label: 'Send Message', icon: MessageSquare, color: 'bg-amber-50 text-amber-600 hover:bg-amber-100', path: '/crm/messages' },
-            { label: 'Revenue Report', icon: DollarSign, color: 'bg-pink-50 text-pink-600 hover:bg-pink-100', path: '/crm/revenue' },
-          ].map((action) => (
-            <Link
-              key={action.label}
-              to={action.path}
-              className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${action.color} border border-transparent hover:border-gray-200 hover:shadow-sm`}
-            >
-              <action.icon className="w-5 h-5" />
-              <span className="text-[11px] font-semibold text-center leading-tight">{action.label}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
+      {/* Clinic Verification Modal */}
+      <ClinicVerificationModal
+        isOpen={showVerifyModal}
+        onClose={() => setShowVerifyModal(false)}
+        onStatusChange={(status) => setClinicVerificationStatus(status)}
+      />
     </div>
   );
 };

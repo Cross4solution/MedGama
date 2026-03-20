@@ -8,6 +8,8 @@ import './i18n';
 import { Footer, Header } from './components/layout';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { FavoritesProvider } from './context/FavoritesContext';
+import { NotificationsProvider } from './context/NotificationsContext';
 import { CookieConsentProvider } from './context/CookieConsentContext';
 import scrollConfig from './config/scroll';
 import ScrollToTopButton from './components/common/ScrollToTopButton';
@@ -41,12 +43,16 @@ const KVKKPage = React.lazy(() => import('./pages/KVKKPage'));
 const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRightsPage'));
 const SearchResults = React.lazy(() => import('./pages/SearchResults'));
 const DashboardRedirect = React.lazy(() => import('./pages/DashboardRedirect'));
+const DoctorDashboard = React.lazy(() => import('./pages/DoctorDashboard'));
 const PatientDashboard = React.lazy(() => import('./pages/PatientDashboard'));
 const MedicalArchive = React.lazy(() => import('./pages/MedicalArchive'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 const ServerErrorPage = React.lazy(() => import('./pages/ServerErrorPage'));
 const SavedPosts = React.lazy(() => import('./pages/SavedPosts'));
 const SavedClinics = React.lazy(() => import('./pages/SavedClinics'));
+const ClinicOnboarding = React.lazy(() => import('./pages/ClinicOnboarding'));
+const ClinicDashboard = React.lazy(() => import('./pages/ClinicDashboard'));
+const ClinicTeam = React.lazy(() => import('./pages/ClinicTeam'));
 
 // CRM Pages
 const CRMLayout = React.lazy(() => import('./components/crm/CRMLayout'));
@@ -65,8 +71,13 @@ const CRMSmartCalendar = React.lazy(() => import('./pages/crm/CRMSmartCalendar')
 const CRMRevenue = React.lazy(() => import('./pages/crm/CRMRevenue'));
 const CRMSupport = React.lazy(() => import('./pages/crm/CRMSupport'));
 const CRMFaq = React.lazy(() => import('./pages/crm/CRMFaq'));
+const CRMStaff = React.lazy(() => import('./pages/crm/CRMStaff'));
 const CRMClinicManager = React.lazy(() => import('./pages/crm/CRMClinicManager'));
 const CRMReviews = React.lazy(() => import('./pages/crm/CRMReviews'));
+const CRMContactInbox = React.lazy(() => import('./pages/crm/CRMContactInbox'));
+const CRMPrescriptions = React.lazy(() => import('./pages/crm/CRMPrescriptions'));
+const CRMMessages = React.lazy(() => import('./pages/crm/CRMMessages'));
+const CRMDocuments = React.lazy(() => import('./pages/crm/CRMDocuments'));
 
 // Admin Pages
 const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
@@ -81,6 +92,7 @@ const AdminSupport = React.lazy(() => import('./pages/admin/AdminSupport'));
 const AdminUserManagement = React.lazy(() => import('./pages/admin/AdminUserManagement'));
 const AdminVerificationReview = React.lazy(() => import('./pages/admin/AdminVerificationReview'));
 const AdminSystemSettings = React.lazy(() => import('./pages/admin/AdminSystemSettings'));
+const AdminFinancials = React.lazy(() => import('./pages/admin/AdminFinancials'));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -140,6 +152,7 @@ function AppContent() {
       '/crm/patients': 'CRM Patients | MedaGama',
       '/crm/patient-360': 'CRM Patient 360 | MedaGama',
       '/crm/reports': 'CRM Reports | MedaGama',
+      '/settings': 'Settings | MedaGama',
       '/crm/settings': 'CRM Settings | MedaGama',
       '/crm/integrations': 'CRM Integrations | MedaGama',
       '/crm/billing': 'CRM Billing | MedaGama',
@@ -150,9 +163,16 @@ function AppContent() {
       '/crm/revenue': 'Revenue & Finance | MedaGama',
       '/crm/support': 'Help & Support | MedaGama',
       '/crm/faq': 'FAQ | MedaGama',
+      '/crm/staff': 'Staff Management | MedaGama',
       '/crm/clinic-manager': 'Clinic Management | MedaGama',
+      '/crm/prescriptions': 'Prescriptions | MedaGama',
+      '/crm/messages': 'Messages | MedaGama',
+      '/crm/documents': 'Documents | MedaGama',
       '/crm/help': 'CRM Help | MedaGama',
       '/onboarding': 'Setup Wizard | MedaGama',
+      '/clinic/onboarding': 'Clinic Setup | MedaGama',
+      '/clinic/dashboard': 'Clinic Dashboard | MedaGama',
+      '/clinic/team': 'My Team | MedaGama',
       '/admin': 'Admin Dashboard | MedaGama',
       '/admin/verification': 'Doctor Verification | MedaGama',
       '/admin/moderation': 'Content Moderation | MedaGama',
@@ -251,7 +271,7 @@ function AppContent() {
   }, [location.pathname, navType]);
   
   // Auth ve CRM sayfalarında header ve cookie banner'ı gizle
-  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/verify-email', '/forgot-password', '/dashboard', '/onboarding'];
+  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/verify-email', '/forgot-password', '/dashboard', '/onboarding', '/clinic/onboarding'];
   const isAuthPage = hideOnAuthPages.includes(location.pathname);
   const isCRMPage = location.pathname.startsWith('/crm');
   const isAdminPage = location.pathname.startsWith('/admin');
@@ -264,6 +284,8 @@ function AppContent() {
     '/patient-home', '/telehealth', '/telehealth-appointment',
     '/clinic', '/explore', '/post', '/doctor'
   ];
+  // Also hide header/footer on clinic onboarding
+  const isClinicOnboarding = location.pathname === '/clinic/onboarding';
   const hasOwnContainer = pagesWithOwnContainer.some(page => 
     location.pathname.startsWith(page)
   );
@@ -325,8 +347,15 @@ function AppContent() {
         <Route path="/clinic-login" element={<LoginPage role="clinic" />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<CRMSettings standalone />} />
         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
         <Route path="/post/:id" element={<PostDetail />} />
+        {/* Doctor Dashboard — MedaGama main panel (NOT CRM) */}
+        <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        {/* Clinic Routes */}
+        <Route path="/clinic/onboarding" element={<ClinicOnboarding />} />
+        <Route path="/clinic/dashboard" element={<ClinicDashboard />} />
+        <Route path="/clinic/team" element={<ClinicTeam />} />
         {/* CRM Routes */}
         <Route path="/crm" element={<CRMLayout><CRMDashboard /></CRMLayout>} />
         <Route path="/crm/appointments" element={<CRMLayout><CRMAppointments /></CRMLayout>} />
@@ -343,8 +372,13 @@ function AppContent() {
         <Route path="/crm/revenue" element={<CRMLayout><CRMRevenue /></CRMLayout>} />
         <Route path="/crm/support" element={<CRMLayout><CRMSupport /></CRMLayout>} />
         <Route path="/crm/faq" element={<CRMLayout><CRMFaq /></CRMLayout>} />
+        <Route path="/crm/staff" element={<CRMLayout><CRMStaff /></CRMLayout>} />
         <Route path="/crm/clinic-manager" element={<CRMLayout><CRMClinicManager /></CRMLayout>} />
         <Route path="/crm/reviews" element={<CRMLayout><CRMReviews /></CRMLayout>} />
+        <Route path="/crm/contact-inbox" element={<CRMLayout><CRMContactInbox /></CRMLayout>} />
+        <Route path="/crm/prescriptions" element={<CRMLayout><CRMPrescriptions /></CRMLayout>} />
+        <Route path="/crm/messages" element={<CRMLayout><CRMMessages /></CRMLayout>} />
+        <Route path="/crm/documents" element={<CRMLayout><CRMDocuments /></CRMLayout>} />
         <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
@@ -358,6 +392,7 @@ function AppContent() {
         <Route path="/admin/reviews" element={<AdminLayout><AdminReviews /></AdminLayout>} />
         <Route path="/admin/support" element={<AdminLayout><AdminSupport /></AdminLayout>} />
         <Route path="/admin/users" element={<AdminLayout><AdminUserManagement /></AdminLayout>} />
+        <Route path="/admin/financials" element={<AdminLayout><AdminFinancials /></AdminLayout>} />
         <Route path="/500" element={<ServerErrorPage />} />
         <Route path="*" element={<NotFoundPage />} />
         </Routes>
@@ -379,14 +414,21 @@ function OnboardingGate() {
 
   useEffect(() => {
     if (!user) return;
-    const needsOnboarding = (user.role === 'doctor' || user.role_id === 'doctor' || user.role_id === 'clinicOwner')
-      && user.onboarding_completed === false;
-    const isOnboardingPage = location.pathname === '/onboarding';
+    const isClinicOwner = user.role_id === 'clinicOwner';
+    const isDoctor = user.role === 'doctor' || user.role_id === 'doctor';
+    const needsOnboarding = (isDoctor || isClinicOwner) && user.onboarding_completed === false;
+
+    const isOnboardingPage = location.pathname === '/onboarding' || location.pathname === '/clinic/onboarding';
     const isPublicPage = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login',
       '/verify-email', '/forgot-password', '/terms-of-service', '/privacy-policy',
       '/cookie-policy', '/kvkk', '/data-rights'].includes(location.pathname);
+
     if (needsOnboarding && !isOnboardingPage && !isPublicPage) {
-      navigate('/onboarding', { replace: true });
+      if (isClinicOwner) {
+        navigate('/clinic/onboarding', { replace: true });
+      } else {
+        navigate('/onboarding', { replace: true });
+      }
     }
   }, [user, location.pathname, navigate]);
 
@@ -400,7 +442,11 @@ function App() {
         <CookieConsentProvider>
           <AuthProvider>
             <ToastProvider>
-              <AppContent />
+              <FavoritesProvider>
+                <NotificationsProvider>
+                  <AppContent />
+                </NotificationsProvider>
+              </FavoritesProvider>
             </ToastProvider>
           </AuthProvider>
         </CookieConsentProvider>

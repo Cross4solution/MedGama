@@ -8,6 +8,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { patientAPI } from '../../lib/api';
+import ProTeaser from '../../components/crm/ProTeaser';
 
 // ─── Helpers ─────────────────────────────────────────────────
 const getInitials = (name) => {
@@ -173,7 +174,8 @@ const SetStageModal = ({ patientId, patientName, currentStage, onClose, onUpdate
 // ═════════════════════════════════════════════════════════════
 const CRMPatients = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, isPro } = useAuth();
+
   const navigate = useNavigate();
 
   // Data state
@@ -240,6 +242,8 @@ const CRMPatients = () => {
 
   useEffect(() => { fetchMeta(); }, [fetchMeta]);
   useEffect(() => { fetchPatients(); }, [fetchPatients]);
+
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="patients" />;
 
   // Debounced search
   const handleSearch = (value) => {

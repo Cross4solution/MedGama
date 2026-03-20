@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { appointmentAPI, doctorProfileAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
+import ProTeaser from '../../components/crm/ProTeaser';
 
 const POLL_INTERVAL = 30000; // 30s
 
@@ -40,7 +41,7 @@ const StatusBadge = ({ status, t }) => {
 const CRMSmartCalendar = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isPro } = useAuth();
   const calendarRef = useRef(null);
 
   const [events, setEvents] = useState([]);
@@ -293,6 +294,8 @@ const CRMSmartCalendar = () => {
     if (dateRange.start) fetchEvents(dateRange.start, dateRange.end);
   };
 
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="calendar" />;
+
   return (
     <div className="space-y-5">
       {/* ─── Header ─── */}
@@ -314,8 +317,10 @@ const CRMSmartCalendar = () => {
             {t('common.refresh', 'Refresh')}
           </button>
           <button
-            onClick={() => navigate('/crm/appointments')}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md"
+            onClick={() => { if (user?.role_id === 'doctor' && !user?.is_verified) return; navigate('/crm/appointments'); }}
+            disabled={user?.role_id === 'doctor' && !user?.is_verified}
+            title={user?.role_id === 'doctor' && !user?.is_verified ? t('crm.verificationBanner.restrictedFeature', 'Verification required to use this feature') : undefined}
+            className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm hover:shadow-md ${user?.role_id === 'doctor' && !user?.is_verified ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70' : 'bg-teal-600 text-white hover:bg-teal-700'}`}
           >
             <Plus className="w-4 h-4" />
             {t('crm.appointments.newAppointment', 'New Appointment')}

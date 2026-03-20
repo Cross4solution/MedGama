@@ -1,6 +1,7 @@
 import React from 'react';
-import { MapPin, Star, Heart, Minus, Loader2 } from 'lucide-react';
+import { MapPin, Star, Heart, CheckCircle, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 export default function ClinicHero({
   image,
@@ -21,9 +22,10 @@ export default function ClinicHero({
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6 mt-4">
       <div className="relative h-56 md:h-72">
         <img 
-          src={image}
+          src={resolveStorageUrl(image)}
           alt={`${name} - Modern clinic environment`}
           className="w-full h-full object-cover"
+          onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
         <div className="absolute top-4 right-4 flex items-center bg-white/95 backdrop-blur-sm rounded-xl px-3 py-1.5 shadow-sm border border-white/20">
@@ -65,8 +67,8 @@ export default function ClinicHero({
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : isFollowing ? (
                 <>
-                  <Minus className="w-4 h-4 flex-shrink-0" />
-                  <span>{t('common.unfollow')}</span>
+                  <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>{t('common.following', 'Following')}</span>
                 </>
               ) : (
                 <>

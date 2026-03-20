@@ -4,11 +4,14 @@ import {
   Receipt, CreditCard, Banknote, Building2, Plus, Search, Filter,
   ChevronLeft, ChevronRight, X, Check, AlertTriangle, Clock,
   TrendingUp, Users, FileText, Download, Loader2,
-  Wallet, CircleDollarSign, Eye, CalendarPlus,
+  Wallet, CircleDollarSign, Eye, CalendarPlus, CalendarDays,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { billingAPI, patientAPI } from '../../lib/api';
+import ProTeaser from '../../components/crm/ProTeaser';
+import { blockNonNumeric } from '../../utils/numericInput';
+import CRMModal, { ModalLabel, ModalInput, ModalSelect, ModalTextarea, ModalPrimaryButton, ModalCancelButton } from '../../components/crm/CRMModal';
 
 // ─── Helpers ─────────────────────────────────────────────────
 const fmt = (v, currency = 'EUR') => {
@@ -109,144 +112,150 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-teal-50 flex items-center justify-center"><Receipt className="w-4.5 h-4.5 text-teal-600" /></div>
-            <h2 className="text-base font-bold text-gray-900">{t('crm.billing.createInvoice', 'Create Invoice')}</h2>
-          </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400"><X className="w-4 h-4" /></button>
-        </div>
-
-        <div className="px-6 py-5 space-y-5">
-          {/* Patient */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('common.patient')} *</label>
-            {patientsLoading ? (
-              <div className="flex items-center gap-2 text-xs text-gray-400"><Loader2 className="w-3 h-3 animate-spin" /> Loading patients...</div>
-            ) : (
-              <select value={form.patient_id} onChange={e => setForm({ ...form, patient_id: e.target.value })}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none">
-                <option value="">{t('crm.billing.selectPatient', 'Select Patient')}</option>
-                {patients.map(p => <option key={p.id} value={p.id}>{p.fullname} — {p.email || p.mobile || ''}</option>)}
-              </select>
-            )}
-          </div>
-
-          {/* Items */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-semibold text-gray-700">{t('crm.billing.serviceItems', 'Service Items')} *</label>
-              <button onClick={addItem} className="text-[11px] text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-0.5">
-                <Plus className="w-3 h-3" /> {t('crm.billing.addItem', 'Add Item')}
-              </button>
-            </div>
-            <div className="space-y-3">
-              {items.map((item, i) => (
-                <div key={i} className="flex items-start gap-2 bg-gray-50 rounded-xl p-3">
-                  <div className="flex-1 grid grid-cols-12 gap-2">
-                    <input type="text" placeholder="Description *" value={item.description}
-                      onChange={e => updateItem(i, 'description', e.target.value)}
-                      className="col-span-5 h-9 px-2.5 text-xs border border-gray-200 rounded-lg focus:ring-1 focus:ring-teal-400 focus:border-transparent" />
-                    <input type="text" placeholder="Category" value={item.category}
-                      onChange={e => updateItem(i, 'category', e.target.value)}
-                      className="col-span-3 h-9 px-2.5 text-xs border border-gray-200 rounded-lg focus:ring-1 focus:ring-teal-400 focus:border-transparent" />
-                    <input type="number" min="1" placeholder="Qty" value={item.quantity}
-                      onChange={e => updateItem(i, 'quantity', e.target.value)}
-                      className="col-span-1 h-9 px-2 text-xs border border-gray-200 rounded-lg text-center focus:ring-1 focus:ring-teal-400" />
-                    <input type="number" min="0" step="0.01" placeholder="Price *" value={item.unit_price}
-                      onChange={e => updateItem(i, 'unit_price', e.target.value)}
-                      className="col-span-2 h-9 px-2 text-xs border border-gray-200 rounded-lg text-right focus:ring-1 focus:ring-teal-400" />
-                    <div className="col-span-1 flex items-center justify-center">
-                      {items.length > 1 && (
-                        <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-600"><X className="w-3.5 h-3.5" /></button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Financial */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div>
-              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Currency</label>
-              <select value={form.currency} onChange={e => setForm({ ...form, currency: e.target.value })}
-                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg bg-white">
-                {['EUR', 'USD', 'TRY', 'GBP'].map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.billing.taxRate', 'Tax Rate')} (%)</label>
-              <input type="number" min="0" max="100" step="0.01" value={form.tax_rate}
-                onChange={e => setForm({ ...form, tax_rate: e.target.value })}
-                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg text-right" />
-            </div>
-            <div>
-              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.billing.discount', 'Discount')}</label>
-              <input type="number" min="0" step="0.01" value={form.discount_amount}
-                onChange={e => setForm({ ...form, discount_amount: e.target.value })}
-                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg text-right" />
-            </div>
-            <div>
-              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.billing.paymentMethod', 'Payment Method')}</label>
-              <select value={form.payment_method} onChange={e => setForm({ ...form, payment_method: e.target.value })}
-                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg bg-white">
-                <option value="">—</option>
-                <option value="cash">{t('crm.billing.cash', 'Cash')}</option>
-                <option value="credit_card">{t('crm.billing.creditCard', 'Credit Card')}</option>
-                <option value="bank_transfer">{t('crm.billing.bankTransfer', 'Bank Transfer')}</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Dates */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.billing.issueDate', 'Issue Date')}</label>
-              <input type="date" value={form.issue_date} onChange={e => setForm({ ...form, issue_date: e.target.value })}
-                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg" />
-            </div>
-            <div>
-              <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.billing.dueDate', 'Due Date')}</label>
-              <input type="date" value={form.due_date} onChange={e => setForm({ ...form, due_date: e.target.value })}
-                className="w-full h-9 px-2 text-xs border border-gray-200 rounded-lg" />
-            </div>
-          </div>
-
-          {/* Notes */}
-          <div>
-            <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('common.notes')}</label>
-            <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2}
-              className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl resize-none focus:ring-1 focus:ring-teal-400" />
-          </div>
-
-          {/* Totals Summary */}
-          <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-1.5">
-            <div className="flex justify-between text-xs"><span className="text-gray-500">Subtotal</span><span className="font-medium">{fmt(subtotal, form.currency)}</span></div>
-            <div className="flex justify-between text-xs"><span className="text-gray-500">Tax ({form.tax_rate}%)</span><span className="font-medium">{fmt(taxAmount, form.currency)}</span></div>
-            {discount > 0 && <div className="flex justify-between text-xs"><span className="text-gray-500">Discount</span><span className="font-medium text-red-500">-{fmt(discount, form.currency)}</span></div>}
-            <div className="flex justify-between text-sm font-bold border-t border-gray-200 pt-2 mt-1">
-              <span className="text-gray-900">Grand Total</span>
-              <span className="text-teal-700">{fmt(grandTotal, form.currency)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl sticky bottom-0">
-          <button onClick={onClose} className="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl">{t('common.cancel')}</button>
-          <button onClick={handleSubmit} disabled={loading || !canSubmit}
-            className="px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 disabled:opacity-50 transition-all shadow-sm inline-flex items-center gap-2">
+    <CRMModal
+      isOpen={true}
+      onClose={onClose}
+      title={t('crm.billing.createInvoice', 'Create Invoice')}
+      subtitle={t('crm.billing.createInvoiceDesc', 'Add items, set pricing and generate an invoice')}
+      icon={Receipt}
+      maxWidth="max-w-2xl"
+      footer={
+        <>
+          <ModalCancelButton onClick={onClose}>{t('common.cancel')}</ModalCancelButton>
+          <ModalPrimaryButton onClick={handleSubmit} disabled={loading || !canSubmit}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Receipt className="w-4 h-4" />}
             {t('crm.billing.createInvoice', 'Create Invoice')}
-          </button>
+          </ModalPrimaryButton>
+        </>
+      }
+    >
+      <div className="px-7 py-7 space-y-6">
+        {/* Patient */}
+        <div>
+          <ModalLabel required icon={Users}>{t('common.patient', 'Patient')}</ModalLabel>
+          {patientsLoading ? (
+            <div className="flex items-center gap-2 text-xs text-gray-400 h-10"><Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading patients...</div>
+          ) : (
+            <ModalSelect value={form.patient_id} onChange={e => setForm({ ...form, patient_id: e.target.value })}>
+              <option value="">{t('crm.billing.selectPatient', 'Select patient...')}</option>
+              {patients.map(p => <option key={p.id} value={p.id}>{p.fullname} — {p.email || p.mobile || ''}</option>)}
+            </ModalSelect>
+          )}
+        </div>
+
+        {/* Service Items — Table Style */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <ModalLabel required icon={FileText}>{t('crm.billing.serviceItems', 'Service Items')}</ModalLabel>
+            <button onClick={addItem} className="text-[11px] text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1 hover:bg-teal-50 px-2 py-1 rounded-lg transition-colors">
+              <Plus className="w-3 h-3" /> {t('crm.billing.addItem', 'Add Item')}
+            </button>
+          </div>
+
+          {/* Table header */}
+          <div className="hidden sm:grid grid-cols-12 gap-2 px-3 mb-1.5">
+            <span className="col-span-4 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Description</span>
+            <span className="col-span-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Category</span>
+            <span className="col-span-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide text-center">Qty</span>
+            <span className="col-span-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide text-right">Price</span>
+            <span className="col-span-1" />
+          </div>
+
+          <div className="space-y-2">
+            {items.map((item, i) => (
+              <div key={i} className="bg-gray-50/80 rounded-xl p-3 border border-gray-100">
+                <div className="grid grid-cols-12 gap-2 items-center">
+                  <input type="text" placeholder="Description *" value={item.description}
+                    onChange={e => updateItem(i, 'description', e.target.value)}
+                    className="col-span-12 sm:col-span-4 h-9 px-3 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white" />
+                  <input type="text" placeholder="Category" value={item.category}
+                    onChange={e => updateItem(i, 'category', e.target.value)}
+                    className="col-span-6 sm:col-span-3 h-9 px-3 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white" />
+                  <input type="number" min="1" placeholder="1" value={item.quantity}
+                    onChange={e => updateItem(i, 'quantity', e.target.value)}
+                    onKeyDown={blockNonNumeric}
+                    className="col-span-3 sm:col-span-2 h-9 px-2 text-xs border border-gray-200 rounded-lg text-center focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white" />
+                  <input type="number" min="0" step="0.01" placeholder="0.00" value={item.unit_price}
+                    onChange={e => updateItem(i, 'unit_price', e.target.value)}
+                    onKeyDown={blockNonNumeric}
+                    className="col-span-3 sm:col-span-2 h-9 px-2 text-xs border border-gray-200 rounded-lg text-right focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white" />
+                  <div className="col-span-12 sm:col-span-1 flex items-center justify-center">
+                    {items.length > 1 && (
+                      <button onClick={() => removeItem(i)} className="w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Financial Settings */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div>
+            <ModalLabel icon={CircleDollarSign}>Currency</ModalLabel>
+            <ModalSelect value={form.currency} onChange={e => setForm({ ...form, currency: e.target.value })}>
+              {['EUR', 'USD', 'TRY', 'GBP'].map(c => <option key={c} value={c}>{c}</option>)}
+            </ModalSelect>
+          </div>
+          <div>
+            <ModalLabel>{t('crm.billing.taxRate', 'Tax Rate')} (%)</ModalLabel>
+            <ModalInput type="number" min="0" max="100" step="0.01" value={form.tax_rate}
+              onChange={e => setForm({ ...form, tax_rate: e.target.value })}
+              onKeyDown={blockNonNumeric}
+              className="text-right" />
+          </div>
+          <div>
+            <ModalLabel>{t('crm.billing.discount', 'Discount')}</ModalLabel>
+            <ModalInput type="number" min="0" step="0.01" value={form.discount_amount}
+              onChange={e => setForm({ ...form, discount_amount: e.target.value })}
+              onKeyDown={blockNonNumeric}
+              className="text-right" />
+          </div>
+          <div>
+            <ModalLabel icon={CreditCard}>{t('crm.billing.paymentMethod', 'Payment')}</ModalLabel>
+            <ModalSelect value={form.payment_method} onChange={e => setForm({ ...form, payment_method: e.target.value })}>
+              <option value="">—</option>
+              <option value="cash">{t('crm.billing.cash', 'Cash')}</option>
+              <option value="credit_card">{t('crm.billing.creditCard', 'Credit Card')}</option>
+              <option value="bank_transfer">{t('crm.billing.bankTransfer', 'Bank Transfer')}</option>
+            </ModalSelect>
+          </div>
+        </div>
+
+        {/* Dates */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <ModalLabel icon={CalendarDays}>{t('crm.billing.issueDate', 'Issue Date')}</ModalLabel>
+            <ModalInput type="date" value={form.issue_date} onChange={e => setForm({ ...form, issue_date: e.target.value })} />
+          </div>
+          <div>
+            <ModalLabel icon={CalendarDays}>{t('crm.billing.dueDate', 'Due Date')}</ModalLabel>
+            <ModalInput type="date" value={form.due_date} onChange={e => setForm({ ...form, due_date: e.target.value })} />
+          </div>
+        </div>
+
+        {/* Notes */}
+        <div>
+          <ModalLabel icon={FileText}>{t('common.notes', 'Notes')}</ModalLabel>
+          <ModalTextarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2}
+            placeholder="Additional notes for the invoice..." />
+        </div>
+
+        {/* Totals Summary */}
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl px-5 py-4 space-y-2 border border-gray-200/60">
+          <div className="flex justify-between text-xs"><span className="text-gray-500">Subtotal</span><span className="font-semibold text-gray-700">{fmt(subtotal, form.currency)}</span></div>
+          <div className="flex justify-between text-xs"><span className="text-gray-500">Tax ({form.tax_rate}%)</span><span className="font-semibold text-gray-700">{fmt(taxAmount, form.currency)}</span></div>
+          {discount > 0 && <div className="flex justify-between text-xs"><span className="text-gray-500">Discount</span><span className="font-semibold text-red-500">-{fmt(discount, form.currency)}</span></div>}
+          <div className="flex justify-between text-sm font-bold border-t border-gray-200 pt-2.5 mt-1">
+            <span className="text-gray-900">Grand Total</span>
+            <span className="text-teal-700">{fmt(grandTotal, form.currency)}</span>
+          </div>
         </div>
       </div>
-    </div>
+    </CRMModal>
   );
 };
 
@@ -298,6 +307,7 @@ const PaymentModal = ({ invoice, onClose, onUpdated, t }) => {
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('common.amount')} *</label>
             <input type="number" min="0.01" max={remaining} step="0.01" value={amount}
               onChange={e => setAmount(e.target.value)} placeholder={`Max: ${remaining.toFixed(2)}`}
+              onKeyDown={blockNonNumeric}
               className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
           </div>
           <div>
@@ -336,7 +346,8 @@ const PaymentModal = ({ invoice, onClose, onUpdated, t }) => {
 // ═════════════════════════════════════════════════════════════
 const CRMBilling = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, isPro } = useAuth();
+
   const navigate = useNavigate();
 
   // Data
@@ -430,6 +441,8 @@ const CRMBilling = () => {
     { key: 'invoices', label: t('crm.billing.invoices', 'Invoices'), icon: Receipt },
     { key: 'outstanding', label: t('crm.billing.outstandingBalances', 'Outstanding'), icon: AlertTriangle },
   ];
+
+  if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="billing" />;
 
   return (
     <div className="space-y-5">

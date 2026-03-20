@@ -186,10 +186,13 @@ class AuthController extends Controller
     {
         $result = $this->authService->uploadAvatar($request->user(), $request->file('avatar'));
 
+        // Return relative /storage/ path — frontend resolveStorageUrl handles origin
+        $relativeUrl = $result['url']; // e.g. "/storage/avatars/uuid_medium.webp"
+
         return (new UserResource($result['user']))
             ->withExtra([
-                'avatar_url' => $result['url'],
-                'url'        => $result['url'],
+                'avatar_url' => $relativeUrl,
+                'url'        => $relativeUrl,
             ])
             ->response();
     }

@@ -108,7 +108,7 @@ const ROLE_CONFIG = {
     showStats: false,
     showGoogleLogin: false,
     googleBtnId: 'googleBtnClinic',
-    redirectAfterLogin: '/explore',
+    redirectAfterLogin: '/clinic/dashboard',
     placeholder: 'clinic@example.com',
     otherLogins: [
       { href: '/doctor-login', labelKey: 'nav.doctorLogin' },
@@ -275,21 +275,19 @@ const LoginPage = ({ role = 'patient' }) => {
           navigate(config.redirectAfterLogin);
         }
       } else if (currentPage === 'register') {
-        if (formData.role === 'clinic') {
-          notify({ type: 'info', message: 'Clinic registration will be available soon. Please sign in via clinic portal.' });
-          setSubmitting(false);
-          navigate('/clinic-login');
-          return;
-        }
+        const isClinicRole = formData.role === 'clinic';
         const doRegister = formData.role === 'doctor' ? registerDoctor : register;
-        const res = await doRegister({
+        const payload = {
           email: formData.email,
           password: formData.password,
           fullname: `${formData.firstName} ${formData.lastName}`.trim() || formData.email,
           mobile: formData.phone ? `${formData.phoneCode}${formData.phone}`.replace(/\s/g, '') : undefined,
           city_id: formData.city ? parseInt(formData.city) : undefined,
           date_of_birth: formData.birthDate || undefined,
-        });
+          ...(isClinicRole ? { role_id: 'clinicOwner', clinic_name: formData.clinicName || undefined } : {}),
+          ...(formData.role === 'patient' && formData.medicalHistory ? { medical_history: String(formData.medicalHistory).trim() } : {}),
+        };
+        const res = await doRegister(payload);
         try {
           if ((formData.role || 'patient') === 'patient' && formData.email) {
             const key = `patient_profile_extra_${formData.email}`;
@@ -298,9 +296,10 @@ const LoginPage = ({ role = 'patient' }) => {
           }
         } catch {}
         const needsVerification = res?.requires_email_verification ?? res?.data?.requires_email_verification;
+        const redirectTo = isClinicRole ? '/clinic/onboarding' : config.redirectAfterLogin;
         if (needsVerification === false) {
           notify({ type: 'success', message: res?.message || res?.data?.message || 'Registration successful!' });
-          navigate(config.redirectAfterLogin);
+          navigate(redirectTo);
         } else {
           notify({ type: 'success', message: 'Registration successful! Please verify your email.' });
           navigate('/verify-email');

@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ChatMessageResource extends JsonResource
 {
+    use Concerns\ResolvesMediaUrls;
+
     public function toArray(Request $request): array
     {
         return [
@@ -15,7 +17,7 @@ class ChatMessageResource extends JsonResource
             'sender_id'       => $this->sender_id,
             'message_type'    => $this->message_type,
             'content'         => $this->content,
-            'attachment_url'  => $this->attachment_url,
+            'attachment_url'  => self::resolveMediaUrl($this->attachment_url),
             'attachment_name' => $this->attachment_name,
             'read_at'         => $this->read_at?->toISOString(),
             'created_at'      => $this->created_at?->toISOString(),
@@ -24,7 +26,7 @@ class ChatMessageResource extends JsonResource
             'sender' => $this->whenLoaded('sender', fn () => [
                 'id'       => $this->sender->id,
                 'fullname' => $this->sender->fullname,
-                'avatar'   => $this->sender->avatar,
+                'avatar'   => self::resolveMediaUrl($this->sender->avatar),
             ]),
         ];
     }
