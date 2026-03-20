@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Users, Search, ChevronLeft, ChevronRight, Shield, ShieldCheck, ShieldX,
   UserPlus, Stethoscope, Building2, Crown, Loader2,
   Ban, RotateCcw, ChevronDown, KeyRound, Eye, X, AlertTriangle, ExternalLink,
+  Calendar, FileText, MessageSquare, Download, Activity, Mail, Phone, Clock,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 
@@ -49,7 +50,7 @@ function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 lg:left-64 lg:w-[calc(100%-16rem)] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
@@ -94,16 +95,18 @@ function UserDetailDrawer({ user: u, onClose }) {
   if (!u) return null;
   const roleMeta = getRoleMeta(u.role_id);
   const RoleIcon = roleMeta.icon;
+  const isDoctor = u.role_id === 'doctor';
+  const isClinicOwner = u.role_id === 'clinicOwner';
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/40" onClick={onClose}>
-      <div className="w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto animate-slide-in-right" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 lg:left-64 lg:w-[calc(100%-16rem)] flex justify-end bg-black/40 backdrop-blur-sm" onClick={onClose}>
+      <div className="w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between z-10">
-          <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2"><Eye className="w-4 h-4 text-indigo-600" /> User Profile</h3>
+          <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2"><Eye className="w-4 h-4 text-purple-600" /> User 360</h3>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"><X className="w-4 h-4 text-gray-500" /></button>
         </div>
         <div className="p-5 space-y-5">
-          {/* Avatar + Name */}
+          {/* Avatar + Name + Role Badge */}
           <div className="text-center">
             <img src={u.avatar || '/images/default/default-avatar.svg'} alt="" className="w-20 h-20 rounded-2xl object-cover mx-auto border-2 border-gray-100 shadow-sm" />
             <h4 className="text-lg font-bold text-gray-900 mt-3">{u.fullname}</h4>
@@ -111,17 +114,114 @@ function UserDetailDrawer({ user: u, onClose }) {
               <RoleIcon className="w-3 h-3" /> {roleMeta.label}
             </span>
           </div>
-          {/* Info Grid */}
-          <div className="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
-            <InfoRow label="Email" value={u.email} />
-            <InfoRow label="Phone" value={u.mobile || '—'} />
-            <InfoRow label="Clinic" value={u.clinic?.fullname || '—'} />
-            <InfoRow label="Registered" value={u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'} />
-            <InfoRow label="Last Login" value={u.last_login ? new Date(u.last_login).toLocaleString() : '—'} />
-            <InfoRow label="Verified" value={u.is_verified ? '✅ Yes' : '❌ No'} />
-            <InfoRow label="Status" value={u.is_active ? '🟢 Active' : '🔴 Suspended'} />
+
+          {/* Contact Info */}
+          <div className="bg-gray-50 rounded-xl p-4 space-y-2.5">
+            <div className="flex items-center gap-2.5">
+              <Mail className="w-3.5 h-3.5 text-gray-400" />
+              <span className="text-xs text-gray-700 truncate">{u.email}</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <Phone className="w-3.5 h-3.5 text-gray-400" />
+              <span className="text-xs text-gray-700">{u.mobile || '—'}</span>
+            </div>
+            {(isDoctor || isClinicOwner) && u.clinic?.fullname && (
+              <div className="flex items-center gap-2.5">
+                <Building2 className="w-3.5 h-3.5 text-gray-400" />
+                <span className="text-xs text-gray-700">{u.clinic.fullname}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-2.5">
+              <Clock className="w-3.5 h-3.5 text-gray-400" />
+              <span className="text-xs text-gray-500">Registered {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</span>
+            </div>
           </div>
-          <div className="text-[10px] text-gray-400 text-center">ID: {u.id}</div>
+
+          {/* Status Grid */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className={`rounded-xl p-3 border ${u.is_active ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
+              <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_active ? 'text-emerald-600' : 'text-red-600'}`}>Account</p>
+              <p className={`text-sm font-bold ${u.is_active ? 'text-emerald-800' : 'text-red-800'}`}>{u.is_active ? 'Active' : 'Suspended'}</p>
+            </div>
+            <div className={`rounded-xl p-3 border ${u.is_verified ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
+              <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_verified ? 'text-emerald-600' : 'text-amber-600'}`}>Verification</p>
+              <p className={`text-sm font-bold ${u.is_verified ? 'text-emerald-800' : 'text-amber-800'}`}>{u.is_verified ? 'Verified' : 'Unverified'}</p>
+            </div>
+            <div className="rounded-xl p-3 border border-gray-200 bg-white">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Last Login</p>
+              <p className="text-xs font-semibold text-gray-800 mt-0.5">{u.last_login ? new Date(u.last_login).toLocaleDateString() : 'Never'}</p>
+            </div>
+            <div className="rounded-xl p-3 border border-gray-200 bg-white">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Role</p>
+              <p className="text-xs font-semibold text-gray-800 mt-0.5">{roleMeta.label}</p>
+            </div>
+          </div>
+
+          {/* Doctor-specific: Verification Docs + Appointments */}
+          {isDoctor && (
+            <div className="space-y-2">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Doctor Details</p>
+              <Link
+                to={`/admin/verification/review?id=${u.id}`}
+                onClick={onClose}
+                className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:bg-purple-50 hover:border-purple-200 transition-all group"
+              >
+                <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center group-hover:bg-purple-100">
+                  <FileText className="w-4 h-4 text-purple-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-gray-900">Verification Documents</p>
+                  <p className="text-[10px] text-gray-400">View submitted certificates & ID</p>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-purple-500" />
+              </Link>
+              <div className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50/50">
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-indigo-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-gray-900">Appointments</p>
+                  <p className="text-[10px] text-gray-400">{u.appointments_count ?? '—'} total</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Clinic Owner specific */}
+          {isClinicOwner && u.clinic && (
+            <div className="space-y-2">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Clinic Info</p>
+              <div className="p-3 rounded-xl border border-gray-200 bg-gray-50/50">
+                <p className="text-xs font-semibold text-gray-900">{u.clinic.fullname}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">{u.clinic.address || 'No address'}</p>
+                {u.clinic.phone && <p className="text-[10px] text-gray-400 mt-0.5">{u.clinic.phone}</p>}
+              </div>
+            </div>
+          )}
+
+          {/* Activity Summary */}
+          <div className="space-y-2">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Activity</p>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="text-center p-2.5 rounded-xl border border-gray-200 bg-white">
+                <MessageSquare className="w-4 h-4 text-teal-500 mx-auto" />
+                <p className="text-sm font-bold text-gray-900 mt-1">{u.posts_count ?? '—'}</p>
+                <p className="text-[9px] text-gray-400">Posts</p>
+              </div>
+              <div className="text-center p-2.5 rounded-xl border border-gray-200 bg-white">
+                <Calendar className="w-4 h-4 text-indigo-500 mx-auto" />
+                <p className="text-sm font-bold text-gray-900 mt-1">{u.appointments_count ?? '—'}</p>
+                <p className="text-[9px] text-gray-400">Appts</p>
+              </div>
+              <div className="text-center p-2.5 rounded-xl border border-gray-200 bg-white">
+                <Activity className="w-4 h-4 text-amber-500 mx-auto" />
+                <p className="text-sm font-bold text-gray-900 mt-1">{u.reviews_count ?? '—'}</p>
+                <p className="text-[9px] text-gray-400">Reviews</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-[10px] text-gray-300 text-center pt-2 border-t border-gray-100">ID: {u.id}</div>
         </div>
       </div>
     </div>
@@ -238,8 +338,8 @@ export default function AdminUserManagement() {
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-          <Users className="w-5 h-5 text-indigo-600" />
-          {t('admin.users.title', 'User Management')}
+          <Users className="w-5 h-5 text-purple-600" />
+          {t('admin.users.title', 'User 360')}
         </h1>
         <p className="text-sm text-gray-500 mt-0.5">{t('admin.users.subtitle', 'Manage all platform users, roles and access')}</p>
       </div>
