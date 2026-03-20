@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { NavLink, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -322,7 +322,13 @@ const AdminLayout = () => {
 
         {/* Page content — fills remaining width, no max-w constraint */}
         <main className="flex-1 py-4 lg:py-6">
-          <Outlet />
+          <Suspense fallback={
+            <div className="flex items-center justify-center py-20">
+              <div className="w-6 h-6 border-2 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
+            </div>
+          }>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>
