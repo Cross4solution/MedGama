@@ -189,6 +189,15 @@ class SuperAdminService
     {
         $report = MedStreamReport::findOrFail($reportId);
         $report->update(['admin_status' => 'reviewed']);
+
+        AuditLog::log(
+            action: 'report.dismissed',
+            resourceType: 'MedStreamReport',
+            resourceId: $report->id,
+            newValues: ['admin_status' => 'reviewed', 'post_id' => $report->post_id],
+            description: "Dismissed content report #{$report->id}",
+        );
+
         return $report->refresh();
     }
 
@@ -204,6 +213,14 @@ class SuperAdminService
             MedStreamPost::where('id', $report->post_id)->update(['is_hidden' => true]);
         });
 
+        AuditLog::log(
+            action: 'report.content_removed',
+            resourceType: 'MedStreamReport',
+            resourceId: $report->id,
+            newValues: ['admin_status' => 'hidden', 'post_id' => $report->post_id],
+            description: "Removed reported content — post hidden for report #{$report->id}",
+        );
+
         return $report->refresh();
     }
 
@@ -213,8 +230,18 @@ class SuperAdminService
     public function suspendUser(string $userId, bool $suspend): User
     {
         $user = User::findOrFail($userId);
+        $oldActive = (bool) $user->is_active;
         $user->is_active = !$suspend;
         $user->save();
+
+        AuditLog::log(
+            action: $suspend ? 'user.suspended' : 'user.reactivated',
+            resourceType: 'User',
+            resourceId: $user->id,
+            oldValues: ['is_active' => $oldActive],
+            newValues: ['is_active' => !$suspend],
+            description: ($suspend ? 'Suspended' : 'Reactivated') . " user: {$user->fullname}",
+        );
 
         Cache::forget('superadmin:dashboard');
 
@@ -868,5 +895,35 @@ class SuperAdminService
             'rejected' => DoctorReview::rejected()->count(),
             'hidden'   => DoctorReview::hidden()->count(),
         ];
+    }
+
+    // ══════════════════════════════════════════════
+    //  PRIVATE HELPERS
+    // ══════════════════════════════════════════════
+
+    /**
+     * Convenience wrapper around AuditLog::log with explicit userId.
+     */
+    private function logAudit(
+        string $userId,
+        string $action,
+        string $resourceType,
+        ?string $resourceId = null,
+        ?array $oldValues = null,
+        ?array $newValues = null,
+        ?string $description = null,
+    ): void {
+        AuditLog::create([
+            'user_id'       => $userId,
+            'action'        => $action,
+            'resource_type' => $resourceType,
+            'resource_id'   => $resourceId,
+            'old_values'    => $oldValues,
+            'new_values'    => $newValues,
+            'ip_address'    => request()?->ip(),
+            'user_agent'    => request()?->userAgent(),
+            'description'   => $description,
+            'created_at'    => now(),
+        ]);
     }
 }
