@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Clinic;
 use App\Models\ClinicVerification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -143,6 +145,16 @@ class ClinicVerificationController extends Controller
                 'is_verified'         => true,
             ]);
 
+            AuditLog::log(
+                action: 'clinic_verification.approved',
+                resourceType: 'ClinicVerification',
+                resourceId: $verification->id,
+                newValues: ['clinic_id' => $verification->clinic_id, 'status' => 'approved'],
+                description: "Approved clinic verification for: {$verification->clinic->name}",
+            );
+
+            Cache::forget('superadmin:dashboard');
+
             return response()->json([
                 'message' => 'Clinic verification approved',
                 'verification_status' => 'verified',
@@ -170,6 +182,14 @@ class ClinicVerificationController extends Controller
             $verification->clinic->update([
                 'verification_status' => 'rejected',
             ]);
+
+            AuditLog::log(
+                action: 'clinic_verification.rejected',
+                resourceType: 'ClinicVerification',
+                resourceId: $verification->id,
+                newValues: ['clinic_id' => $verification->clinic_id, 'status' => 'rejected', 'notes' => $request->notes],
+                description: "Rejected clinic verification for: {$verification->clinic->name}",
+            );
 
             return response()->json([
                 'message' => 'Clinic verification rejected',

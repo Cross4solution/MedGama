@@ -5,6 +5,7 @@ import {
   Loader2, FileText, Eye, Clock, X, Download, AlertTriangle, ExternalLink,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 const DOC_TYPE_LABELS = {
   diploma: 'Diploma',
@@ -30,7 +31,8 @@ function DocumentPreviewModal({ vr, onClose, token }) {
   const isImage = vr.mime_type?.startsWith('image/');
 
   return (
-    <div className="fixed inset-0 z-50 lg:left-64 lg:w-[calc(100%-16rem)] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="lg:pl-64 w-full flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
           <div>
@@ -65,6 +67,7 @@ function DocumentPreviewModal({ vr, onClose, token }) {
           </div>
         )}
       </div>
+      </div>
     </div>
   );
 }
@@ -77,7 +80,8 @@ function RejectModal({ vr, onClose, onConfirm, loading }) {
   if (!vr) return null;
 
   return (
-    <div className="fixed inset-0 z-50 lg:left-64 lg:w-[calc(100%-16rem)] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="lg:pl-64 w-full flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
@@ -107,6 +111,7 @@ function RejectModal({ vr, onClose, onConfirm, loading }) {
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />} Reject
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
@@ -323,7 +328,7 @@ export default function AdminVerification() {
                         <tr key={vr.id} className="hover:bg-gray-50/40 transition-colors">
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2.5">
-                              <img src={vr.doctor?.avatar || '/images/default/default-avatar.svg'} alt="" className="w-8 h-8 rounded-lg object-cover" />
+                              <img src={resolveStorageUrl(vr.doctor?.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-8 h-8 rounded-lg object-cover" />
                               <div>
                                 <span className="font-medium text-gray-900 block">{vr.doctor?.fullname}</span>
                                 <span className="text-[11px] text-gray-400">{vr.doctor?.email}</span>
@@ -447,7 +452,7 @@ export default function AdminVerification() {
                       <tr key={d.id} className="hover:bg-gray-50/40 transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2.5">
-                            <img src={d.avatar || '/images/default/default-avatar.svg'} alt="" className="w-8 h-8 rounded-lg object-cover" />
+                            <img src={resolveStorageUrl(d.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-8 h-8 rounded-lg object-cover" />
                             <span className="font-medium text-gray-900">{d.fullname}</span>
                           </div>
                         </td>

@@ -8,6 +8,7 @@ import {
   Download, RefreshCw, Lock, CreditCard, ChevronDown,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 // ─── Action icon map ─────────────────────────────────────────
 const ACTION_ICONS = {
@@ -431,7 +432,7 @@ export default function AdminAuditLogs() {
                 {userResults.map(u => (
                   <button key={u.id} onClick={() => selectUser(u)}
                     className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left">
-                    <img src={u.avatar || '/images/default/default-avatar.svg'} alt="" className="w-5 h-5 rounded-full object-cover" />
+                    <img src={resolveStorageUrl(u.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-5 h-5 rounded-full object-cover" />
                     <div>
                       <p className="text-xs font-medium text-gray-900">{u.fullname}</p>
                       <p className="text-[10px] text-gray-400">{u.email} · {u.role_id}</p>

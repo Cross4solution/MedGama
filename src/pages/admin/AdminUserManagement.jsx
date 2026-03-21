@@ -8,6 +8,7 @@ import {
   Calendar, FileText, MessageSquare, Download, Activity, Mail, Phone, Clock,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 const ROLES = [
   { key: 'patient',     label: 'Patient',      icon: Users,       color: 'bg-blue-50 text-blue-600 border-blue-200' },
@@ -50,7 +51,8 @@ function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 lg:left-64 lg:w-[calc(100%-16rem)] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="lg:pl-64 w-full flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
@@ -84,6 +86,7 @@ function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
           </div>
         </form>
       </div>
+      </div>
     </div>
   );
 }
@@ -99,7 +102,8 @@ function UserDetailDrawer({ user: u, onClose }) {
   const isClinicOwner = u.role_id === 'clinicOwner';
 
   return (
-    <div className="fixed inset-0 z-50 lg:left-64 lg:w-[calc(100%-16rem)] flex justify-end bg-black/40 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm" onClick={onClose}>
+      <div className="lg:pl-64 w-full flex justify-end">
       <div className="w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between z-10">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2"><Eye className="w-4 h-4 text-purple-600" /> User 360</h3>
@@ -108,7 +112,7 @@ function UserDetailDrawer({ user: u, onClose }) {
         <div className="p-5 space-y-5">
           {/* Avatar + Name + Role Badge */}
           <div className="text-center">
-            <img src={u.avatar || '/images/default/default-avatar.svg'} alt="" className="w-20 h-20 rounded-2xl object-cover mx-auto border-2 border-gray-100 shadow-sm" />
+            <img src={resolveStorageUrl(u.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-20 h-20 rounded-2xl object-cover mx-auto border-2 border-gray-100 shadow-sm" />
             <h4 className="text-lg font-bold text-gray-900 mt-3">{u.fullname}</h4>
             <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${roleMeta.color} mt-1.5`}>
               <RoleIcon className="w-3 h-3" /> {roleMeta.label}
@@ -223,6 +227,7 @@ function UserDetailDrawer({ user: u, onClose }) {
 
           <div className="text-[10px] text-gray-300 text-center pt-2 border-t border-gray-100">ID: {u.id}</div>
         </div>
+      </div>
       </div>
     </div>
   );
@@ -461,7 +466,7 @@ export default function AdminUserManagement() {
                     <tr key={u.id} className="hover:bg-gray-50/40 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
-                          <img src={u.avatar || '/images/default/default-avatar.svg'} alt="" className="w-8 h-8 rounded-full object-cover border border-gray-200" />
+                          <img src={resolveStorageUrl(u.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-8 h-8 rounded-full object-cover border border-gray-200" />
                           <div>
                             <p className="text-sm font-medium text-gray-900 leading-tight">{u.fullname}</p>
                             {u.mobile && <p className="text-[10px] text-gray-400">{u.mobile}</p>}

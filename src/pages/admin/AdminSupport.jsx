@@ -101,7 +101,8 @@ function TicketDrawer({ ticketId, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 lg:left-64 lg:w-[calc(100%-16rem)] flex justify-end bg-black/40 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm" onClick={onClose}>
+      <div className="lg:pl-64 w-full flex justify-end h-full">
       <div className="w-full max-w-xl bg-white h-full shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Drawer Header */}
         <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between z-10 flex-shrink-0">
@@ -231,6 +232,7 @@ function TicketDrawer({ ticketId, onClose }) {
             </div>
           </form>
         )}
+      </div>
       </div>
     </div>
   );

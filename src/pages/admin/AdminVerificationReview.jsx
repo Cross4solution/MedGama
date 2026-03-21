@@ -8,6 +8,7 @@ import {
   ZoomIn, ZoomOut, RotateCw, Maximize2,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 const DOC_TYPE_LABELS = {
   diploma: 'Diploma',
@@ -126,7 +127,8 @@ function RejectModal({ vr, onClose, onConfirm, loading }) {
   if (!vr) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="lg:pl-64 w-full flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
@@ -162,6 +164,7 @@ function RejectModal({ vr, onClose, onConfirm, loading }) {
             {t('admin.review.rejectBtn', 'Reject')}
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
@@ -269,7 +272,7 @@ export default function AdminVerificationReview() {
         <div className="p-5">
           <div className="flex items-start gap-4">
             <img
-              src={doctor.avatar || '/images/default/default-avatar.svg'}
+              src={resolveStorageUrl(doctor.avatar) || '/images/default/default-avatar.svg'}
               alt=""
               className="w-16 h-16 rounded-2xl object-cover border-2 border-gray-200"
             />

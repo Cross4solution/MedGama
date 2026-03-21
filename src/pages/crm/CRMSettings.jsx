@@ -42,7 +42,7 @@ const ALL_TABS = [
 
 const CRMSettings = ({ standalone = false }) => {
   const { t, i18n } = useTranslation();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const location = useLocation();
   const hasCrm = !!(user?.is_crm_active);
   const TABS = ALL_TABS.map(tab => ({
@@ -146,18 +146,28 @@ const CRMSettings = ({ standalone = false }) => {
     }
   }, [user]);
 
-  // Load verification requests when tab is active
+  // Load verification requests when tab is active + poll every 15s for real-time admin decisions
   const fetchVerificationRequests = useCallback(async () => {
     setVerificationLoading(true);
     try {
       const res = await doctorProfileAPI.getVerificationRequests();
-      setVerificationRequests(res?.verification_requests || res?.data?.verification_requests || []);
+      const docs = res?.verification_requests || res?.data?.verification_requests || [];
+      setVerificationRequests(docs);
+      // Sync verified status to user context when admin approves
+      const hasApproved = Array.isArray(docs) && docs.some(d => d.status === 'approved');
+      if (hasApproved && !user?.is_verified) {
+        updateUser?.({ is_verified: true });
+      }
     } catch { setVerificationRequests([]); }
     setVerificationLoading(false);
-  }, []);
+  }, [user?.is_verified, updateUser]);
 
   useEffect(() => {
-    if (activeTab === 'verification') fetchVerificationRequests();
+    if (activeTab === 'verification') {
+      fetchVerificationRequests();
+      const poll = setInterval(fetchVerificationRequests, 15000);
+      return () => clearInterval(poll);
+    }
   }, [activeTab, fetchVerificationRequests]);
 
   const handleVerificationUpload = async () => {
