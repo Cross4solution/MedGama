@@ -302,6 +302,60 @@ class SuperAdminService
     }
 
     // ══════════════════════════════════════════════
+    //  USER 360 VIEW
+    // ══════════════════════════════════════════════
+
+    /**
+     * Full user detail for admin User 360 view.
+     * Returns profile, recent appointments, verification docs, audit trail, counts.
+     */
+    public function getUserDetail(string $userId): array
+    {
+        $user = User::with(['clinic:id,fullname,address,phone'])
+            ->findOrFail($userId);
+
+        // Recent appointments (last 10)
+        $appointments = Appointment::where('doctor_id', $user->id)
+            ->orWhere('patient_id', $user->id)
+            ->with(['doctor:id,fullname,avatar', 'patient:id,fullname,avatar'])
+            ->orderByDesc('appointment_date')
+            ->limit(10)
+            ->get(['id', 'doctor_id', 'patient_id', 'appointment_date', 'start_time', 'end_time', 'status', 'appointment_type']);
+
+        // Verification documents (doctors only)
+        $verificationDocs = [];
+        if ($user->role_id === 'doctor') {
+            $verificationDocs = VerificationRequest::where('doctor_id', $user->id)
+                ->with('reviewer:id,fullname')
+                ->orderByDesc('created_at')
+                ->limit(20)
+                ->get(['id', 'document_type', 'file_name', 'document_label', 'status', 'rejection_reason', 'reviewed_by', 'reviewed_at', 'created_at']);
+        }
+
+        // Recent audit logs (last 15)
+        $auditLogs = AuditLog::where('user_id', $user->id)
+            ->orderByDesc('created_at')
+            ->limit(15)
+            ->get(['id', 'action', 'resource_type', 'resource_id', 'description', 'ip_address', 'created_at']);
+
+        // Activity counts
+        $counts = [
+            'appointments' => Appointment::where('doctor_id', $user->id)->orWhere('patient_id', $user->id)->count(),
+            'posts'        => MedStreamPost::where('author_id', $user->id)->count(),
+            'reviews'      => DB::table('doctor_reviews')->where('doctor_id', $user->id)->orWhere('patient_id', $user->id)->count(),
+            'audit_logs'   => AuditLog::where('user_id', $user->id)->count(),
+        ];
+
+        return [
+            'user'              => $user,
+            'appointments'      => $appointments,
+            'verification_docs' => $verificationDocs,
+            'audit_logs'        => $auditLogs,
+            'counts'            => $counts,
+        ];
+    }
+
+    // ══════════════════════════════════════════════
     //  GROWTH TREND (monthly registration chart)
     // ══════════════════════════════════════════════
 

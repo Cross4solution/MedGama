@@ -199,6 +199,14 @@ class SuperAdminController extends Controller
     }
 
     /**
+     * GET /api/admin/users/{id} — User 360 detail view
+     */
+    public function getUserDetail(string $id): JsonResponse
+    {
+        return response()->json($this->superAdminService->getUserDetail($id));
+    }
+
+    /**
      * PUT /api/admin/users/{id}/role — Update user role
      */
     public function updateUserRole(Request $request, string $id): JsonResponse

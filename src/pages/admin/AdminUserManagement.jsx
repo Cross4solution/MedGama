@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import StatusBadge from '../../components/ui/StatusBadge';
 
 const ROLES = [
   { key: 'patient',     label: 'Patient',      icon: Users,       color: 'bg-blue-50 text-blue-600 border-blue-200' },
@@ -92,140 +93,218 @@ function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
 }
 
 /* ═══════════════════════════════════════════
-   User Detail Drawer
+   User Detail Drawer — "User 360"
+   Fetches detailed data from /admin/users/{id}
    ═══════════════════════════════════════════ */
+const DRAWER_TABS = [
+  { key: 'overview', label: 'Overview', icon: Eye },
+  { key: 'appointments', label: 'Appointments', icon: Calendar },
+  { key: 'audit', label: 'Audit Trail', icon: Activity },
+];
+
 function UserDetailDrawer({ user: u, onClose }) {
+  const [tab, setTab] = useState('overview');
+  const [detail, setDetail] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!u?.id) return;
+    setLoading(true);
+    adminAPI.getUserDetail(u.id)
+      .then(res => setDetail(res?.data || res))
+      .catch(() => setDetail(null))
+      .finally(() => setLoading(false));
+  }, [u?.id]);
+
   if (!u) return null;
   const roleMeta = getRoleMeta(u.role_id);
   const RoleIcon = roleMeta.icon;
   const isDoctor = u.role_id === 'doctor';
   const isClinicOwner = u.role_id === 'clinicOwner';
+  const counts = detail?.counts || {};
+  const appointments = detail?.appointments || [];
+  const verificationDocs = detail?.verification_docs || [];
+  const auditLogs = detail?.audit_logs || [];
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="lg:pl-64 w-full flex justify-end">
+      <div className="lg:pl-64 w-full flex justify-end h-full">
       <div className="w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between z-10">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2"><Eye className="w-4 h-4 text-purple-600" /> User 360</h3>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"><X className="w-4 h-4 text-gray-500" /></button>
         </div>
-        <div className="p-5 space-y-5">
-          {/* Avatar + Name + Role Badge */}
-          <div className="text-center">
-            <img src={resolveStorageUrl(u.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-20 h-20 rounded-2xl object-cover mx-auto border-2 border-gray-100 shadow-sm" />
-            <h4 className="text-lg font-bold text-gray-900 mt-3">{u.fullname}</h4>
-            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${roleMeta.color} mt-1.5`}>
-              <RoleIcon className="w-3 h-3" /> {roleMeta.label}
-            </span>
-          </div>
 
-          {/* Contact Info */}
-          <div className="bg-gray-50 rounded-xl p-4 space-y-2.5">
-            <div className="flex items-center gap-2.5">
-              <Mail className="w-3.5 h-3.5 text-gray-400" />
-              <span className="text-xs text-gray-700 truncate">{u.email}</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <Phone className="w-3.5 h-3.5 text-gray-400" />
-              <span className="text-xs text-gray-700">{u.mobile || '—'}</span>
-            </div>
-            {(isDoctor || isClinicOwner) && u.clinic?.fullname && (
-              <div className="flex items-center gap-2.5">
-                <Building2 className="w-3.5 h-3.5 text-gray-400" />
-                <span className="text-xs text-gray-700">{u.clinic.fullname}</span>
-              </div>
-            )}
-            <div className="flex items-center gap-2.5">
-              <Clock className="w-3.5 h-3.5 text-gray-400" />
-              <span className="text-xs text-gray-500">Registered {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</span>
-            </div>
+        {/* Profile Header */}
+        <div className="p-5 pb-3 text-center border-b border-gray-100">
+          <img src={resolveStorageUrl(u.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-16 h-16 rounded-2xl object-cover mx-auto border-2 border-gray-100 shadow-sm" />
+          <h4 className="text-base font-bold text-gray-900 mt-2">{u.fullname}</h4>
+          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${roleMeta.color} mt-1`}>
+            <RoleIcon className="w-3 h-3" /> {roleMeta.label}
+          </span>
+          <div className="flex items-center justify-center gap-4 mt-3 text-[11px] text-gray-500">
+            <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {u.email}</span>
+            {u.mobile && <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {u.mobile}</span>}
           </div>
+        </div>
 
-          {/* Status Grid */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className={`rounded-xl p-3 border ${u.is_active ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
-              <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_active ? 'text-emerald-600' : 'text-red-600'}`}>Account</p>
-              <p className={`text-sm font-bold ${u.is_active ? 'text-emerald-800' : 'text-red-800'}`}>{u.is_active ? 'Active' : 'Suspended'}</p>
-            </div>
-            <div className={`rounded-xl p-3 border ${u.is_verified ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
-              <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_verified ? 'text-emerald-600' : 'text-amber-600'}`}>Verification</p>
-              <p className={`text-sm font-bold ${u.is_verified ? 'text-emerald-800' : 'text-amber-800'}`}>{u.is_verified ? 'Verified' : 'Unverified'}</p>
-            </div>
-            <div className="rounded-xl p-3 border border-gray-200 bg-white">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Last Login</p>
-              <p className="text-xs font-semibold text-gray-800 mt-0.5">{u.last_login ? new Date(u.last_login).toLocaleDateString() : 'Never'}</p>
-            </div>
-            <div className="rounded-xl p-3 border border-gray-200 bg-white">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Role</p>
-              <p className="text-xs font-semibold text-gray-800 mt-0.5">{roleMeta.label}</p>
-            </div>
-          </div>
+        {/* Tabs */}
+        <div className="flex border-b border-gray-100 px-5">
+          {DRAWER_TABS.map(t => {
+            const Icon = t.icon;
+            return (
+              <button key={t.key} onClick={() => setTab(t.key)}
+                className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
+                  tab === t.key ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-400 hover:text-gray-600'
+                }`}>
+                <Icon className="w-3.5 h-3.5" /> {t.label}
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Doctor-specific: Verification Docs + Appointments */}
-          {isDoctor && (
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Doctor Details</p>
-              <Link
-                to={`/admin/verification/review?id=${u.id}`}
-                onClick={onClose}
-                className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:bg-purple-50 hover:border-purple-200 transition-all group"
-              >
-                <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center group-hover:bg-purple-100">
-                  <FileText className="w-4 h-4 text-purple-600" />
+        <div className="p-5 space-y-4">
+          {loading && <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 text-gray-300 animate-spin" /></div>}
+
+          {/* ── OVERVIEW TAB ── */}
+          {!loading && tab === 'overview' && (
+            <>
+              {/* Status Grid */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className={`rounded-xl p-3 border ${u.is_active ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
+                  <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_active ? 'text-emerald-600' : 'text-red-600'}`}>Account</p>
+                  <p className={`text-sm font-bold ${u.is_active ? 'text-emerald-800' : 'text-red-800'}`}>{u.is_active ? 'Active' : 'Suspended'}</p>
                 </div>
-                <div className="flex-1">
-                  <p className="text-xs font-semibold text-gray-900">Verification Documents</p>
-                  <p className="text-[10px] text-gray-400">View submitted certificates & ID</p>
+                <div className={`rounded-xl p-3 border ${u.is_verified ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
+                  <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_verified ? 'text-emerald-600' : 'text-amber-600'}`}>Verification</p>
+                  <p className={`text-sm font-bold ${u.is_verified ? 'text-emerald-800' : 'text-amber-800'}`}>{u.is_verified ? 'Verified' : 'Unverified'}</p>
                 </div>
-                <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-purple-500" />
-              </Link>
-              <div className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-gray-50/50">
-                <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-                  <Calendar className="w-4 h-4 text-indigo-600" />
+                <div className="rounded-xl p-3 border border-gray-200 bg-white">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Last Login</p>
+                  <p className="text-xs font-semibold text-gray-800 mt-0.5">{u.last_login ? new Date(u.last_login).toLocaleDateString() : 'Never'}</p>
                 </div>
-                <div className="flex-1">
-                  <p className="text-xs font-semibold text-gray-900">Appointments</p>
-                  <p className="text-[10px] text-gray-400">{u.appointments_count ?? '—'} total</p>
+                <div className="rounded-xl p-3 border border-gray-200 bg-white">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Registered</p>
+                  <p className="text-xs font-semibold text-gray-800 mt-0.5">{u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</p>
                 </div>
               </div>
-            </div>
+
+              {/* Activity Counts */}
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { label: 'Appts', value: counts.appointments, icon: Calendar, color: 'text-indigo-500' },
+                  { label: 'Posts', value: counts.posts, icon: MessageSquare, color: 'text-teal-500' },
+                  { label: 'Reviews', value: counts.reviews, icon: Activity, color: 'text-amber-500' },
+                  { label: 'Logs', value: counts.audit_logs, icon: FileText, color: 'text-gray-400' },
+                ].map(c => {
+                  const CIcon = c.icon;
+                  return (
+                    <div key={c.label} className="text-center p-2 rounded-xl border border-gray-200 bg-white">
+                      <CIcon className={`w-3.5 h-3.5 mx-auto ${c.color}`} />
+                      <p className="text-sm font-bold text-gray-900 mt-0.5">{c.value ?? '—'}</p>
+                      <p className="text-[9px] text-gray-400">{c.label}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Doctor: Verification Docs */}
+              {isDoctor && verificationDocs.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Verification Documents</p>
+                  {verificationDocs.map(vr => (
+                    <div key={vr.id} className="flex items-center gap-3 p-2.5 rounded-xl border border-gray-200 bg-gray-50/50">
+                      <FileText className="w-4 h-4 text-purple-500 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-gray-900 truncate">{vr.document_label || vr.file_name}</p>
+                        <p className="text-[10px] text-gray-400">{vr.document_type?.replace(/_/g, ' ')}</p>
+                      </div>
+                      <StatusBadge status={vr.status} size="xs" />
+                    </div>
+                  ))}
+                  <Link to={`/admin/verification/review?id=${u.id}`} onClick={onClose}
+                    className="flex items-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 mt-1">
+                    <ExternalLink className="w-3 h-3" /> Open Full Review
+                  </Link>
+                </div>
+              )}
+
+              {/* Clinic Owner specific */}
+              {isClinicOwner && u.clinic && (
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Clinic Info</p>
+                  <div className="p-3 rounded-xl border border-gray-200 bg-gray-50/50">
+                    <p className="text-xs font-semibold text-gray-900">{u.clinic.fullname}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">{u.clinic.address || 'No address'}</p>
+                    {u.clinic.phone && <p className="text-[10px] text-gray-400 mt-0.5">{u.clinic.phone}</p>}
+                  </div>
+                </div>
+              )}
+
+              <div className="text-[10px] text-gray-300 text-center pt-2 border-t border-gray-100">ID: {u.id}</div>
+            </>
           )}
 
-          {/* Clinic Owner specific */}
-          {isClinicOwner && u.clinic && (
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Clinic Info</p>
-              <div className="p-3 rounded-xl border border-gray-200 bg-gray-50/50">
-                <p className="text-xs font-semibold text-gray-900">{u.clinic.fullname}</p>
-                <p className="text-[10px] text-gray-400 mt-0.5">{u.clinic.address || 'No address'}</p>
-                {u.clinic.phone && <p className="text-[10px] text-gray-400 mt-0.5">{u.clinic.phone}</p>}
-              </div>
-            </div>
+          {/* ── APPOINTMENTS TAB ── */}
+          {!loading && tab === 'appointments' && (
+            <>
+              {appointments.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-6">No appointments found</p>
+              ) : (
+                <div className="space-y-2">
+                  {appointments.map(apt => (
+                    <div key={apt.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-white hover:bg-gray-50/50 transition-colors">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                        apt.status === 'completed' ? 'bg-emerald-50' :
+                        apt.status === 'cancelled' ? 'bg-red-50' : 'bg-indigo-50'
+                      }`}>
+                        <Calendar className={`w-4 h-4 ${
+                          apt.status === 'completed' ? 'text-emerald-600' :
+                          apt.status === 'cancelled' ? 'text-red-500' : 'text-indigo-600'
+                        }`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-gray-900">
+                          {apt.appointment_date ? new Date(apt.appointment_date).toLocaleDateString() : '—'}
+                          {apt.start_time && <span className="text-gray-400 ml-1">{apt.start_time?.slice(0, 5)}</span>}
+                        </p>
+                        <p className="text-[10px] text-gray-400 truncate">
+                          {apt.doctor?.fullname && `Dr. ${apt.doctor.fullname}`}
+                          {apt.patient?.fullname && ` · ${apt.patient.fullname}`}
+                        </p>
+                      </div>
+                      <StatusBadge status={apt.status || 'pending'} size="xs" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
 
-          {/* Activity Summary */}
-          <div className="space-y-2">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Activity</p>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="text-center p-2.5 rounded-xl border border-gray-200 bg-white">
-                <MessageSquare className="w-4 h-4 text-teal-500 mx-auto" />
-                <p className="text-sm font-bold text-gray-900 mt-1">{u.posts_count ?? '—'}</p>
-                <p className="text-[9px] text-gray-400">Posts</p>
-              </div>
-              <div className="text-center p-2.5 rounded-xl border border-gray-200 bg-white">
-                <Calendar className="w-4 h-4 text-indigo-500 mx-auto" />
-                <p className="text-sm font-bold text-gray-900 mt-1">{u.appointments_count ?? '—'}</p>
-                <p className="text-[9px] text-gray-400">Appts</p>
-              </div>
-              <div className="text-center p-2.5 rounded-xl border border-gray-200 bg-white">
-                <Activity className="w-4 h-4 text-amber-500 mx-auto" />
-                <p className="text-sm font-bold text-gray-900 mt-1">{u.reviews_count ?? '—'}</p>
-                <p className="text-[9px] text-gray-400">Reviews</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-[10px] text-gray-300 text-center pt-2 border-t border-gray-100">ID: {u.id}</div>
+          {/* ── AUDIT TRAIL TAB ── */}
+          {!loading && tab === 'audit' && (
+            <>
+              {auditLogs.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-6">No audit logs found</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {auditLogs.map(log => (
+                    <div key={log.id} className="p-2.5 rounded-xl border border-gray-200 bg-white">
+                      <div className="flex items-center gap-2">
+                        <Activity className="w-3 h-3 text-gray-400 shrink-0" />
+                        <p className="text-xs font-medium text-gray-900 truncate flex-1">{log.action}</p>
+                        <span className="text-[9px] text-gray-400 shrink-0">
+                          {log.created_at ? new Date(log.created_at).toLocaleDateString() : ''}
+                        </span>
+                      </div>
+                      {log.description && <p className="text-[10px] text-gray-500 mt-0.5 ml-5 truncate">{log.description}</p>}
+                      {log.ip_address && <p className="text-[9px] text-gray-300 mt-0.5 ml-5">IP: {log.ip_address}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
       </div>

@@ -537,6 +537,7 @@ export const adminAPI = {
   // User management (Doc §14)
   users: (params) => api.get('/admin/users', { params }),
   userStats: () => api.get('/admin/users/stats'),
+  getUserDetail: (id) => api.get(`/admin/users/${id}`),
   updateUserRole: (id, role) => api.put(`/admin/users/${id}/role`, { role }),
   suspendUser: (id, suspend) => api.put(`/admin/users/${id}/suspend`, { suspend }),
   resetPassword: (id, password) => api.put(`/admin/users/${id}/reset-password`, { password }),

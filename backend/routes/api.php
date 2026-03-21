@@ -582,6 +582,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     // User management (Doc §14)
     Route::get('/users', [SuperAdminController::class, 'listUsers']);
     Route::get('/users/stats', [SuperAdminController::class, 'userStats']);
+    Route::get('/users/search', [SuperAdminController::class, 'searchUsers']);
+    Route::get('/users/{id}', [SuperAdminController::class, 'getUserDetail']);
     Route::put('/users/{id}/role', [SuperAdminController::class, 'updateUserRole']);
     Route::put('/users/{id}/suspend', [SuperAdminController::class, 'suspendUser']);
     Route::put('/users/{id}/reset-password', [SuperAdminController::class, 'resetPassword']);
@@ -598,9 +600,6 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     // Audit logs
     Route::get('/audit-logs', [SuperAdminController::class, 'auditLogs']);
     Route::get('/audit-logs/stats', [SuperAdminController::class, 'auditLogStats']);
-
-    // User search (for audit log filters)
-    Route::get('/users/search', [SuperAdminController::class, 'searchUsers']);
 
     // Catalog management (admin CRUD)
     Route::prefix('catalog')->group(function () {
