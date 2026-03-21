@@ -11,7 +11,7 @@ import { getStatusBadge } from '../../lib/constants';
  * @param {string} [label] - Override label text
  * @param {string} [className] - Additional classes
  */
-export default function StatusBadge({ status, size = 'sm', dot = false, label, className = '' }) {
+export default function StatusBadge({ status, size = 'sm', dot = false, icon: Icon, label, className = '' }) {
   const badge = getStatusBadge(status);
   const displayLabel = label || badge.label;
 
@@ -21,11 +21,18 @@ export default function StatusBadge({ status, size = 'sm', dot = false, label, c
     md: 'px-3 py-1.5 text-sm',
   };
 
+  const iconSize = {
+    xs: 'w-2.5 h-2.5',
+    sm: 'w-3 h-3',
+    md: 'w-3.5 h-3.5',
+  };
+
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full font-semibold border ${badge.bg} ${badge.text} ${badge.border} ${sizeMap[size] || sizeMap.sm} ${className}`}
+      className={`inline-flex items-center gap-1 rounded-full font-semibold border ${badge.bg} ${badge.text} ${badge.border} ${sizeMap[size] || sizeMap.sm} ${className}`}
     >
-      {dot && <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />}
+      {Icon && <Icon className={iconSize[size] || iconSize.sm} />}
+      {dot && !Icon && <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />}
       {displayLabel}
     </span>
   );

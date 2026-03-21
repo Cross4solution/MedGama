@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import StatusBadge from '../../components/ui/StatusBadge';
 
 const DOC_TYPE_LABELS = {
   diploma: 'Diploma',
@@ -360,9 +361,7 @@ export default function AdminVerificationReview() {
                       <p className="text-sm font-medium text-gray-900 truncate">{vr.document_label || vr.file_name}</p>
                       <p className="text-[10px] text-gray-400 mt-0.5">{DOC_TYPE_LABELS[vr.document_type] || vr.document_type}</p>
                       <div className="flex items-center gap-2 mt-1.5">
-                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold ${st.bg} ${st.text}`}>
-                          <StIcon className="w-2.5 h-2.5" /> {st.label}
-                        </span>
+                        <StatusBadge status={vr.status} icon={StIcon} size="xs" />
                         {vr.created_at && (
                           <span className="text-[9px] text-gray-400">{new Date(vr.created_at).toLocaleDateString()}</span>
                         )}

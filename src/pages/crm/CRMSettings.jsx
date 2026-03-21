@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { doctorProfileAPI, authAPI } from '../../lib/api';
 import { blockNonNumeric } from '../../utils/numericInput';
 import GlobalSuggest from '../../components/forms/GlobalSuggest';
+import StatusBadge from '../../components/ui/StatusBadge';
 
 const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 
@@ -1020,16 +1021,7 @@ const CRMSettings = ({ standalone = false }) => {
                             {vr.document_type?.replace(/_/g, ' ')} · {vr.created_at ? new Date(vr.created_at).toLocaleDateString() : ''}
                           </p>
                         </div>
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${
-                          vr.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                          vr.status === 'rejected' ? 'bg-red-50 text-red-700 border border-red-200' :
-                          'bg-amber-50 text-amber-700 border border-amber-200'
-                        }`}>
-                          {vr.status === 'approved' ? <CheckCircle className="w-3 h-3" /> :
-                           vr.status === 'rejected' ? <X className="w-3 h-3" /> :
-                           <Loader2 className="w-3 h-3" />}
-                          {vr.status.charAt(0).toUpperCase() + vr.status.slice(1)}
-                        </span>
+                        <StatusBadge status={vr.status} dot className="shrink-0" />
                         {vr.status === 'rejected' && vr.rejection_reason && (
                           <p className="text-[10px] text-red-500 max-w-[160px] truncate" title={vr.rejection_reason}>{vr.rejection_reason}</p>
                         )}

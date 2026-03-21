@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import StatusBadge from '../../components/ui/StatusBadge';
 
 const DOC_TYPE_LABELS = {
   diploma: 'Diploma',
@@ -322,8 +323,6 @@ export default function AdminVerification() {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {requests.map(vr => {
-                      const st = STATUS_STYLES[vr.status] || STATUS_STYLES.pending;
-                      const StIcon = st.icon;
                       return (
                         <tr key={vr.id} className="hover:bg-gray-50/40 transition-colors">
                           <td className="px-4 py-3">
@@ -356,9 +355,7 @@ export default function AdminVerification() {
                           </td>
                           <td className="px-4 py-3 text-gray-500 text-xs">{vr.created_at ? new Date(vr.created_at).toLocaleDateString() : '—'}</td>
                           <td className="px-4 py-3 text-center">
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${st.bg} ${st.text} border ${st.border}`}>
-                              <StIcon className="w-3 h-3" /> {st.label}
-                            </span>
+                            <StatusBadge status={vr.status} icon={vr.status === 'pending' ? Clock : vr.status === 'approved' ? CheckCircle : XCircle} />
                             {vr.status === 'rejected' && vr.rejection_reason && (
                               <p className="text-[10px] text-red-500 mt-1 max-w-[140px] truncate" title={vr.rejection_reason}>{vr.rejection_reason}</p>
                             )}
