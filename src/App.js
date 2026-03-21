@@ -106,7 +106,7 @@ function AppContent() {
   const navType = useNavigationType();
   const { user } = useAuth();
   // Show sidebar for all logged-in users (including patients), but not on CRM or verify-email pages
-  const hasSidebar = !!user && !location.pathname.startsWith('/crm') && location.pathname !== '/verify-email';
+  const hasSidebar = !!user && !location.pathname.startsWith('/crm') && !location.pathname.startsWith('/admin') && location.pathname !== '/verify-email';
 
   React.useEffect(() => {
     const path = String(location.pathname || '/');
