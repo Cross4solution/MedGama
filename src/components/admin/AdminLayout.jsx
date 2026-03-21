@@ -30,7 +30,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { adminAPI } from '../../lib/api';
+import { adminAPI, supportAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 // ── Admin Login Gate ──────────────────────────────────────
@@ -219,6 +219,7 @@ const AdminLayout = () => {
   // ── Admin alerts state (hooks must come before any conditional returns) ──
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [alerts, setAlerts] = useState([]);
+  const [badgeCounts, setBadgeCounts] = useState({});
   const alertsRef = useRef(null);
 
   // ── Admin role gate ──
@@ -228,17 +229,25 @@ const AdminLayout = () => {
   const fetchAlerts = useCallback(async () => {
     if (!isAdmin) return;
     try {
-      const [dashRes, vStats] = await Promise.all([
+      const [dashRes, vStats, sStats] = await Promise.all([
         adminAPI.dashboard().then(r => r?.data?.data || r?.data || r).catch(() => null),
         adminAPI.verificationStats().then(r => r?.data || r).catch(() => null),
+        supportAPI.stats().then(r => r?.data || r).catch(() => null),
       ]);
       const items = [];
-      const pending = vStats?.pending || dashRes?.users?.unverified_doctors || 0;
-      if (pending > 0) items.push({ id: 'vr', label: `${pending} doctor(s) awaiting verification`, severity: 'warning', path: '/admin/verification' });
+      const pendingVr = vStats?.pending || dashRes?.users?.unverified_doctors || 0;
+      if (pendingVr > 0) items.push({ id: 'vr', label: `${pendingVr} doctor(s) awaiting verification`, severity: 'warning', path: '/admin/verification' });
       const reports = dashRes?.medstream?.pending_reports || 0;
       if (reports > 0) items.push({ id: 'rp', label: `${reports} flagged content report(s)`, severity: 'critical', path: '/admin/moderation' });
+      const openTickets = sStats?.open || sStats?.pending || 0;
+      if (openTickets > 0) items.push({ id: 'st', label: `${openTickets} open support ticket(s)`, severity: 'warning', path: '/admin/support' });
       if (items.length === 0) items.push({ id: 'ok', label: 'No urgent alerts', severity: 'info' });
       setAlerts(items);
+      setBadgeCounts({
+        '/admin/verification': pendingVr,
+        '/admin/moderation': reports,
+        '/admin/support': openTickets,
+      });
     } catch {
       setAlerts([{ id: 'err', label: 'Failed to load alerts', severity: 'info' }]);
     }
@@ -329,6 +338,8 @@ const AdminLayout = () => {
       );
     }
 
+    const count = badgeCounts[item.path] || 0;
+
     return (
       <NavLink
         to={item.path}
@@ -342,6 +353,11 @@ const AdminLayout = () => {
               <item.icon className={iconCls(isActive)} />
             </div>
             <span className="flex-1">{item.label}</span>
+            {count > 0 && (
+              <span className="min-w-[18px] h-[18px] rounded-full bg-red-500/90 text-white text-[9px] font-bold flex items-center justify-center px-1 shadow-sm shadow-red-500/30">
+                {count > 99 ? '99+' : count}
+              </span>
+            )}
           </>
         )}
       </NavLink>
