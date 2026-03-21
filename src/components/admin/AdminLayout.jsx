@@ -217,8 +217,10 @@ const AdminLayout = () => {
       <div className="mt-auto flex-shrink-0">
         {/* Main Site link */}
         <div className="px-3 pb-3">
-          <NavLink
-            to="/"
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200 group"
           >
             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all">
@@ -226,7 +228,7 @@ const AdminLayout = () => {
             </div>
             <span className="flex-1">Main Site</span>
             <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-300" />
-          </NavLink>
+          </a>
         </div>
       </div>
     </div>
