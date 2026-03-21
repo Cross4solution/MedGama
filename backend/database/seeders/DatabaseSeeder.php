@@ -14,10 +14,10 @@ class DatabaseSeeder extends Seeder
     {
         // ── Super Admin ──
         $admin = User::updateOrCreate(
-            ['email' => 'admin@admin.com'],
+            ['email' => 'admin@medagama.com'],
             [
                 'id' => 'f7103b85-fcda-4dec-92c6-c336f71fd3a2',
-                'password' => 'admin123',
+                'password' => '123asd123',
                 'fullname' => 'Platform Admin',
                 'role_id' => 'superAdmin',
                 'mobile' => '+905001234567',
@@ -179,7 +179,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('');
         $this->command->info('╔══════════════════════════════════════════════════════════════╗');
         $this->command->info('║  Users:                                                     ║');
-        $this->command->info('║    Admin    → admin@admin.com       / admin123               ║');
+        $this->command->info('║    Admin    → admin@medagama.com     / 123asd123              ║');
         $this->command->info('║    Clinic   → clinic@medagama.com    / clinic123              ║');
         $this->command->info('║    Doctor   → doctor@medagama.com    / doctor123              ║');
         $this->command->info('║    Patient  → patient@medagama.com   / patient123             ║');
