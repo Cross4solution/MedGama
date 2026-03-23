@@ -28,12 +28,17 @@ function AvatarImg({ src, alt, className }) {
 
 function MediaImg({ src, alt, className, onClick = undefined }) {
   const [failed, setFailed] = React.useState(false);
-  if (failed) {
-    return null;
+  const resolved = resolveStorageUrl(src, '');
+  if (failed || !resolved) {
+    return (
+      <div className={`${className} bg-gray-100 flex items-center justify-center`}>
+        <ImageOff className="w-8 h-8 text-gray-300" />
+      </div>
+    );
   }
   return (
     <img
-      src={src}
+      src={resolved}
       alt={alt}
       loading="lazy"
       className={className}
@@ -108,7 +113,8 @@ function NestedReply({ r, depth, authUser, replyTo, setReplyTo, replyText, setRe
 }
 
 function resolveMediaUrl(m) {
-  return m.medium || m.original || m.url || m.thumb || '';
+  const raw = m.medium || m.original || m.url || m.thumb || '';
+  return raw;
 }
 
 function getMediaType(m) {

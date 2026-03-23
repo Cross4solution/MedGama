@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { notificationAPI } from '../../lib/api';
 import { getEcho } from '../../lib/echo';
 import { useToast } from '../../context/ToastContext';
+import { useNotifications } from '../../context/NotificationsContext';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import { playNotificationSound } from '../../utils/notificationSound';
 
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout, hydrated, isPro } = useAuth();
@@ -26,17 +28,23 @@ const Header = () => {
   // ── Notification state ──
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef(null);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { unreadCount: globalUnreadCount, increment: globalIncrement, decrement: globalDecrement, reset: globalReset, setCount: globalSetCount } = useNotifications();
+  const [unreadCount, setUnreadCount] = useState(globalUnreadCount);
   const [notifications, setNotifications] = useState([]);
   const [notifLoading, setNotifLoading] = useState(false);
+
+  // Keep local count in sync with global context
+  useEffect(() => { setUnreadCount(globalUnreadCount); }, [globalUnreadCount]);
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user) return;
     try {
       const res = await notificationAPI.unreadCount();
-      setUnreadCount(res?.data?.unread_count ?? res?.data?.count ?? 0);
+      const c = res?.data?.unread_count ?? res?.data?.count ?? 0;
+      setUnreadCount(c);
+      globalSetCount(c);
     } catch { /* silent */ }
-  }, [user]);
+  }, [user, globalSetCount]);
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
@@ -57,21 +65,30 @@ const Header = () => {
     const channel = echo.private(`notifications.${user.id}`);
 
     channel.listen('.notification.new', (payload) => {
-      // Increment badge count
+      // Increment badge count (local + global)
       setUnreadCount(prev => prev + 1);
+      globalIncrement(1);
+      // Play subtle notification sound
+      playNotificationSound();
       // Prepend to list if dropdown is open
       setNotifications(prev => {
         if (prev.some(n => n.id === payload.id)) return prev;
         return [payload, ...prev].slice(0, 15);
       });
-      // Show toast notification
+      // Show rich toast notification
       const data = payload?.data || payload || {};
-      const toastMsg = data.title || data.message || 'New notification';
       const nType = String(data.type || '');
-      const toastType = nType.includes('cancelled') ? 'error'
-        : nType.includes('reminder') ? 'warning'
+      const toastType = nType.includes('approved') ? 'success'
+        : nType.includes('cancelled') || nType.includes('rejected') ? 'error'
+        : nType.includes('info_requested') || nType.includes('reminder') ? 'warning'
         : 'info';
-      showToast({ type: toastType, message: toastMsg, timeout: 5000 });
+      showToast({
+        type: toastType,
+        title: data.title || 'New notification',
+        message: data.message || '',
+        timeout: 5000,
+        actionUrl: data.action_url || data.link || null,
+      });
     });
 
     return () => {
@@ -107,6 +124,7 @@ const Header = () => {
       await notificationAPI.markAsRead(id);
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
       setUnreadCount(prev => Math.max(0, prev - 1));
+      globalDecrement(1);
     } catch { /* silent */ }
   };
 
@@ -115,6 +133,7 @@ const Header = () => {
       await notificationAPI.markAllAsRead();
       setNotifications(prev => prev.map(n => ({ ...n, read_at: n.read_at || new Date().toISOString() })));
       setUnreadCount(0);
+      globalReset();
     } catch { /* silent */ }
   };
 
@@ -147,6 +166,7 @@ const Header = () => {
     if (type.includes('review_rejected') || type.includes('review_hidden')) return 'bg-red-100 text-red-600';
     if (type.includes('review_response')) return 'bg-teal-100 text-teal-600';
     if (type.includes('verification_approved')) return 'bg-emerald-100 text-emerald-600';
+    if (type.includes('verification_info_requested')) return 'bg-orange-100 text-orange-600';
     if (type.includes('verification_rejected')) return 'bg-red-100 text-red-600';
     if (type.includes('post_liked') || type.includes('liked')) return 'bg-pink-100 text-pink-600';
     if (type.includes('post_commented') || type.includes('comment')) return 'bg-teal-100 text-teal-600';
@@ -172,15 +192,11 @@ const Header = () => {
     if (!notif.read_at) handleMarkRead(notif.id);
     setNotifOpen(false);
     const data = notif.data || {};
+    // Priority: action_url > link > contextual routing
+    if (data.action_url) { navigate(data.action_url); return; }
     if (data.link) { navigate(data.link); return; }
-    if (data.post_id) {
-      navigate(`/post/${encodeURIComponent(data.post_id)}`);
-      return;
-    }
-    if (data.conversation_id) {
-      navigate(`/doctor-chat`);
-      return;
-    }
+    if (data.post_id) { navigate(`/post/${encodeURIComponent(data.post_id)}`); return; }
+    if (data.conversation_id) { navigate('/doctor-chat'); return; }
     if (data.appointment_id) {
       navigate(user?.role === 'patient' ? '/telehealth' : (isPro ? '/crm/appointments' : '/doctor/dashboard'));
       return;
@@ -189,6 +205,7 @@ const Header = () => {
       navigate(user?.role === 'patient' ? `/doctors/${data.doctor_id || ''}` : (isPro ? '/crm/reviews' : '/doctor/dashboard'));
       return;
     }
+    if (data.ticket_id) { navigate(isPro ? '/crm/support' : '/support'); return; }
   };
 
   const toggleMenu = () => {

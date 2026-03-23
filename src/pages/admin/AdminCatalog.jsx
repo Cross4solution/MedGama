@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { blockNonNumericInt } from '../../utils/numericInput';
 import {
-  Stethoscope, MapPin, FileText, Plus, Pencil, Trash2, X, Save,
+  Stethoscope, MapPin, FileText, Plus, Pencil, Trash2, X, Save, Tag,
   Search, Loader2, Globe, RefreshCw, CheckCircle2, Hash, ArrowUpDown,
   Heart, Brain, Bone, Eye as EyeIcon, Ear, Baby, Shield, Pill, Scissors, Zap,
   Activity, Microscope, Syringe, Thermometer, Dna, ScanFace, Radiation, Droplets,
@@ -27,7 +27,7 @@ const LANGS = [
 const TABS = [
   { key: 'specialties', label: 'Specialties', icon: Stethoscope, color: 'purple' },
   { key: 'cities', label: 'Cities', icon: MapPin, color: 'blue' },
-  { key: 'diseases', label: 'Diseases (ICD-10)', icon: FileText, color: 'emerald' },
+  { key: 'treatments', label: 'Treatments & Symptoms', icon: Tag, color: 'emerald' },
 ];
 
 // ─── Specialty icon mapping ──────────────────────────────────
@@ -117,38 +117,69 @@ function MultiLangInput({ value, onChange, label }) {
 }
 
 // ─── Create / Edit modal (sidebar-centered) ──────────────────
-function CatalogModal({ type, item, onClose, onSaved }) {
+function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
   const isEdit = !!item;
+  const isTreatment = type === 'treatments';
   const [form, setForm] = useState({
-    code: item?.code || '',
+    code: item?.code || item?.slug || '',
     name: item?.name || {},
     description: item?.description || {},
     country_id: item?.country_id || 1,
     display_order: item?.display_order || 0,
     icon_name: item?.icon_name || '',
+    // Treatment-specific
+    specialty_id: item?.specialty_id || '',
+    aliases: item?.aliases || { en: [], tr: [] },
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [aliasInput, setAliasInput] = useState({ en: '', tr: '' });
 
-  const typeLabel = type === 'specialties' ? 'Specialty' : type === 'cities' ? 'City' : 'Disease (ICD-10)';
+  const typeLabel = type === 'specialties' ? 'Specialty' : type === 'cities' ? 'City' : 'Treatment Tag';
+
+  const addAlias = (lang) => {
+    const val = aliasInput[lang]?.trim();
+    if (!val) return;
+    const current = form.aliases[lang] || [];
+    if (current.includes(val)) return;
+    setForm(f => ({ ...f, aliases: { ...f.aliases, [lang]: [...current, val] } }));
+    setAliasInput(a => ({ ...a, [lang]: '' }));
+  };
+
+  const removeAlias = (lang, idx) => {
+    setForm(f => ({
+      ...f,
+      aliases: { ...f.aliases, [lang]: (f.aliases[lang] || []).filter((_, i) => i !== idx) },
+    }));
+  };
 
   const handleSave = async () => {
     if (!form.name?.en || !form.name?.tr) { setError('English and Turkish names are required.'); return; }
-    if (!isEdit && !form.code) { setError('Code is required.'); return; }
+    if (!isEdit && !form.code) { setError(isTreatment ? 'Slug is required.' : 'Code is required.'); return; }
+    if (isTreatment && !form.specialty_id) { setError('Please select a specialty.'); return; }
 
     setSaving(true);
     setError('');
     try {
-      const payload = { ...form };
       if (type === 'specialties') {
+        const payload = { code: form.code, name: form.name, description: form.description, display_order: form.display_order, icon_name: form.icon_name };
         if (isEdit) await adminAPI.updateSpecialty(item.id, payload);
         else await adminAPI.createSpecialty(payload);
       } else if (type === 'cities') {
+        const payload = { code: form.code, name: form.name, country_id: form.country_id };
         if (isEdit) await adminAPI.updateCity(item.id, payload);
         else await adminAPI.createCity(payload);
-      } else if (type === 'diseases') {
-        if (isEdit) await adminAPI.updateDisease(item.id, payload);
-        else await adminAPI.createDisease(payload);
+      } else if (isTreatment) {
+        const payload = {
+          slug: form.code,
+          specialty_id: form.specialty_id,
+          name: form.name,
+          description: form.description,
+          aliases: form.aliases,
+          display_order: form.display_order,
+        };
+        if (isEdit) await adminAPI.updateTreatmentTag(item.id, payload);
+        else await adminAPI.createTreatmentTag(payload);
       }
       onSaved();
       onClose();
@@ -160,20 +191,22 @@ function CatalogModal({ type, item, onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      {/* Sidebar-offset centering: shift right by half sidebar width */}
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50/40 rounded-t-2xl">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-purple-100 border border-purple-200 flex items-center justify-center">
+              <div className={`w-8 h-8 rounded-lg border flex items-center justify-center ${
+                type === 'specialties' ? 'bg-purple-100 border-purple-200' :
+                type === 'cities' ? 'bg-blue-100 border-blue-200' : 'bg-emerald-100 border-emerald-200'
+              }`}>
                 {type === 'specialties' ? <Stethoscope className="w-4 h-4 text-purple-600" /> :
                  type === 'cities' ? <MapPin className="w-4 h-4 text-blue-600" /> :
-                 <FileText className="w-4 h-4 text-emerald-600" />}
+                 <Tag className="w-4 h-4 text-emerald-600" />}
               </div>
               <div>
                 <h3 className="text-sm font-bold text-gray-900">{isEdit ? 'Edit' : 'Create New'} {typeLabel}</h3>
-                <p className="text-[10px] text-gray-500">{isEdit ? `Editing ${item.code}` : 'Fill in the details below'}</p>
+                <p className="text-[10px] text-gray-500">{isEdit ? `Editing ${item.code || item.slug}` : 'Fill in the details below'}</p>
               </div>
             </div>
             <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"><X className="w-4 h-4" /></button>
@@ -186,17 +219,36 @@ function CatalogModal({ type, item, onClose, onSaved }) {
               </div>
             )}
 
-            {/* Code */}
+            {/* Specialty selector — treatments only */}
+            {isTreatment && (
+              <div>
+                <label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                  Specialty <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={form.specialty_id}
+                  onChange={e => setForm(f => ({ ...f, specialty_id: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all bg-white"
+                >
+                  <option value="">Select specialty...</option>
+                  {specialties.map(s => (
+                    <option key={s.id} value={s.id}>{getName(s, 'en')} ({s.code})</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Code / Slug */}
             <div>
               <label className="text-xs font-semibold text-gray-700 mb-1.5 block">
-                Code {!isEdit && <span className="text-red-500">*</span>}
+                {isTreatment ? 'Slug' : 'Code'} {!isEdit && <span className="text-red-500">*</span>}
               </label>
               <input
                 type="text"
                 value={form.code}
-                onChange={e => setForm(f => ({ ...f, code: e.target.value }))}
+                onChange={e => setForm(f => ({ ...f, code: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))}
                 disabled={isEdit}
-                placeholder={type === 'diseases' ? 'e.g. J06.9' : type === 'cities' ? 'e.g. istanbul' : 'e.g. cardiology'}
+                placeholder={isTreatment ? 'e.g. botox-treatment' : type === 'cities' ? 'e.g. istanbul' : 'e.g. cardiology'}
                 className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all disabled:bg-gray-50 disabled:text-gray-500"
               />
             </div>
@@ -230,9 +282,50 @@ function CatalogModal({ type, item, onClose, onSaved }) {
             {/* Name (multi-lang) */}
             <MultiLangInput label="Name *" value={form.name} onChange={name => setForm(f => ({ ...f, name }))} />
 
-            {/* Description (multi-lang) — specialties & diseases */}
+            {/* Description (multi-lang) — specialties & treatments */}
             {type !== 'cities' && (
               <MultiLangInput label="Description" value={form.description} onChange={description => setForm(f => ({ ...f, description }))} />
+            )}
+
+            {/* Aliases — treatments only */}
+            {isTreatment && (
+              <div>
+                <label className="text-xs font-semibold text-gray-700 mb-1.5 block flex items-center gap-1">
+                  <Hash className="w-3 h-3 text-gray-400" /> Aliases (Colloquial Terms)
+                </label>
+                <p className="text-[10px] text-gray-400 mb-2">Add everyday terms patients might search for, e.g. "wrinkle treatment", "kırışıklık giderme"</p>
+                {['en', 'tr'].map(lang => (
+                  <div key={lang} className="mb-2">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <LangFlag lang={LANGS.find(l => l.code === lang) || { code: lang, countryCode: lang === 'en' ? 'gb' : lang }} size={14} />
+                      <span className="text-[10px] font-medium text-gray-500 uppercase">{lang}</span>
+                    </div>
+                    <div className="flex gap-1.5">
+                      <input
+                        type="text"
+                        value={aliasInput[lang] || ''}
+                        onChange={e => setAliasInput(a => ({ ...a, [lang]: e.target.value }))}
+                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addAlias(lang); } }}
+                        placeholder={lang === 'en' ? 'e.g. wrinkle removal' : 'e.g. kırışıklık giderme'}
+                        className="flex-1 px-2.5 py-1.5 border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
+                      />
+                      <button type="button" onClick={() => addAlias(lang)} className="px-2.5 py-1.5 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg text-xs font-medium hover:bg-emerald-100 transition-colors">
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
+                    {(form.aliases[lang] || []).length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {(form.aliases[lang] || []).map((alias, idx) => (
+                          <span key={idx} className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-medium">
+                            {alias}
+                            <button type="button" onClick={() => removeAlias(lang, idx)} className="hover:text-red-500 transition-colors"><X className="w-2.5 h-2.5" /></button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
 
             {/* Country ID — cities */}
@@ -249,8 +342,8 @@ function CatalogModal({ type, item, onClose, onSaved }) {
               </div>
             )}
 
-            {/* Display Order — specialties */}
-            {type === 'specialties' && (
+            {/* Display Order — specialties & treatments */}
+            {(type === 'specialties' || isTreatment) && (
               <div>
                 <label className="text-xs font-semibold text-gray-700 mb-1.5 block flex items-center gap-1">
                   <ArrowUpDown className="w-3 h-3 text-gray-400" /> Display Order
@@ -269,7 +362,9 @@ function CatalogModal({ type, item, onClose, onSaved }) {
           {/* Footer */}
           <div className="px-5 py-4 border-t border-gray-100 flex justify-end gap-2 bg-gray-50/30 rounded-b-2xl">
             <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-1.5 px-5 py-2 text-sm font-semibold text-white bg-purple-600 rounded-xl hover:bg-purple-700 transition-colors disabled:opacity-50 shadow-sm">
+            <button onClick={handleSave} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-50 shadow-sm ${
+              isTreatment ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-purple-600 hover:bg-purple-700'
+            }`}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {isEdit ? 'Update' : 'Create'}
             </button>
@@ -308,8 +403,17 @@ export default function AdminCatalog() {
   const [refreshing, setRefreshing] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const [allSpecialties, setAllSpecialties] = useState([]);
 
   const showSuccess = (msg) => { setToastMsg(msg); setShowToast(true); };
+
+  // Load specialties once for treatment tag modal
+  useEffect(() => {
+    adminAPI.specialties().then(res => {
+      const data = res?.data || res;
+      setAllSpecialties(data?.specialties || []);
+    }).catch(() => {});
+  }, []);
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -317,10 +421,10 @@ export default function AdminCatalog() {
       let res;
       if (activeTab === 'specialties') res = await adminAPI.specialties();
       else if (activeTab === 'cities') res = await adminAPI.cities();
-      else res = await adminAPI.diseases();
+      else res = await adminAPI.treatmentTags();
 
       const data = res?.data || res;
-      setItems(data?.specialties || data?.cities || data?.diseases || data?.data || []);
+      setItems(data?.specialties || data?.cities || data?.treatment_tags || data?.data || []);
     } catch {
       setItems([]);
     }
@@ -342,6 +446,7 @@ export default function AdminCatalog() {
     try {
       if (activeTab === 'specialties') await adminAPI.deleteSpecialty(id);
       else if (activeTab === 'cities') await adminAPI.deleteCity(id);
+      else if (activeTab === 'treatments') await adminAPI.deleteTreatmentTag(id);
       setItems(prev => prev.filter(i => i.id !== id));
       showSuccess('Item deactivated');
     } catch {}
@@ -361,7 +466,10 @@ export default function AdminCatalog() {
     const s = search.toLowerCase();
     const name = getName(item, displayLang).toLowerCase();
     const desc = getDesc(item, displayLang).toLowerCase();
-    return name.includes(s) || (item.code || '').toLowerCase().includes(s) || desc.includes(s);
+    const slug = (item.slug || item.code || '').toLowerCase();
+    // Also search aliases for treatments
+    const aliasMatch = item.aliases ? Object.values(item.aliases).flat().some(a => (a || '').toLowerCase().includes(s)) : false;
+    return name.includes(s) || slug.includes(s) || desc.includes(s) || aliasMatch;
   });
 
   const activeTabObj = TABS.find(t => t.key === activeTab);
@@ -377,7 +485,7 @@ export default function AdminCatalog() {
             <Stethoscope className="w-5 h-5 text-purple-600" />
             Catalog & System
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage specialties, cities, and diseases (ICD-10)</p>
+          <p className="text-sm text-gray-500 mt-0.5">Manage specialties, cities, and treatment tags</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleRefresh} disabled={refreshing}
@@ -414,7 +522,7 @@ export default function AdminCatalog() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
-            placeholder={activeTab === 'diseases' ? 'Search ICD-10 code or disease name...' : `Search ${activeTab} by name or code...`}
+            placeholder={activeTab === 'treatments' ? 'Search by name, slug or alias...' : `Search ${activeTab} by name or code...`}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-9 pr-8 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
@@ -447,7 +555,7 @@ export default function AdminCatalog() {
       ) : filtered.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-            {activeTab === 'diseases' ? <FileText className="w-12 h-12 mb-3 opacity-30" /> :
+            {activeTab === 'treatments' ? <Tag className="w-12 h-12 mb-3 opacity-30" /> :
              activeTab === 'cities' ? <MapPin className="w-12 h-12 mb-3 opacity-30" /> :
              <Stethoscope className="w-12 h-12 mb-3 opacity-30" />}
             <p className="text-sm font-medium">No {activeTab} found</p>
@@ -481,13 +589,14 @@ export default function AdminCatalog() {
                       <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">Actions</th>
                     </>
                   )}
-                  {/* Diseases columns */}
-                  {activeTab === 'diseases' && (
+                  {/* Treatments columns */}
+                  {activeTab === 'treatments' && (
                     <>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[100px]">ICD-10 Code</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Disease Name ({displayLang.toUpperCase()})</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Description</th>
-                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">Langs</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[120px]">Slug</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Name ({displayLang.toUpperCase()})</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Specialty</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Aliases</th>
+                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[60px]">Order</th>
                       <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">Actions</th>
                     </>
                   )}
@@ -571,23 +680,48 @@ export default function AdminCatalog() {
                     );
                   }
 
-                  /* ── Diseases row ── */
+                  /* ── Treatments row ── */
+                  const allAliases = item.aliases ? Object.values(item.aliases).flat().filter(Boolean) : [];
+                  const specName = item.specialty ? getName(item.specialty, displayLang) : '—';
                   return (
                     <tr key={item.id} className="hover:bg-emerald-50/20 transition-colors">
                       <td className="px-4 py-3">
-                        <code className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-mono font-bold border border-emerald-200">{item.code}</code>
+                        <code className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-mono border border-emerald-200">{item.slug}</code>
                       </td>
-                      <td className="px-4 py-3 font-medium text-gray-900">{getName(item, displayLang)}</td>
-                      <td className="px-4 py-3 text-xs text-gray-500 max-w-[250px] truncate">{getDesc(item, displayLang) || '—'}</td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          <Globe className="w-2.5 h-2.5" /> {langCount}/{LANGS.length}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <Tag className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                          <span className="font-medium text-gray-900">{getName(item, displayLang)}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-purple-50 text-purple-700 border border-purple-200">
+                          <Stethoscope className="w-2.5 h-2.5" /> {specName}
                         </span>
                       </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-1 max-w-[200px]">
+                          {allAliases.slice(0, 3).map((a, i) => (
+                            <span key={i} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">{a}</span>
+                          ))}
+                          {allAliases.length > 3 && <span className="text-[10px] text-gray-400">+{allAliases.length - 3}</span>}
+                          {allAliases.length === 0 && <span className="text-[10px] text-gray-300">—</span>}
+                        </div>
+                      </td>
                       <td className="px-4 py-3 text-center">
-                        <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors" title="Edit">
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
+                        <span className="text-xs text-gray-500 font-mono">{item.display_order ?? '—'}</span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <div className="flex items-center justify-center gap-1">
+                          <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors" title="Edit">
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          {deleteLoading === item.id ? <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" /> : (
+                            <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors" title="Deactivate">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -616,6 +750,7 @@ export default function AdminCatalog() {
           item={editItem}
           onClose={() => { setShowModal(false); setEditItem(null); }}
           onSaved={handleSaved}
+          specialties={allSpecialties}
         />
       )}
     </div>

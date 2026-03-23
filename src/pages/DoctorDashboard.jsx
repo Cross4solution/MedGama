@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { doctorProfileAPI, appointmentAPI } from '../lib/api';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
+import useVerificationListener from '../hooks/useVerificationListener';
+import AnnouncementBanner from '../components/ui/AnnouncementBanner';
 import {
   User, Calendar, Star, Shield, CheckCircle, AlertTriangle,
   Clock, ChevronRight, ExternalLink, Settings, FileText,
@@ -15,6 +17,9 @@ const DoctorDashboard = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, isPro } = useAuth();
+
+  // ── Real-time verification status listener ──
+  useVerificationListener();
 
   const [profile, setProfile] = useState(null);
   const [appointments, setAppointments] = useState([]);
@@ -64,6 +69,9 @@ const DoctorDashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
 
+        {/* ── Announcement Banner ── */}
+        <AnnouncementBanner />
+
         {/* ── Welcome Header ── */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
@@ -102,36 +110,77 @@ const DoctorDashboard = () => {
 
         {/* ── Status Cards Grid ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {/* Verification Status */}
-          <div className={`p-5 rounded-2xl border ${isVerified ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
-            <div className="flex items-center gap-3 mb-2">
-              {isVerified
-                ? <CheckCircle className="w-6 h-6 text-emerald-600" />
-                : <AlertTriangle className="w-6 h-6 text-amber-600" />
-              }
-              <h3 className={`font-semibold ${isVerified ? 'text-emerald-900' : 'text-amber-900'}`}>
-                {isVerified
-                  ? t('doctorDashboard.verified', 'Account Verified')
-                  : t('doctorDashboard.pendingVerification', 'Verification Pending')
-                }
-              </h3>
-            </div>
-            <p className={`text-sm ${isVerified ? 'text-emerald-700' : 'text-amber-700'}`}>
-              {isVerified
-                ? t('doctorDashboard.verifiedDesc', 'Your account is verified. Patients can book appointments.')
-                : t('doctorDashboard.pendingDesc', 'Upload your documents to get verified and start receiving appointments.')
-              }
-            </p>
-            {!isVerified && (
-              <Link
-                to="/profile"
-                className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 text-xs font-semibold text-amber-800 bg-amber-100 rounded-lg hover:bg-amber-200 transition-colors"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                {t('doctorDashboard.uploadDocs', 'Upload Documents')}
-              </Link>
-            )}
-          </div>
+          {/* Verification Status — dynamic by verification_status */}
+          {(() => {
+            const vs = user?.verification_status || (isVerified ? 'approved' : 'unverified');
+            const cardConfig = {
+              approved: {
+                bg: 'bg-emerald-50', border: 'border-emerald-200',
+                icon: <CheckCircle className="w-6 h-6 text-emerald-600" />,
+                titleColor: 'text-emerald-900', descColor: 'text-emerald-700',
+                title: t('doctorDashboard.verified', 'Account Verified'),
+                desc: t('doctorDashboard.verifiedDesc', 'Your account is verified. Patients can book appointments.'),
+                showBtn: false,
+              },
+              unverified: {
+                bg: 'bg-amber-50', border: 'border-amber-200',
+                icon: <AlertTriangle className="w-6 h-6 text-amber-600" />,
+                titleColor: 'text-amber-900', descColor: 'text-amber-700',
+                title: t('doctorDashboard.pendingVerification', 'Verification Pending'),
+                desc: t('doctorDashboard.pendingDesc', 'Upload your documents to get verified and start receiving appointments.'),
+                showBtn: true, btnText: t('doctorDashboard.uploadDocs', 'Upload Documents'),
+                btnClass: 'text-amber-800 bg-amber-100 hover:bg-amber-200',
+                btnLink: '/crm/settings?tab=verification',
+              },
+              pending_review: {
+                bg: 'bg-blue-50', border: 'border-blue-200',
+                icon: <Clock className="w-6 h-6 text-blue-600" />,
+                titleColor: 'text-blue-900', descColor: 'text-blue-700',
+                title: t('doctorDashboard.underReview', 'Documents Under Review'),
+                desc: t('doctorDashboard.underReviewDesc', 'Your documents have been received. Our admin team is reviewing them (2-5 business days).'),
+                showBtn: false,
+              },
+              info_requested: {
+                bg: 'bg-orange-50', border: 'border-orange-300',
+                icon: <AlertTriangle className="w-6 h-6 text-orange-600" />,
+                titleColor: 'text-orange-900', descColor: 'text-orange-700',
+                title: t('doctorDashboard.infoRequested', 'Additional Documents Needed'),
+                desc: user?.admin_verification_note || t('doctorDashboard.infoRequestedDesc', 'The admin team has requested additional information.'),
+                showBtn: true, btnText: t('doctorDashboard.updateDocs', 'Update Documents'),
+                btnClass: 'text-orange-800 bg-orange-100 hover:bg-orange-200',
+                btnLink: '/crm/settings?tab=verification',
+              },
+              rejected: {
+                bg: 'bg-red-50', border: 'border-red-200',
+                icon: <AlertTriangle className="w-6 h-6 text-red-600" />,
+                titleColor: 'text-red-900', descColor: 'text-red-700',
+                title: t('doctorDashboard.rejected', 'Verification Rejected'),
+                desc: t('doctorDashboard.rejectedDesc', 'Your verification was not approved. Please re-upload correct documents.'),
+                showBtn: true, btnText: t('doctorDashboard.resubmitDocs', 'Re-submit Documents'),
+                btnClass: 'text-red-800 bg-red-100 hover:bg-red-200',
+                btnLink: '/crm/settings?tab=verification',
+              },
+            };
+            const cfg = cardConfig[vs] || cardConfig.unverified;
+            return (
+              <div className={`p-5 rounded-2xl border ${cfg.bg} ${cfg.border}`}>
+                <div className="flex items-center gap-3 mb-2">
+                  {cfg.icon}
+                  <h3 className={`font-semibold ${cfg.titleColor}`}>{cfg.title}</h3>
+                </div>
+                <p className={`text-sm ${cfg.descColor}`}>{cfg.desc}</p>
+                {cfg.showBtn && (
+                  <Link
+                    to={cfg.btnLink}
+                    className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${cfg.btnClass}`}
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    {cfg.btnText}
+                  </Link>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Upcoming Appointments */}
           <div className="p-5 rounded-2xl border bg-blue-50 border-blue-200">

@@ -6,6 +6,7 @@ use App\Models\VerificationRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
 class VerificationRejectedNotification extends Notification implements ShouldQueue
@@ -18,7 +19,7 @@ class VerificationRejectedNotification extends Notification implements ShouldQue
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'broadcast', 'mail'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -51,5 +52,26 @@ class VerificationRejectedNotification extends Notification implements ShouldQue
             'document_label' => $this->verificationRequest->document_label,
             'rejection_reason' => $this->verificationRequest->rejection_reason,
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage([
+            'type' => 'verification_rejected',
+            'title' => 'Verification Rejected',
+            'message' => 'Your verification request was not approved.' .
+                ($this->verificationRequest->rejection_reason
+                    ? ' Reason: ' . $this->verificationRequest->rejection_reason
+                    : ''),
+            'verification_status' => 'rejected',
+            'admin_verification_note' => null,
+            'action_url' => '/crm/settings?tab=verification',
+            'timestamp' => now()->toISOString(),
+        ]);
+    }
+
+    public function broadcastOn(): array
+    {
+        return ["user.{$this->verificationRequest->doctor_id}"];
     }
 }

@@ -28,7 +28,8 @@ class User extends Authenticatable
         'mobile_verified', 'email_verified', 'email_verification_code',
         'password_reset_code', 'password_reset_expires_at',
         'city_id', 'country_id', 'country', 'preferred_language',
-        'date_of_birth', 'gender', 'is_verified', 'last_login', 'clinic_id', 'hospital_id',
+        'date_of_birth', 'gender', 'is_verified', 'verification_status', 'admin_verification_note',
+        'last_login', 'clinic_id', 'hospital_id',
         'medical_history', 'notification_preferences', 'clinic_name',
         'is_crm_active', 'crm_expires_at', 'added_by_clinic',
     ];

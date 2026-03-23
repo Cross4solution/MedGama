@@ -5,6 +5,7 @@ import { notificationAPI } from '../lib/api';
 const NotificationsContext = createContext({
   unreadCount: 0,
   refresh: () => {},
+  increment: () => {},
   decrement: () => {},
   reset: () => {},
   setCount: () => {},
@@ -34,12 +35,13 @@ export function NotificationsProvider({ children }) {
     return () => clearInterval(interval);
   }, [user, refresh]);
 
+  const increment = useCallback((by = 1) => setUnreadCount(c => c + by), []);
   const decrement = useCallback((by = 1) => setUnreadCount(c => Math.max(0, c - by)), []);
   const reset = useCallback(() => setUnreadCount(0), []);
   const setCount = useCallback((n) => setUnreadCount(n), []);
 
   return (
-    <NotificationsContext.Provider value={{ unreadCount, refresh, decrement, reset, setCount }}>
+    <NotificationsContext.Provider value={{ unreadCount, refresh, increment, decrement, reset, setCount }}>
       {children}
     </NotificationsContext.Provider>
   );

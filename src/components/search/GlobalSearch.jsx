@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stethoscope, Building2, BadgeCheck, ArrowRight, Loader2 } from 'lucide-react';
+import { Stethoscope, Building2, BadgeCheck, ArrowRight, Loader2, Tag } from 'lucide-react';
 import { searchAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
@@ -11,6 +11,7 @@ export default function GlobalSearch() {
   const [loading, setLoading] = useState(false);
   const [doctors, setDoctors] = useState([]);
   const [clinics, setClinics] = useState([]);
+  const [treatments, setTreatments] = useState([]);
   const [activeIndex, setActiveIndex] = useState(-1);
   const wrapperRef = useRef(null);
   const debounceRef = useRef(null);
@@ -18,9 +19,10 @@ export default function GlobalSearch() {
 
   // Flat list for keyboard navigation
   const flatResults = useMemo(() => [
+    ...treatments.map((t) => ({ ...t, _type: 'treatment' })),
     ...doctors.map((d) => ({ ...d, _type: 'doctor' })),
     ...clinics.map((c) => ({ ...c, _type: 'clinic' })),
-  ], [doctors, clinics]);
+  ], [treatments, doctors, clinics]);
 
   // Close on outside click
   useEffect(() => {
@@ -38,6 +40,7 @@ export default function GlobalSearch() {
     if (q.length < 2) {
       setDoctors([]);
       setClinics([]);
+      setTreatments([]);
       setLoading(false);
       return;
     }
@@ -48,8 +51,9 @@ export default function GlobalSearch() {
           const data = res?.data || res;
           setDoctors(data.doctors || []);
           setClinics(data.clinics || []);
+          setTreatments(data.treatments || []);
         })
-        .catch(() => { setDoctors([]); setClinics([]); })
+        .catch(() => { setDoctors([]); setClinics([]); setTreatments([]); })
         .finally(() => setLoading(false));
     }, 300);
     return () => clearTimeout(debounceRef.current);
@@ -58,7 +62,10 @@ export default function GlobalSearch() {
   const onSelect = useCallback((item) => {
     setOpen(false);
     setQuery('');
-    if (item._type === 'clinic') {
+    if (item._type === 'treatment') {
+      // Navigate to find-a-doctor filtered by the treatment's specialty
+      navigate(`/find-a-doctor?specialty=${encodeURIComponent(item.specialty_code || '')}&treatment=${encodeURIComponent(item.slug || '')}`);
+    } else if (item._type === 'clinic') {
       navigate(`/clinic/${encodeURIComponent(item.slug || item.id)}`);
     } else {
       navigate(`/doctor/${encodeURIComponent(item.slug || item.id)}`);
@@ -90,9 +97,10 @@ export default function GlobalSearch() {
   const showDropdown = open && query.trim().length >= 2 && (hasResults || loading);
   const noResults = !loading && query.trim().length >= 2 && !hasResults;
 
-  // Compute flat index offset for clinics (they come after doctors)
-  const doctorOffset = 0;
-  const clinicOffset = doctors.length;
+  // Compute flat index offsets (treatments → doctors → clinics)
+  const treatmentOffset = 0;
+  const doctorOffset = treatments.length;
+  const clinicOffset = treatments.length + doctors.length;
 
   return (
     <div ref={wrapperRef} className="relative mx-auto w-full max-w-lg sm:max-w-xl md:max-w-2xl">
@@ -141,6 +149,52 @@ export default function GlobalSearch() {
               <Loader2 className="w-4 h-4 animate-spin" />
               <span>Searching...</span>
             </div>
+          )}
+
+          {/* Treatments category */}
+          {treatments.length > 0 && (
+            <div>
+              <div className="px-4 pt-3 pb-1.5 flex items-center gap-2">
+                <Tag className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Treatments & Symptoms</span>
+                <span className="text-[11px] text-gray-300">({treatments.length})</span>
+              </div>
+              <ul role="listbox">
+                {treatments.map((t, idx) => {
+                  const flatIdx = treatmentOffset + idx;
+                  return (
+                    <li key={t.id}>
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={activeIndex === flatIdx}
+                        onMouseEnter={() => setActiveIndex(flatIdx)}
+                        onClick={() => onSelect({ ...t, _type: 'treatment' })}
+                        className={`w-full text-left px-4 py-2.5 flex items-center gap-3 transition-all duration-100 ${activeIndex === flatIdx ? 'bg-emerald-50/70' : 'hover:bg-gray-50'}`}
+                      >
+                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-100 flex items-center justify-center">
+                          <Tag className="w-5 h-5 text-emerald-500" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-semibold text-gray-800 truncate block">{t.name}</span>
+                          {t.specialty_name && (
+                            <p className="text-xs text-gray-400 truncate mt-0.5">
+                              <Stethoscope className="w-3 h-3 inline-block mr-1 -mt-0.5" />{t.specialty_name}
+                            </p>
+                          )}
+                        </div>
+                        <ArrowRight className={`w-4 h-4 flex-shrink-0 transition-opacity ${activeIndex === flatIdx ? 'text-emerald-500 opacity-100' : 'opacity-0'}`} />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          {/* Divider */}
+          {treatments.length > 0 && (doctors.length > 0 || clinics.length > 0) && (
+            <div className="mx-4 border-t border-gray-100" />
           )}
 
           {/* Doctors category */}
@@ -255,7 +309,7 @@ export default function GlobalSearch() {
       {open && noResults && (
         <div className="absolute z-30 mt-2 w-full bg-white border border-gray-200/80 rounded-2xl shadow-xl overflow-hidden">
           <div className="px-4 py-5 text-center">
-            <p className="text-sm text-gray-400">No doctors or clinics found for "<span className="font-medium text-gray-600">{query.trim()}</span>"</p>
+            <p className="text-sm text-gray-400">No results found for "<span className="font-medium text-gray-600">{query.trim()}</span>"</p>
           </div>
         </div>
       )}

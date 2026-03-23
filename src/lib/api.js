@@ -556,6 +556,10 @@ export const adminAPI = {
   diseases: (params) => api.get('/admin/catalog/diseases', { params }),
   createDisease: (payload) => api.post('/admin/catalog/diseases', payload),
   updateDisease: (id, payload) => api.put(`/admin/catalog/diseases/${id}`, payload),
+  treatmentTags: (params) => api.get('/admin/catalog/treatment-tags', { params }),
+  createTreatmentTag: (payload) => api.post('/admin/catalog/treatment-tags', payload),
+  updateTreatmentTag: (id, payload) => api.put(`/admin/catalog/treatment-tags/${id}`, payload),
+  deleteTreatmentTag: (id) => api.delete(`/admin/catalog/treatment-tags/${id}`),
   // Feature Toggles
   featureToggles: () => api.get('/admin/feature-toggles'),
   updateFeatureToggle: (key, value) => api.put('/admin/feature-toggles', { key, value }),
@@ -569,6 +573,8 @@ export const adminAPI = {
   verificationStats: () => api.get('/admin/verification-requests/stats'),
   approveVerification: (id) => api.put(`/admin/verification-requests/${id}/approve`),
   rejectVerification: (id, reason) => api.put(`/admin/verification-requests/${id}/reject`, { reason }),
+  undoVerification: (id) => api.put(`/admin/verification-requests/${id}/undo`),
+  requestMoreInfo: (id, message) => api.put(`/admin/verification-requests/${id}/request-info`, { message }),
   verificationDocumentUrl: (id) => `${api.defaults.baseURL}/admin/verification-requests/${id}/document`,
   // Review moderation (Doc §10)
   reviews: (params) => api.get('/admin/reviews', { params }),
@@ -576,6 +582,16 @@ export const adminAPI = {
   approveReview: (id) => api.put(`/admin/reviews/${id}/approve`),
   rejectReview: (id, note) => api.put(`/admin/reviews/${id}/reject`, { note }),
   hideReview: (id, note) => api.put(`/admin/reviews/${id}/hide`, { note }),
+  // Announcements (admin CRUD)
+  announcements: (params) => api.get('/admin/announcements', { params }),
+  createAnnouncement: (data) => api.post('/admin/announcements', data),
+  updateAnnouncement: (id, data) => api.put(`/admin/announcements/${id}`, data),
+  deleteAnnouncement: (id) => api.delete(`/admin/announcements/${id}`),
+};
+
+// ── Announcements (public) ──
+export const announcementAPI = {
+  list: () => api.get('/announcements'),
 };
 
 // ── Analytics Service (Clinic BI) ──

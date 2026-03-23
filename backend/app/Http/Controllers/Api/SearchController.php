@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Clinic;
+use App\Models\TreatmentTag;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -78,9 +79,42 @@ class SearchController extends Controller
                 'verified' => (bool) $c->is_verified,
             ]);
 
+        // ── Treatment Tags: match name (JSONB), slug, aliases (JSONB) ──
+        $locale   = app()->getLocale();
+        $fallback = config('app.fallback_locale', 'en');
+        $lowerQ   = mb_strtolower($term);
+
+        $treatments = TreatmentTag::active()
+            ->with('specialty:id,code,name')
+            ->get()
+            ->filter(function ($tag) use ($lowerQ, $locale, $fallback) {
+                $name = mb_strtolower($tag->getTranslation('name', $locale) ?? $tag->getTranslation('name', $fallback) ?? '');
+                if (str_contains($name, $lowerQ)) return true;
+                if (str_contains($tag->slug, $lowerQ)) return true;
+                foreach ([$locale, $fallback] as $lang) {
+                    foreach (($tag->aliases[$lang] ?? []) as $alias) {
+                        if (str_contains(mb_strtolower($alias), $lowerQ)) return true;
+                    }
+                }
+                return false;
+            })
+            ->take(5)
+            ->map(fn ($tag) => [
+                'id'             => $tag->id,
+                'slug'           => $tag->slug,
+                'name'           => $tag->getTranslation('name', $locale) ?? $tag->getTranslation('name', $fallback) ?? '',
+                'specialty_id'   => $tag->specialty_id,
+                'specialty_code' => $tag->specialty?->code,
+                'specialty_name' => $tag->specialty
+                    ? ($tag->specialty->getTranslation('name', $locale) ?? $tag->specialty->getTranslation('name', $fallback) ?? '')
+                    : '',
+            ])
+            ->values();
+
         return response()->json([
-            'doctors' => $doctors,
-            'clinics' => $clinics,
+            'doctors'    => $doctors,
+            'clinics'    => $clinics,
+            'treatments' => $treatments,
         ]);
     }
 }

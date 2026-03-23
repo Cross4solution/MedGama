@@ -48,11 +48,14 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { notificationAPI, chatAPI } from '../../lib/api';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import { supportAPI, notificationAPI, chatAPI } from '../../lib/api';
+import useVerificationListener from '../../hooks/useVerificationListener';
+import AnnouncementBanner from '../ui/AnnouncementBanner';
 import { useNotifications } from '../../context/NotificationsContext';
 import { getEcho } from '../../lib/echo';
 import { useToast } from '../../context/ToastContext';
-import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import { playNotificationSound } from '../../utils/notificationSound';
 
 const getNavSections = (t, role, isVerified, { chatUnreadCount = 0 } = {}) => {
   const isClinic = role === 'clinic' || role === 'clinicOwner';
@@ -182,6 +185,10 @@ const CRMLayout = ({ children }) => {
   const { notify: showToast } = useToast();
   const userRole = user?.role || user?.role_id || 'doctor';
   const isVerified = user?.is_verified;
+  
+  // ── Real-time verification status listener ──
+  useVerificationListener();
+  
   // ── Chat unread count for sidebar badge ──
   const [chatUnread, setChatUnread] = useState(0);
 
@@ -216,7 +223,7 @@ const CRMLayout = ({ children }) => {
   // ── Notification state ──
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef(null);
-  const { unreadCount: globalUnreadCount, decrement: globalDecrement, reset: globalReset, setCount: globalSetCount } = useNotifications();
+  const { unreadCount: globalUnreadCount, increment: globalIncrement, decrement: globalDecrement, reset: globalReset, setCount: globalSetCount } = useNotifications();
   const [unreadCount, setUnreadCount] = useState(globalUnreadCount);
   const [notifications, setNotifications] = useState([]);
   const [notifLoading, setNotifLoading] = useState(false);
@@ -252,17 +259,25 @@ const CRMLayout = ({ children }) => {
     const channel = echo.private(`notifications.${user.id}`);
     channel.listen('.notification.new', (payload) => {
       setUnreadCount(prev => prev + 1);
-      globalSetCount(c => c + 1);
+      globalIncrement(1);
+      playNotificationSound();
       setNotifications(prev => {
         if (prev.some(n => n.id === payload.id)) return prev;
         return [payload, ...prev].slice(0, 10);
       });
       const data = payload?.data || payload || {};
-      const toastMsg = data.title || data.message || 'New notification';
       const nType = String(data.type || '');
-      const toastType = nType.includes('cancelled') || nType.includes('rejected') ? 'error'
-        : nType.includes('reminder') ? 'warning' : 'info';
-      showToast({ type: toastType, message: toastMsg, timeout: 5000 });
+      const toastType = nType.includes('approved') ? 'success'
+        : nType.includes('cancelled') || nType.includes('rejected') ? 'error'
+        : nType.includes('info_requested') || nType.includes('reminder') ? 'warning'
+        : 'info';
+      showToast({
+        type: toastType,
+        title: data.title || 'New notification',
+        message: data.message || '',
+        timeout: 5000,
+        actionUrl: data.action_url || data.link || null,
+      });
     });
     return () => { echo.leave(`notifications.${user.id}`); };
   }, [user?.id]);
@@ -632,31 +647,101 @@ const CRMLayout = ({ children }) => {
           </div>
         </header>
 
-        {/* Verification Pending Banner — unverified doctors */}
-        {userRole === 'doctor' && !user?.is_verified && (
-          <div className="mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-6 lg:mt-8 mb-0 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 shadow-sm">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
-                <Shield className="w-5 h-5 text-amber-600" />
+        {/* Dynamic Verification Banner — status-aware */}
+        {userRole === 'doctor' && user?.verification_status && user.verification_status !== 'approved' && (() => {
+          const vs = user.verification_status;
+          const bannerConfig = {
+            unverified: {
+              gradient: 'from-amber-50 to-orange-50',
+              border: 'border-amber-200',
+              iconBg: 'bg-amber-100',
+              iconColor: 'text-amber-600',
+              Icon: Shield,
+              titleColor: 'text-amber-900',
+              descColor: 'text-amber-700',
+              title: t('crm.verificationBanner.unverifiedTitle', 'Verification Pending'),
+              desc: t('crm.verificationBanner.unverifiedDesc', 'Upload your professional documents to get verified and start receiving appointments.'),
+              btnBg: 'bg-amber-600 hover:bg-amber-700',
+              btnLabel: t('crm.verificationBanner.uploadAction', 'Upload Documents'),
+              btnLink: '/crm/settings?tab=verification',
+              showBtn: true,
+            },
+            pending_review: {
+              gradient: 'from-blue-50 to-indigo-50',
+              border: 'border-blue-200',
+              iconBg: 'bg-blue-100',
+              iconColor: 'text-blue-600',
+              Icon: Clock,
+              titleColor: 'text-blue-900',
+              descColor: 'text-blue-700',
+              title: t('crm.verificationBanner.pendingTitle', 'Documents Under Review'),
+              desc: t('crm.verificationBanner.pendingDesc', 'Your documents have been received. Our admin team is reviewing them (2-5 business days).'),
+              btnBg: '',
+              btnLabel: '',
+              btnLink: '',
+              showBtn: false,
+            },
+            info_requested: {
+              gradient: 'from-orange-50 to-red-50',
+              border: 'border-orange-300',
+              iconBg: 'bg-orange-100',
+              iconColor: 'text-orange-600',
+              Icon: AlertTriangle,
+              titleColor: 'text-orange-900',
+              descColor: 'text-orange-700',
+              title: t('crm.verificationBanner.infoTitle', 'Action Required: Additional Documents Needed'),
+              desc: user?.admin_verification_note || t('crm.verificationBanner.infoDesc', 'The admin team has requested additional information. Please update your documents.'),
+              btnBg: 'bg-orange-600 hover:bg-orange-700',
+              btnLabel: t('crm.verificationBanner.updateAction', 'Update Documents'),
+              btnLink: '/crm/settings?tab=verification',
+              showBtn: true,
+            },
+            rejected: {
+              gradient: 'from-red-50 to-rose-50',
+              border: 'border-red-200',
+              iconBg: 'bg-red-100',
+              iconColor: 'text-red-600',
+              Icon: ShieldAlert,
+              titleColor: 'text-red-900',
+              descColor: 'text-red-700',
+              title: t('crm.verificationBanner.rejectedTitle', 'Verification Rejected'),
+              desc: t('crm.verificationBanner.rejectedDesc', 'Your verification was not approved. Please re-upload correct documents or contact support.'),
+              btnBg: 'bg-red-600 hover:bg-red-700',
+              btnLabel: t('crm.verificationBanner.resubmitAction', 'Re-submit Documents'),
+              btnLink: '/crm/settings?tab=verification',
+              showBtn: true,
+            },
+          };
+          const cfg = bannerConfig[vs] || bannerConfig.unverified;
+          const BannerIcon = cfg.Icon;
+
+          return (
+            <div className={`mx-4 sm:mx-6 lg:mx-8 mt-4 sm:mt-6 lg:mt-8 mb-0 rounded-xl border ${cfg.border} bg-gradient-to-r ${cfg.gradient} px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 shadow-sm`}>
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className={`w-10 h-10 rounded-full ${cfg.iconBg} flex items-center justify-center flex-shrink-0`}>
+                  <BannerIcon className={`w-5 h-5 ${cfg.iconColor}`} />
+                </div>
+                <div className="min-w-0">
+                  <p className={`text-sm font-semibold ${cfg.titleColor}`}>{cfg.title}</p>
+                  <p className={`text-xs ${cfg.descColor} mt-0.5`}>{cfg.desc}</p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-amber-900">{t('crm.verificationBanner.title', 'Account Under Review')}</p>
-                <p className="text-xs text-amber-700 mt-0.5">{t('crm.verificationBanner.description', 'Your account is being reviewed by our admin team. Appointment creation and MedStream interaction features (like, comment, share) are restricted until approval.')}</p>
-              </div>
+              {cfg.showBtn && (
+                <Link
+                  to={cfg.btnLink}
+                  className={`inline-flex items-center gap-1.5 px-4 py-2 ${cfg.btnBg} text-white text-xs font-semibold rounded-lg transition-colors shadow-sm flex-shrink-0`}
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  {cfg.btnLabel}
+                </Link>
+              )}
             </div>
-            <Link
-              to="/crm/settings?tab=verification"
-              onClick={() => { setTimeout(() => document.querySelector('[data-tab="verification"]')?.click(), 300); }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm flex-shrink-0"
-            >
-              <Shield className="w-3.5 h-3.5" />
-              {t('crm.verificationBanner.action', 'Submit Documents')}
-            </Link>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Page Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          <AnnouncementBanner />
           <Suspense fallback={<PageTransitionLoader />}>
             <div className="animate-fadeIn">
               {children}

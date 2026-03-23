@@ -93,6 +93,8 @@ const CRMSettings = ({ standalone = false }) => {
   const [socialInfo, setSocialInfo] = useState({
     phone: '', whatsapp: '', website: '', address: '',
     map_coordinates: { lat: '', lng: '' },
+    maps_url: '',
+    full_address_text: '',
     social_links: { instagram: '', facebook: '', twitter: '', linkedin: '', youtube: '', tiktok: '' },
   });
   const [socialSaving, setSocialSaving] = useState(false);
@@ -138,6 +140,8 @@ const CRMSettings = ({ standalone = false }) => {
             website: dp.website || '',
             address: dp.address || '',
             map_coordinates: dp.map_coordinates || { lat: '', lng: '' },
+            maps_url: dp.maps_url || '',
+            full_address_text: dp.full_address_text || '',
             social_links: { instagram: '', facebook: '', twitter: '', linkedin: '', youtube: '', tiktok: '', ...(dp.social_links || {}) },
           });
         }
@@ -852,23 +856,32 @@ const CRMSettings = ({ standalone = false }) => {
                     <input type="url" value={socialInfo.website} onChange={(e) => updateSocialField('website', e.target.value)} placeholder="https://www.example.com"
                       className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-gray-400" /> {t('crm.settings.addressLabel', 'Full Address')}</label>
-                    <textarea rows={2} value={socialInfo.address} onChange={(e) => updateSocialField('address', e.target.value)} placeholder="Street, building, district, city, country"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.latitude', 'Latitude')}</label>
-                      <input type="number" step="any" value={socialInfo.map_coordinates?.lat || ''} onChange={(e) => updateMapCoord('lat', e.target.value)} placeholder="41.0082"
-                        onKeyDown={blockNonNumeric}
-                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.longitude', 'Longitude')}</label>
-                      <input type="number" step="any" value={socialInfo.map_coordinates?.lng || ''} onChange={(e) => updateMapCoord('lng', e.target.value)} placeholder="28.9784"
-                        onKeyDown={blockNonNumeric}
-                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                  {/* ── Location Section ── */}
+                  <div className="pt-2 border-t border-gray-100">
+                    <h3 className="text-xs font-bold text-gray-800 mb-3 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-teal-500" /> {t('crm.settings.locationTitle', 'Location Information')}</h3>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.fullAddressLabel', 'Detailed Address')}</label>
+                        <textarea rows={3} value={socialInfo.full_address_text} onChange={(e) => updateSocialField('full_address_text', e.target.value)}
+                          placeholder={t('crm.settings.fullAddressPlaceholder', 'Neighborhood, street, avenue and door number...')}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none" />
+                        <p className="text-[10px] text-gray-400 mt-1">{t('crm.settings.fullAddressHelper', 'Enter your full address including neighborhood, street, avenue and door number.')}</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.mapsUrlLabel', 'Google Maps Link')}</label>
+                        <input type="url" value={socialInfo.maps_url} onChange={(e) => updateSocialField('maps_url', e.target.value)}
+                          placeholder="https://www.google.com/maps/place/..."
+                          className={`w-full h-10 px-3 border rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
+                            socialInfo.maps_url && !isValidGoogleMapsUrl(socialInfo.maps_url) ? 'border-red-300 bg-red-50/30' : 'border-gray-300'
+                          }`} />
+                        <p className="text-[10px] text-gray-400 mt-1">{t('crm.settings.mapsUrlHelper', 'Paste the share link of your location on Google Maps.')}</p>
+                      </div>
+
+                      {socialInfo.maps_url && (
+                        <GoogleMapsPreview url={socialInfo.maps_url} height={200} compact />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -913,28 +926,34 @@ const CRMSettings = ({ standalone = false }) => {
           {/* Verification Tab */}
           {activeTab === 'verification' && (
             <div className="space-y-5">
-              {/* Current verification status */}
-              <div className={`rounded-2xl border shadow-sm overflow-hidden ${user?.is_verified ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
-                <div className="px-6 py-4 flex items-center gap-3">
-                  {user?.is_verified ? (
-                    <>
-                      <ShieldCheck className="w-6 h-6 text-emerald-600" />
+              {/* Current verification status — dynamic */}
+              {(() => {
+                const vs = user?.verification_status || (user?.is_verified ? 'approved' : 'unverified');
+                const statusMap = {
+                  approved:       { bg: 'bg-emerald-50', border: 'border-emerald-200', icon: <ShieldCheck className="w-6 h-6 text-emerald-600" />, titleColor: 'text-emerald-800', descColor: 'text-emerald-600',
+                                    title: t('crm.settings.verifiedTitle', 'Verified Professional'), desc: t('crm.settings.verifiedDesc', 'Your profile displays a verified badge visible to all patients.') },
+                  unverified:     { bg: 'bg-amber-50', border: 'border-amber-200', icon: <AlertTriangle className="w-6 h-6 text-amber-600" />, titleColor: 'text-amber-800', descColor: 'text-amber-600',
+                                    title: t('crm.settings.notVerifiedTitle', 'Not Yet Verified'), desc: t('crm.settings.notVerifiedDesc', 'Upload your professional documents below to get verified.') },
+                  pending_review: { bg: 'bg-blue-50', border: 'border-blue-200', icon: <Clock className="w-6 h-6 text-blue-600" />, titleColor: 'text-blue-800', descColor: 'text-blue-600',
+                                    title: t('crm.settings.pendingReviewTitle', 'Documents Under Review'), desc: t('crm.settings.pendingReviewDesc', 'Your documents are being reviewed by our admin team (2-5 business days).') },
+                  info_requested: { bg: 'bg-orange-50', border: 'border-orange-300', icon: <AlertTriangle className="w-6 h-6 text-orange-600" />, titleColor: 'text-orange-800', descColor: 'text-orange-600',
+                                    title: t('crm.settings.infoRequestedTitle', 'Additional Documents Needed'), desc: user?.admin_verification_note || t('crm.settings.infoRequestedDesc', 'The admin team has requested additional information. Please upload the required documents below.') },
+                  rejected:       { bg: 'bg-red-50', border: 'border-red-200', icon: <AlertTriangle className="w-6 h-6 text-red-600" />, titleColor: 'text-red-800', descColor: 'text-red-600',
+                                    title: t('crm.settings.rejectedTitle', 'Verification Rejected'), desc: t('crm.settings.rejectedDesc', 'Your verification was not approved. Please re-upload correct documents below.') },
+                };
+                const cfg = statusMap[vs] || statusMap.unverified;
+                return (
+                  <div className={`rounded-2xl border shadow-sm overflow-hidden ${cfg.bg} ${cfg.border}`}>
+                    <div className="px-6 py-4 flex items-center gap-3">
+                      {cfg.icon}
                       <div>
-                        <h2 className="text-sm font-bold text-emerald-800">{t('crm.settings.verifiedTitle', 'Verified Professional')}</h2>
-                        <p className="text-xs text-emerald-600 mt-0.5">{t('crm.settings.verifiedDesc', 'Your profile displays a verified badge visible to all patients.')}</p>
+                        <h2 className={`text-sm font-bold ${cfg.titleColor}`}>{cfg.title}</h2>
+                        <p className={`text-xs ${cfg.descColor} mt-0.5`}>{cfg.desc}</p>
                       </div>
-                    </>
-                  ) : (
-                    <>
-                      <AlertTriangle className="w-6 h-6 text-amber-600" />
-                      <div>
-                        <h2 className="text-sm font-bold text-amber-800">{t('crm.settings.notVerifiedTitle', 'Not Yet Verified')}</h2>
-                        <p className="text-xs text-amber-600 mt-0.5">{t('crm.settings.notVerifiedDesc', 'Upload your professional documents below to get verified.')}</p>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Upload new document */}
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">

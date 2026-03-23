@@ -422,6 +422,40 @@ class SuperAdminController extends Controller
     }
 
     /**
+     * PUT /api/admin/verification-requests/{id}/undo — Revert action back to pending
+     */
+    public function undoVerification(Request $request, string $id): JsonResponse
+    {
+        $vr = $this->superAdminService->undoVerificationAction($id, $request->user()->id);
+
+        return response()->json([
+            'message' => 'Verification action undone. Request is now pending again.',
+            'verification_request' => $vr,
+        ]);
+    }
+
+    /**
+     * PUT /api/admin/verification-requests/{id}/request-info — Request more documents
+     */
+    public function requestMoreInfo(Request $request, string $id): JsonResponse
+    {
+        $request->validate([
+            'message' => 'required|string|max:2000',
+        ]);
+
+        $vr = $this->superAdminService->requestMoreInfo(
+            $id,
+            $request->user()->id,
+            $request->input('message'),
+        );
+
+        return response()->json([
+            'message' => 'Information request sent to doctor.',
+            'verification_request' => $vr,
+        ]);
+    }
+
+    /**
      * GET /api/admin/verification-requests/{id}/document — Download/preview document
      */
     public function verificationDocument(string $id): \Symfony\Component\HttpFoundation\StreamedResponse|JsonResponse

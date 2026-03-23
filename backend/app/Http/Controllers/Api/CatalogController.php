@@ -10,6 +10,7 @@ use App\Models\Specialty;
 use App\Models\City;
 use App\Models\DiseaseCondition;
 use App\Models\SymptomSpecialtyMapping;
+use App\Models\TreatmentTag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -202,6 +203,116 @@ class CatalogController extends Controller
         $disease->update($validated);
 
         return response()->json(['disease' => $disease->fresh()]);
+    }
+
+    // ── Treatment Tags ──
+
+    public function treatmentTags(Request $request)
+    {
+        $tags = TreatmentTag::active()
+            ->ordered()
+            ->with('specialty:id,code,name')
+            ->when($request->specialty_id, fn($q, $v) => $q->where('specialty_id', $v))
+            ->get();
+
+        return response()->json(['treatment_tags' => $tags]);
+    }
+
+    public function storeTreatmentTag(Request $request)
+    {
+        $validated = $request->validate([
+            'specialty_id'  => 'required|uuid|exists:specialties,id',
+            'slug'          => 'required|string|max:100|unique:treatment_tags,slug',
+            'name'          => 'required|array',
+            'name.en'       => 'required|string|max:255',
+            'name.tr'       => 'required|string|max:255',
+            'aliases'       => 'nullable|array',
+            'description'   => 'nullable|array',
+            'display_order' => 'sometimes|integer',
+        ]);
+
+        $tag = TreatmentTag::create($validated);
+
+        return response()->json(['treatment_tag' => $tag->load('specialty:id,code,name')], 201);
+    }
+
+    public function updateTreatmentTag(Request $request, string $id)
+    {
+        $tag = TreatmentTag::active()->findOrFail($id);
+
+        $validated = $request->validate([
+            'specialty_id'  => 'sometimes|uuid|exists:specialties,id',
+            'name'          => 'sometimes|array',
+            'aliases'       => 'nullable|array',
+            'description'   => 'nullable|array',
+            'display_order' => 'sometimes|integer',
+        ]);
+
+        $tag->update($validated);
+
+        return response()->json(['treatment_tag' => $tag->fresh()->load('specialty:id,code,name')]);
+    }
+
+    public function destroyTreatmentTag(string $id)
+    {
+        TreatmentTag::active()->findOrFail($id)->update(['is_active' => false]);
+        return response()->json(['message' => 'Treatment tag deactivated.']);
+    }
+
+    /**
+     * GET /api/catalog/treatment-tags/search?q=botox
+     * Patient-facing search: matches tag name + aliases in current locale.
+     * Returns tag + linked specialty for routing.
+     */
+    public function treatmentTagsSearch(Request $request): JsonResponse
+    {
+        $q = mb_strtolower(trim($request->query('q', '')));
+        if (mb_strlen($q) < 2) {
+            return response()->json(['results' => []]);
+        }
+
+        $locale   = app()->getLocale();
+        $fallback = config('app.fallback_locale', 'en');
+
+        $tags = TreatmentTag::active()
+            ->with('specialty:id,code,name')
+            ->get();
+
+        $results = $tags->filter(function ($tag) use ($q, $locale, $fallback) {
+            // Match on name
+            $name = mb_strtolower($tag->getTranslation('name', $locale) ?? $tag->getTranslation('name', $fallback) ?? '');
+            if (str_contains($name, $q)) return true;
+
+            // Match on slug
+            if (str_contains($tag->slug, $q)) return true;
+
+            // Match on aliases (array per locale)
+            $aliases = $tag->aliases ?? [];
+            foreach ([$locale, $fallback] as $lang) {
+                $langAliases = $aliases[$lang] ?? [];
+                if (is_array($langAliases)) {
+                    foreach ($langAliases as $alias) {
+                        if (str_contains(mb_strtolower($alias), $q)) return true;
+                    }
+                }
+            }
+
+            return false;
+        })->take(15)->map(function ($tag) use ($locale, $fallback) {
+            $specName = $tag->specialty
+                ? ($tag->specialty->getTranslation('name', $locale) ?? $tag->specialty->getTranslation('name', $fallback) ?? '')
+                : '';
+            return [
+                'id'             => $tag->id,
+                'slug'           => $tag->slug,
+                'name'           => $tag->getTranslation('name', $locale) ?? $tag->getTranslation('name', $fallback) ?? '',
+                'specialty_id'   => $tag->specialty_id,
+                'specialty_code' => $tag->specialty?->code,
+                'specialty_name' => $specName,
+            ];
+        })->values();
+
+        return response()->json(['results' => $results]);
     }
 
     // ── Symptom-Specialty Mapping ──

@@ -31,6 +31,7 @@ use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SocialController;
 use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\ClinicVerificationController;
+use App\Http\Controllers\Api\AnnouncementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -130,6 +131,8 @@ Route::prefix('catalog')->middleware('cache.headers:public')->group(function () 
     Route::get('/cities/search', [CatalogController::class, 'citiesSearch']);
     Route::get('/diseases', [CatalogController::class, 'diseases']);
     Route::get('/symptoms', [CatalogController::class, 'symptoms']);
+    Route::get('/treatment-tags', [CatalogController::class, 'treatmentTags']);
+    Route::get('/treatment-tags/search', [CatalogController::class, 'treatmentTagsSearch']);
 });
 
 /*
@@ -148,6 +151,9 @@ Route::prefix('catalog')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin
     Route::put('/diseases/{id}', [CatalogController::class, 'updateDisease']);
     Route::post('/symptoms', [CatalogController::class, 'storeSymptom']);
     Route::put('/symptoms/{id}', [CatalogController::class, 'updateSymptom']);
+    Route::post('/treatment-tags', [CatalogController::class, 'storeTreatmentTag']);
+    Route::put('/treatment-tags/{id}', [CatalogController::class, 'updateTreatmentTag']);
+    Route::delete('/treatment-tags/{id}', [CatalogController::class, 'destroyTreatmentTag']);
 });
 
 /*
@@ -565,6 +571,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     Route::get('/verification-requests/doctor/{doctorId}', [SuperAdminController::class, 'doctorVerificationDetail']);
     Route::put('/verification-requests/{id}/approve', [SuperAdminController::class, 'approveVerification']);
     Route::put('/verification-requests/{id}/reject', [SuperAdminController::class, 'rejectVerification']);
+    Route::put('/verification-requests/{id}/undo', [SuperAdminController::class, 'undoVerification']);
+    Route::put('/verification-requests/{id}/request-info', [SuperAdminController::class, 'requestMoreInfo']);
     Route::get('/verification-requests/{id}/document', [SuperAdminController::class, 'verificationDocument']);
 
     // Clinic verification (document-based)
@@ -616,7 +624,18 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
         Route::get('/diseases', [CatalogController::class, 'diseases']);
         Route::post('/diseases', [CatalogController::class, 'storeDisease']);
         Route::put('/diseases/{id}', [CatalogController::class, 'updateDisease']);
+
+        Route::get('/treatment-tags', [CatalogController::class, 'treatmentTags']);
+        Route::post('/treatment-tags', [CatalogController::class, 'storeTreatmentTag']);
+        Route::put('/treatment-tags/{id}', [CatalogController::class, 'updateTreatmentTag']);
+        Route::delete('/treatment-tags/{id}', [CatalogController::class, 'destroyTreatmentTag']);
     });
+
+    // Announcements (admin CRUD)
+    Route::get('/announcements', [AnnouncementController::class, 'adminList']);
+    Route::post('/announcements', [AnnouncementController::class, 'store']);
+    Route::put('/announcements/{id}', [AnnouncementController::class, 'update']);
+    Route::delete('/announcements/{id}', [AnnouncementController::class, 'destroy']);
 
     // FAQ management (admin)
     Route::get('/faqs', [FaqController::class, 'adminIndex']);
@@ -632,6 +651,9 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
 */
 // Public FAQ (no auth required)
 Route::get('/faqs', [FaqController::class, 'index']);
+
+// Public announcements (auth optional — role-based filtering)
+Route::get('/announcements', [AnnouncementController::class, 'index'])->middleware('auth:sanctum');
 
 // Authenticated support ticket routes
 Route::prefix('support')->middleware(['auth:sanctum'])->group(function () {

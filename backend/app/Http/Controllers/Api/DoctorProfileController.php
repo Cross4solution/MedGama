@@ -82,6 +82,8 @@ class DoctorProfileController extends Controller
             'languages'          => 'nullable|array',
             'address'            => 'nullable|string|max:500',
             'map_coordinates'    => 'nullable|array',
+            'maps_url'           => 'nullable|string|max:2000|url',
+            'full_address_text'  => 'nullable|string|max:2000',
             'phone'              => 'nullable|string|max:50',
             'website'            => 'nullable|string|max:255',
             'gallery'            => 'nullable|array',
@@ -367,6 +369,14 @@ class DoctorProfileController extends Controller
             'notes'          => $request->input('notes'),
             'status'         => 'pending',
         ]);
+
+        // Auto-transition doctor to pending_review when documents are submitted
+        if (in_array($user->verification_status, ['unverified', 'info_requested', null])) {
+            $user->update([
+                'verification_status'       => 'pending_review',
+                'admin_verification_note'   => null,
+            ]);
+        }
 
         return response()->json([
             'message' => 'Verification document submitted for review.',

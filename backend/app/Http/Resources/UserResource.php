@@ -77,13 +77,15 @@ class UserResource extends JsonResource
             ];
         }
 
-        // For doctors, include onboarding status
+        // For doctors, include onboarding status + verification details
         if ($this->role_id === 'doctor') {
             $profile = $this->relationLoaded('doctorProfile')
                 ? $this->doctorProfile
                 : $this->doctorProfile()->first();
 
             $data['onboarding_completed'] = $profile ? (bool) $profile->onboarding_completed : false;
+            $data['verification_status'] = $this->verification_status ?? 'unverified';
+            $data['admin_verification_note'] = $this->admin_verification_note;
         }
 
         return $data;

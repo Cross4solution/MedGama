@@ -631,8 +631,12 @@ class SuperAdminService
                 'reviewed_at' => now(),
             ]);
 
-            // Mark doctor as verified
-            User::where('id', $vr->doctor_id)->update(['is_verified' => true]);
+            // Mark doctor as verified + update verification_status
+            User::where('id', $vr->doctor_id)->update([
+                'is_verified'             => true,
+                'verification_status'     => 'approved',
+                'admin_verification_note' => null,
+            ]);
         });
 
         // Send notification to doctor
@@ -666,6 +670,9 @@ class SuperAdminService
             'rejection_reason' => $reason,
         ]);
 
+        // Update user verification_status — check if any other pending/approved remain
+        $this->recalculateDoctorVerificationStatus($vr->doctor_id);
+
         // Send notification to doctor
         $vr->doctor->notify(new VerificationRejectedNotification($vr));
 
@@ -679,6 +686,135 @@ class SuperAdminService
         );
 
         return $vr->refresh()->load(['doctor:id,fullname,email,avatar,is_verified', 'reviewer:id,fullname']);
+    }
+
+    /**
+     * Undo a verification action — revert approved/rejected back to pending.
+     */
+    public function undoVerificationAction(string $requestId, string $adminId): VerificationRequest
+    {
+        $vr = VerificationRequest::findOrFail($requestId);
+        $oldStatus = $vr->status;
+
+        if ($oldStatus === 'pending') {
+            throw new \InvalidArgumentException('This request is already pending.');
+        }
+
+        DB::transaction(function () use ($vr) {
+            $vr->update([
+                'status'           => 'pending',
+                'reviewed_by'      => null,
+                'reviewed_at'      => null,
+                'rejection_reason' => null,
+            ]);
+
+            // If was approved, revert doctor verification
+            if ($vr->getOriginal('status') === 'approved') {
+                $hasOtherApproved = VerificationRequest::where('doctor_id', $vr->doctor_id)
+                    ->where('id', '!=', $vr->id)
+                    ->where('status', 'approved')
+                    ->exists();
+                if (!$hasOtherApproved) {
+                    User::where('id', $vr->doctor_id)->update(['is_verified' => false]);
+                }
+            }
+
+            // Recalculate verification_status
+            $this->recalculateDoctorVerificationStatus($vr->doctor_id);
+        });
+
+        AuditLog::log(
+            action: 'verification.undone',
+            resourceType: 'VerificationRequest',
+            resourceId: $vr->id,
+            oldValues: ['status' => $oldStatus],
+            newValues: ['status' => 'pending'],
+            description: "Undid verification action ({$oldStatus}→pending) for doctor: {$vr->doctor->fullname}",
+        );
+
+        Cache::forget('superadmin:dashboard');
+
+        return $vr->refresh()->load(['doctor:id,fullname,email,avatar,is_verified', 'reviewer:id,fullname']);
+    }
+
+    /**
+     * Request more documents/info from a doctor.
+     */
+    public function requestMoreInfo(string $requestId, string $adminId, string $message): VerificationRequest
+    {
+        $vr = VerificationRequest::findOrFail($requestId);
+
+        $vr->update([
+            'status'           => 'info_requested',
+            'reviewed_by'      => $adminId,
+            'reviewed_at'      => now(),
+            'rejection_reason' => $message,
+        ]);
+
+        // Update user verification_status + admin note
+        User::where('id', $vr->doctor_id)->update([
+            'verification_status'     => 'info_requested',
+            'admin_verification_note' => $message,
+        ]);
+
+        // Send notification to doctor
+        try {
+            $vr->doctor->notify(new \App\Notifications\VerificationInfoRequestNotification($vr, $message));
+        } catch (\Throwable $e) {
+            // Notification class may not exist yet — skip gracefully
+        }
+
+        AuditLog::log(
+            action: 'verification.info_requested',
+            resourceType: 'VerificationRequest',
+            resourceId: $vr->id,
+            newValues: ['doctor_id' => $vr->doctor_id, 'message' => $message],
+            description: "Requested more info for doctor: {$vr->doctor->fullname}",
+        );
+
+        return $vr->refresh()->load(['doctor:id,fullname,email,avatar,is_verified', 'reviewer:id,fullname']);
+    }
+
+    /**
+     * Recalculate a doctor's verification_status based on their verification requests.
+     */
+    private function recalculateDoctorVerificationStatus(string $doctorId): void
+    {
+        $requests = VerificationRequest::where('doctor_id', $doctorId)->get();
+
+        // If any approved → approved (is_verified already handled separately)
+        if ($requests->where('status', 'approved')->isNotEmpty()) {
+            User::where('id', $doctorId)->update([
+                'verification_status'     => 'approved',
+                'admin_verification_note' => null,
+            ]);
+            return;
+        }
+
+        // If any info_requested → info_requested
+        $infoReq = $requests->where('status', 'info_requested')->first();
+        if ($infoReq) {
+            User::where('id', $doctorId)->update([
+                'verification_status'     => 'info_requested',
+                'admin_verification_note' => $infoReq->rejection_reason,
+            ]);
+            return;
+        }
+
+        // If any pending → pending_review
+        if ($requests->where('status', 'pending')->isNotEmpty()) {
+            User::where('id', $doctorId)->update([
+                'verification_status'     => 'pending_review',
+                'admin_verification_note' => null,
+            ]);
+            return;
+        }
+
+        // All rejected or no requests → unverified
+        User::where('id', $doctorId)->update([
+            'verification_status'     => $requests->isNotEmpty() ? 'rejected' : 'unverified',
+            'admin_verification_note' => null,
+        ]);
     }
 
     /**

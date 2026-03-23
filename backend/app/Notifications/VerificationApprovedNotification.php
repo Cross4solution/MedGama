@@ -6,6 +6,7 @@ use App\Models\VerificationRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
 class VerificationApprovedNotification extends Notification implements ShouldQueue
@@ -18,7 +19,7 @@ class VerificationApprovedNotification extends Notification implements ShouldQue
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'broadcast', 'mail'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -46,5 +47,23 @@ class VerificationApprovedNotification extends Notification implements ShouldQue
             'document_type' => $this->verificationRequest->document_type,
             'document_label' => $this->verificationRequest->document_label,
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage([
+            'type' => 'verification_approved',
+            'title' => 'Verification Approved',
+            'message' => 'Your professional verification has been approved. You now have a Verified badge.',
+            'verification_status' => 'approved',
+            'admin_verification_note' => null,
+            'action_url' => '/crm',
+            'timestamp' => now()->toISOString(),
+        ]);
+    }
+
+    public function broadcastOn(): array
+    {
+        return ["user.{$this->verificationRequest->doctor_id}"];
     }
 }

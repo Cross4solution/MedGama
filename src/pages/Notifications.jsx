@@ -31,8 +31,9 @@ const TYPE_META = {
   review_approved:       { label: 'Review Approved', icon: Star, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'review' },
   review_rejected:       { label: 'Review Rejected', icon: Star, color: 'text-red-600', bg: 'bg-red-100/80', category: 'review' },
   review_hidden:         { label: 'Review Hidden', icon: Star, color: 'text-gray-600', bg: 'bg-gray-100', category: 'review' },
-  verification_approved: { label: 'Verification Approved', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'system' },
-  verification_rejected: { label: 'Verification Rejected', icon: Shield, color: 'text-red-600', bg: 'bg-red-100/80', category: 'system' },
+  verification_approved:      { label: 'Verification Approved', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'system' },
+  verification_info_requested:{ label: 'Documents Requested', icon: Shield, color: 'text-orange-600', bg: 'bg-orange-100/80', category: 'system' },
+  verification_rejected:      { label: 'Verification Rejected', icon: Shield, color: 'text-red-600', bg: 'bg-red-100/80', category: 'system' },
   post_liked:            { label: 'Post Liked', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-100/80', category: 'social' },
   post_commented:        { label: 'Post Comment', icon: MessageCircle, color: 'text-teal-600', bg: 'bg-teal-100/80', category: 'social' },
   new_chat_message:      { label: 'New Message', icon: MessageCircle, color: 'text-blue-600', bg: 'bg-blue-100/80', category: 'message' },
@@ -137,6 +138,8 @@ export default function Notifications() {
   const handleClick = (notif) => {
     if (!notif.read_at) handleMarkRead(notif.id);
     const data = notif.data || {};
+    // Priority: action_url > link > contextual routing
+    if (data.action_url) { navigate(data.action_url); return; }
     if (data.link) { navigate(data.link); return; }
     if (data.post_id) { navigate(`/post/${encodeURIComponent(data.post_id)}`); return; }
     if (data.conversation_id) { navigate('/doctor-chat'); return; }
@@ -145,6 +148,7 @@ export default function Notifications() {
       return;
     }
     if (data.review_id && user?.role !== 'patient') { navigate(isPro ? '/crm/reviews' : '/doctor/dashboard'); return; }
+    if (data.ticket_id) { navigate(isPro ? '/crm/support' : '/support'); return; }
   };
 
   const getMeta = (notif) => {

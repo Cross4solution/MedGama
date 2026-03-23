@@ -23,6 +23,7 @@ import {
   Bell,
   CreditCard,
   Zap,
+  Megaphone,
   Search,
   Lock,
   Eye,
@@ -32,6 +33,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { adminAPI, supportAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import AnnouncementBanner from '../ui/AnnouncementBanner';
 
 // ── Admin Login Gate ──────────────────────────────────────
 const ADMIN_ROLES = ['superAdmin', 'saasAdmin'];
@@ -205,6 +207,7 @@ const NAV_SECTIONS = [
       { label: 'System Settings', icon: Settings2, path: '/admin/settings' },
       { label: 'Audit Logs', icon: ScrollText, path: '/admin/audit-logs' },
       { label: 'Support Tickets', icon: LifeBuoy, path: '/admin/support' },
+      { label: 'Announcements', icon: Megaphone, path: '/admin/announcements' },
     ],
   },
 ];
@@ -505,6 +508,7 @@ const AdminLayout = () => {
               <div className="w-6 h-6 border-2 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
             </div>
           }>
+            <AnnouncementBanner />
             <Outlet />
           </Suspense>
         </main>

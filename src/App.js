@@ -93,6 +93,7 @@ const AdminUserManagement = React.lazy(() => import('./pages/admin/AdminUserMana
 const AdminVerificationReview = React.lazy(() => import('./pages/admin/AdminVerificationReview'));
 const AdminSystemSettings = React.lazy(() => import('./pages/admin/AdminSystemSettings'));
 const AdminFinancials = React.lazy(() => import('./pages/admin/AdminFinancials'));
+const AdminAnnouncements = React.lazy(() => import('./pages/admin/AdminAnnouncements'));
 
 // Minimal loading fallback
 const PageLoader = () => (
@@ -104,7 +105,12 @@ const PageLoader = () => (
 function AppContent() {
   const location = useLocation();
   const navType = useNavigationType();
+  const navigate = useNavigate();
   const { user } = useAuth();
+
+  // Bridge for toast SPA navigation (ToastContext uses this)
+  React.useEffect(() => { window.__TOAST_NAVIGATE = navigate; return () => { delete window.__TOAST_NAVIGATE; }; }, [navigate]);
+
   // Show sidebar for all logged-in users (including patients), but not on CRM or verify-email pages
   const hasSidebar = !!user && !location.pathname.startsWith('/crm') && !location.pathname.startsWith('/admin') && location.pathname !== '/verify-email';
 
@@ -393,6 +399,7 @@ function AppContent() {
           <Route path="reviews" element={<AdminReviews />} />
           <Route path="support" element={<AdminSupport />} />
           <Route path="users" element={<AdminUserManagement />} />
+          <Route path="announcements" element={<AdminAnnouncements />} />
           <Route path="financials" element={<AdminFinancials />} />
         </Route>
         <Route path="/500" element={<ServerErrorPage />} />

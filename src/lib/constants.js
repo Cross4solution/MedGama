@@ -75,6 +75,10 @@ export const STATUS_BADGE = Object.freeze({
     bg: 'bg-gray-50', text: 'text-gray-500', border: 'border-gray-200',
     dot: 'bg-gray-400', label: 'Unverified',
   },
+  info_requested: {
+    bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200',
+    dot: 'bg-blue-400', label: 'Info Requested',
+  },
 });
 
 /**
