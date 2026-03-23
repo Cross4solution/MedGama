@@ -240,12 +240,10 @@ function DocumentPreview({ m, className, onClick }) {
 
 function toStreamUrl(url) {
   if (!url || typeof url !== 'string') return url;
-  const marker = '/storage/';
-  const idx = url.indexOf(marker);
-  if (idx === -1) return url;
-  const base = url.substring(0, idx);
-  const storagePath = url.substring(idx + marker.length);
-  return `${base}/api/media/stream/${storagePath}`;
+  // Get the fully resolved storage URL (e.g. http://localhost:8001/storage/...)
+  const fullUrl = resolveStorageUrl(url);
+  // Replace /storage/ with the stream endpoint path
+  return fullUrl.replace('/storage/', '/api/media/stream/');
 }
 
 function VideoPreview({ m, className }) {
@@ -280,7 +278,7 @@ function VideoPreview({ m, className }) {
           preload="auto"
           className="w-full h-full object-contain"
           style={{ pointerEvents: 'auto', position: 'relative', zIndex: 11 }}
-          poster={m.thumb || undefined}
+          poster={m.thumb ? resolveStorageUrl(m.thumb) : undefined}
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
@@ -297,7 +295,7 @@ function VideoPreview({ m, className }) {
   return (
     <div className="relative bg-black flex items-center justify-center cursor-pointer group aspect-video w-full" onClick={handlePlay}>
       {hasThumb ? (
-        <img src={thumb} alt="Video" loading="lazy" className="w-full h-full object-contain" />
+        <img src={resolveStorageUrl(thumb)} alt="Video" loading="lazy" className="w-full h-full object-contain" />
       ) : (
         <video
           src={videoSrc}
@@ -683,7 +681,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               </span>
               </div>
             </div>
-            {!compact && (
+            {true && (
               <div ref={moreMenuRef} className="flex items-center gap-1 text-gray-500 relative">
                 <span className="text-xs text-[rgba(0,0,0,0.6)]">{timeLabel}</span>
                 <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="More options" onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>

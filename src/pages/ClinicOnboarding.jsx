@@ -66,8 +66,8 @@ export default function ClinicOnboarding() {
   // Fetch specialties
   useEffect(() => {
     setLoadingSpecs(true);
-    catalogAPI.popular('specialty').then(res => {
-      const items = res?.data || res || [];
+    catalogAPI.specialties().then(res => {
+      const items = res?.specialties || res?.data?.specialties || res?.data || [];
       setAllSpecialties(Array.isArray(items) ? items : []);
     }).catch(() => {}).finally(() => setLoadingSpecs(false));
   }, []);
@@ -75,7 +75,13 @@ export default function ClinicOnboarding() {
   const filteredSpecialties = allSpecialties.filter(sp => {
     if (!specSearch) return true;
     const q = specSearch.toLowerCase();
-    return (sp.name || '').toLowerCase().includes(q) || (sp.code || '').toLowerCase().includes(q);
+    const name = (sp.name || '').toLowerCase();
+    const code = (sp.code || '').toLowerCase();
+    const desc = (sp.description || '').toLowerCase();
+    // Check translated names and descriptions for colloquial search terms
+    const nameTr = Object.values(sp.name_translations || {}).join(' ').toLowerCase();
+    const descTr = Object.values(sp.description_translations || {}).join(' ').toLowerCase();
+    return name.includes(q) || code.includes(q) || desc.includes(q) || nameTr.includes(q) || descTr.includes(q);
   });
 
   const toggleSpecialty = (sp) => {

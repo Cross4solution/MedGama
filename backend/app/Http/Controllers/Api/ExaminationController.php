@@ -27,7 +27,6 @@ class ExaminationController extends Controller
         tags: ['Examination'],
         parameters: [
             new OA\Parameter(name: 'patient_id', in: 'query', schema: new OA\Schema(type: 'string', format: 'uuid')),
-            new OA\Parameter(name: 'icd10_code', in: 'query', schema: new OA\Schema(type: 'string')),
             new OA\Parameter(name: 'date_from', in: 'query', schema: new OA\Schema(type: 'string', format: 'date')),
             new OA\Parameter(name: 'date_to', in: 'query', schema: new OA\Schema(type: 'string', format: 'date')),
             new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
@@ -40,7 +39,7 @@ class ExaminationController extends Controller
     {
         $records = $this->examinationService->listExaminations(
             $request->user(),
-            $request->only(['patient_id', 'icd10_code', 'date_from', 'date_to', 'per_page']),
+            $request->only(['patient_id', 'date_from', 'date_to', 'per_page']),
         );
 
         return response()->json($records);
@@ -79,7 +78,6 @@ class ExaminationController extends Controller
                     new OA\Property(property: 'patient_id', type: 'string', format: 'uuid'),
                     new OA\Property(property: 'appointment_id', type: 'string', format: 'uuid'),
                     new OA\Property(property: 'clinic_id', type: 'string', format: 'uuid'),
-                    new OA\Property(property: 'icd10_code', type: 'string', example: 'J06.9'),
                     new OA\Property(property: 'diagnosis_note', type: 'string'),
                     new OA\Property(
                         property: 'vitals',
@@ -171,29 +169,6 @@ class ExaminationController extends Controller
         return response()->json(['message' => 'Examination record deleted.']);
     }
 
-    // ── ICD-10 Search ──
-
-    #[OA\Get(
-        path: '/crm/icd10/search',
-        summary: 'Search ICD-10 codes by code or name (TR/EN)',
-        security: [['sanctum' => []]],
-        tags: ['Examination'],
-        parameters: [
-            new OA\Parameter(name: 'q', in: 'query', required: true, schema: new OA\Schema(type: 'string', minLength: 2)),
-        ],
-        responses: [
-            new OA\Response(response: 200, description: 'List of matching ICD-10 codes (max 20)'),
-            new OA\Response(response: 422, description: 'Query too short'),
-        ]
-    )]
-    public function searchIcd10(Request $request): JsonResponse
-    {
-        $request->validate(['q' => 'required|string|min:2']);
-
-        $results = $this->examinationService->searchIcd10($request->q);
-
-        return response()->json(['icd10_codes' => $results]);
-    }
 
     // ── Prescription PDF ──
 

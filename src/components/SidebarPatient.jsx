@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { useFavorites } from '../context/FavoritesContext';
 import { useNotifications } from '../context/NotificationsContext';
 import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, Heart, FolderHeart, Activity } from 'lucide-react';
 
@@ -20,7 +19,6 @@ export default function SidebarPatient() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { count: favCount } = useFavorites();
   const { unreadCount: notifCount } = useNotifications();
 
   if (!user) return null;
@@ -33,7 +31,7 @@ export default function SidebarPatient() {
     { to: '/patient-dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: Activity },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
-    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart, badge: favCount || undefined },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
@@ -48,7 +46,7 @@ export default function SidebarPatient() {
     { to: '/doctor/dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: LayoutDashboard },
     { to: '/explore', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
-    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart, badge: favCount || undefined },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
@@ -69,7 +67,8 @@ export default function SidebarPatient() {
 
   const isClinic = role === 'clinic' || role === 'clinicOwner';
   const items = role === 'patient' ? patientItems : (isClinic ? clinicItems : doctorItems);
-  const showCRM = isPro && (role === 'doctor' || role === 'clinic' || role === 'clinicOwner');
+  // CRM is accessible to doctors and clinics (freemium gating happens inside CRM)
+  const showCRM = role === 'doctor' || role === 'clinic' || role === 'clinicOwner';
 
   const NavItem = ({ to = undefined, href = undefined, icon: Icon, label, badge = undefined, external = false }) => {
     const active = to ? (pathname === to || (to.includes('?') && pathname === to.split('?')[0])) : false;

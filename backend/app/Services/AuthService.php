@@ -70,10 +70,10 @@ class AuthService
                     'fullname'    => $clinicName,
                     'codename'    => \Illuminate\Support\Str::slug($clinicName) . '-' . \Illuminate\Support\Str::random(4),
                     'owner_id'    => $user->id,
-                    'is_verified' => false,
+                    'is_verified' => true,
                     'is_active'   => true,
                 ]);
-                $user->update(['clinic_id' => $clinic->id]);
+                $user->update(['clinic_id' => $clinic->id, 'is_verified' => true]);
             }
 
             return $user;

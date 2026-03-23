@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X, Upload, FileText, Building2, Shield, Receipt, UserCheck,
   CheckCircle2, Clock, AlertTriangle, Loader2, File, Trash2, XCircle,
@@ -153,17 +154,17 @@ const ClinicVerificationModal = ({ isOpen, onClose, onStatusChange }) => {
   const statusCfg = STATUS_CONFIG[verificationStatus] || STATUS_CONFIG.unverified;
   const StatusIcon = statusCfg.icon;
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 bg-black/40"
+        className="fixed inset-0 z-[1000] bg-black/40"
         style={{ backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
         onClick={onClose}
       />
 
       {/* Centering container — sidebar-aware */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 lg:pl-[256px] pointer-events-none">
+      <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 lg:pl-[256px] pointer-events-none">
         <div
           className="relative bg-white rounded-2xl max-w-2xl w-full shadow-2xl flex flex-col overflow-hidden animate-fadeIn pointer-events-auto"
           style={{ maxHeight: 'min(92vh, 860px)' }}
@@ -258,7 +259,7 @@ const ClinicVerificationModal = ({ isOpen, onClose, onStatusChange }) => {
                           onDrop={(e) => handleDrop(field.key, e)}
                         >
                           <input
-                            ref={el => fileRefs.current[field.key] = el}
+                            ref={el => { fileRefs.current[field.key] = el; }}
                             type="file"
                             accept={ACCEPTED}
                             className="hidden"
@@ -382,7 +383,8 @@ const ClinicVerificationModal = ({ isOpen, onClose, onStatusChange }) => {
           )}
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 

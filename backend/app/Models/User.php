@@ -34,6 +34,8 @@ class User extends Authenticatable
         'is_crm_active', 'crm_expires_at', 'added_by_clinic',
     ];
 
+    protected $appends = ['level'];
+
     protected $hidden = [
         'password', 'remember_token',
     ];
@@ -95,6 +97,26 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: fn (?string $value) => self::resolveStoragePath($value),
+        );
+    }
+
+    /**
+     * MedaGama Seviye (Level) Hiyerarşisi (S1-S4)
+     * Master Brief §1 uyarınca hesaplanır.
+     */
+    protected function level(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                return match ($this->role_id) {
+                    'patient'     => 1,
+                    'doctor'      => $this->clinic_id ? 3 : 2, // S2: Independent, S3: Clinic Hub
+                    'clinicOwner' => 3,
+                    'hospital'    => 4,
+                    'superAdmin', 'saasAdmin' => 0,
+                    default       => 1,
+                };
+            }
         );
     }
 

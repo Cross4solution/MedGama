@@ -1,6 +1,6 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
-import LeafletMap from 'components/map/LeafletMap';
+import MapboxView from 'components/map/MapboxView';
 
 export default function LocationTab({ locationAddress }) {
   return (
@@ -12,7 +12,7 @@ export default function LocationTab({ locationAddress }) {
           <span>{locationAddress}</span>
         </div>
         <div className="rounded-xl overflow-hidden border border-gray-200">
-          <LeafletMap address={locationAddress} height="320px" />
+          <MapboxView address={locationAddress} height="320px" />
         </div>
       </div>
     </div>

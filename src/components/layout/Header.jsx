@@ -657,7 +657,7 @@ const Header = () => {
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/profile', label: 'Profile', icon: User },
             ];
-            const showCRM = isPro && (role === 'doctor' || role === 'clinic' || role === 'clinicOwner');
+            const showCRM = role === 'doctor' || role === 'clinic' || role === 'clinicOwner';
             const items = role === 'clinic' ? clinicItems : (role === 'doctor' ? doctorItems : patientItems);
             return (
               <nav>

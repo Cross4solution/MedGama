@@ -22,7 +22,7 @@ class PatientRecord extends Model
         'patient_id', 'clinic_id', 'doctor_id', 'appointment_id',
         'file_url', 'upload_date', 'record_type', 'description',
         // Examination fields
-        'icd10_code', 'diagnosis_note', 'vitals',
+        'diagnosis_note', 'vitals',
         'examination_note', 'treatment_plan', 'prescriptions',
     ];
 
@@ -102,8 +102,8 @@ class PatientRecord extends Model
         return $this->belongsTo(Appointment::class);
     }
 
-    public function icd10()
+    public function treatmentTags()
     {
-        return $this->belongsTo(Icd10Code::class, 'icd10_code', 'code');
+        return $this->belongsToMany(TreatmentTag::class, 'patient_record_treatment_tag');
     }
 }

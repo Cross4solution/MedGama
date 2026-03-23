@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -20,6 +21,14 @@ import {
   PieChart,
   DollarSign,
   FileText,
+  ChevronRight,
+  ShieldCheck,
+  MessageSquare,
+  Search,
+  Lock,
+  Star,
+  Globe,
+  CalendarDays,
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════
@@ -39,10 +48,10 @@ const PricingModal = ({ open, onClose, t }) => {
     { key: 'support', label: t('pro.pricing.prioritySupport', 'Priority Support'), free: false, pro: true },
   ];
 
-  return (
-    <div className="fixed inset-0 lg:left-[256px] lg:w-[calc(100%-256px)] bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4" onClick={onClose}>
+  return createPortal(
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 lg:pl-[256px]" onClick={onClose}>
       <div
-        className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -116,7 +125,8 @@ const PricingModal = ({ open, onClose, t }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -270,11 +280,11 @@ const ProTeaser = ({ page = 'crm' }) => {
     },
   ];
 
-  return (
+  return createPortal(
     <>
-      {/* ══ Overlay: pinned to content area only (right of sidebar) ══ */}
+      {/* ══ Overlay: Now covers full viewport to ensure consistent blur ══ */}
       <div
-        className="fixed inset-0 z-20 lg:left-[256px] lg:w-[calc(100%-256px)]"
+        className="fixed inset-0 z-[60] lg:left-[256px] lg:w-[calc(100%-256px)]"
       >
         {/* ── Background: Mock Dashboard (blurred) ── */}
         <div className="absolute inset-0 overflow-hidden">
@@ -359,9 +369,9 @@ const ProTeaser = ({ page = 'crm' }) => {
         </div>
       </div>
 
-      {/* Pricing Modal — also sidebar-aware */}
-      <PricingModal open={showPricing} onClose={() => setShowPricing(false)} t={t} />
-    </>
+      {showPricing && <PricingModal open={showPricing} onClose={() => setShowPricing(false)} t={t} />}
+    </>,
+    document.body
   );
 };
 

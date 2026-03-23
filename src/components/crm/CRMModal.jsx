@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 /**
@@ -44,11 +45,11 @@ const CRMModal = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop — full viewport, blur + dim */}
       <div
-        className="fixed inset-0 z-50 bg-black/40"
+        className="fixed inset-0 z-[1000] bg-black/40"
         style={{ backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
         onClick={onClose}
       />
@@ -58,7 +59,7 @@ const CRMModal = ({
         Desktop (lg+): offset left by sidebar width so modal centers in content area only
       */}
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 lg:pl-[256px] pointer-events-none"
+        className="fixed inset-0 z-[1001] flex items-center justify-center p-4 lg:pl-[256px] pointer-events-none"
       >
         <div
           className={`relative bg-white rounded-2xl ${maxWidth} w-full shadow-2xl flex flex-col overflow-hidden animate-fadeIn pointer-events-auto`}
@@ -103,7 +104,8 @@ const CRMModal = ({
           )}
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 
@@ -124,8 +126,8 @@ export const ModalInput = ({ className = '', ...props }) => (
     {...props}
     className={`w-full h-10 px-3.5 border border-gray-200 rounded-xl text-sm bg-white placeholder:text-gray-300 outline-none transition-all ${className}`}
     style={{ ...(props.style || {}), '--tw-ring-color': 'rgba(10,110,111,0.15)' }}
-    onFocus={(e) => { e.target.style.borderColor = '#0A6E6F'; e.target.style.boxShadow = '0 0 0 3px rgba(10,110,111,0.1)'; props.onFocus?.(e); }}
-    onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; props.onBlur?.(e); }}
+    onFocus={(e) => { e.currentTarget.style.borderColor = '#0A6E6F'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(10,110,111,0.1)'; props.onFocus?.(e); }}
+    onBlur={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; props.onBlur?.(e); }}
   />
 );
 
@@ -134,8 +136,8 @@ export const ModalSelect = ({ className = '', children, ...props }) => (
   <select
     {...props}
     className={`w-full h-10 px-3 border border-gray-200 rounded-xl text-sm bg-white outline-none transition-all ${className}`}
-    onFocus={(e) => { e.target.style.borderColor = '#0A6E6F'; e.target.style.boxShadow = '0 0 0 3px rgba(10,110,111,0.1)'; props.onFocus?.(e); }}
-    onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; props.onBlur?.(e); }}
+    onFocus={(e) => { e.currentTarget.style.borderColor = '#0A6E6F'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(10,110,111,0.1)'; props.onFocus?.(e); }}
+    onBlur={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; props.onBlur?.(e); }}
   >
     {children}
   </select>
@@ -146,8 +148,8 @@ export const ModalTextarea = ({ className = '', ...props }) => (
   <textarea
     {...props}
     className={`w-full px-3.5 py-3 border border-gray-200 rounded-xl text-sm bg-white placeholder:text-gray-300 outline-none transition-all resize-none ${className}`}
-    onFocus={(e) => { e.target.style.borderColor = '#0A6E6F'; e.target.style.boxShadow = '0 0 0 3px rgba(10,110,111,0.1)'; props.onFocus?.(e); }}
-    onBlur={(e) => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; props.onBlur?.(e); }}
+    onFocus={(e) => { e.currentTarget.style.borderColor = '#0A6E6F'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(10,110,111,0.1)'; props.onFocus?.(e); }}
+    onBlur={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; props.onBlur?.(e); }}
   />
 );
 
@@ -157,8 +159,8 @@ export const ModalPrimaryButton = ({ children, className = '', ...props }) => (
     {...props}
     className={`inline-flex items-center justify-center gap-2 px-5 h-10 rounded-xl text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md ${className}`}
     style={{ backgroundColor: props.disabled ? undefined : '#0A6E6F', ...(props.style || {}) }}
-    onMouseEnter={(e) => { if (!props.disabled) e.target.style.backgroundColor = '#085858'; }}
-    onMouseLeave={(e) => { if (!props.disabled) e.target.style.backgroundColor = '#0A6E6F'; }}
+    onMouseEnter={(e) => { if (!props.disabled) e.currentTarget.style.backgroundColor = '#085858'; }}
+    onMouseLeave={(e) => { if (!props.disabled) e.currentTarget.style.backgroundColor = '#0A6E6F'; }}
   >
     {children}
   </button>

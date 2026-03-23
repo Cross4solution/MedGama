@@ -85,9 +85,8 @@ const VitalsAlertBanner = ({ vitalsAlert, t }) => {
 };
 
 // ═══════════════════════════════════════════════════
-// ICD-10 Smart Search Component (API-backed)
-// ═══════════════════════════════════════════════════
-const ICD10Search = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
+// ─── Treatment Tag Search Component (Symptoms & Treatments) ───
+const TreatmentTagSearch = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -104,8 +103,8 @@ const ICD10Search = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
     debounceRef.current = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const data = await examinationAPI.searchIcd10(term);
-        setResults(Array.isArray(data) ? data : (data?.data || []));
+        const res = await catalogAPI.search('treatment_tag', term);
+        setResults(res.results || []);
       } catch {
         setResults([]);
       } finally {
@@ -130,7 +129,7 @@ const ICD10Search = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
   return (
     <div className="space-y-3">
       <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
-        {t('crm.examination.diagnosis')} (ICD-10)
+        {t('crm.examination.diagnosis', 'Diagnosis')} (Symptoms & Treatments)
       </label>
 
       {/* Selected diagnoses */}
@@ -169,7 +168,7 @@ const ICD10Search = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
               handleSearch(e.target.value);
             }}
             onFocus={() => query.length >= 2 && setIsOpen(true)}
-            placeholder={t('crm.examination.searchICD10')}
+            placeholder={t('crm.examination.searchTreatmentTag', 'Search Symptoms or Treatments...')}
             className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full"
           />
           {isSearching && <Loader2 className="w-4 h-4 text-teal-500 animate-spin flex-shrink-0" />}
@@ -651,11 +650,10 @@ const PrintableReport = ({ exam, t }) => {
       {(icd10 || diagnoses.length > 0) && (
         <div className="print-section">
           <div className="print-section-title">
-            {t('crm.examination.print.diagnoses', 'Diagnoses')} (ICD-10)
+            {t('crm.examination.print.diagnoses', 'Diagnoses')} (Symptoms & Treatments)
           </div>
-          {icd10 && <span className="print-icd-badge">{icd10}</span>}
           {diagnoses.map((d, i) => (
-            <span key={i} className="print-icd-badge">{d.code} — {d.desc}</span>
+            <span key={i} className="print-icd-badge">{d.desc || d.name}</span>
           ))}
           {exam.diagnosis_note && (
             <div className="print-note" style={{ marginTop: '6pt' }}>
@@ -1161,7 +1159,7 @@ const CRMExamination = () => {
 
             {/* ICD-10 Diagnosis */}
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
-              <ICD10Search
+              <TreatmentTagSearch
                 selectedDiagnoses={diagnoses}
                 onAdd={(d) => setDiagnoses([...diagnoses, d])}
                 onRemove={(code) => setDiagnoses(diagnoses.filter((d) => d.code !== code))}

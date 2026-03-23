@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\HealthDataAuditLog;
-use App\Models\Icd10Code;
 use App\Models\PatientDocument;
 use App\Models\PatientRecord;
 use App\Models\User;
@@ -27,7 +26,6 @@ class ExaminationService
             ->where('doctor_id', $doctor->id)
             ->with(['patient:id,fullname,avatar,date_of_birth,gender', 'appointment:id,appointment_date,appointment_time'])
             ->when($filters['patient_id'] ?? null, fn($q, $v) => $q->where('patient_id', $v))
-            ->when($filters['icd10_code'] ?? null, fn($q, $v) => $q->where('icd10_code', $v))
             ->when($filters['date_from'] ?? null, fn($q, $v) => $q->whereDate('created_at', '>=', $v))
             ->when($filters['date_to'] ?? null, fn($q, $v) => $q->whereDate('created_at', '<=', $v))
             ->orderByDesc('created_at')
@@ -80,14 +78,17 @@ class ExaminationService
                 'clinic_id'        => $data['clinic_id'] ?? $doctor->clinic_id,
                 'appointment_id'   => $data['appointment_id'] ?? null,
                 'record_type'      => 'examination',
-                'icd10_code'       => $data['icd10_code'] ?? null,
-                'diagnosis_note'   => $data['diagnosis_note'] ?? null,
                 'vitals'           => $data['vitals'] ?? null,
                 'examination_note' => $data['examination_note'] ?? null,
                 'treatment_plan'   => $data['treatment_plan'] ?? null,
                 'prescriptions'    => $data['prescriptions'] ?? null,
                 'upload_date'      => now()->toDateString(),
             ]);
+
+            // Sync treatment tags if provided
+            if (!empty($data['treatment_tags'])) {
+                $record->treatmentTags()->sync($data['treatment_tags']);
+            }
 
             return $record;
         });
@@ -121,7 +122,6 @@ class ExaminationService
 
         DB::transaction(function () use ($record, $data) {
             $updatable = array_filter([
-                'icd10_code'       => $data['icd10_code'] ?? null,
                 'diagnosis_note'   => $data['diagnosis_note'] ?? null,
                 'vitals'           => $data['vitals'] ?? null,
                 'examination_note' => $data['examination_note'] ?? null,
@@ -131,6 +131,11 @@ class ExaminationService
             ], fn($v) => $v !== null);
 
             $record->update($updatable);
+
+            // Sync treatment tags if provided
+            if (isset($data['treatment_tags'])) {
+                $record->treatmentTags()->sync($data['treatment_tags']);
+            }
         });
 
         // GDPR Audit — log update
@@ -272,23 +277,5 @@ class ExaminationService
         );
 
         return $documents;
-    }
-
-    // ══════════════════════════════════════════════
-    //  ICD-10 SEARCH
-    // ══════════════════════════════════════════════
-
-    /**
-     * Search ICD-10 codes by code prefix or name (TR/EN).
-     * Returns max 20 results for autocomplete performance.
-     */
-    public function searchIcd10(string $term): \Illuminate\Support\Collection
-    {
-        return Icd10Code::active()
-            ->search($term)
-            ->select(['id', 'code', 'category', 'name'])
-            ->orderBy('code')
-            ->limit(20)
-            ->get();
     }
 }

@@ -337,7 +337,7 @@ class MediaOptimizer
      */
     private static function findFFmpeg(): ?string
     {
-        foreach (['/usr/bin/ffmpeg', '/usr/local/bin/ffmpeg', 'ffmpeg'] as $path) {
+        foreach (['/opt/homebrew/bin/ffmpeg', '/usr/bin/ffmpeg', '/usr/local/bin/ffmpeg', 'ffmpeg'] as $path) {
             $check = trim(shell_exec("which {$path} 2>/dev/null") ?? '');
             if ($check && file_exists($check)) return $check;
         }

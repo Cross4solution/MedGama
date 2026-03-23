@@ -141,6 +141,10 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
 
   const typeLabel = (id) => TYPE_LABELS[id]?.[isTr ? 'tr' : 'en'] || id;
 
+  // Level 2 (Independent) restriction check
+  // Note: Parent component (DoctorProfile) already hides the buttons, but this is a safety gate.
+  const isIndie = doctorId && availability === 'level_2_locked'; 
+
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />

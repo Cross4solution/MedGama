@@ -388,6 +388,7 @@ class CatalogController extends Controller
             'specialty'  => $this->searchTranslatable(Specialty::active()->ordered(), $q, $locale, $fallback, $limit),
             'language'   => $this->searchTranslatable(LanguageCatalog::active()->ordered(), $q, $locale, $fallback, $limit),
             'symptom', 'procedure' => $this->searchSymptoms($q, $locale, $fallback, $limit),
+            'treatment_tag' => $this->searchTreatmentTags($q, $locale, $fallback, $limit),
             default      => collect(),
         };
 
@@ -551,5 +552,25 @@ class CatalogController extends Controller
             return str_contains(mb_strtolower($item['name'] ?? ''), $q)
                 || str_contains(mb_strtolower($item['code'] ?? ''), $q);
         })->take($limit);
+    }
+
+    /**
+     * Internal helper for treatment tag search (used by unified search).
+     */
+    private function searchTreatmentTags(string $q, string $locale, string $fallback, int $limit)
+    {
+        return TreatmentTag::active()
+            ->where(function ($builder) use ($q, $locale, $fallback) {
+                $builder->whereRaw("LOWER(name->>?) LIKE ?", [$locale, "%{$q}%"])
+                        ->orWhereRaw("LOWER(name->>?) LIKE ?", [$fallback, "%{$q}%"])
+                        ->orWhereRaw("LOWER(slug) LIKE ?", ["%{$q}%"]);
+            })
+            ->limit($limit)
+            ->get()
+            ->map(fn($item) => [
+                'id'   => $item->id,
+                'code' => $item->slug, // Using slug as 'code' for compatibility with frontend suggest
+                'name' => $item->getTranslation('name', $locale) ?? $item->getTranslation('name', $fallback) ?? '',
+            ]);
     }
 }

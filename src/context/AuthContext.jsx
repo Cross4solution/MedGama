@@ -344,12 +344,14 @@ export function AuthProvider({ children }) {
     });
   }, [performLogout]);
 
-  // Compute is_pro: doctors need an active subscription; other CRM roles (clinicOwner, superAdmin, saasAdmin) are always pro
+  // Compute is_pro: superAdmin/saasAdmin always pro; doctors and clinics need active subscription
   const isPro = useMemo(() => {
     if (!user) return false;
     const role = user.role_id || user.role || '';
-    if (['clinicOwner', 'superAdmin', 'saasAdmin', 'clinic'].includes(role)) return true;
-    if (role === 'doctor') return !!(user.subscription_plan === 'pro' || user.is_pro);
+    if (['superAdmin', 'saasAdmin'].includes(role)) return true;
+    if (['doctor', 'clinicOwner', 'clinic'].includes(role)) {
+      return !!(user.subscription_plan === 'pro' || user.is_pro);
+    }
     return false;
   }, [user]);
 

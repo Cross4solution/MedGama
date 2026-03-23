@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\City;
 use App\Models\DiseaseCondition;
-use App\Models\Icd10Code;
 use App\Models\Specialty;
 use App\Models\SymptomSpecialtyMapping;
 use Illuminate\Database\Seeder;
@@ -21,7 +20,6 @@ class CatalogSeeder extends Seeder
         $this->seedCities();
         $this->seedDiseases();
         $this->seedSymptoms();
-        $this->seedIcd10Codes();
 
         $this->command->info('✅ Catalog seeded with TR + EN translations.');
     }
@@ -545,88 +543,4 @@ class CatalogSeeder extends Seeder
         $this->command->info('  → ' . count($symptoms) . ' symptom mappings seeded.');
     }
 
-    private function seedIcd10Codes(): void
-    {
-        $codes = [
-            // Infectious diseases (A00-B99)
-            ['code' => 'A09',   'category' => 'A00-B99', 'name' => ['en' => 'Infectious gastroenteritis and colitis, unspecified', 'tr' => 'Enfeksiyöz gastroenterit ve kolit, tanımlanmamış']],
-            ['code' => 'B34.9', 'category' => 'A00-B99', 'name' => ['en' => 'Viral infection, unspecified', 'tr' => 'Viral enfeksiyon, tanımlanmamış']],
-
-            // Neoplasms (C00-D49)
-            ['code' => 'C50.9', 'category' => 'C00-D49', 'name' => ['en' => 'Malignant neoplasm of breast, unspecified', 'tr' => 'Meme malign neoplazmı, tanımlanmamış']],
-            ['code' => 'D50.9', 'category' => 'C00-D49', 'name' => ['en' => 'Iron deficiency anaemia, unspecified', 'tr' => 'Demir eksikliği anemisi, tanımlanmamış']],
-
-            // Endocrine (E00-E89)
-            ['code' => 'E11.9', 'category' => 'E00-E89', 'name' => ['en' => 'Type 2 diabetes mellitus without complications', 'tr' => 'Komplikasyonsuz Tip 2 diyabet']],
-            ['code' => 'E03.9', 'category' => 'E00-E89', 'name' => ['en' => 'Hypothyroidism, unspecified', 'tr' => 'Hipotiroidizm, tanımlanmamış']],
-            ['code' => 'E05.9', 'category' => 'E00-E89', 'name' => ['en' => 'Thyrotoxicosis, unspecified', 'tr' => 'Tirotoksikoz, tanımlanmamış']],
-            ['code' => 'E78.5', 'category' => 'E00-E89', 'name' => ['en' => 'Hyperlipidaemia, unspecified', 'tr' => 'Hiperlipidemi, tanımlanmamış']],
-
-            // Mental & behavioural (F00-F99)
-            ['code' => 'F32.9', 'category' => 'F00-F99', 'name' => ['en' => 'Depressive episode, unspecified', 'tr' => 'Depresif epizod, tanımlanmamış']],
-            ['code' => 'F41.1', 'category' => 'F00-F99', 'name' => ['en' => 'Generalized anxiety disorder', 'tr' => 'Yaygın anksiyete bozukluğu']],
-            ['code' => 'F51.0', 'category' => 'F00-F99', 'name' => ['en' => 'Insomnia not due to a substance or known physiological condition', 'tr' => 'Madde veya bilinen fizyolojik duruma bağlı olmayan uykusuzluk']],
-
-            // Nervous system (G00-G99)
-            ['code' => 'G43.9', 'category' => 'G00-G99', 'name' => ['en' => 'Migraine, unspecified', 'tr' => 'Migren, tanımlanmamış']],
-            ['code' => 'G47.3', 'category' => 'G00-G99', 'name' => ['en' => 'Sleep apnoea', 'tr' => 'Uyku apnesi']],
-
-            // Circulatory system (I00-I99)
-            ['code' => 'I10',   'category' => 'I00-I99', 'name' => ['en' => 'Essential (primary) hypertension', 'tr' => 'Esansiyel (primer) hipertansiyon']],
-            ['code' => 'I25.9', 'category' => 'I00-I99', 'name' => ['en' => 'Chronic ischaemic heart disease, unspecified', 'tr' => 'Kronik iskemik kalp hastalığı, tanımlanmamış']],
-            ['code' => 'I48.9', 'category' => 'I00-I99', 'name' => ['en' => 'Atrial fibrillation, unspecified', 'tr' => 'Atriyal fibrilasyon, tanımlanmamış']],
-            ['code' => 'I83.9', 'category' => 'I00-I99', 'name' => ['en' => 'Varicose veins of lower extremities without ulcer or inflammation', 'tr' => 'Alt ekstremite varisler, ülser veya enflamasyon olmadan']],
-
-            // Respiratory system (J00-J99)
-            ['code' => 'J06.9', 'category' => 'J00-J99', 'name' => ['en' => 'Acute upper respiratory infection, unspecified', 'tr' => 'Akut üst solunum yolu enfeksiyonu, tanımlanmamış']],
-            ['code' => 'J18.9', 'category' => 'J00-J99', 'name' => ['en' => 'Pneumonia, unspecified organism', 'tr' => 'Pnömoni, etken tanımlanmamış']],
-            ['code' => 'J30.4', 'category' => 'J00-J99', 'name' => ['en' => 'Allergic rhinitis, unspecified', 'tr' => 'Alerjik rinit, tanımlanmamış']],
-            ['code' => 'J45.9', 'category' => 'J00-J99', 'name' => ['en' => 'Asthma, unspecified', 'tr' => 'Astım, tanımlanmamış']],
-
-            // Digestive system (K00-K95)
-            ['code' => 'K21.0', 'category' => 'K00-K95', 'name' => ['en' => 'Gastro-oesophageal reflux disease with oesophagitis', 'tr' => 'Özofajitli gastroözofageal reflü hastalığı']],
-            ['code' => 'K29.7', 'category' => 'K00-K95', 'name' => ['en' => 'Gastritis, unspecified', 'tr' => 'Gastrit, tanımlanmamış']],
-            ['code' => 'K58.9', 'category' => 'K00-K95', 'name' => ['en' => 'Irritable bowel syndrome without diarrhoea', 'tr' => 'Diyaresiz irritabl bağırsak sendromu']],
-
-            // Skin (L00-L99)
-            ['code' => 'L20.9', 'category' => 'L00-L99', 'name' => ['en' => 'Atopic dermatitis, unspecified', 'tr' => 'Atopik dermatit, tanımlanmamış']],
-            ['code' => 'L40.0', 'category' => 'L00-L99', 'name' => ['en' => 'Psoriasis vulgaris', 'tr' => 'Psoriazis vulgaris']],
-            ['code' => 'L70.0', 'category' => 'L00-L99', 'name' => ['en' => 'Acne vulgaris', 'tr' => 'Akne vulgaris']],
-
-            // Musculoskeletal (M00-M99)
-            ['code' => 'M54.5', 'category' => 'M00-M99', 'name' => ['en' => 'Low back pain', 'tr' => 'Bel ağrısı']],
-            ['code' => 'M79.3', 'category' => 'M00-M99', 'name' => ['en' => 'Panniculitis, unspecified', 'tr' => 'Pannikülit, tanımlanmamış']],
-            ['code' => 'M25.5', 'category' => 'M00-M99', 'name' => ['en' => 'Pain in joint', 'tr' => 'Eklem ağrısı']],
-
-            // Genitourinary (N00-N99)
-            ['code' => 'N39.0', 'category' => 'N00-N99', 'name' => ['en' => 'Urinary tract infection, site not specified', 'tr' => 'İdrar yolu enfeksiyonu, yeri belirtilmemiş']],
-            ['code' => 'N40.0', 'category' => 'N00-N99', 'name' => ['en' => 'Benign prostatic hyperplasia without lower urinary tract symptoms', 'tr' => 'Alt üriner sistem semptomları olmadan benign prostat hiperplazisi']],
-
-            // Symptoms & signs (R00-R99)
-            ['code' => 'R10.4', 'category' => 'R00-R99', 'name' => ['en' => 'Other and unspecified abdominal pain', 'tr' => 'Diğer ve tanımlanmamış karın ağrısı']],
-            ['code' => 'R50.9', 'category' => 'R00-R99', 'name' => ['en' => 'Fever, unspecified', 'tr' => 'Ateş, tanımlanmamış']],
-            ['code' => 'R51',   'category' => 'R00-R99', 'name' => ['en' => 'Headache', 'tr' => 'Baş ağrısı']],
-            ['code' => 'R05',   'category' => 'R00-R99', 'name' => ['en' => 'Cough', 'tr' => 'Öksürük']],
-
-            // Injury & external causes (S00-T98)
-            ['code' => 'S93.4', 'category' => 'S00-T98', 'name' => ['en' => 'Sprain of ankle', 'tr' => 'Ayak bileği burkulması']],
-            ['code' => 'T78.4', 'category' => 'S00-T98', 'name' => ['en' => 'Allergy, unspecified', 'tr' => 'Alerji, tanımlanmamış']],
-
-            // Factors influencing health status (Z00-Z99)
-            ['code' => 'Z00.0', 'category' => 'Z00-Z99', 'name' => ['en' => 'General adult medical examination', 'tr' => 'Genel yetişkin tıbbi muayenesi']],
-            ['code' => 'Z23',   'category' => 'Z00-Z99', 'name' => ['en' => 'Need for immunization against single bacterial diseases', 'tr' => 'Tek bakteriyel hastalığa karşı bağışıklama ihtiyacı']],
-        ];
-
-        foreach ($codes as $data) {
-            Icd10Code::updateOrCreate(
-                ['code' => $data['code']],
-                [
-                    'category' => $data['category'],
-                    'name'     => $data['name'],
-                ]
-            );
-        }
-
-        $this->command->info('  → ' . count($codes) . ' ICD-10 codes seeded.');
-    }
 }
