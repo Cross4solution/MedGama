@@ -339,7 +339,7 @@ function VideoPreview({ m, className }) {
         <img src={resolvedThumb} alt="Video" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
       ) : inView ? (
         <video
-          src={videoSrc}
+          src={rawSrc ? `${rawSrc}#t=0.5` : videoSrc}
           muted preload="metadata" playsInline
           className="w-full h-full object-cover pointer-events-none"
           onLoadedMetadata={(e) => { if (e.target.duration) setDuration(e.target.duration); }}

@@ -157,7 +157,7 @@ export default function CustomSearch() {
             value={country}
             onChange={(val) => { setCountry((val || '').trim()); setCity(''); }}
             placeholder="Select country"
-            triggerClassName="w-full h-10 border border-gray-300 rounded-xl px-3 text-sm bg-white text-left hover:border-gray-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
+            triggerClassName="w-full h-10 border border-gray-300 rounded-xl px-3 text-sm bg-white text-left hover:border-gray-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all opacity-50"
             getFlagUrl={(name) => {
               const code = getFlagCode(name);
               return code ? `https://flagcdn.com/24x18/${code}.png` : null;
@@ -193,7 +193,7 @@ export default function CustomSearch() {
           />
         </div>
 
-        <div className="flex items-center justify-center col-span-1 sm:col-span-2 md:col-span-1 md:pt-8 py-1 md:py-0">
+        <div className="flex items-center justify-center col-span-1 sm:col-span-2 md:col-span-1 md:pt-6 py-1 md:py-0">
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="flex-1 h-px bg-gray-200 md:hidden"></div>
             <span className="text-xs font-medium text-gray-400 tracking-wider">or</span>

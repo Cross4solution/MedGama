@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import { Star, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 function formatRating(value) {
   const n = typeof value === 'number' ? value : Number(value);
@@ -65,7 +66,8 @@ export default function PopularClinicsShowcase({
   items = [],
   title: titleProp,
   midTitle: midTitleProp,
-  viewAllHref = '#',
+  viewAllHref = '/browse/treatments',
+  viewAllClinicsHref = '/browse/clinics',
   onCardClick = (_c) => {},
   onViewClick = (_c) => {},
 }) {
@@ -103,7 +105,7 @@ export default function PopularClinicsShowcase({
         {/* Top: Popular Treatments */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-gray-900">{title}</h2>
-          <a href={viewAllHref} className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('home.viewAll')} →</a>
+          <Link to={viewAllHref} className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('home.viewAll')} →</Link>
         </div>
         <div className="relative mb-10">
           <ScrollArrow direction="left" onClick={() => scrollByAmount(scrollRefTop, -1)} />
@@ -131,7 +133,7 @@ export default function PopularClinicsShowcase({
         {/* Bottom: Popular Clinics */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-gray-900">{midTitle}</h2>
-          <a href={viewAllHref} className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('home.viewAll')} →</a>
+          <Link to={viewAllClinicsHref} className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('home.viewAll')} →</Link>
         </div>
         <div className="relative">
           <ScrollArrow direction="left" onClick={() => scrollByAmount(scrollRefBottom, -1)} />

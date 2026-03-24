@@ -53,6 +53,8 @@ const SavedClinics = React.lazy(() => import('./pages/SavedClinics'));
 const ClinicOnboarding = React.lazy(() => import('./pages/ClinicOnboarding'));
 const ClinicDashboard = React.lazy(() => import('./pages/ClinicDashboard'));
 const ClinicTeam = React.lazy(() => import('./pages/ClinicTeam'));
+const BrowseTreatments = React.lazy(() => import('./pages/BrowseTreatments'));
+const BrowseClinics = React.lazy(() => import('./pages/BrowseClinics'));
 
 // CRM Pages
 const CRMLayout = React.lazy(() => import('./components/crm/CRMLayout'));
@@ -387,6 +389,8 @@ function AppContent() {
         <Route path="/crm/messages" element={<CRMLayout><CRMMessages /></CRMLayout>} />
         <Route path="/crm/documents" element={<CRMLayout><CRMDocuments /></CRMLayout>} />
         <Route path="/crm/branches" element={<CRMLayout><CRMBranches /></CRMLayout>} />
+        <Route path="/browse/treatments" element={<BrowseTreatments />} />
+        <Route path="/browse/clinics" element={<BrowseClinics />} />
         <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
         {/* Admin Routes — nested under AdminLayout (Outlet pattern, zero remount) */}
         <Route path="/admin" element={<AdminLayout />}>
