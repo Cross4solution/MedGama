@@ -78,6 +78,7 @@ const CRMContactInbox = React.lazy(() => import('./pages/crm/CRMContactInbox'));
 const CRMPrescriptions = React.lazy(() => import('./pages/crm/CRMPrescriptions'));
 const CRMMessages = React.lazy(() => import('./pages/crm/CRMMessages'));
 const CRMDocuments = React.lazy(() => import('./pages/crm/CRMDocuments'));
+const CRMBranches = React.lazy(() => import('./pages/crm/CRMBranches'));
 
 // Admin Pages
 const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
@@ -385,6 +386,7 @@ function AppContent() {
         <Route path="/crm/prescriptions" element={<CRMLayout><CRMPrescriptions /></CRMLayout>} />
         <Route path="/crm/messages" element={<CRMLayout><CRMMessages /></CRMLayout>} />
         <Route path="/crm/documents" element={<CRMLayout><CRMDocuments /></CRMLayout>} />
+        <Route path="/crm/branches" element={<CRMLayout><CRMBranches /></CRMLayout>} />
         <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
         {/* Admin Routes — nested under AdminLayout (Outlet pattern, zero remount) */}
         <Route path="/admin" element={<AdminLayout />}>

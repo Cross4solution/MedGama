@@ -57,26 +57,50 @@ import { getEcho } from '../../lib/echo';
 import { useToast } from '../../context/ToastContext';
 import { playNotificationSound } from '../../utils/notificationSound';
 
-const getNavSections = (t, role, isVerified, { chatUnreadCount = 0 } = {}) => {
+/**
+ * Navigation sections builder.
+ * @param {number} userLevel — 1=Patient, 2=Doctor, 3=Clinic, 4=Hospital, 5=Admin
+ */
+const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, userLevel = 2 } = {}) => {
   const isClinic = role === 'clinic' || role === 'clinicOwner';
+  const isHospital = role === 'hospital' || userLevel === 4;
   const doctorUnverified = role === 'doctor' && !isVerified;
 
   const mainItems = [
     { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm', pro: true },
-    { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments', pro: true, locked: doctorUnverified },
-    { label: t('crm.sidebar.smartCalendar', 'Smart Calendar'), icon: CalendarCheck, path: '/crm/calendar', pro: true },
-    { label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients', pro: true },
   ];
-  // Doctor-only: examination
-  if (!isClinic) {
+
+  // Level 4 (Hospital) has NO appointment/telehealth — promotion network only
+  if (!isHospital) {
+    mainItems.push(
+      { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments', pro: true, locked: doctorUnverified },
+      { label: t('crm.sidebar.smartCalendar', 'Smart Calendar'), icon: CalendarCheck, path: '/crm/calendar', pro: true },
+    );
+  }
+
+  mainItems.push({ label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients', pro: true });
+
+  // Doctor-only: examination (not for clinics or hospitals)
+  if (!isClinic && !isHospital) {
     mainItems.push({ label: t('crm.sidebar.examination'), icon: Stethoscope, path: '/crm/examination', pro: true });
   }
-  mainItems.push({ label: t('crm.sidebar.telehealth', 'Telehealth'), icon: Video, path: '/crm/telehealth', pro: true });
+
+  // Telehealth — not for hospitals
+  if (!isHospital) {
+    mainItems.push({ label: t('crm.sidebar.telehealth', 'Telehealth'), icon: Video, path: '/crm/telehealth', pro: true });
+  }
+
   mainItems.push({ label: t('crm.sidebar.contactInbox', 'Contact Messages'), icon: Mail, path: '/crm/contact-inbox', badge: chatUnreadCount > 0 ? chatUnreadCount : undefined });
+
   // Clinic-only: staff management + clinic manager panel
   if (isClinic) {
     mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
     mainItems.push({ label: t('crm.sidebar.clinicManager', 'Clinic Management'), icon: Building2, path: '/crm/clinic-manager' });
+  }
+
+  // Hospital-only: branches management
+  if (isHospital) {
+    mainItems.push({ label: t('crm.sidebar.branches', 'Branches'), icon: Building2, path: '/crm/branches' });
   }
 
   const managementItems = [
@@ -101,7 +125,7 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0 } = {}) => {
   ];
 };
 
-const CRM_ALLOWED_ROLES = ['doctor', 'clinic', 'clinicOwner', 'superAdmin', 'saasAdmin'];
+const CRM_ALLOWED_ROLES = ['doctor', 'clinic', 'clinicOwner', 'hospital', 'superAdmin', 'saasAdmin'];
 
 // Smooth loading overlay for page transitions
 const PageTransitionLoader = () => (
@@ -180,7 +204,7 @@ const CRMLayout = ({ children }) => {
   const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout, isPro } = useAuth();
+  const { user, logout, isPro, hasCrmSubscription, userLevel } = useAuth();
   const { t } = useTranslation();
   const { notify: showToast } = useToast();
   const userRole = user?.role || user?.role_id || 'doctor';
@@ -208,17 +232,19 @@ const CRMLayout = ({ children }) => {
     return () => clearInterval(interval);
   }, [user, fetchChatUnread]);
 
-  const NAV_SECTIONS = getNavSections(t, userRole, isVerified, { chatUnreadCount: chatUnread });
+  const NAV_SECTIONS = getNavSections(t, userRole, isVerified, { chatUnreadCount: chatUnread, userLevel });
 
-  // ── CRM Access Gate: only Pro users can access CRM (except /crm/billing for upgrade) ──
+  // ── CRM Access Gate: only users with CRM subscription can access CRM (except /crm/billing for upgrade) ──
   useEffect(() => {
     if (!user) return;
-    if (isPro) return;
+    if (hasCrmSubscription) return;
     const isBilling = location.pathname === '/crm/billing';
     if (!isBilling) {
-      navigate('/doctor/dashboard', { replace: true });
+      // Redirect to appropriate dashboard based on user level
+      const dashboardMap = { 3: '/clinic/dashboard', 4: '/dashboard', 2: '/doctor/dashboard' };
+      navigate(dashboardMap[userLevel] || '/dashboard', { replace: true });
     }
-  }, [user, isPro, location.pathname, navigate]);
+  }, [user, hasCrmSubscription, userLevel, location.pathname, navigate]);
 
   // ── Notification state ──
   const [notifOpen, setNotifOpen] = useState(false);

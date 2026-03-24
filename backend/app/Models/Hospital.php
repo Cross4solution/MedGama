@@ -93,6 +93,14 @@ class Hospital extends Model
     }
 
     /**
+     * A Hospital has many Branches (Level 4 — Promotion Network).
+     */
+    public function branches()
+    {
+        return $this->hasMany(Branch::class);
+    }
+
+    /**
      * All staff users that belong to this hospital directly.
      */
     public function staff()

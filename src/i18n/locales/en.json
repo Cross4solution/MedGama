@@ -225,7 +225,38 @@
       "faq": "FAQ",
       "staff": "Staff",
       "clinicManager": "Clinic Management",
-      "contactInbox": "Contact Messages"
+      "contactInbox": "Contact Messages",
+      "branches": "Branches"
+    },
+    "premiumGate": {
+      "title": "Premium Feature",
+      "description": "This feature is part of MedaGama CRM — our premium practice management suite. Upgrade to unlock advanced dashboards, AI assistant, detailed patient management, and more.",
+      "upgrade": "Upgrade to CRM Pro",
+      "hint": "You can continue using platform features (appointments, telehealth, profile) without a CRM subscription."
+    },
+    "branches": {
+      "title": "Branches",
+      "subtitle": "Manage your hospital branch locations across the network.",
+      "add": "Add Branch",
+      "addTitle": "Add Branch",
+      "editTitle": "Edit Branch",
+      "name": "Branch Name",
+      "address": "Address",
+      "city": "City",
+      "country": "Country",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "phone": "Phone",
+      "email": "Email",
+      "isActive": "Active branch",
+      "empty": "No branches yet",
+      "emptyHint": "Add your first branch to start building your network.",
+      "created": "Branch created.",
+      "updated": "Branch updated.",
+      "deleted": "Branch deleted.",
+      "deleteTitle": "Delete Branch?",
+      "deleteConfirm": "This action cannot be undone.",
+      "fetchError": "Failed to load branches."
     },
     "contactInbox": {
       "title": "Contact Messages",

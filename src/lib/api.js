@@ -610,6 +610,15 @@ export const telehealthAPI = {
   updateStatus: (appointmentId, meetingStatus) => api.put(`/telehealth/${appointmentId}/status`, { meeting_status: meetingStatus }),
 };
 
+// ── Branches — Hospital (Level 4) Promotion Network ──
+export const branchAPI = {
+  list: () => api.get('/branches'),
+  get: (id) => api.get(`/branches/${id}`),
+  create: (data) => api.post('/branches', data),
+  update: (id, data) => api.put(`/branches/${id}`, data),
+  remove: (id) => api.delete(`/branches/${id}`),
+};
+
 // ── Legacy compat (for existing code that imports { endpoints }) ──
 export const endpoints = {
   login: (payload) => authAPI.login(payload),

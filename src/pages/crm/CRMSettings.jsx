@@ -18,6 +18,69 @@ import { blockNonNumeric } from '../../utils/numericInput';
 import GlobalSuggest from '../../components/forms/GlobalSuggest';
 import StatusBadge from '../../components/ui/StatusBadge';
 
+// ── Google Maps helpers ──────────────────────────────
+function isValidGoogleMapsUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  try {
+    const u = new URL(url);
+    return (
+      u.hostname.includes('google.com') ||
+      u.hostname.includes('goo.gl') ||
+      u.hostname.includes('maps.app.goo.gl')
+    );
+  } catch {
+    return false;
+  }
+}
+
+function extractGoogleMapsEmbed(url) {
+  if (!url) return null;
+  // Convert share/place URL to embed
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('google.com') && url.includes('/maps/')) {
+      // Extract coordinates or place query
+      const placeMatch = url.match(/@([-\d.]+),([-\d.]+)/);
+      if (placeMatch) {
+        return `https://maps.google.com/maps?q=${placeMatch[1]},${placeMatch[2]}&z=15&output=embed`;
+      }
+      const qMatch = url.match(/\/place\/([^/@]+)/);
+      if (qMatch) {
+        return `https://maps.google.com/maps?q=${encodeURIComponent(decodeURIComponent(qMatch[1]))}&z=15&output=embed`;
+      }
+    }
+    // Fallback: use the URL as query
+    return `https://maps.google.com/maps?q=${encodeURIComponent(url)}&z=15&output=embed`;
+  } catch {
+    return null;
+  }
+}
+
+function GoogleMapsPreview({ url, height = 200, compact = false }) {
+  const embedUrl = extractGoogleMapsEmbed(url);
+  if (!embedUrl || !isValidGoogleMapsUrl(url)) {
+    return (
+      <div className={`rounded-xl border border-red-200 bg-red-50/50 flex items-center justify-center ${compact ? 'p-3' : 'p-6'}`} style={{ height }}>
+        <p className="text-xs text-red-400">Invalid Google Maps URL</p>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-xl overflow-hidden border border-gray-200" style={{ height }}>
+      <iframe
+        title="Google Maps Preview"
+        src={embedUrl}
+        width="100%"
+        height={height}
+        style={{ border: 0 }}
+        loading="lazy"
+        allowFullScreen
+        referrerPolicy="no-referrer-when-downgrade"
+      />
+    </div>
+  );
+}
+
 const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 
 const DEFAULT_HOURS = DAYS.map(day => ({

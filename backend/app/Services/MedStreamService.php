@@ -19,6 +19,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Models\AuditLog;
 
 class MedStreamService
 {
@@ -196,6 +197,21 @@ class MedStreamService
 
         $post->load('author:id,fullname,avatar');
 
+        // Audit log — media upload tracking
+        $mediaTypes = collect($mediaResult['uploaded_files'] ?? [])->pluck('type')->unique()->values()->toArray();
+        AuditLog::log(
+            action: 'medstream.post.created',
+            resourceType: 'MedStreamPost',
+            resourceId: $post->id,
+            newValues: [
+                'post_type'   => $post->post_type,
+                'media_types' => $mediaTypes,
+                'media_count' => count($mediaResult['uploaded_files'] ?? []),
+                'has_videos'  => $hasVideos,
+            ],
+            description: "MedStream post created by {$author->fullname} ({$post->post_type})" . ($hasVideos ? ' — video processing queued' : ''),
+        );
+
         return $post;
     }
 
@@ -214,6 +230,21 @@ class MedStreamService
      */
     public function destroyPost(MedStreamPost $post): void
     {
+        // Audit log — media deletion tracking
+        $mediaTypes = collect($post->media ?? [])->pluck('type')->unique()->values()->toArray();
+        AuditLog::log(
+            action: 'medstream.post.deleted',
+            resourceType: 'MedStreamPost',
+            resourceId: $post->id,
+            oldValues: [
+                'post_type'   => $post->post_type,
+                'media_types' => $mediaTypes,
+                'media_count' => count($post->media ?? []),
+                'author_id'   => $post->author_id,
+            ],
+            description: "MedStream post deleted (type: {$post->post_type}, media: " . count($post->media ?? []) . ")",
+        );
+
         // Delete media files from disk (outside transaction)
         $this->deletePostMedia($post);
 

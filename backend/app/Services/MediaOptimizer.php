@@ -140,7 +140,7 @@ class MediaOptimizer
                 $thumbFullPath = Storage::disk('public')->path($thumbPath);
 
                 $cmd = escapeshellcmd($ffmpeg) . ' -i ' . escapeshellarg($storedPath)
-                    . ' -ss 00:00:01 -vframes 1 -vf scale=400:-1 -q:v 8 '
+                    . ' -ss 00:00:01 -vframes 1 -vf scale=720:-1 -q:v 4 '
                     . escapeshellarg($thumbFullPath) . ' -y 2>&1';
                 exec($cmd, $output, $returnCode);
 
@@ -219,7 +219,7 @@ class MediaOptimizer
                 $thumbFullPath = Storage::disk('public')->path($thumbStoragePath);
 
                 $cmd = escapeshellcmd($ffmpeg) . ' -i ' . escapeshellarg($storedFullPath)
-                    . ' -ss 00:00:01 -vframes 1 -vf scale=400:-1 -q:v 8 '
+                    . ' -ss 00:00:01 -vframes 1 -vf scale=720:-1 -q:v 4 '
                     . escapeshellarg($thumbFullPath) . ' -y 2>&1';
                 exec($cmd, $output, $returnCode);
 

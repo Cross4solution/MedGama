@@ -32,6 +32,7 @@ use App\Http\Controllers\Api\SocialController;
 use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\ClinicVerificationController;
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\BranchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -684,4 +685,17 @@ Route::prefix('contact-messages')->middleware('auth:sanctum')->group(function ()
     Route::get('/{id}', [ContactMessageController::class, 'show']);
     Route::delete('/{id}', [ContactMessageController::class, 'destroy']);
     Route::get('/{id}/download/{attachmentId}', [ContactMessageController::class, 'downloadAttachment']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Branches — Hospital (Level 4) Promotion Network
+|--------------------------------------------------------------------------
+*/
+Route::prefix('branches')->middleware(['auth:sanctum', 'role:hospital,superAdmin,saasAdmin'])->group(function () {
+    Route::get('/', [BranchController::class, 'index']);
+    Route::post('/', [BranchController::class, 'store']);
+    Route::get('/{id}', [BranchController::class, 'show']);
+    Route::put('/{id}', [BranchController::class, 'update']);
+    Route::delete('/{id}', [BranchController::class, 'destroy']);
 });

@@ -424,7 +424,7 @@ const PostCard = ({ post, onLike, onBookmark, onReport, t, isVerified = true }) 
         <div className={`px-5 pb-2 ${media.length === 1 ? '' : 'grid grid-cols-2 gap-1'}`}>
           {media.slice(0, 4).map((m, i) => (
             <div key={i} className="relative rounded-xl overflow-hidden bg-gray-100 aspect-video">
-              <img src={m.medium || m.original || m.url} alt="" className="w-full h-full object-cover" loading="lazy" />
+              <img src={resolveStorageUrl(m.medium || m.original || m.url, '')} alt="" className="w-full h-full object-cover" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement.classList.add('flex', 'items-center', 'justify-center'); const ph = document.createElement('div'); ph.className = 'text-gray-300 text-xs'; ph.textContent = '📷'; e.currentTarget.parentElement.appendChild(ph); }} />
               {i === 3 && media.length > 4 && (
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                   <span className="text-white text-lg font-bold">+{media.length - 4}</span>

@@ -9,12 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureDoctorVerified
 {
     /**
-     * Block unverified doctors from critical write endpoints.
+     * Platform access gate for appointments / telehealth endpoints.
      *
-     * Non-doctor roles (patient, clinicOwner, superAdmin, etc.) pass through.
-     * Doctors who have completed onboarding but are NOT yet admin-verified
-     * receive a 403 with a machine-readable code so the frontend can show
-     * the appropriate lock banner.
+     * Business rules (MedaGama Level System):
+     *   • Level 3 (Clinic/clinicOwner) → ALWAYS allowed (no verification needed for platform features).
+     *   • Level 5 (Admin)              → ALWAYS allowed.
+     *   • Level 2 (Doctor)             → Must be admin-verified (is_verified = true).
+     *   • Level 4 (Hospital)           → BLOCKED — hospitals are a "Promotion Network", no appointment system.
+     *   • Level 1 (Patient)            → Passes through (patients book appointments normally).
      *
      * Usage: ->middleware('verified.doctor')
      */
@@ -26,21 +28,41 @@ class EnsureDoctorVerified
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        // Only restrict doctors — other roles pass through
-        if ($user->role_id !== 'doctor') {
+        $level = (int) $user->user_level;
+
+        // Level 5 (Admin) → always allowed
+        if ($level >= 5) {
             return $next($request);
         }
 
-        // If doctor is already verified, allow
-        if ($user->is_verified) {
+        // Level 3 (Clinic) → bypass verification, can use platform features immediately
+        if ($level === 3) {
             return $next($request);
         }
 
-        // Unverified doctor → 403
-        return response()->json([
-            'success' => false,
-            'message' => 'Your account is under review. Admin approval is required to use this feature.',
-            'code'    => 'DOCTOR_NOT_VERIFIED',
-        ], 403);
+        // Level 4 (Hospital) → no appointment system, promotion network only
+        if ($level === 4) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hospitals operate as a Promotion Network. Appointment features are not available for this account level.',
+                'code'    => 'HOSPITAL_NO_APPOINTMENTS',
+            ], 403);
+        }
+
+        // Level 1 (Patient) → patients can book appointments normally
+        if ($level === 1) {
+            return $next($request);
+        }
+
+        // Level 2 (Doctor) → must be admin-verified
+        if ($user->role_id === 'doctor' && !$user->is_verified) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your account is under review. Admin approval is required to use this feature.',
+                'code'    => 'DOCTOR_NOT_VERIFIED',
+            ], 403);
+        }
+
+        return $next($request);
     }
 }

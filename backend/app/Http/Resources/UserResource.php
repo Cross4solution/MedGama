@@ -77,6 +77,10 @@ class UserResource extends JsonResource
             ];
         }
 
+        // User level & CRM subscription (platform vs CRM distinction)
+        $data['user_level'] = (int) ($this->user_level ?? 1);
+        $data['has_crm_subscription'] = $this->resource->hasCrmSubscription();
+
         // For doctors, include onboarding status + verification details
         if ($this->role_id === 'doctor') {
             $profile = $this->relationLoaded('doctorProfile')
@@ -86,6 +90,30 @@ class UserResource extends JsonResource
             $data['onboarding_completed'] = $profile ? (bool) $profile->onboarding_completed : false;
             $data['verification_status'] = $this->verification_status ?? 'unverified';
             $data['admin_verification_note'] = $this->admin_verification_note;
+        }
+
+        // For clinic owners, include onboarding + verification status
+        if ($this->role_id === 'clinicOwner') {
+            $clinic = $this->relationLoaded('clinic') ? $this->clinic : null;
+            if (!$clinic && $this->clinic_id) $clinic = $this->clinic;
+            $ownedClinic = $this->relationLoaded('ownedClinic') ? $this->ownedClinic : $this->ownedClinic()->first();
+            $c = $ownedClinic ?? $clinic;
+            $data['onboarding_completed'] = $c ? (bool) $c->onboarding_completed : false;
+        }
+
+        // For hospitals, include hospital info
+        if ($this->role_id === 'hospital') {
+            $hospital = $this->relationLoaded('ownedHospital')
+                ? $this->ownedHospital
+                : $this->ownedHospital()->first();
+            if ($hospital) {
+                $data['hospital'] = [
+                    'id'          => $hospital->id,
+                    'name'        => $hospital->name,
+                    'fullname'    => $hospital->fullname,
+                    'is_verified' => (bool) $hospital->is_verified,
+                ];
+            }
         }
 
         return $data;

@@ -24,7 +24,7 @@ class User extends Authenticatable
     public $incrementing = false;
 
     protected $fillable = [
-        'email', 'password', 'fullname', 'avatar', 'profile_image', 'role_id', 'mobile',
+        'email', 'password', 'fullname', 'avatar', 'profile_image', 'role_id', 'user_level', 'mobile',
         'mobile_verified', 'email_verified', 'email_verification_code',
         'password_reset_code', 'password_reset_expires_at',
         'city_id', 'country_id', 'country', 'preferred_language',
@@ -53,6 +53,7 @@ class User extends Authenticatable
             'is_crm_active'            => 'boolean',
             'crm_expires_at'           => 'datetime',
             'added_by_clinic'          => 'boolean',
+            'user_level'               => 'integer',
         ];
     }
 
@@ -299,5 +300,51 @@ class User extends Authenticatable
     public function isHospital(): bool
     {
         return $this->role_id === 'hospital';
+    }
+
+    public function isClinicLevel(): bool
+    {
+        return (int) $this->user_level === 3;
+    }
+
+    public function isHospitalLevel(): bool
+    {
+        return (int) $this->user_level === 4;
+    }
+
+    public function isAdminLevel(): bool
+    {
+        return (int) $this->user_level >= 5;
+    }
+
+    /**
+     * Check if user has an active CRM subscription.
+     * Admins always have access. Clinic owners check their clinic. Doctors check clinic or own flag.
+     */
+    public function hasCrmSubscription(): bool
+    {
+        if ($this->isAdmin()) return true;
+
+        if ($this->isClinicOwner()) {
+            $clinic = $this->ownedClinic ?? $this->clinic;
+            return $clinic && (bool) $clinic->is_crm_active
+                && (!$clinic->crm_expires_at || now()->lessThanOrEqualTo($clinic->crm_expires_at));
+        }
+
+        if ($this->isDoctor()) {
+            if ($this->clinic_id && $this->clinic) {
+                return (bool) $this->clinic->is_crm_active
+                    && (!$this->clinic->crm_expires_at || now()->lessThanOrEqualTo($this->clinic->crm_expires_at));
+            }
+            return (bool) $this->is_crm_active
+                && (!$this->crm_expires_at || now()->lessThanOrEqualTo($this->crm_expires_at));
+        }
+
+        if ($this->isHospital()) {
+            return (bool) $this->is_crm_active
+                && (!$this->crm_expires_at || now()->lessThanOrEqualTo($this->crm_expires_at));
+        }
+
+        return false;
     }
 }
