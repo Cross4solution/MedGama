@@ -45,6 +45,7 @@ import {
   Wrench,
   CheckCircle2,
   ShieldAlert,
+  MapPin,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -59,6 +60,7 @@ import { playNotificationSound } from '../../utils/notificationSound';
 
 const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = false } = {}) => {
   const isClinic = role === 'clinic' || role === 'clinicOwner';
+  const isHospital = role === 'hospital';
   const doctorUnverified = role === 'doctor' && !isVerified;
 
   // Free tier: Dashboard, Appointments, Smart Calendar, Patients, Staff are open
@@ -79,6 +81,11 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
   if (isClinic) {
     mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
     mainItems.push({ label: t('crm.sidebar.clinicManager', 'Clinic Management'), icon: Building2, path: '/crm/clinic-manager', locked: !isPremium });
+  }
+  // Hospital-only: branch management
+  if (isHospital) {
+    mainItems.push({ label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin, path: '/crm/branches' });
+    mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
   }
 
   const managementItems = [
@@ -103,7 +110,7 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
   ];
 };
 
-const CRM_ALLOWED_ROLES = ['doctor', 'clinic', 'clinicOwner', 'superAdmin', 'saasAdmin'];
+const CRM_ALLOWED_ROLES = ['doctor', 'clinic', 'clinicOwner', 'hospital', 'superAdmin', 'saasAdmin'];
 
 // Smooth loading overlay for page transitions
 const PageTransitionLoader = () => (

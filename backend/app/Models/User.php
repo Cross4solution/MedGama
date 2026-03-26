@@ -172,6 +172,13 @@ class User extends Authenticatable
         return $this->hasOne(Clinic::class, 'owner_id');
     }
 
+    public function branches()
+    {
+        return $this->belongsToMany(Branch::class, 'doctor_branches', 'doctor_id', 'branch_id')
+            ->withPivot('schedule')
+            ->withTimestamps();
+    }
+
     public function verificationRequests()
     {
         return $this->hasMany(VerificationRequest::class, 'doctor_id');

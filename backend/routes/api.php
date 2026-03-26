@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\TelehealthController;
 use App\Http\Controllers\Api\PatientDocumentController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\ClinicManagerController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SocialController;
@@ -522,6 +523,21 @@ Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
     Route::get('/clinic/{clinicId}/doctors', [ClinicAnalyticsController::class, 'doctorPerformance']);
     Route::get('/clinic/{clinicId}/engagement', [ClinicAnalyticsController::class, 'engagement']);
     Route::get('/clinic/{clinicId}/appointment-trend', [ClinicAnalyticsController::class, 'appointmentTrend']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Branch Management — L4 Hospitals (§8.3)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('branches')->middleware(['auth:sanctum', 'role:hospital,superAdmin,saasAdmin'])->group(function () {
+    Route::get('/', [BranchController::class, 'index']);
+    Route::post('/', [BranchController::class, 'store']);
+    Route::get('/{id}', [BranchController::class, 'show']);
+    Route::put('/{id}', [BranchController::class, 'update']);
+    Route::delete('/{id}', [BranchController::class, 'destroy']);
+    Route::post('/{id}/assign-clinic', [BranchController::class, 'assignClinic']);
+    Route::post('/{id}/assign-doctor', [BranchController::class, 'assignDoctor']);
 });
 
 /*
