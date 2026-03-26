@@ -75,6 +75,14 @@ class Clinic extends Model
         return $this->belongsTo(Hospital::class);
     }
 
+    public function branches()
+    {
+        return $this->belongsToMany(Branch::class, 'clinic_branches')
+            ->withPivot('is_primary')
+            ->where('branches.is_active', true)
+            ->withTimestamps();
+    }
+
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');

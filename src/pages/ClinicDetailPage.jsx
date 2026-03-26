@@ -90,6 +90,9 @@ const ClinicDetailPage = () => {
   };
   const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('clinic', apiClinic?.id, initialSocial, clinicMeta, socialCallbacks);
 
+  // L4 Rule: hospitals do not accept direct appointments — branches handle them
+  const isHospitalProfile = apiClinic?.level === 4 || apiClinic?.hospital_role === true;
+
   // UI State
   const [activeTab, setActiveTab] = useState('genel-bakis');
   
@@ -210,7 +213,14 @@ const ClinicDetailPage = () => {
 
           {/* Sidebar */}
           <div className="lg:w-80 space-y-4 lg:sticky lg:top-24 h-max">
-            <ContactActions onTelehealth={guardAction(() => setOnlineBookModal(true))} onBook={guardAction(() => setBookModal(true))} onMessage={guardAction(() => setMessageModal(true))} />
+            {/* L4 Rule: no appointment buttons on hospital profiles */}
+            {!isHospitalProfile && (
+              <ContactActions
+                onTelehealth={guardAction(() => setOnlineBookModal(true))}
+                onBook={guardAction(() => setBookModal(true))}
+                onMessage={guardAction(() => setMessageModal(true))}
+              />
+            )}
             <PriceRangeList items={priceRangesData} />
           </div>
         </div>

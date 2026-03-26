@@ -19,6 +19,7 @@ const OnboardingWizard = React.lazy(() => import('./pages/DoctorOnboarding.jsx')
 const HomeV2 = React.lazy(() => import('./pages/HomeV2'));
 const ExploreTimeline = React.lazy(() => import('./pages/ExploreTimeline'));
 const ClinicDetailPage = React.lazy(() => import('./pages/ClinicDetailPage'));
+const HospitalProfilePage = React.lazy(() => import('./pages/HospitalProfilePage'));
 const DoctorChatPage = React.lazy(() => import('./pages/DoctorChatPage'));
 const TelehealthAppointmentPage = React.lazy(() => import('./pages/TelehealthAppointmentPage'));
 const TelehealthPage = React.lazy(() => import('./pages/TelehealthPage'));
@@ -78,6 +79,7 @@ const CRMContactInbox = React.lazy(() => import('./pages/crm/CRMContactInbox'));
 const CRMPrescriptions = React.lazy(() => import('./pages/crm/CRMPrescriptions'));
 const CRMMessages = React.lazy(() => import('./pages/crm/CRMMessages'));
 const CRMDocuments = React.lazy(() => import('./pages/crm/CRMDocuments'));
+const CRMBranches = React.lazy(() => import('./pages/crm/CRMBranches'));
 
 // Admin Pages
 const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
@@ -323,6 +325,7 @@ function AppContent() {
         <Route path="/doctors-departments" element={<DoctorsDepartments />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />
+        <Route path="/hospital/:codename" element={<HospitalProfilePage />} />
         <Route path="/clinic-edit" element={<ClinicProfileEdit />} />
         <Route path="/doctor-chat" element={<DoctorChatPage />} />
         <Route path="/telehealth" element={<TelehealthPage />} />
@@ -380,6 +383,7 @@ function AppContent() {
         <Route path="/crm/faq" element={<CRMLayout><CRMFaq /></CRMLayout>} />
         <Route path="/crm/staff" element={<CRMLayout><CRMStaff /></CRMLayout>} />
         <Route path="/crm/clinic-manager" element={<CRMLayout><CRMClinicManager /></CRMLayout>} />
+        <Route path="/crm/branches" element={<CRMLayout><CRMBranches /></CRMLayout>} />
         <Route path="/crm/reviews" element={<CRMLayout><CRMReviews /></CRMLayout>} />
         <Route path="/crm/contact-inbox" element={<CRMLayout><CRMContactInbox /></CRMLayout>} />
         <Route path="/crm/prescriptions" element={<CRMLayout><CRMPrescriptions /></CRMLayout>} />

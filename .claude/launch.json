@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "React Frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start"],
+      "port": 3000
+    },
+    {
+      "name": "Laravel Backend",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["backend/artisan", "serve", "--host=127.0.0.1", "--port=8001"],
+      "port": 8001
+    }
+  ]
+}

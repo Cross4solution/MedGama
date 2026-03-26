@@ -26,6 +26,8 @@ use App\Http\Controllers\Api\TelehealthController;
 use App\Http\Controllers\Api\PatientDocumentController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\HospitalController;
 use App\Http\Controllers\Api\ClinicManagerController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SocialController;
@@ -183,6 +185,12 @@ Route::prefix('social')->middleware('auth:sanctum')->group(function () {
 */
 Route::get('/clinics', [ClinicController::class, 'index'])->middleware('cache.headers:public');
 Route::get('/clinics/{codename}', [ClinicController::class, 'show'])->middleware('cache.headers:public');
+
+// ── Hospital CRM Stats (authenticated) — defined BEFORE {codename} wildcard ──
+Route::get('/hospitals/stats', [HospitalController::class, 'stats'])->middleware(['auth:sanctum', 'role:hospital,superAdmin,saasAdmin']);
+
+// ── Hospital public profiles (L4) ──
+Route::get('/hospitals/{codename}', [HospitalController::class, 'show'])->middleware('cache.headers:public');
 
 // Clinic reviews — public read (optional auth for can_review flag)
 Route::get('/clinics/{id}/reviews', [ClinicController::class, 'reviews']);
@@ -522,6 +530,21 @@ Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
     Route::get('/clinic/{clinicId}/doctors', [ClinicAnalyticsController::class, 'doctorPerformance']);
     Route::get('/clinic/{clinicId}/engagement', [ClinicAnalyticsController::class, 'engagement']);
     Route::get('/clinic/{clinicId}/appointment-trend', [ClinicAnalyticsController::class, 'appointmentTrend']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Branch Management — L4 Hospitals (§8.3)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('branches')->middleware(['auth:sanctum', 'role:hospital,superAdmin,saasAdmin'])->group(function () {
+    Route::get('/', [BranchController::class, 'index']);
+    Route::post('/', [BranchController::class, 'store']);
+    Route::get('/{id}', [BranchController::class, 'show']);
+    Route::put('/{id}', [BranchController::class, 'update']);
+    Route::delete('/{id}', [BranchController::class, 'destroy']);
+    Route::post('/{id}/assign-clinic', [BranchController::class, 'assignClinic']);
+    Route::post('/{id}/assign-doctor', [BranchController::class, 'assignDoctor']);
 });
 
 /*

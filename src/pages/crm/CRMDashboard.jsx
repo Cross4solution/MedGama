@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { appointmentAPI, clinicVerificationAPI } from '../../lib/api';
+import { appointmentAPI, clinicVerificationAPI, hospitalAPI } from '../../lib/api';
 import {
   CalendarDays,
   Clock,
@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   XCircle,
+  Building2,
   ChevronRight,
   TrendingUp,
   TrendingDown,
@@ -135,6 +136,57 @@ const UpgradeBanner = ({ t, label }) => (
   </div>
 );
 
+// ─── Hospital Stat Cards (L4 only) ───────────────────────────
+
+const HOSPITAL_STAT_CONFIG = [
+  { key: 'total_branches',  labelKey: 'hospital.stats.totalBranches',  fallback: 'Total Branches',    icon: MapPin,     bg: 'bg-teal-50',    iconColor: 'text-teal-600',    border: 'border-teal-100'   },
+  { key: 'total_clinics',   labelKey: 'hospital.stats.linkedClinics',  fallback: 'Linked Clinics',    icon: Building2,  bg: 'bg-blue-50',    iconColor: 'text-blue-600',    border: 'border-blue-100'   },
+  { key: 'total_doctors',   labelKey: 'hospital.stats.activeDoctors',  fallback: 'Active Doctors',    icon: Users,      bg: 'bg-violet-50',  iconColor: 'text-violet-600',  border: 'border-violet-100' },
+];
+
+const HospitalStatCards = () => {
+  const { t } = useTranslation();
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    hospitalAPI.stats()
+      .then((res) => setStats(res?.stats ?? null))
+      .catch(() => setStats(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+      {HOSPITAL_STAT_CONFIG.map((cfg) => {
+        const Icon = cfg.icon;
+        return (
+          <div key={cfg.key} className={`bg-white rounded-xl border ${cfg.border} p-4 hover:shadow-md transition-shadow`}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className={`w-9 h-9 rounded-lg ${cfg.bg} flex items-center justify-center flex-shrink-0`}>
+                <Icon className={`w-4.5 h-4.5 ${cfg.iconColor}`} />
+              </div>
+              <p className="text-xs font-medium text-gray-500">{t(cfg.labelKey, cfg.fallback)}</p>
+            </div>
+
+            {loading ? (
+              /* Skeleton */
+              <div className="space-y-2">
+                <div className="h-7 w-16 bg-gray-100 rounded-lg animate-pulse" />
+                <div className="h-3 w-24 bg-gray-50 rounded animate-pulse" />
+              </div>
+            ) : (
+              <p className="text-2xl font-bold text-gray-900">
+                {stats?.[cfg.key] ?? '—'}
+              </p>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 // ─── Main Dashboard ──────────────────────────────────────────
 
 const CRMDashboard = () => {
@@ -194,6 +246,7 @@ const CRMDashboard = () => {
   const [clinicVerificationStatus, setClinicVerificationStatus] = useState(null);
 
   const isClinicOwner = user?.role_id === 'clinicOwner';
+  const isHospital = user?.role_id === 'hospital';
 
   useEffect(() => {
     if (!isClinicOwner) return;
@@ -302,6 +355,9 @@ const CRMDashboard = () => {
           patients={MOCK_RECENT_PATIENTS}
         />
       </PremiumGate>
+
+      {/* Hospital Network Stats — L4 only */}
+      {isHospital && <HospitalStatCards />}
 
       {/* KPI Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">

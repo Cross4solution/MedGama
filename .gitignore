@@ -30,3 +30,4 @@ yarn-error.log*
 /backend/storage/*.key
 /backend/bootstrap/cache/*
 /backend/.phpunit.result.cache
+.claude/settings.local.json
