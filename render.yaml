@@ -3,7 +3,7 @@ services:
     name: medagama-backend
     env: docker
     dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerContext: ./
     region: frankfurt
     plan: starter
     healthCheckPath: /api/health

@@ -8,7 +8,7 @@
 FROM composer:2 AS vendor
 
 WORKDIR /app
-COPY composer.json composer.lock ./
+COPY backend/composer.json backend/composer.lock ./
 RUN composer install \
     --no-dev \
     --no-interaction \
@@ -58,7 +58,7 @@ WORKDIR /var/www/html
 COPY --from=vendor /app/vendor ./vendor
 
 # Copy application code + docker config files
-COPY . .
+COPY backend/ .
 
 # OPcache settings
 RUN mkdir -p /usr/local/etc/php/conf.d && \
