@@ -18,6 +18,8 @@ const DashboardRedirect = () => {
       navigate('/admin', { replace: true });
     } else if (role === 'patient') {
       navigate('/', { replace: true });
+    } else if (role === 'hospital') {
+      navigate('/crm', { replace: true });
     } else if (role === 'doctor' && user?.onboarding_completed === false) {
       navigate('/onboarding', { replace: true });
     } else {

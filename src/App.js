@@ -279,7 +279,7 @@ function AppContent() {
   }, [location.pathname, navType]);
   
   // Auth ve CRM sayfalarında header ve cookie banner'ı gizle
-  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/verify-email', '/forgot-password', '/dashboard', '/onboarding', '/clinic/onboarding'];
+  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/hospital-login', '/admin-login', '/verify-email', '/forgot-password', '/dashboard', '/onboarding', '/clinic/onboarding'];
   const isAuthPage = hideOnAuthPages.includes(location.pathname);
   const isCRMPage = location.pathname.startsWith('/crm');
   const isAdminPage = location.pathname.startsWith('/admin');
@@ -354,6 +354,7 @@ function AppContent() {
         {/* Role-specific logins */}
         <Route path="/doctor-login" element={<LoginPage role="doctor" />} />
         <Route path="/clinic-login" element={<LoginPage role="clinic" />} />
+        <Route path="/hospital-login" element={<LoginPage role="hospital" />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<CRMSettings standalone />} />

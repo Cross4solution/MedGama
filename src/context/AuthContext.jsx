@@ -67,7 +67,7 @@ export function AuthProvider({ children }) {
           if (isPlaceholder || !av) parsed.user.avatar = null;
           // Re-evaluate role from role_id to fix stale cached roles
           const rid = parsed.user?.role_id || parsed.user?.role || '';
-          if (rid === 'doctor' || rid === 'clinic' || rid === 'clinicOwner') {
+          if (rid === 'doctor' || rid === 'clinic' || rid === 'clinicOwner' || rid === 'hospital') {
             parsed.user.role = rid;
           }
           setUser(parsed.user);
@@ -165,7 +165,7 @@ export function AuthProvider({ children }) {
       }
       if (!apiUser || !access) return null;
       const roleRaw = apiUser?.role_id || apiUser?.role || '';
-      const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || 'specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
+      const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || (roleRaw !== 'hospital' && ('specialty' in apiUser || 'access' in apiUser)));
       const isClinic = roleRaw === 'clinic' || roleRaw === 'clinicOwner';
       const role = isDoctor ? 'doctor' : isClinic ? roleRaw : (roleRaw || 'patient');
       const name = apiUser?.fullname || apiUser?.name || [apiUser?.fname, apiUser?.lname].filter(Boolean).join(' ').trim() || apiUser?.email || 'User';
@@ -233,7 +233,7 @@ export function AuthProvider({ children }) {
         return null;
       }
       const roleRaw = apiUser?.role_id || apiUser?.role || '';
-      const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || 'specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
+      const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || (roleRaw !== 'hospital' && ('specialty' in apiUser || 'access' in apiUser)));
       const isClinic = roleRaw === 'clinic' || roleRaw === 'clinicOwner';
       const role = isDoctor ? 'doctor' : isClinic ? roleRaw : (roleRaw || 'patient');
       const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';

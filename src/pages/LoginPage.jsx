@@ -115,6 +115,40 @@ const ROLE_CONFIG = {
       { href: '/login', labelKey: 'nav.patientLogin' },
     ],
   },
+  hospital: {
+    icon: Building2,
+    gradient: 'from-teal-700 via-teal-800 to-emerald-900',
+    accentColor: 'teal',
+    ringColor: 'focus:ring-teal-200',
+    btnBg: 'bg-teal-700 hover:bg-teal-800',
+    btnFocus: 'focus:ring-teal-200',
+    linkColor: 'text-teal-600 hover:text-teal-700',
+    linkColorLight: 'text-teal-500 hover:text-teal-600',
+    featureIconColor: 'text-teal-200',
+    inputFocus: 'focus:ring-teal-500',
+    checkboxColor: 'text-teal-600 focus:ring-teal-500',
+    titleKey: 'auth.hospitalSignIn',
+    subtitleKey: 'auth.accessHospitalPortal',
+    welcomeKey: 'auth.welcomeHospitalPortal',
+    descKey: 'auth.hospitalPortalDesc',
+    metaTitleKey: 'auth.metaHospitalLogin',
+    metaDescKey: 'auth.metaHospitalLoginDesc',
+    featuresKeys: [
+      { icon: Building2, textKey: 'auth.featureBranchMgmt' },
+      { icon: Users, textKey: 'auth.featureHospitalStaff' },
+      { icon: Calendar, textKey: 'auth.featureHospitalSchedule' },
+    ],
+    showStats: false,
+    showGoogleLogin: false,
+    showRegister: false,
+    googleBtnId: 'googleBtnHospital',
+    redirectAfterLogin: '/crm',
+    placeholder: 'hospital@example.com',
+    otherLogins: [
+      { href: '/doctor-login', labelKey: 'nav.doctorLogin' },
+      { href: '/clinic-login', labelKey: 'nav.clinicLogin' },
+    ],
+  },
 };
 
 const SVG_PATTERN = 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")';
@@ -402,10 +436,17 @@ const LoginPage = ({ role = 'patient' }) => {
           </>
         )}
       </form>
-      <div className="mt-4 text-center text-xs text-gray-500">
-        {t('auth.dontHaveAccount')}{' '}
-        <button type="button" onClick={() => setCurrentPage('register')} className={`${config.linkColor} font-semibold`}>{t('auth.signUp')}</button>
-      </div>
+      {config.showRegister !== false && (
+        <div className="mt-4 text-center text-xs text-gray-500">
+          {t('auth.dontHaveAccount')}{' '}
+          <button type="button" onClick={() => setCurrentPage('register')} className={`${config.linkColor} font-semibold`}>{t('auth.signUp')}</button>
+        </div>
+      )}
+      {config.showRegister === false && (
+        <div className="mt-4 text-center text-xs text-gray-400">
+          {t('auth.hospitalAccountInfo', 'Hospital accounts are created by MedaGama administrators.')}
+        </div>
+      )}
       <div className="mt-4 pt-3 border-t border-gray-100">
         <p className="text-xs text-gray-500 text-center mb-2.5 font-medium">{t('auth.signInAsDifferentRole', 'Sign in as a different role')}</p>
         <div className="flex gap-2">
