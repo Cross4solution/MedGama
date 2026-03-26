@@ -52,34 +52,34 @@ RUN apk add --no-cache \
 # PHP production config
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# OPcache settings
-COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-
-# Upload limits (default PHP is 2MB which is too small for media)
-COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
-
-# Nginx config — REPLACE the entire main nginx.conf (no dependency on Alpine include paths)
-RUN rm -f /etc/nginx/http.d/*.conf /etc/nginx/conf.d/*.conf 2>/dev/null || true
-COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
-
-# Supervisor config
-COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# PHP-FPM: force unix socket (override any default TCP listener)
-RUN rm -f /usr/local/etc/php-fpm.d/zz-docker.conf 2>/dev/null || true
-COPY docker/php/php-fpm-pool.conf /usr/local/etc/php-fpm.d/zz-railway.conf
-
 WORKDIR /var/www/html
 
 # Copy vendor from stage 1
 COPY --from=vendor /app/vendor ./vendor
 
-# Copy application code
+# Copy application code + docker config files
 COPY . .
 
+# OPcache settings
+RUN mkdir -p /usr/local/etc/php/conf.d && \
+    cp docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini && \
+    cp docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
+# Nginx config — REPLACE the entire main nginx.conf
+RUN rm -f /etc/nginx/http.d/*.conf /etc/nginx/conf.d/*.conf 2>/dev/null || true && \
+    cp docker/nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Supervisor config
+RUN mkdir -p /etc/supervisor/conf.d && \
+    cp docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# PHP-FPM: force unix socket (override any default TCP listener)
+RUN rm -f /usr/local/etc/php-fpm.d/zz-docker.conf 2>/dev/null || true && \
+    cp docker/php/php-fpm-pool.conf /usr/local/etc/php-fpm.d/zz-railway.conf
+
 # Entrypoint script
-COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x docker/entrypoint.sh && \
+    cp docker/entrypoint.sh /entrypoint.sh
 
 # Create required directories & set permissions
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \
