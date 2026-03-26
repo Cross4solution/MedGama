@@ -46,6 +46,7 @@ const ROLE_CONFIG = {
     otherLogins: [
       { href: '/doctor-login', labelKey: 'nav.doctorLogin' },
       { href: '/clinic-login', labelKey: 'nav.clinicLogin' },
+      { href: '/hospital-login', labelKey: 'nav.hospitalLogin' },
     ],
   },
   doctor: {
@@ -453,12 +454,14 @@ const LoginPage = ({ role = 'patient' }) => {
           {config.otherLogins.map((link) => {
             const isDoctor = link.href === '/doctor-login';
             const isClinic = link.href === '/clinic-login';
-            const isPatient = link.href === '/login';
-            const Icon = isDoctor ? Stethoscope : isClinic ? Building2 : Heart;
+            const isHospital = link.href === '/hospital-login';
+            const Icon = isDoctor ? Stethoscope : isClinic ? Building2 : isHospital ? Building2 : Heart;
             const colors = isDoctor
-              ? 'border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700'
+              ? 'border-blue-200 bg-blue-50/60 hover:bg-blue-100 hover:border-blue-400 text-blue-700'
               : isClinic
               ? 'border-purple-200 bg-purple-50/60 hover:bg-purple-100 hover:border-purple-400 text-purple-700'
+              : isHospital
+              ? 'border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700'
               : 'border-rose-200 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-400 text-rose-700';
             return (
               <a key={link.href} href={link.href}

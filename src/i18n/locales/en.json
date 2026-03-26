@@ -80,6 +80,7 @@
     "signUp": "Sign Up",
     "doctorLogin": "Doctor Login",
     "clinicLogin": "Clinic Login",
+    "hospitalLogin": "Hospital Login",
     "patientLogin": "Patient Login"
   },
   "auth": {

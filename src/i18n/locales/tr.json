@@ -80,6 +80,7 @@
     "signUp": "Kayıt Ol",
     "doctorLogin": "Doktor Girişi",
     "clinicLogin": "Klinik Girişi",
+    "hospitalLogin": "Hastane Girişi",
     "patientLogin": "Hasta Girişi"
   },
   "auth": {
