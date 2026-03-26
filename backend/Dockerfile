@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  MedaGama Backend — Railway Production Dockerfile              ║
+# ║  MedaGama Backend — Render Production Dockerfile               ║
 # ║  Single container: Nginx + PHP-FPM + Queue + Reverb            ║
-# ║  Managed by Supervisor                                         ║
+# ║  Managed by Supervisor · DB: TiDB Cloud (MySQL / port 4000)    ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
 # ── Stage 1: Composer dependencies ──
@@ -24,7 +24,6 @@ FROM php:8.4-fpm-alpine
 RUN apk add --no-cache \
         nginx \
         supervisor \
-        postgresql-dev \
         libpng-dev \
         libjpeg-turbo-dev \
         freetype-dev \
@@ -36,8 +35,8 @@ RUN apk add --no-cache \
         $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
-        pdo_pgsql \
-        pgsql \
+        pdo_mysql \
+        mysqli \
         gd \
         zip \
         intl \
@@ -89,7 +88,7 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
     && chmod -R 775 storage bootstrap/cache \
     && chown -R www-data:www-data /var/lib/nginx /var/log/nginx
 
-# Railway uses PORT env var (default 8080)
+# Render uses PORT env var (default 8080)
 EXPOSE 8080
 
 ENTRYPOINT ["/entrypoint.sh"]
