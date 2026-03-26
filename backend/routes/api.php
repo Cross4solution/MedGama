@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\PatientDocumentController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\HospitalController;
 use App\Http\Controllers\Api\ClinicManagerController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SocialController;
@@ -184,6 +185,9 @@ Route::prefix('social')->middleware('auth:sanctum')->group(function () {
 */
 Route::get('/clinics', [ClinicController::class, 'index'])->middleware('cache.headers:public');
 Route::get('/clinics/{codename}', [ClinicController::class, 'show'])->middleware('cache.headers:public');
+
+// ── Hospital public profiles (L4) ──
+Route::get('/hospitals/{codename}', [HospitalController::class, 'show'])->middleware('cache.headers:public');
 
 // Clinic reviews — public read (optional auth for can_review flag)
 Route::get('/clinics/{id}/reviews', [ClinicController::class, 'reviews']);

@@ -610,6 +610,11 @@ export const telehealthAPI = {
   updateStatus: (appointmentId, meetingStatus) => api.put(`/telehealth/${appointmentId}/status`, { meeting_status: meetingStatus }),
 };
 
+// ── Hospital Public Profiles (L4) ──
+export const hospitalAPI = {
+  getByCodename: (codename) => api.get(`/hospitals/${codename}`),
+};
+
 // ── Branch Management (L4 Hospitals) ──
 export const branchAPI = {
   list: (params) => api.get('/branches', { params }),

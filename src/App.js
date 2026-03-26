@@ -19,6 +19,7 @@ const OnboardingWizard = React.lazy(() => import('./pages/DoctorOnboarding.jsx')
 const HomeV2 = React.lazy(() => import('./pages/HomeV2'));
 const ExploreTimeline = React.lazy(() => import('./pages/ExploreTimeline'));
 const ClinicDetailPage = React.lazy(() => import('./pages/ClinicDetailPage'));
+const HospitalProfilePage = React.lazy(() => import('./pages/HospitalProfilePage'));
 const DoctorChatPage = React.lazy(() => import('./pages/DoctorChatPage'));
 const TelehealthAppointmentPage = React.lazy(() => import('./pages/TelehealthAppointmentPage'));
 const TelehealthPage = React.lazy(() => import('./pages/TelehealthPage'));
@@ -324,6 +325,7 @@ function AppContent() {
         <Route path="/doctors-departments" element={<DoctorsDepartments />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />
+        <Route path="/hospital/:codename" element={<HospitalProfilePage />} />
         <Route path="/clinic-edit" element={<ClinicProfileEdit />} />
         <Route path="/doctor-chat" element={<DoctorChatPage />} />
         <Route path="/telehealth" element={<TelehealthPage />} />
