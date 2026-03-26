@@ -186,6 +186,9 @@ Route::prefix('social')->middleware('auth:sanctum')->group(function () {
 Route::get('/clinics', [ClinicController::class, 'index'])->middleware('cache.headers:public');
 Route::get('/clinics/{codename}', [ClinicController::class, 'show'])->middleware('cache.headers:public');
 
+// ── Hospital CRM Stats (authenticated) — defined BEFORE {codename} wildcard ──
+Route::get('/hospitals/stats', [HospitalController::class, 'stats'])->middleware(['auth:sanctum', 'role:hospital,superAdmin,saasAdmin']);
+
 // ── Hospital public profiles (L4) ──
 Route::get('/hospitals/{codename}', [HospitalController::class, 'show'])->middleware('cache.headers:public');
 
