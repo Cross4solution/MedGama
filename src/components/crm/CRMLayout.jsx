@@ -46,6 +46,7 @@ import {
   CheckCircle2,
   ShieldAlert,
   MapPin,
+  Image,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -63,8 +64,39 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
   const isHospital = role === 'hospital';
   const doctorUnverified = role === 'doctor' && !isVerified;
 
-  // Free tier: Dashboard, Appointments, Smart Calendar, Patients, Staff are open
-  // Premium tier: Telehealth, Contact Messages, Clinic Management, Revenue, Billing, Reports, Integrations are locked
+  // ── L4 Hospital: completely separate nav ───────────────────────
+  if (isHospital) {
+    return [
+      {
+        title: t('crm.sidebar.main'),
+        items: [
+          { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm' },
+          { label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin, path: '/crm/branches' },
+          { label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' },
+          { label: t('crm.sidebar.medstream', 'MedStream'), icon: Rss, path: '/crm/medstream' },
+          { label: t('crm.sidebar.contactInbox', 'Contact Messages'), icon: Mail, path: '/crm/contact-inbox', badge: chatUnreadCount > 0 ? chatUnreadCount : undefined },
+        ],
+      },
+      {
+        title: t('crm.sidebar.management'),
+        items: [
+          { label: t('crm.sidebar.reviews', 'Reviews'), icon: Star, path: '/crm/reviews' },
+          { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports' },
+          { label: t('crm.sidebar.gallery', 'Gallery'), icon: Image, path: '/crm/settings?tab=gallery' },
+        ],
+      },
+      {
+        title: t('crm.sidebar.system'),
+        items: [
+          { label: t('crm.sidebar.support', 'Support'), icon: LifeBuoy, path: '/crm/support' },
+          { label: t('crm.sidebar.faq', 'FAQ'), icon: BookOpen, path: '/crm/faq' },
+          { label: t('crm.sidebar.settings'), icon: Settings, path: '/crm/settings' },
+        ],
+      },
+    ];
+  }
+
+  // ── Doctor / Clinic nav ────────────────────────────────────────
   const mainItems = [
     { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm' },
     { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments', locked: doctorUnverified },
@@ -81,11 +113,6 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
   if (isClinic) {
     mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
     mainItems.push({ label: t('crm.sidebar.clinicManager', 'Clinic Management'), icon: Building2, path: '/crm/clinic-manager', locked: !isPremium });
-  }
-  // Hospital-only: branch management
-  if (isHospital) {
-    mainItems.push({ label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin, path: '/crm/branches' });
-    mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
   }
 
   const managementItems = [
