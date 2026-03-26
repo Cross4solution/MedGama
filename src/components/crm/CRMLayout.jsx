@@ -45,6 +45,8 @@ import {
   Wrench,
   CheckCircle2,
   ShieldAlert,
+  MapPin,
+  Image,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -61,54 +63,66 @@ import { playNotificationSound } from '../../utils/notificationSound';
  * Navigation sections builder.
  * @param {number} userLevel — 1=Patient, 2=Doctor, 3=Clinic, 4=Hospital, 5=Admin
  */
-const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, userLevel = 2 } = {}) => {
+const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = false } = {}) => {
   const isClinic = role === 'clinic' || role === 'clinicOwner';
-  const isHospital = role === 'hospital' || userLevel === 4;
+  const isHospital = role === 'hospital';
   const doctorUnverified = role === 'doctor' && !isVerified;
 
+  // ── L4 Hospital: completely separate nav ───────────────────────
+  if (isHospital) {
+    return [
+      {
+        title: t('crm.sidebar.main'),
+        items: [
+          { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm' },
+          { label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin, path: '/crm/branches' },
+          { label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' },
+          { label: t('crm.sidebar.medstream', 'MedStream'), icon: Rss, path: '/crm/medstream' },
+          { label: t('crm.sidebar.contactInbox', 'Contact Messages'), icon: Mail, path: '/crm/contact-inbox', badge: chatUnreadCount > 0 ? chatUnreadCount : undefined },
+        ],
+      },
+      {
+        title: t('crm.sidebar.management'),
+        items: [
+          { label: t('crm.sidebar.reviews', 'Reviews'), icon: Star, path: '/crm/reviews' },
+          { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports' },
+          { label: t('crm.sidebar.gallery', 'Gallery'), icon: Image, path: '/crm/settings?tab=gallery' },
+        ],
+      },
+      {
+        title: t('crm.sidebar.system'),
+        items: [
+          { label: t('crm.sidebar.support', 'Support'), icon: LifeBuoy, path: '/crm/support' },
+          { label: t('crm.sidebar.faq', 'FAQ'), icon: BookOpen, path: '/crm/faq' },
+          { label: t('crm.sidebar.settings'), icon: Settings, path: '/crm/settings' },
+        ],
+      },
+    ];
+  }
+
+  // ── Doctor / Clinic nav ────────────────────────────────────────
   const mainItems = [
-    { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm', pro: true },
+    { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm' },
+    { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments', locked: doctorUnverified },
+    { label: t('crm.sidebar.smartCalendar', 'Smart Calendar'), icon: CalendarCheck, path: '/crm/calendar' },
+    { label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients' },
   ];
-
-  // Level 4 (Hospital) has NO appointment/telehealth — promotion network only
-  if (!isHospital) {
-    mainItems.push(
-      { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments', pro: true, locked: doctorUnverified },
-      { label: t('crm.sidebar.smartCalendar', 'Smart Calendar'), icon: CalendarCheck, path: '/crm/calendar', pro: true },
-    );
+  if (!isClinic) {
+    mainItems.push({ label: t('crm.sidebar.examination'), icon: Stethoscope, path: '/crm/examination' });
   }
-
-  mainItems.push({ label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients', pro: true });
-
-  // Doctor-only: examination (not for clinics or hospitals)
-  if (!isClinic && !isHospital) {
-    mainItems.push({ label: t('crm.sidebar.examination'), icon: Stethoscope, path: '/crm/examination', pro: true });
-  }
-
-  // Telehealth — not for hospitals
-  if (!isHospital) {
-    mainItems.push({ label: t('crm.sidebar.telehealth', 'Telehealth'), icon: Video, path: '/crm/telehealth', pro: true });
-  }
-
-  mainItems.push({ label: t('crm.sidebar.contactInbox', 'Contact Messages'), icon: Mail, path: '/crm/contact-inbox', badge: chatUnreadCount > 0 ? chatUnreadCount : undefined });
-
-  // Clinic-only: staff management + clinic manager panel
+  mainItems.push({ label: t('crm.sidebar.telehealth', 'Telehealth'), icon: Video, path: '/crm/telehealth', locked: !isPremium });
+  mainItems.push({ label: t('crm.sidebar.contactInbox', 'Contact Messages'), icon: Mail, path: '/crm/contact-inbox', locked: !isPremium, badge: chatUnreadCount > 0 ? chatUnreadCount : undefined });
   if (isClinic) {
     mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
-    mainItems.push({ label: t('crm.sidebar.clinicManager', 'Clinic Management'), icon: Building2, path: '/crm/clinic-manager' });
-  }
-
-  // Hospital-only: branches management
-  if (isHospital) {
-    mainItems.push({ label: t('crm.sidebar.branches', 'Branches'), icon: Building2, path: '/crm/branches' });
+    mainItems.push({ label: t('crm.sidebar.clinicManager', 'Clinic Management'), icon: Building2, path: '/crm/clinic-manager', locked: !isPremium });
   }
 
   const managementItems = [
-    { label: t('crm.sidebar.revenue', 'Revenue & Finance'), icon: DollarSign, path: '/crm/revenue', pro: true },
-    { label: t('crm.sidebar.billing'), icon: Receipt, path: '/crm/billing', pro: true },
+    { label: t('crm.sidebar.revenue', 'Revenue & Finance'), icon: DollarSign, path: '/crm/revenue', locked: !isPremium },
+    { label: t('crm.sidebar.billing'), icon: Receipt, path: '/crm/billing', locked: !isPremium },
     { label: t('crm.sidebar.reviews', 'Reviews'), icon: Star, path: '/crm/reviews' },
-    { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports', pro: true },
-    { label: t('crm.sidebar.integrations'), icon: Plug, path: '/crm/integrations', pro: true },
+    { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports', locked: !isPremium },
+    { label: t('crm.sidebar.integrations'), icon: Plug, path: '/crm/integrations', locked: !isPremium },
   ];
 
   return [

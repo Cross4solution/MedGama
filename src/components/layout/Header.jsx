@@ -337,7 +337,8 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  {/* Notification Bell */}
+                  {/* Notification Bell — Hidden on Main Site Pages (only show in CRM/Admin) */}
+                  {(pathname.startsWith('/crm') || pathname.startsWith('/admin')) && (
                   <div className="relative" ref={notifRef}>
                     <button
                       onClick={() => setNotifOpen(p => !p)}
@@ -443,6 +444,7 @@ const Header = () => {
                       </div>
                     )}
                   </div>
+                  )}
 
                   {/* Avatar + Name + Dropdown */}
                   <div className="relative" ref={profileRef}>
@@ -499,6 +501,18 @@ const Header = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* Hospital CRM Button — Premium Style, Far Right */}
+                  {user?.role_id === 'hospital' || user?.role === 'hospital' ? (
+                    <button
+                      onClick={() => { navigate('/crm'); }}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600 text-white text-sm font-semibold hover:from-teal-700 hover:via-teal-800 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                      title="Go to Management Portal"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>Hospital Panel</span>
+                    </button>
+                  ) : null}
                 </>
               )}
             </div>

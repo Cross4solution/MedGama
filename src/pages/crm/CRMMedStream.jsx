@@ -19,7 +19,6 @@ const CreatePostModal = ({ open, onClose, onCreated, t }) => {
   const [photos, setPhotos] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [specialty, setSpecialty] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(false);
   const [gdprConsent, setGdprConsent] = useState(false);
   const [posting, setPosting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -58,7 +57,7 @@ const CreatePostModal = ({ open, onClose, onCreated, t }) => {
         content: content.trim(),
         post_type: photos.length > 0 ? 'image' : 'text',
         specialty_id: specialty || undefined,
-        is_anonymous: isAnonymous,
+        is_anonymous: false,
         gdpr_consent: gdprConsent,
         photos,
         onProgress: setUploadProgress,
@@ -67,7 +66,7 @@ const CreatePostModal = ({ open, onClose, onCreated, t }) => {
       setPhotos([]);
       setPreviews([]);
       setSpecialty('');
-      setIsAnonymous(false);
+
       setGdprConsent(false);
       setUploadProgress(0);
       onCreated?.();
@@ -156,32 +155,18 @@ const CreatePostModal = ({ open, onClose, onCreated, t }) => {
             </select>
           </div>
 
-          {/* Toggles */}
-          <div className="flex flex-col gap-3">
-            {/* Anonymous Toggle */}
-            <label className="flex items-center gap-3 cursor-pointer group">
-              <div className={`w-10 h-6 rounded-full flex items-center transition-colors ${isAnonymous ? 'bg-violet-500' : 'bg-gray-200'}`}>
-                <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform mx-1 ${isAnonymous ? 'translate-x-4' : ''}`} />
-              </div>
-              <div className="flex items-center gap-1.5">
-                {isAnonymous ? <EyeOff className="w-4 h-4 text-violet-500" /> : <Eye className="w-4 h-4 text-gray-400" />}
-                <span className="text-sm text-gray-700">{isAnonymous ? 'Anonim Paylaşım' : 'İsimle Paylaş'}</span>
-              </div>
-            </label>
-
-            {/* GDPR Consent Checkbox */}
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={gdprConsent}
-                onChange={(e) => setGdprConsent(e.target.checked)}
-                className="mt-0.5 w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
-              />
-              <span className="text-xs text-gray-600 leading-relaxed">
-                Bu paylaşımda hasta kişisel verisi bulunmadığını ve KVKK/GDPR düzenlemelerine uygun olduğunu <strong className="text-gray-900">onaylıyorum</strong>.
-              </span>
-            </label>
-          </div>
+          {/* GDPR Consent Checkbox */}
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={gdprConsent}
+              onChange={(e) => setGdprConsent(e.target.checked)}
+              className="mt-0.5 w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
+            />
+            <span className="text-xs text-gray-600 leading-relaxed">
+              Bu paylaşımda hasta kişisel verisi bulunmadığını ve KVKK/GDPR düzenlemelerine uygun olduğunu <strong className="text-gray-900">onaylıyorum</strong>.
+            </span>
+          </label>
 
           {/* Error */}
           {error && (

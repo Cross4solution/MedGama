@@ -67,7 +67,7 @@ export function AuthProvider({ children }) {
           if (isPlaceholder || !av) parsed.user.avatar = null;
           // Re-evaluate role from role_id to fix stale cached roles
           const rid = parsed.user?.role_id || parsed.user?.role || '';
-          if (rid === 'doctor' || rid === 'clinic' || rid === 'clinicOwner') {
+          if (rid === 'doctor' || rid === 'clinic' || rid === 'clinicOwner' || rid === 'hospital') {
             parsed.user.role = rid;
           }
           setUser(parsed.user);
@@ -165,7 +165,7 @@ export function AuthProvider({ children }) {
       }
       if (!apiUser || !access) return null;
       const roleRaw = apiUser?.role_id || apiUser?.role || '';
-      const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || 'specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
+      const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || (roleRaw !== 'hospital' && ('specialty' in apiUser || 'access' in apiUser)));
       const isClinic = roleRaw === 'clinic' || roleRaw === 'clinicOwner';
       const role = isDoctor ? 'doctor' : isClinic ? roleRaw : (roleRaw || 'patient');
       const name = apiUser?.fullname || apiUser?.name || [apiUser?.fname, apiUser?.lname].filter(Boolean).join(' ').trim() || apiUser?.email || 'User';
@@ -233,7 +233,7 @@ export function AuthProvider({ children }) {
         return null;
       }
       const roleRaw = apiUser?.role_id || apiUser?.role || '';
-      const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || 'specialty' in apiUser || 'hospital' in apiUser || 'access' in apiUser);
+      const isDoctor = apiUser && typeof apiUser === 'object' && (roleRaw === 'doctor' || (roleRaw !== 'hospital' && ('specialty' in apiUser || 'access' in apiUser)));
       const isClinic = roleRaw === 'clinic' || roleRaw === 'clinicOwner';
       const role = isDoctor ? 'doctor' : isClinic ? roleRaw : (roleRaw || 'patient');
       const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
@@ -352,11 +352,11 @@ export function AuthProvider({ children }) {
   // This is the single source of truth for CRM access gating (PremiumGate)
   const hasCrmSubscription = useMemo(() => {
     if (!user) return false;
+    // Hospitals always get full CRM access — no upgrade gates
+    const role = user.role_id || user.role || '';
+    if (['superAdmin', 'saasAdmin', 'hospital'].includes(role)) return true;
     // Backend computes this; trust it if available
     if (typeof user.has_crm_subscription === 'boolean') return user.has_crm_subscription;
-    // Fallback: admins always have access
-    const role = user.role_id || user.role || '';
-    if (['superAdmin', 'saasAdmin'].includes(role)) return true;
     return false;
   }, [user]);
 

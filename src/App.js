@@ -114,8 +114,9 @@ function AppContent() {
   // Bridge for toast SPA navigation (ToastContext uses this)
   React.useEffect(() => { window.__TOAST_NAVIGATE = navigate; return () => { delete window.__TOAST_NAVIGATE; }; }, [navigate]);
 
-  // Show sidebar for all logged-in users (including patients), but not on CRM or verify-email pages
-  const hasSidebar = !!user && !location.pathname.startsWith('/crm') && !location.pathname.startsWith('/admin') && location.pathname !== '/verify-email';
+  // Show sidebar for all logged-in users (including patients), but not on CRM, admin, hospital, or verify-email pages
+  const isHospital = user?.role_id === 'hospital' || user?.role === 'hospital';
+  const hasSidebar = !!user && !isHospital && !location.pathname.startsWith('/crm') && !location.pathname.startsWith('/admin') && location.pathname !== '/verify-email';
 
   React.useEffect(() => {
     const path = String(location.pathname || '/');
@@ -280,7 +281,7 @@ function AppContent() {
   }, [location.pathname, navType]);
   
   // Auth ve CRM sayfalarında header ve cookie banner'ı gizle
-  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/admin-login', '/verify-email', '/forgot-password', '/dashboard', '/onboarding', '/clinic/onboarding'];
+  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/hospital-login', '/admin-login', '/verify-email', '/forgot-password', '/dashboard', '/onboarding', '/clinic/onboarding'];
   const isAuthPage = hideOnAuthPages.includes(location.pathname);
   const isCRMPage = location.pathname.startsWith('/crm');
   const isAdminPage = location.pathname.startsWith('/admin');
@@ -354,6 +355,7 @@ function AppContent() {
         {/* Role-specific logins */}
         <Route path="/doctor-login" element={<LoginPage role="doctor" />} />
         <Route path="/clinic-login" element={<LoginPage role="clinic" />} />
+        <Route path="/hospital-login" element={<LoginPage role="hospital" />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<CRMSettings standalone />} />

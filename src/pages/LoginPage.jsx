@@ -46,6 +46,7 @@ const ROLE_CONFIG = {
     otherLogins: [
       { href: '/doctor-login', labelKey: 'nav.doctorLogin' },
       { href: '/clinic-login', labelKey: 'nav.clinicLogin' },
+      { href: '/hospital-login', labelKey: 'nav.hospitalLogin' },
     ],
   },
   doctor: {
@@ -113,6 +114,40 @@ const ROLE_CONFIG = {
     otherLogins: [
       { href: '/doctor-login', labelKey: 'nav.doctorLogin' },
       { href: '/login', labelKey: 'nav.patientLogin' },
+    ],
+  },
+  hospital: {
+    icon: Building2,
+    gradient: 'from-teal-700 via-teal-800 to-emerald-900',
+    accentColor: 'teal',
+    ringColor: 'focus:ring-teal-200',
+    btnBg: 'bg-teal-700 hover:bg-teal-800',
+    btnFocus: 'focus:ring-teal-200',
+    linkColor: 'text-teal-600 hover:text-teal-700',
+    linkColorLight: 'text-teal-500 hover:text-teal-600',
+    featureIconColor: 'text-teal-200',
+    inputFocus: 'focus:ring-teal-500',
+    checkboxColor: 'text-teal-600 focus:ring-teal-500',
+    titleKey: 'auth.hospitalSignIn',
+    subtitleKey: 'auth.accessHospitalPortal',
+    welcomeKey: 'auth.welcomeHospitalPortal',
+    descKey: 'auth.hospitalPortalDesc',
+    metaTitleKey: 'auth.metaHospitalLogin',
+    metaDescKey: 'auth.metaHospitalLoginDesc',
+    featuresKeys: [
+      { icon: Building2, textKey: 'auth.featureBranchMgmt' },
+      { icon: Users, textKey: 'auth.featureHospitalStaff' },
+      { icon: Calendar, textKey: 'auth.featureHospitalSchedule' },
+    ],
+    showStats: false,
+    showGoogleLogin: false,
+    showRegister: false,
+    googleBtnId: 'googleBtnHospital',
+    redirectAfterLogin: '/crm',
+    placeholder: 'hospital@example.com',
+    otherLogins: [
+      { href: '/doctor-login', labelKey: 'nav.doctorLogin' },
+      { href: '/clinic-login', labelKey: 'nav.clinicLogin' },
     ],
   },
 };
@@ -402,22 +437,31 @@ const LoginPage = ({ role = 'patient' }) => {
           </>
         )}
       </form>
-      <div className="mt-4 text-center text-xs text-gray-500">
-        {t('auth.dontHaveAccount')}{' '}
-        <button type="button" onClick={() => setCurrentPage('register')} className={`${config.linkColor} font-semibold`}>{t('auth.signUp')}</button>
-      </div>
+      {config.showRegister !== false && (
+        <div className="mt-4 text-center text-xs text-gray-500">
+          {t('auth.dontHaveAccount')}{' '}
+          <button type="button" onClick={() => setCurrentPage('register')} className={`${config.linkColor} font-semibold`}>{t('auth.signUp')}</button>
+        </div>
+      )}
+      {config.showRegister === false && (
+        <div className="mt-4 text-center text-xs text-gray-400">
+          {t('auth.hospitalAccountInfo', 'Hospital accounts are created by MedaGama administrators.')}
+        </div>
+      )}
       <div className="mt-4 pt-3 border-t border-gray-100">
         <p className="text-xs text-gray-500 text-center mb-2.5 font-medium">{t('auth.signInAsDifferentRole', 'Sign in as a different role')}</p>
         <div className="flex gap-2">
           {config.otherLogins.map((link) => {
             const isDoctor = link.href === '/doctor-login';
             const isClinic = link.href === '/clinic-login';
-            const isPatient = link.href === '/login';
-            const Icon = isDoctor ? Stethoscope : isClinic ? Building2 : Heart;
+            const isHospital = link.href === '/hospital-login';
+            const Icon = isDoctor ? Stethoscope : isClinic ? Building2 : isHospital ? Building2 : Heart;
             const colors = isDoctor
-              ? 'border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700'
+              ? 'border-blue-200 bg-blue-50/60 hover:bg-blue-100 hover:border-blue-400 text-blue-700'
               : isClinic
               ? 'border-purple-200 bg-purple-50/60 hover:bg-purple-100 hover:border-purple-400 text-purple-700'
+              : isHospital
+              ? 'border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700'
               : 'border-rose-200 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-400 text-rose-700';
             return (
               <a key={link.href} href={link.href}

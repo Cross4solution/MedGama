@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { appointmentAPI, clinicVerificationAPI } from '../../lib/api';
+import { appointmentAPI, clinicVerificationAPI, hospitalAPI } from '../../lib/api';
 import {
   CalendarDays,
   Clock,
@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   XCircle,
+  Building2,
   ChevronRight,
   TrendingUp,
   TrendingDown,
@@ -31,12 +32,18 @@ import {
   Crown,
   Lock,
   Shield,
+  Rss,
+  Star,
+  Mail,
+  PieChart,
+  Image,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import AiInsightBanner from '../../components/crm/AiInsightBanner';
 import ClinicVerificationModal from '../../components/crm/ClinicVerificationModal';
+import PremiumGate from '../../components/crm/PremiumGate';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const TODAY = new Date();
@@ -134,6 +141,56 @@ const UpgradeBanner = ({ t, label }) => (
   </div>
 );
 
+// ─── Hospital Stat Cards (L4 only) ───────────────────────────
+
+const HOSPITAL_STAT_CONFIG = [
+  { key: 'total_branches',  labelKey: 'hospital.stats.totalBranches',  fallback: 'Total Branches',    icon: MapPin,     bg: 'bg-teal-50',    iconColor: 'text-teal-600',    border: 'border-teal-100'   },
+  { key: 'total_clinics',   labelKey: 'hospital.stats.linkedClinics',  fallback: 'Linked Clinics',    icon: Building2,  bg: 'bg-blue-50',    iconColor: 'text-blue-600',    border: 'border-blue-100'   },
+  { key: 'total_doctors',   labelKey: 'hospital.stats.activeDoctors',  fallback: 'Active Doctors',    icon: Users,      bg: 'bg-violet-50',  iconColor: 'text-violet-600',  border: 'border-violet-100' },
+];
+
+const HospitalStatCards = () => {
+  const { t } = useTranslation();
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    hospitalAPI.stats()
+      .then((res) => setStats(res?.stats ?? null))
+      .catch(() => setStats(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+      {HOSPITAL_STAT_CONFIG.map((cfg) => {
+        const Icon = cfg.icon;
+        return (
+          <div key={cfg.key} className={`bg-white rounded-xl border ${cfg.border} p-4 hover:shadow-md transition-shadow`}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className={`w-9 h-9 rounded-lg ${cfg.bg} flex items-center justify-center flex-shrink-0`}>
+                <Icon className={`w-4.5 h-4.5 ${cfg.iconColor}`} />
+              </div>
+              <p className="text-xs font-medium text-gray-500">{t(cfg.labelKey, cfg.fallback)}</p>
+            </div>
+
+            {loading ? (
+              <div className="space-y-2">
+                <div className="h-7 w-16 bg-gray-100 rounded-lg animate-pulse" />
+                <div className="h-3 w-24 bg-gray-50 rounded animate-pulse" />
+              </div>
+            ) : (
+              <p className="text-2xl font-bold text-gray-900">
+                {stats?.[cfg.key] ?? '—'}
+              </p>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 // ─── Main Dashboard ──────────────────────────────────────────
 
 const CRMDashboard = () => {
@@ -186,13 +243,13 @@ const CRMDashboard = () => {
   const maxRevenue = Math.max(...WEEKLY_REVENUE.map((d) => d.amount), 1);
   const todayIndex = TODAY.getDay() === 0 ? 6 : TODAY.getDay() - 1; // Mon=0
 
-  const isFreeDoctor = user?.role_id === 'doctor' && !isPro;
+  const isClinicOwner = user?.role_id === 'clinicOwner';
+  const isHospital = user?.role_id === 'hospital';
+  const isFreeTier = isHospital ? false : !isPro;
 
   // ── Clinic Verification ──
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [clinicVerificationStatus, setClinicVerificationStatus] = useState(null);
-
-  const isClinicOwner = user?.role_id === 'clinicOwner';
 
   useEffect(() => {
     if (!isClinicOwner) return;
@@ -204,6 +261,77 @@ const CRMDashboard = () => {
 
   const clinicNeedsVerification = isClinicOwner && clinicVerificationStatus && clinicVerificationStatus !== 'verified';
 
+  // ── Hospital Dashboard (L4) ───────────────────────────────
+  if (isHospital) {
+    const HOSPITAL_QUICK_ACTIONS = [
+      { label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin,       color: 'bg-teal-50 text-teal-600 hover:bg-teal-100',        path: '/crm/branches' },
+      { label: t('crm.sidebar.staff', 'Staff'),               icon: Users,         color: 'bg-violet-50 text-violet-600 hover:bg-violet-100',  path: '/crm/staff' },
+      { label: t('crm.sidebar.medstream', 'MedStream'),       icon: Rss,           color: 'bg-blue-50 text-blue-600 hover:bg-blue-100',        path: '/crm/medstream' },
+      { label: t('crm.sidebar.reviews', 'Reviews'),           icon: Star,          color: 'bg-amber-50 text-amber-600 hover:bg-amber-100',     path: '/crm/reviews' },
+      { label: t('crm.sidebar.contactInbox', 'Messages'),     icon: Mail,          color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100', path: '/crm/contact-inbox' },
+      { label: t('crm.sidebar.reports', 'Reports'),           icon: PieChart,      color: 'bg-pink-50 text-pink-600 hover:bg-pink-100',        path: '/crm/reports' },
+    ];
+
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+              {TODAY.getHours() < 12 ? 'Good Morning' : TODAY.getHours() < 18 ? 'Good Afternoon' : 'Good Evening'}, {user?.name?.split(' ')[0] || 'Admin'} 👋
+            </h1>
+            <p className="text-sm text-gray-500 mt-0.5">{formatDate(TODAY)}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              to={`/hospital/${user?.hospital?.codename || user?.codename || ''}`}
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-teal-200 text-teal-700 bg-teal-50 rounded-xl text-sm font-medium hover:bg-teal-100 transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span className="hidden sm:inline">{t('doctorProfile.viewPublicProfile', 'View Public Profile')}</span>
+            </Link>
+            <button
+              onClick={() => window.location.reload()}
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span className="hidden sm:inline">{t('common.refresh', 'Refresh')}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* AI Banner */}
+        <AiInsightBanner
+          appointments={[]}
+          alerts={MOCK_URGENT_NOTES}
+          stats={[]}
+          patients={[]}
+        />
+
+        {/* Hospital Network Stats */}
+        <HospitalStatCards />
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+          <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.dashboard.quickActions', 'Quick Actions')}</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+            {HOSPITAL_QUICK_ACTIONS.map((action) => (
+              <Link
+                key={action.label}
+                to={action.path}
+                className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${action.color} border border-transparent hover:border-gray-200 hover:shadow-sm`}
+              >
+                <action.icon className="w-5 h-5" />
+                <span className="text-[11px] font-semibold text-center leading-tight">{action.label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Doctor / Clinic Dashboard ─────────────────────────────
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -309,7 +437,7 @@ const CRMDashboard = () => {
                 <stat.icon className={`w-4.5 h-4.5 ${stat.iconColor}`} />
               </div>
             </div>
-            {isFreeDoctor ? (
+            {isFreeTier ? (
               <>
                 <p className="text-xl sm:text-2xl font-bold text-gray-300 select-none">—</p>
                 <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
@@ -323,7 +451,7 @@ const CRMDashboard = () => {
           </div>
         ))}
       </div>
-      {isFreeDoctor && (
+      {isFreeTier && (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-teal-100 p-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -388,7 +516,7 @@ const CRMDashboard = () => {
 
           {/* Appointment Rows */}
           <div className="divide-y divide-gray-50 min-h-0">
-            {isFreeDoctor ? (
+            {isFreeTier ? (
               <UpgradeBanner t={t} label={t('crm.dashboard.upgradeAppointments', 'Upgrade to see your live appointment schedule')} />
             ) : filteredAppointments.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-gray-400">
@@ -453,7 +581,7 @@ const CRMDashboard = () => {
               <Link to="/crm/appointments" className="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
                 {t('crm.dashboard.viewAll')} <ChevronRight className="w-3.5 h-3.5" />
               </Link>
-              {!isFreeDoctor && totalPages > 1 && (
+              {!isFreeTier && totalPages > 1 && (
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
@@ -518,7 +646,7 @@ const CRMDashboard = () => {
                 {MOCK_URGENT_NOTES.filter((n) => !n.read).length} new
               </span>
             </div>
-            {isFreeDoctor ? (
+            {isFreeTier ? (
               <UpgradeBanner t={t} label={t('crm.dashboard.upgradeAlerts', 'Upgrade to receive real-time alerts')} />
             ) : (
               <>
@@ -563,7 +691,7 @@ const CRMDashboard = () => {
               </div>
               <span className="text-xs font-semibold text-emerald-600">€8,400</span>
             </div>
-            {isFreeDoctor ? (
+            {isFreeTier ? (
               <UpgradeBanner t={t} label={t('crm.dashboard.upgradeRevenue', 'Upgrade to track your weekly revenue')} />
             ) : (
               <div className="px-5 py-4">
@@ -603,7 +731,7 @@ const CRMDashboard = () => {
               </div>
               <Link to="/crm/patients" className="text-xs font-semibold text-teal-600 hover:text-teal-700">{t('crm.dashboard.viewAll')}</Link>
             </div>
-            {isFreeDoctor ? (
+            {isFreeTier ? (
               <UpgradeBanner t={t} label={t('crm.dashboard.upgradePatients', 'Upgrade to see your recent patients')} />
             ) : (
               <div className="divide-y divide-gray-50">
