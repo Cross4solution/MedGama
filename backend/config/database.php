@@ -47,7 +47,7 @@ return [
             'driver' => 'mysql',
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
+            'port' => env('DB_PORT', '4000'),
             'database' => env('DB_DATABASE', 'laravel'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
@@ -59,7 +59,20 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => (function () {
+                    // 1) Explicit env override (e.g. Railway / Render secret)
+                    if ($ca = env('MYSQL_ATTR_SSL_CA')) {
+                        return $ca;
+                    }
+                    // 2) System CA bundle fallback (macOS / Alpine / Ubuntu)
+                    foreach (['/etc/ssl/cert.pem', '/etc/ssl/certs/ca-certificates.crt', '/etc/pki/tls/certs/ca-bundle.crt'] as $path) {
+                        if (file_exists($path)) {
+                            return $path;
+                        }
+                    }
+                    // 3) No cert found — skip SSL CA (connection may still work on private networks)
+                    return null;
+                })(),
             ]) : [],
         ],
 

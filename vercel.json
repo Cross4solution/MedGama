@@ -31,8 +31,8 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://medagama-production.up.railway.app/api/:path*" },
-    { "source": "/storage/:path*", "destination": "https://medagama-production.up.railway.app/storage/:path*" },
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/api/:path*", "destination": "https://medagama-backend.onrender.com/api/:path*" },
+    { "source": "/storage/:path*", "destination": "https://medagama-backend.onrender.com/storage/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

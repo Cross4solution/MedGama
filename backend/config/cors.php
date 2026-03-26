@@ -19,9 +19,14 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => array_filter(array_map('trim', explode(',', env('CORS_ALLOWED_ORIGINS', 'http://localhost:3000')))),
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        // Vercel preview & production deployments
+        '#^https://[\w-]+\.vercel\.app$#',
+        // Custom domain (set CORS_ALLOWED_ORIGINS in .env for production)
+        ...(env('CORS_ALLOWED_PATTERN') ? ['#' . env('CORS_ALLOWED_PATTERN') . '#'] : []),
+    ],
 
     'allowed_headers' => ['*'],
 
