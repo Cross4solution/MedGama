@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getRedirectFromLoginResult } from '../utils/authRedirect';
 import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff, Phone, Loader2, Heart, Building2 } from 'lucide-react';
 import PhoneVerification from '../components/auth/PhoneVerification';
 import TermsPopup from '../components/auth/TermsPopup';
@@ -67,7 +68,7 @@ const DoctorLogin = () => {
               try { localStorage.setItem('google_access_token', access_token); } catch {}
               const applied = applyApiAuth?.(data);
               try { localStorage.setItem('google_user', JSON.stringify(applied?.user || data?.user || data?.data?.user || data)); } catch {}
-              navigate('/explore', { replace: true });
+              navigate(getRedirectFromLoginResult(data, '/crm'), { replace: true });
             } catch (e) {}
           }
         });
@@ -117,7 +118,8 @@ const DoctorLogin = () => {
       if (res?.requires_email_verification) {
         navigate('/verify-email', { replace: true });
       } else {
-        navigate('/explore', { replace: true });
+        // Redirect based on ACTUAL role — doctor page may also be used by admins/hospitals
+        navigate(getRedirectFromLoginResult(res, '/crm'), { replace: true });
       }
       return;
     } catch (err) {

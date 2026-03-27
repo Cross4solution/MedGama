@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { getRedirectFromLoginResult } from '../utils/authRedirect';
 import { Helmet } from 'react-helmet-async';
 import {
   Heart, Stethoscope, Building2, CheckCircle, Shield, Lock,
@@ -307,7 +308,8 @@ const LoginPage = ({ role = 'patient' }) => {
           navigate('/verify-email');
         } else {
           notify({ type: 'success', message: 'Login successful' });
-          navigate(config.redirectAfterLogin);
+          // Redirect based on ACTUAL role from API — not the login page's assumed role
+          navigate(getRedirectFromLoginResult(res, config.redirectAfterLogin));
         }
       } else if (currentPage === 'register') {
         const isClinicRole = formData.role === 'clinic';

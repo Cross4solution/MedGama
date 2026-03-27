@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getRedirectFromLoginResult, getRedirectForRole } from '../utils/authRedirect';
 import { Building2, Users, Calendar, Video, Shield, Lock, Eye, EyeOff, Phone, Loader2, Heart, Stethoscope } from 'lucide-react';
 import PhoneVerification from '../components/auth/PhoneVerification';
 import TermsPopup from '../components/auth/TermsPopup';
@@ -19,14 +20,10 @@ const ClinicLogin = () => {
   const [showPrivacyPopup, setShowPrivacyPopup] = useState(false);
   const { t } = useTranslation();
 
-  // If user is already logged in (doctor/clinic), skip login form
+  // If user is already logged in, redirect to their own dashboard
   useEffect(() => {
     if (user) {
-      if (user.role !== 'clinic') {
-        // Switch role to clinic (e.g. doctor → clinic)
-        login({ ...user, id: user.id || 'clinic-1', role: 'clinic', name: user.name || 'Clinic' });
-      }
-      navigate('/clinic-edit', { replace: true });
+      navigate(getRedirectForRole(user?.role_id || user?.role || 'clinic'), { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -50,7 +47,8 @@ const ClinicLogin = () => {
       if (res?.requires_email_verification) {
         navigate('/verify-email', { replace: true });
       } else {
-        navigate('/explore', { replace: true });
+        // Redirect based on ACTUAL role — clinic page may also be used by hospitals/doctors
+        navigate(getRedirectFromLoginResult(res, '/crm'), { replace: true });
       }
     } catch (err) {
       const backendErrors = err?.errors || err?.data?.errors || err?.response?.data?.errors;
@@ -70,12 +68,12 @@ const ClinicLogin = () => {
     { icon: Video, text: t('auth.featureTelehealthSchedule') },
   ];
 
-  const handlePhoneVerified = (verifiedPhone) => {
-    navigate('/explore', { replace: true });
+  const handlePhoneVerified = () => {
+    navigate(getRedirectForRole(user?.role_id || user?.role || 'clinic'), { replace: true });
   };
 
   const handlePhoneSkip = () => {
-    navigate('/explore', { replace: true });
+    navigate(getRedirectForRole(user?.role_id || user?.role || 'clinic'), { replace: true });
   };
 
   // Phone verification screen
