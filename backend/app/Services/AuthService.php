@@ -92,15 +92,23 @@ class AuthService
             return $user;
         });
 
-        // Hospital users are always auto-verified — admin-provisioned accounts never need email verification
-        $isHospital = ($data['role_id'] ?? '') === 'hospital';
+        // Roles that NEVER need email verification during register:
+        //   • hospital    → admin-provisioned accounts
+        //   • clinic / clinicOwner → business accounts, verified by admin
+        //   • superAdmin / saasAdmin → platform operators
+        $roleId = $data['role_id'] ?? 'patient';
+        $isAutoVerifyRole = in_array($roleId, ['hospital', 'clinic', 'clinicOwner', 'superAdmin', 'saasAdmin']);
 
-        // In demo/log mode, auto-verify email so users go straight to dashboard
+        // In demo/log mode, also auto-verify patients and doctors so testing is frictionless
         $isDemoMail = in_array(config('mail.default'), ['log', 'array']);
-        if ($isHospital || $isDemoMail) {
+
+        $autoVerified = $isAutoVerifyRole || $isDemoMail;
+
+        if ($autoVerified) {
             $user->update(['email_verified' => true, 'email_verification_code' => null]);
             $user->refresh();
         } else {
+            // Only patient and doctor get the verification email
             $this->sendVerificationEmail($user->email, $verificationCode, $user->fullname);
         }
 
@@ -113,7 +121,7 @@ class AuthService
             \Log::warning('Welcome notification failed: ' . $e->getMessage());
         }
 
-        return ['user' => $user, 'token' => $token, 'auto_verified' => $isDemoMail];
+        return ['user' => $user, 'token' => $token, 'auto_verified' => $autoVerified];
     }
 
     /**
@@ -144,8 +152,9 @@ class AuthService
 
         $user->update(['last_login' => now()]);
 
-        // Auto-verify hospital users on first login — they are admin-created, not self-registered
-        if ($user->role_id === 'hospital' && !$user->email_verified) {
+        // Auto-verify non-patient/non-doctor roles on first login (admin-provisioned or no verification required)
+        $noVerificationRoles = ['hospital', 'clinic', 'clinicOwner', 'superAdmin', 'saasAdmin'];
+        if (in_array($user->role_id, $noVerificationRoles) && !$user->email_verified) {
             $user->update([
                 'email_verified'          => true,
                 'email_verification_code' => null,
@@ -155,12 +164,13 @@ class AuthService
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
-        // Hospital users never require email verification — they are admin-provisioned accounts
-        $requiresEmailVerification = $user->role_id !== 'hospital' && !$user->email_verified;
+        // Login NEVER redirects to email verification — verification is a register-only flow
+        // for patients and doctors. All other roles are always auto-verified.
+        $requiresEmailVerification = false;
 
         return [
-            'user'                       => $user,
-            'token'                      => $token,
+            'user'                        => $user,
+            'token'                       => $token,
             'requires_email_verification' => $requiresEmailVerification,
         ];
     }

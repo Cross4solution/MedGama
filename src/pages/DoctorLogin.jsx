@@ -115,12 +115,8 @@ const DoctorLogin = () => {
     }
     try {
       const res = await login(formData.email, formData.password);
-      if (res?.requires_email_verification) {
-        navigate('/verify-email', { replace: true });
-      } else {
-        // Redirect based on ACTUAL role — doctor page may also be used by admins/hospitals
-        navigate(getRedirectFromLoginResult(res, '/crm'), { replace: true });
-      }
+      // Login never requires email verification — verification is register-only for patients/doctors
+      navigate(getRedirectFromLoginResult(res, '/crm'), { replace: true });
       return;
     } catch (err) {
       const backendErrors = err?.errors || err?.data?.errors || err?.response?.data?.errors;

@@ -44,12 +44,8 @@ const ClinicLogin = () => {
     }
     try {
       const res = await login(formData.email, formData.password);
-      if (res?.requires_email_verification) {
-        navigate('/verify-email', { replace: true });
-      } else {
-        // Redirect based on ACTUAL role — clinic page may also be used by hospitals/doctors
-        navigate(getRedirectFromLoginResult(res, '/crm'), { replace: true });
-      }
+      // Login never requires email verification — verification is register-only for patients/doctors
+      navigate(getRedirectFromLoginResult(res, '/crm'), { replace: true });
     } catch (err) {
       const backendErrors = err?.errors || err?.data?.errors || err?.response?.data?.errors;
       if (backendErrors?.email) setError(Array.isArray(backendErrors.email) ? backendErrors.email[0] : backendErrors.email);

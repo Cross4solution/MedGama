@@ -101,13 +101,9 @@ const AuthPages = () => {
       setSubmitting(true);
       if (currentPage === 'login') {
         const res = await login(formData.email, formData.password, !!formData.rememberMe);
-        if (res?.requires_email_verification) {
-          notify({ type: 'info', message: 'Lütfen e-posta adresinizi doğrulayın.' });
-          navigate('/verify-email');
-        } else {
-          notify({ type: 'success', message: 'Giriş başarılı!' });
-          navigate('/dashboard');
-        }
+        // Login never requires email verification — verification is register-only for patients/doctors
+        notify({ type: 'success', message: 'Giriş başarılı!' });
+        navigate('/dashboard');
       } else if (currentPage === 'register') {
         const roleId = formData.role === 'clinic' ? 'clinicOwner' : formData.role;
         const doRegister = roleId === 'doctor' ? registerDoctor : register;
