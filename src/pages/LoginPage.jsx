@@ -330,7 +330,9 @@ const LoginPage = ({ role = 'patient' }) => {
         } catch {}
         const needsVerification = res?.requires_email_verification ?? res?.data?.requires_email_verification;
         const redirectTo = isClinicRole ? '/clinic/onboarding' : config.redirectAfterLogin;
-        if (needsVerification === false) {
+        // Only patient and doctor need email verification — clinic/hospital are auto-verified
+        const roleNeedsVerify = ['patient', 'doctor'].includes(formData.role || 'patient');
+        if (needsVerification === false || !roleNeedsVerify) {
           notify({ type: 'success', message: res?.message || res?.data?.message || 'Registration successful!' });
           navigate(redirectTo);
         } else {

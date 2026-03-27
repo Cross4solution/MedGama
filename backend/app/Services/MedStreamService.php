@@ -83,8 +83,8 @@ class MedStreamService
                 )
                 ->selectRaw($this->engagementScoreSql() . ' as engagement_score');
 
-            // Primary: followed authors first
-            $query->orderByRaw('is_followed_author DESC NULLS LAST');
+            // Primary: followed authors first (MySQL-compatible NULLS LAST equivalent)
+            $query->orderByRaw('(is_followed_author IS NULL) ASC, is_followed_author DESC');
 
             // Secondary: by sort mode
             if ($sort === 'top') {
