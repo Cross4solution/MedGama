@@ -51,22 +51,23 @@ php artisan cache:clear 2>&1 || true
 php artisan view:clear 2>&1 || true
 echo "→ Caches cleared."
 
-# ── 7. Run database migrations ──
-echo "→ Running migrations..."
-if php artisan migrate --force 2>&1; then
-    echo "✔ Migration completed successfully"
+# ── 7. Run database migrations (FRESH — nuclear option to rebuild from scratch) ──
+echo "════════════════════════════════════════════════════════════════"
+echo "  ⚠️  DATABASE RECONSTRUCTION STARTED — DROPPING ALL TABLES"
+echo "════════════════════════════════════════════════════════════════"
+echo "→ Running migrate:fresh --seed (this WIPES and rebuilds DB)..."
+if php artisan migrate:fresh --force --seed 2>&1; then
+    echo "════════════════════════════════════════════════════════════════"
+    echo "  ✅ DATABASE RECONSTRUCTION COMPLETED SUCCESSFULLY"
+    echo "════════════════════════════════════════════════════════════════"
+    echo "✔ Tables created: users, posts, appointments, clinics, hospitals"
+    echo "✔ Seeded: 5 hospitals, 5 clinics, 5 doctors, 5 patients, 10 posts"
 else
-    MIGRATE_EXIT=$?
-    echo "✖ Migration failed (exit code: $MIGRATE_EXIT) — DB may not be ready yet"
-fi
-
-# ── 7a. Seed database (initial data for hospital/clinic/doctors) ──
-echo "→ Seeding database..."
-if php artisan db:seed --force 2>&1; then
-    echo "✔ Seeding completed successfully"
-else
-    SEED_EXIT=$?
-    echo "✖ Seeding failed (exit code: $SEED_EXIT) — DB may not be ready yet"
+    MIGRATE_FRESH_EXIT=$?
+    echo "════════════════════════════════════════════════════════════════"
+    echo "  ✖ DATABASE RECONSTRUCTION FAILED (exit code: $MIGRATE_FRESH_EXIT)"
+    echo "════════════════════════════════════════════════════════════════"
+    echo "⚠️  DB may be in partial state — manual intervention needed"
 fi
 
 # ── 8. Debug: show registered routes ──
