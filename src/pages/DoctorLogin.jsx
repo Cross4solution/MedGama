@@ -149,11 +149,11 @@ const DoctorLogin = () => {
 
   const handlePhoneVerified = (verifiedPhone) => {
     // Phone verified — proceed to Medstream
-    navigate('/explore', { replace: true });
+    navigate('/medstream', { replace: true });
   };
 
   const handlePhoneSkip = () => {
-    navigate('/explore', { replace: true });
+    navigate('/medstream', { replace: true });
   };
 
   // Phone verification screen
@@ -260,7 +260,7 @@ const DoctorLogin = () => {
                 </p>
                 <div id="googleBtnDoctor" className="w-full flex items-center justify-center"></div>
                 <button type="button"
-                        onClick={() => { login({ id: 'doc-demo-1', role: 'doctor', name: 'Demo Doctor' }); navigate('/explore', { replace: true }); }}
+                        onClick={() => { login({ id: 'doc-demo-1', role: 'doctor', name: 'Demo Doctor' }); navigate('/medstream', { replace: true }); }}
                         className="w-full bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 border border-gray-200 transition-colors">
                   {t('auth.tryDemoDoctor')}
                 </button>

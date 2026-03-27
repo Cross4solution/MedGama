@@ -645,7 +645,7 @@ const Header = () => {
             const roleLabel = String(role).charAt(0).toUpperCase() + String(role).slice(1);
             // Mirror mobile dropdown with SidebarPatient menu for patients
             const patientItems = [
-              { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/medstream', label: 'Medstream', icon: Video },
               { to: '/saved', label: 'Saved Posts', icon: Bookmark },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
@@ -654,7 +654,7 @@ const Header = () => {
               { to: '/profile', label: 'Profile', icon: User },
             ];
             const doctorItems = [
-              { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/medstream', label: 'Medstream', icon: Video },
               { to: '/saved', label: 'Saved Posts', icon: Bookmark },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
@@ -663,7 +663,7 @@ const Header = () => {
               { to: '/profile', label: 'Profile', icon: User },
             ];
             const clinicItems = [
-              { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/medstream', label: 'Medstream', icon: Video },
               { to: '/saved', label: 'Saved Posts', icon: Bookmark },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },

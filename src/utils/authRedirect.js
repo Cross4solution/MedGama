@@ -27,7 +27,7 @@ export function getRedirectForRole(roleId) {
     default:
       // All other roles land in Medstream (main platform)
       // Professionals can reach CRM via the sidebar bridge link
-      return '/explore';
+      return '/medstream';
   }
 }
 
@@ -35,7 +35,7 @@ export function getRedirectForRole(roleId) {
  * Extract role from AuthContext login() response and return target path.
  * Falls back to `fallback` if role cannot be determined.
  */
-export function getRedirectFromLoginResult(res, fallback = '/explore') {
+export function getRedirectFromLoginResult(res, fallback = '/medstream') {
   const roleId =
     res?.data?.user?.role_id ||
     res?.data?.user?.role    ||

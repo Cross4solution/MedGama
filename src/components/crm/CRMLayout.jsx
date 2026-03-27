@@ -386,7 +386,7 @@ const CRMLayout = ({ children }) => {
     }
     const role = user?.role || user?.role_id || 'patient';
     if (!CRM_ALLOWED_ROLES.includes(role)) {
-      navigate('/explore', { replace: true });
+      navigate('/medstream', { replace: true });
     }
   }, [user, navigate]);
 

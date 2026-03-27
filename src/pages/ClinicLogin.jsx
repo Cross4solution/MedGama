@@ -179,7 +179,7 @@ const ClinicLogin = () => {
                   <button type="button" onClick={() => setShowPrivacyPopup(true)} className="text-teal-500 hover:text-teal-600 underline underline-offset-2">{t('auth.privacyPolicy')}</button>
                 </p>
                 <button type="button"
-                        onClick={() => { login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }); navigate('/explore', { replace: true }); }}
+                        onClick={() => { login({ id: 'clinic-demo-1', role: 'clinic', name: 'Demo Clinic' }); navigate('/medstream', { replace: true }); }}
                         className="w-full bg-gray-50 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 border border-gray-200 transition-colors">
                   {t('auth.tryDemoClinic')}
                 </button>

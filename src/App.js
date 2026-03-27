@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigationType, useNavigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import SidebarPatient from './components/SidebarPatient';
 import { useAuth } from './context/AuthContext';
@@ -128,7 +128,7 @@ function AppContent() {
       '/': 'MedaGama',
       '/home': 'MedaGama',
       '/home-v2': 'MedaGama',
-      '/explore': 'MedStream | MedaGama',
+      '/medstream': 'MedStream | MedaGama',
       '/saved': 'Saved Posts | MedaGama',
       '/search': 'Search Doctors | MedaGama',
       '/doctors-departments': 'Doctors & Departments | MedaGama',
@@ -292,7 +292,7 @@ function AppContent() {
   const pagesWithOwnContainer = [
     '/profile', '/notifications', '/doctors-departments', '/search', 
     '/patient-home', '/telehealth', '/telehealth-appointment',
-    '/clinic', '/explore', '/post', '/doctor'
+    '/clinic', '/medstream', '/post', '/doctor'
   ];
   // Also hide header/footer on clinic onboarding
   const isClinicOnboarding = location.pathname === '/clinic/onboarding';
@@ -320,7 +320,9 @@ function AppContent() {
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />
         <Route path="/home-v2" element={<HomeV2 />} />
-        <Route path="/explore" element={<ExploreTimeline />} />
+        {/* Canonical URL: /medstream — /explore kept as backward-compat redirect */}
+        <Route path="/medstream" element={<ExploreTimeline />} />
+        <Route path="/explore" element={<Navigate to="/medstream" replace />} />
         <Route path="/saved" element={<SavedPosts />} />
         <Route path="/saved-clinics" element={<SavedClinics />} />
         <Route path="/search" element={<SearchResults />} />

@@ -77,7 +77,7 @@ const ROLE_CONFIG = {
     showStats: true,
     showGoogleLogin: true,
     googleBtnId: 'googleBtnDoctor',
-    redirectAfterLogin: '/explore',
+    redirectAfterLogin: '/medstream',
     placeholder: 'doctor@example.com',
     otherLogins: [
       { href: '/clinic-login', labelKey: 'nav.clinicLogin' },
