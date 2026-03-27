@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('language_catalog', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('code', 10)->unique();       // ISO 639-1: en, tr, de, ar …
-            $table->jsonb('name');                       // {"en": "Turkish", "tr": "Türkçe"}
+            $table->json('name');                       // {"en": "Turkish", "tr": "Türkçe"}
             $table->string('native_name', 100);          // Türkçe, العربية, Deutsch …
             $table->boolean('is_popular')->default(false);
             $table->boolean('is_active')->default(true);

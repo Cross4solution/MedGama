@@ -11,8 +11,8 @@ return new class extends Migration
         // ── Ticket Categories ──
         Schema::create('ticket_categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->jsonb('name');            // {"en": "Billing", "tr": "Faturalandırma"}
-            $table->jsonb('description')->nullable();
+            $table->json('name');            // {"en": "Billing", "tr": "Faturalandırma"}
+            $table->json('description')->nullable();
             $table->string('slug')->unique();
             $table->integer('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
@@ -48,7 +48,7 @@ return new class extends Migration
             $table->uuid('ticket_id')->index();
             $table->uuid('user_id')->index(); // who sent the message
             $table->text('body');
-            $table->jsonb('attachments')->nullable(); // [{filename, path, mime, size}]
+            $table->json('attachments')->nullable(); // [{filename, path, mime, size}]
             $table->boolean('is_internal')->default(false); // admin-only note
             $table->timestamps();
 
@@ -59,8 +59,8 @@ return new class extends Migration
         // ── FAQ ──
         Schema::create('faqs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->jsonb('question');  // {"en": "...", "tr": "..."}
-            $table->jsonb('answer');    // {"en": "...", "tr": "..."}
+            $table->json('question');  // {"en": "...", "tr": "..."}
+            $table->json('answer');    // {"en": "...", "tr": "..."}
             $table->string('category')->nullable();
             $table->integer('sort_order')->default(0);
             $table->boolean('is_published')->default(true);

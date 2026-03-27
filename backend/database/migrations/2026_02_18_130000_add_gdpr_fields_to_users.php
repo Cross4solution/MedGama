@@ -16,10 +16,10 @@ return new class extends Migration
                 $table->string('preferred_language', 10)->nullable()->after('country');
             }
             if (!Schema::hasColumn('users', 'medical_history')) {
-                $table->jsonb('medical_history')->nullable()->after('clinic_id');
+                $table->json('medical_history')->nullable()->after('clinic_id');
             }
             if (!Schema::hasColumn('users', 'notification_preferences')) {
-                $table->jsonb('notification_preferences')->nullable()->after('medical_history');
+                $table->json('notification_preferences')->nullable()->after('medical_history');
             }
         });
     }

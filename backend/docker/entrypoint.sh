@@ -53,11 +53,21 @@ echo "→ Caches cleared."
 
 # ── 7. Run database migrations ──
 echo "→ Running migrations..."
-php artisan migrate --force 2>&1 || echo "⚠ Migration failed (DB may not be ready yet)"
+if php artisan migrate --force 2>&1; then
+    echo "✔ Migration completed successfully"
+else
+    MIGRATE_EXIT=$?
+    echo "✖ Migration failed (exit code: $MIGRATE_EXIT) — DB may not be ready yet"
+fi
 
 # ── 7a. Seed database (initial data for hospital/clinic/doctors) ──
 echo "→ Seeding database..."
-php artisan db:seed --force 2>&1 || echo "⚠ Seeding failed (DB may not be ready yet)"
+if php artisan db:seed --force 2>&1; then
+    echo "✔ Seeding completed successfully"
+else
+    SEED_EXIT=$?
+    echo "✖ Seeding failed (exit code: $SEED_EXIT) — DB may not be ready yet"
+fi
 
 # ── 8. Debug: show registered routes ──
 echo "→ Registered routes (init/ping/health):"

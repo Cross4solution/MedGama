@@ -14,8 +14,8 @@ return new class extends Migration
             $table->string('action', 100);         // e.g. user.password_changed, patient_record.deleted
             $table->string('resource_type', 100);   // e.g. User, PatientRecord, SystemSetting
             $table->uuid('resource_id')->nullable();
-            $table->jsonb('old_values')->nullable();
-            $table->jsonb('new_values')->nullable();
+            $table->json('old_values')->nullable();
+            $table->json('new_values')->nullable();
             $table->string('ip_address', 45)->nullable();
             $table->string('user_agent', 500)->nullable();
             $table->text('description')->nullable();
