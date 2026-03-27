@@ -16,13 +16,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('clinics', function (Blueprint $table) {
-            $table->boolean('is_crm_active')->default(false)->after('is_active');
-            $table->timestamp('crm_expires_at')->nullable()->after('is_crm_active');
+            if (!Schema::hasColumn('clinics', 'is_crm_active')) {
+                $table->boolean('is_crm_active')->default(false)->after('is_active');
+            }
+            if (!Schema::hasColumn('clinics', 'crm_expires_at')) {
+                $table->timestamp('crm_expires_at')->nullable()->after('is_crm_active');
+            }
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_crm_active')->default(false)->after('is_active');
-            $table->timestamp('crm_expires_at')->nullable()->after('is_crm_active');
+            if (!Schema::hasColumn('users', 'is_crm_active')) {
+                $table->boolean('is_crm_active')->default(false)->after('is_active');
+            }
+            if (!Schema::hasColumn('users', 'crm_expires_at')) {
+                $table->timestamp('crm_expires_at')->nullable()->after('is_crm_active');
+            }
         });
     }
 
