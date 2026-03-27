@@ -91,12 +91,8 @@ class AuthController extends Controller
     {
         $result = $this->authService->login($request->validated());
 
+        // Login never requires email verification — that flow is register-only for patients/doctors
         $extra = ['token' => $result['token']];
-
-        if ($result['requires_email_verification']) {
-            $extra['requires_email_verification'] = true;
-            $extra['message'] = 'Please verify your email address.';
-        }
 
         return (new UserResource($result['user']))
             ->withExtra($extra)

@@ -303,14 +303,10 @@ const LoginPage = ({ role = 'patient' }) => {
       setSubmitting(true);
       if (currentPage === 'login') {
         const res = await login(formData.email, formData.password);
-        if (res?.requires_email_verification) {
-          notify({ type: 'info', message: 'Please verify your email address.' });
-          navigate('/verify-email');
-        } else {
-          notify({ type: 'success', message: 'Login successful' });
-          // Redirect based on ACTUAL role from API — not the login page's assumed role
-          navigate(getRedirectFromLoginResult(res, config.redirectAfterLogin));
-        }
+        // Login never requires email verification — verification is register-only for patients/doctors
+        notify({ type: 'success', message: 'Login successful' });
+        // Redirect based on ACTUAL role from API — not the login page's assumed role
+        navigate(getRedirectFromLoginResult(res, config.redirectAfterLogin));
       } else if (currentPage === 'register') {
         const isClinicRole = formData.role === 'clinic';
         const doRegister = formData.role === 'doctor' ? registerDoctor : register;
