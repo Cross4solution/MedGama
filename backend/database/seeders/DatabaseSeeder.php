@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Clinic;
+use App\Models\Hospital;
 use App\Models\Appointment;
 use App\Models\DoctorProfile;
 use Illuminate\Database\Seeder;
@@ -88,6 +89,40 @@ class DatabaseSeeder extends Seeder
                 );
             } catch (\Throwable $e) {
                 // Skip if table/columns don't match
+            }
+        }
+
+        // ── Test Hospital (L4) ──
+        $hospitalUser = User::updateOrCreate(
+            ['email' => 'hospital@medagama.com'],
+            [
+                'password'        => 'hospital123',
+                'fullname'        => 'Memorial Hastanesi Yöneticisi',
+                'role_id'         => 'hospital',
+                'user_level'      => 4,
+                'mobile'          => '+905001234572',
+                'email_verified'  => true,   // Hospital users are always pre-verified
+                'mobile_verified' => true,
+                'is_verified'     => true,
+                'is_active'       => true,
+                'is_crm_active'   => true,
+            ]
+        );
+
+        if (class_exists(Hospital::class)) {
+            try {
+                $hospital = Hospital::updateOrCreate(
+                    ['codename' => 'memorial-hastanesi'],
+                    [
+                        'name'       => 'Memorial Hastanesi',
+                        'owner_id'   => $hospitalUser->id,
+                        'is_active'  => true,
+                        'is_verified'=> true,
+                    ]
+                );
+                $hospitalUser->update(['hospital_id' => $hospital->id]);
+            } catch (\Throwable $e) {
+                // Skip if Hospital table columns don't match yet
             }
         }
 
@@ -182,6 +217,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('║    Admin    → admin@medagama.com     / 123asd123              ║');
         $this->command->info('║    Clinic   → clinic@medagama.com    / clinic123              ║');
         $this->command->info('║    Doctor   → doctor@medagama.com    / doctor123              ║');
+        $this->command->info('║    Hospital → hospital@medagama.com  / hospital123            ║');
         $this->command->info('║    Patient  → patient@medagama.com   / patient123             ║');
         $this->command->info('║    Patient2 → zeynep@medagama.com    / patient123             ║');
         $this->command->info('╚══════════════════════════════════════════════════════════════╝');

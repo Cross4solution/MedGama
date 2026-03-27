@@ -25,7 +25,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'email', 'password', 'fullname', 'avatar', 'profile_image', 'role_id', 'user_level', 'mobile',
-        'mobile_verified', 'email_verified', 'email_verification_code',
+        'mobile_verified', 'email_verified', 'email_verified_at', 'email_verification_code',
         'password_reset_code', 'password_reset_expires_at',
         'city_id', 'country_id', 'country', 'preferred_language',
         'date_of_birth', 'gender', 'is_verified', 'verification_status', 'admin_verification_note',
@@ -44,6 +44,7 @@ class User extends Authenticatable
             'password'                 => 'hashed',
             'mobile_verified'          => 'boolean',
             'email_verified'           => 'boolean',
+            'email_verified_at'        => 'datetime',
             'is_verified'              => 'boolean',
             'is_active'                => 'boolean',
             'date_of_birth'            => 'date',

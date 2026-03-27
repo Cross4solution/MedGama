@@ -92,9 +92,12 @@ class AuthService
             return $user;
         });
 
+        // Hospital users are always auto-verified — admin-provisioned accounts never need email verification
+        $isHospital = ($data['role_id'] ?? '') === 'hospital';
+
         // In demo/log mode, auto-verify email so users go straight to dashboard
         $isDemoMail = in_array(config('mail.default'), ['log', 'array']);
-        if ($isDemoMail) {
+        if ($isHospital || $isDemoMail) {
             $user->update(['email_verified' => true, 'email_verification_code' => null]);
             $user->refresh();
         } else {
@@ -141,12 +144,24 @@ class AuthService
 
         $user->update(['last_login' => now()]);
 
+        // Auto-verify hospital users on first login — they are admin-created, not self-registered
+        if ($user->role_id === 'hospital' && !$user->email_verified) {
+            $user->update([
+                'email_verified'          => true,
+                'email_verification_code' => null,
+            ]);
+            $user->refresh();
+        }
+
         $token = $user->createToken('auth-token')->plainTextToken;
+
+        // Hospital users never require email verification — they are admin-provisioned accounts
+        $requiresEmailVerification = $user->role_id !== 'hospital' && !$user->email_verified;
 
         return [
             'user'                       => $user,
             'token'                      => $token,
-            'requires_email_verification' => !$user->email_verified,
+            'requires_email_verification' => $requiresEmailVerification,
         ];
     }
 
@@ -229,6 +244,7 @@ class AuthService
 
         $user->update([
             'email_verified'          => true,
+            'email_verified_at'       => now(),
             'email_verification_code' => null,
         ]);
 
