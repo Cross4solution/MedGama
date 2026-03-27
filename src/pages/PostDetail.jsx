@@ -375,7 +375,7 @@ export default function PostDetail() {
     if (window.history.length > 1) {
       navigate(-1);
     } else {
-      navigate('/explore', { replace: true });
+      navigate('/medstream', { replace: true });
     }
   }, [navigate]);
 
