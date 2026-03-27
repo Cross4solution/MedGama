@@ -1,15 +1,16 @@
 /**
  * Role-based post-login redirect.
  *
- * Regardless of which login page the user arrived from,
- * they are always sent to the correct dashboard for their role.
+ * Product hierarchy:
+ *  • Medstream (/explore) is the MAIN platform — social feed, content, interactions.
+ *  • CRM is an EXTRA professional tool accessed from inside Medstream.
  *
- * Role hierarchy:
- *  L5 — superAdmin / saasAdmin  → /admin
- *  L4 — hospital                → /crm
- *  L3 — clinicOwner / clinic    → /crm
- *  L2 — doctor                  → /crm
- *  L1 — patient                 → /explore
+ * Login landing rules:
+ *  L5 — superAdmin / saasAdmin  → /admin   (platform management)
+ *  L4 — hospital                → /crm     (management-only role, no social feed)
+ *  L3 — clinicOwner / clinic    → /explore (enter Medstream, then use CRM bridge)
+ *  L2 — doctor                  → /explore (enter Medstream, then use CRM bridge)
+ *  L1 — patient                 → /explore (Medstream consumer)
  */
 export function getRedirectForRole(roleId) {
   switch (roleId) {
@@ -17,14 +18,15 @@ export function getRedirectForRole(roleId) {
     case 'saasAdmin':
       return '/admin';
     case 'hospital':
+      // Hospital is a management-only role — land directly in CRM panel
       return '/crm';
     case 'clinicOwner':
     case 'clinic':
-      return '/crm';
     case 'doctor':
-      return '/crm';
     case 'patient':
     default:
+      // All other roles land in Medstream (main platform)
+      // Professionals can reach CRM via the sidebar bridge link
       return '/explore';
   }
 }
