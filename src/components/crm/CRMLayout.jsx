@@ -59,6 +59,10 @@ import { getEcho } from '../../lib/echo';
 import { useToast } from '../../context/ToastContext';
 import { playNotificationSound } from '../../utils/notificationSound';
 
+/**
+ * Navigation sections builder.
+ * @param {number} userLevel — 1=Patient, 2=Doctor, 3=Clinic, 4=Hospital, 5=Admin
+ */
 const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = false } = {}) => {
   const isClinic = role === 'clinic' || role === 'clinicOwner';
   const isHospital = role === 'hospital';
@@ -103,13 +107,11 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
     { label: t('crm.sidebar.smartCalendar', 'Smart Calendar'), icon: CalendarCheck, path: '/crm/calendar' },
     { label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients' },
   ];
-  // Doctor-only: examination
   if (!isClinic) {
     mainItems.push({ label: t('crm.sidebar.examination'), icon: Stethoscope, path: '/crm/examination' });
   }
   mainItems.push({ label: t('crm.sidebar.telehealth', 'Telehealth'), icon: Video, path: '/crm/telehealth', locked: !isPremium });
   mainItems.push({ label: t('crm.sidebar.contactInbox', 'Contact Messages'), icon: Mail, path: '/crm/contact-inbox', locked: !isPremium, badge: chatUnreadCount > 0 ? chatUnreadCount : undefined });
-  // Clinic-only: staff management (open) + clinic manager panel (locked)
   if (isClinic) {
     mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
     mainItems.push({ label: t('crm.sidebar.clinicManager', 'Clinic Management'), icon: Building2, path: '/crm/clinic-manager', locked: !isPremium });
@@ -216,7 +218,7 @@ const CRMLayout = ({ children }) => {
   const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout, isPro } = useAuth();
+  const { user, logout, isPro, hasCrmSubscription, userLevel } = useAuth();
   const { t } = useTranslation();
   const { notify: showToast } = useToast();
   const userRole = user?.role || user?.role_id || 'doctor';
@@ -244,19 +246,19 @@ const CRMLayout = ({ children }) => {
     return () => clearInterval(interval);
   }, [user, fetchChatUnread]);
 
-  const NAV_SECTIONS = getNavSections(t, userRole, isVerified, { chatUnreadCount: chatUnread, isPremium: isPro });
+  const NAV_SECTIONS = getNavSections(t, userRole, isVerified, { chatUnreadCount: chatUnread, userLevel });
 
-  // ── CRM Access Gate: non-CRM roles are redirected; free-tier users see gated content ──
+  // ── CRM Access Gate: only users with CRM subscription can access CRM (except /crm/billing for upgrade) ──
   useEffect(() => {
     if (!user) return;
-    const role = user?.role || user?.role_id || 'patient';
-    // Clinics and doctors can always access CRM (they see gated/free content)
-    if (['doctor', 'clinic', 'clinicOwner', 'superAdmin', 'saasAdmin'].includes(role)) return;
-    // Non-CRM roles redirect out
-    if (!CRM_ALLOWED_ROLES.includes(role)) {
-      navigate('/explore', { replace: true });
+    if (hasCrmSubscription) return;
+    const isBilling = location.pathname === '/crm/billing';
+    if (!isBilling) {
+      // Redirect to appropriate dashboard based on user level
+      const dashboardMap = { 3: '/clinic/dashboard', 4: '/dashboard', 2: '/doctor/dashboard' };
+      navigate(dashboardMap[userLevel] || '/dashboard', { replace: true });
     }
-  }, [user, location.pathname, navigate]);
+  }, [user, hasCrmSubscription, userLevel, location.pathname, navigate]);
 
   // ── Notification state ──
   const [notifOpen, setNotifOpen] = useState(false);
@@ -384,7 +386,7 @@ const CRMLayout = ({ children }) => {
     }
     const role = user?.role || user?.role_id || 'patient';
     if (!CRM_ALLOWED_ROLES.includes(role)) {
-      navigate('/explore', { replace: true });
+      navigate('/medstream', { replace: true });
     }
   }, [user, navigate]);
 
@@ -402,11 +404,9 @@ const CRMLayout = ({ children }) => {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <Link to="/" className="flex items-center gap-2.5 px-5 py-5 border-b border-gray-800/50 hover:bg-white/5 transition-colors">
-        <img
-          src="/images/logo/favicon-icon-white.png"
-          alt="MedaGama"
-          className="h-9 w-auto object-contain"
-        />
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-teal-500/20">
+          <Stethoscope className="w-5 h-5 text-white" />
+        </div>
         <div>
           <span className="text-base font-bold text-white tracking-tight">MedaGama</span>
           <span className="block text-[10px] text-gray-400 font-medium tracking-wider uppercase">CRM Platform</span>
@@ -419,31 +419,23 @@ const CRMLayout = ({ children }) => {
           <div key={section.title}>
             {section.items.map((item) => {
                 const active = isActive(item.path);
-                const isLocked = item.locked;
                 return (
                   <Link
                     key={item.path}
-                    to={isLocked ? '/crm/billing' : item.path}
-                    onClick={(e) => {
-                      setSidebarOpen(false);
-                    }}
+                    to={item.path}
+                    onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 group ${
-                      isLocked
-                        ? 'text-gray-600 opacity-50 hover:opacity-70'
-                        : active
-                          ? 'bg-teal-500/15 text-teal-400 shadow-sm'
-                          : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      active
+                        ? 'bg-teal-500/15 text-teal-400 shadow-sm'
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
                     }`}
-                    style={isLocked ? { filter: 'blur(0.5px)' } : undefined}
                   >
-                    <item.icon className={`w-[18px] h-[18px] flex-shrink-0 ${
-                      isLocked ? 'text-gray-600' : active ? 'text-teal-400' : 'text-gray-500 group-hover:text-gray-300'
-                    }`} />
+                    <item.icon className={`w-[18px] h-[18px] flex-shrink-0 ${active ? 'text-teal-400' : 'text-gray-500 group-hover:text-gray-300'}`} />
                     <span className="flex-1">{item.label}</span>
-                    {isLocked && (
-                      <Lock className="w-3.5 h-3.5 text-amber-500/70 flex-shrink-0" />
+                    {item.locked && (
+                      <Lock className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
                     )}
-                    {!isLocked && item.badge && (
+                    {item.badge && (
                       <span className="min-w-[20px] h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1.5">
                         {item.badge}
                       </span>

@@ -44,12 +44,25 @@ class AuthService
         $verificationCode = '123456';
 
         $user = DB::transaction(function () use ($data, $clinicId, $verificationCode) {
+            // Determine user_level from role_id
+            $roleId = $data['role_id'] ?? 'patient';
+            $levelMap = [
+                'patient'     => 1,
+                'doctor'      => 2,
+                'clinicOwner' => 3,
+                'clinic'      => 3,
+                'hospital'    => 4,
+                'superAdmin'  => 5,
+                'saasAdmin'   => 5,
+            ];
+
             $user = User::create([
                 'email'                   => $data['email'],
                 'password'                => $data['password'],
                 'fullname'                => $data['fullname'],
                 'mobile'                  => $data['mobile'] ?? null,
-                'role_id'                 => $data['role_id'] ?? 'patient',
+                'role_id'                 => $roleId,
+                'user_level'              => $levelMap[$roleId] ?? 1,
                 'city_id'                 => $data['city_id'] ?? null,
                 'country_id'              => $data['country_id'] ?? null,
                 'date_of_birth'           => $data['date_of_birth'] ?? null,
@@ -70,18 +83,21 @@ class AuthService
                     'fullname'    => $clinicName,
                     'codename'    => \Illuminate\Support\Str::slug($clinicName) . '-' . \Illuminate\Support\Str::random(4),
                     'owner_id'    => $user->id,
-                    'is_verified' => true,
+                    'is_verified' => false,
                     'is_active'   => true,
                 ]);
-                $user->update(['clinic_id' => $clinic->id, 'is_verified' => true]);
+                $user->update(['clinic_id' => $clinic->id]);
             }
 
             return $user;
         });
 
+        // Hospital users are always auto-verified — admin-provisioned accounts never need email verification
+        $isHospital = ($data['role_id'] ?? '') === 'hospital';
+
         // In demo/log mode, auto-verify email so users go straight to dashboard
         $isDemoMail = in_array(config('mail.default'), ['log', 'array']);
-        if ($isDemoMail) {
+        if ($isHospital || $isDemoMail) {
             $user->update(['email_verified' => true, 'email_verification_code' => null]);
             $user->refresh();
         } else {
@@ -128,12 +144,24 @@ class AuthService
 
         $user->update(['last_login' => now()]);
 
+        // Auto-verify hospital users on first login — they are admin-created, not self-registered
+        if ($user->role_id === 'hospital' && !$user->email_verified) {
+            $user->update([
+                'email_verified'          => true,
+                'email_verification_code' => null,
+            ]);
+            $user->refresh();
+        }
+
         $token = $user->createToken('auth-token')->plainTextToken;
+
+        // Hospital users never require email verification — they are admin-provisioned accounts
+        $requiresEmailVerification = $user->role_id !== 'hospital' && !$user->email_verified;
 
         return [
             'user'                       => $user,
             'token'                      => $token,
-            'requires_email_verification' => !$user->email_verified,
+            'requires_email_verification' => $requiresEmailVerification,
         ];
     }
 
@@ -216,6 +244,7 @@ class AuthService
 
         $user->update([
             'email_verified'          => true,
+            'email_verified_at'       => now(),
             'email_verification_code' => null,
         ]);
 

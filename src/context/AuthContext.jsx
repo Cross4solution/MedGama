@@ -348,7 +348,8 @@ export function AuthProvider({ children }) {
   const isPro = useMemo(() => {
     if (!user) return false;
     const role = user.role_id || user.role || '';
-    if (['superAdmin', 'saasAdmin'].includes(role)) return true;
+    // Admins and hospitals always get full access — no upgrade gates
+    if (['superAdmin', 'saasAdmin', 'hospital'].includes(role)) return true;
     if (['doctor', 'clinicOwner', 'clinic'].includes(role)) {
       return !!(user.subscription_plan === 'pro' || user.is_pro);
     }

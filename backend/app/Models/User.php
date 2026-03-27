@@ -24,8 +24,8 @@ class User extends Authenticatable
     public $incrementing = false;
 
     protected $fillable = [
-        'email', 'password', 'fullname', 'avatar', 'profile_image', 'role_id', 'mobile',
-        'mobile_verified', 'email_verified', 'email_verification_code',
+        'email', 'password', 'fullname', 'avatar', 'profile_image', 'role_id', 'user_level', 'mobile',
+        'mobile_verified', 'email_verified', 'email_verified_at', 'email_verification_code',
         'password_reset_code', 'password_reset_expires_at',
         'city_id', 'country_id', 'country', 'preferred_language',
         'date_of_birth', 'gender', 'is_verified', 'verification_status', 'admin_verification_note',
@@ -33,8 +33,6 @@ class User extends Authenticatable
         'medical_history', 'notification_preferences', 'clinic_name',
         'is_crm_active', 'crm_expires_at', 'added_by_clinic',
     ];
-
-    protected $appends = ['level'];
 
     protected $hidden = [
         'password', 'remember_token',
@@ -46,6 +44,7 @@ class User extends Authenticatable
             'password'                 => 'hashed',
             'mobile_verified'          => 'boolean',
             'email_verified'           => 'boolean',
+            'email_verified_at'        => 'datetime',
             'is_verified'              => 'boolean',
             'is_active'                => 'boolean',
             'date_of_birth'            => 'date',
@@ -55,6 +54,7 @@ class User extends Authenticatable
             'is_crm_active'            => 'boolean',
             'crm_expires_at'           => 'datetime',
             'added_by_clinic'          => 'boolean',
+            'user_level'               => 'integer',
         ];
     }
 
@@ -97,26 +97,6 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: fn (?string $value) => self::resolveStoragePath($value),
-        );
-    }
-
-    /**
-     * MedaGama Seviye (Level) Hiyerarşisi (S1-S4)
-     * Master Brief §1 uyarınca hesaplanır.
-     */
-    protected function level(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                return match ($this->role_id) {
-                    'patient'     => 1,
-                    'doctor'      => $this->clinic_id ? 3 : 2, // S2: Independent, S3: Clinic Hub
-                    'clinicOwner' => 3,
-                    'hospital'    => 4,
-                    'superAdmin', 'saasAdmin' => 0,
-                    default       => 1,
-                };
-            }
         );
     }
 
@@ -170,13 +150,6 @@ class User extends Authenticatable
     public function ownedClinic()
     {
         return $this->hasOne(Clinic::class, 'owner_id');
-    }
-
-    public function branches()
-    {
-        return $this->belongsToMany(Branch::class, 'doctor_branches', 'doctor_id', 'branch_id')
-            ->withPivot('schedule')
-            ->withTimestamps();
     }
 
     public function verificationRequests()
@@ -328,5 +301,51 @@ class User extends Authenticatable
     public function isHospital(): bool
     {
         return $this->role_id === 'hospital';
+    }
+
+    public function isClinicLevel(): bool
+    {
+        return (int) $this->user_level === 3;
+    }
+
+    public function isHospitalLevel(): bool
+    {
+        return (int) $this->user_level === 4;
+    }
+
+    public function isAdminLevel(): bool
+    {
+        return (int) $this->user_level >= 5;
+    }
+
+    /**
+     * Check if user has an active CRM subscription.
+     * Admins always have access. Clinic owners check their clinic. Doctors check clinic or own flag.
+     */
+    public function hasCrmSubscription(): bool
+    {
+        if ($this->isAdmin()) return true;
+
+        if ($this->isClinicOwner()) {
+            $clinic = $this->ownedClinic ?? $this->clinic;
+            return $clinic && (bool) $clinic->is_crm_active
+                && (!$clinic->crm_expires_at || now()->lessThanOrEqualTo($clinic->crm_expires_at));
+        }
+
+        if ($this->isDoctor()) {
+            if ($this->clinic_id && $this->clinic) {
+                return (bool) $this->clinic->is_crm_active
+                    && (!$this->clinic->crm_expires_at || now()->lessThanOrEqualTo($this->clinic->crm_expires_at));
+            }
+            return (bool) $this->is_crm_active
+                && (!$this->crm_expires_at || now()->lessThanOrEqualTo($this->crm_expires_at));
+        }
+
+        if ($this->isHospital()) {
+            return (bool) $this->is_crm_active
+                && (!$this->crm_expires_at || now()->lessThanOrEqualTo($this->crm_expires_at));
+        }
+
+        return false;
     }
 }

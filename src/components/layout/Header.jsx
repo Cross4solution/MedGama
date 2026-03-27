@@ -337,7 +337,8 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  {/* Notification Bell */}
+                  {/* Notification Bell — Hidden on Main Site Pages (only show in CRM/Admin) */}
+                  {(pathname.startsWith('/crm') || pathname.startsWith('/admin')) && (
                   <div className="relative" ref={notifRef}>
                     <button
                       onClick={() => setNotifOpen(p => !p)}
@@ -443,6 +444,7 @@ const Header = () => {
                       </div>
                     )}
                   </div>
+                  )}
 
                   {/* Avatar + Name + Dropdown */}
                   <div className="relative" ref={profileRef}>
@@ -499,6 +501,18 @@ const Header = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* Hospital CRM Button — Premium Style, Far Right */}
+                  {user?.role_id === 'hospital' || user?.role === 'hospital' ? (
+                    <button
+                      onClick={() => { navigate('/crm'); }}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600 text-white text-sm font-semibold hover:from-teal-700 hover:via-teal-800 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                      title="Go to Management Portal"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>Hospital Panel</span>
+                    </button>
+                  ) : null}
                 </>
               )}
             </div>
@@ -631,7 +645,7 @@ const Header = () => {
             const roleLabel = String(role).charAt(0).toUpperCase() + String(role).slice(1);
             // Mirror mobile dropdown with SidebarPatient menu for patients
             const patientItems = [
-              { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/medstream', label: 'Medstream', icon: Video },
               { to: '/saved', label: 'Saved Posts', icon: Bookmark },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
@@ -640,7 +654,7 @@ const Header = () => {
               { to: '/profile', label: 'Profile', icon: User },
             ];
             const doctorItems = [
-              { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/medstream', label: 'Medstream', icon: Video },
               { to: '/saved', label: 'Saved Posts', icon: Bookmark },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
@@ -649,7 +663,7 @@ const Header = () => {
               { to: '/profile', label: 'Profile', icon: User },
             ];
             const clinicItems = [
-              { to: '/explore', label: 'Medstream', icon: Video },
+              { to: '/medstream', label: 'Medstream', icon: Video },
               { to: '/saved', label: 'Saved Posts', icon: Bookmark },
               { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
               { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
@@ -657,7 +671,7 @@ const Header = () => {
               { to: '/notifications', label: 'Notifications', icon: Bell },
               { to: '/profile', label: 'Profile', icon: User },
             ];
-            const showCRM = role === 'doctor' || role === 'clinic' || role === 'clinicOwner';
+            const showCRM = isPro && (role === 'doctor' || role === 'clinic' || role === 'clinicOwner');
             const items = role === 'clinic' ? clinicItems : (role === 'doctor' ? doctorItems : patientItems);
             return (
               <nav>

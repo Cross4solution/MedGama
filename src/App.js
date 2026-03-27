@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigationType, useNavigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import SidebarPatient from './components/SidebarPatient';
 import { useAuth } from './context/AuthContext';
@@ -19,7 +19,6 @@ const OnboardingWizard = React.lazy(() => import('./pages/DoctorOnboarding.jsx')
 const HomeV2 = React.lazy(() => import('./pages/HomeV2'));
 const ExploreTimeline = React.lazy(() => import('./pages/ExploreTimeline'));
 const ClinicDetailPage = React.lazy(() => import('./pages/ClinicDetailPage'));
-const HospitalProfilePage = React.lazy(() => import('./pages/HospitalProfilePage'));
 const DoctorChatPage = React.lazy(() => import('./pages/DoctorChatPage'));
 const TelehealthAppointmentPage = React.lazy(() => import('./pages/TelehealthAppointmentPage'));
 const TelehealthPage = React.lazy(() => import('./pages/TelehealthPage'));
@@ -54,6 +53,8 @@ const SavedClinics = React.lazy(() => import('./pages/SavedClinics'));
 const ClinicOnboarding = React.lazy(() => import('./pages/ClinicOnboarding'));
 const ClinicDashboard = React.lazy(() => import('./pages/ClinicDashboard'));
 const ClinicTeam = React.lazy(() => import('./pages/ClinicTeam'));
+const BrowseTreatments = React.lazy(() => import('./pages/BrowseTreatments'));
+const BrowseClinics = React.lazy(() => import('./pages/BrowseClinics'));
 
 // CRM Pages
 const CRMLayout = React.lazy(() => import('./components/crm/CRMLayout'));
@@ -113,8 +114,9 @@ function AppContent() {
   // Bridge for toast SPA navigation (ToastContext uses this)
   React.useEffect(() => { window.__TOAST_NAVIGATE = navigate; return () => { delete window.__TOAST_NAVIGATE; }; }, [navigate]);
 
-  // Show sidebar for all logged-in users (including patients), but not on CRM or verify-email pages
-  const hasSidebar = !!user && !location.pathname.startsWith('/crm') && !location.pathname.startsWith('/admin') && location.pathname !== '/verify-email';
+  // Show sidebar for all logged-in users (including patients), but not on CRM, admin, hospital, or verify-email pages
+  const isHospital = user?.role_id === 'hospital' || user?.role === 'hospital';
+  const hasSidebar = !!user && !isHospital && !location.pathname.startsWith('/crm') && !location.pathname.startsWith('/admin') && location.pathname !== '/verify-email';
 
   React.useEffect(() => {
     const path = String(location.pathname || '/');
@@ -126,7 +128,7 @@ function AppContent() {
       '/': 'MedaGama',
       '/home': 'MedaGama',
       '/home-v2': 'MedaGama',
-      '/explore': 'MedStream | MedaGama',
+      '/medstream': 'MedStream | MedaGama',
       '/saved': 'Saved Posts | MedaGama',
       '/search': 'Search Doctors | MedaGama',
       '/doctors-departments': 'Doctors & Departments | MedaGama',
@@ -290,7 +292,7 @@ function AppContent() {
   const pagesWithOwnContainer = [
     '/profile', '/notifications', '/doctors-departments', '/search', 
     '/patient-home', '/telehealth', '/telehealth-appointment',
-    '/clinic', '/explore', '/post', '/doctor'
+    '/clinic', '/medstream', '/post', '/doctor'
   ];
   // Also hide header/footer on clinic onboarding
   const isClinicOnboarding = location.pathname === '/clinic/onboarding';
@@ -318,14 +320,15 @@ function AppContent() {
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />
         <Route path="/home-v2" element={<HomeV2 />} />
-        <Route path="/explore" element={<ExploreTimeline />} />
+        {/* Canonical URL: /medstream — /explore kept as backward-compat redirect */}
+        <Route path="/medstream" element={<ExploreTimeline />} />
+        <Route path="/explore" element={<Navigate to="/medstream" replace />} />
         <Route path="/saved" element={<SavedPosts />} />
         <Route path="/saved-clinics" element={<SavedClinics />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/doctors-departments" element={<DoctorsDepartments />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />
-        <Route path="/hospital/:codename" element={<HospitalProfilePage />} />
         <Route path="/clinic-edit" element={<ClinicProfileEdit />} />
         <Route path="/doctor-chat" element={<DoctorChatPage />} />
         <Route path="/telehealth" element={<TelehealthPage />} />
@@ -384,12 +387,14 @@ function AppContent() {
         <Route path="/crm/faq" element={<CRMLayout><CRMFaq /></CRMLayout>} />
         <Route path="/crm/staff" element={<CRMLayout><CRMStaff /></CRMLayout>} />
         <Route path="/crm/clinic-manager" element={<CRMLayout><CRMClinicManager /></CRMLayout>} />
-        <Route path="/crm/branches" element={<CRMLayout><CRMBranches /></CRMLayout>} />
         <Route path="/crm/reviews" element={<CRMLayout><CRMReviews /></CRMLayout>} />
         <Route path="/crm/contact-inbox" element={<CRMLayout><CRMContactInbox /></CRMLayout>} />
         <Route path="/crm/prescriptions" element={<CRMLayout><CRMPrescriptions /></CRMLayout>} />
         <Route path="/crm/messages" element={<CRMLayout><CRMMessages /></CRMLayout>} />
         <Route path="/crm/documents" element={<CRMLayout><CRMDocuments /></CRMLayout>} />
+        <Route path="/crm/branches" element={<CRMLayout><CRMBranches /></CRMLayout>} />
+        <Route path="/browse/treatments" element={<BrowseTreatments />} />
+        <Route path="/browse/clinics" element={<BrowseClinics />} />
         <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
         {/* Admin Routes — nested under AdminLayout (Outlet pattern, zero remount) */}
         <Route path="/admin" element={<AdminLayout />}>

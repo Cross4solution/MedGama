@@ -101,7 +101,7 @@ export default function HomeV2() {
                         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                       }
                     }}
-                    className="mt-6 inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/95 backdrop-blur-sm text-teal-600 rounded-lg text-xs font-normal hover:bg-teal-50 transition-all border-[0.5px] border-teal-400/60 hover:border-teal-500 shadow-sm hover:shadow-md"
+                    className="mt-6 inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/95 backdrop-blur-sm text-teal-600 rounded-full text-xs font-normal hover:bg-teal-50 transition-all border-[0.5px] border-teal-400/60 hover:border-teal-500 shadow-sm hover:shadow-md"
                   >
                     <Compass className="w-3.5 h-3.5" />
                     <span>Explore</span>
@@ -119,7 +119,7 @@ export default function HomeV2() {
       <CoreBoxes />
 
       {/* Medstream timeline preview between CoreBoxes and Popular Treatments */}
-      <TimelinePreview limit={8} onViewAll={() => navigate('/explore')} />
+      <TimelinePreview limit={8} onViewAll={() => navigate('/medstream')} />
 
 
       {/* Popular Clinics reusable showcase */}
