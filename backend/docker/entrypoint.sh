@@ -55,6 +55,10 @@ echo "→ Caches cleared."
 echo "→ Running migrations..."
 php artisan migrate --force 2>&1 || echo "⚠ Migration failed (DB may not be ready yet)"
 
+# ── 7a. Seed database (initial data for hospital/clinic/doctors) ──
+echo "→ Seeding database..."
+php artisan db:seed --force 2>&1 || echo "⚠ Seeding failed (DB may not be ready yet)"
+
 # ── 8. Debug: show registered routes ──
 echo "→ Registered routes (init/ping/health):"
 php artisan route:list 2>&1 | grep -iE "init|ping|health" || echo "(none matched)"
