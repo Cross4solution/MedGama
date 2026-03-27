@@ -9,20 +9,22 @@ return new class extends Migration
     public function up(): void
     {
         // MedStream Posts — Professional feed content
-        Schema::create('med_stream_posts', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('author_id')->index();
-            $table->uuid('clinic_id')->nullable()->index();
-            $table->enum('post_type', ['text', 'image', 'video'])->default('text');
-            $table->text('content')->nullable();
-            $table->string('media_url')->nullable(); // External URL only
-            $table->boolean('is_hidden')->default(false);
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
+        if (!Schema::hasTable('med_stream_posts')) {
+            Schema::create('med_stream_posts', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->uuid('author_id')->index();
+                $table->uuid('clinic_id')->nullable()->index();
+                $table->enum('post_type', ['text', 'image', 'video'])->default('text');
+                $table->text('content')->nullable();
+                $table->string('media_url')->nullable(); // External URL only
+                $table->boolean('is_hidden')->default(false);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
 
-            $table->foreign('author_id')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('clinic_id')->references('id')->on('clinics')->nullOnDelete();
-        });
+                $table->foreign('author_id')->references('id')->on('users')->nullOnDelete();
+                $table->foreign('clinic_id')->references('id')->on('clinics')->nullOnDelete();
+            });
+        }
 
         // MedStream Comments
         Schema::create('med_stream_comments', function (Blueprint $table) {
