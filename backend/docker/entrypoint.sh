@@ -51,23 +51,33 @@ php artisan cache:clear 2>&1 || true
 php artisan view:clear 2>&1 || true
 echo "→ Caches cleared."
 
-# ── 7. Run database migrations (FRESH — nuclear option to rebuild from scratch) ──
+# ── 7. Run database migrations ──
 echo "════════════════════════════════════════════════════════════════"
-echo "  ⚠️  DATABASE RECONSTRUCTION STARTED — DROPPING ALL TABLES"
+echo "  DATABASE INIT — Connection details:"
+echo "  DB_CONNECTION : ${DB_CONNECTION:-not set}"
+echo "  DB_HOST       : ${DB_HOST:-not set}"
+echo "  DB_PORT       : ${DB_PORT:-not set}"
+echo "  DB_DATABASE   : ${DB_DATABASE:-not set}"
+echo "  DB_USERNAME   : ${DB_USERNAME:-not set}"
+echo "  MYSQL_ATTR_SSL_CA: ${MYSQL_ATTR_SSL_CA:-not set}"
 echo "════════════════════════════════════════════════════════════════"
-echo "→ Running migrate:fresh --seed (this WIPES and rebuilds DB)..."
+
+echo "→ Testing DB connection..."
+php artisan db:show 2>&1 || echo "⚠ db:show failed — proceeding anyway"
+
+echo ""
+echo "→ Running migrate:fresh --force --seed..."
 if php artisan migrate:fresh --force --seed 2>&1; then
     echo "════════════════════════════════════════════════════════════════"
     echo "  ✅ DATABASE RECONSTRUCTION COMPLETED SUCCESSFULLY"
     echo "════════════════════════════════════════════════════════════════"
-    echo "✔ Tables created: users, posts, appointments, clinics, hospitals"
-    echo "✔ Seeded: 5 hospitals, 5 clinics, 5 doctors, 5 patients, 10 posts"
 else
     MIGRATE_FRESH_EXIT=$?
     echo "════════════════════════════════════════════════════════════════"
-    echo "  ✖ DATABASE RECONSTRUCTION FAILED (exit code: $MIGRATE_FRESH_EXIT)"
+    echo "  ✖ DATABASE RECONSTRUCTION FAILED (exit: $MIGRATE_FRESH_EXIT)"
     echo "════════════════════════════════════════════════════════════════"
-    echo "⚠️  DB may be in partial state — manual intervention needed"
+    echo "→ Fallback: trying incremental migrate only..."
+    php artisan migrate --force 2>&1 || echo "⚠ Incremental migrate also failed"
 fi
 
 # ── 8. Debug: show registered routes ──

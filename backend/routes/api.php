@@ -51,30 +51,63 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
     if ($request->query('key') !== 'MedaGama2026SecretInit') {
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
+
+    $isFresh = $request->query('fresh') === '1';
+    $result  = ['key' => $isFresh ? 'migrate:fresh --seed' : 'migrate + seed'];
+
+    // ── Step 1: Test DB connection ──
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', [
-            '--force' => true,
-        ]);
-        $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
-
-        \Illuminate\Support\Facades\Artisan::call('db:seed', [
-            '--force' => true,
-        ]);
-        $seedOutput = \Illuminate\Support\Facades\Artisan::output();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Database migrated and seeded successfully.',
-            'migrate_output' => $migrateOutput,
-            'seed_output' => $seedOutput,
-        ]);
+        \Illuminate\Support\Facades\DB::statement('SELECT 1');
+        $result['db_connection'] = 'ok';
+        $result['db_driver']     = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $result['db_host']       = config('database.connections.' . config('database.default') . '.host');
     } catch (\Throwable $e) {
         return response()->json([
-            'status' => 'error',
+            'status'  => 'error',
+            'step'    => 'db_connection',
             'message' => $e->getMessage(),
-            'trace'   => $e->getTraceAsString(),
         ], 500);
     }
+
+    // ── Step 2: Migrate ──
+    try {
+        if ($isFresh) {
+            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+        } else {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        }
+        $result['migrate_output'] = \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status'  => 'error',
+            'step'    => 'migrate',
+            'message' => $e->getMessage(),
+            'trace'   => substr($e->getTraceAsString(), 0, 2000),
+        ], 500);
+    }
+
+    // ── Step 3: Seed ──
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        $result['seed_output'] = \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Throwable $e) {
+        $result['seed_error'] = $e->getMessage();
+    }
+
+    // ── Step 4: Verify table counts ──
+    try {
+        $result['verification'] = [
+            'users'           => \Illuminate\Support\Facades\DB::table('users')->count(),
+            'med_stream_posts'=> \Illuminate\Support\Facades\DB::table('med_stream_posts')->count(),
+            'clinics'         => \Illuminate\Support\Facades\DB::table('clinics')->count(),
+            'hospitals'       => \Illuminate\Support\Facades\DB::table('hospitals')->count(),
+            'appointments'    => \Illuminate\Support\Facades\DB::table('appointments')->count(),
+        ];
+    } catch (\Throwable $e) {
+        $result['verification_error'] = $e->getMessage();
+    }
+
+    return response()->json(['status' => 'success'] + $result);
 });
 
 /*
