@@ -465,8 +465,8 @@ const LoginPage = ({ role = 'patient' }) => {
               : 'border-rose-200 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-400 text-rose-700';
             return (
               <a key={link.href} href={link.href}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 ${colors} text-sm font-semibold transition-all`}>
-                <Icon className="w-4 h-4" />
+                className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border-2 ${colors} text-sm font-semibold transition-all`}>
+                <Icon className="w-5 h-5" />
                 {t(link.labelKey)}
               </a>
             );
