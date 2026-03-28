@@ -187,12 +187,16 @@ const ClinicLogin = () => {
               <div className="mt-4 pt-3 border-t border-gray-100">
                 <p className="text-xs text-gray-500 text-center mb-2.5 font-medium">{t('auth.signInAsDifferentRole', 'Sign in as a different role')}</p>
                 <div className="flex gap-2">
-                  <a href="/doctor-login" className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700 text-sm font-semibold transition-all">
-                    <Stethoscope className="w-4 h-4" />
+                  <a href="/doctor-login" className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border-2 border-blue-200 bg-blue-50/60 hover:bg-blue-100 hover:border-blue-400 text-blue-700 text-sm font-semibold transition-all">
+                    <Stethoscope className="w-5 h-5" />
                     {t('nav.doctorLogin')}
                   </a>
-                  <a href="/login" className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-rose-200 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-400 text-rose-700 text-sm font-semibold transition-all">
-                    <Heart className="w-4 h-4" />
+                  <a href="/hospital-login" className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border-2 border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700 text-sm font-semibold transition-all">
+                    <Building2 className="w-5 h-5" />
+                    {t('nav.hospitalLogin')}
+                  </a>
+                  <a href="/login" className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border-2 border-rose-200 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-400 text-rose-700 text-sm font-semibold transition-all">
+                    <Heart className="w-5 h-5" />
                     {t('nav.patientLogin')}
                   </a>
                 </div>

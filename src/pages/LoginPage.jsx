@@ -47,7 +47,6 @@ const ROLE_CONFIG = {
     otherLogins: [
       { href: '/doctor-login', labelKey: 'nav.doctorLogin' },
       { href: '/clinic-login', labelKey: 'nav.clinicLogin' },
-      { href: '/hospital-login', labelKey: 'nav.hospitalLogin' },
     ],
   },
   doctor: {
