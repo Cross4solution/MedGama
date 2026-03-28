@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('body');
             $table->string('type')->default('info'); // info, warning, success, error
-            $table->json('target_roles')->default('[]'); // [] = all, ["doctor","patient",...]
+            $table->json('target_roles')->nullable(); // [] = all, ["doctor","patient",...] — JSON cannot have DEFAULT literal in MySQL/TiDB
             $table->boolean('is_active')->default(true);
             $table->boolean('is_dismissible')->default(true);
             $table->timestamp('starts_at')->nullable();

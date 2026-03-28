@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('system_settings', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('key', 100)->unique();
-            $table->text('value')->default('');
+            $table->text('value')->nullable(); // TEXT cannot have DEFAULT in MySQL/TiDB
             $table->string('type', 20)->default('boolean'); // boolean, string, integer, json
             $table->string('group', 50)->default('general');
             $table->string('label', 255)->default('');
