@@ -66,18 +66,18 @@ echo "→ Testing DB connection..."
 php artisan db:show 2>&1 || echo "⚠ db:show failed — proceeding anyway"
 
 echo ""
-echo "→ Running migrate:fresh --force --seed..."
-if php artisan migrate:fresh --force --seed 2>&1; then
+echo "→ Running incremental migrations (production mode)..."
+if php artisan migrate --force 2>&1; then
     echo "════════════════════════════════════════════════════════════════"
-    echo "  ✅ DATABASE RECONSTRUCTION COMPLETED SUCCESSFULLY"
+    echo "  ✅ MIGRATIONS COMPLETED SUCCESSFULLY"
     echo "════════════════════════════════════════════════════════════════"
 else
-    MIGRATE_FRESH_EXIT=$?
+    MIGRATE_EXIT=$?
     echo "════════════════════════════════════════════════════════════════"
-    echo "  ✖ DATABASE RECONSTRUCTION FAILED (exit: $MIGRATE_FRESH_EXIT)"
+    echo "  ⚠ MIGRATIONS FAILED (exit: $MIGRATE_EXIT)"
+    echo "  Note: If this is the FIRST deployment, use init-db endpoint:"
+    echo "  GET /api/system/init-db?key=MedaGama2026SecretInit&fresh=1"
     echo "════════════════════════════════════════════════════════════════"
-    echo "→ Fallback: trying incremental migrate only..."
-    php artisan migrate --force 2>&1 || echo "⚠ Incremental migrate also failed"
 fi
 
 # ── 8. Debug: show registered routes ──
