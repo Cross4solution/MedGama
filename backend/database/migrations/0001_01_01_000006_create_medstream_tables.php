@@ -38,7 +38,7 @@ return new class extends Migration
 
             $table->foreign('post_id')->references('id')->on('med_stream_posts')->cascadeOnDelete();
             $table->foreign('author_id')->references('id')->on('users')->nullOnDelete();
-            $table->unique(['post_id', 'author_id', 'content']); // Prevent duplicate comments
+            // Duplicate comment prevention handled at application layer (validator)
         });
 
         // MedStream Likes — One per user per post
