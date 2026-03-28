@@ -44,23 +44,19 @@ Route::get('/health', function () {
 });
 
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  TEMPORARY: One-time DB seed route — DELETE AFTER USE           ║
-// ║  Usage: GET or POST /api/system/init-db?key=MedaGama2026SecretInit ║
+// ║  TEMPORARY: One-time DB init route — DELETE AFTER USE           ║
+// ║  Usage: GET /api/system/init-db?key=MedaGama2026SecretInit      ║
+// ║         GET /api/system/init-db?key=...&fresh=1  → migrate:fresh║
+// ║  Check: GET /api/system/init-db-status                          ║
 // ╚══════════════════════════════════════════════════════════════════╝
 Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Request $request) {
     if ($request->query('key') !== 'MedaGama2026SecretInit') {
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
 
-    $isFresh = $request->query('fresh') === '1';
-    $result  = ['key' => $isFresh ? 'migrate:fresh --seed' : 'migrate + seed'];
-
-    // ── Step 1: Test DB connection ──
+    // ── Step 1: Test DB connection first (fast, <1s) ──
     try {
         \Illuminate\Support\Facades\DB::statement('SELECT 1');
-        $result['db_connection'] = 'ok';
-        $result['db_driver']     = \Illuminate\Support\Facades\DB::connection()->getDriverName();
-        $result['db_host']       = config('database.connections.' . config('database.default') . '.host');
     } catch (\Throwable $e) {
         return response()->json([
             'status'  => 'error',
@@ -69,45 +65,58 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
         ], 500);
     }
 
-    // ── Step 2: Migrate ──
-    try {
-        if ($isFresh) {
-            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
-        } else {
-            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        }
-        $result['migrate_output'] = \Illuminate\Support\Facades\Artisan::output();
-    } catch (\Throwable $e) {
-        return response()->json([
-            'status'  => 'error',
-            'step'    => 'migrate',
-            'message' => $e->getMessage(),
-            'trace'   => substr($e->getTraceAsString(), 0, 2000),
-        ], 500);
+    $isFresh  = $request->query('fresh') === '1';
+    $logFile  = '/tmp/init-db.log';
+    $artisan  = base_path('artisan');
+    $phpBin   = PHP_BINARY;
+
+    // Build command: migrate:fresh --seed OR migrate + seed
+    if ($isFresh) {
+        $cmd = "$phpBin $artisan migrate:fresh --force --seed >> $logFile 2>&1";
+    } else {
+        $cmd = "$phpBin $artisan migrate --force >> $logFile 2>&1 && $phpBin $artisan db:seed --force >> $logFile 2>&1";
     }
 
-    // ── Step 3: Seed ──
-    try {
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        $result['seed_output'] = \Illuminate\Support\Facades\Artisan::output();
-    } catch (\Throwable $e) {
-        $result['seed_error'] = $e->getMessage();
+    // Wipe old log and fire background process (returns immediately)
+    file_put_contents($logFile, "=== DB INIT STARTED: " . date('Y-m-d H:i:s') . " ===\n");
+    exec("nohup sh -c " . escapeshellarg($cmd) . " &");
+
+    return response()->json([
+        'status'   => 'started',
+        'message'  => 'Migration running in background. Check /api/system/init-db-status for progress.',
+        'mode'     => $isFresh ? 'migrate:fresh --seed' : 'migrate + seed',
+        'db_host'  => config('database.connections.' . config('database.default') . '.host'),
+        'log_file' => $logFile,
+    ]);
+});
+
+// ── Status check: tail the background migration log ──
+Route::get('/system/init-db-status', function (\Illuminate\Http\Request $request) {
+    if ($request->query('key') !== 'MedaGama2026SecretInit') {
+        return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
 
-    // ── Step 4: Verify table counts ──
+    $logFile = '/tmp/init-db.log';
+    $log     = file_exists($logFile) ? file_get_contents($logFile) : 'No log yet.';
+
+    // Check table counts if migration completed
+    $counts = [];
     try {
-        $result['verification'] = [
-            'users'           => \Illuminate\Support\Facades\DB::table('users')->count(),
-            'med_stream_posts'=> \Illuminate\Support\Facades\DB::table('med_stream_posts')->count(),
-            'clinics'         => \Illuminate\Support\Facades\DB::table('clinics')->count(),
-            'hospitals'       => \Illuminate\Support\Facades\DB::table('hospitals')->count(),
-            'appointments'    => \Illuminate\Support\Facades\DB::table('appointments')->count(),
+        $counts = [
+            'users'            => \Illuminate\Support\Facades\DB::table('users')->count(),
+            'med_stream_posts' => \Illuminate\Support\Facades\DB::table('med_stream_posts')->count(),
+            'clinics'          => \Illuminate\Support\Facades\DB::table('clinics')->count(),
+            'hospitals'        => \Illuminate\Support\Facades\DB::table('hospitals')->count(),
+            'appointments'     => \Illuminate\Support\Facades\DB::table('appointments')->count(),
         ];
     } catch (\Throwable $e) {
-        $result['verification_error'] = $e->getMessage();
+        $counts = ['error' => $e->getMessage()];
     }
 
-    return response()->json(['status' => 'success'] + $result);
+    return response()->json([
+        'log'    => $log,
+        'counts' => $counts,
+    ]);
 });
 
 /*
