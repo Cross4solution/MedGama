@@ -54,40 +54,59 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
 
-    // ── Step 1: Test DB connection first (fast, <1s) ──
+    // Allow unlimited execution — nginx already set to 300s
+    set_time_limit(0);
+    ignore_user_abort(true);
+
+    // ── Step 1: Test DB connection ──
     try {
         \Illuminate\Support\Facades\DB::statement('SELECT 1');
+        $dbHost = config('database.connections.' . config('database.default') . '.host');
+    } catch (\Throwable $e) {
+        return response()->json(['status' => 'error', 'step' => 'db_connection', 'message' => $e->getMessage()], 500);
+    }
+
+    $isFresh = $request->query('fresh') === '1';
+    $result  = ['db_host' => $dbHost, 'mode' => $isFresh ? 'migrate:fresh --seed' : 'migrate + seed'];
+
+    // ── Step 2: Migrate ──
+    try {
+        if ($isFresh) {
+            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+        } else {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        }
+        $result['migrate_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
     } catch (\Throwable $e) {
         return response()->json([
             'status'  => 'error',
-            'step'    => 'db_connection',
+            'step'    => 'migrate',
             'message' => $e->getMessage(),
-        ], 500);
+            'trace'   => substr($e->getTraceAsString(), 0, 3000),
+        ] + $result, 500);
     }
 
-    $isFresh  = $request->query('fresh') === '1';
-    $logFile  = '/tmp/init-db.log';
-    $artisan  = base_path('artisan');
-    $phpBin   = PHP_BINARY;
-
-    // Build command: migrate:fresh --seed OR migrate + seed
-    if ($isFresh) {
-        $cmd = "$phpBin $artisan migrate:fresh --force --seed >> $logFile 2>&1";
-    } else {
-        $cmd = "$phpBin $artisan migrate --force >> $logFile 2>&1 && $phpBin $artisan db:seed --force >> $logFile 2>&1";
+    // ── Step 3: Seed ──
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        $result['seed_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        $result['seed_error'] = $e->getMessage();
     }
 
-    // Wipe old log and fire background process (returns immediately)
-    file_put_contents($logFile, "=== DB INIT STARTED: " . date('Y-m-d H:i:s') . " ===\n");
-    exec("nohup sh -c " . escapeshellarg($cmd) . " &");
+    // ── Step 4: Verify counts ──
+    try {
+        $result['counts'] = [
+            'users'            => \Illuminate\Support\Facades\DB::table('users')->count(),
+            'med_stream_posts' => \Illuminate\Support\Facades\DB::table('med_stream_posts')->count(),
+            'clinics'          => \Illuminate\Support\Facades\DB::table('clinics')->count(),
+            'hospitals'        => \Illuminate\Support\Facades\DB::table('hospitals')->count(),
+        ];
+    } catch (\Throwable $e) {
+        $result['counts_error'] = $e->getMessage();
+    }
 
-    return response()->json([
-        'status'   => 'started',
-        'message'  => 'Migration running in background. Check /api/system/init-db-status for progress.',
-        'mode'     => $isFresh ? 'migrate:fresh --seed' : 'migrate + seed',
-        'db_host'  => config('database.connections.' . config('database.default') . '.host'),
-        'log_file' => $logFile,
-    ]);
+    return response()->json(['status' => 'success'] + $result);
 });
 
 // ── Status check: tail the background migration log ──
