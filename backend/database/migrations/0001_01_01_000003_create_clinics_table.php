@@ -15,7 +15,7 @@ return new class extends Migration
                 $table->string('codename')->unique();
                 $table->string('fullname');
                 $table->string('avatar')->nullable();
-                $table->uuid('owner_id')->index();
+                $table->uuid('owner_id')->nullable()->index();
                 $table->string('address')->nullable();
                 $table->text('biography')->nullable();
                 $table->json('map_coordinates')->nullable(); // {lat, lng}

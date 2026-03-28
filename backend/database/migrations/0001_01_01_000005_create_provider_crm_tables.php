@@ -128,9 +128,9 @@ return new class extends Migration
         // Archived Clinic Records — When doctor leaves clinic
         Schema::create('archived_clinic_records', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('former_doctor_id')->index();
+            $table->uuid('former_doctor_id')->nullable()->index();
             $table->uuid('clinic_id')->index();
-            $table->uuid('archived_patient_id')->index();
+            $table->uuid('archived_patient_id')->nullable()->index();
             $table->json('record_references')->nullable(); // Array of patient_record IDs
             $table->date('archived_at')->nullable();
             $table->boolean('is_active')->default(true);

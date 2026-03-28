@@ -21,7 +21,7 @@ return new class extends Migration
         Schema::create('clinic_verifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('clinic_id')->index();
-            $table->uuid('submitted_by')->index(); // user who submitted
+            $table->uuid('submitted_by')->nullable()->index(); // user who submitted
 
             // 4 document paths
             $table->string('business_registration')->nullable();
