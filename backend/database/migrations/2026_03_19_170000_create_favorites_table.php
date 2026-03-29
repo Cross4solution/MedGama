@@ -21,28 +21,21 @@ return new class extends Migration
             $table->index(['favoritable_id', 'favoritable_type']);
         });
 
-        // Migrate existing clinic_favorites data (driver-aware for SQLite/MySQL/PostgreSQL)
+// Migrate existing clinic_favorites data (driver-aware)
         if (Schema::hasTable('clinic_favorites')) {
             $driver = DB::connection()->getDriverName();
-            if ($driver === 'pgsql') {
+            if ($driver === 'mysql') {
+                DB::statement("
+                    INSERT IGNORE INTO favorites (id, user_id, favoritable_id, favoritable_type, created_at, updated_at)
+                    SELECT id, user_id, clinic_id, 'clinic', created_at, updated_at
+                    FROM clinic_favorites
+                ");
+            } else {
                 DB::statement("
                     INSERT INTO favorites (id, user_id, favoritable_id, favoritable_type, created_at, updated_at)
                     SELECT id, user_id, clinic_id, 'clinic', created_at, updated_at
                     FROM clinic_favorites
                     ON CONFLICT DO NOTHING
-                ");
-            } elseif ($driver === 'sqlite') {
-                DB::statement("
-                    INSERT OR IGNORE INTO favorites (id, user_id, favoritable_id, favoritable_type, created_at, updated_at)
-                    SELECT id, user_id, clinic_id, 'clinic', created_at, updated_at
-                    FROM clinic_favorites
-                ");
-            } else {
-                // MySQL / TiDB
-                DB::statement("
-                    INSERT IGNORE INTO favorites (id, user_id, favoritable_id, favoritable_type, created_at, updated_at)
-                    SELECT id, user_id, clinic_id, 'clinic', created_at, updated_at
-                    FROM clinic_favorites
                 ");
             }
         }

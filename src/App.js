@@ -449,6 +449,12 @@ function OnboardingGate() {
         navigate('/onboarding', { replace: true });
       }
     }
+
+    // Reverse guard: if onboarding IS completed, never show onboarding page again
+    if ((isDoctor || isClinicOwner) && user.onboarding_completed === true && isOnboardingPage) {
+      const dash = isClinicOwner ? '/clinic/dashboard' : '/crm';
+      navigate(dash, { replace: true });
+    }
   }, [user, location.pathname, navigate]);
 
   return null;

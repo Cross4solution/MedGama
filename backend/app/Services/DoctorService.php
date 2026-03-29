@@ -35,7 +35,8 @@ class DoctorService
             ->where('role_id', 'doctor')
             ->where('is_active', true)
             ->with([
-                'doctorProfile:id,user_id,title,specialty,sub_specialties,experience_years,address,online_consultation,bio,languages,prices',
+                'doctorProfile:id,user_id,clinic_id,title,specialty,specialty_id,sub_specialties,experience_years,address,online_consultation,bio,languages,prices',
+                'doctorProfile.specialtyRelation:id,name',
                 'clinic:id,name,codename,avatar',
             ])
             ->select([
@@ -56,36 +57,21 @@ class DoctorService
                     TurkishStr::addNormalizedSearch($pq, 'specialty', $search, 'or');
                 });
 
-                // Also search translatable specialty names in the specialties table
-                $matchingSpecialtyIds = $this->findSpecialtyIdsByText($search);
-                if ($matchingSpecialtyIds) {
-                    $q->orWhereHas('doctorProfile', function ($pq) use ($matchingSpecialtyIds, $search) {
-                        // specialty field on profile may contain code or name
-                        $pq->where(function ($inner) use ($matchingSpecialtyIds, $search) {
-                            foreach ($matchingSpecialtyIds as $code) {
-                                $inner->orWhere('specialty', 'ilike', "%{$code}%");
-                            }
-                        });
+                // Also search by specialty_id FK (Single Source of Truth)
+                $matchingSpecIds = $this->findSpecialtyIdsByText($search);
+                if ($matchingSpecIds) {
+                    $q->orWhereHas('doctorProfile', function ($pq) use ($matchingSpecIds) {
+                        $pq->whereIn('specialty_id', $matchingSpecIds);
                     });
                 }
             });
         }
 
-        // ── Specialty ID (UUID from specialties table) ──
+        // ── Specialty ID (UUID — Single Source of Truth via FK) ──
         if ($specId = $filters['specialty_id'] ?? null) {
-            $spec = Specialty::find($specId);
-            if ($spec) {
-                // Match on specialty code or any translation of the name
-                $translations = $spec->getTranslations('name');
-                $query->whereHas('doctorProfile', function ($pq) use ($spec, $translations) {
-                    $pq->where(function ($inner) use ($spec, $translations) {
-                        $inner->where('specialty', 'ilike', "%{$spec->code}%");
-                        foreach ($translations as $val) {
-                            if ($val) $inner->orWhere('specialty', 'ilike', "%{$val}%");
-                        }
-                    });
-                });
-            }
+            $query->whereHas('doctorProfile', function ($pq) use ($specId) {
+                $pq->where('specialty_id', $specId);
+            });
         }
 
         // ── City ──
@@ -148,7 +134,7 @@ class DoctorService
     {
         $doctor = User::where('role_id', 'doctor')
             ->where('is_active', true)
-            ->with(['doctorProfile', 'clinic:id,name,fullname,codename,avatar,address,is_verified'])
+            ->with(['doctorProfile', 'doctorProfile.specialtyRelation:id,name', 'clinic:id,name,fullname,codename,avatar,address,is_verified'])
             ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
             ->find($id);
 
@@ -492,16 +478,13 @@ class DoctorService
 
     /**
      * Search specialties table for matching translatable names.
-     * Returns array of specialty codes.
+     * Returns array of specialty UUIDs (Single Source of Truth).
      */
     private function findSpecialtyIdsByText(string $search): array
     {
-        $locale = app()->getLocale();
-        $fallback = config('app.fallback_locale', 'en');
-
         return Specialty::active()
             ->get()
-            ->filter(function ($spec) use ($search, $locale, $fallback) {
+            ->filter(function ($spec) use ($search) {
                 $translations = $spec->getTranslations('name');
                 foreach ($translations as $val) {
                     if ($val && stripos($val, $search) !== false) {
@@ -510,7 +493,7 @@ class DoctorService
                 }
                 return false;
             })
-            ->pluck('code')
+            ->pluck('id')
             ->toArray();
     }
 }

@@ -41,6 +41,16 @@ class ClinicController extends Controller
         $clinic = Clinic::active()->where('codename', $codename)->firstOrFail();
         $clinic->load('owner:id,fullname,avatar');
 
+        // Load doctors with their profiles and specialty (Single Source of Truth)
+        $clinic->load(['doctors' => function ($q) {
+            $q->where('is_active', true)
+              ->select('id', 'fullname', 'avatar', 'clinic_id')
+              ->with(['doctorProfile' => function ($q2) {
+                  $q2->select('id', 'user_id', 'clinic_id', 'title', 'specialty', 'specialty_id', 'experience_years', 'avg_rating', 'review_count', 'bio', 'languages')
+                     ->with('specialtyRelation:id,name');
+              }]);
+        }]);
+
         // Social flags for authenticated user
         $authUser = auth('sanctum')->user();
         $clinic->is_favorited = false;

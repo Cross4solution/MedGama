@@ -30,7 +30,6 @@ import {
   clinicInfo,
   aboutData,
   servicesData,
-  departmentsData,
   galleryData,
   beforeAfterData,
   priceRangesData,
@@ -91,30 +90,13 @@ const ClinicDetailPage = () => {
   };
   const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('clinic', apiClinic?.id, initialSocial, clinicMeta, socialCallbacks);
 
-  // L4 Rule: hospitals do not accept direct appointments — branches handle them
-  const isHospitalProfile = apiClinic?.level === 4 || apiClinic?.hospital_role === true;
-
   // UI State
   const [activeTab, setActiveTab] = useState('genel-bakis');
   
-  // Clinic Doctors State
-  const [clinicDoctors, setClinicDoctors] = useState([]);
-
-  useEffect(() => {
-    if (apiClinic?.id) {
-      clinicAPI.staff(apiClinic.id).then((res) => {
-        const list = res?.data || [];
-        setClinicDoctors(list);
-      }).catch(() => {});
-    }
-  }, [apiClinic?.id]);
-
   // Prices Tab State
   const [selectedService, setSelectedService] = useState(null);
-
-  // Doctors Tab State
-  const [selectedDept, setSelectedDept] = useState(null);
-  const doctorsText = 'Our expert doctors provide comprehensive care across multiple specialties, focusing on patient safety and outcomes.';
+  
+  // Doctors (from API)
   
   // Gallery State
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -129,7 +111,7 @@ const ClinicDetailPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'genel-bakis':
-        return <OverviewTab aboutTitle={aboutData.title} aboutP1={aboutData.paragraph1} aboutP2={aboutData.paragraph2} doctors={clinicDoctors} onBookAppointment={() => setBookModal(true)} onSwitchToDoctors={() => setActiveTab('doktorlar')} />;
+        return <OverviewTab aboutTitle={aboutData.title} aboutP1={aboutData.paragraph1} aboutP2={aboutData.paragraph2} />;
       case 'prices':
         return (
           <PricesTab 
@@ -141,12 +123,7 @@ const ClinicDetailPage = () => {
       case 'doktorlar':
         return (
           <DoctorsTab
-            doctorsText={doctorsText}
-            doctors={clinicDoctors}
-            deptDoctors={departmentsData}
-            selectedDept={selectedDept}
-            setSelectedDept={setSelectedDept}
-            onBookAppointment={() => setBookModal(true)}
+            doctors={apiClinic?.doctors || []}
           />
         );
       case 'degerlendirmeler':
@@ -230,14 +207,7 @@ const ClinicDetailPage = () => {
 
           {/* Sidebar */}
           <div className="lg:w-80 space-y-4 lg:sticky lg:top-24 h-max">
-            {/* L4 Rule: no appointment buttons on hospital profiles */}
-            {!isHospitalProfile && (
-              <ContactActions
-                onTelehealth={guardAction(() => setOnlineBookModal(true))}
-                onBook={guardAction(() => setBookModal(true))}
-                onMessage={guardAction(() => setMessageModal(true))}
-              />
-            )}
+            <ContactActions onTelehealth={guardAction(() => setOnlineBookModal(true))} onBook={guardAction(() => setBookModal(true))} onMessage={guardAction(() => setMessageModal(true))} />
             <PriceRangeList items={priceRangesData} />
           </div>
         </div>

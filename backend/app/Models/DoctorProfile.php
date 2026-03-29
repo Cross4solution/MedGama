@@ -19,8 +19,10 @@ class DoctorProfile extends Model
 
     protected $fillable = [
         'user_id',
+        'clinic_id',
         'title',
         'specialty',
+        'specialty_id',
         'sub_specialties',
         'bio',
         'experience_years',
@@ -132,5 +134,15 @@ class DoctorProfile extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function clinic()
+    {
+        return $this->belongsTo(Clinic::class);
+    }
+
+    public function specialtyRelation()
+    {
+        return $this->belongsTo(Specialty::class, 'specialty_id');
     }
 }

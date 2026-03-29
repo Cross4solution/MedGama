@@ -17,66 +17,36 @@ import { doctorProfileAPI, authAPI } from '../../lib/api';
 import { blockNonNumeric } from '../../utils/numericInput';
 import GlobalSuggest from '../../components/forms/GlobalSuggest';
 import StatusBadge from '../../components/ui/StatusBadge';
-import GoogleMapsPreview, { isValidGoogleMapsUrl } from '../../components/ui/GoogleMapsPreview';
+import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
-// ── Google Maps helpers ──────────────────────────────
-function isValidGoogleMapsUrl(url) {
-  if (!url || typeof url !== 'string') return false;
-  try {
-    const u = new URL(url);
-    return (
-      u.hostname.includes('google.com') ||
-      u.hostname.includes('goo.gl') ||
-      u.hostname.includes('maps.app.goo.gl')
-    );
-  } catch {
-    return false;
-  }
+// ── OpenStreetMap helpers ──────────────────────────────
+function hasValidCoordinates(coords) {
+  if (!coords) return false;
+  const lat = parseFloat(coords.lat);
+  const lng = parseFloat(coords.lng);
+  return !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
 }
 
-function extractGoogleMapsEmbed(url) {
-  if (!url) return null;
-  // Convert share/place URL to embed
-  try {
-    const u = new URL(url);
-    if (u.hostname.includes('google.com') && url.includes('/maps/')) {
-      // Extract coordinates or place query
-      const placeMatch = url.match(/@([-\d.]+),([-\d.]+)/);
-      if (placeMatch) {
-        return `https://maps.google.com/maps?q=${placeMatch[1]},${placeMatch[2]}&z=15&output=embed`;
-      }
-      const qMatch = url.match(/\/place\/([^/@]+)/);
-      if (qMatch) {
-        return `https://maps.google.com/maps?q=${encodeURIComponent(decodeURIComponent(qMatch[1]))}&z=15&output=embed`;
-      }
-    }
-    // Fallback: use the URL as query
-    return `https://maps.google.com/maps?q=${encodeURIComponent(url)}&z=15&output=embed`;
-  } catch {
-    return null;
-  }
-}
-
-function GoogleMapsPreview({ url, height = 200, compact = false }) {
-  const embedUrl = extractGoogleMapsEmbed(url);
-  if (!embedUrl || !isValidGoogleMapsUrl(url)) {
+function OpenStreetMapPreview({ coordinates, height = 200 }) {
+  const lat = parseFloat(coordinates?.lat);
+  const lng = parseFloat(coordinates?.lng);
+  if (isNaN(lat) || isNaN(lng)) {
     return (
-      <div className={`rounded-xl border border-red-200 bg-red-50/50 flex items-center justify-center ${compact ? 'p-3' : 'p-6'}`} style={{ height }}>
-        <p className="text-xs text-red-400">Invalid Google Maps URL</p>
+      <div className="rounded-xl border border-amber-200 bg-amber-50/50 flex items-center justify-center p-4" style={{ height }}>
+        <p className="text-xs text-amber-500">Enter latitude and longitude to see the map preview</p>
       </div>
     );
   }
+  const embedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lng}`;
   return (
     <div className="rounded-xl overflow-hidden border border-gray-200" style={{ height }}>
       <iframe
-        title="Google Maps Preview"
+        title="OpenStreetMap Preview"
         src={embedUrl}
         width="100%"
         height={height}
         style={{ border: 0 }}
         loading="lazy"
-        allowFullScreen
-        referrerPolicy="no-referrer-when-downgrade"
       />
     </div>
   );
@@ -168,6 +138,8 @@ const CRMSettings = ({ standalone = false }) => {
   const [verificationRequests, setVerificationRequests] = useState([]);
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [verificationUploading, setVerificationUploading] = useState(false);
+  const [verificationSuccess, setVerificationSuccess] = useState(false);
+  const [verificationError, setVerificationError] = useState('');
   const [verificationForm, setVerificationForm] = useState({ document_type: 'diploma', document_label: '', notes: '' });
   const verificationFileRef = useRef(null);
 
@@ -241,8 +213,14 @@ const CRMSettings = ({ standalone = false }) => {
 
   const handleVerificationUpload = async () => {
     const file = verificationFileRef.current?.files?.[0];
-    if (!file) return;
+    if (!file) {
+      setVerificationError(t('crm.settings.noFileSelected', 'Please select a file to upload.'));
+      setTimeout(() => setVerificationError(''), 4000);
+      return;
+    }
     setVerificationUploading(true);
+    setVerificationError('');
+    setVerificationSuccess(false);
     try {
       const fd = new FormData();
       fd.append('document', file);
@@ -252,8 +230,15 @@ const CRMSettings = ({ standalone = false }) => {
       await doctorProfileAPI.submitVerification(fd);
       setVerificationForm({ document_type: 'diploma', document_label: '', notes: '' });
       if (verificationFileRef.current) verificationFileRef.current.value = '';
+      setVerificationSuccess(true);
+      setTimeout(() => setVerificationSuccess(false), 4000);
       fetchVerificationRequests();
-    } catch (err) { console.error('Verification upload failed:', err); }
+    } catch (err) {
+      console.error('Verification upload failed:', err);
+      const msg = err?.response?.data?.message || err?.message || t('crm.settings.uploadFailed', 'Upload failed. Please try again.');
+      setVerificationError(msg);
+      setTimeout(() => setVerificationError(''), 5000);
+    }
     setVerificationUploading(false);
   };
 
@@ -395,13 +380,17 @@ const CRMSettings = ({ standalone = false }) => {
 
   const content = (
     <div className="space-y-6">
-      {standalone && (
-        <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3">
+        {standalone && (
           <button onClick={() => window.history.back()} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </button>
+        )}
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.settings.title', 'Settings')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t('crm.settings.subtitle', 'Manage your account, clinic and preferences')}</p>
         </div>
-      )}
+      </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar Tabs */}
@@ -717,7 +706,7 @@ const CRMSettings = ({ standalone = false }) => {
                           onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (dragIdx !== null) { handleGalleryDragEnd(dragIdx, idx); setDragIdx(null); } }}
                           className={`relative group rounded-xl overflow-hidden border-2 aspect-square ${dragIdx === idx ? 'border-teal-400 opacity-50' : 'border-gray-200'}`}
                         >
-                          <img src={url} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
+                          <img src={resolveStorageUrl(url, '/images/default/placeholder.svg')} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                             <button onClick={() => handleGalleryDelete(url)} className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg">
                               <Trash2 className="w-4 h-4" />
@@ -918,7 +907,7 @@ const CRMSettings = ({ standalone = false }) => {
                   </div>
                   {/* ── Location Section ── */}
                   <div className="pt-2 border-t border-gray-100">
-                    <h3 className="text-xs font-bold text-gray-800 mb-3 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-teal-500" /> {t('crm.settings.locationTitle', 'Location Information')}</h3>
+                    <h3 className="text-xs font-bold text-gray-800 mb-3 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-teal-500" /> {t('crm.settings.locationTitle', 'Location (OpenStreetMap)')}</h3>
 
                     <div className="space-y-3">
                       <div>
@@ -929,18 +918,24 @@ const CRMSettings = ({ standalone = false }) => {
                         <p className="text-[10px] text-gray-400 mt-1">{t('crm.settings.fullAddressHelper', 'Enter your full address including neighborhood, street, avenue and door number.')}</p>
                       </div>
 
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.mapsUrlLabel', 'Google Maps Link')}</label>
-                        <input type="url" value={socialInfo.maps_url} onChange={(e) => updateSocialField('maps_url', e.target.value)}
-                          placeholder="https://www.google.com/maps/place/..."
-                          className={`w-full h-10 px-3 border rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                            socialInfo.maps_url && !isValidGoogleMapsUrl(socialInfo.maps_url) ? 'border-red-300 bg-red-50/30' : 'border-gray-300'
-                          }`} />
-                        <p className="text-[10px] text-gray-400 mt-1">{t('crm.settings.mapsUrlHelper', 'Paste the share link of your location on Google Maps.')}</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.latitude', 'Latitude')}</label>
+                          <input type="text" value={socialInfo.map_coordinates?.lat || ''} onChange={(e) => updateMapCoord('lat', e.target.value)}
+                            placeholder="e.g. 41.0082"
+                            className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.longitude', 'Longitude')}</label>
+                          <input type="text" value={socialInfo.map_coordinates?.lng || ''} onChange={(e) => updateMapCoord('lng', e.target.value)}
+                            placeholder="e.g. 28.9784"
+                            className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                        </div>
                       </div>
+                      <p className="text-[10px] text-gray-400">{t('crm.settings.coordsHelper', 'Enter coordinates to display your location on the map. You can find them on openstreetmap.org.')}</p>
 
-                      {socialInfo.maps_url && (
-                        <GoogleMapsPreview url={socialInfo.maps_url} height={200} compact />
+                      {hasValidCoordinates(socialInfo.map_coordinates) && (
+                        <OpenStreetMapPreview coordinates={socialInfo.map_coordinates} height={200} />
                       )}
                     </div>
                   </div>
@@ -1067,6 +1062,16 @@ const CRMSettings = ({ standalone = false }) => {
                       className="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 transition-all"
                     />
                   </div>
+                  {verificationError && (
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600 font-medium">
+                      <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" /> {verificationError}
+                    </div>
+                  )}
+                  {verificationSuccess && (
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-600 font-medium">
+                      <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" /> {t('crm.settings.uploadSuccess', 'Document submitted successfully! It will be reviewed shortly.')}
+                    </div>
+                  )}
                   <div className="flex justify-end">
                     <button
                       onClick={handleVerificationUpload}
@@ -1247,12 +1252,6 @@ const CRMSettings = ({ standalone = false }) => {
                     <Key className="w-4 h-4" /> Update Password
                   </button>
                 </div>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-6">
-                <h2 className="text-sm font-bold text-gray-900 mb-3">Two-Factor Authentication</h2>
-                <p className="text-xs text-gray-500 mb-4">Add an extra layer of security to your account</p>
-                <button className="px-4 py-2.5 border border-teal-300 text-teal-700 bg-teal-50 rounded-xl text-sm font-semibold hover:bg-teal-100 transition-colors">Enable 2FA</button>
               </div>
 
               <div className="bg-white rounded-2xl border border-red-200 shadow-sm p-6">

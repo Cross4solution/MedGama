@@ -43,7 +43,7 @@ const DOC_TYPES = [
 
 /* ────────── OnboardingWizard ────────── */
 export default function OnboardingWizard() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, fetchCurrentUser } = useAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const lang = i18n.language || 'en';
@@ -194,9 +194,11 @@ export default function OnboardingWizard() {
 
   const handleBack = () => { if (step > 0) setStep(step - 1); };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     setShowWelcome(false);
     updateUser({ onboarding_completed: true });
+    // Refresh user from backend to persist onboarding_completed in auth state
+    try { await fetchCurrentUser(); } catch {}
     navigate('/doctor/dashboard');
   };
 
@@ -270,17 +272,17 @@ export default function OnboardingWizard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
         <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col">
+    <div className="fixed inset-0 z-50 min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col overflow-y-auto">
       {/* ── Header + Progress ── */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-30 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-4">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-lg font-bold text-gray-900">{t('onboarding.title')}</h1>
@@ -320,7 +322,7 @@ export default function OnboardingWizard() {
       </div>
 
       {/* ── Content ── */}
-      <div className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-8">
+      <div className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-8 py-8">
 
         {/* ═══ Step 0: Professional Profile ═══ */}
         {step === 0 && (
@@ -568,7 +570,7 @@ export default function OnboardingWizard() {
 
       {/* ── Footer ── */}
       <div className="sticky bottom-0 bg-white border-t border-gray-100 z-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
           <button onClick={handleBack} disabled={step === 0}
             className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
               step === 0 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'
