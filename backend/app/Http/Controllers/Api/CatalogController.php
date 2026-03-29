@@ -82,11 +82,12 @@ class CatalogController extends Controller
             ])->values();
         });
 
-        // Optional client-side q filter
+        // Optional client-side q filter with prefix-first sort
         if ($q = $request->query('q')) {
             $q = mb_strtolower($q);
             $items = $items->filter(fn($i) => str_contains(mb_strtolower($i['name'] ?? ''), $q)
-                                           || str_contains(mb_strtolower($i['code'] ?? ''), $q))->values();
+                                           || str_contains(mb_strtolower($i['code'] ?? ''), $q));
+            $items = $this->applyPrefixSort($items, $q);
         }
 
         return response()->json(['specialties' => $items]);
@@ -432,6 +433,25 @@ class CatalogController extends Controller
     }
 
     /**
+     * Sort a collection by prefix-first priority:
+     *   0 = name starts with $q  (highest priority)
+     *   1 = name contains $q
+     *   2 = code starts with $q
+     *   3 = code contains $q
+     * Secondary sort is alphabetical (name ASC).
+     */
+    private function applyPrefixSort(\Illuminate\Support\Collection $items, string $q): \Illuminate\Support\Collection
+    {
+        return $items->sortBy(function (array $row) use ($q) {
+            $name = mb_strtolower($row['name'] ?? '');
+            $code = mb_strtolower($row['code'] ?? '');
+            if (str_starts_with($name, $q)) return '0' . $name;
+            if (str_starts_with($code, $q)) return '1' . $code;
+            return '2' . $name;
+        })->values();
+    }
+
+    /**
      * Build a driver-aware WHERE clause for partial, case-insensitive search on a JSON name column.
      * Supports PostgreSQL (name->>?), MySQL/TiDB (JSON_UNQUOTE(JSON_EXTRACT(...))), and SQLite (json_extract).
      */
@@ -461,33 +481,31 @@ class CatalogController extends Controller
 
     /**
      * Search models that use HasTranslations trait (name column is JSON).
+     * Fetches 3× the limit so prefix-starting results aren't lost, then sorts prefix-first.
      */
     private function searchTranslatable($query, string $q, string $locale, string $fallback, int $limit, bool $withCategory = false)
     {
-        $filtered = $query
+        $rows = $query
             ->where(function ($builder) use ($q, $locale, $fallback) {
                 $this->applyJsonNameSearch($builder, $q, $locale, $fallback);
             })
-            ->limit($limit)
-            ->get();
+            ->limit($limit * 3)
+            ->get()
+            ->map(function ($item) use ($locale, $fallback, $withCategory) {
+                $name = $item->getTranslation('name', $locale)
+                     ?? $item->getTranslation('name', $fallback)
+                     ?? '';
+                $row = ['id' => $item->id, 'code' => $item->code, 'name' => $name];
+                if ($withCategory && isset($item->category)) {
+                    $row['category'] = $item->category;
+                }
+                if (isset($item->form)) {
+                    $row['form'] = $item->form;
+                }
+                return $row;
+            });
 
-        return $filtered->map(function ($item) use ($locale, $fallback, $withCategory) {
-            $name = $item->getTranslation('name', $locale)
-                 ?? $item->getTranslation('name', $fallback)
-                 ?? '';
-            $row = [
-                'id'   => $item->id,
-                'code' => $item->code,
-                'name' => $name,
-            ];
-            if ($withCategory && isset($item->category)) {
-                $row['category'] = $item->category;
-            }
-            if (isset($item->form)) {
-                $row['form'] = $item->form;
-            }
-            return $row;
-        });
+        return $this->applyPrefixSort($rows, $q)->take($limit);
     }
 
     /**
@@ -507,31 +525,33 @@ class CatalogController extends Controller
      */
     private function searchTranslatableWithType($query, string $q, string $locale, string $fallback, string $sourceType)
     {
-        $filtered = $query
+        $perType = 5;
+        $rows = $query
             ->where(function ($builder) use ($q, $locale, $fallback) {
                 $this->applyJsonNameSearch($builder, $q, $locale, $fallback);
             })
-            ->limit(5)
-            ->get();
+            ->limit($perType * 3)
+            ->get()
+            ->map(function ($item) use ($locale, $fallback, $sourceType) {
+                $name = $item->getTranslation('name', $locale)
+                     ?? $item->getTranslation('name', $fallback)
+                     ?? '';
+                $row = [
+                    'id'         => $item->id,
+                    'code'       => $item->code,
+                    'name'       => $name,
+                    'sourceType' => $sourceType,
+                ];
+                if (isset($item->category)) {
+                    $row['category'] = $item->category;
+                }
+                if (isset($item->form)) {
+                    $row['form'] = $item->form;
+                }
+                return $row;
+            });
 
-        return $filtered->map(function ($item) use ($locale, $fallback, $sourceType) {
-            $name = $item->getTranslation('name', $locale)
-                 ?? $item->getTranslation('name', $fallback)
-                 ?? '';
-            $row = [
-                'id'         => $item->id,
-                'code'       => $item->code,
-                'name'       => $name,
-                'sourceType' => $sourceType,
-            ];
-            if (isset($item->category)) {
-                $row['category'] = $item->category;
-            }
-            if (isset($item->form)) {
-                $row['form'] = $item->form;
-            }
-            return $row;
-        });
+        return $this->applyPrefixSort($rows, $q)->take($perType);
     }
 
     /**
@@ -573,6 +593,8 @@ class CatalogController extends Controller
         })->filter(function ($item) use ($q) {
             return str_contains(mb_strtolower($item['name'] ?? ''), $q)
                 || str_contains(mb_strtolower($item['code'] ?? ''), $q);
-        })->take($limit);
+        });
+
+        return $this->applyPrefixSort($filtered, $q)->take($limit);
     }
 }
