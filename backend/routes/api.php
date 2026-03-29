@@ -26,14 +26,13 @@ use App\Http\Controllers\Api\TelehealthController;
 use App\Http\Controllers\Api\PatientDocumentController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\FaqController;
-use App\Http\Controllers\Api\BranchController;
-use App\Http\Controllers\Api\HospitalController;
 use App\Http\Controllers\Api\ClinicManagerController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SocialController;
 use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\ClinicVerificationController;
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\BranchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,37 +44,98 @@ Route::get('/health', function () {
 });
 
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  TEMPORARY: One-time DB seed route — DELETE AFTER USE           ║
-// ║  Usage: GET or POST /api/system/init-db?key=MedaGama2026SecretInit ║
+// ║  TEMPORARY: One-time DB init route — DELETE AFTER USE           ║
+// ║  Usage: GET /api/system/init-db?key=MedaGama2026SecretInit      ║
+// ║         GET /api/system/init-db?key=...&fresh=1  → migrate:fresh║
+// ║  Check: GET /api/system/init-db-status                          ║
 // ╚══════════════════════════════════════════════════════════════════╝
 Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Request $request) {
     if ($request->query('key') !== 'MedaGama2026SecretInit') {
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
+
+    // Allow unlimited execution — nginx already set to 300s
+    set_time_limit(0);
+    ignore_user_abort(true);
+
+    // ── Step 1: Test DB connection ──
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', [
-            '--force' => true,
-        ]);
-        $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+        \Illuminate\Support\Facades\DB::statement('SELECT 1');
+        $dbHost = config('database.connections.' . config('database.default') . '.host');
+    } catch (\Throwable $e) {
+        return response()->json(['status' => 'error', 'step' => 'db_connection', 'message' => $e->getMessage()], 500);
+    }
 
-        \Illuminate\Support\Facades\Artisan::call('db:seed', [
-            '--force' => true,
-        ]);
-        $seedOutput = \Illuminate\Support\Facades\Artisan::output();
+    $isFresh = $request->query('fresh') === '1';
+    $result  = ['db_host' => $dbHost, 'mode' => $isFresh ? 'migrate:fresh --seed' : 'migrate + seed'];
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Database migrated and seeded successfully.',
-            'migrate_output' => $migrateOutput,
-            'seed_output' => $seedOutput,
-        ]);
+    // ── Step 2: Migrate ──
+    try {
+        if ($isFresh) {
+            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+        } else {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        }
+        $result['migrate_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
     } catch (\Throwable $e) {
         return response()->json([
-            'status' => 'error',
+            'status'  => 'error',
+            'step'    => 'migrate',
             'message' => $e->getMessage(),
-            'trace'   => $e->getTraceAsString(),
-        ], 500);
+            'trace'   => substr($e->getTraceAsString(), 0, 3000),
+        ] + $result, 500);
     }
+
+    // ── Step 3: Seed ──
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        $result['seed_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        $result['seed_error'] = $e->getMessage();
+    }
+
+    // ── Step 4: Verify counts ──
+    try {
+        $result['counts'] = [
+            'users'            => \Illuminate\Support\Facades\DB::table('users')->count(),
+            'med_stream_posts' => \Illuminate\Support\Facades\DB::table('med_stream_posts')->count(),
+            'clinics'          => \Illuminate\Support\Facades\DB::table('clinics')->count(),
+            'hospitals'        => \Illuminate\Support\Facades\DB::table('hospitals')->count(),
+        ];
+    } catch (\Throwable $e) {
+        $result['counts_error'] = $e->getMessage();
+    }
+
+    return response()->json(['status' => 'success'] + $result);
+});
+
+// ── Status check: tail the background migration log ──
+Route::get('/system/init-db-status', function (\Illuminate\Http\Request $request) {
+    if ($request->query('key') !== 'MedaGama2026SecretInit') {
+        return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
+    }
+
+    $logFile = '/tmp/init-db.log';
+    $log     = file_exists($logFile) ? file_get_contents($logFile) : 'No log yet.';
+
+    // Check table counts if migration completed
+    $counts = [];
+    try {
+        $counts = [
+            'users'            => \Illuminate\Support\Facades\DB::table('users')->count(),
+            'med_stream_posts' => \Illuminate\Support\Facades\DB::table('med_stream_posts')->count(),
+            'clinics'          => \Illuminate\Support\Facades\DB::table('clinics')->count(),
+            'hospitals'        => \Illuminate\Support\Facades\DB::table('hospitals')->count(),
+            'appointments'     => \Illuminate\Support\Facades\DB::table('appointments')->count(),
+        ];
+    } catch (\Throwable $e) {
+        $counts = ['error' => $e->getMessage()];
+    }
+
+    return response()->json([
+        'log'    => $log,
+        'counts' => $counts,
+    ]);
 });
 
 /*
@@ -186,14 +246,9 @@ Route::prefix('social')->middleware('auth:sanctum')->group(function () {
 Route::get('/clinics', [ClinicController::class, 'index'])->middleware('cache.headers:public');
 Route::get('/clinics/{codename}', [ClinicController::class, 'show'])->middleware('cache.headers:public');
 
-// ── Hospital CRM Stats (authenticated) — defined BEFORE {codename} wildcard ──
-Route::get('/hospitals/stats', [HospitalController::class, 'stats'])->middleware(['auth:sanctum', 'role:hospital,superAdmin,saasAdmin']);
-
-// ── Hospital public profiles (L4) ──
-Route::get('/hospitals/{codename}', [HospitalController::class, 'show'])->middleware('cache.headers:public');
-
-// Clinic reviews — public read (optional auth for can_review flag)
+// Clinic reviews & staff — public read
 Route::get('/clinics/{id}/reviews', [ClinicController::class, 'reviews']);
+Route::get('/clinics/{id}/staff', [ClinicController::class, 'staff']);
 Route::middleware('optional.auth')->group(function () {
     Route::get('/clinics/{id}/review-stats', [ClinicController::class, 'reviewStats']);
 });
@@ -206,7 +261,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/clinics', [ClinicController::class, 'store'])->middleware('role:superAdmin,saasAdmin');
     Route::put('/clinics/{id}', [ClinicController::class, 'update']);
-    Route::get('/clinics/{id}/staff', [ClinicController::class, 'staff']);
     Route::post('/clinics/{id}/staff', [ClinicController::class, 'createStaff']);
     Route::post('/clinics/{id}/reviews', [ClinicController::class, 'submitReview']);
 
@@ -534,21 +588,6 @@ Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Branch Management — L4 Hospitals (§8.3)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('branches')->middleware(['auth:sanctum', 'role:hospital,superAdmin,saasAdmin'])->group(function () {
-    Route::get('/', [BranchController::class, 'index']);
-    Route::post('/', [BranchController::class, 'store']);
-    Route::get('/{id}', [BranchController::class, 'show']);
-    Route::put('/{id}', [BranchController::class, 'update']);
-    Route::delete('/{id}', [BranchController::class, 'destroy']);
-    Route::post('/{id}/assign-clinic', [BranchController::class, 'assignClinic']);
-    Route::post('/{id}/assign-doctor', [BranchController::class, 'assignDoctor']);
-});
-
-/*
-|--------------------------------------------------------------------------
 | Clinic / Hospital Manager Panel (§8.2)
 |--------------------------------------------------------------------------
 */
@@ -707,4 +746,17 @@ Route::prefix('contact-messages')->middleware('auth:sanctum')->group(function ()
     Route::get('/{id}', [ContactMessageController::class, 'show']);
     Route::delete('/{id}', [ContactMessageController::class, 'destroy']);
     Route::get('/{id}/download/{attachmentId}', [ContactMessageController::class, 'downloadAttachment']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Branches — Hospital (Level 4) Promotion Network
+|--------------------------------------------------------------------------
+*/
+Route::prefix('branches')->middleware(['auth:sanctum', 'role:hospital,superAdmin,saasAdmin'])->group(function () {
+    Route::get('/', [BranchController::class, 'index']);
+    Route::post('/', [BranchController::class, 'store']);
+    Route::get('/{id}', [BranchController::class, 'show']);
+    Route::put('/{id}', [BranchController::class, 'update']);
+    Route::delete('/{id}', [BranchController::class, 'destroy']);
 });

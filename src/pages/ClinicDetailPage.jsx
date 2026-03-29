@@ -96,9 +96,21 @@ const ClinicDetailPage = () => {
   // UI State
   const [activeTab, setActiveTab] = useState('genel-bakis');
   
+  // Clinic Doctors State
+  const [clinicDoctors, setClinicDoctors] = useState([]);
+
+  useEffect(() => {
+    if (apiClinic?.id) {
+      clinicAPI.staff(apiClinic.id).then((res) => {
+        const list = res?.data || [];
+        setClinicDoctors(list);
+      }).catch(() => {});
+    }
+  }, [apiClinic?.id]);
+
   // Prices Tab State
   const [selectedService, setSelectedService] = useState(null);
-  
+
   // Doctors Tab State
   const [selectedDept, setSelectedDept] = useState(null);
   const doctorsText = 'Our expert doctors provide comprehensive care across multiple specialties, focusing on patient safety and outcomes.';
@@ -116,7 +128,7 @@ const ClinicDetailPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'genel-bakis':
-        return <OverviewTab aboutTitle={aboutData.title} aboutP1={aboutData.paragraph1} aboutP2={aboutData.paragraph2} />;
+        return <OverviewTab aboutTitle={aboutData.title} aboutP1={aboutData.paragraph1} aboutP2={aboutData.paragraph2} doctors={clinicDoctors} onBookAppointment={() => setBookModal(true)} onSwitchToDoctors={() => setActiveTab('doktorlar')} />;
       case 'prices':
         return (
           <PricesTab 
@@ -129,9 +141,11 @@ const ClinicDetailPage = () => {
         return (
           <DoctorsTab
             doctorsText={doctorsText}
+            doctors={clinicDoctors}
             deptDoctors={departmentsData}
             selectedDept={selectedDept}
             setSelectedDept={setSelectedDept}
+            onBookAppointment={() => setBookModal(true)}
           />
         );
       case 'degerlendirmeler':
