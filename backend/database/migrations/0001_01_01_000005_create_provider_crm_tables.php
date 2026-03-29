@@ -9,24 +9,27 @@ return new class extends Migration
     public function up(): void
     {
         // Calendar Slots — Doctor availability
-        Schema::create('calendar_slots', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('doctor_id')->index();
-            $table->uuid('clinic_id')->nullable()->index();
-            $table->date('slot_date');
-            $table->string('start_time'); // HH:MM format
-            $table->integer('duration_minutes')->default(30);
-            $table->boolean('is_available')->default(true);
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
+        if (!Schema::hasTable('calendar_slots')) {
+            Schema::create('calendar_slots', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->uuid('doctor_id')->index();
+                $table->uuid('clinic_id')->nullable()->index();
+                $table->date('slot_date');
+                $table->string('start_time'); // HH:MM format
+                $table->integer('duration_minutes')->default(30);
+                $table->boolean('is_available')->default(true);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
 
-            $table->foreign('doctor_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->foreign('clinic_id')->references('id')->on('clinics')->nullOnDelete();
-            $table->unique(['doctor_id', 'slot_date', 'start_time']);
-        });
+                $table->foreign('doctor_id')->references('id')->on('users')->cascadeOnDelete();
+                $table->foreign('clinic_id')->references('id')->on('clinics')->nullOnDelete();
+                $table->unique(['doctor_id', 'slot_date', 'start_time']);
+            });
+        }
 
         // Appointments
-        Schema::create('appointments', function (Blueprint $table) {
+        if (!Schema::hasTable('appointments')) {
+            Schema::create('appointments', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('patient_id')->index();
             $table->uuid('doctor_id')->index();
@@ -50,7 +53,8 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('users')->cascadeOnDelete();
             $table->index('status');
             $table->index('appointment_date');
-        });
+            });
+        }
 
         // Digital Anamnesis — Patient health history (JSON answers)
         Schema::create('digital_anamneses', function (Blueprint $table) {
@@ -124,9 +128,9 @@ return new class extends Migration
         // Archived Clinic Records — When doctor leaves clinic
         Schema::create('archived_clinic_records', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('former_doctor_id')->index();
+            $table->uuid('former_doctor_id')->nullable()->index();
             $table->uuid('clinic_id')->index();
-            $table->uuid('archived_patient_id')->index();
+            $table->uuid('archived_patient_id')->nullable()->index();
             $table->json('record_references')->nullable(); // Array of patient_record IDs
             $table->date('archived_at')->nullable();
             $table->boolean('is_active')->default(true);

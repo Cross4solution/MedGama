@@ -344,17 +344,24 @@ export function AuthProvider({ children }) {
     });
   }, [performLogout]);
 
-  // Compute is_pro: superAdmin/saasAdmin always pro; doctors and clinics need active subscription
-  const isPro = useMemo(() => {
+  // ── User Level System ──
+  // 1=Patient, 2=Doctor, 3=Clinic, 4=Hospital, 5=Admin
+  const userLevel = useMemo(() => (user?.user_level ?? 1), [user]);
+
+  // ── CRM Subscription (has_crm_subscription from backend) ──
+  // This is the single source of truth for CRM access gating (PremiumGate)
+  const hasCrmSubscription = useMemo(() => {
     if (!user) return false;
+    // Hospitals always get full CRM access — no upgrade gates
     const role = user.role_id || user.role || '';
-    // Admins and hospitals always get full access — no upgrade gates
     if (['superAdmin', 'saasAdmin', 'hospital'].includes(role)) return true;
-    if (['doctor', 'clinicOwner', 'clinic'].includes(role)) {
-      return !!(user.subscription_plan === 'pro' || user.is_pro);
-    }
+    // Backend computes this; trust it if available
+    if (typeof user.has_crm_subscription === 'boolean') return user.has_crm_subscription;
     return false;
   }, [user]);
+
+  // Legacy isPro — now aliases hasCrmSubscription for backward compat
+  const isPro = hasCrmSubscription;
 
   const value = useMemo(() => ({
     user,
@@ -363,6 +370,8 @@ export function AuthProvider({ children }) {
     country,
     setCountry,
     isPro,
+    userLevel,
+    hasCrmSubscription,
     login,
     updateUser,
     applyApiAuth,
@@ -375,7 +384,7 @@ export function AuthProvider({ children }) {
     sidebarMobileOpen,
     setSidebarMobileOpen,
     hydrated,
-  }), [user, token, country, isPro, sidebarMobileOpen, hydrated, login, updateUser, applyApiAuth, fetchCurrentUser, demoLogin, register, registerDoctor, logout]);
+  }), [user, token, country, isPro, userLevel, hasCrmSubscription, sidebarMobileOpen, hydrated, login, updateUser, applyApiAuth, fetchCurrentUser, demoLogin, register, registerDoctor, logout]);
 
   // If we have a token (from fallback) but no user yet, try to fetch current user once
   useEffect(() => {

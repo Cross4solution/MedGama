@@ -54,13 +54,13 @@ return new class extends Migration
     {
         if (Schema::hasColumn('users', 'medical_history')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->jsonb('medical_history')->nullable()->change();
+                $table->json('medical_history')->nullable()->change();
             });
         }
 
         if (Schema::hasColumn('users', 'notification_preferences')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->jsonb('notification_preferences')->nullable()->change();
+                $table->json('notification_preferences')->nullable()->change();
             });
         }
 

@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import SendMessageModal from '../components/modals/SendMessageModal';
 import DoctorBookingModal from '../components/modals/DoctorBookingModal';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
+import MedstreamProfileFeed from '../components/profile/MedstreamProfileFeed';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
@@ -230,6 +231,7 @@ const DoctorProfilePage = () => {
 
   const tabs = [
     { id: 'overview', label: t('doctorProfile.overview') },
+    { id: 'medstream', label: 'Medstream' },
     { id: 'services', label: t('doctorProfile.services') },
     { id: 'reviews', label: `${t('doctorProfile.reviews')} (${reviewStats.review_count})` },
     { id: 'gallery', label: t('doctorProfile.gallery') },
@@ -292,8 +294,15 @@ const DoctorProfilePage = () => {
       )}
 
       {/* ═══ Hero Section ═══ */}
-      <div className="relative h-36 md:h-44 bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+      <div className="relative h-36 md:h-44 overflow-hidden">
+        <img
+          src="/images/doctor-profile-bg.webp"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-teal-900/60 via-teal-800/40 to-emerald-900/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+        <div className="absolute inset-0 backdrop-blur-[1px]" />
       </div>
 
       {/* ═══ Doctor Info Bar ═══ */}
@@ -624,6 +633,11 @@ const DoctorProfilePage = () => {
                       </div>
                     )}
                   </div>
+                )}
+
+                {/* ── Medstream ── */}
+                {activeTab === 'medstream' && (
+                  <MedstreamProfileFeed authorId={doctorId} />
                 )}
 
                 {/* ── Gallery ── */}

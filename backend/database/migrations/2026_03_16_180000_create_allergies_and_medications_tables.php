@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('allergies', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('code', 30)->unique();
-            $table->jsonb('name');           // {"en": "Penicillin", "tr": "Penisilin"}
+            $table->json('name');           // {"en": "Penicillin", "tr": "Penisilin"}
             $table->string('category', 50)->nullable(); // drug, food, environmental, other
             $table->boolean('is_active')->default(true);
             $table->timestamps();
@@ -20,7 +20,7 @@ return new class extends Migration
         Schema::create('medications', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('code', 30)->unique();
-            $table->jsonb('name');           // {"en": "Ibuprofen", "tr": "İbuprofen"}
+            $table->json('name');           // {"en": "Ibuprofen", "tr": "İbuprofen"}
             $table->string('category', 50)->nullable(); // analgesic, antibiotic, cardiovascular, etc.
             $table->string('form', 30)->nullable();      // tablet, capsule, syrup, injection
             $table->boolean('is_active')->default(true);

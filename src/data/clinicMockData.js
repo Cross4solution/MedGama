@@ -155,6 +155,7 @@ export const priceRangesData = [
 
 export const tabsConfig = [
   { id: 'genel-bakis', label: 'Overview' },
+  { id: 'medstream', label: 'Medstream' },
   { id: 'prices', label: 'Prices' },
   { id: 'doktorlar', label: 'Doctors' },
   { id: 'degerlendirmeler', label: 'Reviews' },

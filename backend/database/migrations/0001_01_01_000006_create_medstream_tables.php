@@ -9,34 +9,36 @@ return new class extends Migration
     public function up(): void
     {
         // MedStream Posts — Professional feed content
-        Schema::create('med_stream_posts', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('author_id')->index();
-            $table->uuid('clinic_id')->nullable()->index();
-            $table->enum('post_type', ['text', 'image', 'video'])->default('text');
-            $table->text('content')->nullable();
-            $table->string('media_url')->nullable(); // External URL only
-            $table->boolean('is_hidden')->default(false);
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
+        if (!Schema::hasTable('med_stream_posts')) {
+            Schema::create('med_stream_posts', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->uuid('author_id')->nullable()->index();
+                $table->uuid('clinic_id')->nullable()->index();
+                $table->enum('post_type', ['text', 'image', 'video'])->default('text');
+                $table->text('content')->nullable();
+                $table->string('media_url')->nullable(); // External URL only
+                $table->boolean('is_hidden')->default(false);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
 
-            $table->foreign('author_id')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('clinic_id')->references('id')->on('clinics')->nullOnDelete();
-        });
+                $table->foreign('author_id')->references('id')->on('users')->nullOnDelete();
+                $table->foreign('clinic_id')->references('id')->on('clinics')->nullOnDelete();
+            });
+        }
 
         // MedStream Comments
         Schema::create('med_stream_comments', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('post_id')->index();
-            $table->uuid('author_id')->index();
+            $table->uuid('author_id')->nullable()->index();
             $table->text('content');
             $table->boolean('is_hidden')->default(false);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->foreign('post_id')->references('id')->on('med_stream_posts')->nullOnDelete();
+            $table->foreign('post_id')->references('id')->on('med_stream_posts')->cascadeOnDelete();
             $table->foreign('author_id')->references('id')->on('users')->nullOnDelete();
-            $table->unique(['post_id', 'author_id', 'content']); // Prevent duplicate comments
+            // Duplicate comment prevention handled at application layer (validator)
         });
 
         // MedStream Likes — One per user per post
@@ -47,8 +49,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->foreign('post_id')->references('id')->on('med_stream_posts')->nullOnDelete();
-            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('post_id')->references('id')->on('med_stream_posts')->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->unique(['user_id', 'post_id']);
         });
 
@@ -61,7 +63,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->unique(['user_id', 'bookmarked_type', 'target_id']);
         });
 
@@ -75,8 +77,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->foreign('post_id')->references('id')->on('med_stream_posts')->nullOnDelete();
-            $table->foreign('reporter_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('post_id')->references('id')->on('med_stream_posts')->cascadeOnDelete();
+            $table->foreign('reporter_id')->references('id')->on('users')->cascadeOnDelete();
             $table->unique(['post_id', 'reporter_id']);
             $table->index('admin_status');
         });
@@ -90,7 +92,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->foreign('post_id')->references('id')->on('med_stream_posts')->nullOnDelete();
+            $table->foreign('post_id')->references('id')->on('med_stream_posts')->cascadeOnDelete();
         });
     }
 

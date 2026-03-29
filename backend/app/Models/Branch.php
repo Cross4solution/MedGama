@@ -18,19 +18,23 @@ class Branch extends Model
         'hospital_id',
         'name',
         'address',
-        'phone',
-        'email',
-        'coordinates',
         'city',
         'country',
+        'latitude',
+        'longitude',
+        'phone',
+        'email',
         'is_active',
+        'display_order',
     ];
 
     protected function casts(): array
     {
         return [
-            'coordinates' => 'array',
-            'is_active'   => 'boolean',
+            'latitude'      => 'decimal:7',
+            'longitude'     => 'decimal:7',
+            'is_active'     => 'boolean',
+            'display_order' => 'integer',
         ];
     }
 
@@ -46,19 +50,5 @@ class Branch extends Model
     public function hospital()
     {
         return $this->belongsTo(Hospital::class);
-    }
-
-    public function clinics()
-    {
-        return $this->belongsToMany(Clinic::class, 'clinic_branches')
-            ->withPivot('is_primary')
-            ->withTimestamps();
-    }
-
-    public function doctors()
-    {
-        return $this->belongsToMany(User::class, 'doctor_branches', 'branch_id', 'doctor_id')
-            ->withPivot('schedule')
-            ->withTimestamps();
     }
 }

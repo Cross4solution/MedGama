@@ -52,8 +52,33 @@ php artisan view:clear 2>&1 || true
 echo "→ Caches cleared."
 
 # ── 7. Run database migrations ──
-echo "→ Running migrations..."
-php artisan migrate --force 2>&1 || echo "⚠ Migration failed (DB may not be ready yet)"
+echo "════════════════════════════════════════════════════════════════"
+echo "  DATABASE INIT — Connection details:"
+echo "  DB_CONNECTION : ${DB_CONNECTION:-not set}"
+echo "  DB_HOST       : ${DB_HOST:-not set}"
+echo "  DB_PORT       : ${DB_PORT:-not set}"
+echo "  DB_DATABASE   : ${DB_DATABASE:-not set}"
+echo "  DB_USERNAME   : ${DB_USERNAME:-not set}"
+echo "  MYSQL_ATTR_SSL_CA: ${MYSQL_ATTR_SSL_CA:-not set}"
+echo "════════════════════════════════════════════════════════════════"
+
+echo "→ Testing DB connection..."
+php artisan db:show 2>&1 || echo "⚠ db:show failed — proceeding anyway"
+
+echo ""
+echo "→ Running incremental migrations (production mode)..."
+if php artisan migrate --force 2>&1; then
+    echo "════════════════════════════════════════════════════════════════"
+    echo "  ✅ MIGRATIONS COMPLETED SUCCESSFULLY"
+    echo "════════════════════════════════════════════════════════════════"
+else
+    MIGRATE_EXIT=$?
+    echo "════════════════════════════════════════════════════════════════"
+    echo "  ⚠ MIGRATIONS FAILED (exit: $MIGRATE_EXIT)"
+    echo "  Note: If this is the FIRST deployment, use init-db endpoint:"
+    echo "  GET /api/system/init-db?key=MedaGama2026SecretInit&fresh=1"
+    echo "════════════════════════════════════════════════════════════════"
+fi
 
 # ── 7a. Seed database (initial data for hospital/clinic/doctors) ──
 echo "→ Seeding database..."

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, MapPin, Share2, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2, Bookmark, Loader2 } from 'lucide-react';
+import { Heart, MessageCircle, MapPin, Share2, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2, Bookmark, Loader2, Volume2, Film } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
@@ -240,75 +240,137 @@ function DocumentPreview({ m, className, onClick }) {
 
 function toStreamUrl(url) {
   if (!url || typeof url !== 'string') return url;
-  // Get the fully resolved storage URL (e.g. http://localhost:8001/storage/...)
-  const fullUrl = resolveStorageUrl(url);
-  // Replace /storage/ with the stream endpoint path
-  return fullUrl.replace('/storage/', '/api/media/stream/');
+  const marker = '/storage/';
+  const idx = url.indexOf(marker);
+  if (idx === -1) return url;
+  const base = url.substring(0, idx);
+  const storagePath = url.substring(idx + marker.length);
+  return `${base}/api/media/stream/${storagePath}`;
+}
+
+function formatDuration(seconds) {
+  if (!seconds || isNaN(seconds) || !isFinite(seconds)) return null;
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
 function VideoPreview({ m, className }) {
   const [playing, setPlaying] = useState(false);
+  const [duration, setDuration] = useState(null);
+  const [error, setError] = useState(false);
+  const [inView, setInView] = useState(false);
   const videoRef = useRef(null);
-  const rawSrc = m.original || m.url;
+  const containerRef = useRef(null);
+  const rawSrc = resolveStorageUrl(m.original || m.url, '');
   const videoSrc = toStreamUrl(rawSrc);
+  const resolvedThumb = resolveStorageUrl(m.thumb, '');
+  const isProcessing = m.status === 'processing';
+
+  // Lazy loading — only load video when in viewport
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect(); } }, { rootMargin: '200px' });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   const handlePlay = (e) => {
     e?.stopPropagation?.();
     e?.preventDefault?.();
+    if (isProcessing || error) return;
     setPlaying(true);
     setTimeout(() => videoRef.current?.play?.(), 50);
   };
 
+  const stopProp = (e) => e.stopPropagation();
+
+  // Playing state — full video player
   if (playing) {
     return (
       <div
+        ref={containerRef}
         className="relative bg-black flex items-center justify-center aspect-video w-full"
         style={{ zIndex: 10, overflow: 'visible' }}
-        onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-        onPointerDown={(e) => e.stopPropagation()}
-        onTouchStart={(e) => e.stopPropagation()}
+        onClick={stopProp} onMouseDown={stopProp} onPointerDown={stopProp} onTouchStart={stopProp}
       >
         <video
           ref={videoRef}
           src={videoSrc}
-          controls
-          autoPlay
-          playsInline
-          preload="auto"
+          controls autoPlay playsInline preload="auto"
           className="w-full h-full object-contain"
           style={{ pointerEvents: 'auto', position: 'relative', zIndex: 11 }}
-          poster={m.thumb ? resolveStorageUrl(m.thumb) : undefined}
-          onClick={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-          onTouchStart={(e) => e.stopPropagation()}
-          onInput={(e) => e.stopPropagation()}
-          onChange={(e) => e.stopPropagation()}
+          poster={resolvedThumb || undefined}
+          onError={() => { setError(true); setPlaying(false); }}
+          onClick={stopProp} onMouseDown={stopProp} onPointerDown={stopProp} onTouchStart={stopProp}
         />
       </div>
     );
   }
 
-  const thumb = m.thumb;
-  const hasThumb = thumb && !thumb.endsWith('.mp4') && !thumb.endsWith('.webm') && !thumb.endsWith('.mov');
+  // Processing state
+  if (isProcessing) {
+    return (
+      <div ref={containerRef} className="relative bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col items-center justify-center aspect-video w-full rounded-lg">
+        <Loader2 className="w-8 h-8 text-white/60 animate-spin mb-2" />
+        <p className="text-white/50 text-xs font-medium">Video processing...</p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div ref={containerRef} className="relative bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col items-center justify-center aspect-video w-full rounded-lg cursor-pointer" onClick={() => { setError(false); setPlaying(true); }}>
+        <AlertTriangle className="w-8 h-8 text-amber-400/70 mb-2" />
+        <p className="text-white/50 text-xs font-medium">Playback error — tap to retry</p>
+      </div>
+    );
+  }
+
+  const hasThumb = resolvedThumb && !resolvedThumb.endsWith('.mp4') && !resolvedThumb.endsWith('.webm') && !resolvedThumb.endsWith('.mov');
+  const durationLabel = formatDuration(duration || m.duration);
+
   return (
-    <div className="relative bg-black flex items-center justify-center cursor-pointer group aspect-video w-full" onClick={handlePlay}>
+    <div ref={containerRef} className="relative bg-black flex items-center justify-center cursor-pointer group aspect-video w-full overflow-hidden rounded-lg" onClick={handlePlay}>
+      {/* Thumbnail or video metadata preview */}
       {hasThumb ? (
-        <img src={resolveStorageUrl(thumb)} alt="Video" loading="lazy" className="w-full h-full object-contain" />
-      ) : (
+        <img src={resolvedThumb} alt="Video" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
+      ) : inView ? (
         <video
-          src={videoSrc}
-          muted
-          preload="metadata"
-          playsInline
-          className="w-full h-full object-contain pointer-events-none"
+          src={rawSrc ? `${rawSrc}#t=0.5` : videoSrc}
+          muted preload="metadata" playsInline
+          className="w-full h-full object-cover pointer-events-none"
+          onLoadedMetadata={(e) => { if (e.target.duration) setDuration(e.target.duration); }}
+          onError={() => setError(true)}
         />
-      )}
-      <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-        <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-          <Play className="w-6 h-6 text-gray-800 ml-0.5" fill="currentColor" />
+      ) : (
+        <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+          <Film className="w-10 h-10 text-white/20" />
         </div>
+      )}
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+
+      {/* Play button */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-xl group-hover:scale-110 transition-all duration-200">
+          <Play className="w-6 h-6 text-gray-900 ml-0.5" fill="currentColor" />
+        </div>
+      </div>
+
+      {/* Bottom bar: duration + audio indicator */}
+      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-3 py-2">
+        {durationLabel ? (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[11px] font-medium tabular-nums">
+            <Play className="w-2.5 h-2.5" fill="currentColor" /> {durationLabel}
+          </span>
+        ) : <span />}
+        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm">
+          <Volume2 className="w-3 h-3 text-white/70" />
+        </span>
       </div>
     </div>
   );
@@ -322,7 +384,7 @@ function MediaItem({ m, alt, className, onClick = undefined }) {
 }
 
 function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
-  const avatarUrl = resolveStorageUrl(item.avatar);
+  const avatarUrl = resolveStorageUrl(item.avatar || item.actor?.avatarUrl);
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
   const { t } = useTranslation();
@@ -681,7 +743,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               </span>
               </div>
             </div>
-            {true && (
+            {!compact && (
               <div ref={moreMenuRef} className="flex items-center gap-1 text-gray-500 relative">
                 <span className="text-xs text-[rgba(0,0,0,0.6)]">{timeLabel}</span>
                 <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="More options" onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>

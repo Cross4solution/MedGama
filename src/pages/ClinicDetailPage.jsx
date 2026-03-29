@@ -23,6 +23,7 @@ import ReviewsTab from '../components/clinic/tabs/ReviewsTab';
 import GalleryTab from '../components/clinic/tabs/GalleryTab';
 import BeforeAfterTab from '../components/clinic/tabs/BeforeAfterTab';
 import LocationTab from '../components/clinic/tabs/LocationTab';
+import MedstreamProfileFeed from '../components/profile/MedstreamProfileFeed';
 
 // Mock Data
 import {
@@ -174,6 +175,8 @@ const ClinicDetailPage = () => {
         );
       case 'konum':
         return <LocationTab locationAddress="Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul" />;
+      case 'medstream':
+        return <MedstreamProfileFeed clinicId={apiClinic?.id} />;
       default:
         return null;
     }

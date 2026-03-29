@@ -236,7 +236,38 @@
       "faq": "SSS",
       "staff": "Ekip",
       "clinicManager": "Klinik Yönetimi",
-      "contactInbox": "İletişim Mesajları"
+      "contactInbox": "İletişim Mesajları",
+      "branches": "Şubeler"
+    },
+    "premiumGate": {
+      "title": "Premium Özellik",
+      "description": "Bu özellik MedaGama CRM'in bir parçasıdır — gelişmiş paneller, AI asistan, detaylı hasta yönetimi ve daha fazlası için yükseltin.",
+      "upgrade": "CRM Pro'ya Yükselt",
+      "hint": "CRM aboneliği olmadan platform özelliklerini (randevu, telehealth, profil) kullanmaya devam edebilirsiniz."
+    },
+    "branches": {
+      "title": "Şubeler",
+      "subtitle": "Hastane şube lokasyonlarınızı ağ genelinde yönetin.",
+      "add": "Şube Ekle",
+      "addTitle": "Şube Ekle",
+      "editTitle": "Şubeyi Düzenle",
+      "name": "Şube Adı",
+      "address": "Adres",
+      "city": "Şehir",
+      "country": "Ülke",
+      "latitude": "Enlem",
+      "longitude": "Boylam",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "isActive": "Aktif şube",
+      "empty": "Henüz şube yok",
+      "emptyHint": "Ağınızı oluşturmak için ilk şubenizi ekleyin.",
+      "created": "Şube oluşturuldu.",
+      "updated": "Şube güncellendi.",
+      "deleted": "Şube silindi.",
+      "deleteTitle": "Şubeyi Sil?",
+      "deleteConfirm": "Bu işlem geri alınamaz.",
+      "fetchError": "Şubeler yüklenemedi."
     },
     "contactInbox": {
       "title": "İletişim Mesajları",

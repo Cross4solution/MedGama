@@ -175,7 +175,6 @@ const HospitalStatCards = () => {
             </div>
 
             {loading ? (
-              /* Skeleton */
               <div className="space-y-2">
                 <div className="h-7 w-16 bg-gray-100 rounded-lg animate-pulse" />
                 <div className="h-3 w-24 bg-gray-50 rounded animate-pulse" />
@@ -265,12 +264,12 @@ const CRMDashboard = () => {
   // ── Hospital Dashboard (L4) ───────────────────────────────
   if (isHospital) {
     const HOSPITAL_QUICK_ACTIONS = [
-      { label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin,       color: 'bg-teal-50 text-teal-600 hover:bg-teal-100',     path: '/crm/branches' },
-      { label: t('crm.sidebar.staff', 'Staff'),               icon: Users,         color: 'bg-violet-50 text-violet-600 hover:bg-violet-100', path: '/crm/staff' },
-      { label: t('crm.sidebar.medstream', 'MedStream'),       icon: Rss,           color: 'bg-blue-50 text-blue-600 hover:bg-blue-100',       path: '/crm/medstream' },
-      { label: t('crm.sidebar.reviews', 'Reviews'),           icon: Star,          color: 'bg-amber-50 text-amber-600 hover:bg-amber-100',    path: '/crm/reviews' },
+      { label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin,       color: 'bg-teal-50 text-teal-600 hover:bg-teal-100',        path: '/crm/branches' },
+      { label: t('crm.sidebar.staff', 'Staff'),               icon: Users,         color: 'bg-violet-50 text-violet-600 hover:bg-violet-100',  path: '/crm/staff' },
+      { label: t('crm.sidebar.medstream', 'MedStream'),       icon: Rss,           color: 'bg-blue-50 text-blue-600 hover:bg-blue-100',        path: '/crm/medstream' },
+      { label: t('crm.sidebar.reviews', 'Reviews'),           icon: Star,          color: 'bg-amber-50 text-amber-600 hover:bg-amber-100',     path: '/crm/reviews' },
       { label: t('crm.sidebar.contactInbox', 'Messages'),     icon: Mail,          color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100', path: '/crm/contact-inbox' },
-      { label: t('crm.sidebar.reports', 'Reports'),           icon: PieChart,      color: 'bg-pink-50 text-pink-600 hover:bg-pink-100',       path: '/crm/reports' },
+      { label: t('crm.sidebar.reports', 'Reports'),           icon: PieChart,      color: 'bg-pink-50 text-pink-600 hover:bg-pink-100',        path: '/crm/reports' },
     ];
 
     return (
@@ -422,31 +421,26 @@ const CRMDashboard = () => {
       )}
 
       {/* AI Insight Banner */}
-      <PremiumGate locked={isFreeTier} message="AI Asistanınızı Etkinleştirmek İçin Premium'a Geçin">
-        <AiInsightBanner
-          appointments={appointments}
-          alerts={MOCK_URGENT_NOTES}
-          stats={MOCK_STATS}
-          patients={MOCK_RECENT_PATIENTS}
-        />
-      </PremiumGate>
+      <AiInsightBanner
+        appointments={appointments}
+        alerts={MOCK_URGENT_NOTES}
+        stats={MOCK_STATS}
+        patients={MOCK_RECENT_PATIENTS}
+      />
 
       {/* KPI Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {MOCK_STATS.map((stat) => {
-          const isRevenueStat = stat.label === "Today's Revenue" || stat.label === 'Total Patients';
-          const lockThis = isFreeTier && isRevenueStat;
-          return (
-          <div key={stat.label} className={`bg-white rounded-xl border ${stat.borderColor} p-3 sm:p-4 hover:shadow-md transition-shadow relative overflow-hidden`}>
+        {MOCK_STATS.map((stat) => (
+          <div key={stat.label} className={`bg-white rounded-xl border ${stat.borderColor} p-3 sm:p-4 hover:shadow-md transition-shadow`}>
             <div className="flex items-center gap-2.5 mb-2">
               <div className={`w-9 h-9 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
                 <stat.icon className={`w-4.5 h-4.5 ${stat.iconColor}`} />
               </div>
             </div>
-            {lockThis ? (
+            {isFreeTier ? (
               <>
-                <p className="text-xl sm:text-2xl font-bold text-gray-300 select-none" style={{ filter: 'blur(5px)' }}>{stat.value}</p>
-                <p className="text-[10px] text-gray-400 mt-1 font-semibold">🔒 Kilidi Açmak İçin Premium'a Geçin</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-300 select-none">—</p>
+                <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
               </>
             ) : (
               <>
@@ -455,8 +449,7 @@ const CRMDashboard = () => {
               </>
             )}
           </div>
-          );
-        })}
+        ))}
       </div>
       {isFreeTier && (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-teal-100 p-4">
@@ -466,8 +459,8 @@ const CRMDashboard = () => {
                 <Crown className="w-4.5 h-4.5 text-white" />
               </div>
               <div>
-                <p className="text-sm font-bold text-gray-900">{t('crm.dashboard.unlockInsights', 'Tüm Özelliklerin Kilidini Açın')}</p>
-                <p className="text-xs text-gray-500">{t('crm.dashboard.upgradeHint', 'Premium\'a geçerek tüm CRM özelliklerini kullanın')}</p>
+                <p className="text-sm font-bold text-gray-900">{t('crm.dashboard.unlockInsights', 'Unlock Real-Time Insights')}</p>
+                <p className="text-xs text-gray-500">{t('crm.dashboard.upgradeHint', 'Upgrade to Professional to unlock live data')}</p>
               </div>
             </div>
             <Link
@@ -475,7 +468,7 @@ const CRMDashboard = () => {
               className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-xl text-xs font-bold hover:from-teal-700 hover:to-emerald-600 transition-all shadow-lg shadow-teal-200/50"
             >
               <Crown className="w-3.5 h-3.5" />
-              {t('pro.teaser.upgradeCta', 'Premium\'a Geç')}
+              {t('pro.teaser.upgradeCta', 'Upgrade to Professional')}
             </Link>
           </div>
         </div>
@@ -487,6 +480,7 @@ const CRMDashboard = () => {
         <div className="xl:col-span-2 space-y-4 sm:space-y-6">
           {/* Appointments List */}
           <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+          {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-4 border-b border-gray-100">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -519,8 +513,12 @@ const CRMDashboard = () => {
               ))}
             </div>
           </div>
+
+          {/* Appointment Rows */}
           <div className="divide-y divide-gray-50 min-h-0">
-            {filteredAppointments.length === 0 ? (
+            {isFreeTier ? (
+              <UpgradeBanner t={t} label={t('crm.dashboard.upgradeAppointments', 'Upgrade to see your live appointment schedule')} />
+            ) : filteredAppointments.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                 <CalendarDays className="w-10 h-10 mb-2 opacity-40" />
                 <p className="text-sm font-medium">{t('crm.dashboard.noAppointments')}</p>
@@ -533,18 +531,26 @@ const CRMDashboard = () => {
                     apt.status === 'in-progress' ? 'bg-blue-50/30 border-l-2 border-l-blue-500' : ''
                   } ${apt.status === 'cancelled' ? 'opacity-50' : ''}`}
                 >
+                  {/* Time */}
                   <div className="w-14 sm:w-16 flex-shrink-0 text-center">
                     <p className={`text-sm font-bold ${apt.status === 'in-progress' ? 'text-blue-600' : 'text-gray-900'}`}>{apt.time}</p>
                     <p className="text-[10px] text-gray-400">{apt.endTime}</p>
                   </div>
+
+                  {/* Divider */}
                   <div className={`w-0.5 h-10 rounded-full flex-shrink-0 ${
                     apt.status === 'completed' ? 'bg-emerald-300' :
                     apt.status === 'in-progress' ? 'bg-blue-400' :
-                    apt.status === 'cancelled' ? 'bg-red-300' : 'bg-gray-200'
+                    apt.status === 'cancelled' ? 'bg-red-300' :
+                    'bg-gray-200'
                   }`} />
+
+                  {/* Avatar */}
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 text-xs font-bold flex-shrink-0">
                     {apt.patient.split(' ').map((n) => n[0]).join('')}
                   </div>
+
+                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-gray-900 truncate">{apt.patient}</p>
@@ -556,6 +562,8 @@ const CRMDashboard = () => {
                       <span className="text-[11px] text-gray-400">Age {apt.age}</span>
                     </div>
                   </div>
+
+                  {/* Status + Actions */}
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <StatusBadge status={apt.status} />
                     <button className="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -566,6 +574,8 @@ const CRMDashboard = () => {
               ))
             )}
           </div>
+
+          {/* Footer with Pagination */}
           <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
             <div className="flex items-center justify-between">
               <Link to="/crm/appointments" className="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
@@ -573,11 +583,21 @@ const CRMDashboard = () => {
               </Link>
               {!isFreeTier && totalPages > 1 && (
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
                     <ChevronRight className="w-3.5 h-3.5 rotate-180" />
                   </button>
-                  <span className="text-xs text-gray-500 font-medium">{currentPage} / {totalPages}</span>
-                  <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                  <span className="text-xs text-gray-500 font-medium">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -598,7 +618,11 @@ const CRMDashboard = () => {
                 { label: 'Send Message', icon: MessageSquare, color: 'bg-amber-50 text-amber-600 hover:bg-amber-100', path: '/crm/messages' },
                 { label: 'Revenue Report', icon: DollarSign, color: 'bg-pink-50 text-pink-600 hover:bg-pink-100', path: '/crm/revenue' },
               ].map((action) => (
-                <Link key={action.label} to={action.path} className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${action.color} border border-transparent hover:border-gray-200 hover:shadow-sm`}>
+                <Link
+                  key={action.label}
+                  to={action.path}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${action.color} border border-transparent hover:border-gray-200 hover:shadow-sm`}
+                >
                   <action.icon className="w-5 h-5" />
                   <span className="text-[11px] font-semibold text-center leading-tight">{action.label}</span>
                 </Link>
@@ -623,34 +647,19 @@ const CRMDashboard = () => {
               </span>
             </div>
             {isFreeTier ? (
-              <PremiumGate locked={true} message="Klinik Risklerinizi Yönetmek İçin Premium'a Geçin">
-                <div className="divide-y divide-gray-50 max-h-72 overflow-y-auto">
-                  {MOCK_URGENT_NOTES.map((note) => (
-                    <div key={note.id} className={`px-5 py-3 hover:bg-gray-50/50 transition-colors ${!note.read ? 'bg-red-50/20' : ''}`}>
-                      <div className="flex items-start gap-2.5">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${note.type === 'critical' ? 'bg-red-100' : note.type === 'warning' ? 'bg-amber-100' : 'bg-blue-100'}`}>
-                          {note.type === 'critical' ? <AlertTriangle className="w-3 h-3 text-red-600" /> : note.type === 'warning' ? <AlertTriangle className="w-3 h-3 text-amber-600" /> : <Activity className="w-3 h-3 text-blue-600" />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-[11px] font-semibold text-gray-700">{note.from}</span>
-                            <span className="text-[10px] text-gray-400">{note.time}</span>
-                          </div>
-                          <p className="text-xs text-gray-600 leading-relaxed">{note.message}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </PremiumGate>
+              <UpgradeBanner t={t} label={t('crm.dashboard.upgradeAlerts', 'Upgrade to receive real-time alerts')} />
             ) : (
               <>
                 <div className="divide-y divide-gray-50 max-h-72 overflow-y-auto">
                   {MOCK_URGENT_NOTES.map((note) => (
                     <div key={note.id} className={`px-5 py-3 hover:bg-gray-50/50 transition-colors ${!note.read ? 'bg-red-50/20' : ''}`}>
                       <div className="flex items-start gap-2.5">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${note.type === 'critical' ? 'bg-red-100' : note.type === 'warning' ? 'bg-amber-100' : 'bg-blue-100'}`}>
-                          {note.type === 'critical' ? <AlertTriangle className="w-3 h-3 text-red-600" /> : note.type === 'warning' ? <AlertTriangle className="w-3 h-3 text-amber-600" /> : <Activity className="w-3 h-3 text-blue-600" />}
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                          note.type === 'critical' ? 'bg-red-100' : note.type === 'warning' ? 'bg-amber-100' : 'bg-blue-100'
+                        }`}>
+                          {note.type === 'critical' ? <AlertTriangle className="w-3 h-3 text-red-600" /> :
+                           note.type === 'warning' ? <AlertTriangle className="w-3 h-3 text-amber-600" /> :
+                           <Activity className="w-3 h-3 text-blue-600" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
@@ -682,7 +691,9 @@ const CRMDashboard = () => {
               </div>
               <span className="text-xs font-semibold text-emerald-600">€8,400</span>
             </div>
-            <PremiumGate locked={isFreeTier} message="Gelir Verilerinizi Görmek İçin Premium'a Geçin">
+            {isFreeTier ? (
+              <UpgradeBanner t={t} label={t('crm.dashboard.upgradeRevenue', 'Upgrade to track your weekly revenue')} />
+            ) : (
               <div className="px-5 py-4">
                 <div className="flex items-end justify-between gap-2 h-28">
                   {WEEKLY_REVENUE.map((d, i) => {
@@ -690,15 +701,23 @@ const CRMDashboard = () => {
                     const isToday = i === todayIndex;
                     return (
                       <div key={d.day} className="flex-1 flex flex-col items-center gap-1.5">
-                        <span className="text-[10px] font-semibold text-gray-500">{d.amount > 0 ? `€${(d.amount / 1000).toFixed(1)}k` : '—'}</span>
-                        <div className={`w-full max-w-[32px] rounded-lg transition-all ${isToday ? 'bg-gradient-to-t from-teal-600 to-teal-400 shadow-sm shadow-teal-200' : d.amount > 0 ? 'bg-gray-200 hover:bg-gray-300' : 'bg-gray-100'}`} style={{ height: `${h}%` }} />
+                        <span className="text-[10px] font-semibold text-gray-500">
+                          {d.amount > 0 ? `€${(d.amount / 1000).toFixed(1)}k` : '—'}
+                        </span>
+                        <div
+                          className={`w-full max-w-[32px] rounded-lg transition-all ${
+                            isToday ? 'bg-gradient-to-t from-teal-600 to-teal-400 shadow-sm shadow-teal-200' :
+                            d.amount > 0 ? 'bg-gray-200 hover:bg-gray-300' : 'bg-gray-100'
+                          }`}
+                          style={{ height: `${h}%` }}
+                        />
                         <span className={`text-[10px] font-medium ${isToday ? 'text-teal-600 font-bold' : 'text-gray-400'}`}>{d.day}</span>
                       </div>
                     );
                   })}
                 </div>
               </div>
-            </PremiumGate>
+            )}
           </div>
 
           {/* Recent Patients */}
@@ -713,7 +732,7 @@ const CRMDashboard = () => {
               <Link to="/crm/patients" className="text-xs font-semibold text-teal-600 hover:text-teal-700">{t('crm.dashboard.viewAll')}</Link>
             </div>
             {isFreeTier ? (
-              <UpgradeBanner t={t} label={t('crm.dashboard.upgradePatients', 'Hasta verilerinizi görmek için Premium\'a geçin')} />
+              <UpgradeBanner t={t} label={t('crm.dashboard.upgradePatients', 'Upgrade to see your recent patients')} />
             ) : (
               <div className="divide-y divide-gray-50">
                 {MOCK_RECENT_PATIENTS.map((p, i) => (

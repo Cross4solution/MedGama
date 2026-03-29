@@ -4,23 +4,24 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
+use App\Models\Hospital;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class BranchController extends Controller
 {
     /**
-     * GET /api/branches
-     * List branches for the authenticated hospital owner.
+     * GET /api/branches — List branches for the authenticated hospital owner.
      */
     public function index(Request $request): JsonResponse
     {
         $hospital = $this->resolveHospital($request);
+        if (!$hospital) {
+            return response()->json(['message' => 'Hospital not found.'], 404);
+        }
 
         $branches = $hospital->branches()
-            ->when($request->boolean('active_only'), fn ($q) => $q->active())
-            ->withCount(['clinics', 'doctors'])
+            ->orderBy('display_order')
             ->orderBy('name')
             ->get();
 
@@ -28,153 +29,114 @@ class BranchController extends Controller
     }
 
     /**
-     * POST /api/branches
+     * POST /api/branches — Create a new branch.
      */
     public function store(Request $request): JsonResponse
     {
         $hospital = $this->resolveHospital($request);
-
-        $validator = Validator::make($request->all(), [
-            'name'        => 'required|string|max:255',
-            'address'     => 'nullable|string',
-            'phone'       => 'nullable|string|max:50',
-            'email'       => 'nullable|email|max:255',
-            'coordinates' => 'nullable|array',
-            'coordinates.lat' => 'required_with:coordinates|numeric',
-            'coordinates.lng' => 'required_with:coordinates|numeric',
-            'city'        => 'nullable|string|max:255',
-            'country'     => 'nullable|string|max:255',
-            'is_active'   => 'boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+        if (!$hospital) {
+            return response()->json(['message' => 'Hospital not found.'], 404);
         }
 
-        $branch = $hospital->branches()->create($validator->validated());
+        $data = $request->validate([
+            'name'          => 'required|string|max:255',
+            'address'       => 'nullable|string|max:1000',
+            'city'          => 'nullable|string|max:100',
+            'country'       => 'nullable|string|max:100',
+            'latitude'      => 'nullable|numeric|between:-90,90',
+            'longitude'     => 'nullable|numeric|between:-180,180',
+            'phone'         => 'nullable|string|max:30',
+            'email'         => 'nullable|email|max:255',
+            'is_active'     => 'boolean',
+            'display_order' => 'integer|min:0',
+        ]);
 
-        return response()->json(['data' => $branch], 201);
+        $data['hospital_id'] = $hospital->id;
+        $branch = Branch::create($data);
+
+        return response()->json([
+            'message' => 'Branch created.',
+            'data'    => $branch,
+        ], 201);
     }
 
     /**
-     * GET /api/branches/{id}
+     * GET /api/branches/{id} — Show a single branch.
      */
     public function show(Request $request, string $id): JsonResponse
     {
         $hospital = $this->resolveHospital($request);
+        if (!$hospital) {
+            return response()->json(['message' => 'Hospital not found.'], 404);
+        }
 
-        $branch = $hospital->branches()
-            ->withCount(['clinics', 'doctors'])
-            ->with(['clinics:id,name,avatar', 'doctors:id,fullname,avatar'])
-            ->findOrFail($id);
+        $branch = $hospital->branches()->findOrFail($id);
 
         return response()->json(['data' => $branch]);
     }
 
     /**
-     * PUT /api/branches/{id}
+     * PUT /api/branches/{id} — Update a branch.
      */
     public function update(Request $request, string $id): JsonResponse
     {
         $hospital = $this->resolveHospital($request);
-        $branch = $hospital->branches()->findOrFail($id);
-
-        $validator = Validator::make($request->all(), [
-            'name'        => 'sometimes|required|string|max:255',
-            'address'     => 'nullable|string',
-            'phone'       => 'nullable|string|max:50',
-            'email'       => 'nullable|email|max:255',
-            'coordinates' => 'nullable|array',
-            'coordinates.lat' => 'required_with:coordinates|numeric',
-            'coordinates.lng' => 'required_with:coordinates|numeric',
-            'city'        => 'nullable|string|max:255',
-            'country'     => 'nullable|string|max:255',
-            'is_active'   => 'boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+        if (!$hospital) {
+            return response()->json(['message' => 'Hospital not found.'], 404);
         }
 
-        $branch->update($validator->validated());
+        $branch = $hospital->branches()->findOrFail($id);
 
-        return response()->json(['data' => $branch->fresh()]);
+        $data = $request->validate([
+            'name'          => 'sometimes|string|max:255',
+            'address'       => 'nullable|string|max:1000',
+            'city'          => 'nullable|string|max:100',
+            'country'       => 'nullable|string|max:100',
+            'latitude'      => 'nullable|numeric|between:-90,90',
+            'longitude'     => 'nullable|numeric|between:-180,180',
+            'phone'         => 'nullable|string|max:30',
+            'email'         => 'nullable|email|max:255',
+            'is_active'     => 'boolean',
+            'display_order' => 'integer|min:0',
+        ]);
+
+        $branch->update($data);
+
+        return response()->json([
+            'message' => 'Branch updated.',
+            'data'    => $branch->refresh(),
+        ]);
     }
 
     /**
-     * DELETE /api/branches/{id}
+     * DELETE /api/branches/{id} — Soft-delete a branch.
      */
     public function destroy(Request $request, string $id): JsonResponse
     {
         $hospital = $this->resolveHospital($request);
-        $branch = $hospital->branches()->findOrFail($id);
+        if (!$hospital) {
+            return response()->json(['message' => 'Hospital not found.'], 404);
+        }
 
+        $branch = $hospital->branches()->findOrFail($id);
         $branch->delete();
 
-        return response()->json(['message' => 'Branch deleted successfully.']);
+        return response()->json(['message' => 'Branch deleted.']);
     }
 
     /**
-     * POST /api/branches/{id}/assign-clinic
+     * Resolve the hospital for the authenticated user.
+     * Hospital owner (role_id=hospital) → ownedHospital
+     * Admin → can pass ?hospital_id= query param
      */
-    public function assignClinic(Request $request, string $id): JsonResponse
-    {
-        $hospital = $this->resolveHospital($request);
-        $branch = $hospital->branches()->findOrFail($id);
-
-        $validator = Validator::make($request->all(), [
-            'clinic_id'  => 'required|uuid|exists:clinics,id',
-            'is_primary' => 'boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $branch->clinics()->syncWithoutDetaching([
-            $request->clinic_id => ['is_primary' => $request->boolean('is_primary')],
-        ]);
-
-        return response()->json(['message' => 'Clinic assigned to branch.']);
-    }
-
-    /**
-     * POST /api/branches/{id}/assign-doctor
-     */
-    public function assignDoctor(Request $request, string $id): JsonResponse
-    {
-        $hospital = $this->resolveHospital($request);
-        $branch = $hospital->branches()->findOrFail($id);
-
-        $validator = Validator::make($request->all(), [
-            'doctor_id' => 'required|uuid|exists:users,id',
-            'schedule'  => 'nullable|array',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $branch->doctors()->syncWithoutDetaching([
-            $request->doctor_id => ['schedule' => json_encode($request->schedule)],
-        ]);
-
-        return response()->json(['message' => 'Doctor assigned to branch.']);
-    }
-
-    /**
-     * Resolve the hospital owned by the authenticated user.
-     */
-    private function resolveHospital(Request $request)
+    private function resolveHospital(Request $request): ?Hospital
     {
         $user = $request->user();
 
-        $hospital = $user->ownedHospital ?? $user->hospital;
-
-        if (!$hospital) {
-            abort(403, 'No hospital associated with this account.');
+        if ($user->isAdmin() && $request->has('hospital_id')) {
+            return Hospital::find($request->query('hospital_id'));
         }
 
-        return $hospital;
+        return $user->ownedHospital ?? ($user->hospital_id ? $user->hospital : null);
     }
 }

@@ -14,9 +14,9 @@ return new class extends Migration
             $table->foreign('specialty_id')->references('id')->on('specialties')->cascadeOnDelete();
 
             $table->string('slug', 100)->unique();        // e.g. "botox", "laser-epilation"
-            $table->jsonb('name');                          // {"en": "Botox", "tr": "Botoks"}
-            $table->jsonb('aliases')->nullable();           // {"en": ["wrinkle treatment","botulinum"], "tr": ["kırışıklık tedavisi","botulinum"]}
-            $table->jsonb('description')->nullable();       // {"en": "...", "tr": "..."}
+            $table->json('name');                          // {"en": "Botox", "tr": "Botoks"}
+            $table->json('aliases')->nullable();           // {"en": ["wrinkle treatment","botulinum"], "tr": ["kırışıklık tedavisi","botulinum"]}
+            $table->json('description')->nullable();       // {"en": "...", "tr": "..."}
             $table->boolean('is_active')->default(true);
             $table->integer('display_order')->default(0);
             $table->timestamps();

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { getRedirectFromLoginResult } from '../utils/authRedirect';
 import { Heart, CheckCircle, Shield } from 'lucide-react';
 import LoginForm from '../components/auth/LoginForm';
 import RegisterForm from '../components/auth/RegisterForm';
@@ -103,7 +104,7 @@ const AuthPages = () => {
         const res = await login(formData.email, formData.password, !!formData.rememberMe);
         // Login never requires email verification — verification is register-only for patients/doctors
         notify({ type: 'success', message: 'Giriş başarılı!' });
-        navigate('/dashboard');
+        navigate(getRedirectFromLoginResult(res, '/medstream'));
       } else if (currentPage === 'register') {
         const roleId = formData.role === 'clinic' ? 'clinicOwner' : formData.role;
         const doRegister = roleId === 'doctor' ? registerDoctor : register;
@@ -130,7 +131,9 @@ const AuthPages = () => {
         const redirectTo = (roleId === 'doctor') ? '/onboarding'
           : (roleId === 'clinicOwner') ? '/doctor/dashboard'
           : '/dashboard';
-        if (needsVerification === false) {
+        // Only patient and doctor need email verification — clinic/hospital/admin are auto-verified
+        const roleNeedsVerify = ['patient', 'doctor'].includes(roleId);
+        if (needsVerification === false || !roleNeedsVerify) {
           notify({ type: 'success', message: 'Kayıt başarılı! E-posta adresiniz otomatik olarak doğrulandı.' });
           navigate(redirectTo);
         } else {

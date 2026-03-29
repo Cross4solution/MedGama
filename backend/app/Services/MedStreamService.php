@@ -19,6 +19,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Models\AuditLog;
 
 class MedStreamService
 {
@@ -62,7 +63,23 @@ class MedStreamService
             ->when($filters['clinic_id'] ?? null, fn($q, $v) => $q->where('clinic_id', $v))
             ->when($filters['hospital_id'] ?? null, fn($q, $v) => $q->where('hospital_id', $v))
             ->when($filters['post_type'] ?? null, fn($q, $v) => $q->where('post_type', $v))
-            ->when($filters['specialty_id'] ?? null, fn($q, $v) => $q->where('specialty_id', $v));
+            ->when($filters['specialty_id'] ?? null, fn($q, $v) => $q->where('specialty_id', $v))
+            // Fuzzy full-text search on post content
+            ->when($filters['search'] ?? null, fn($q, $v) =>
+                $q->where('content', 'LIKE', '%' . $v . '%')
+            )
+            // Author specialization filter (doctor_profile.specialty)
+            ->when($filters['specialization'] ?? null, fn($q, $v) =>
+                $q->whereHas('author.doctorProfile', fn($dq) =>
+                    $dq->where('specialty', 'LIKE', '%' . $v . '%')
+                )
+            )
+            // Country filter (author's country field)
+            ->when($filters['country'] ?? null, fn($q, $v) =>
+                $q->whereHas('author', fn($uq) =>
+                    $uq->where('country', 'LIKE', '%' . $v . '%')
+                )
+            );
 
         // Top Posts: restrict to last 30 days
         if ($sort === 'top') {
@@ -82,8 +99,8 @@ class MedStreamService
                 )
                 ->selectRaw($this->engagementScoreSql() . ' as engagement_score');
 
-            // Primary: followed authors first
-            $query->orderByRaw('is_followed_author DESC NULLS LAST');
+            // Primary: followed authors first (MySQL-compatible NULLS LAST equivalent)
+            $query->orderByRaw('(is_followed_author IS NULL) ASC, is_followed_author DESC');
 
             // Secondary: by sort mode
             if ($sort === 'top') {
@@ -196,6 +213,21 @@ class MedStreamService
 
         $post->load('author:id,fullname,avatar');
 
+        // Audit log — media upload tracking
+        $mediaTypes = collect($mediaResult['uploaded_files'] ?? [])->pluck('type')->unique()->values()->toArray();
+        AuditLog::log(
+            action: 'medstream.post.created',
+            resourceType: 'MedStreamPost',
+            resourceId: $post->id,
+            newValues: [
+                'post_type'   => $post->post_type,
+                'media_types' => $mediaTypes,
+                'media_count' => count($mediaResult['uploaded_files'] ?? []),
+                'has_videos'  => $hasVideos,
+            ],
+            description: "MedStream post created by {$author->fullname} ({$post->post_type})" . ($hasVideos ? ' — video processing queued' : ''),
+        );
+
         return $post;
     }
 
@@ -214,6 +246,21 @@ class MedStreamService
      */
     public function destroyPost(MedStreamPost $post): void
     {
+        // Audit log — media deletion tracking
+        $mediaTypes = collect($post->media ?? [])->pluck('type')->unique()->values()->toArray();
+        AuditLog::log(
+            action: 'medstream.post.deleted',
+            resourceType: 'MedStreamPost',
+            resourceId: $post->id,
+            oldValues: [
+                'post_type'   => $post->post_type,
+                'media_types' => $mediaTypes,
+                'media_count' => count($post->media ?? []),
+                'author_id'   => $post->author_id,
+            ],
+            description: "MedStream post deleted (type: {$post->post_type}, media: " . count($post->media ?? []) . ")",
+        );
+
         // Delete media files from disk (outside transaction)
         $this->deletePostMedia($post);
 

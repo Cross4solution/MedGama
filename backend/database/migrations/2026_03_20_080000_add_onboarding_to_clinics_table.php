@@ -12,7 +12,7 @@ return new class extends Migration
             $table->boolean('onboarding_completed')->default(false)->after('is_active');
             $table->tinyInteger('onboarding_step')->default(0)->after('onboarding_completed');
             $table->string('phone', 30)->nullable()->after('address');
-            $table->jsonb('specialties')->nullable()->after('biography');
+            $table->json('specialties')->nullable()->after('biography');
         });
     }
 
