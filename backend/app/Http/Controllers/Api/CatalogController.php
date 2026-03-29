@@ -432,16 +432,41 @@ class CatalogController extends Controller
     }
 
     /**
-     * Search models that use HasTranslations trait (name column is JSONB).
+     * Build a driver-aware WHERE clause for partial, case-insensitive search on a JSON name column.
+     * Supports PostgreSQL (name->>?), MySQL/TiDB (JSON_UNQUOTE(JSON_EXTRACT(...))), and SQLite (json_extract).
+     */
+    private function applyJsonNameSearch($builder, string $q, string $locale, string $fallback): void
+    {
+        $driver = \DB::connection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            $builder->whereRaw("LOWER(name->>?) LIKE ?", [$locale, "%{$q}%"])
+                    ->orWhereRaw("LOWER(name->>?) LIKE ?", [$fallback, "%{$q}%"])
+                    ->orWhereRaw("LOWER(code) LIKE ?", ["%{$q}%"]);
+        } elseif ($driver === 'sqlite') {
+            $localePath   = '$.'. $locale;
+            $fallbackPath = '$.'. $fallback;
+            $builder->whereRaw("LOWER(json_extract(name, ?)) LIKE ?", [$localePath, "%{$q}%"])
+                    ->orWhereRaw("LOWER(json_extract(name, ?)) LIKE ?", [$fallbackPath, "%{$q}%"])
+                    ->orWhereRaw("LOWER(code) LIKE ?", ["%{$q}%"]);
+        } else {
+            // MySQL / TiDB
+            $localePath   = '$.'. $locale;
+            $fallbackPath = '$.'. $fallback;
+            $builder->whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, ?))) LIKE ?", [$localePath, "%{$q}%"])
+                    ->orWhereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(name, ?))) LIKE ?", [$fallbackPath, "%{$q}%"])
+                    ->orWhereRaw("LOWER(code) LIKE ?", ["%{$q}%"]);
+        }
+    }
+
+    /**
+     * Search models that use HasTranslations trait (name column is JSON).
      */
     private function searchTranslatable($query, string $q, string $locale, string $fallback, int $limit, bool $withCategory = false)
     {
-        // Fuzzy search: filter by ILIKE on JSONB name column for both locale and fallback
         $filtered = $query
             ->where(function ($builder) use ($q, $locale, $fallback) {
-                $builder->whereRaw("LOWER(name->>?) LIKE ?", [$locale, "%{$q}%"])
-                        ->orWhereRaw("LOWER(name->>?) LIKE ?", [$fallback, "%{$q}%"])
-                        ->orWhereRaw("LOWER(code) LIKE ?", ["%{$q}%"]);
+                $this->applyJsonNameSearch($builder, $q, $locale, $fallback);
             })
             ->limit($limit)
             ->get();
@@ -484,9 +509,7 @@ class CatalogController extends Controller
     {
         $filtered = $query
             ->where(function ($builder) use ($q, $locale, $fallback) {
-                $builder->whereRaw("LOWER(name->>?) LIKE ?", [$locale, "%{$q}%"])
-                        ->orWhereRaw("LOWER(name->>?) LIKE ?", [$fallback, "%{$q}%"])
-                        ->orWhereRaw("LOWER(code) LIKE ?", ["%{$q}%"]);
+                $this->applyJsonNameSearch($builder, $q, $locale, $fallback);
             })
             ->limit(5)
             ->get();
