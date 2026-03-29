@@ -24,8 +24,12 @@ return new class extends Migration
                     $q->orWhereRaw("LOWER(comment) ~ '^[a-z]{1,6}$'")       // e.g. "asdasd"
                       ->orWhereRaw("comment ~ '^[A-Z]{3,}$'")               // e.g. "ASDSAD"
                       ->orWhereRaw("LOWER(comment) ~ '^(test|asdf|qwer|asd)'");
+                } elseif ($driver === 'sqlite') {
+                    // SQLite: use LIKE patterns for basic matching
+                    $q->orWhereRaw("LOWER(comment) IN ('a', 'as', 'asd', 'asda', 'asdas', 'test', 'asdf', 'qwer')")
+                      ->orWhereIn('comment', ['ABC', 'ASDSAD', 'TESTING', 'TEST']);
                 } else {
-                    // MySQL / TiDB / SQLite use REGEXP
+                    // MySQL / TiDB use REGEXP
                     $q->orWhereRaw("LOWER(comment) REGEXP '^[a-z]{1,6}$'")  // e.g. "asdasd"
                       ->orWhereRaw("comment REGEXP '^[A-Z]{3,}$'")          // e.g. "ASDSAD"
                       ->orWhereRaw("LOWER(comment) REGEXP '^(test|asdf|qwer|asd)'");
