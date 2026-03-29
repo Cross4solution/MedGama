@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { useFavorites } from '../context/FavoritesContext';
 import { useNotifications } from '../context/NotificationsContext';
 import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, Heart, FolderHeart, Activity, Lock, X, Sparkles } from 'lucide-react';
 
@@ -20,7 +19,6 @@ export default function SidebarPatient() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { count: favCount } = useFavorites();
   const { unreadCount: notifCount } = useNotifications();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
@@ -34,7 +32,7 @@ export default function SidebarPatient() {
     { to: '/patient-dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: Activity },
     { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
-    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart, badge: favCount || undefined },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
@@ -49,7 +47,7 @@ export default function SidebarPatient() {
     { to: '/doctor/dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: LayoutDashboard },
     { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
-    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart, badge: favCount || undefined },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
