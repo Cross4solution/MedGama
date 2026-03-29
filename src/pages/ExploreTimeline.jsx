@@ -26,7 +26,9 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
   useEffect(() => {
     setApiLoaded(false);
     const params = { per_page: 50, sort };
-    if (specialtyFilter) params.specialty_id = specialtyFilter;
+    if (specialtyFilter) params.specialization = specialtyFilter;
+    if (textQuery)       params.search = textQuery;
+    if (countryName)     params.country = countryName;
     medStreamAPI.posts(params).then((res) => {
       const list = res?.data || [];
       if (list.length) {
@@ -81,7 +83,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
       }
       setApiLoaded(true);
     }).catch(() => setApiLoaded(true));
-  }, [refreshKey, sort]);
+  }, [refreshKey, sort, textQuery, specialtyFilter, countryName]);
 
   // Kaynak data — mock fallback
   const base = useMemo(() => {
@@ -162,16 +164,9 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     const pinned = source.filter(x => injectedIds.has(x.id));
     let list = source.filter(x => !injectedIds.has(x.id));
 
-    // Client-side text/country filters (backend handles sort + follow priority)
-    const codeLower = countryName ? (countryCodes[countryName] || '').toLowerCase() : '';
-    if (codeLower) list = list.filter(x => !x.countryCode || (x.countryCode || '').toLowerCase() === codeLower);
-    if (textQuery) {
-      const q = textQuery.toLowerCase();
-      list = list.filter(x => (x.title + ' ' + x.subtitle + ' ' + x.text).toLowerCase().includes(q));
-    }
-    // Pinned (injected) posts always first
+    // Backend handles search, specialization, country filters — injected posts always on top
     return [...pinned, ...list];
-  }, [source, injectedPosts, countryName, textQuery]);
+  }, [source, injectedPosts]);
 
   const paged = useMemo(() => {
     const start = 0;
