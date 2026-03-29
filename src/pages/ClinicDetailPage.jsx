@@ -30,7 +30,6 @@ import {
   clinicInfo,
   aboutData,
   servicesData,
-  departmentsData,
   galleryData,
   beforeAfterData,
   priceRangesData,
@@ -97,9 +96,7 @@ const ClinicDetailPage = () => {
   // Prices Tab State
   const [selectedService, setSelectedService] = useState(null);
   
-  // Doctors Tab State
-  const [selectedDept, setSelectedDept] = useState(null);
-  const doctorsText = 'Our expert doctors provide comprehensive care across multiple specialties, focusing on patient safety and outcomes.';
+  // Doctors (from API)
   
   // Gallery State
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -126,10 +123,7 @@ const ClinicDetailPage = () => {
       case 'doktorlar':
         return (
           <DoctorsTab
-            doctorsText={doctorsText}
-            deptDoctors={departmentsData}
-            selectedDept={selectedDept}
-            setSelectedDept={setSelectedDept}
+            doctors={apiClinic?.doctors || []}
           />
         );
       case 'degerlendirmeler':

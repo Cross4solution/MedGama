@@ -193,6 +193,7 @@ export const doctorAPI = {
   myReviews: (params) => api.get('/doctors/my-reviews', { params }),
   respondToReview: (reviewId, response) => api.put(`/doctors/reviews/${reviewId}/respond`, { response }),
   reviewableAppointments: () => api.get('/doctors/reviewable-appointments'),
+  faqs: (id) => api.get(`/doctors/${id}/faqs`),
 };
 
 // ── Doctor Profile (own profile management + onboarding) ──
@@ -209,6 +210,12 @@ export const doctorProfileAPI = {
   // Verification documents (Doc §8.3)
   getVerificationRequests: () => api.get('/doctor-profile/verification'),
   submitVerification: (formData) => api.post('/doctor-profile/verification', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  // Doctor FAQs (CRM CRUD)
+  getFaqs: () => api.get('/doctor-profile/faqs'),
+  createFaq: (data) => api.post('/doctor-profile/faqs', data),
+  updateFaq: (id, data) => api.put(`/doctor-profile/faqs/${id}`, data),
+  deleteFaq: (id) => api.delete(`/doctor-profile/faqs/${id}`),
+  reorderFaqs: (order) => api.put('/doctor-profile/faqs/reorder', { order }),
 };
 
 // ── Appointment Service ──

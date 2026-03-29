@@ -17,6 +17,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ══════════════════════════════════════════════════════════════════
+        //  CATALOG (Specialties, Cities, Diseases, Symptoms) — must run first
+        // ══════════════════════════════════════════════════════════════════
+        $this->call(CatalogSeeder::class);
+
+        // ══════════════════════════════════════════════════════════════════
         //  SUPER ADMIN
         // ══════════════════════════════════════════════════════════════════
 
@@ -455,6 +460,21 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
+        // Build specialty text → ID lookup for Single Source of Truth (both EN and TR keys)
+        $allSpecialties = \App\Models\Specialty::all();
+        $specialtyMap = []; // lowercase name → specialty model
+        foreach ($allSpecialties as $spec) {
+            $raw = $spec->getAttributes()['name'];
+            $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
+            if (is_array($decoded)) {
+                foreach ($decoded as $locale => $name) {
+                    $specialtyMap[mb_strtolower(trim($name))] = $spec;
+                }
+            } else {
+                $specialtyMap[mb_strtolower(trim((string) $raw))] = $spec;
+            }
+        }
+
         $doctors = [];
         foreach ($doctorData as $index => $dd) {
             $clinic = $clinics[$dd['clinic_index']] ?? null;
@@ -478,12 +498,67 @@ class DatabaseSeeder extends Seeder
                 ]
             );
 
+            // Resolve specialty_id from text name via locale-aware lookup
+            $specText = $dd['profile']['specialty'] ?? '';
+            $specId = null;
+            // Normalize: "Kardiyoloji – Girişimsel" → "kardiyoloji", "Ortopedi ve Travmatoloji" → "ortopedi"
+            $normalizedSpec = mb_strtolower(trim(preg_split('/[\s]*[–\-][\s]*/u', $specText)[0]));
+            // Direct match
+            if (isset($specialtyMap[$normalizedSpec])) {
+                $specId = $specialtyMap[$normalizedSpec]->id;
+            } else {
+                // Fuzzy: match first word(s) — e.g. "ortopedi ve travmatoloji" matches "ortopedi"
+                foreach ($specialtyMap as $key => $spec) {
+                    if (str_starts_with($normalizedSpec, $key) || str_starts_with($key, $normalizedSpec)
+                        || str_contains($key, $normalizedSpec) || str_contains($normalizedSpec, $key)) {
+                        $specId = $spec->id;
+                        break;
+                    }
+                }
+            }
+
+            $profileData = array_merge(['user_id' => $doctor->id], $dd['profile'], [
+                'clinic_id'    => $clinic?->id,
+                'specialty_id' => $specId,
+            ]);
+
             DoctorProfile::updateOrCreate(
                 ['user_id' => $doctor->id],
-                array_merge(['user_id' => $doctor->id], $dd['profile'])
+                $profileData
             );
 
             $doctors[] = $doctor;
+        }
+
+        // ══════════════════════════════════════════════════════════════════
+        //  DOCTOR FAQs (Dr. Ayşe Kaya — Cardiology)
+        // ══════════════════════════════════════════════════════════════════
+
+        $ayseKaya = $doctors[0] ?? null;
+        if ($ayseKaya) {
+            $faqData = [
+                [
+                    'question'   => 'Kardiyoloji muayenesine gelmeden önce ne yapmalıyım?',
+                    'answer'     => 'Muayeneye gelmeden önce varsa önceki EKG, efor testi ve kan sonuçlarınızı yanınıza alın. Son 24 saat içinde kafein tüketimini azaltmanız ve rahat kıyafetler giymeniz önerilir. Kullandığınız ilaç listesini de getirmeniz tanı sürecini hızlandıracaktır.',
+                    'sort_order' => 0,
+                ],
+                [
+                    'question'   => 'Kalp çarpıntısı ne zaman ciddi bir durum olabilir?',
+                    'answer'     => 'Çoğu çarpıntı zararsızdır ve stres, kafein veya uyku bozukluğundan kaynaklanır. Ancak çarpıntıya göğüs ağrısı, nefes darlığı, baş dönmesi veya bayılma eşlik ediyorsa, ya da çarpıntı düzensiz ve 10 dakikadan uzun sürüyorsa mutlaka bir kardiyoloğa başvurun. Erken tanı hayat kurtarır.',
+                    'sort_order' => 1,
+                ],
+                [
+                    'question'   => 'Online (uzaktan) kardiyoloji konsültasyonu mümkün mü?',
+                    'answer'     => 'Evet, kontrol muayeneleri, ilaç ayarlamaları ve test sonucu değerlendirmeleri için online konsültasyon sunuyorum. İlk muayene veya fizik muayene gerektiren durumlar için yüz yüze görüşme gereklidir. Online randevu almak için profil sayfamdaki "Online Randevu" butonunu kullanabilirsiniz.',
+                    'sort_order' => 2,
+                ],
+            ];
+            foreach ($faqData as $fq) {
+                \App\Models\DoctorFaq::updateOrCreate(
+                    ['doctor_id' => $ayseKaya->id, 'question' => $fq['question']],
+                    array_merge($fq, ['doctor_id' => $ayseKaya->id, 'is_active' => true])
+                );
+            }
         }
 
         // ══════════════════════════════════════════════════════════════════

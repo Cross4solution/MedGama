@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\ClinicVerificationController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\DoctorFaqController;
 
 /*
 |--------------------------------------------------------------------------
@@ -279,6 +280,7 @@ Route::get('/doctors/suggestions', [DoctorController::class, 'suggestions'])->mi
 Route::get('/doctors/{id}', [DoctorController::class, 'show'])->middleware('cache.headers:public');
 Route::get('/doctors/{id}/reviews', [DoctorController::class, 'reviews'])->middleware('cache.headers:public');
 Route::get('/doctors/{id}/availability', [DoctorController::class, 'availability'])->middleware('cache.headers:public');
+Route::get('/doctors/{id}/faqs', [DoctorFaqController::class, 'index'])->middleware('cache.headers:public');
 Route::post('/doctors/{id}/reviews', [DoctorController::class, 'submitReview'])->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/doctors/my-reviews', [DoctorController::class, 'myReviews']);
@@ -304,6 +306,13 @@ Route::prefix('doctor-profile')->middleware('auth:sanctum')->group(function () {
     // Verification documents (Doc §8.3)
     Route::get('/verification', [DoctorProfileController::class, 'verificationRequests']);
     Route::post('/verification', [DoctorProfileController::class, 'submitVerification']);
+
+    // Doctor FAQs (CRM CRUD)
+    Route::get('/faqs', [DoctorFaqController::class, 'myFaqs']);
+    Route::post('/faqs', [DoctorFaqController::class, 'store']);
+    Route::put('/faqs/reorder', [DoctorFaqController::class, 'reorder']);
+    Route::put('/faqs/{id}', [DoctorFaqController::class, 'update']);
+    Route::delete('/faqs/{id}', [DoctorFaqController::class, 'destroy']);
 });
 
 /*

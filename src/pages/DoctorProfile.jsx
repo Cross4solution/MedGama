@@ -18,6 +18,7 @@ import SendMessageModal from '../components/modals/SendMessageModal';
 import DoctorBookingModal from '../components/modals/DoctorBookingModal';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import MedstreamProfileFeed from '../components/profile/MedstreamProfileFeed';
+import DoctorFaqSection from '../components/doctor/DoctorFaqSection';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
@@ -195,7 +196,8 @@ const DoctorProfilePage = () => {
   const education = profile?.education || [];
   const certifications = profile?.certifications || [];
   const languages = profile?.languages || [];
-  const locationAddress = profile?.address || '';
+  const locationAddress = profile?.full_address_text || profile?.address || '';
+  const mapCoordinates = profile?.map_coordinates || null;
   const onlineConsultation = profile?.online_consultation || false;
   const operatingHours = profile?.operating_hours || null;
   const hasProfile = profile && profile.onboarding_completed;
@@ -234,6 +236,7 @@ const DoctorProfilePage = () => {
     { id: 'medstream', label: 'Medstream' },
     { id: 'services', label: t('doctorProfile.services') },
     { id: 'reviews', label: `${t('doctorProfile.reviews')} (${reviewStats.review_count})` },
+    { id: 'faq', label: t('doctorProfile.faq', 'FAQ') },
     { id: 'gallery', label: t('doctorProfile.gallery') },
     { id: 'location', label: t('doctorProfile.location') },
   ];
@@ -640,6 +643,11 @@ const DoctorProfilePage = () => {
                   <MedstreamProfileFeed authorId={doctorId} />
                 )}
 
+                {/* ── FAQ ── */}
+                {activeTab === 'faq' && (
+                  <DoctorFaqSection doctorId={doctorId} />
+                )}
+
                 {/* ── Gallery ── */}
                 {activeTab === 'gallery' && (
                   <div className="space-y-4">
@@ -688,9 +696,16 @@ const DoctorProfilePage = () => {
                 {activeTab === 'location' && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-bold text-gray-900">{t('doctorProfile.location')}</h3>
-                    {locationAddress ? (<>
-                      <div className="flex items-start gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 mt-0.5 text-teal-600 flex-shrink-0" /><span>{locationAddress}</span></div>
-                      <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm"><LeafletMap address={locationAddress} height="320px" zoom={15} /></div>
+                    {locationAddress || (mapCoordinates?.lat && mapCoordinates?.lng) ? (<>
+                      {locationAddress && <div className="flex items-start gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 mt-0.5 text-teal-600 flex-shrink-0" /><span>{locationAddress}</span></div>}
+                      <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                        <LeafletMap
+                          address={locationAddress}
+                          center={mapCoordinates?.lat && mapCoordinates?.lng ? [parseFloat(mapCoordinates.lat), parseFloat(mapCoordinates.lng)] : undefined}
+                          height="320px"
+                          zoom={15}
+                        />
+                      </div>
                     </>) : <p className="text-sm text-gray-400 italic">{t('doctorProfile.noLocationYet')}</p>}
                   </div>
                 )}
