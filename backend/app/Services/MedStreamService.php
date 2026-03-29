@@ -63,7 +63,23 @@ class MedStreamService
             ->when($filters['clinic_id'] ?? null, fn($q, $v) => $q->where('clinic_id', $v))
             ->when($filters['hospital_id'] ?? null, fn($q, $v) => $q->where('hospital_id', $v))
             ->when($filters['post_type'] ?? null, fn($q, $v) => $q->where('post_type', $v))
-            ->when($filters['specialty_id'] ?? null, fn($q, $v) => $q->where('specialty_id', $v));
+            ->when($filters['specialty_id'] ?? null, fn($q, $v) => $q->where('specialty_id', $v))
+            // Fuzzy full-text search on post content
+            ->when($filters['search'] ?? null, fn($q, $v) =>
+                $q->where('content', 'LIKE', '%' . $v . '%')
+            )
+            // Author specialization filter (doctor_profile.specialty)
+            ->when($filters['specialization'] ?? null, fn($q, $v) =>
+                $q->whereHas('author.doctorProfile', fn($dq) =>
+                    $dq->where('specialty', 'LIKE', '%' . $v . '%')
+                )
+            )
+            // Country filter (author's country field)
+            ->when($filters['country'] ?? null, fn($q, $v) =>
+                $q->whereHas('author', fn($uq) =>
+                    $uq->where('country', 'LIKE', '%' . $v . '%')
+                )
+            );
 
         // Top Posts: restrict to last 30 days
         if ($sort === 'top') {
