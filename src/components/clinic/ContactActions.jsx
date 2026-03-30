@@ -15,7 +15,7 @@ export default function ContactActions({ onTelehealth, onBook, onMessage }) {
         <span>{t('clinicDetail.bookAppointment')}</span>
       </button>
 
-      {/* Secondary — Online Consultation */}
+      {/* Secondary — Telehealth */}
       <button
         onClick={onTelehealth}
         className="w-full min-h-[46px] bg-[#4338ca] text-white py-3 px-4 rounded-xl hover:bg-[#3730a3] focus:ring-4 focus:ring-indigo-200 transition-all duration-200 font-semibold text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md"

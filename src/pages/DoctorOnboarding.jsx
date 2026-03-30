@@ -461,7 +461,7 @@ export default function OnboardingWizard() {
               </div>
             </div>
 
-            {/* Online Consultation */}
+            {/* Telehealth Available */}
             <label className="flex items-center gap-3 p-3.5 bg-teal-50/50 rounded-xl border border-teal-100 cursor-pointer">
               <input type="checkbox" checked={onlineConsultation} onChange={e => setOnlineConsultation(e.target.checked)}
                 className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500" />

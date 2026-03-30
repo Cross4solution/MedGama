@@ -52,7 +52,7 @@ export default function OnlineConsultationModal({ open, onClose, targetId, targe
               <Video className="w-5 h-5 text-teal-600" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-900">{isTr ? 'Online Görüşme' : 'Online Consultation'}</h2>
+              <h2 className="text-base font-bold text-gray-900">{isTr ? 'Görüntülü Görüşme' : 'Telehealth'}</h2>
               <p className="text-xs text-gray-500">{targetName}</p>
             </div>
           </div>

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 const APPOINTMENT_TYPES = [
   { id: 'in_person', icon: MapPin, label: 'In-Person Visit', labelTr: 'Yüz Yüze Muayene', color: 'bg-blue-50 text-blue-600 border-blue-200' },
-  { id: 'video', icon: Video, label: 'Video Consultation', labelTr: 'Online Görüşme', color: 'bg-teal-50 text-teal-600 border-teal-200' },
+  { id: 'video', icon: Video, label: 'Telehealth', labelTr: 'Görüntülü Görüşme', color: 'bg-teal-50 text-teal-600 border-teal-200' },
 ];
 
 const TIME_SLOTS = [
@@ -121,7 +121,7 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
           <div>
             <h2 className="text-lg font-bold text-gray-900">
               {initialType === 'video'
-                ? (isTr ? 'Online Görüşme Randevusu' : 'Online Consultation Booking')
+                ? (isTr ? 'Görüntülü Görüşme Randevusu' : 'Telehealth Appointment')
                 : (isTr ? 'Randevu Al' : 'Book Appointment')}
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">{targetName}</p>

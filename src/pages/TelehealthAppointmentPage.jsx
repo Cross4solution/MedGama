@@ -594,7 +594,7 @@ export default function TelehealthAppointmentPage() {
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { key: 'online', label: 'Online Telehealth', desc: 'Video consultation from home', icon: Video, color: 'teal' },
+                      { key: 'online', label: 'Telehealth', desc: 'Video consultation from home', icon: Video, color: 'teal' },
                       { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic directly', icon: Building2, color: 'blue' },
                     ].map(opt => (
                       <button
@@ -793,7 +793,7 @@ export default function TelehealthAppointmentPage() {
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { key: 'online', label: 'Online Telehealth', desc: 'Video consultation', icon: Video, color: 'teal' },
+                        { key: 'online', label: 'Telehealth', desc: 'Video consultation', icon: Video, color: 'teal' },
                         { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic', icon: Building2, color: 'blue' },
                       ].map(opt => (
                         <button

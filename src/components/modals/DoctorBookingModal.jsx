@@ -53,7 +53,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
 
   const TYPE_LABELS = {
     in_person: { en: 'In-Person Visit', tr: 'Yüz Yüze Muayene' },
-    video: { en: 'Video Consultation', tr: 'Online Görüşme' },
+    video: { en: 'Telehealth', tr: 'Görüntülü Görüşme' },
     phone: { en: 'Phone Consultation', tr: 'Telefon Görüşmesi' },
   };
 
@@ -176,7 +176,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
           <div>
             <h2 className="text-lg font-bold text-gray-900">
               {initialType === 'video'
-                ? (isTr ? 'Online Görüşme Randevusu' : 'Online Consultation Booking')
+                ? (isTr ? 'Görüntülü Görüşme Randevusu' : 'Telehealth Appointment')
                 : (isTr ? 'Randevu Al' : 'Book Appointment')}
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">{doctorName}</p>

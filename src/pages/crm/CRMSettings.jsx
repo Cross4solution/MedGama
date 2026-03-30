@@ -506,7 +506,7 @@ const CRMSettings = ({ standalone = false }) => {
                       </div>
                       <label className="flex items-center gap-3 self-end pb-1.5 cursor-pointer">
                         <input type="checkbox" checked={onlineConsultation} onChange={e => setOnlineConsultation(e.target.checked)} className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500" />
-                        <span className="text-sm text-gray-700 font-medium">Online Consultation Available</span>
+                        <span className="text-sm text-gray-700 font-medium">Telehealth Available</span>
                       </label>
                     </div>
                     {/* Spoken Languages — GlobalSuggest */}
