@@ -370,11 +370,6 @@ export default function GlobalSuggest({
                   )}
                 </div>
                 {sourceTypeBadge(item.sourceType)}
-                {item.code && !item.sourceType && (
-                  <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded flex-shrink-0">
-                    {item.code}
-                  </span>
-                )}
               </button>
             );
           })}
