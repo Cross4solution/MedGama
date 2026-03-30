@@ -60,9 +60,19 @@ export default function MapboxMap({
     loadCoordinates();
   }, [address, lat, lng]);
 
-  // If no coordinates and no address, don't render
+  // If no coordinates and no address, show placeholder
   if (!coordinates && !address) {
-    return null;
+    return (
+      <div
+        style={{ height, width: '100%' }}
+        className="flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-200"
+      >
+        <div className="text-center">
+          <MapPin className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+          <p className="text-sm text-gray-500">No location provided yet.</p>
+        </div>
+      </div>
+    );
   }
 
   // Loading state

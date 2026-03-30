@@ -98,10 +98,23 @@ export default function ClinicOnboarding() {
   };
 
   const saveStep = useCallback(async (nextStep) => {
+    // Validation
+    if (step === 0 && !name.trim()) {
+      alert('Please enter clinic name');
+      return;
+    }
+
     setSaving(true);
     try {
       if (step === 0) {
-        await clinicAPI.updateOnboarding({ step: 0, name, address, latitude, longitude, phone, biography });
+        const payload = { step: 0, name, phone, biography };
+        // Only add address and coordinates if they exist
+        if (address) payload.address = address;
+        if (latitude) payload.latitude = latitude;
+        if (longitude) payload.longitude = longitude;
+        
+        await clinicAPI.updateOnboarding(payload);
+        
         // Upload logo if selected
         if (logoFile) {
           const logoRes = await clinicAPI.uploadLogo(logoFile);
@@ -121,10 +134,11 @@ export default function ClinicOnboarding() {
       setStep(nextStep);
     } catch (err) {
       console.error('Save error:', err);
+      alert('Error saving: ' + (err?.response?.data?.message || err.message || 'Unknown error'));
     } finally {
       setSaving(false);
     }
-  }, [step, name, address, phone, biography, logoFile, selectedSpecialties, updateUser, navigate]);
+  }, [step, name, address, latitude, longitude, phone, biography, logoFile, selectedSpecialties, updateUser, navigate]);
 
   const addDoctor = async () => {
     if (!newDoctor.fullname || !newDoctor.email) {
