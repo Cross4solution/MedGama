@@ -75,7 +75,28 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
   const dateStr = selectedDate
     ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
     : null;
-  const daySlots = dateStr ? (availability[dateStr] || []) : [];
+  
+  // Filter out past time slots if selected date is today
+  const daySlots = useMemo(() => {
+    if (!dateStr) return [];
+    const slots = availability[dateStr] || [];
+    
+    // Check if selected date is today
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    
+    if (dateStr !== todayStr) return slots;
+    
+    // Filter out past slots for today
+    const now = new Date();
+    return slots.filter(slot => {
+      const timeStr = slot.start_time?.slice(0, 5) || slot.start_time;
+      if (!timeStr) return true;
+      const [hh, mm] = timeStr.split(':').map(Number);
+      const slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm);
+      return slotTime.getTime() >= now.getTime();
+    });
+  }, [dateStr, availability]);
 
   const isPast = (day) => {
     const d = new Date(calYear, calMonth, day);

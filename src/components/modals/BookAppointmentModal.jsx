@@ -13,6 +13,25 @@ const TIME_SLOTS = [
   '16:00', '16:30', '17:00',
 ];
 
+// Check if a time slot is in the past (only for today)
+function isPastTimeSlot(time, selectedDate) {
+  if (!time || !selectedDate) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const selDate = new Date(selectedDate);
+  selDate.setHours(0, 0, 0, 0);
+  
+  // Only check if selected date is today
+  if (selDate.getTime() !== today.getTime()) return false;
+  
+  const now = new Date();
+  const [hh, mm] = time.split(':').map(Number);
+  const slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm);
+  
+  // Slot is past if it's before current time
+  return slotTime.getTime() < now.getTime();
+}
+
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
 }
@@ -209,15 +228,23 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
                   <div className="w-44 flex-shrink-0">
                     <h4 className="text-xs font-semibold text-gray-500 mb-2">{isTr ? 'Uygun Saatler' : 'Available Times'}</h4>
                     <div className="grid grid-cols-3 gap-1.5">
-                      {TIME_SLOTS.map(time => (
-                        <button
-                          key={time}
-                          onClick={() => setSelectedTime(time)}
-                          className={`py-2 rounded-lg text-xs font-medium transition-all ${
-                            selectedTime === time ? 'bg-teal-600 text-white shadow-sm' : 'bg-gray-50 text-gray-700 hover:bg-teal-50 hover:text-teal-700 border border-gray-200'
-                          }`}
-                        >{time}</button>
-                      ))}
+                      {TIME_SLOTS.map(time => {
+                        const isPast = isPastTimeSlot(time, selectedDate);
+                        return (
+                          <button
+                            key={time}
+                            onClick={() => !isPast && setSelectedTime(time)}
+                            disabled={isPast}
+                            className={`py-2 rounded-lg text-xs font-medium transition-all ${
+                              isPast
+                                ? 'bg-gray-100 text-gray-300 cursor-not-allowed opacity-50'
+                                : selectedTime === time
+                                ? 'bg-teal-600 text-white shadow-sm'
+                                : 'bg-gray-50 text-gray-700 hover:bg-teal-50 hover:text-teal-700 border border-gray-200'
+                            }`}
+                          >{time}</button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
