@@ -70,12 +70,12 @@ const ClinicDetailPage = () => {
 
   // Social hook (follow / favorite)
   const clinicMeta = {
-    name: apiClinic?.fullname || apiClinic?.name || '',
+    name: apiClinic?.fullname || apiClinic?.name || clinicInfo.name || '',
     codename: apiClinic?.codename || clinicParam || '',
-    avatar: apiClinic?.avatar || '',
-    address: apiClinic?.address || '',
-    rating: resolveClinicRating(apiClinic, 0),
-    reviewCount: resolveClinicReviewCount(apiClinic, 0),
+    avatar: apiClinic?.avatar || clinicInfo.heroImage || '',
+    address: apiClinic?.address || clinicInfo.location || '',
+    rating: resolveClinicRating(apiClinic, clinicInfo.rating || 0),
+    reviewCount: resolveClinicReviewCount(apiClinic, clinicInfo.reviewCount || 0),
     specialty: apiClinic?.specialty || '',
   };
   const socialCallbacks = {
@@ -186,11 +186,11 @@ const ClinicDetailPage = () => {
           <div className="flex-1 min-w-0">
             {/* Hero Section */}
             <ClinicHero
-              image={apiClinic?.avatar || '/images/petr-magera-huwm7malj18-unsplash_720.jpg'}
-              name={apiClinic?.fullname || apiClinic?.name || ''}
-              location={apiClinic?.address || ''}
-              rating={resolveClinicRating(apiClinic, 0)}
-              reviews={resolveClinicReviewCount(apiClinic, 0)}
+              image={apiClinic?.avatar || clinicInfo.heroImage || '/images/petr-magera-huwm7malj18-unsplash_720.jpg'}
+              name={apiClinic?.fullname || apiClinic?.name || clinicInfo.name || ''}
+              location={apiClinic?.address || clinicInfo.location || ''}
+              rating={resolveClinicRating(apiClinic, clinicInfo.rating || 0)}
+              reviews={resolveClinicReviewCount(apiClinic, clinicInfo.reviewCount || 0)}
               badgeNode={null}
               isFavorite={isFavorited}
               onToggleFavorite={guardAction(toggleFavorite)}

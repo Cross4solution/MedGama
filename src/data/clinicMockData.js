@@ -1,8 +1,8 @@
 import { Activity, Stethoscope, Brain, Scissors } from 'lucide-react';
 
 export const clinicInfo = {
-  name: 'Anadolu Health Center',
-  location: 'Istanbul, Turkey',
+  name: 'Elite Dental Ağız ve Diş Sağlığı Kliniği',
+  location: 'Bağdat Cad. No:142, Kadıköy/İstanbul',
   heroImage: '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
   rating: 4.8,
   reviewCount: 342
