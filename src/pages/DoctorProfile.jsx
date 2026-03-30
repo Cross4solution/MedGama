@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import SEOHead, { buildPhysicianSchema } from '../components/seo/SEOHead';
-import MapboxView from 'components/map/MapboxView';
+import MapboxMap from '../components/map/MapboxMap';
 import {
   Award, Stethoscope, Heart, CheckCircle, Shield, Users, MapPin, X,
   ChevronLeft, ChevronRight, Minus, Video, Loader2, GraduationCap, Globe,
@@ -696,12 +696,13 @@ const DoctorProfilePage = () => {
                 {activeTab === 'location' && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-bold text-gray-900">{t('doctorProfile.location')}</h3>
-                    {locationAddress || (mapCoordinates?.lat && mapCoordinates?.lng) ? (<>
+                    {locationAddress || (profile?.latitude && profile?.longitude) ? (<>
                       {locationAddress && <div className="flex items-start gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 mt-0.5 text-teal-600 flex-shrink-0" /><span>{locationAddress}</span></div>}
                       <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-                        <MapboxView
+                        <MapboxMap
                           address={locationAddress}
-                          center={mapCoordinates?.lat && mapCoordinates?.lng ? [parseFloat(mapCoordinates.lat), parseFloat(mapCoordinates.lng)] : undefined}
+                          lat={profile?.latitude ? parseFloat(profile.latitude) : undefined}
+                          lng={profile?.longitude ? parseFloat(profile.longitude) : undefined}
                           height="320px"
                           zoom={15}
                         />

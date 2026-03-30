@@ -34,6 +34,8 @@ class DoctorProfile extends Model
         'languages',
         'address',
         'map_coordinates',
+        'latitude',
+        'longitude',
         'maps_url',
         'full_address_text',
         'phone',

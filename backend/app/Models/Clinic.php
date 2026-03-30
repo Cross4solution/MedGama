@@ -21,7 +21,7 @@ class Clinic extends Model
 
     protected $fillable = [
         'name', 'codename', 'fullname', 'avatar', 'owner_id', 'hospital_id',
-        'address', 'phone', 'biography', 'map_coordinates', 'website', 'is_verified',
+        'address', 'phone', 'biography', 'map_coordinates', 'latitude', 'longitude', 'website', 'is_verified',
         'is_crm_active', 'crm_expires_at', 'specialties',
         'onboarding_completed', 'onboarding_step',
         'verification_status',

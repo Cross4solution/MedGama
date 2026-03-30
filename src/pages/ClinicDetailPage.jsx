@@ -151,7 +151,11 @@ const ClinicDetailPage = () => {
           />
         );
       case 'konum':
-        return <LocationTab locationAddress="Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul" />;
+        return <LocationTab 
+          locationAddress={apiClinic?.address || "Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul"} 
+          latitude={apiClinic?.latitude}
+          longitude={apiClinic?.longitude}
+        />;
       case 'medstream':
         return <MedstreamProfileFeed clinicId={apiClinic?.id} />;
       default:
