@@ -22,10 +22,11 @@ class SearchController extends Controller
     {
         $q = trim($request->input('q', ''));
 
-        if (mb_strlen($q) < 2) {
+        if (mb_strlen($q) < 1) {
             return response()->json([
                 'doctors' => [],
                 'clinics' => [],
+                'treatments' => [],
             ]);
         }
 

@@ -268,7 +268,7 @@ class CatalogController extends Controller
     public function treatmentTagsSearch(Request $request): JsonResponse
     {
         $q = mb_strtolower(trim($request->query('q', '')));
-        if (mb_strlen($q) < 2) {
+        if (mb_strlen($q) < 1) {
             return response()->json(['results' => []]);
         }
 

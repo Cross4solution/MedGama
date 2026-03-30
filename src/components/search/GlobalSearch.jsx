@@ -37,7 +37,7 @@ export default function GlobalSearch() {
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     const q = (query || '').trim();
-    if (q.length < 2) {
+    if (q.length < 1) {
       setDoctors([]);
       setClinics([]);
       setTreatments([]);
