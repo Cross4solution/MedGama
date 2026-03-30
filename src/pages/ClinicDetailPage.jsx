@@ -70,12 +70,12 @@ const ClinicDetailPage = () => {
 
   // Social hook (follow / favorite)
   const clinicMeta = {
-    name: apiClinic?.fullname || apiClinic?.name || clinicInfo.name,
+    name: apiClinic?.fullname || apiClinic?.name || '',
     codename: apiClinic?.codename || clinicParam || '',
-    avatar: apiClinic?.avatar || clinicInfo.heroImage,
-    address: apiClinic?.address || clinicInfo.location,
-    rating: resolveClinicRating(apiClinic, clinicInfo.rating),
-    reviewCount: resolveClinicReviewCount(apiClinic, clinicInfo.reviewCount),
+    avatar: apiClinic?.avatar || '',
+    address: apiClinic?.address || '',
+    rating: resolveClinicRating(apiClinic, 0),
+    reviewCount: resolveClinicReviewCount(apiClinic, 0),
     specialty: apiClinic?.specialty || '',
   };
   const socialCallbacks = {
@@ -186,11 +186,11 @@ const ClinicDetailPage = () => {
           <div className="flex-1 min-w-0">
             {/* Hero Section */}
             <ClinicHero
-              image={apiClinic?.avatar || clinicInfo.heroImage}
-              name={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
-              location={apiClinic?.address || clinicInfo.location}
-              rating={resolveClinicRating(apiClinic, clinicInfo.rating)}
-              reviews={resolveClinicReviewCount(apiClinic, clinicInfo.reviewCount)}
+              image={apiClinic?.avatar || '/images/petr-magera-huwm7malj18-unsplash_720.jpg'}
+              name={apiClinic?.fullname || apiClinic?.name || ''}
+              location={apiClinic?.address || ''}
+              rating={resolveClinicRating(apiClinic, 0)}
+              reviews={resolveClinicReviewCount(apiClinic, 0)}
               badgeNode={null}
               isFavorite={isFavorited}
               onToggleFavorite={guardAction(toggleFavorite)}
@@ -221,14 +221,14 @@ const ClinicDetailPage = () => {
         open={bookModal}
         onClose={() => setBookModal(false)}
         targetId={apiClinic?.id}
-        targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
+        targetName={apiClinic?.fullname || apiClinic?.name || ''}
         targetType="clinic"
       />
       <BookAppointmentModal
         open={onlineBookModal}
         onClose={() => setOnlineBookModal(false)}
         targetId={apiClinic?.id}
-        targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
+        targetName={apiClinic?.fullname || apiClinic?.name || ''}
         targetType="clinic"
         initialType="video"
       />
@@ -236,7 +236,7 @@ const ClinicDetailPage = () => {
         open={messageModal}
         onClose={() => setMessageModal(false)}
         targetId={apiClinic?.id}
-        targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
+        targetName={apiClinic?.fullname || apiClinic?.name || ''}
         targetType="clinic"
       />
     </div>

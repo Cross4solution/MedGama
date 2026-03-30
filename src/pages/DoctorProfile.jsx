@@ -187,6 +187,11 @@ const DoctorProfilePage = () => {
   const doctorName = doctor?.fullname || 'Doctor';
   const doctorTitle = profile?.title || '';
   const specialty = profile?.specialty || '';
+  
+  // Remove "Dr." prefix from name if title already contains it
+  const displayName = (doctorTitle && doctorName.startsWith('Dr. ')) 
+    ? doctorName.replace(/^Dr\.\s+/, '') 
+    : doctorName;
   const avatarUrl = resolveStorageUrl(doctor?.avatar);
   const bio = profile?.bio || '';
   const experienceYears = profile?.experience_years || '';
@@ -319,7 +324,7 @@ const DoctorProfilePage = () => {
               />
               <div className="pt-1">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <h1 className="text-xl md:text-2xl font-extrabold text-gray-900">{doctorTitle ? `${doctorTitle} ` : ''}{doctorName}</h1>
+                  <h1 className="text-xl md:text-2xl font-extrabold text-gray-900">{doctorTitle ? `${doctorTitle} ` : ''}{displayName}</h1>
                   {doctor.is_verified && (
                     <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
                       <BadgeCheck className="w-3 h-3" /> {t('doctorProfile.verified')}
