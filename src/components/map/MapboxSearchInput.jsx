@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, Search, Loader2, X } from 'lucide-react';
-import { searchPlaces } from '../../config/mapbox';
+import { MapPin, Search, Loader2, X, AlertCircle } from 'lucide-react';
+import { searchPlaces, MAPBOX_CONFIG } from '../../config/mapbox';
 
 /**
  * MapboxSearchInput - Autocomplete address search with geocoding
@@ -31,18 +31,35 @@ export default function MapboxSearchInput({
   const dropdownRef = useRef(null);
   const debounceTimer = useRef(null);
 
-  // Update query when value prop changes
+  const hasValidToken = MAPBOX_CONFIG.accessToken && !MAPBOX_CONFIG.accessToken.includes('placeholder') && MAPBOX_CONFIG.accessToken.length > 10;
+
+  // Update query when value prop changes (only if different to avoid loop)
   useEffect(() => {
-    setQuery(value);
+    if (value !== query) {
+      setQuery(value);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
+
+  // When user types, also update parent (for plain text fallback mode)
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setQuery(val);
+    // In fallback mode (no token), pass text directly to parent
+    if (!hasValidToken && onChange) {
+      onChange(val, null);
+    }
+  };
 
   // Search for places with debounce
   useEffect(() => {
+    if (!hasValidToken) return; // Skip search if no valid token
+    
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
 
-    if (query.trim().length < 2) {
+    if (query.trim().length < 3) {
       setSuggestions([]);
       setShowDropdown(false);
       return;
@@ -55,19 +72,20 @@ export default function MapboxSearchInput({
         setSuggestions(results);
         setShowDropdown(results.length > 0);
       } catch (err) {
-        console.error('Search error:', err);
+        console.error('[MapboxSearchInput] Search error:', err);
         setSuggestions([]);
       } finally {
         setLoading(false);
       }
-    }, 300);
+    }, 400);
 
     return () => {
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [query]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, hasValidToken]);
 
   // Handle click outside
   useEffect(() => {
@@ -161,7 +179,7 @@ export default function MapboxSearchInput({
           ref={inputRef}
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onFocus={() => {
             if (suggestions.length > 0) {

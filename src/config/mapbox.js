@@ -3,9 +3,14 @@
  * Global configuration for Mapbox integration across MedGama platform
  */
 
+const TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || '';
+if (!TOKEN || TOKEN.includes('placeholder')) {
+  console.warn('[Mapbox] ⚠️ No valid REACT_APP_MAPBOX_ACCESS_TOKEN found. Map and search features will not work. Get your token from https://account.mapbox.com/access-tokens/');
+}
+
 export const MAPBOX_CONFIG = {
-  // Access token - should be set in .env as REACT_APP_MAPBOX_ACCESS_TOKEN
-  accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoibWVkYWdhbWEiLCJhIjoiY204NWV0Znp6MG1jdzJpcXJvNHRscGgxeSJ9.fXy5X_3Z_0_0_0_0_0_placeholder',
+  // Access token - MUST be set in .env (local) or Vercel env vars (production)
+  accessToken: TOKEN,
   
   // Default map styles
   styles: {
@@ -46,13 +51,20 @@ export const MAPBOX_CONFIG = {
  */
 export async function geocodeAddress(address) {
   if (!address || address.trim().length === 0) return null;
+  if (!MAPBOX_CONFIG.accessToken || MAPBOX_CONFIG.accessToken.includes('placeholder')) {
+    console.error('[Mapbox] Cannot geocode: invalid access token');
+    return null;
+  }
   
   try {
     const encodedAddress = encodeURIComponent(address);
     const url = `${MAPBOX_CONFIG.geocodingAPI}/${encodedAddress}.json?access_token=${MAPBOX_CONFIG.accessToken}&country=TR&limit=1`;
     
     const response = await fetch(url);
-    if (!response.ok) throw new Error('Geocoding failed');
+    if (!response.ok) {
+      console.error('[Mapbox] Geocoding API error:', response.status);
+      throw new Error('Geocoding failed');
+    }
     
     const data = await response.json();
     if (data.features && data.features.length > 0) {
@@ -78,22 +90,30 @@ export async function geocodeAddress(address) {
  */
 export async function searchPlaces(query, options = {}) {
   if (!query || query.trim().length < 2) return [];
+  if (!MAPBOX_CONFIG.accessToken || MAPBOX_CONFIG.accessToken.includes('placeholder')) {
+    console.error('[Mapbox] Cannot search: invalid access token');
+    return [];
+  }
   
   try {
     const encodedQuery = encodeURIComponent(query);
     const country = options.country || 'TR';
     const limit = options.limit || 5;
-    const types = options.types || 'address,poi';
+    const types = options.types || 'place,locality,neighborhood,address,poi';
     
     const url = `${MAPBOX_CONFIG.geocodingAPI}/${encodedQuery}.json?access_token=${MAPBOX_CONFIG.accessToken}&country=${country}&limit=${limit}&types=${types}&language=tr`;
     
     const response = await fetch(url);
-    if (!response.ok) throw new Error('Search failed');
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[Mapbox] Search API error:', response.status, errorText);
+      throw new Error(`Search failed: ${response.status}`);
+    }
     
     const data = await response.json();
     return data.features || [];
   } catch (error) {
-    console.error('Search error:', error);
+    console.error('[Mapbox] Search error:', error);
     return [];
   }
 }

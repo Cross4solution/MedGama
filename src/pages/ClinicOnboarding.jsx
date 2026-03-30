@@ -133,8 +133,9 @@ export default function ClinicOnboarding() {
       }
       setStep(nextStep);
     } catch (err) {
-      console.error('Save error:', err);
-      alert('Error saving: ' + (err?.response?.data?.message || err.message || 'Unknown error'));
+      console.error('Save error:', err, JSON.stringify(err));
+      const msg = err?.message || err?.data?.message || (typeof err === 'string' ? err : 'Unknown error');
+      alert('Error: ' + msg);
     } finally {
       setSaving(false);
     }
