@@ -393,8 +393,8 @@ const DoctorProfilePage = () => {
         </div>
       </div>
 
-      {/* ═══ Profile not completed ═══ */}
-      {!hasProfile && (
+      {/* ═══ Profile not completed (only visible to profile owner) ═══ */}
+      {!hasProfile && isOwner && (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-6">
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
             <p className="text-sm text-amber-800 font-medium">{t('doctorProfile.profileNotComplete')}</p>
