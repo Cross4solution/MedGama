@@ -31,6 +31,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     if (textQuery)       params.search = textQuery;
     if (countryName)     params.country = countryName;
     medStreamAPI.posts(params).then((res) => {
+      console.log('[ExploreTimeline] API response:', res);
       const list = res?.data || [];
       if (list.length) {
         const apiIds = list.map(p => p.id);
@@ -80,11 +81,17 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
           };
         }));
       } else {
+        console.warn('[ExploreTimeline] API returned empty data array');
         setApiPosts([]);
       }
       setApiLoaded(true);
       setIsRefreshing(false);
-    }).catch(() => { setApiLoaded(true); setIsRefreshing(false); });
+    }).catch((err) => { 
+      console.error('[ExploreTimeline] API error:', err, err?.status, err?.message);
+      setApiPosts([]);
+      setApiLoaded(true); 
+      setIsRefreshing(false); 
+    });
   }, [refreshKey, sort, textQuery, specialtyFilter, countryName]);
 
   // Kaynak data — mock fallback
