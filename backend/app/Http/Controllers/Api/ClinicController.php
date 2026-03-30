@@ -39,7 +39,13 @@ class ClinicController extends Controller
     public function show(string $codename)
     {
         \Log::info('ClinicController@show called with codename: ' . $codename);
-        $clinic = Clinic::active()->where('codename', $codename)->firstOrFail();
+        $clinic = Clinic::active()->where('codename', $codename)->first();
+        
+        if (!$clinic) {
+            \Log::error('Clinic not found with codename: ' . $codename);
+            return response()->json(['error' => 'Clinic not found'], 404);
+        }
+        
         \Log::info('Clinic found: ' . $clinic->id . ' - ' . $clinic->fullname);
         $clinic->load('owner:id,fullname,avatar');
 
