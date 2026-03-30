@@ -38,7 +38,9 @@ class ClinicController extends Controller
      */
     public function show(string $codename)
     {
+        \Log::info('ClinicController@show called with codename: ' . $codename);
         $clinic = Clinic::active()->where('codename', $codename)->firstOrFail();
+        \Log::info('Clinic found: ' . $clinic->id . ' - ' . $clinic->fullname);
         $clinic->load('owner:id,fullname,avatar');
 
         // Load doctors with their profiles and specialty (Single Source of Truth)
