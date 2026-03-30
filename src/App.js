@@ -45,6 +45,7 @@ const SearchResults = React.lazy(() => import('./pages/SearchResults'));
 const DashboardRedirect = React.lazy(() => import('./pages/DashboardRedirect'));
 const DoctorDashboard = React.lazy(() => import('./pages/DoctorDashboard'));
 const PatientDashboard = React.lazy(() => import('./pages/PatientDashboard'));
+const PatientAppointments = React.lazy(() => import('./pages/PatientAppointments'));
 const MedicalArchive = React.lazy(() => import('./pages/MedicalArchive'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 const ServerErrorPage = React.lazy(() => import('./pages/ServerErrorPage'));
@@ -333,6 +334,7 @@ function AppContent() {
         <Route path="/doctor-chat" element={<DoctorChatPage />} />
         <Route path="/telehealth" element={<TelehealthPage />} />
         <Route path="/patient-dashboard" element={<PatientDashboard />} />
+        <Route path="/patient/appointments" element={<PatientAppointments />} />
         <Route path="/medical-archive" element={<MedicalArchive />} />
         <Route path="/telehealth-appointment" element={<TelehealthAppointmentPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
