@@ -743,38 +743,36 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               </span>
               </div>
             </div>
-            {!compact && (
-              <div ref={moreMenuRef} className="flex items-center gap-1 text-gray-500 relative">
-                <span className="text-xs text-[rgba(0,0,0,0.6)]">{timeLabel}</span>
-                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="More options" onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>
-                  <MoreHorizontal className="w-5 h-5" />
-                </button>
-                {showMoreMenu && (
-                  <div className="absolute right-0 top-8 z-20 w-44 bg-white border rounded-lg shadow-md py-1 text-sm" onClick={(e)=>e.stopPropagation()}>
-                    {authUser?.id && (item?.author_id === authUser.id || item?.actor?.id === authUser.id) && (
-                      <button
-                        type="button"
-                        className="w-full px-3 py-2 hover:bg-red-50 text-red-600 inline-flex items-center gap-2"
-                        onClick={() => { setShowDeleteConfirm(true); setShowMoreMenu(false); }}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        <span className="font-medium">Delete</span>
-                      </button>
-                    )}
-                    {!(authUser?.id && (item?.author_id === authUser.id || item?.actor?.id === authUser.id)) && (
-                      <button
-                        type="button"
-                        className="w-full px-3 py-2 hover:bg-red-50 text-red-600 inline-flex items-center gap-2"
-                        onClick={() => { setShowReportModal(true); setShowMoreMenu(false); }}
-                      >
-                        <AlertTriangle className="w-4 h-4" />
-                        <span className="font-medium">Report</span>
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
+            <div ref={moreMenuRef} className="flex items-center gap-1 text-gray-500 relative">
+              {!compact && <span className="text-xs text-[rgba(0,0,0,0.6)]">{timeLabel}</span>}
+              <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="More options" onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>
+                <MoreHorizontal className="w-5 h-5" />
+              </button>
+              {showMoreMenu && (
+                <div className="absolute right-0 top-8 z-20 w-44 bg-white border rounded-lg shadow-md py-1 text-sm" onClick={(e)=>e.stopPropagation()}>
+                  {authUser?.id && (item?.author_id === authUser.id || item?.actor?.id === authUser.id) && (
+                    <button
+                      type="button"
+                      className="w-full px-3 py-2 hover:bg-red-50 text-red-600 inline-flex items-center gap-2"
+                      onClick={() => { setShowDeleteConfirm(true); setShowMoreMenu(false); }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span className="font-medium">Delete</span>
+                    </button>
+                  )}
+                  {!(authUser?.id && (item?.author_id === authUser.id || item?.actor?.id === authUser.id)) && (
+                    <button
+                      type="button"
+                      className="w-full px-3 py-2 hover:bg-red-50 text-red-600 inline-flex items-center gap-2"
+                      onClick={() => { setShowReportModal(true); setShowMoreMenu(false); }}
+                    >
+                      <AlertTriangle className="w-4 h-4" />
+                      <span className="font-medium">Report</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Text */}

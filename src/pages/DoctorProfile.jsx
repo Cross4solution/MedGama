@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import SEOHead, { buildPhysicianSchema } from '../components/seo/SEOHead';
-import LeafletMap from 'components/map/LeafletMap';
+import MapboxView from 'components/map/MapboxView';
 import {
   Award, Stethoscope, Heart, CheckCircle, Shield, Users, MapPin, X,
   ChevronLeft, ChevronRight, Minus, Video, Loader2, GraduationCap, Globe,
@@ -699,7 +699,7 @@ const DoctorProfilePage = () => {
                     {locationAddress || (mapCoordinates?.lat && mapCoordinates?.lng) ? (<>
                       {locationAddress && <div className="flex items-start gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 mt-0.5 text-teal-600 flex-shrink-0" /><span>{locationAddress}</span></div>}
                       <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-                        <LeafletMap
+                        <MapboxView
                           address={locationAddress}
                           center={mapCoordinates?.lat && mapCoordinates?.lng ? [parseFloat(mapCoordinates.lat), parseFloat(mapCoordinates.lng)] : undefined}
                           height="320px"
