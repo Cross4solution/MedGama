@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI, catalogAPI } from '../lib/api';
+import MapboxSearchInput from '../components/map/MapboxSearchInput';
 import {
   Building2, MapPin, Phone, FileText, Camera, Loader2,
   CheckCircle2, ChevronRight, ChevronLeft, Stethoscope,
@@ -28,6 +29,8 @@ export default function ClinicOnboarding() {
   // Step 0: Profile
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [phone, setPhone] = useState('');
   const [biography, setBiography] = useState('');
   const [logoFile, setLogoFile] = useState(null);
@@ -53,6 +56,8 @@ export default function ClinicOnboarding() {
         setClinicId(c.id);
         setName(c.name || c.fullname || '');
         setAddress(c.address || '');
+        setLatitude(c.latitude);
+        setLongitude(c.longitude);
         setPhone(c.phone || '');
         setBiography(c.biography || '');
         setSelectedSpecialties(c.specialties || []);
@@ -96,7 +101,7 @@ export default function ClinicOnboarding() {
     setSaving(true);
     try {
       if (step === 0) {
-        await clinicAPI.updateOnboarding({ step: 0, name, address, phone, biography });
+        await clinicAPI.updateOnboarding({ step: 0, name, address, latitude, longitude, phone, biography });
         // Upload logo if selected
         if (logoFile) {
           const logoRes = await clinicAPI.uploadLogo(logoFile);
@@ -240,15 +245,19 @@ export default function ClinicOnboarding() {
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
                     placeholder={t('clinicOnboarding.clinicNamePlaceholder', 'e.g., MedaGama Health Center')} />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('clinicOnboarding.address', 'Address')}</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input value={address} onChange={e => setAddress(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
-                      placeholder={t('clinicOnboarding.addressPlaceholder', 'Street, City, Country')} />
-                  </div>
-                </div>
+                <MapboxSearchInput
+                  value={address}
+                  onChange={(selectedAddress, coordinates) => {
+                    setAddress(selectedAddress);
+                    if (coordinates) {
+                      setLatitude(coordinates.lat);
+                      setLongitude(coordinates.lng);
+                    }
+                  }}
+                  label={t('clinicOnboarding.address', 'Address')}
+                  placeholder={t('clinicOnboarding.addressPlaceholder', 'Search for your clinic address...')}
+                  hint={t('clinicOnboarding.addressHint', 'Please enter your full address (e.g., Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul) and select from the list. The map will automatically generate coordinates.')}
+                />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('clinicOnboarding.phone', 'Phone')}</label>
                   <div className="relative">

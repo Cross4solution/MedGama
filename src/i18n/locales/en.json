@@ -1365,6 +1365,25 @@
     "welcomeHint": "Patients can now find you and book appointments. You can update your profile anytime from your dashboard.",
     "goToDashboard": "Go to Dashboard"
   },
+  "clinicOnboarding": {
+    "profileTitle": "Clinic Profile",
+    "profileSubtitle": "Basic information about your clinic",
+    "clinicLogo": "Clinic Logo",
+    "logoHint": "JPG, PNG or SVG, max 5MB",
+    "clinicName": "Clinic Name",
+    "clinicNamePlaceholder": "e.g., MedaGama Health Center",
+    "address": "Address",
+    "addressPlaceholder": "Search for your clinic address...",
+    "addressHint": "Please enter your full address (e.g., Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul) and select from the list. The map will automatically generate coordinates.",
+    "phone": "Phone",
+    "description": "Short Description",
+    "descriptionPlaceholder": "Tell patients what makes your clinic special...",
+    "specialtiesTitle": "Medical Specialties",
+    "specialtiesSubtitle": "Select the departments your clinic offers",
+    "searchSpecialties": "Search specialties...",
+    "teamTitle": "Team Setup",
+    "teamSubtitle": "Invite doctors to join your clinic"
+  },
   "admin": {
     "auditLogs": {
       "title": "Audit Logs",

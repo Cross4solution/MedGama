@@ -1365,6 +1365,25 @@
     "welcomeHint": "Hastalar artık sizi bulabilir ve randevu alabilir. Profilinizi istediğiniz zaman panelden güncelleyebilirsiniz.",
     "goToDashboard": "Panele Git"
   },
+  "clinicOnboarding": {
+    "profileTitle": "Klinik Profili",
+    "profileSubtitle": "Kliniğiniz hakkında temel bilgiler",
+    "clinicLogo": "Klinik Logosu",
+    "logoHint": "JPG, PNG veya SVG, maksimum 5MB",
+    "clinicName": "Klinik Adı",
+    "clinicNamePlaceholder": "örn., MedaGama Sağlık Merkezi",
+    "address": "Adres",
+    "addressPlaceholder": "Klinik adresinizi arayın...",
+    "addressHint": "Lütfen tam adresinizi girin (örn: Cumhuriyet Mah., Sağlık Cad. No: 12, İstanbul) ve listeden seçin. Harita otomatik olarak koordinatları oluşturacaktır.",
+    "phone": "Telefon",
+    "description": "Kısa Açıklama",
+    "descriptionPlaceholder": "Hastalara kliniğinizi özel kılan şeyleri anlatın...",
+    "specialtiesTitle": "Tıbbi Uzmanlıklar",
+    "specialtiesSubtitle": "Kliniğinizin sunduğu bölümleri seçin",
+    "searchSpecialties": "Uzmanlık ara...",
+    "teamTitle": "Ekip Kurulumu",
+    "teamSubtitle": "Doktorları kliniğinize davet edin"
+  },
   "admin": {
     "auditLogs": {
       "title": "Sistem Günlükleri",

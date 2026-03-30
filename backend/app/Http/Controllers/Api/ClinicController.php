@@ -234,6 +234,8 @@ class ClinicController extends Controller
                 'fullname'             => $clinic->fullname,
                 'avatar'               => $clinic->getRawOriginal('avatar'),
                 'address'              => $clinic->address,
+                'latitude'             => $clinic->latitude,
+                'longitude'            => $clinic->longitude,
                 'phone'                => $clinic->phone,
                 'biography'            => $clinic->biography,
                 'map_coordinates'      => $clinic->map_coordinates,
@@ -261,6 +263,8 @@ class ClinicController extends Controller
             $validated = $request->validate([
                 'name'            => 'required|string|max:255',
                 'address'         => 'nullable|string|max:500',
+                'latitude'        => 'nullable|numeric|between:-90,90',
+                'longitude'       => 'nullable|numeric|between:-180,180',
                 'phone'           => 'nullable|string|max:30',
                 'biography'       => 'nullable|string|max:5000',
                 'map_coordinates' => 'nullable|array',
