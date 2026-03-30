@@ -22,9 +22,10 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
   // API'den gelen postlar
   const [apiPosts, setApiPosts] = useState([]);
   const [apiLoaded, setApiLoaded] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    setApiLoaded(false);
+    setIsRefreshing(true);
     const params = { per_page: 50, sort };
     if (specialtyFilter) params.specialization = specialtyFilter;
     if (textQuery)       params.search = textQuery;
@@ -82,7 +83,8 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
         setApiPosts([]);
       }
       setApiLoaded(true);
-    }).catch(() => setApiLoaded(true));
+      setIsRefreshing(false);
+    }).catch(() => { setApiLoaded(true); setIsRefreshing(false); });
   }, [refreshKey, sort, textQuery, specialtyFilter, countryName]);
 
   // Kaynak data — mock fallback
