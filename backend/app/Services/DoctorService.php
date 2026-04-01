@@ -130,15 +130,31 @@ class DoctorService
     /**
      * Get single doctor with full profile + review stats (Doc §3.2).
      */
-    public function getDoctor(string $id): ?array
+    public function getDoctor(string $idOrSlug): ?array
     {
-        $doctor = User::where('role_id', 'doctor')
-            ->where('is_active', true)
-            ->with(['doctorProfile', 'doctorProfile.specialtyRelation:id,name', 'clinic:id,name,fullname,codename,avatar,address,is_verified'])
-            ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
-            ->find($id);
+        // Support both UUID and slug lookup
+        $isUuid = preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $idOrSlug);
+
+        if ($isUuid) {
+            $doctor = User::where('role_id', 'doctor')
+                ->where('is_active', true)
+                ->with(['doctorProfile', 'doctorProfile.specialtyRelation:id,name', 'clinic:id,name,fullname,codename,avatar,address,is_verified'])
+                ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
+                ->find($idOrSlug);
+        } else {
+            // Slug lookup via DoctorProfile
+            $profile = \App\Models\DoctorProfile::where('slug', $idOrSlug)->first();
+            if (!$profile) return null;
+
+            $doctor = User::where('role_id', 'doctor')
+                ->where('is_active', true)
+                ->with(['doctorProfile', 'doctorProfile.specialtyRelation:id,name', 'clinic:id,name,fullname,codename,avatar,address,is_verified'])
+                ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
+                ->find($profile->user_id);
+        }
 
         if (!$doctor) return null;
+        $id = $doctor->id;
 
         // Review stats
         $reviews = DoctorReview::where('doctor_id', $id)->visible();

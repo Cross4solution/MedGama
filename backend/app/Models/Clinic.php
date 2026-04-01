@@ -134,6 +134,11 @@ class Clinic extends Model
         return $this->hasOne(ClinicVerification::class)->latestOfMany();
     }
 
+    public function doctorProfiles()
+    {
+        return $this->hasMany(DoctorProfile::class, 'clinic_id');
+    }
+
     public function accreditations()
     {
         return $this->belongsToMany(Accreditation::class, 'clinic_accreditations')

@@ -94,7 +94,6 @@ const DoctorProfilePage = () => {
   const { guardAction } = useAuthGuard();
   const { user: authUser } = useAuth();
   const { notify } = useToast();
-  const isOwner = authUser && (authUser.id === doctorId);
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [doctor, setDoctor] = useState(null);
@@ -184,6 +183,8 @@ const DoctorProfilePage = () => {
   const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('doctor', doctorId, initialSocial, doctorMeta, socialCallbacks);
 
   // Derived
+  // isOwner: works with both UUID and slug URLs since we compare loaded doctor.id
+  const isOwner = !!(authUser && doctor && authUser.id === doctor.id);
   const doctorName = doctor?.fullname || 'Doctor';
   const doctorTitle = profile?.title || '';
   const specialty = profile?.specialty || '';
@@ -267,13 +268,13 @@ const DoctorProfilePage = () => {
     <div className="min-h-screen bg-gray-50/50">
       {/* ═══ SEO Meta + Schema.org ═══ */}
       <SEOHead
-        title={`${doctorTitle ? doctorTitle + ' ' : ''}${doctorName} — ${specialty}`}
-        description={`${doctorName} — ${specialty}. ${bio?.slice(0, 150) || ''}`}
-        canonical={`/doctor/${doctorId}`}
+        title={`${doctorTitle ? doctorTitle + ' ' : ''}${displayName} — ${specialty}`}
+        description={`${displayName} — ${specialty}. ${bio?.slice(0, 150) || ''}`}
+        canonical={profile?.slug ? `/doctor/${profile.slug}` : `/doctor/${doctorId}`}
         image={avatarUrl}
         type="profile"
         jsonLd={buildPhysicianSchema({
-          name: `${doctorTitle ? doctorTitle + ' ' : ''}${doctorName}`,
+          name: `${doctorTitle ? doctorTitle + ' ' : ''}${displayName}`,
           image: avatarUrl,
           description: bio,
           specialty,

@@ -54,7 +54,7 @@ class ClinicController extends Controller
             $q->where('is_active', true)
               ->select('id', 'fullname', 'avatar', 'clinic_id')
               ->with(['doctorProfile' => function ($q2) {
-                  $q2->select('id', 'user_id', 'clinic_id', 'title', 'specialty', 'specialty_id', 'experience_years', 'avg_rating', 'review_count', 'bio', 'languages')
+                  $q2->select('id', 'user_id', 'clinic_id', 'title', 'slug', 'specialty', 'specialty_id', 'experience_years', 'avg_rating', 'review_count', 'bio', 'languages')
                      ->with('specialtyRelation:id,name');
               }]);
         }]);

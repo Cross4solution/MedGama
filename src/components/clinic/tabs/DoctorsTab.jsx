@@ -27,11 +27,12 @@ export default function DoctorsTab({ doctors = [] }) {
           const specName = specObj.name || dp.specialty || '';
           const rating = dp.avg_rating ? parseFloat(dp.avg_rating) : null;
 
+          const doctorPath = dp.slug ? `/doctor/${dp.slug}` : `/doctor/${doc.id}`;
           return (
             <button
               key={doc.id}
               type="button"
-              onClick={() => navigate(`/doctor/${doc.id}`)}
+              onClick={() => navigate(doctorPath)}
               className="bg-white border border-gray-200 rounded-xl p-4 flex items-start gap-4 hover:border-teal-300 hover:shadow-md transition-all text-left group"
             >
               <img
