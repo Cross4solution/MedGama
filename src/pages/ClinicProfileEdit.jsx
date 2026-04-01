@@ -154,7 +154,9 @@ export default function ClinicProfileEdit() {
   ]);
   const [saving, setSaving] = useState(false);
   const [heroPreview, setHeroPreview] = useState('');
+  const [heroFile, setHeroFile] = useState(null);
   const [logoUrl, setLogoUrl] = useState('');
+  const [logoFile, setLogoFile] = useState(null);
   const [reviews, setReviews] = useState([
     { id: 'r1', user: 'Verified Patient', rating: 5, text: 'Excellent care and professional staff.', date: '2025-09-01' },
     { id: 'r2', user: 'Anonymous', rating: 4, text: 'Quick appointment and clear explanations.', date: '2025-08-22' },
@@ -204,8 +206,14 @@ export default function ClinicProfileEdit() {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
-    if (key === 'hero') setHeroPreview(url);
-    if (key === 'logo') setLogoUrl(url);
+    if (key === 'hero') {
+      setHeroPreview(url);
+      setHeroFile(file);
+    }
+    if (key === 'logo') {
+      setLogoUrl(url);
+      setLogoFile(file);
+    }
   };
 
   // services are managed inline in the Services tab (objects with id, name, icon, description)
@@ -252,12 +260,23 @@ export default function ClinicProfileEdit() {
     setSaveSuccess(false);
     try {
       if (user?.clinic_id) {
-        await clinicAPI.update(user.clinic_id, {
-          fullname: form.name,
-          address: address,
-          biography: form.aboutP1 + (form.aboutP2 ? '\n\n' + form.aboutP2 : ''),
-          website: mapUrl || undefined,
-        });
+        // ── Build FormData for multipart upload ──
+        const formData = new FormData();
+        formData.append('fullname', form.name);
+        formData.append('address', address);
+        formData.append('biography', form.aboutP1 + (form.aboutP2 ? '\n\n' + form.aboutP2 : ''));
+        if (mapUrl) formData.append('website', mapUrl);
+
+        // ── Append image files if selected ──
+        if (logoFile) {
+          formData.append('avatar', logoFile);
+        }
+        if (heroFile) {
+          formData.append('background_image', heroFile);
+        }
+
+        // ── Send to backend with multipart/form-data ──
+        await clinicAPI.update(user.clinic_id, formData);
       }
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);

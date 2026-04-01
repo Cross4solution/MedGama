@@ -128,14 +128,34 @@ class ClinicController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:100',
             'fullname' => 'sometimes|string|max:255',
-            'avatar' => 'sometimes|string|url',
+            'avatar' => 'sometimes|image|max:10240', // 10MB file upload
             'address' => 'sometimes|string',
             'biography' => 'sometimes|string',
             'map_coordinates' => 'sometimes|array',
             'website' => 'sometimes|url',
+            'background_image' => 'sometimes|image|max:10240', // 10MB file upload
         ]);
 
-        $clinic->update($validated);
+        // ── Handle Avatar Upload ──
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('clinics', 'public');
+            $clinic->avatar = "/storage/$avatarPath";
+        }
+
+        // ── Handle Background Image Upload ──
+        if ($request->hasFile('background_image')) {
+            $bgPath = $request->file('background_image')->store('clinics', 'public');
+            $clinic->background_image = "/storage/$bgPath";
+        }
+
+        // ── Update other fields ──
+        if (isset($validated['fullname'])) $clinic->fullname = $validated['fullname'];
+        if (isset($validated['address'])) $clinic->address = $validated['address'];
+        if (isset($validated['biography'])) $clinic->biography = $validated['biography'];
+        if (isset($validated['website'])) $clinic->website = $validated['website'];
+        if (isset($validated['map_coordinates'])) $clinic->map_coordinates = $validated['map_coordinates'];
+
+        $clinic->save();
 
         return response()->json(['clinic' => $clinic->refresh()]);
     }
