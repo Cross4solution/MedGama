@@ -34,6 +34,7 @@ use App\Http\Controllers\Api\ClinicVerificationController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\DoctorFaqController;
+use App\Http\Controllers\Api\AccreditationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -268,7 +269,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Clinic Verification
     Route::get('/clinic-verification/status', [ClinicVerificationController::class, 'status']);
     Route::post('/clinic-verification/submit', [ClinicVerificationController::class, 'submit']);
+
+    // Clinic Accreditations
+    Route::get('/clinics/{clinicId}/accreditations', [AccreditationController::class, 'clinicAccreditations']);
+    Route::post('/clinics/{clinicId}/accreditations', [AccreditationController::class, 'attachAccreditations']);
+    Route::delete('/clinics/{clinicId}/accreditations/{accreditationId}', [AccreditationController::class, 'detachAccreditation']);
 });
+
+// Public: List all available accreditations (for dropdown)
+Route::get('/accreditations', [AccreditationController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------

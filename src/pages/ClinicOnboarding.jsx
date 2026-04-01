@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI, catalogAPI } from '../lib/api';
 import MapboxSearchInput from '../components/map/MapboxSearchInput';
+import AccreditationsDropdown from '../components/forms/AccreditationsDropdown';
 import {
   Building2, MapPin, Phone, FileText, Camera, Loader2,
   CheckCircle2, ChevronRight, ChevronLeft, Stethoscope,
@@ -35,6 +36,7 @@ export default function ClinicOnboarding() {
   const [biography, setBiography] = useState('');
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
+  const [accreditations, setAccreditations] = useState([]);
 
   // Step 1: Specialties
   const [allSpecialties, setAllSpecialties] = useState([]);
@@ -63,6 +65,12 @@ export default function ClinicOnboarding() {
         setSelectedSpecialties(c.specialties || []);
         if (c.avatar) setLogoPreview(c.avatar);
         if (c.onboarding_step > 0) setStep(Math.min(c.onboarding_step, 2));
+
+        // Load existing accreditations
+        clinicAPI.getAccreditations(c.id).then(res => {
+          const accIds = (res?.data || []).map(acc => acc.id);
+          setAccreditations(accIds);
+        }).catch(() => {});
       }
       if (res?.doctors?.length) setDoctors(res.doctors);
     }).catch(() => {}).finally(() => setLoading(false));
@@ -112,17 +120,23 @@ export default function ClinicOnboarding() {
         if (address) payload.address = address;
         if (latitude) payload.latitude = latitude;
         if (longitude) payload.longitude = longitude;
-        
+
         await clinicAPI.updateOnboarding(payload);
-        
+
         // Upload logo if selected
         if (logoFile) {
           const logoRes = await clinicAPI.uploadLogo(logoFile);
           if (logoRes?.avatar) setLogoPreview(logoRes.avatar);
         }
-        // Refetch to get clinic id
+
+        // Save accreditations if selected
         const fresh = await clinicAPI.onboardingProfile();
-        if (fresh?.clinic?.id) setClinicId(fresh.clinic.id);
+        if (fresh?.clinic?.id) {
+          setClinicId(fresh.clinic.id);
+          if (accreditations.length > 0) {
+            await clinicAPI.updateAccreditations(fresh.clinic.id, accreditations);
+          }
+        }
       } else if (step === 1) {
         await clinicAPI.updateOnboarding({ step: 1, specialties: selectedSpecialties });
       } else if (step === 2) {
@@ -139,7 +153,7 @@ export default function ClinicOnboarding() {
     } finally {
       setSaving(false);
     }
-  }, [step, name, address, latitude, longitude, phone, biography, logoFile, selectedSpecialties, updateUser, navigate]);
+  }, [step, name, address, latitude, longitude, phone, biography, logoFile, accreditations, selectedSpecialties, updateUser, navigate]);
 
   const addDoctor = async () => {
     if (!newDoctor.fullname || !newDoctor.email) {
@@ -287,6 +301,19 @@ export default function ClinicOnboarding() {
                   <textarea value={biography} onChange={e => setBiography(e.target.value)} rows={3}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all resize-none"
                     placeholder={t('clinicOnboarding.descriptionPlaceholder', 'Tell patients what makes your clinic special...')} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                    <Award className="w-4 h-4 text-amber-600" />
+                    {t('clinicOnboarding.accreditations', 'Sertifikalar & Akreditasyonlar')}
+                  </label>
+                  <AccreditationsDropdown
+                    selected={accreditations}
+                    onChange={setAccreditations}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    {t('clinicOnboarding.accreditationsHint', 'Klinağinizin sahip olduğu profesyonel sertifikaları seçin. Hastalara güven aşılar.')}
+                  </p>
                 </div>
               </div>
             </div>

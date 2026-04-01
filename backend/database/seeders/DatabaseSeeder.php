@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         // ══════════════════════════════════════════════════════════════════
         $this->call(CatalogSeeder::class);
         $this->call(TicketCategorySeeder::class);
+        $this->call(AccreditationSeeder::class);
 
         // ══════════════════════════════════════════════════════════════════
         //  SUPER ADMIN

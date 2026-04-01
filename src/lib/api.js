@@ -136,6 +136,16 @@ export const clinicAPI = {
   reviews: (id, params) => api.get(`/clinics/${id}/reviews`, { params }),
   reviewStats: (id) => api.get(`/clinics/${id}/review-stats`),
   submitReview: (id, payload) => api.post(`/clinics/${id}/reviews`, payload),
+  // Accreditations
+  getAccreditations: (clinicId) => api.get(`/clinics/${clinicId}/accreditations`),
+  updateAccreditations: (clinicId, accreditationIds) => api.post(`/clinics/${clinicId}/accreditations`, {
+    accreditation_ids: accreditationIds,
+    certificate_number: [],
+    issued_at: [],
+    expires_at: [],
+    document_url: [],
+  }),
+  removeAccreditation: (clinicId, accreditationId) => api.delete(`/clinics/${clinicId}/accreditations/${accreditationId}`),
   // Onboarding
   onboardingProfile: () => api.get('/clinic-onboarding'),
   updateOnboarding: (payload) => api.put('/clinic-onboarding', payload),
@@ -144,6 +154,11 @@ export const clinicAPI = {
     fd.append('logo', file);
     return api.post('/clinic-onboarding/logo', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
+};
+
+// ── Accreditations ──
+export const accreditationAPI = {
+  list: () => api.get('/accreditations'),
 };
 
 // ── Clinic Verification ──

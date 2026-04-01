@@ -133,4 +133,13 @@ class Clinic extends Model
     {
         return $this->hasOne(ClinicVerification::class)->latestOfMany();
     }
+
+    public function accreditations()
+    {
+        return $this->belongsToMany(Accreditation::class, 'clinic_accreditations')
+            ->withPivot('certificate_number', 'issued_at', 'expires_at', 'document_url', 'is_verified')
+            ->where('accreditations.is_active', true)
+            ->orderBy('accreditations.sort_order')
+            ->withTimestamps();
+    }
 }
