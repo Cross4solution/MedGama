@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\LogsActivity;
+use App\Utils\SlugGenerator;
 
 class DoctorProfile extends Model
 {
@@ -17,10 +18,32 @@ class DoctorProfile extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Auto-generate slug when creating or updating
+        static::saving(function ($model) {
+            if ($model->isDirty(['title']) || !$model->slug) {
+                // Get user name from relationship if available
+                $userName = $model->user?->fullname ?? '';
+                $slug = SlugGenerator::generateDoctorSlug($model->title, $userName);
+
+                // Ensure slug is unique
+                $model->slug = SlugGenerator::ensureUniqueSlug($slug, function ($checkSlug) use ($model) {
+                    return static::where('slug', $checkSlug)
+                        ->where('id', '!=', $model->id)
+                        ->exists();
+                });
+            }
+        });
+    }
+
     protected $fillable = [
         'user_id',
         'clinic_id',
         'title',
+        'slug',
         'specialty',
         'specialty_id',
         'sub_specialties',
