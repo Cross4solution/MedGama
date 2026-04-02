@@ -21,14 +21,16 @@ return new class extends Migration
     public function up(): void
     {
         // ── 1. ICD-10 Codes catalog table ──
-        Schema::create('icd10_codes', function (Blueprint $table) {
+        if (!Schema::hasTable('icd10_codes')) {
+            Schema::create('icd10_codes', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('code', 10)->unique()->index();       // e.g. "J06.9"
             $table->string('category', 50)->nullable()->index();  // e.g. "J00-J99"
             $table->json('name');                                  // {"en": "...", "tr": "..."}
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-        });
+            });
+        }
 
         // ── 2. Expand patient_records with examination/prescription fields ──
         Schema::table('patient_records', function (Blueprint $table) {
