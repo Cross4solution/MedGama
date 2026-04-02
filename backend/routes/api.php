@@ -69,33 +69,17 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
     }
 
     $isFresh = $request->query('fresh') === '1';
-    $result  = ['db_host' => $dbHost, 'mode' => $isFresh ? 'drop-all+migrate+seed' : 'migrate+seed'];
+    $result  = ['db_host' => $dbHost, 'mode' => $isFresh ? 'db:wipe+migrate+seed' : 'migrate+seed'];
 
-    // ── Step 2: Fresh Reset (if requested) ──
+    // ── Step 2: Wipe Database (if fresh) ──
     if ($isFresh) {
         try {
-            // Disable FK checks to allow dropping all tables
-            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0');
-
-            // Get all tables
-            $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
-            $dropped = [];
-
-            // Drop each table individually (TiDB doesn't support bulk DROP)
-            foreach ($tables as $row) {
-                $tableName = array_values((array) $row)[0];
-                \Illuminate\Support\Facades\DB::statement("DROP TABLE IF EXISTS `{$tableName}`");
-                $dropped[] = $tableName;
-            }
-
-            // Re-enable FK checks
-            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1');
-            $result['dropped_tables'] = $dropped;
-            $result['reset_message'] = 'Database cleared successfully (' . count($dropped) . ' tables dropped)';
+            \Illuminate\Support\Facades\Artisan::call('db:wipe', ['--force' => true]);
+            $result['wipe_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'error',
-                'step'    => 'fresh_reset',
+                'step'    => 'db_wipe',
                 'message' => $e->getMessage(),
                 'trace'   => substr($e->getTraceAsString(), 0, 2000),
             ] + $result, 500);
@@ -115,7 +99,7 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
         ] + $result, 500);
     }
 
-    // ── Step 3: Seed ──
+    // ── Step 4: Seed ──
     try {
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         $result['seed_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
@@ -123,7 +107,7 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
         $result['seed_error'] = $e->getMessage();
     }
 
-    // ── Step 4: Verify counts ──
+    // ── Step 5: Verify counts ──
     try {
         $result['counts'] = [
             'users'            => \Illuminate\Support\Facades\DB::table('users')->count(),
