@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff, LogOut, Shield, ChevronDown, Heart } from 'lucide-react';
+import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff, LogOut, Shield, ChevronDown, Heart, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { notificationAPI } from '../../lib/api';
@@ -498,6 +498,14 @@ const Header = () => {
                             <Shield className="w-4 h-4 text-gray-400" />
                             {t('profile.security', 'Security')}
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => { setProfileOpen(false); navigate('/profile?tab=privacy'); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                          >
+                            <Lock className="w-4 h-4 text-gray-400" />
+                            {t('profile.privacyData', 'Privacy & Data')}
+                          </button>
                         </div>
                         <div className="border-t border-gray-100 p-1.5">
                           <button
@@ -580,7 +588,7 @@ const Header = () => {
           <p className="text-sm text-gray-600 mb-4">You are about to log out of your account. Are you sure?</p>
           <div className="flex justify-end gap-2">
             <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">{t('common.cancel')}</button>
-            <button onClick={()=>{ setConfirmLogoutOpen(false); logout({ skipConfirmation: true }); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">{t('common.logout')}</button>
+            <button onClick={()=>{ setConfirmLogoutOpen(false); logout({ skipConfirmation: true }); navigate('/'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">{t('common.logout')}</button>
           </div>
         </div>
       </div>
@@ -752,7 +760,7 @@ const Header = () => {
                 {/* Logout */}
                 <div className="px-3 pb-3 pt-2 border-t border-gray-100 mt-2">
                   <button
-                    onClick={() => { closeMenu(); logout({ skipConfirmation: true }); }}
+                    onClick={() => { closeMenu(); logout({ skipConfirmation: true }); navigate('/'); }}
                     className="w-full flex items-center justify-center gap-2 mt-2 px-3 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-600 hover:to-red-600 shadow-md shadow-rose-200/50 transition-all duration-200"
                   >
                     {t('common.logout')}

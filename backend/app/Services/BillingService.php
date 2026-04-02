@@ -37,8 +37,9 @@ class BillingService
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
-                $q->where('invoice_number', 'ilike', "%{$search}%")
-                  ->orWhereHas('patient', fn($pq) => $pq->where('fullname', 'ilike', "%{$search}%"));
+                $likeOp = \DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+                $q->where('invoice_number', $likeOp, "%{$search}%")
+                  ->orWhereHas('patient', fn($pq) => $pq->where('fullname', $likeOp, "%{$search}%"));
             });
         }
         if (!empty($filters['date_from'])) {

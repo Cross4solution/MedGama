@@ -410,11 +410,10 @@ export default function Profile() {
               <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('profile.settings')}</div>
             </div>
             <div className="p-2 space-y-0.5">
-              <NavItem id="notifications" icon={Bell} title={t('profile.notifications')} desc={t('profile.notificationsDesc')} />
               {user?.role === 'patient' && (
                 <NavItem id="medical" icon={HeartPulse} title={t('profile.medicalHistory')} desc={t('profile.medicalHistoryDesc')} />
               )}
-              <NavItem id="privacy" icon={Cookie} title={t('profile.privacyData')} desc={t('profile.privacyDataDesc')} />
+              <NavItem id="notifications" icon={Bell} title={t('profile.notifications')} desc={t('profile.notificationsDesc')} />
             </div>
           </div>
         </aside>
@@ -665,7 +664,7 @@ export default function Profile() {
             </div>
           )}
 
-          {active === 'privacy' && (
+          {active === 'privacy' && user?.role !== 'patient' && (
             <div className="space-y-5">
               {/* Cookie Consent Management */}
               <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">

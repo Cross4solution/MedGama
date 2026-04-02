@@ -26,6 +26,13 @@ export default function SavedClinics() {
   const [removing, setRemoving] = useState(null);
   const [confirmRemove, setConfirmRemove] = useState(null);
 
+  // Redirect doctors away from saved clinics page
+  useEffect(() => {
+    if (user && user.role === 'doctor') {
+      navigate('/medstream', { replace: true });
+    }
+  }, [user, navigate]);
+
   const fetchSavedClinics = useCallback(async () => {
     setLoading(true);
     try {

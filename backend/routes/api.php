@@ -447,6 +447,16 @@ Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospi
 | CRM — Billing / Invoicing (Bölüm 7.5)
 |--------------------------------------------------------------------------
 */
+// ── Doctor Billing (MVP — no CRM gate, all authenticated doctors) ──────────────
+Route::prefix('doctor/billing')->middleware(['auth:sanctum', 'role:doctor'])->group(function () {
+    Route::get('/invoices', [BillingController::class, 'index']);
+    Route::post('/invoices', [BillingController::class, 'store']);
+    Route::get('/invoices/{id}', [BillingController::class, 'show']);
+    Route::put('/invoices/{id}', [BillingController::class, 'update']);
+    Route::delete('/invoices/{id}', [BillingController::class, 'destroy']);
+    Route::get('/stats', [BillingController::class, 'stats']);
+});
+
 Route::prefix('crm/billing')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospital,superAdmin', 'crm.access'])->group(function () {
     Route::get('/invoices', [BillingController::class, 'index']);
     Route::post('/invoices', [BillingController::class, 'store']);

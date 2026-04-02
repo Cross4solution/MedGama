@@ -44,6 +44,7 @@ const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRights
 const SearchResults = React.lazy(() => import('./pages/SearchResults'));
 const DashboardRedirect = React.lazy(() => import('./pages/DashboardRedirect'));
 const DoctorDashboard = React.lazy(() => import('./pages/DoctorDashboard'));
+const DoctorBilling = React.lazy(() => import('./pages/DoctorBilling'));
 const PatientDashboard = React.lazy(() => import('./pages/PatientDashboard'));
 const PatientAppointments = React.lazy(() => import('./pages/PatientAppointments'));
 const MedicalArchive = React.lazy(() => import('./pages/MedicalArchive'));
@@ -367,6 +368,7 @@ function AppContent() {
         <Route path="/post/:id" element={<PostDetail />} />
         {/* Doctor Dashboard — MedaGama main panel (NOT CRM) */}
         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        <Route path="/doctor/billing" element={<DoctorBilling />} />
         {/* Clinic Routes */}
         <Route path="/clinic/onboarding" element={<ClinicOnboarding />} />
         <Route path="/clinic/dashboard" element={<ClinicDashboard />} />

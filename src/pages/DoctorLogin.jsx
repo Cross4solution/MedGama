@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getRedirectFromLoginResult } from '../utils/authRedirect';
+import { getRedirectFromLoginResult, getRedirectForRole } from '../utils/authRedirect';
 import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff, Phone, Loader2, Heart, Building2 } from 'lucide-react';
 import PhoneVerification from '../components/auth/PhoneVerification';
 import TermsPopup from '../components/auth/TermsPopup';
@@ -10,8 +10,16 @@ import { useTranslation } from 'react-i18next';
 
 const DoctorLogin = () => {
   const navigate = useNavigate();
-  const { login, applyApiAuth } = useAuth();
+  const { user, login, applyApiAuth } = useAuth();
   const [formData, setFormData] = useState({ email: '', password: '' });
+
+  // Redirect already-authenticated users away from login page
+  useEffect(() => {
+    if (user) {
+      navigate(getRedirectForRole(user?.role_id || user?.role || 'doctor'), { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');

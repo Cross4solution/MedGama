@@ -308,6 +308,16 @@ export const patientAPI = {
   setStage: (id, stage) => api.post(`/crm/patients/${id}/stage`, { stage }),
 };
 
+// ── Doctor Billing (MVP — no CRM gate required) ──
+export const doctorBillingAPI = {
+  invoices: (params) => api.get('/doctor/billing/invoices', { params }),
+  getInvoice: (id) => api.get(`/doctor/billing/invoices/${id}`),
+  createInvoice: (payload) => api.post('/doctor/billing/invoices', payload),
+  updateInvoice: (id, payload) => api.put(`/doctor/billing/invoices/${id}`, payload),
+  deleteInvoice: (id) => api.delete(`/doctor/billing/invoices/${id}`),
+  stats: (params) => api.get('/doctor/billing/stats', { params }),
+};
+
 // ── CRM Billing / Invoicing (Bölüm 7.5) ──
 export const billingAPI = {
   invoices: (params) => api.get('/crm/billing/invoices', { params }),
