@@ -69,15 +69,24 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
     }
 
     $isFresh = $request->query('fresh') === '1';
-    $result  = ['db_host' => $dbHost, 'mode' => $isFresh ? 'migrate:fresh --seed' : 'migrate + seed'];
+    $result  = ['db_host' => $dbHost, 'mode' => $isFresh ? 'drop-each+migrate --seed' : 'migrate + seed'];
 
     // ── Step 2: Migrate ──
     try {
         if ($isFresh) {
-            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
-        } else {
-            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            // TiDB-safe: drop tables one by one (bulk DROP TABLE not supported)
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0');
+            $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
+            $dropped = [];
+            foreach ($tables as $row) {
+                $tableName = array_values((array) $row)[0];
+                \Illuminate\Support\Facades\DB::statement("DROP TABLE IF EXISTS `{$tableName}`");
+                $dropped[] = $tableName;
+            }
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1');
+            $result['dropped_tables'] = $dropped;
         }
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         $result['migrate_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
     } catch (\Throwable $e) {
         return response()->json([
