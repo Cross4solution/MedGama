@@ -110,7 +110,17 @@ const ClinicDetailPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'genel-bakis':
-        return <OverviewTab aboutTitle={aboutData.title} aboutP1={aboutData.paragraph1} aboutP2={aboutData.paragraph2} />;
+        return (
+          <OverviewTab
+            aboutTitle={aboutData.title}
+            aboutP1={aboutData.paragraph1}
+            aboutP2={aboutData.paragraph2}
+            doctors={apiClinic?.doctors || []}
+            accreditations={apiClinic?.accreditations || []}
+            onBookAppointment={() => setBookModal(true)}
+            onSwitchToDoctors={() => setActiveTab('doktorlar')}
+          />
+        );
       case 'prices':
         return (
           <PricesTab 

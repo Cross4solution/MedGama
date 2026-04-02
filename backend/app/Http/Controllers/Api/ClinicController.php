@@ -59,6 +59,9 @@ class ClinicController extends Controller
               }]);
         }]);
 
+        // Load accreditations
+        $clinic->load('accreditations');
+
         // Social flags for authenticated user
         $authUser = auth('sanctum')->user();
         $clinic->is_favorited = false;
