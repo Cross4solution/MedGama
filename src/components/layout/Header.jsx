@@ -291,37 +291,37 @@ const Header = () => {
                     {loginOpen && (
                       <div role="menu" className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
                         {/* Header */}
-                        <div className="px-4 py-3 border-b border-gray-100">
-                          <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-[0.08em]">{t('nav.signIn')}</p>
+                        <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-teal-50">
+                          <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-[0.08em]">{t('nav.signIn')}</p>
                         </div>
 
                         {/* Main Login Options */}
-                        <div className="space-y-0.5 p-2">
+                        <div className="space-y-1 p-2">
                           <button
                             type="button"
                             role="menuitem"
                             onClick={()=>{ setLoginOpen(false); navigate('/login'); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-blue-50 transition-colors"
                           >
-                            <User className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                            <User className="w-4 h-4 text-blue-500 flex-shrink-0" />
                             <span className="font-medium">{t('common.patient')}</span>
                           </button>
                           <button
                             type="button"
                             role="menuitem"
                             onClick={()=>{ setLoginOpen(false); navigate('/doctor-login'); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-amber-50 transition-colors"
                           >
-                            <Stethoscope className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                            <Stethoscope className="w-4 h-4 text-amber-500 flex-shrink-0" />
                             <span className="font-medium">{t('common.doctor')}</span>
                           </button>
                           <button
                             type="button"
                             role="menuitem"
                             onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-purple-50 transition-colors"
                           >
-                            <Hospital className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                            <Hospital className="w-4 h-4 text-purple-500 flex-shrink-0" />
                             <span className="font-medium">{t('common.clinic')}</span>
                           </button>
                         </div>
@@ -330,15 +330,15 @@ const Header = () => {
                         <div className="border-t border-gray-100" />
 
                         {/* CRM Panel */}
-                        <div className="p-2">
+                        <div className="p-2 bg-gradient-to-r from-teal-50/50 to-cyan-50/50">
                           <button
                             type="button"
                             role="menuitem"
                             onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-teal-100 transition-colors"
                           >
                             <LayoutDashboard className="w-4 h-4 text-teal-600 flex-shrink-0" />
-                            <span className="font-medium">CRM Panel</span>
+                            <span className="font-medium text-teal-700">CRM Panel</span>
                           </button>
                         </div>
                       </div>
