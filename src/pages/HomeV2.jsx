@@ -81,7 +81,7 @@ export default function HomeV2() {
               aria-hidden="true"
             />
             {/* Removed white bottom gradient as requested */}
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 md:py-9">
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 pb-6 md:pt-9 md:pb-7">
               <div className="grid grid-cols-1 gap-3 items-center">
                 <div>
                   <h1
