@@ -594,16 +594,18 @@ export default function TelehealthAppointmentPage() {
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { key: 'online', label: 'Telehealth', desc: 'Video consultation from home', icon: Video },
-                      { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic directly', icon: Building2 },
+                      { key: 'online', label: 'Telehealth', desc: 'Video consultation from home', icon: Video, color: '#2D8CFF' },
+                      { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic directly', icon: Building2, color: '#10B981' },
                     ].map(opt => (
                       <button
                         key={opt.key}
                         onClick={() => setAppointmentType(opt.key)}
                         className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 ${
                           appointmentType === opt.key
-                            ? 'bg-teal-600 border-teal-600 shadow-lg shadow-teal-200/60'
-                            : 'bg-white border-gray-200 hover:border-teal-300 hover:shadow-md hover:shadow-teal-50 hover:bg-teal-50/20'
+                            ? opt.key === 'online'
+                              ? 'bg-[#2D8CFF] border-[#2D8CFF] shadow-lg shadow-blue-200/60'
+                              : 'bg-teal-600 border-teal-600 shadow-lg shadow-teal-200/60'
+                            : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md hover:shadow-gray-50 hover:bg-gray-50/20'
                         }`}
                       >
                         {appointmentType === opt.key && (
@@ -853,16 +855,18 @@ export default function TelehealthAppointmentPage() {
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { key: 'online', label: 'Telehealth', desc: 'Video consultation', icon: Video },
-                        { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic', icon: Building2 },
+                        { key: 'online', label: 'Telehealth', desc: 'Video consultation', icon: Video, color: '#2D8CFF' },
+                        { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic', icon: Building2, color: '#10B981' },
                       ].map(opt => (
                         <button
                           key={opt.key}
                           onClick={() => setAppointmentType(opt.key)}
                           className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 ${
                             appointmentType === opt.key
-                              ? 'bg-teal-600 border-teal-600 shadow-lg shadow-teal-200/60'
-                              : 'bg-white border-gray-200 hover:border-teal-300 hover:shadow-md hover:shadow-teal-50 hover:bg-teal-50/20'
+                              ? opt.key === 'online'
+                                ? 'bg-[#2D8CFF] border-[#2D8CFF] shadow-lg shadow-blue-200/60'
+                                : 'bg-teal-600 border-teal-600 shadow-lg shadow-teal-200/60'
+                              : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md hover:shadow-gray-50 hover:bg-gray-50/20'
                           }`}
                         >
                           {appointmentType === opt.key && (

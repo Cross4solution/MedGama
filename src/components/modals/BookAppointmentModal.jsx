@@ -3,8 +3,8 @@ import { X, Calendar, Clock, Video, MapPin, CheckCircle2, ChevronLeft, ChevronRi
 import { useTranslation } from 'react-i18next';
 
 const APPOINTMENT_TYPES = [
-  { id: 'in_person', icon: MapPin, label: 'In-Person Visit', labelTr: 'Yüz Yüze Muayene', color: 'bg-blue-50 text-blue-600 border-blue-200' },
-  { id: 'video', icon: Video, label: 'Telehealth', labelTr: 'Görüntülü Görüşme', color: 'bg-teal-50 text-teal-600 border-teal-200' },
+  { id: 'in_person', icon: MapPin, label: 'In-Person Visit', labelTr: 'Yüz Yüze Muayene', color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
+  { id: 'video', icon: Video, label: 'Telehealth', labelTr: 'Görüntülü Görüşme', color: 'bg-blue-50 text-[#2D8CFF] border-blue-200' },
 ];
 
 const TIME_SLOTS = [
