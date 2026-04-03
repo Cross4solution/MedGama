@@ -594,28 +594,26 @@ export default function TelehealthAppointmentPage() {
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { key: 'online', label: 'Telehealth', desc: 'Video consultation from home', icon: Video, color: 'teal' },
-                      { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic directly', icon: Building2, color: 'blue' },
+                      { key: 'online', label: 'Telehealth', desc: 'Video consultation from home', icon: Video },
+                      { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic directly', icon: Building2 },
                     ].map(opt => (
                       <button
                         key={opt.key}
                         onClick={() => setAppointmentType(opt.key)}
-                        className={`relative p-4 rounded-xl border-2 text-left transition-all duration-200 ${
+                        className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 ${
                           appointmentType === opt.key
-                            ? opt.color === 'teal'
-                              ? 'border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100/50'
-                              : 'border-blue-500 bg-blue-50/50 shadow-md shadow-blue-100/50'
-                            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'
+                            ? 'bg-teal-600 border-teal-600 shadow-lg shadow-teal-200/60'
+                            : 'bg-white border-gray-200 hover:border-teal-300 hover:shadow-md hover:shadow-teal-50 hover:bg-teal-50/20'
                         }`}
                       >
                         {appointmentType === opt.key && (
-                          <div className={`absolute top-2.5 right-2.5 w-5 h-5 rounded-full flex items-center justify-center ${opt.color === 'teal' ? 'bg-teal-500' : 'bg-blue-500'}`}>
+                          <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
                             <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                           </div>
                         )}
-                        <opt.icon className={`w-6 h-6 mb-2 ${appointmentType === opt.key ? (opt.color === 'teal' ? 'text-teal-600' : 'text-blue-600') : 'text-gray-400'}`} />
-                        <p className={`text-sm font-bold ${appointmentType === opt.key ? 'text-gray-900' : 'text-gray-600'}`}>{opt.label}</p>
-                        <p className="text-[11px] text-gray-400 mt-0.5">{opt.desc}</p>
+                        <opt.icon className={`w-6 h-6 mb-2 transition-colors duration-300 ${appointmentType === opt.key ? 'text-white' : 'text-gray-400'}`} />
+                        <p className={`text-sm font-bold transition-colors duration-300 ${appointmentType === opt.key ? 'text-white' : 'text-gray-700'}`}>{opt.label}</p>
+                        <p className={`text-[11px] mt-0.5 transition-colors duration-300 ${appointmentType === opt.key ? 'text-white/70' : 'text-gray-400'}`}>{opt.desc}</p>
                       </button>
                     ))}
                   </div>
@@ -629,17 +627,22 @@ export default function TelehealthAppointmentPage() {
                   </h3>
                   <p className="text-xs text-gray-400 mb-3">{t('appointment.selectSpecialtyDesc', 'Choose a medical specialty to find the right doctor for you')}</p>
 
-                  {/* Search */}
+                  {/* Search — always visible once specialties loaded */}
                   {!loadingSpecialties && !specialtiesError && specialties.length > 0 && (
-                    <div className="relative mb-3">
+                    <div className="relative mb-4">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                       <input
                         type="text"
                         value={specialtySearch}
                         onChange={e => setSpecialtySearch(e.target.value)}
                         placeholder={t('appointment.searchSpecialty', 'Search specialty...')}
-                        className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-gray-200 bg-gray-50/60 text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+                        className="w-full pl-9 pr-9 py-2.5 text-sm rounded-xl border border-gray-200 bg-gray-50/60 text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
                       />
+                      {specialtySearch && (
+                        <button onClick={() => setSpecialtySearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                   )}
 
@@ -652,58 +655,115 @@ export default function TelehealthAppointmentPage() {
                     <div className="flex flex-col items-center justify-center py-10 text-gray-400">
                       <Stethoscope className="w-10 h-10 mb-3 text-gray-300" />
                       <p className="text-sm font-medium text-gray-500">{t('appointment.specialtiesLoadError', 'Could not load specialties. Please check your connection.')}</p>
-                      <button
-                        onClick={fetchSpecialties}
-                        className="mt-3 px-4 py-2 text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200 rounded-xl hover:bg-teal-100 transition-colors"
-                      >
+                      <button onClick={fetchSpecialties} className="mt-3 px-4 py-2 text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200 rounded-xl hover:bg-teal-100 transition-colors">
                         {t('common.retry', 'Try Again')}
                       </button>
                     </div>
                   ) : specialties.length > 0 ? (() => {
                     const lang = i18n.language?.split('-')[0] || 'en';
                     const q = specialtySearch.trim().toLowerCase();
-                    const filtered = q
-                      ? specialties.filter(sp => {
-                          const n = (sp.name || sp.name_translations?.[lang] || sp.name_translations?.en || sp.code || '').toLowerCase();
-                          return n.includes(q);
-                        })
-                      : specialties;
-                    return filtered.length > 0 ? (
-                      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-1.5">
-                        {filtered.map(sp => {
-                          const spName = sp.name || sp.name_translations?.[lang] || sp.name_translations?.en || sp.code;
-                          const isActive = selectedSpecialty === sp.id;
-                          return (
-                            <button
-                              key={sp.id}
-                              onClick={() => { setSelectedSpecialty(sp.id); setSelectedDoctor(null); setSpecialtySearch(''); }}
-                              className={`group flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-[11px] font-semibold border transition-all duration-150 text-left leading-tight ${
-                                isActive
-                                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-200/50'
-                                  : 'bg-white text-gray-600 border-gray-200/80 hover:border-emerald-500 hover:shadow-md hover:shadow-emerald-100/40 hover:bg-emerald-50/40'
-                              }`}
-                            >
-                              <Stethoscope className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-white/80' : 'text-gray-400 group-hover:text-emerald-500'}`} />
-                              <span className="truncate">{spName}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center py-8 text-gray-400">
-                        <Search className="w-8 h-8 mb-2 text-gray-300" />
-                        <p className="text-sm font-medium text-gray-500">{t('appointment.noMatchingSpecialties', 'No matching specialties')}</p>
-                        <button onClick={() => setSpecialtySearch('')} className="mt-2 text-xs font-medium text-teal-600 hover:underline">{t('common.clearSearch', 'Clear search')}</button>
+                    const POPULAR_KEYS = ['cardio', 'dent', 'derma', 'orthop', 'ophthalm', 'neurol', 'general', 'psychiatr', 'gynecol', 'pediatr', 'family', 'internal'];
+                    const getName = (sp) => sp.name || sp.name_translations?.[lang] || sp.name_translations?.en || sp.code || '';
+                    const isPopular = (sp) => { const n = getName(sp).toLowerCase(); return POPULAR_KEYS.some(k => n.includes(k)); };
+
+                    if (q) {
+                      // Search mode — fixed min-height prevents layout shift
+                      const filtered = specialties.filter(sp => getName(sp).toLowerCase().includes(q));
+                      return (
+                        <div className="min-h-[200px]">
+                          {filtered.length > 0 ? (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                              {filtered.map(sp => {
+                                const spName = getName(sp);
+                                const isActive = selectedSpecialty === sp.id;
+                                return (
+                                  <button
+                                    key={sp.id}
+                                    onClick={() => { setSelectedSpecialty(sp.id); setSelectedDoctor(null); setSpecialtySearch(''); }}
+                                    className={`px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 text-left ${
+                                      isActive
+                                        ? 'bg-teal-600 text-white border-teal-600 shadow-md'
+                                        : 'bg-white text-gray-700 border-gray-200 hover:border-teal-400 hover:shadow-md hover:bg-teal-50/30'
+                                    }`}
+                                  >
+                                    {spName}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center py-12">
+                              <Search className="w-10 h-10 mb-3 text-gray-200" />
+                              <p className="text-sm font-semibold text-gray-500">Oops! No specialty found</p>
+                              <p className="text-xs text-gray-400 mt-1">Try a different search term</p>
+                              <button onClick={() => setSpecialtySearch('')} className="mt-3 text-xs font-medium text-teal-600 hover:underline transition-colors">Clear search</button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    // Default: Popular + All Specialties sections
+                    const popular = specialties.filter(isPopular).slice(0, 6);
+                    const others = specialties.filter(sp => !isPopular(sp)).sort((a, b) => getName(a).localeCompare(getName(b)));
+
+                    return (
+                      <div className="space-y-4">
+                        {popular.length > 0 && (
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2.5">Popular Specialties</p>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                              {popular.map(sp => {
+                                const spName = getName(sp);
+                                const isActive = selectedSpecialty === sp.id;
+                                return (
+                                  <button
+                                    key={sp.id}
+                                    onClick={() => { setSelectedSpecialty(sp.id); setSelectedDoctor(null); setSpecialtySearch(''); }}
+                                    className={`px-3 py-3 rounded-xl text-sm font-semibold border transition-all duration-200 text-left shadow-sm ${
+                                      isActive
+                                        ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-200/50'
+                                        : 'bg-white text-gray-700 border-gray-200 hover:border-teal-400 hover:shadow-md hover:shadow-teal-50 hover:bg-teal-50/30'
+                                    }`}
+                                  >
+                                    {spName}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                        {others.length > 0 && (
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2.5">All Specialties</p>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                              {others.map(sp => {
+                                const spName = getName(sp);
+                                const isActive = selectedSpecialty === sp.id;
+                                return (
+                                  <button
+                                    key={sp.id}
+                                    onClick={() => { setSelectedSpecialty(sp.id); setSelectedDoctor(null); setSpecialtySearch(''); }}
+                                    className={`px-2.5 py-2 rounded-lg text-[12px] font-medium border transition-all duration-200 text-left ${
+                                      isActive
+                                        ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300 hover:shadow-sm hover:bg-teal-50/20'
+                                    }`}
+                                  >
+                                    {spName}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })() : (
                     <div className="flex flex-col items-center justify-center py-10 text-gray-400">
                       <Stethoscope className="w-10 h-10 mb-3 text-gray-300" />
                       <p className="text-sm font-medium text-gray-500">{t('appointment.noSpecialties', 'No specialties available at the moment.')}</p>
-                      <button
-                        onClick={fetchSpecialties}
-                        className="mt-3 px-4 py-2 text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200 rounded-xl hover:bg-teal-100 transition-colors"
-                      >
+                      <button onClick={fetchSpecialties} className="mt-3 px-4 py-2 text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200 rounded-xl hover:bg-teal-100 transition-colors">
                         {t('common.retry', 'Try Again')}
                       </button>
                     </div>
@@ -793,28 +853,26 @@ export default function TelehealthAppointmentPage() {
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { key: 'online', label: 'Telehealth', desc: 'Video consultation', icon: Video, color: 'teal' },
-                        { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic', icon: Building2, color: 'blue' },
+                        { key: 'online', label: 'Telehealth', desc: 'Video consultation', icon: Video },
+                        { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic', icon: Building2 },
                       ].map(opt => (
                         <button
                           key={opt.key}
                           onClick={() => setAppointmentType(opt.key)}
-                          className={`relative p-4 rounded-xl border-2 text-left transition-all duration-200 ${
+                          className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 ${
                             appointmentType === opt.key
-                              ? opt.color === 'teal'
-                                ? 'border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100/50'
-                                : 'border-blue-500 bg-blue-50/50 shadow-md shadow-blue-100/50'
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'
+                              ? 'bg-teal-600 border-teal-600 shadow-lg shadow-teal-200/60'
+                              : 'bg-white border-gray-200 hover:border-teal-300 hover:shadow-md hover:shadow-teal-50 hover:bg-teal-50/20'
                           }`}
                         >
                           {appointmentType === opt.key && (
-                            <div className={`absolute top-2.5 right-2.5 w-5 h-5 rounded-full flex items-center justify-center ${opt.color === 'teal' ? 'bg-teal-500' : 'bg-blue-500'}`}>
+                            <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
                               <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                             </div>
                           )}
-                          <opt.icon className={`w-6 h-6 mb-2 ${appointmentType === opt.key ? (opt.color === 'teal' ? 'text-teal-600' : 'text-blue-600') : 'text-gray-400'}`} />
-                          <p className={`text-sm font-bold ${appointmentType === opt.key ? 'text-gray-900' : 'text-gray-600'}`}>{opt.label}</p>
-                          <p className="text-[11px] text-gray-400 mt-0.5">{opt.desc}</p>
+                          <opt.icon className={`w-6 h-6 mb-2 transition-colors duration-300 ${appointmentType === opt.key ? 'text-white' : 'text-gray-400'}`} />
+                          <p className={`text-sm font-bold transition-colors duration-300 ${appointmentType === opt.key ? 'text-white' : 'text-gray-700'}`}>{opt.label}</p>
+                          <p className={`text-[11px] mt-0.5 transition-colors duration-300 ${appointmentType === opt.key ? 'text-white/70' : 'text-gray-400'}`}>{opt.desc}</p>
                         </button>
                       ))}
                     </div>
