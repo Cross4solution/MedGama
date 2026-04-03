@@ -957,7 +957,7 @@
     "home": "Home",
     "explore": "Explore",
     "appointments": "Appointments",
-    "myAppointments": "My Appointments",
+    "myAppointments": "Appointments",
     "messages": "Messages",
     "notifications": "Notifications",
     "profile": "Profile",
@@ -971,7 +971,7 @@
     "medicalRecords": "Medical Records",
     "prescriptions": "Prescriptions",
     "savedPosts": "Saved Posts",
-    "favoriteClinics": "Favorite Clinics",
+    "favoriteClinics": "Favorites",
     "medicalArchive": "Medical Archive",
     "dashboard": "Dashboard"
   },

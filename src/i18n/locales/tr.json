@@ -957,7 +957,7 @@
     "home": "Ana Sayfa",
     "explore": "Keşfet",
     "appointments": "Randevular",
-    "myAppointments": "Randevularım",
+    "myAppointments": "Randevular",
     "messages": "Mesajlar",
     "notifications": "Bildirimler",
     "profile": "Profil",
@@ -971,7 +971,7 @@
     "medicalRecords": "Tıbbi Kayıtlar",
     "prescriptions": "Reçeteler",
     "savedPosts": "Kaydedilen Gönderiler",
-    "favoriteClinics": "Favori Klinikler",
+    "favoriteClinics": "Favoriler",
     "medicalArchive": "Tıbbi Arşiv",
     "dashboard": "Panel"
   },
