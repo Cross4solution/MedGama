@@ -488,41 +488,77 @@ export default function ClinicProfileEdit() {
               </div>
             )}
 
-            {/* Location Tab */}
+            {/* Location Tab — Mapbox GL JS */}
             {tab === 'location' && (
               <div>
                 {(() => {
                   const lat = mapLat;
                   const lng = mapLng;
+                  const token = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || '';
                   const html = `<!DOCTYPE html>
-                    <html>
-                    <head>
-                      <meta charset=\"utf-8\" />
-                      <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
-                      <link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\" crossorigin=\"\" />
-                      <style>html,body,#map{height:100%;margin:0}</style>
-                    </head>
-                    <body>
-                      <div id=\"map\"></div>
-                      <script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\" crossorigin=\"\"></script>
-                      <script>
-                        var map = L.map('map').setView([${lat}, ${lng}], 14);
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
-                        var marker = L.marker([${lat}, ${lng}], {draggable: true}).addTo(map);
-                        function report(lat,lng){
-                          try { parent.postMessage({ type: 'clinic-map-select', lat: lat, lng: lng }, '*'); } catch(e) {}
-                        }
-                        map.on('click', function(ev){
-                          var p = ev.latlng; marker.setLatLng(p); report(p.lat, p.lng);
-                        });
-                        marker.on('dragend', function(ev){ var p = ev.target.getLatLng(); report(p.lat, p.lng); });
-                      </script>
-                    </body>
-                    </html>`;
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
+  <style>
+    html,body,#map { height:100%; margin:0; padding:0; font-family:sans-serif; }
+    .mapboxgl-ctrl-logo { display:none !important; }
+    #coords {
+      position:absolute; bottom:12px; left:12px; z-index:10;
+      background:rgba(255,255,255,0.92); backdrop-filter:blur(6px);
+      border-radius:8px; padding:6px 10px; font-size:11px; color:#374151;
+      box-shadow:0 1px 6px rgba(0,0,0,0.12); border:1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="coords">Lat: ${lat.toFixed(5)} · Lng: ${lng.toFixed(5)}</div>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+  <script>
+    mapboxgl.accessToken = '${token}';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [${lng}, ${lat}],
+      zoom: 14
+    });
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+
+    var el = document.createElement('div');
+    el.style.cssText = 'width:28px;height:28px;border-radius:50%;background:#0d9488;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:grab';
+    var marker = new mapboxgl.Marker({ element: el, draggable: true })
+      .setLngLat([${lng}, ${lat}])
+      .addTo(map);
+
+    function report(lat, lng) {
+      document.getElementById('coords').textContent = 'Lat: ' + lat.toFixed(5) + ' · Lng: ' + lng.toFixed(5);
+      try { parent.postMessage({ type: 'clinic-map-select', lat: lat, lng: lng }, '*'); } catch(e) {}
+    }
+
+    map.on('click', function(ev) {
+      var ll = ev.lngLat;
+      marker.setLngLat([ll.lng, ll.lat]);
+      report(ll.lat, ll.lng);
+    });
+
+    marker.on('dragend', function() {
+      var ll = marker.getLngLat();
+      report(ll.lat, ll.lng);
+    });
+  </script>
+</body>
+</html>`;
                   return (
-                    <div className="rounded-xl border overflow-hidden">
-                      <iframe title="clinic-map" srcDoc={html} className="w-full h-[360px] border-0" />
-                      <div className="px-3 py-2 text-xs text-gray-600">Lat: {lat.toFixed(5)} · Lng: {lng.toFixed(5)}</div>
+                    <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                      <div className="px-4 py-2.5 bg-gradient-to-r from-teal-50 to-emerald-50 border-b border-gray-100 flex items-center justify-between">
+                        <span className="text-xs font-semibold text-teal-700">Click or drag marker to set location</span>
+                        <span className="text-[11px] text-gray-500 font-mono">
+                          {mapLat.toFixed(5)}, {mapLng.toFixed(5)}
+                        </span>
+                      </div>
+                      <iframe title="clinic-map" srcDoc={html} className="w-full h-[380px] border-0" />
                     </div>
                   );
                 })()}

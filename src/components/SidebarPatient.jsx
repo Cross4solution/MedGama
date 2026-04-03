@@ -126,7 +126,7 @@ export default function SidebarPatient() {
             <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors">
               <LayoutDashboard className="w-3.5 h-3.5 text-white" />
             </span>
-            {t('sidebar.managementPanel', 'Yönetim Paneli')}
+            {t('sidebar.managementPanel', 'CRM Panel')}
           </span>
           <ChevronRight className="w-3.5 h-3.5 text-white/70 group-hover:translate-x-0.5 transition-transform" />
         </Link>
@@ -147,7 +147,7 @@ export default function SidebarPatient() {
               <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors">
                 <LayoutDashboard className="w-3.5 h-3.5 text-white" />
               </span>
-              {t('sidebar.managementPanel', 'Yönetim Paneli')}
+              {t('sidebar.managementPanel', 'CRM Panel')}
             </span>
             <ChevronRight className="w-3.5 h-3.5 text-white/70 group-hover:translate-x-0.5 transition-transform" />
           </Link>
@@ -167,7 +167,7 @@ export default function SidebarPatient() {
             <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100 transition-colors">
               <Lock className="w-3.5 h-3.5 text-gray-400" />
             </span>
-            {t('sidebar.managementPanel', 'Yönetim Paneli')}
+            {t('sidebar.managementPanel', 'CRM Panel')}
           </span>
           <span className="text-[9px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-200">
             {t('common.upgrade', 'Yükselt')}

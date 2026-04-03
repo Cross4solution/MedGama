@@ -529,7 +529,7 @@ const Header = () => {
                       title="Go to Management Portal"
                     >
                       <LayoutDashboard className="w-4 h-4" />
-                      <span>Hospital Panel</span>
+                      <span>CRM Panel</span>
                     </button>
                   ) : null}
                 </>
