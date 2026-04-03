@@ -296,7 +296,7 @@ export default function DoctorBilling() {
   // Guard: only doctors
   useEffect(() => {
     if (user && user.role !== 'doctor') navigate('/dashboard', { replace: true });
-    if (!user) navigate('/login', { replace: true });
+    if (!user) navigate(localStorage.getItem('auth_logout') === '1' ? '/' : '/login', { replace: true });
   }, [user, navigate]);
 
   const fetchData = useCallback(async () => {

@@ -381,7 +381,7 @@ const CRMLayout = ({ children }) => {
   // CRM access control — redirect unauthorized users
   React.useEffect(() => {
     if (!user) {
-      navigate('/login', { replace: true });
+      navigate(localStorage.getItem('auth_logout') === '1' ? '/' : '/login', { replace: true });
       return;
     }
     const role = user?.role || user?.role_id || 'patient';

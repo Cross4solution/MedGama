@@ -83,7 +83,7 @@ export default function TelehealthAppointmentPage() {
 
   // Redirect unauthenticated users to login
   useEffect(() => {
-    if (!user) navigate('/login', { replace: true });
+    if (!user) navigate(localStorage.getItem('auth_logout') === '1' ? '/' : '/login', { replace: true });
   }, [user, navigate]);
 
   const isDoctor = user?.role_id === 'doctor' || user?.role_id === 'clinicOwner';

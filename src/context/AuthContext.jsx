@@ -401,9 +401,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const handleForceLogout = () => {
       clearLocalAuth();
-      // Redirect to login if not already there
-      if (window.location.pathname !== '/login' && !window.location.pathname.includes('-login')) {
-        window.location.href = '/login';
+      // Redirect to home page on forced logout (401/token expire)
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
       }
     };
     window.addEventListener('auth:logout', handleForceLogout);

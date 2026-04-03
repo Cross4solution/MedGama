@@ -27,7 +27,7 @@ const DoctorDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) { navigate('/login', { replace: true }); return; }
+    if (!user) { navigate(localStorage.getItem('auth_logout') === '1' ? '/' : '/login', { replace: true }); return; }
     if (user.role !== 'doctor' && user.role_id !== 'doctor') {
       navigate('/dashboard', { replace: true }); return;
     }

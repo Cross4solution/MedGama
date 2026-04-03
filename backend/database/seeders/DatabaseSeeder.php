@@ -516,8 +516,9 @@ class DatabaseSeeder extends Seeder
             }
 
             $profileData = array_merge(['user_id' => $doctor->id], $dd['profile'], [
-                'clinic_id'    => $clinic?->id,
-                'specialty_id' => $specId,
+                'clinic_id'           => $clinic?->id,
+                'specialty_id'        => $specId,
+                'onboarding_completed' => true,
             ]);
 
             DoctorProfile::updateOrCreate(
