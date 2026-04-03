@@ -57,7 +57,7 @@ export default function SidebarPatient() {
 
   const clinicItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
-    { to: '/clinic/dashboard', label: t('sidebar.clinicDashboard', 'Clinic Dashboard'), icon: LayoutDashboard },
+    { to: '/clinic/dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: LayoutDashboard },
     { to: '/clinic/team', label: t('sidebar.myTeam', 'My Team'), icon: Building2 },
     { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
