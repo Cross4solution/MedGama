@@ -60,6 +60,7 @@ export default function SidebarPatient() {
     { to: '/clinic/dashboard', label: t('sidebar.clinicDashboard', 'Clinic Dashboard'), icon: LayoutDashboard },
     { to: '/clinic/team', label: t('sidebar.myTeam', 'My Team'), icon: Building2 },
     { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
+    { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: notifCount || undefined },
