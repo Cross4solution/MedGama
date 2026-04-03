@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../context/NotificationsContext';
-import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, Heart, FolderHeart, Activity, Lock, X, Sparkles } from 'lucide-react';
+import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, Heart, FolderHeart, Activity, Lock, X, Sparkles, Receipt } from 'lucide-react';
 
 // Custom chat icon using public SVG (accepts className via props)
 const ChatRoundIcon = (props) => (
@@ -33,7 +33,7 @@ export default function SidebarPatient() {
     { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
-    { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
+    { to: '/patient/appointments', label: t('sidebar.myAppointments', 'My Appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
     { to: '/medical-archive', label: t('sidebar.medicalArchive', 'Medical Archive'), icon: FolderHeart },
@@ -47,8 +47,8 @@ export default function SidebarPatient() {
     { to: '/doctor/dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: LayoutDashboard },
     { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
-    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
+    { to: '/doctor/billing', label: t('sidebar.billing', 'Billing'), icon: Receipt },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
     { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: notifCount || undefined },
@@ -57,9 +57,10 @@ export default function SidebarPatient() {
 
   const clinicItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
-    { to: '/clinic/dashboard', label: t('sidebar.clinicDashboard', 'Clinic Dashboard'), icon: LayoutDashboard },
+    { to: '/clinic/dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: LayoutDashboard },
     { to: '/clinic/team', label: t('sidebar.myTeam', 'My Team'), icon: Building2 },
     { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
+    { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/telehealth-appointment', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: notifCount || undefined },
@@ -126,7 +127,7 @@ export default function SidebarPatient() {
             <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors">
               <LayoutDashboard className="w-3.5 h-3.5 text-white" />
             </span>
-            {t('sidebar.managementPanel', 'Yönetim Paneli')}
+            {t('sidebar.managementPanel', 'CRM Panel')}
           </span>
           <ChevronRight className="w-3.5 h-3.5 text-white/70 group-hover:translate-x-0.5 transition-transform" />
         </Link>
@@ -147,7 +148,7 @@ export default function SidebarPatient() {
               <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors">
                 <LayoutDashboard className="w-3.5 h-3.5 text-white" />
               </span>
-              {t('sidebar.managementPanel', 'Yönetim Paneli')}
+              {t('sidebar.managementPanel', 'CRM Panel')}
             </span>
             <ChevronRight className="w-3.5 h-3.5 text-white/70 group-hover:translate-x-0.5 transition-transform" />
           </Link>
@@ -167,7 +168,7 @@ export default function SidebarPatient() {
             <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100 transition-colors">
               <Lock className="w-3.5 h-3.5 text-gray-400" />
             </span>
-            {t('sidebar.managementPanel', 'Yönetim Paneli')}
+            {t('sidebar.managementPanel', 'CRM Panel')}
           </span>
           <span className="text-[9px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-200">
             {t('common.upgrade', 'Yükselt')}
