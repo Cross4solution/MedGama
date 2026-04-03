@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { doctorBillingAPI } from '../lib/api';
@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Plus, FileText, Search, Filter, ChevronDown, X,
   CheckCircle, Clock, AlertCircle, XCircle, Loader2,
-  DollarSign, TrendingUp, Calendar, Download,
+  DollarSign, TrendingUp, Calendar, Download, User,
 } from 'lucide-react';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -40,10 +40,108 @@ function StatusBadge({ status }) {
 
 // ── Add Invoice Modal ─────────────────────────────────────────────────────────
 
+function PatientSearchDropdown({ value, onChange }) {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const debounceRef = useRef(null);
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSearch = (q) => {
+    setQuery(q);
+    setOpen(true);
+    if (!q.trim()) { setResults([]); return; }
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await doctorBillingAPI.patientSearch(q);
+        setResults(res.data || []);
+      } catch { setResults([]); }
+      finally { setLoading(false); }
+    }, 300);
+  };
+
+  const handleSelect = (patient) => {
+    setSelected(patient);
+    setQuery(patient.fullname || patient.email);
+    setOpen(false);
+    onChange(patient.id);
+  };
+
+  const handleClear = () => {
+    setSelected(null);
+    setQuery('');
+    setResults([]);
+    onChange('');
+  };
+
+  return (
+    <div ref={wrapperRef} className="relative">
+      <div className="relative">
+        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+        <input
+          value={query}
+          onChange={e => handleSearch(e.target.value)}
+          onFocus={() => query && setOpen(true)}
+          placeholder="Search patient by name or email..."
+          className="w-full pl-8 pr-8 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 focus:border-teal-400"
+        />
+        {(query || selected) && (
+          <button type="button" onClick={handleClear} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+      {open && (
+        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+          {loading && (
+            <div className="flex items-center gap-2 px-4 py-3 text-sm text-gray-400">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Searching...
+            </div>
+          )}
+          {!loading && results.length === 0 && query && (
+            <div className="px-4 py-3 text-sm text-gray-400">No patients found</div>
+          )}
+          {!loading && results.map(p => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => handleSelect(p)}
+              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-teal-50 transition-colors text-left"
+            >
+              <div className="w-7 h-7 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+                {p.avatar
+                  ? <img src={p.avatar} alt="" className="w-7 h-7 rounded-full object-cover" />
+                  : <User className="w-3.5 h-3.5 text-teal-600" />}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-800">{p.fullname || '—'}</p>
+                <p className="text-[11px] text-gray-400">{p.email}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AddInvoiceModal({ open, onClose, onCreated }) {
   const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [form, setForm] = useState({
     patient_id: '',
     currency: 'EUR',
@@ -79,12 +177,15 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!form.patient_id.trim()) { setError('Patient ID (UUID) is required'); return; }
-    if (!form.items.some(it => it.description && it.unit_price)) { setError('At least one line item is required'); return; }
+    const errs = {};
+    if (!form.items.some(it => it.description && it.unit_price)) errs.items = 'At least one line item with description and price is required';
+    if (Object.keys(errs).length) { setFieldErrors(errs); return; }
+    setFieldErrors({});
     try {
       setSaving(true);
       const payload = {
         ...form,
+        patient_id: form.patient_id || null,
         items: form.items
           .filter(it => it.description && it.unit_price)
           .map(it => ({
@@ -99,7 +200,16 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
       onClose();
       setForm({ patient_id: '', currency: 'EUR', tax_rate: '0', discount_amount: '0', payment_method: '', notes: '', issue_date: new Date().toISOString().slice(0, 10), due_date: '', items: [{ description: '', category: 'Consultation', quantity: '1', unit_price: '' }] });
     } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to create invoice');
+      const data = err?.response?.data;
+      if (data?.errors) {
+        // Laravel validation errors — show per-field
+        const flat = {};
+        Object.entries(data.errors).forEach(([k, v]) => { flat[k] = Array.isArray(v) ? v[0] : v; });
+        setFieldErrors(flat);
+        setError('Please fix the errors below.');
+      } else {
+        setError(data?.message || 'Failed to create invoice. Please check all fields and try again.');
+      }
     } finally {
       setSaving(false);
     }
@@ -134,14 +244,10 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
 
           {/* Patient & Dates */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Patient ID (UUID) *</label>
-              <input
-                value={form.patient_id}
-                onChange={e => setField('patient_id', e.target.value)}
-                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 focus:border-teal-400"
-              />
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Patient <span className="text-gray-400 font-normal">(optional)</span></label>
+              <PatientSearchDropdown value={form.patient_id} onChange={v => setField('patient_id', v)} />
+              {fieldErrors.patient_id && <p className="text-xs text-red-500 mt-1">{fieldErrors.patient_id}</p>}
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1.5">Currency</label>
@@ -165,7 +271,10 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
           {/* Line Items */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-semibold text-gray-600">Line Items *</label>
+              <div>
+                <label className="text-xs font-semibold text-gray-600">Line Items *</label>
+                {fieldErrors.items && <p className="text-xs text-red-500 mt-0.5">{fieldErrors.items}</p>}
+              </div>
               <button type="button" onClick={addItem}
                 className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1">
                 <Plus className="w-3.5 h-3.5" /> Add Item

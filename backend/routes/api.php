@@ -455,6 +455,7 @@ Route::prefix('doctor/billing')->middleware(['auth:sanctum', 'role:doctor'])->gr
     Route::put('/invoices/{id}', [BillingController::class, 'update']);
     Route::delete('/invoices/{id}', [BillingController::class, 'destroy']);
     Route::get('/stats', [BillingController::class, 'stats']);
+    Route::get('/patient-search', [BillingController::class, 'patientSearch']);
 });
 
 Route::prefix('crm/billing')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospital,superAdmin', 'crm.access'])->group(function () {

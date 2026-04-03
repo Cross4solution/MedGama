@@ -41,7 +41,7 @@ class BillingController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'patient_id'       => 'required|uuid|exists:users,id',
+            'patient_id'       => 'nullable|uuid|exists:users,id',
             'appointment_id'   => 'nullable|uuid|exists:appointments,id',
             'tax_rate'         => 'nullable|numeric|min:0|max:100',
             'discount_amount'  => 'nullable|numeric|min:0',
@@ -115,6 +115,26 @@ class BillingController extends Controller
         $pdf = $this->billing->generatePdf($invoice);
 
         return $pdf->download("invoice-{$invoice->invoice_number}.pdf");
+    }
+
+    /**
+     * GET /doctor/billing/patient-search — Autocomplete patients by name.
+     */
+    public function patientSearch(Request $request): JsonResponse
+    {
+        $q = trim($request->input('q', ''));
+        $likeOp = \DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
+        $patients = \App\Models\User::where('role_id', 'patient')
+            ->where(function ($query) use ($q, $likeOp) {
+                $query->where('fullname', $likeOp, "%{$q}%")
+                      ->orWhere('email', $likeOp, "%{$q}%");
+            })
+            ->select('id', 'fullname', 'email', 'avatar')
+            ->limit(15)
+            ->get();
+
+        return response()->json($patients);
     }
 
     /**

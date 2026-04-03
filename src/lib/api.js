@@ -316,6 +316,7 @@ export const doctorBillingAPI = {
   updateInvoice: (id, payload) => api.put(`/doctor/billing/invoices/${id}`, payload),
   deleteInvoice: (id) => api.delete(`/doctor/billing/invoices/${id}`),
   stats: (params) => api.get('/doctor/billing/stats', { params }),
+  patientSearch: (q) => api.get('/doctor/billing/patient-search', { params: { q } }),
 };
 
 // ── CRM Billing / Invoicing (Bölüm 7.5) ──
