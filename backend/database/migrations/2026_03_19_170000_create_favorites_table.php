@@ -30,6 +30,12 @@ return new class extends Migration
                     SELECT id, user_id, clinic_id, 'clinic', created_at, updated_at
                     FROM clinic_favorites
                 ");
+            } elseif ($driver === 'sqlite') {
+                DB::statement("
+                    INSERT OR IGNORE INTO favorites (id, user_id, favoritable_id, favoritable_type, created_at, updated_at)
+                    SELECT id, user_id, clinic_id, 'clinic', created_at, updated_at
+                    FROM clinic_favorites
+                ");
             } else {
                 DB::statement("
                     INSERT INTO favorites (id, user_id, favoritable_id, favoritable_type, created_at, updated_at)
