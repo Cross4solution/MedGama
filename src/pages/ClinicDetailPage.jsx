@@ -201,8 +201,8 @@ const ClinicDetailPage = () => {
               rating={resolveClinicRating(apiClinic, 0)}
               reviews={resolveClinicReviewCount(apiClinic, 0)}
               badgeNode={null}
-              isFavorite={user?.role !== 'doctor' ? isFavorited : false}
-              onToggleFavorite={user?.role !== 'doctor' ? guardAction(toggleFavorite) : undefined}
+              isFavorite={(user?.role !== 'doctor' && user?.role_id !== 'doctor') ? isFavorited : false}
+              onToggleFavorite={(user?.role !== 'doctor' && user?.role_id !== 'doctor') ? guardAction(toggleFavorite) : undefined}
               isFollowing={isFollowing}
               followLoading={followLoading}
               onToggleFollow={guardAction(toggleFollow)}

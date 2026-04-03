@@ -375,11 +375,13 @@ const DoctorProfilePage = () => {
 
             {/* Action buttons */}
             <div className="flex items-center gap-2 flex-shrink-0 sm:pt-2">
-              <button onClick={guardAction(toggleFavorite)}
-                className={`p-2.5 rounded-xl border transition-all ${isFavorited ? 'bg-red-50 text-red-500 border-red-200' : 'bg-white text-gray-400 border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200'}`}
-              >
-                <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
-              </button>
+              {(authUser?.role !== 'doctor' && authUser?.role_id !== 'doctor') && (
+                <button onClick={guardAction(toggleFavorite)}
+                  className={`p-2.5 rounded-xl border transition-all ${isFavorited ? 'bg-red-50 text-red-500 border-red-200' : 'bg-white text-gray-400 border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200'}`}
+                >
+                  <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+                </button>
+              )}
               <button onClick={guardAction(() => navigate(`/doctor-chat?startWith=${doctorId}`))}
                 className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-violet-50 hover:text-violet-600 hover:border-violet-200 transition-all"
               >
