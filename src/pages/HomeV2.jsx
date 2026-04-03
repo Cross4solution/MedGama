@@ -81,7 +81,7 @@ export default function HomeV2() {
               aria-hidden="true"
             />
             {/* Removed white bottom gradient as requested */}
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 md:py-9">
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12 pb-7 md:pb-9">
               <div className="grid grid-cols-1 gap-3 items-center">
                 <div>
                   <h1
@@ -113,9 +113,7 @@ export default function HomeV2() {
       </section>
 
       {/* Unified Search sections via component */}
-      <div className="pt-8 md:pt-12">
-        <SearchSections />
-      </div>
+      <SearchSections />
 
       {/* Core Boxes (6 items) */}
       <CoreBoxes />
