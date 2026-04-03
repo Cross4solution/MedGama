@@ -113,7 +113,9 @@ export default function HomeV2() {
       </section>
 
       {/* Unified Search sections via component */}
-      <SearchSections />
+      <div className="pt-8 md:pt-12">
+        <SearchSections />
+      </div>
 
       {/* Core Boxes (6 items) */}
       <CoreBoxes />
