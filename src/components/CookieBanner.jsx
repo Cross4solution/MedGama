@@ -236,7 +236,7 @@ const CookieBanner = () => {
       {/* Backdrop overlay */}
       <div className="absolute inset-0 -top-screen" />
       <div className="bg-gray-900/95 backdrop-blur-md border-t border-gray-700/50 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-2.5 pb-3.5 sm:pt-3 sm:pb-4 flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
           {/* Icon + text */}
           <div className="flex items-center gap-2.5 flex-1 min-w-0">
             <div className="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
