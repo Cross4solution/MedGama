@@ -32,7 +32,7 @@ export default function CoreBoxes() {
             const Icon = ICONS[i % ICONS.length];
             const theme = PALETTE[i % PALETTE.length];
             return (
-              <div key={i} className="relative rounded-2xl border border-gray-100 bg-white overflow-hidden shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] hover:shadow-[0_6px_24px_0_rgba(0,0,0,0.10)] transition-shadow duration-300">
+              <div key={i} className="relative rounded-2xl border border-gray-200/70 bg-gray-50/60 overflow-hidden shadow-[0_1px_4px_0_rgba(0,0,0,0.05)]">
                 <div className="relative p-4 sm:p-5 flex flex-col h-full">
                   <div className={`w-9 h-9 rounded-xl ${theme.bg} mb-3 flex items-center justify-center flex-shrink-0`}>
                     <Icon className={`w-4 h-4 ${theme.fg}`} aria-hidden="true" />
