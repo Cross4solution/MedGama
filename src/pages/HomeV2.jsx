@@ -67,22 +67,22 @@ export default function HomeV2() {
       ) : (
         <>
       {/* Hero / Slogan */}
-      <section className="relative overflow-hidden">
-          <div className="relative overflow-hidden">
-            {/* Background layer with a lighter blur (reduced for clarity) */}
+      <section className="relative overflow-hidden min-h-[500px] md:min-h-[600px] flex flex-col">
+          <div className="relative flex-1 flex flex-col">
+            {/* Background layer */}
             <div
-              className="absolute inset-0 bg-cover bg-center filter blur-[0.5px] md:blur-[1px] brightness-95 md:brightness-100"
+              className="absolute inset-0 bg-cover bg-center brightness-95 md:brightness-100"
               style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
               aria-hidden="true"
             />
-            {/* Subtle dark overlay on top of the background image */}
+            {/* Subtle dark overlay */}
             <div
               className="pointer-events-none absolute inset-0 bg-black/25 md:bg-black/30"
               aria-hidden="true"
             />
-            {/* Removed white bottom gradient as requested */}
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 pb-6 md:pt-9 md:pb-7">
-              <div className="grid grid-cols-1 gap-3 items-center">
+            {/* Content — flex-1 + justify-center = pixel-perfect vertical centering */}
+            <div className="relative flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-8">
+              <div className="max-w-7xl mx-auto w-full">
                 <div>
                   <h1
                     className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md antialiased"
