@@ -25,12 +25,15 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
+    setApiLoaded(false);
     setIsRefreshing(true);
     const params = { per_page: 50, sort };
     if (specialtyFilter) params.specialization = specialtyFilter;
     if (textQuery)       params.search = textQuery;
     if (countryName)     params.country = countryName;
     medStreamAPI.posts(params).then((res) => {
+      if (controller.signal.aborted) return;
       console.log('[ExploreTimeline] API response:', res);
       const list = res?.data || [];
       if (list.length) {
@@ -86,12 +89,14 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
       }
       setApiLoaded(true);
       setIsRefreshing(false);
-    }).catch((err) => { 
+    }).catch((err) => {
+      if (controller.signal.aborted) return;
       console.error('[ExploreTimeline] API error:', err, err?.status, err?.message);
       setApiPosts([]);
-      setApiLoaded(true); 
-      setIsRefreshing(false); 
+      setApiLoaded(true);
+      setIsRefreshing(false);
     });
+    return () => controller.abort();
   }, [refreshKey, sort, textQuery, specialtyFilter, countryName]);
 
   // Kaynak data — mock fallback
@@ -724,6 +729,14 @@ export default function ExploreTimeline() {
               {!apiLoaded ? (
                 <div className="space-y-4">
                   {[1,2,3].map((i) => <SkeletonCard key={`init-sk-${i}`} />)}
+                </div>
+              ) : items.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                  </div>
+                  <p className="text-sm font-semibold text-gray-600 mb-1">No posts found</p>
+                  <p className="text-xs text-gray-400">Try adjusting your filters or check back later.</p>
                 </div>
               ) : (
                 <>
