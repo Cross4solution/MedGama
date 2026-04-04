@@ -25,7 +25,7 @@ export default function SearchSections() {
             <GlobalSearch />
           </div>
           {/* Title for course/feature boxes under simple search */}
-          <div id="discover-services" className="mt-10 mb-0 flex items-center gap-2">
+          <div id="discover-services" className="mt-10 mb-6 flex items-center gap-2">
             <Sparkles className="w-4.5 h-4.5 text-teal-600" />
             <h2 className="text-lg font-bold text-gray-900">Discover Our World-First Services</h2>
           </div>
