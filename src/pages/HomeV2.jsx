@@ -67,8 +67,8 @@ export default function HomeV2() {
       ) : (
         <>
       {/* Hero / Slogan */}
-      <section className="relative overflow-hidden min-h-[500px] md:min-h-[600px] flex flex-col">
-          <div className="relative flex-1 flex flex-col">
+      <section className="relative overflow-hidden">
+          <div className="relative overflow-hidden">
             {/* Background layer */}
             <div
               className="absolute inset-0 bg-cover bg-center brightness-95 md:brightness-100"
@@ -80,9 +80,9 @@ export default function HomeV2() {
               className="pointer-events-none absolute inset-0 bg-black/25 md:bg-black/30"
               aria-hidden="true"
             />
-            {/* Content — flex-1 + justify-center = pixel-perfect vertical centering */}
-            <div className="relative flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-8">
-              <div className="max-w-7xl mx-auto w-full">
+            {/* py-10 md:py-12 = symmetric padding → built-in vertical equality */}
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+              <div>
                 <div>
                   <h1
                     className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md antialiased"
