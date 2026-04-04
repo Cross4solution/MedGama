@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getCountryNames } from '../data/cityLoader';
-import countryCodes from '../data/countryCodes';
 import TimelineFilterSidebar from 'components/timeline/TimelineFilterSidebar';
 import TimelineControls from 'components/timeline/TimelineControls';
 import ActiveFilterChips from 'components/timeline/ActiveFilterChips';
@@ -510,12 +509,7 @@ export default function ExploreTimeline() {
     setPage(1);
   }, [query, specialty, countryName, sort, tab]);
 
-  // Girişliyse, AuthContext.country (örn. 'TR') değerine göre ülke adını otomatik ön seç
-  useEffect(() => {
-    if (!country || countryName) return;
-    const entry = Object.entries(countryCodes).find(([, code]) => (code || '').toLowerCase() === String(country).toLowerCase());
-    if (entry) setCountryName(entry[0]);
-  }, [country, countryName]);
+  // Country auto-select disabled: MedStream opens with All countries by default
 
   // Görünüm sabit: LinkedIn benzeri tek sütun liste
 
