@@ -80,17 +80,16 @@ export default function HomeV2() {
               className="pointer-events-none absolute inset-0 bg-black/25 md:bg-black/30"
               aria-hidden="true"
             />
-            {/* py-10 md:py-12 = symmetric padding → built-in vertical equality */}
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
-              <div>
-                <div>
+            {/* py-8 md:py-10 = symmetric padding, flex+gap replaces all child margins */}
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+              <div className="flex flex-col items-start gap-2">
                   <h1
                     className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md antialiased"
                   >
                     {t('home.heroTitle')}
                   </h1>
                   <p
-                    className="mt-1 text-white md:text-lg font-medium drop-shadow-sm antialiased"
+                    className="text-white md:text-lg font-medium drop-shadow-sm antialiased"
                   >
                     {t('home.heroSubtitle')}
                   </p>
@@ -101,12 +100,11 @@ export default function HomeV2() {
                         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                       }
                     }}
-                    className="mt-3 inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/95 backdrop-blur-sm text-teal-600 rounded-full text-xs font-normal hover:bg-teal-50 transition-all border-[0.5px] border-teal-400/60 hover:border-teal-500 shadow-sm hover:shadow-md"
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/95 backdrop-blur-sm text-teal-600 rounded-full text-xs font-normal hover:bg-teal-50 transition-all border-[0.5px] border-teal-400/60 hover:border-teal-500 shadow-sm hover:shadow-md"
                   >
                     <Compass className="w-3.5 h-3.5" />
                     <span>Explore</span>
                   </button>
-                </div>
               </div>
             </div>
           </div>

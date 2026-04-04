@@ -18,14 +18,14 @@ export default function SearchSections() {
       </section>
 
       {/* Clinics Search (unified clinic/doctor autocomplete) */}
-      <section id="clinics-search" className="pt-7 pb-2">
+      <section id="clinics-search" className="pt-4 pb-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-lg font-bold text-gray-900 mb-4 text-center">Clinic Search</h2>
           <div className="relative max-w-3xl mx-auto">
             <GlobalSearch />
           </div>
           {/* Title for course/feature boxes under simple search */}
-          <div id="discover-services" className="mt-16 mb-0 flex items-center gap-2">
+          <div id="discover-services" className="mt-6 mb-0 flex items-center gap-2">
             <Sparkles className="w-4.5 h-4.5 text-teal-600" />
             <h2 className="text-lg font-bold text-gray-900">Discover Our World-First Services</h2>
           </div>
