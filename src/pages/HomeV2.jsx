@@ -80,8 +80,8 @@ export default function HomeV2() {
               className="pointer-events-none absolute inset-0 bg-black/25 md:bg-black/30"
               aria-hidden="true"
             />
-            {/* py-8 md:py-10 = symmetric padding, flex+gap replaces all child margins */}
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+            {/* py-14 md:py-16 = spacious symmetric padding */}
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
               <div className="flex flex-col items-start gap-2">
                   <h1
                     className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md antialiased"
