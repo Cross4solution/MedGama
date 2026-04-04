@@ -185,7 +185,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
 
   const hasMore = paged.length < filtered.length;
 
-  return { items: paged, hasMore, total: filtered.length };
+  return { items: paged, hasMore, total: filtered.length, apiLoaded };
 }
 
 // Card ve Skeleton bileşenleri ayrı dosyalara taşındı
@@ -448,7 +448,7 @@ export default function ExploreTimeline() {
 
   // Removed: EN-only Procedure/Symptom state and helpers (panel dropped)
 
-  const { items, hasMore, total } = useExploreFeed({
+  const { items, hasMore, total, apiLoaded } = useExploreFeed({
     mode: user ? 'user' : 'guest',
     countryName,
     specialtyFilter: specialty,
@@ -721,24 +721,34 @@ export default function ExploreTimeline() {
                   </div>
                 </div>
               )}
-              <VirtualizedFeed
-                items={items}
-                keyExtractor={(it) => it.id}
-                gap="1rem"
-                renderItem={(it) => (
-                  <TimelineCard item={it} disabledActions={disabledActions} view={'list'} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
-                )}
-              />
-              {isLoadingMore && <div className="space-y-4 mt-4">{[1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}</div>}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
-                <p className="text-xs text-gray-400 font-medium">Showing <span className="text-gray-600 font-semibold">{items.length}</span> of <span className="text-gray-600 font-semibold">{total}</span></p>
-                {hasMore && (
-                  <>
-                    <button onClick={() => setPage(p => p + 1)} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200">Load more</button>
-                    <span ref={loadMoreRef} className="sr-only">Observer</span>
-                  </>
-                )}
-              </div>
+              {!apiLoaded ? (
+                <div className="space-y-4">
+                  {[1,2,3].map((i) => <SkeletonCard key={`init-sk-${i}`} />)}
+                </div>
+              ) : (
+                <>
+                  <VirtualizedFeed
+                    items={items}
+                    keyExtractor={(it) => it.id}
+                    gap="1rem"
+                    renderItem={(it) => (
+                      <TimelineCard item={it} disabledActions={disabledActions} view={'list'} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
+                    )}
+                  />
+                  {isLoadingMore && <div className="space-y-4 mt-4">{[1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}</div>}
+                  {items.length > 0 && (
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
+                      <p className="text-xs text-gray-400 font-medium">Showing <span className="text-gray-600 font-semibold">{items.length}</span> of <span className="text-gray-600 font-semibold">{total}</span></p>
+                      {hasMore && (
+                        <>
+                          <button onClick={() => setPage(p => p + 1)} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200">Load more</button>
+                          <span ref={loadMoreRef} className="sr-only">Observer</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </section>
         </div>
