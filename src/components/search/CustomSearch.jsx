@@ -209,7 +209,7 @@ export default function CustomSearch() {
             value={specialty}
             onChange={setSpecialty}
             disabled={disableSpecialty}
-            placeholder="Type a specialty (e.g., ENT)"
+            placeholder="Type a specialty or illness (e.g., ENT or Crohn's)"
             allowCustom={true}
           />
         </div>
