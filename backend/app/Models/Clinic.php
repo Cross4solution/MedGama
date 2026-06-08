@@ -20,8 +20,8 @@ class Clinic extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'name', 'codename', 'fullname', 'avatar', 'owner_id', 'hospital_id',
-        'address', 'phone', 'biography', 'map_coordinates', 'website', 'is_verified',
+        'name', 'codename', 'fullname', 'avatar', 'background_image', 'owner_id', 'hospital_id',
+        'address', 'phone', 'biography', 'map_coordinates', 'latitude', 'longitude', 'website', 'is_verified',
         'is_crm_active', 'crm_expires_at', 'specialties',
         'onboarding_completed', 'onboarding_step',
         'verification_status',
@@ -132,5 +132,19 @@ class Clinic extends Model
     public function latestVerification()
     {
         return $this->hasOne(ClinicVerification::class)->latestOfMany();
+    }
+
+    public function doctorProfiles()
+    {
+        return $this->hasMany(DoctorProfile::class, 'clinic_id');
+    }
+
+    public function accreditations()
+    {
+        return $this->belongsToMany(Accreditation::class, 'clinic_accreditations')
+            ->withPivot('certificate_number', 'issued_at', 'expires_at', 'document_url', 'is_verified')
+            ->where('accreditations.is_active', true)
+            ->orderBy('accreditations.sort_order')
+            ->withTimestamps();
     }
 }

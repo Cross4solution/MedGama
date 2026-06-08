@@ -12,7 +12,7 @@ export default function MapboxView({
   height = '350px',
   theme = 'streets' 
 }) {
-  const mapboxToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoibWVkYWdhbWEiLCJhIjoiY204NWV0Znp6MG1jdzJpcXJvNHRscGgxeSJ9.fXy5X_3Z_0_0_0_0_0_placeholder'; // Placeholder for build-time safety
+  const mapboxToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || '';
 
   const mapData = useMemo(() => {
     // Falls back to Istanbul center if no coordinates provided

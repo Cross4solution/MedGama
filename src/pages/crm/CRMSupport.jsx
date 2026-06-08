@@ -148,7 +148,7 @@ const CreateTicketModal = ({ onClose, onCreated, t }) => {
               <option value="">{t('crm.support.selectCategory', 'Select...')}</option>
               {categories.map(c => (
                 <option key={c.id} value={c.id}>
-                  {typeof c.name === 'string' ? c.name : (c.name_translations?.en || c.name_translations?.tr || c.slug)}
+                  {typeof c.name === 'object' ? (c.name?.en || c.name?.tr || c.slug) : (c.name || c.slug)}
                 </option>
               ))}
             </ModalSelect>
@@ -519,7 +519,7 @@ const CRMSupport = () => {
                     <p className="text-sm font-semibold text-gray-900 mt-1 truncate group-hover:text-teal-700 transition-colors">{ticket.subject}</p>
                     <div className="flex items-center gap-3 mt-1.5 text-[10px] text-gray-400">
                       {isAdmin && ticket.user && <span>{ticket.user.fullname}</span>}
-                      {ticket.category && <span className="flex items-center gap-0.5"><Tag className="w-3 h-3" />{typeof ticket.category?.name === 'string' ? ticket.category.name : (ticket.category?.name_translations?.en || ticket.category?.slug)}</span>}
+                      {ticket.category && <span className="flex items-center gap-0.5"><Tag className="w-3 h-3" />{typeof ticket.category?.name === 'object' ? (ticket.category.name?.en || ticket.category.name?.tr || ticket.category.slug) : (ticket.category?.name || ticket.category?.slug)}</span>}
                       <span>{timeAgo(ticket.created_at)}</span>
                       {ticket.latest_message && <span className="truncate max-w-[200px]">{ticket.latest_message.body?.substring(0, 50)}{ticket.latest_message.body?.length > 50 ? '...' : ''}</span>}
                       {ticket.assignee && <span className="flex items-center gap-0.5"><UserIcon className="w-3 h-3" />{ticket.assignee.fullname}</span>}

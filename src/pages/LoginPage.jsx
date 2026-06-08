@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { getRedirectFromLoginResult } from '../utils/authRedirect';
+import { getRedirectFromLoginResult, getRedirectForRole } from '../utils/authRedirect';
 import { Helmet } from 'react-helmet-async';
 import {
   Heart, Stethoscope, Building2, CheckCircle, Shield, Lock,
@@ -159,10 +159,18 @@ const SVG_PATTERN = 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' v
 const LoginPage = ({ role = 'patient' }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, register, registerDoctor, applyApiAuth, fetchCurrentUser } = useAuth();
+  const { user, login, register, registerDoctor, applyApiAuth, fetchCurrentUser } = useAuth();
   const { notify } = useToast();
   const { t } = useTranslation();
   const tokenClientRef = useRef(null);
+
+  // Redirect already-authenticated users away from login pages
+  useEffect(() => {
+    if (user) {
+      navigate(getRedirectForRole(user?.role_id || user?.role || 'patient'), { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const config = ROLE_CONFIG[role] || ROLE_CONFIG.patient;
   const IconComponent = config.icon;

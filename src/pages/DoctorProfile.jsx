@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import SEOHead, { buildPhysicianSchema } from '../components/seo/SEOHead';
-import MapboxMap from '../components/map/MapboxView';
+import MapboxMap from '../components/map/MapboxMap';
 import {
   Award, Stethoscope, Heart, CheckCircle, Shield, Users, MapPin, X,
   ChevronLeft, ChevronRight, Minus, Video, Loader2, GraduationCap, Globe,
@@ -18,8 +18,7 @@ import SendMessageModal from '../components/modals/SendMessageModal';
 import DoctorBookingModal from '../components/modals/DoctorBookingModal';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import MedstreamProfileFeed from '../components/profile/MedstreamProfileFeed';
-// import DoctorFaqSection from '../components/doctor/DoctorFaqSection'; // component yok, geçici devre dışı
-const DoctorFaqSection = () => null;
+import DoctorFaqSection from '../components/doctor/DoctorFaqSection';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 

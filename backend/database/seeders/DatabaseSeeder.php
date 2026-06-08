@@ -33,6 +33,13 @@ class DatabaseSeeder extends Seeder
         $this->call(AccreditationSeeder::class);
 
         // ══════════════════════════════════════════════════════════════════
+        //  CATALOG (Specialties, Cities, Diseases, Symptoms) — must run first
+        // ══════════════════════════════════════════════════════════════════
+        $this->call(CatalogSeeder::class);
+        $this->call(TicketCategorySeeder::class);
+        $this->call(AccreditationSeeder::class);
+
+        // ══════════════════════════════════════════════════════════════════
         //  SUPER ADMIN
         // ══════════════════════════════════════════════════════════════════
 

@@ -69,28 +69,27 @@ export default function HomeV2() {
       {/* Hero / Slogan */}
       <section className="relative overflow-hidden">
           <div className="relative overflow-hidden">
-            {/* Background layer with a lighter blur (reduced for clarity) */}
+            {/* Background layer */}
             <div
-              className="absolute inset-0 bg-cover bg-center filter blur-[0.5px] md:blur-[1px] brightness-95 md:brightness-100"
+              className="absolute inset-0 bg-cover bg-center brightness-95 md:brightness-100"
               style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/images/default/default-page.jpg)` }}
               aria-hidden="true"
             />
-            {/* Subtle dark overlay on top of the background image */}
+            {/* Subtle dark overlay */}
             <div
               className="pointer-events-none absolute inset-0 bg-black/25 md:bg-black/30"
               aria-hidden="true"
             />
-            {/* Removed white bottom gradient as requested */}
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
-              <div className="grid grid-cols-1 gap-5 items-center">
-                <div>
+            {/* py-14 md:py-16 = spacious symmetric padding */}
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
+              <div className="flex flex-col items-start gap-2">
                   <h1
                     className="text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md antialiased"
                   >
                     {t('home.heroTitle')}
                   </h1>
                   <p
-                    className="mt-3 text-white md:text-lg font-medium drop-shadow-sm antialiased"
+                    className="text-white md:text-lg font-medium drop-shadow-sm antialiased"
                   >
                     {t('home.heroSubtitle')}
                   </p>
@@ -101,12 +100,11 @@ export default function HomeV2() {
                         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                       }
                     }}
-                    className="mt-6 inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/95 backdrop-blur-sm text-teal-600 rounded-full text-xs font-normal hover:bg-teal-50 transition-all border-[0.5px] border-teal-400/60 hover:border-teal-500 shadow-sm hover:shadow-md"
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/95 backdrop-blur-sm text-teal-600 rounded-full text-xs font-normal hover:bg-teal-50 transition-all border-[0.5px] border-teal-400/60 hover:border-teal-500 shadow-sm hover:shadow-md"
                   >
                     <Compass className="w-3.5 h-3.5" />
                     <span>Explore</span>
                   </button>
-                </div>
               </div>
             </div>
           </div>
@@ -119,7 +117,7 @@ export default function HomeV2() {
       <CoreBoxes />
 
       {/* Medstream timeline preview between CoreBoxes and Popular Treatments */}
-      <TimelinePreview limit={8} onViewAll={() => navigate('/medstream')} />
+      <TimelinePreview limit={10} onViewAll={() => navigate('/medstream')} />
 
 
       {/* Popular Clinics reusable showcase */}

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff, LogOut, Shield, ChevronDown, Heart } from 'lucide-react';
+import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff, LogOut, Shield, ChevronDown, Heart, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { notificationAPI } from '../../lib/api';
@@ -297,47 +297,58 @@ const Header = () => {
                       <svg className="w-3.5 h-3.5 ml-1 inline-block text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd"/></svg>
                     </button>
                     {loginOpen && (
-                      <div role="menu" className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 p-2 space-y-1">
-                        <div className="px-2 pt-1 pb-1">
-                          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('nav.signIn')}</p>
+                      <div role="menu" className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                        {/* Header */}
+                        <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-teal-50">
+                          <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-[0.08em]">{t('nav.signIn')}</p>
                         </div>
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={()=>{ setLoginOpen(false); navigate('/login'); }}
-                          className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 hover:border-emerald-300 transition-all"
-                        >
-                          <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600"><User className="w-[18px] h-[18px]" /></span>
-                          <span className="font-semibold">{t('common.patient')}</span>
-                        </button>
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={()=>{ setLoginOpen(false); navigate('/doctor-login'); }}
-                          className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-blue-50 border border-blue-200 text-blue-800 hover:bg-blue-100 hover:border-blue-300 transition-all"
-                        >
-                          <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-blue-100 text-blue-600"><Stethoscope className="w-[18px] h-[18px]" /></span>
-                          <span className="font-semibold">{t('common.doctor')}</span>
-                        </button>
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
-                          className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-violet-50 border border-violet-200 text-violet-800 hover:bg-violet-100 hover:border-violet-300 transition-all"
-                        >
-                          <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-violet-100 text-violet-600"><Hospital className="w-[18px] h-[18px]" /></span>
-                          <span className="font-semibold">{t('common.clinic')}</span>
-                        </button>
-                        <div className="my-1 border-t border-gray-100" />
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
-                          className="w-full flex items-center gap-3 px-3 py-3 text-sm rounded-lg bg-gray-800 border border-gray-700 text-white hover:bg-gray-700 transition-all"
-                        >
-                          <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-700 text-gray-300"><LayoutDashboard className="w-[18px] h-[18px]" /></span>
-                          <span className="font-semibold">CRM Panel</span>
-                        </button>
+
+                        {/* Main Login Options */}
+                        <div className="space-y-1 p-2">
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={()=>{ setLoginOpen(false); navigate('/login'); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-blue-50 transition-colors"
+                          >
+                            <User className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                            <span className="font-medium">{t('common.patient')}</span>
+                          </button>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={()=>{ setLoginOpen(false); navigate('/doctor-login'); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-amber-50 transition-colors"
+                          >
+                            <Stethoscope className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                            <span className="font-medium">{t('common.doctor')}</span>
+                          </button>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-purple-50 transition-colors"
+                          >
+                            <Hospital className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                            <span className="font-medium">{t('common.clinic')}</span>
+                          </button>
+                        </div>
+
+                        {/* CRM Panel Separator */}
+                        <div className="border-t border-gray-100" />
+
+                        {/* CRM Panel */}
+                        <div className="p-2 bg-gradient-to-r from-teal-50/50 to-cyan-50/50">
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={()=>{ setLoginOpen(false); navigate('/clinic-login'); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-teal-100 transition-colors"
+                          >
+                            <LayoutDashboard className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                            <span className="font-medium text-teal-700">CRM Panel</span>
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -495,6 +506,14 @@ const Header = () => {
                             <Shield className="w-4 h-4 text-gray-400" />
                             {t('profile.security', 'Security')}
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => { setProfileOpen(false); navigate('/profile?tab=privacy'); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                          >
+                            <Lock className="w-4 h-4 text-gray-400" />
+                            {t('profile.privacyData', 'Privacy & Data')}
+                          </button>
                         </div>
                         <div className="border-t border-gray-100 p-1.5">
                           <button
@@ -518,7 +537,7 @@ const Header = () => {
                       title="Go to Management Portal"
                     >
                       <LayoutDashboard className="w-4 h-4" />
-                      <span>Hospital Panel</span>
+                      <span>CRM Panel</span>
                     </button>
                   ) : null}
                 </>
@@ -577,7 +596,7 @@ const Header = () => {
           <p className="text-sm text-gray-600 mb-4">You are about to log out of your account. Are you sure?</p>
           <div className="flex justify-end gap-2">
             <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">{t('common.cancel')}</button>
-            <button onClick={()=>{ setConfirmLogoutOpen(false); logout({ skipConfirmation: true }); navigate('/home-v2'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">{t('common.logout')}</button>
+            <button onClick={()=>{ setConfirmLogoutOpen(false); logout({ skipConfirmation: true }); navigate('/'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">{t('common.logout')}</button>
           </div>
         </div>
       </div>
@@ -749,7 +768,7 @@ const Header = () => {
                 {/* Logout */}
                 <div className="px-3 pb-3 pt-2 border-t border-gray-100 mt-2">
                   <button
-                    onClick={() => { closeMenu(); logout({ skipConfirmation: true }); }}
+                    onClick={() => { closeMenu(); logout({ skipConfirmation: true }); navigate('/'); }}
                     className="w-full flex items-center justify-center gap-2 mt-2 px-3 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-600 hover:to-red-600 shadow-md shadow-rose-200/50 transition-all duration-200"
                   >
                     {t('common.logout')}

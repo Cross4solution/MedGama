@@ -76,7 +76,16 @@ export default function PopularClinicsShowcase({
   const midTitle = midTitleProp || t('home.popularClinics');
   const scrollRefTop = useRef(null);
   const scrollRefBottom = useRef(null);
-  const groups = useMemo(() => {
+  // Popular Treatments: 6 items (3×2 grid)
+  const treatmentGroups = useMemo(() => {
+    const arr = items;
+    const grps = [];
+    for (let i = 0; i < arr.length; i += 6) grps.push(arr.slice(i, i + 6));
+    return grps;
+  }, [items]);
+
+  // Popular Clinics: 3 items per carousel view (single row)
+  const clinicGroups = useMemo(() => {
     const arr = items;
     const grps = [];
     for (let i = 0; i < arr.length; i += 3) grps.push(arr.slice(i, i + 3));
@@ -86,6 +95,7 @@ export default function PopularClinicsShowcase({
   const scrollByAmount = (ref, dir = 1) => {
     const el = ref?.current;
     if (!el) return;
+    // Scroll by one full group (now 6 items in 3×2 grid)
     const firstGroup = el.querySelector('.snap-start');
     const gap = 16;
     const amount = firstGroup ? firstGroup.clientWidth + gap : el.clientWidth;
@@ -117,9 +127,9 @@ export default function PopularClinicsShowcase({
             style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             <div className="flex gap-4 px-0">
-              {groups.map((group, i) => (
+              {treatmentGroups.map((group, i) => (
                 <div key={`top-${i}`} className="flex-none shrink-0 w-full min-w-0 snap-start [scroll-snap-stop:always]">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-max">
                     {group.map((clinic, idx) => (
                       <ClinicCard key={idx} clinic={clinic} onClick={handleCardClick} onView={handleViewClick} />
                     ))}
@@ -145,11 +155,13 @@ export default function PopularClinicsShowcase({
             style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
           >
             <div className="flex gap-4 px-0">
-              {groups.map((group, i) => (
+              {clinicGroups.map((group, i) => (
                 <div key={`bot-${i}`} className="flex-none shrink-0 w-full min-w-0 snap-start [scroll-snap-stop:always]">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="flex gap-4">
                     {group.map((clinic, idx) => (
-                      <ClinicCard key={idx} clinic={clinic} onClick={handleCardClick} onView={handleViewClick} />
+                      <div key={idx} className="flex-1 min-w-0">
+                        <ClinicCard clinic={clinic} onClick={handleCardClick} onView={handleViewClick} />
+                      </div>
                     ))}
                   </div>
                 </div>

@@ -268,7 +268,7 @@ class CatalogController extends Controller
     public function treatmentTagsSearch(Request $request): JsonResponse
     {
         $q = mb_strtolower(trim($request->query('q', '')));
-        if (mb_strlen($q) < 2) {
+        if (mb_strlen($q) < 1) {
             return response()->json(['results' => []]);
         }
 
@@ -579,10 +579,13 @@ class CatalogController extends Controller
 
     /**
      * Search symptom_specialty_mappings (name is JSONB, also has symptom string column).
+     * Uses prefix-first sorting: items starting with query appear before items containing query.
      */
     private function searchSymptoms(string $q, string $locale, string $fallback, int $limit)
     {
-        return SymptomSpecialtyMapping::active()->get()->map(function ($item) use ($locale, $fallback) {
+        $q = mb_strtolower($q);
+        
+        $filtered = SymptomSpecialtyMapping::active()->get()->map(function ($item) use ($locale, $fallback) {
             $name = $item->getTranslation('name', $locale)
                  ?? $item->getTranslation('name', $fallback)
                  ?? $item->symptom;

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI, catalogAPI } from '../lib/api';
+import MapboxSearchInput from '../components/map/MapboxSearchInput';
+import AccreditationsDropdown from '../components/forms/AccreditationsDropdown';
 import {
   Building2, MapPin, Phone, FileText, Camera, Loader2,
   CheckCircle2, ChevronRight, ChevronLeft, Stethoscope,
@@ -28,10 +30,13 @@ export default function ClinicOnboarding() {
   // Step 0: Profile
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [phone, setPhone] = useState('');
   const [biography, setBiography] = useState('');
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
+  const [accreditations, setAccreditations] = useState([]);
 
   // Step 1: Specialties
   const [allSpecialties, setAllSpecialties] = useState([]);
@@ -53,11 +58,19 @@ export default function ClinicOnboarding() {
         setClinicId(c.id);
         setName(c.name || c.fullname || '');
         setAddress(c.address || '');
+        setLatitude(c.latitude);
+        setLongitude(c.longitude);
         setPhone(c.phone || '');
         setBiography(c.biography || '');
         setSelectedSpecialties(c.specialties || []);
         if (c.avatar) setLogoPreview(c.avatar);
         if (c.onboarding_step > 0) setStep(Math.min(c.onboarding_step, 2));
+
+        // Load existing accreditations
+        clinicAPI.getAccreditations(c.id).then(res => {
+          const accIds = (res?.data || []).map(acc => acc.id);
+          setAccreditations(accIds);
+        }).catch(() => {});
       }
       if (res?.doctors?.length) setDoctors(res.doctors);
     }).catch(() => {}).finally(() => setLoading(false));
@@ -93,18 +106,37 @@ export default function ClinicOnboarding() {
   };
 
   const saveStep = useCallback(async (nextStep) => {
+    // Validation
+    if (step === 0 && !name.trim()) {
+      alert('Please enter clinic name');
+      return;
+    }
+
     setSaving(true);
     try {
       if (step === 0) {
-        await clinicAPI.updateOnboarding({ step: 0, name, address, phone, biography });
+        const payload = { step: 0, name, phone, biography };
+        // Only add address and coordinates if they exist
+        if (address) payload.address = address;
+        if (latitude) payload.latitude = latitude;
+        if (longitude) payload.longitude = longitude;
+
+        await clinicAPI.updateOnboarding(payload);
+
         // Upload logo if selected
         if (logoFile) {
           const logoRes = await clinicAPI.uploadLogo(logoFile);
           if (logoRes?.avatar) setLogoPreview(logoRes.avatar);
         }
-        // Refetch to get clinic id
+
+        // Save accreditations if selected
         const fresh = await clinicAPI.onboardingProfile();
-        if (fresh?.clinic?.id) setClinicId(fresh.clinic.id);
+        if (fresh?.clinic?.id) {
+          setClinicId(fresh.clinic.id);
+          if (accreditations.length > 0) {
+            await clinicAPI.updateAccreditations(fresh.clinic.id, accreditations);
+          }
+        }
       } else if (step === 1) {
         await clinicAPI.updateOnboarding({ step: 1, specialties: selectedSpecialties });
       } else if (step === 2) {
@@ -115,11 +147,13 @@ export default function ClinicOnboarding() {
       }
       setStep(nextStep);
     } catch (err) {
-      console.error('Save error:', err);
+      console.error('Save error:', err, JSON.stringify(err));
+      const msg = err?.message || err?.data?.message || (typeof err === 'string' ? err : 'Unknown error');
+      alert('Error: ' + msg);
     } finally {
       setSaving(false);
     }
-  }, [step, name, address, phone, biography, logoFile, selectedSpecialties, updateUser, navigate]);
+  }, [step, name, address, latitude, longitude, phone, biography, logoFile, accreditations, selectedSpecialties, updateUser, navigate]);
 
   const addDoctor = async () => {
     if (!newDoctor.fullname || !newDoctor.email) {
@@ -240,15 +274,19 @@ export default function ClinicOnboarding() {
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
                     placeholder={t('clinicOnboarding.clinicNamePlaceholder', 'e.g., MedaGama Health Center')} />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('clinicOnboarding.address', 'Address')}</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input value={address} onChange={e => setAddress(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
-                      placeholder={t('clinicOnboarding.addressPlaceholder', 'Street, City, Country')} />
-                  </div>
-                </div>
+                <MapboxSearchInput
+                  value={address}
+                  onChange={(selectedAddress, coordinates) => {
+                    setAddress(selectedAddress);
+                    if (coordinates) {
+                      setLatitude(coordinates.lat);
+                      setLongitude(coordinates.lng);
+                    }
+                  }}
+                  label={t('clinicOnboarding.address', 'Address')}
+                  placeholder={t('clinicOnboarding.addressPlaceholder', 'Search for your clinic address...')}
+                  hint={t('clinicOnboarding.addressHint', 'Please enter your full address (e.g., Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul) and select from the list. The map will automatically generate coordinates.')}
+                />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('clinicOnboarding.phone', 'Phone')}</label>
                   <div className="relative">
@@ -263,6 +301,19 @@ export default function ClinicOnboarding() {
                   <textarea value={biography} onChange={e => setBiography(e.target.value)} rows={3}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all resize-none"
                     placeholder={t('clinicOnboarding.descriptionPlaceholder', 'Tell patients what makes your clinic special...')} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                    <Award className="w-4 h-4 text-amber-600" />
+                    {t('clinicOnboarding.accreditations', 'Sertifikalar & Akreditasyonlar')}
+                  </label>
+                  <AccreditationsDropdown
+                    selected={accreditations}
+                    onChange={setAccreditations}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    {t('clinicOnboarding.accreditationsHint', 'Klinağinizin sahip olduğu profesyonel sertifikaları seçin. Hastalara güven aşılar.')}
+                  </p>
                 </div>
               </div>
             </div>

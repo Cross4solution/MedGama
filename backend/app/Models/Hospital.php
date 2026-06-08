@@ -109,14 +109,6 @@ class Hospital extends Model
     }
 
     /**
-     * A Hospital has many Branches (physical locations).
-     */
-    public function branches()
-    {
-        return $this->hasMany(Branch::class);
-    }
-
-    /**
      * Appointments across all clinics of this hospital.
      */
     public function appointments()

@@ -59,6 +59,8 @@ class DoctorProfileController extends Controller
         $validated = $request->validate([
             'title'              => 'nullable|string|max:255',
             'specialty'          => 'nullable|string|max:255',
+            'specialty_id'       => 'nullable|uuid|exists:specialties,id',
+            'clinic_id'          => 'nullable|uuid|exists:clinics,id',
             'sub_specialties'    => 'nullable|array',
             'bio'                => 'nullable|string|max:5000',
             'experience_years'   => 'nullable|string|max:50',
@@ -403,6 +405,8 @@ class DoctorProfileController extends Controller
             'map_coordinates' => 'nullable|array',
             'map_coordinates.lat' => 'nullable|numeric',
             'map_coordinates.lng' => 'nullable|numeric',
+            'maps_url'        => 'nullable|string|max:2000',
+            'full_address_text' => 'nullable|string|max:2000',
             'social_links'    => 'nullable|array',
             'social_links.instagram' => 'nullable|string|max:255',
             'social_links.facebook'  => 'nullable|string|max:255',
@@ -421,7 +425,7 @@ class DoctorProfileController extends Controller
 
         return response()->json([
             'profile' => $profile->refresh()->only([
-                'phone', 'whatsapp', 'website', 'address', 'map_coordinates', 'social_links',
+                'phone', 'whatsapp', 'website', 'address', 'map_coordinates', 'maps_url', 'full_address_text', 'social_links',
             ]),
             'message' => 'Social & contact info updated',
         ]);
