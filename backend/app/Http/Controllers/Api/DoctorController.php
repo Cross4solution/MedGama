@@ -80,17 +80,41 @@ class DoctorController extends Controller
      */
     public function submitReview(Request $request, string $id): JsonResponse
     {
+        // Onaylı Review Sistemi — appointment_id artık ZORUNLU
         $request->validate([
             'rating'          => 'required|integer|min:1|max:5',
             'comment'         => 'required|string|min:10|max:2000',
             'treatment_type'  => 'nullable|string|max:255',
-            'appointment_id'  => 'nullable|uuid',
+            'appointment_id'  => 'required|uuid|exists:appointments,id',
         ]);
+
+        // Randevu sahiplik ve durum kontrolü
+        $appointment = \App\Models\Appointment::find($request->input('appointment_id'));
+
+        if (!$appointment || $appointment->patient_id !== $request->user()->id) {
+            abort(403, 'Bu randevu için yorum yapamazsınız.');
+        }
+        if ($appointment->doctor_id !== $id) {
+            abort(403, 'Bu randevu seçilen doktora ait değil.');
+        }
+        if ($appointment->status !== 'completed') {
+            abort(403, 'Randevu henüz tamamlanmadı.');
+        }
+
+        // Hizmet kategorisi kontrolü — appointment_type üzerinden eşleşme
+        $treatmentType = $request->input('treatment_type') ?: $appointment->appointment_type;
+        if ($request->filled('treatment_type')
+            && $request->input('treatment_type') !== $appointment->appointment_type) {
+            abort(403, 'Bu hizmet kategorisinde yorum yapma hakkınız yok.');
+        }
+
+        $payload = $request->only(['rating', 'comment', 'appointment_id']);
+        $payload['treatment_type'] = $treatmentType;
 
         $review = $this->doctorService->submitReview(
             $request->user(),
             $id,
-            $request->only(['rating', 'comment', 'treatment_type', 'appointment_id']),
+            $payload,
         );
 
         return response()->json(['review' => $review->load('patient:id,fullname,avatar')], 201);

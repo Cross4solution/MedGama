@@ -47,7 +47,8 @@ return [
     |
     */
 
-    'expiration' => null,
+    // HIPAA § 164.312(a)(2)(iii) — automatic logoff. Tokens expire after 120 min by default.
+    'expiration' => env('SANCTUM_EXPIRATION', 120),
 
     /*
     |--------------------------------------------------------------------------

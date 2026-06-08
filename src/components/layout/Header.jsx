@@ -96,13 +96,21 @@ const Header = () => {
     };
   }, [user?.id]);
 
-  // Poll unread count (slower when Echo is active, faster as fallback)
+  // Poll unread count — minimum 60s, sekme görünür değilse fetch atla
   useEffect(() => {
     if (!user) return;
-    fetchUnreadCount();
-    const echo = getEcho();
-    const interval = setInterval(fetchUnreadCount, echo ? 60000 : 15000);
-    return () => clearInterval(interval);
+    const fetchIfVisible = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        fetchUnreadCount();
+      }
+    };
+    fetchIfVisible();
+    const interval = setInterval(fetchIfVisible, 60000);
+    document.addEventListener('visibilitychange', fetchIfVisible);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', fetchIfVisible);
+    };
   }, [user, fetchUnreadCount]);
 
   // Fetch full list when dropdown opens

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { MapPin, ExternalLink, AlertCircle } from 'lucide-react';
+import { MapPin, ExternalLink, AlertCircle, Cookie } from 'lucide-react';
+import { useCookieConsent } from '../../context/CookieConsentContext';
 
 /**
  * Converts a standard Google Maps share link into an embeddable iframe URL.
@@ -97,7 +98,42 @@ export function isValidGoogleMapsUrl(url) {
 export default function GoogleMapsPreview({ url, height = 220, className = '', compact = false }) {
   const { embedUrl, isValid, isShortLink } = useMemo(() => parseGoogleMapsUrl(url), [url]);
 
+  // GDPR / KVKK — Google Maps loads third-party assets and may transfer data outside the EEA.
+  // Don't render the iframe until the user has given marketing consent and accepted cross-border transfer.
+  let consent = null;
+  let openSettings = null;
+  try {
+    const ctx = useCookieConsent();
+    consent = ctx?.consent || null;
+    openSettings = ctx?.openSettings || null;
+  } catch {
+    // Provider not mounted (e.g. SSR / isolated render) — fall through and render the map.
+  }
+
   if (!url?.trim()) return null;
+
+  const consentRequired = consent !== null;
+  const hasMapsConsent = !consentRequired || (consent.marketing === true && consent.crossBorder === true);
+
+  if (consentRequired && !hasMapsConsent) {
+    return (
+      <div className={`flex items-start gap-3 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 ${className}`}>
+        <Cookie className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-amber-800 font-medium leading-relaxed">
+            Harita görüntülemek için pazarlama çerezlerini ve yurtdışı veri aktarımını kabul etmeniz gerekir.
+          </p>
+          <button
+            type="button"
+            onClick={() => openSettings && openSettings()}
+            className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-amber-700 hover:text-amber-900 underline underline-offset-2"
+          >
+            Çerezleri Yönet
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Invalid URL warning
   if (!isValid) {

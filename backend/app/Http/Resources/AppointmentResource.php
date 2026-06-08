@@ -21,6 +21,9 @@ class AppointmentResource extends JsonResource
             'appointment_date'      => $this->appointment_date,
             'appointment_time'      => $this->appointment_time,
             'status'                => $this->status,
+            // Onaylı Review Sistemi alanları
+            'deposit_status'        => $this->deposit_status,
+            'auto_completed_at'     => $this->auto_completed_at?->toISOString(),
             'confirmation_note'     => $this->confirmation_note,
             'doctor_note'           => $this->doctor_note,
             'video_conference_link' => $this->video_conference_link,

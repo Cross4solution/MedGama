@@ -32,8 +32,8 @@ export default function SidebarPatient() {
     { to: '/patient-dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: Activity },
     { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
-    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
-    { to: '/patient/appointments', label: t('sidebar.myAppointments', 'My Appointments'), icon: CalendarClock },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorites'), icon: Heart },
+    { to: '/patient/appointments', label: t('sidebar.myAppointments', 'Appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
     { to: '/medical-archive', label: t('sidebar.medicalArchive', 'Medical Archive'), icon: FolderHeart },
@@ -70,7 +70,11 @@ export default function SidebarPatient() {
   const isClinic  = role === 'clinic' || role === 'clinicOwner';
   const isHosp    = role === 'hospital';
   const isProfessional = role === 'doctor' || isClinic;  // roles that can purchase CRM
-  const items = role === 'patient' ? patientItems : (isClinic ? clinicItems : doctorItems);
+  let items = role === 'patient' ? patientItems : (isClinic ? clinicItems : doctorItems);
+  // Hospital (L4) appointment menü öğelerini gizle — hastane CRM içinde branch yönetir
+  if (isHosp || user?.role_id === 'hospital' || user?.user_level === 4) {
+    items = items.filter(it => !String(it.to || '').includes('appointment'));
+  }
 
   // CRM bridge visibility:
   // • Hospital → always show (hospital is inherently a CRM plan; no paywall)

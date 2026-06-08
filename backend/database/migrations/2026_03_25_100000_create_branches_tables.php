@@ -25,7 +25,8 @@ return new class extends Migration
     public function up(): void
     {
         // ── 1. Create branches table ───────────────────────────────────────
-        Schema::create('branches', function (Blueprint $table) {
+        if (!Schema::hasTable('branches')) {
+            Schema::create('branches', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('hospital_id')->index();
             $table->string('name');
@@ -44,10 +45,12 @@ return new class extends Migration
                   ->onDelete('cascade');
 
             $table->index(['hospital_id', 'is_active']);
-        });
+            });
+        }
 
         // ── 2. Clinic ↔ Branch (Many-to-Many) ─────────────────────────────
-        Schema::create('clinic_branches', function (Blueprint $table) {
+        if (!Schema::hasTable('clinic_branches')) {
+            Schema::create('clinic_branches', function (Blueprint $table) {
             $table->uuid('clinic_id');
             $table->uuid('branch_id');
             $table->boolean('is_primary')->default(false);
@@ -62,10 +65,12 @@ return new class extends Migration
             $table->foreign('branch_id')
                   ->references('id')->on('branches')
                   ->onDelete('cascade');
-        });
+            });
+        }
 
         // ── 3. Doctor ↔ Branch (Assignments with schedule) ────────────────
-        Schema::create('doctor_branches', function (Blueprint $table) {
+        if (!Schema::hasTable('doctor_branches')) {
+            Schema::create('doctor_branches', function (Blueprint $table) {
             $table->uuid('doctor_id');
             $table->uuid('branch_id');
             $table->json('schedule')->nullable();          // Working hours per branch
@@ -80,7 +85,8 @@ return new class extends Migration
             $table->foreign('branch_id')
                   ->references('id')->on('branches')
                   ->onDelete('cascade');
-        });
+            });
+        }
     }
 
     public function down(): void

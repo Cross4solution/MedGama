@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { endpoints, authAPI } from '../lib/api';
+import { endpoints, authAPI, getStoredToken } from '../lib/api';
 import { API_BASE_URL } from '../config/apiBase';
 
 // Very light mock auth just for frontend flows
@@ -43,7 +43,16 @@ export function AuthProvider({ children }) {
       loggedOutRef.current = true;
       setUser(null);
       setToken(null);
-      try { localStorage.removeItem('auth_state'); localStorage.setItem('auth_logout', '1'); } catch {}
+      // Üç ayrı key + sessionStorage temizle (race fix: auth_logout ÖNCE setlenmemeli, ama burada zaten setlenmesi gerekiyor)
+      try {
+        localStorage.removeItem('auth_state');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('google_access_token');
+        localStorage.removeItem('google_user');
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('google_access_token');
+        localStorage.setItem('auth_logout', '1');
+      } catch {}
     };
     window.addEventListener('auth:logout', handleForceLogout);
     return () => window.removeEventListener('auth:logout', handleForceLogout);
@@ -78,8 +87,8 @@ export function AuthProvider({ children }) {
           return;
         }
       }
-      // Fallback: if no auth_state, but we do have a token from Google/backend, keep the session
-      const lsToken = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
+      // Fallback: tek source-of-truth helper (3 key arası tutarsızlığı önler)
+      const lsToken = getStoredToken();
       if (lsToken) {
         setToken(lsToken);
         // user will be fetched by the next effect via fetchCurrentUser
@@ -90,12 +99,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    // Only persist to localStorage after initial hydration and when we have real data
+    // Only persist to localStorage after initial hydration and when we have real data.
+    // Deps reduced to primitives to avoid spammy writes on every shallow user object change.
     if (!hydratedRef.current) return;
     if (user && token) {
       localStorage.setItem('auth_state', JSON.stringify({ user, token, country }));
     }
-  }, [user, token, country]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, user?.role_id, user?.email_verified_at, user?.has_crm_subscription, user?.avatar, user?.fullname, token, country]);
 
   // Update user fields without touching token (for profile edits)
   const updateUser = useCallback((updatedFields, newCountry) => {
@@ -137,13 +148,16 @@ export function AuthProvider({ children }) {
     const role = apiUser?.role_id || apiUser?.role || 'patient';
     const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
     const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
+    // Race fix: auth_logout flag'i setUser'dan ÖNCE temizlensin
+    try {
+      localStorage.removeItem('auth_logout');
+      loggedOutRef.current = false;
+    } catch {}
     setUser(userWithRole);
     setToken(access);
     meUnavailableRef.current = false; // Reset so fetchCurrentUser can refresh avatar
     try {
       localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country }));
-      localStorage.removeItem('auth_logout');
-      loggedOutRef.current = false;
     } catch {}
     // Fetch fresh user data from /auth/me to get latest avatar
     try { fetchCurrentUser(access); } catch {}
@@ -157,7 +171,7 @@ export function AuthProvider({ children }) {
       let apiUser = res?.data ?? res?.user ?? null;
       let access = res?.token ?? res?.access_token ?? null;
       if (!access) {
-        const lsAccess = localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
+        const lsAccess = getStoredToken();
         if (lsAccess) access = lsAccess;
       }
       if (!apiUser) {
@@ -170,10 +184,11 @@ export function AuthProvider({ children }) {
       const role = isDoctor ? 'doctor' : isClinic ? roleRaw : (roleRaw || 'patient');
       const name = apiUser?.fullname || apiUser?.name || [apiUser?.fname, apiUser?.lname].filter(Boolean).join(' ').trim() || apiUser?.email || 'User';
       const userWithRole = { ...apiUser, name, avatar: normalizeAvatar(apiUser?.avatar), role };
+      // Race fix: auth_logout flag'i setUser'dan ÖNCE temizlensin
+      try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
       setUser(userWithRole);
       setToken(access);
       try { localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country })); } catch {}
-      try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
       return { user: userWithRole, access_token: access };
     } catch { return null; }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -186,7 +201,7 @@ export function AuthProvider({ children }) {
     try {
       if (loggedOutRef.current) return null;
       if (meUnavailableRef.current) return null;
-      const tk = overrideToken || token || localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
+      const tk = overrideToken || token || getStoredToken();
       if (!tk) return null;
       const resp = await fetch((API_BASE + ME_PATH), {
         method: 'GET',
@@ -255,12 +270,12 @@ export function AuthProvider({ children }) {
       const role = apiUser?.role_id || apiUser?.role || 'patient';
       const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
       const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
+      // Race fix: flag'i setUser'dan önce temizle
+      try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
       setUser(userWithRole);
       setToken(access);
       try {
         localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country }));
-        localStorage.removeItem('auth_logout');
-        loggedOutRef.current = false;
       } catch {}
     }
     return res;
@@ -276,12 +291,12 @@ export function AuthProvider({ children }) {
       const role = apiUser?.role_id || apiUser?.role || 'doctor';
       const name = apiUser?.fullname || apiUser?.name || apiUser?.email || 'User';
       const userWithRole = { ...apiUser, role, name, avatar: normalizeAvatar(apiUser?.avatar) };
+      // Race fix: flag'i setUser'dan önce temizle
+      try { localStorage.removeItem('auth_logout'); loggedOutRef.current = false; } catch {}
       setUser(userWithRole);
       setToken(access);
       try {
         localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country }));
-        localStorage.removeItem('auth_logout');
-        loggedOutRef.current = false;
         sessionStorage.setItem('doctor_just_registered', 'true');
       } catch {}
     }
@@ -303,16 +318,20 @@ export function AuthProvider({ children }) {
   const [logoutCallback, setLogoutCallback] = useState(null);
 
   const clearLocalAuth = useCallback(() => {
-    setUser(null);
-    setToken(null);
+    // Race fix: state'i temizlemeden önce flag'i SET et (interceptor/me-fetch yarış engellensin)
     try {
+      loggedOutRef.current = true;
+      localStorage.setItem('auth_logout', '1');
+      // 3 ayrı token key + google_user + sessionStorage hepsi temizlensin
       localStorage.removeItem('auth_state');
       localStorage.removeItem('access_token');
       localStorage.removeItem('google_access_token');
       localStorage.removeItem('google_user');
-      localStorage.setItem('auth_logout', '1');
-      loggedOutRef.current = true;
+      sessionStorage.removeItem('access_token');
+      sessionStorage.removeItem('google_access_token');
     } catch {}
+    setUser(null);
+    setToken(null);
   }, []);
 
   const performLogout = useCallback(() => {
@@ -389,7 +408,7 @@ export function AuthProvider({ children }) {
   // If we have a token (from fallback) but no user yet, try to fetch current user once
   useEffect(() => {
     if (!user) {
-      const lsToken = token || localStorage.getItem('access_token') || localStorage.getItem('google_access_token');
+      const lsToken = token || getStoredToken();
       if (lsToken && !meUnavailableRef.current) {
         fetchCurrentUser(lsToken).catch(() => {});
       }
@@ -401,9 +420,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const handleForceLogout = () => {
       clearLocalAuth();
-      // Redirect to login if not already there
-      if (window.location.pathname !== '/login' && !window.location.pathname.includes('-login')) {
-        window.location.href = '/login';
+      // Redirect to home page on forced logout (401/token expire)
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
       }
     };
     window.addEventListener('auth:logout', handleForceLogout);

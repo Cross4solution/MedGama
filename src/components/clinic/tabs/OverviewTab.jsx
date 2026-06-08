@@ -1,16 +1,11 @@
 import React from 'react';
-import { CheckCircle, Shield, Award, Users, Calendar, ChevronRight } from 'lucide-react';
+import { Award, Calendar, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import resolveStorageUrl from '../../../utils/resolveStorageUrl';
+import AccreditationBadges from '../AccreditationBadges';
 
-export default function OverviewTab({ aboutTitle, aboutP1, aboutP2, doctors = [], onBookAppointment, onSwitchToDoctors }) {
+export default function OverviewTab({ aboutTitle, aboutP1, aboutP2, doctors = [], accreditations = [], onBookAppointment, onSwitchToDoctors }) {
   const navigate = useNavigate();
-  const accreditations = [
-    { icon: CheckCircle, label: 'JCI Accredited', bg: 'bg-blue-50', fg: 'text-blue-600' },
-    { icon: Shield, label: 'ISO 9001', bg: 'bg-emerald-50', fg: 'text-emerald-600' },
-    { icon: Award, label: 'Ministry of Health', bg: 'bg-violet-50', fg: 'text-violet-600' },
-    { icon: Users, label: 'Health Tourism', bg: 'bg-amber-50', fg: 'text-amber-600' }
-  ];
 
   const previewDoctors = doctors.slice(0, 4);
 
@@ -86,17 +81,12 @@ export default function OverviewTab({ aboutTitle, aboutP1, aboutP2, doctors = []
         </div>
       )}
 
-      <div>
-        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Accreditations</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {accreditations.map((item, idx) => (
-            <div key={idx} className={`flex items-center gap-2.5 p-3 ${item.bg} rounded-xl border border-transparent`}>
-              <item.icon className={`w-5 h-5 ${item.fg} flex-shrink-0`} />
-              <span className="text-xs font-semibold text-gray-700">{item.label}</span>
-            </div>
-          ))}
+      {accreditations.length > 0 && (
+        <div>
+          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Accreditations</h4>
+          <AccreditationBadges accreditations={accreditations} variant="compact" />
         </div>
-      </div>
+      )}
     </div>
   );
 }

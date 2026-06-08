@@ -65,7 +65,6 @@ class DummyDataSeeder extends Seeder
                 'password' => Hash::make('password123'),
                 'fullname' => $clinicData['name'] . ' Admin',
                 'role_id' => 'clinicOwner',
-                'user_level' => 3,
                 'is_verified' => true,
                 'email_verified' => true,
                 'mobile' => $clinicData['phone'],
@@ -113,13 +112,15 @@ class DummyDataSeeder extends Seeder
                 'password' => Hash::make('password123'),
                 'fullname' => $doctorData['name'],
                 'role_id' => 'doctor',
-                'user_level' => 2,
                 'is_verified' => true,
                 'email_verified' => true,
                 'clinic_id' => $clinicMatch ? $clinicMatch['clinic']->id : null,
-                'is_crm_active' => true,
-                'crm_expires_at' => now()->addYear(),
             ]);
+            // CRM alanları guarded — sadece seeder/admin forceFill ile
+            $doctor->forceFill([
+                'is_crm_active'  => true,
+                'crm_expires_at' => now()->addYear(),
+            ])->save();
 
             // Create doctor profile
             DoctorProfile::create([
@@ -153,7 +154,6 @@ class DummyDataSeeder extends Seeder
                 'password' => Hash::make('password123'),
                 'fullname' => $patientData['name'],
                 'role_id' => 'patient',
-                'user_level' => 1,
                 'email_verified' => true,
                 'gender' => $patientData['gender'],
                 'date_of_birth' => $patientData['dob'],

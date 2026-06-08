@@ -8,7 +8,8 @@ const DashboardRedirect = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate('/login', { replace: true });
+      const justLoggedOut = localStorage.getItem('auth_logout') === '1';
+      navigate(justLoggedOut ? '/' : '/login', { replace: true });
       return;
     }
 

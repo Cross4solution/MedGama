@@ -17,6 +17,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allow Destructive DB Init Endpoint
+    |--------------------------------------------------------------------------
+    | When false (default), /api/system/init-db returns 404 in production.
+    | Flip ALLOW_DESTRUCTIVE_INIT=true in env only for one-time bootstrap,
+    | then disable immediately after use.
+    */
+    'allow_destructive_init' => env('ALLOW_DESTRUCTIVE_INIT', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

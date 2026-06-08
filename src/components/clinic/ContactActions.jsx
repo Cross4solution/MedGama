@@ -5,31 +5,31 @@ import { useTranslation } from 'react-i18next';
 export default function ContactActions({ onTelehealth, onBook, onMessage }) {
   const { t } = useTranslation();
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-4 space-y-2.5">
-      {/* Primary — Book Appointment */}
+    <div className="space-y-2">
+      {/* Book Appointment */}
       <button
         onClick={onBook}
-        className="w-full min-h-[46px] bg-[#065f46] text-white py-3 px-4 rounded-xl hover:bg-[#054f3a] focus:ring-4 focus:ring-emerald-200 transition-all duration-200 font-semibold text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+        className="w-full px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl focus:ring-4 focus:ring-teal-200 transition-all duration-200 font-semibold text-sm flex items-center gap-3 shadow-sm hover:shadow-md"
       >
-        <CalendarCheck className="w-4.5 h-4.5" />
+        <CalendarCheck className="w-5 h-5 flex-shrink-0" />
         <span>{t('clinicDetail.bookAppointment')}</span>
       </button>
 
-      {/* Secondary — Online Consultation */}
+      {/* Telehealth Consultation */}
       <button
         onClick={onTelehealth}
-        className="w-full min-h-[46px] bg-[#4338ca] text-white py-3 px-4 rounded-xl hover:bg-[#3730a3] focus:ring-4 focus:ring-indigo-200 transition-all duration-200 font-semibold text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+        className="w-full px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl focus:ring-4 focus:ring-blue-200 transition-all duration-200 font-semibold text-sm flex items-center gap-3 shadow-sm hover:shadow-md"
       >
-        <Video className="w-4.5 h-4.5" />
+        <Video className="w-5 h-5 flex-shrink-0" />
         <span>{t('clinicDetail.onlineConsultation')}</span>
       </button>
 
-      {/* Tertiary — Send Message */}
+      {/* Send Message */}
       <button
         onClick={onMessage}
-        className="w-full min-h-[46px] bg-transparent text-slate-600 border-2 border-slate-300 py-3 px-4 rounded-xl hover:bg-slate-50 focus:ring-4 focus:ring-slate-100 transition-all duration-200 font-medium text-sm flex items-center justify-center gap-2"
+        className="w-full px-6 py-3 bg-gray-400 hover:bg-gray-500 text-white rounded-xl focus:ring-4 focus:ring-gray-300 transition-all duration-200 font-semibold text-sm flex items-center gap-3 shadow-sm hover:shadow-md"
       >
-        <MessageCircle className="w-4 h-4" />
+        <MessageCircle className="w-5 h-5 flex-shrink-0" />
         <span>{t('clinicDetail.sendMessage')}</span>
       </button>
     </div>

@@ -16,6 +16,22 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // TODO: Migrate hard-coded hospital/clinic/doctor loops to factory pattern
+        // (HospitalFactory, ClinicFactory, DoctorProfileFactory). Currently kept hard-coded
+        // for deterministic demo data (named entities: Medipol, Acıbadem, etc.).
+        // Seeder sadece local/staging — prod'da çalışmaz (zayıf demo parolaları sızdırma riskini engelle)
+        if (app()->environment('production')) {
+            $this->command->warn('DatabaseSeeder skipped in production environment.');
+            return;
+        }
+
+        // ══════════════════════════════════════════════════════════════════
+        //  CATALOG (Specialties, Cities, Diseases, Symptoms) — must run first
+        // ══════════════════════════════════════════════════════════════════
+        $this->call(CatalogSeeder::class);
+        $this->call(TicketCategorySeeder::class);
+        $this->call(AccreditationSeeder::class);
+
         // ══════════════════════════════════════════════════════════════════
         //  SUPER ADMIN
         // ══════════════════════════════════════════════════════════════════
@@ -24,10 +40,9 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@medagama.com'],
             [
                 'id'              => 'f7103b85-fcda-4dec-92c6-c336f71fd3a2',
-                'password'        => '123asd123',
+                'password'        => 'Password123!',
                 'fullname'        => 'Platform Admin',
                 'role_id'         => 'superAdmin',
-                'user_level'      => 5,
                 'mobile'          => '+905001234567',
                 'email_verified'  => true,
                 'email_verified_at' => now(),
@@ -44,7 +59,7 @@ class DatabaseSeeder extends Seeder
         $hospitalData = [
             [
                 'email'    => 'hospital@medagama.com',
-                'password' => 'hospital123',
+                'password' => 'Password123!',
                 'fullname' => 'Medipol İstanbul Yönetimi',
                 'hospital' => [
                     'name'     => 'Medipol İstanbul',
@@ -63,7 +78,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'florence@medagama.com',
-                'password' => 'hospital123',
+                'password' => 'Password123!',
                 'fullname' => 'Florence Nightingale Yönetimi',
                 'hospital' => [
                     'name'     => 'Florence Nightingale',
@@ -82,7 +97,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'memorial@medagama.com',
-                'password' => 'hospital123',
+                'password' => 'Password123!',
                 'fullname' => 'Memorial Hastanesi Yönetimi',
                 'hospital' => [
                     'name'     => 'Memorial Hastanesi',
@@ -101,7 +116,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'acibadem@medagama.com',
-                'password' => 'hospital123',
+                'password' => 'Password123!',
                 'fullname' => 'Acıbadem Sağlık Yönetimi',
                 'hospital' => [
                     'name'     => 'Acıbadem',
@@ -120,7 +135,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'bayindir@medagama.com',
-                'password' => 'hospital123',
+                'password' => 'Password123!',
                 'fullname' => 'Bayındır Hastanesi Yönetimi',
                 'hospital' => [
                     'name'     => 'Bayındır Hastanesi',
@@ -149,17 +164,19 @@ class DatabaseSeeder extends Seeder
                     'password'          => $hd['password'],
                     'fullname'          => $hd['fullname'],
                     'role_id'           => 'hospital',
-                    'user_level'        => 4,
                     'mobile'            => '+9050012345' . (70 + $index),
                     'email_verified'    => true,
                     'email_verified_at' => now(),
                     'mobile_verified'   => true,
                     'is_verified'       => true,
                     'is_active'         => true,
-                    'is_crm_active'     => true,
-                    'crm_expires_at'    => now()->addYears(2),
                 ]
             );
+            // CRM alanları guarded — sadece seeder/admin forceFill ile
+            $hUser->forceFill([
+                'is_crm_active'  => true,
+                'crm_expires_at' => now()->addYears(2),
+            ])->save();
 
             $h = Hospital::updateOrCreate(
                 ['codename' => $hd['hospital']['codename']],
@@ -183,7 +200,7 @@ class DatabaseSeeder extends Seeder
         $clinicData = [
             [
                 'email'    => 'clinic@medagama.com',
-                'password' => 'clinic123',
+                'password' => 'Password123!',
                 'fullname' => 'Dr. Mehmet Yılmaz',
                 'clinic'   => [
                     'name'      => 'MedaGama Sağlık',
@@ -199,7 +216,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'elitedental@medagama.com',
-                'password' => 'clinic123',
+                'password' => 'Password123!',
                 'fullname' => 'Dr. Selin Kaya',
                 'clinic'   => [
                     'name'      => 'Elite Dental',
@@ -215,7 +232,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'visioneye@medagama.com',
-                'password' => 'clinic123',
+                'password' => 'Password123!',
                 'fullname' => 'Dr. Murat Öztürk',
                 'clinic'   => [
                     'name'      => 'Vision Eye Clinic',
@@ -231,7 +248,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'lifeortho@medagama.com',
-                'password' => 'clinic123',
+                'password' => 'Password123!',
                 'fullname' => 'Dr. Canan Demir',
                 'clinic'   => [
                     'name'      => 'Life Ortopedi',
@@ -247,7 +264,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'primecardio@medagama.com',
-                'password' => 'clinic123',
+                'password' => 'Password123!',
                 'fullname' => 'Dr. Kerem Arslan',
                 'clinic'   => [
                     'name'      => 'Prime Cardio',
@@ -273,17 +290,19 @@ class DatabaseSeeder extends Seeder
                     'password'          => $cd['password'],
                     'fullname'          => $cd['fullname'],
                     'role_id'           => 'clinicOwner',
-                    'user_level'        => 3,
                     'mobile'            => '+9050012345' . (80 + $index),
                     'email_verified'    => true,
                     'email_verified_at' => now(),
                     'mobile_verified'   => true,
                     'is_verified'       => true,
                     'is_active'         => true,
-                    'is_crm_active'     => true,
-                    'crm_expires_at'    => now()->addYear(),
                 ]
             );
+            // CRM alanları guarded — sadece seeder/admin forceFill ile
+            $cUser->forceFill([
+                'is_crm_active'  => true,
+                'crm_expires_at' => now()->addYear(),
+            ])->save();
 
             $hospitalId = isset($cd['clinic']['hospital_index'])
                 ? ($hospitals[$cd['clinic']['hospital_index']]->id ?? null)
@@ -321,7 +340,7 @@ class DatabaseSeeder extends Seeder
         $doctorData = [
             [
                 'email'    => 'doctor@medagama.com',
-                'password' => 'doctor123',
+                'password' => 'Password123!',
                 'fullname' => 'Dr. Ayşe Kaya',
                 'avatar'   => 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=300&q=80',
                 'clinic_index' => 0,
@@ -348,7 +367,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'drmustafa@medagama.com',
-                'password' => 'doctor123',
+                'password' => 'Password123!',
                 'fullname' => 'Prof. Dr. Mustafa Çelik',
                 'avatar'   => 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&q=80',
                 'clinic_index' => 2,
@@ -375,7 +394,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'drfatma@medagama.com',
-                'password' => 'doctor123',
+                'password' => 'Password123!',
                 'fullname' => 'Dr. Fatma Şahin',
                 'avatar'   => 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&q=80',
                 'clinic_index' => 1,
@@ -402,7 +421,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'dremre@medagama.com',
-                'password' => 'doctor123',
+                'password' => 'Password123!',
                 'fullname' => 'Doç. Dr. Emre Yıldız',
                 'avatar'   => 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&q=80',
                 'clinic_index' => 3,
@@ -429,7 +448,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'email'    => 'drnilufar@medagama.com',
-                'password' => 'doctor123',
+                'password' => 'Password123!',
                 'fullname' => 'Dr. Nilüfer Arslan',
                 'avatar'   => 'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=300&q=80',
                 'clinic_index' => 4,
@@ -455,6 +474,21 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
+        // Build specialty text → ID lookup for Single Source of Truth (both EN and TR keys)
+        $allSpecialties = \App\Models\Specialty::all();
+        $specialtyMap = []; // lowercase name → specialty model
+        foreach ($allSpecialties as $spec) {
+            $raw = $spec->getAttributes()['name'];
+            $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
+            if (is_array($decoded)) {
+                foreach ($decoded as $locale => $name) {
+                    $specialtyMap[mb_strtolower(trim($name))] = $spec;
+                }
+            } else {
+                $specialtyMap[mb_strtolower(trim((string) $raw))] = $spec;
+            }
+        }
+
         $doctors = [];
         foreach ($doctorData as $index => $dd) {
             $clinic = $clinics[$dd['clinic_index']] ?? null;
@@ -466,7 +500,6 @@ class DatabaseSeeder extends Seeder
                     'fullname'          => $dd['fullname'],
                     'avatar'            => $dd['avatar'],
                     'role_id'           => 'doctor',
-                    'user_level'        => 2,
                     'mobile'            => '+9050012345' . (90 + $index),
                     'email_verified'    => true,
                     'email_verified_at' => now(),
@@ -478,12 +511,68 @@ class DatabaseSeeder extends Seeder
                 ]
             );
 
+            // Resolve specialty_id from text name via locale-aware lookup
+            $specText = $dd['profile']['specialty'] ?? '';
+            $specId = null;
+            // Normalize: "Kardiyoloji – Girişimsel" → "kardiyoloji", "Ortopedi ve Travmatoloji" → "ortopedi"
+            $normalizedSpec = mb_strtolower(trim(preg_split('/[\s]*[–\-][\s]*/u', $specText)[0]));
+            // Direct match
+            if (isset($specialtyMap[$normalizedSpec])) {
+                $specId = $specialtyMap[$normalizedSpec]->id;
+            } else {
+                // Fuzzy: match first word(s) — e.g. "ortopedi ve travmatoloji" matches "ortopedi"
+                foreach ($specialtyMap as $key => $spec) {
+                    if (str_starts_with($normalizedSpec, $key) || str_starts_with($key, $normalizedSpec)
+                        || str_contains($key, $normalizedSpec) || str_contains($normalizedSpec, $key)) {
+                        $specId = $spec->id;
+                        break;
+                    }
+                }
+            }
+
+            $profileData = array_merge(['user_id' => $doctor->id], $dd['profile'], [
+                'clinic_id'           => $clinic?->id,
+                'specialty_id'        => $specId,
+                'onboarding_completed' => true,
+            ]);
+
             DoctorProfile::updateOrCreate(
                 ['user_id' => $doctor->id],
-                array_merge(['user_id' => $doctor->id], $dd['profile'])
+                $profileData
             );
 
             $doctors[] = $doctor;
+        }
+
+        // ══════════════════════════════════════════════════════════════════
+        //  DOCTOR FAQs (Dr. Ayşe Kaya — Cardiology)
+        // ══════════════════════════════════════════════════════════════════
+
+        $ayseKaya = $doctors[0] ?? null;
+        if ($ayseKaya) {
+            $faqData = [
+                [
+                    'question'   => 'Kardiyoloji muayenesine gelmeden önce ne yapmalıyım?',
+                    'answer'     => 'Muayeneye gelmeden önce varsa önceki EKG, efor testi ve kan sonuçlarınızı yanınıza alın. Son 24 saat içinde kafein tüketimini azaltmanız ve rahat kıyafetler giymeniz önerilir. Kullandığınız ilaç listesini de getirmeniz tanı sürecini hızlandıracaktır.',
+                    'sort_order' => 0,
+                ],
+                [
+                    'question'   => 'Kalp çarpıntısı ne zaman ciddi bir durum olabilir?',
+                    'answer'     => 'Çoğu çarpıntı zararsızdır ve stres, kafein veya uyku bozukluğundan kaynaklanır. Ancak çarpıntıya göğüs ağrısı, nefes darlığı, baş dönmesi veya bayılma eşlik ediyorsa, ya da çarpıntı düzensiz ve 10 dakikadan uzun sürüyorsa mutlaka bir kardiyoloğa başvurun. Erken tanı hayat kurtarır.',
+                    'sort_order' => 1,
+                ],
+                [
+                    'question'   => 'Online (uzaktan) kardiyoloji konsültasyonu mümkün mü?',
+                    'answer'     => 'Evet, kontrol muayeneleri, ilaç ayarlamaları ve test sonucu değerlendirmeleri için online konsültasyon sunuyorum. İlk muayene veya fizik muayene gerektiren durumlar için yüz yüze görüşme gereklidir. Online randevu almak için profil sayfamdaki "Online Randevu" butonunu kullanabilirsiniz.',
+                    'sort_order' => 2,
+                ],
+            ];
+            foreach ($faqData as $fq) {
+                \App\Models\DoctorFaq::updateOrCreate(
+                    ['doctor_id' => $ayseKaya->id, 'question' => $fq['question']],
+                    array_merge($fq, ['doctor_id' => $ayseKaya->id, 'is_active' => true])
+                );
+            }
         }
 
         // ══════════════════════════════════════════════════════════════════
@@ -493,35 +582,35 @@ class DatabaseSeeder extends Seeder
         $patientData = [
             [
                 'email'         => 'patient@medagama.com',
-                'password'      => 'patient123',
+                'password'      => 'Password123!',
                 'fullname'      => 'Ali Demir',
                 'date_of_birth' => '1990-05-15',
                 'gender'        => 'male',
             ],
             [
                 'email'         => 'zeynep@medagama.com',
-                'password'      => 'patient123',
+                'password'      => 'Password123!',
                 'fullname'      => 'Zeynep Arslan',
                 'date_of_birth' => '1985-11-22',
                 'gender'        => 'female',
             ],
             [
                 'email'         => 'kemal@medagama.com',
-                'password'      => 'patient123',
+                'password'      => 'Password123!',
                 'fullname'      => 'Kemal Doğan',
                 'date_of_birth' => '1978-03-08',
                 'gender'        => 'male',
             ],
             [
                 'email'         => 'sema@medagama.com',
-                'password'      => 'patient123',
+                'password'      => 'Password123!',
                 'fullname'      => 'Sema Koç',
                 'date_of_birth' => '1993-07-29',
                 'gender'        => 'female',
             ],
             [
                 'email'         => 'baris@medagama.com',
-                'password'      => 'patient123',
+                'password'      => 'Password123!',
                 'fullname'      => 'Barış Yılmaz',
                 'date_of_birth' => '2001-12-01',
                 'gender'        => 'male',
@@ -535,7 +624,6 @@ class DatabaseSeeder extends Seeder
                     'password'          => $pd['password'],
                     'fullname'          => $pd['fullname'],
                     'role_id'           => 'patient',
-                    'user_level'        => 1,
                     'date_of_birth'     => $pd['date_of_birth'],
                     'gender'            => $pd['gender'],
                     'country_id'        => 90,
@@ -699,6 +787,12 @@ class DatabaseSeeder extends Seeder
         }
 
         // ══════════════════════════════════════════════════════════════════
+        //  MEDSTREAM SAMPLE POSTS
+        // ══════════════════════════════════════════════════════════════════
+
+        $this->call(MedStreamSampleSeeder::class);
+
+        // ══════════════════════════════════════════════════════════════════
         //  CATALOG DATA
         // ══════════════════════════════════════════════════════════════════
 
@@ -713,35 +807,35 @@ class DatabaseSeeder extends Seeder
         $this->command->info('║  MedaGama Demo Database — Seeded!                                ║');
         $this->command->info('╠═══════════════════════════════════════════════════════════════════╣');
         $this->command->info('║  ADMIN:                                                          ║');
-        $this->command->info('║    admin@medagama.com            / 123asd123                     ║');
+        $this->command->info('║    admin@medagama.com            / Password123!                     ║');
         $this->command->info('╠═══════════════════════════════════════════════════════════════════╣');
         $this->command->info('║  HOSPITALS (L4):                                                 ║');
-        $this->command->info('║    hospital@medagama.com         / hospital123  (Medipol)        ║');
-        $this->command->info('║    florence@medagama.com         / hospital123  (Florence N.)   ║');
-        $this->command->info('║    memorial@medagama.com         / hospital123  (Memorial)       ║');
-        $this->command->info('║    acibadem@medagama.com         / hospital123  (Acıbadem)       ║');
-        $this->command->info('║    bayindir@medagama.com         / hospital123  (Bayındır)       ║');
+        $this->command->info('║    hospital@medagama.com         / Password123! (Medipol)        ║');
+        $this->command->info('║    florence@medagama.com         / Password123! (Florence N.)   ║');
+        $this->command->info('║    memorial@medagama.com         / Password123! (Memorial)       ║');
+        $this->command->info('║    acibadem@medagama.com         / Password123! (Acıbadem)       ║');
+        $this->command->info('║    bayindir@medagama.com         / Password123! (Bayındır)       ║');
         $this->command->info('╠═══════════════════════════════════════════════════════════════════╣');
         $this->command->info('║  CLINICS (L3):                                                   ║');
-        $this->command->info('║    clinic@medagama.com           / clinic123   (MedaGama)        ║');
-        $this->command->info('║    elitedental@medagama.com      / clinic123   (Elite Dental)    ║');
-        $this->command->info('║    visioneye@medagama.com        / clinic123   (Vision Eye)      ║');
-        $this->command->info('║    lifeortho@medagama.com        / clinic123   (Life Ortopedi)   ║');
-        $this->command->info('║    primecardio@medagama.com      / clinic123   (Prime Cardio)    ║');
+        $this->command->info('║    clinic@medagama.com           / Password123! (MedaGama)        ║');
+        $this->command->info('║    elitedental@medagama.com      / Password123! (Elite Dental)    ║');
+        $this->command->info('║    visioneye@medagama.com        / Password123! (Vision Eye)      ║');
+        $this->command->info('║    lifeortho@medagama.com        / Password123! (Life Ortopedi)   ║');
+        $this->command->info('║    primecardio@medagama.com      / Password123! (Prime Cardio)    ║');
         $this->command->info('╠═══════════════════════════════════════════════════════════════════╣');
         $this->command->info('║  DOCTORS (L2):                                                   ║');
-        $this->command->info('║    doctor@medagama.com           / doctor123   (Dr. Ayşe Kaya)  ║');
-        $this->command->info('║    drmustafa@medagama.com        / doctor123   (Prof. Dr. Çelik)║');
-        $this->command->info('║    drfatma@medagama.com          / doctor123   (Dr. Şahin)       ║');
-        $this->command->info('║    dremre@medagama.com           / doctor123   (Doç. Dr. Yıldız)║');
-        $this->command->info('║    drnilufar@medagama.com        / doctor123   (Dr. Arslan)      ║');
+        $this->command->info('║    doctor@medagama.com           / Password123! (Dr. Ayşe Kaya)  ║');
+        $this->command->info('║    drmustafa@medagama.com        / Password123! (Prof. Dr. Çelik)║');
+        $this->command->info('║    drfatma@medagama.com          / Password123! (Dr. Şahin)       ║');
+        $this->command->info('║    dremre@medagama.com           / Password123! (Doç. Dr. Yıldız)║');
+        $this->command->info('║    drnilufar@medagama.com        / Password123! (Dr. Arslan)      ║');
         $this->command->info('╠═══════════════════════════════════════════════════════════════════╣');
         $this->command->info('║  PATIENTS (L1):                                                  ║');
-        $this->command->info('║    patient@medagama.com          / patient123  (Ali Demir)       ║');
-        $this->command->info('║    zeynep@medagama.com           / patient123  (Zeynep Arslan)   ║');
-        $this->command->info('║    kemal@medagama.com            / patient123  (Kemal Doğan)     ║');
-        $this->command->info('║    sema@medagama.com             / patient123  (Sema Koç)        ║');
-        $this->command->info('║    baris@medagama.com            / patient123  (Barış Yılmaz)    ║');
+        $this->command->info('║    patient@medagama.com          / Password123! (Ali Demir)       ║');
+        $this->command->info('║    zeynep@medagama.com           / Password123! (Zeynep Arslan)   ║');
+        $this->command->info('║    kemal@medagama.com            / Password123! (Kemal Doğan)     ║');
+        $this->command->info('║    sema@medagama.com             / Password123! (Sema Koç)        ║');
+        $this->command->info('║    baris@medagama.com            / Password123! (Barış Yılmaz)    ║');
         $this->command->info('╠═══════════════════════════════════════════════════════════════════╣');
         $this->command->info('║  MEDSTREAM: 10 professional posts (3 video, 4 image, 3 text)    ║');
         $this->command->info('╚═══════════════════════════════════════════════════════════════════╝');

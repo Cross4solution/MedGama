@@ -38,8 +38,29 @@ class ClinicController extends Controller
      */
     public function show(string $codename)
     {
-        $clinic = Clinic::active()->where('codename', $codename)->firstOrFail();
+        \Log::info('ClinicController@show called with codename: ' . $codename);
+        $clinic = Clinic::active()->where('codename', $codename)->first();
+        
+        if (!$clinic) {
+            \Log::error('Clinic not found with codename: ' . $codename);
+            return response()->json(['error' => 'Clinic not found'], 404);
+        }
+        
+        \Log::info('Clinic found: ' . $clinic->id . ' - ' . $clinic->fullname);
         $clinic->load('owner:id,fullname,avatar');
+
+        // Load doctors with their profiles and specialty (Single Source of Truth)
+        $clinic->load(['doctors' => function ($q) {
+            $q->where('is_active', true)
+              ->select('id', 'fullname', 'avatar', 'clinic_id')
+              ->with(['doctorProfile' => function ($q2) {
+                  $q2->select('id', 'user_id', 'clinic_id', 'title', 'slug', 'specialty', 'specialty_id', 'experience_years', 'avg_rating', 'review_count', 'bio', 'languages')
+                     ->with('specialtyRelation:id,name');
+              }]);
+        }]);
+
+        // Load accreditations
+        $clinic->load('accreditations');
 
         // Social flags for authenticated user
         $authUser = auth('sanctum')->user();
@@ -110,14 +131,34 @@ class ClinicController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:100',
             'fullname' => 'sometimes|string|max:255',
-            'avatar' => 'sometimes|string|url',
+            'avatar' => 'sometimes|image|max:10240', // 10MB file upload
             'address' => 'sometimes|string',
             'biography' => 'sometimes|string',
             'map_coordinates' => 'sometimes|array',
             'website' => 'sometimes|url',
+            'background_image' => 'sometimes|image|max:10240', // 10MB file upload
         ]);
 
-        $clinic->update($validated);
+        // ── Handle Avatar Upload ──
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('clinics', 'public');
+            $clinic->avatar = "/storage/$avatarPath";
+        }
+
+        // ── Handle Background Image Upload ──
+        if ($request->hasFile('background_image')) {
+            $bgPath = $request->file('background_image')->store('clinics', 'public');
+            $clinic->background_image = "/storage/$bgPath";
+        }
+
+        // ── Update other fields ──
+        if (isset($validated['fullname'])) $clinic->fullname = $validated['fullname'];
+        if (isset($validated['address'])) $clinic->address = $validated['address'];
+        if (isset($validated['biography'])) $clinic->biography = $validated['biography'];
+        if (isset($validated['website'])) $clinic->website = $validated['website'];
+        if (isset($validated['map_coordinates'])) $clinic->map_coordinates = $validated['map_coordinates'];
+
+        $clinic->save();
 
         return response()->json(['clinic' => $clinic->refresh()]);
     }
@@ -224,6 +265,8 @@ class ClinicController extends Controller
                 'fullname'             => $clinic->fullname,
                 'avatar'               => $clinic->getRawOriginal('avatar'),
                 'address'              => $clinic->address,
+                'latitude'             => $clinic->latitude,
+                'longitude'            => $clinic->longitude,
                 'phone'                => $clinic->phone,
                 'biography'            => $clinic->biography,
                 'map_coordinates'      => $clinic->map_coordinates,
@@ -251,6 +294,8 @@ class ClinicController extends Controller
             $validated = $request->validate([
                 'name'            => 'required|string|max:255',
                 'address'         => 'nullable|string|max:500',
+                'latitude'        => 'nullable|numeric|between:-90,90',
+                'longitude'       => 'nullable|numeric|between:-180,180',
                 'phone'           => 'nullable|string|max:30',
                 'biography'       => 'nullable|string|max:5000',
                 'map_coordinates' => 'nullable|array',
@@ -390,77 +435,130 @@ class ClinicController extends Controller
      */
     public function submitReview(Request $request, string $id): JsonResponse
     {
+        // Onaylı Review Sistemi — appointment_id ZORUNLU
         $request->validate([
             'rating'         => 'required|integer|min:1|max:5',
             'comment'        => 'required|string|min:10|max:2000',
             'treatment_type' => 'nullable|string|max:255',
+            'appointment_id' => 'required|uuid|exists:appointments,id',
         ]);
 
         $clinic = Clinic::active()->findOrFail($id);
         $patient = $request->user();
 
-        // Only patients allowed
+        // Sadece hastalar yorum yapabilir
         if ($patient->role_id !== 'patient') {
-            abort(403, 'Only patients can submit reviews.');
+            abort(403, 'Yalnızca hastalar yorum yapabilir.');
         }
 
-        // Gatekeeper: completed appointment at clinic OR with one of the clinic's doctors
+        // Randevuyu fetch et ve sahiplik / durum kontrolleri
+        $appointment = Appointment::find($request->input('appointment_id'));
+        if (!$appointment || $appointment->patient_id !== $patient->id) {
+            abort(403, 'Bu randevu için yorum yapamazsınız.');
+        }
+
+        // Klinik eşleşmesi: doğrudan clinic_id ya da klinik doktorlarından biri
         $clinicDoctorIds = User::where('clinic_id', $clinic->id)
             ->where('role_id', 'doctor')
-            ->pluck('id');
+            ->pluck('id')
+            ->toArray();
 
-        $hasCompletedAppointment = Appointment::where('patient_id', $patient->id)
-            ->where('status', 'completed')
-            ->where(function ($q) use ($clinic, $clinicDoctorIds) {
-                $q->where('clinic_id', $clinic->id)
-                  ->orWhereIn('doctor_id', $clinicDoctorIds);
-            })
-            ->exists();
+        $belongsToClinic = ($appointment->clinic_id === $clinic->id)
+            || in_array($appointment->doctor_id, $clinicDoctorIds, true);
 
-        if (!$hasCompletedAppointment) {
-            abort(403, 'You can only review a clinic after a completed appointment.');
+        if (!$belongsToClinic) {
+            abort(403, 'Bu randevu seçilen kliniğe ait değil.');
         }
 
-        // Duplicate check
+        if ($appointment->status !== 'completed') {
+            abort(403, 'Randevu henüz tamamlanmadı.');
+        }
+
+        // Hizmet kategorisi türetme — appointment_type üzerinden
+        $treatmentType = $request->input('treatment_type') ?: $appointment->appointment_type;
+        if ($request->filled('treatment_type')
+            && $request->input('treatment_type') !== $appointment->appointment_type) {
+            abort(403, 'Bu hizmet kategorisinde yorum yapma hakkınız yok.');
+        }
+
+        // Çift yorum kontrolü
         $existing = ClinicReview::where('clinic_id', $clinic->id)
             ->where('patient_id', $patient->id)
             ->exists();
         if ($existing) {
-            abort(409, 'You have already reviewed this clinic.');
+            abort(409, 'Bu klinik için zaten yorum yaptınız.');
         }
 
-        // Flood protection: max one review every 24 hours (across all clinics)
+        // Flood protection — 24 saat
         $recentReview = ClinicReview::where('patient_id', $patient->id)
             ->where('created_at', '>=', now()->subDay())
             ->exists();
         if ($recentReview) {
-            abort(429, 'Please wait 24 hours between reviews.');
+            abort(429, 'Yorumlar arasında 24 saat beklemelisiniz.');
         }
-
-        // Find the latest completed appointment for this clinic
-        $appointment = Appointment::where('patient_id', $patient->id)
-            ->where('status', 'completed')
-            ->where(function ($q) use ($clinic, $clinicDoctorIds) {
-                $q->where('clinic_id', $clinic->id)
-                  ->orWhereIn('doctor_id', $clinicDoctorIds);
-            })
-            ->latest()
-            ->first();
 
         $review = ClinicReview::create([
             'clinic_id'         => $clinic->id,
             'patient_id'        => $patient->id,
-            'appointment_id'    => $appointment?->id,
+            'appointment_id'    => $appointment->id,
             'rating'            => $request->rating,
             'comment'           => $request->comment,
-            'treatment_type'    => $request->treatment_type,
+            'treatment_type'    => $treatmentType,
             'is_verified'       => true,
             'moderation_status' => 'pending',
         ]);
 
-        // Recalculate aggregated rating
+        // Toplam puanı yeniden hesapla
         ClinicReview::recalculateAggregatedRating($clinic->id);
 
         return response()->json(['review' => $review->load('patient:id,fullname,avatar')], 201);
+    }
+
+    /**
+     * GET /api/clinics/reviewable-appointments
+     * Hastanın yorum yapabileceği (completed + henüz yorumlanmamış) klinik randevuları.
+     */
+    public function reviewableAppointments(Request $request): JsonResponse
+    {
+        $patient = $request->user();
+
+        // Bu hasta tarafından zaten yorumlanmış klinikleri dışla
+        $reviewedClinicIds = ClinicReview::where('patient_id', $patient->id)
+            ->pluck('clinic_id')
+            ->toArray();
+
+        // Klinik doktor eşleştirmesi için tüm klinik->doktor map'i
+        $appointments = Appointment::where('patient_id', $patient->id)
+            ->where('status', 'completed')
+            ->with([
+                'clinic:id,fullname,name,avatar,codename',
+                'doctor:id,fullname,clinic_id',
+            ])
+            ->orderByDesc('appointment_date')
+            ->limit(20)
+            ->get();
+
+        $result = $appointments->map(function ($appt) use ($reviewedClinicIds) {
+            // Klinik referansı: doğrudan clinic_id veya doktorun clinic_id'si
+            $clinicId = $appt->clinic_id ?: $appt->doctor?->clinic_id;
+            if (!$clinicId || in_array($clinicId, $reviewedClinicIds, true)) {
+                return null;
+            }
+
+            $clinic = $appt->clinic ?: Clinic::find($clinicId);
+
+            return [
+                'appointment_id'   => $appt->id,
+                'clinic_id'        => $clinicId,
+                'clinic_name'      => $clinic?->fullname ?? $clinic?->name,
+                'clinic_avatar'    => $clinic?->avatar,
+                'clinic_codename'  => $clinic?->codename,
+                'appointment_date' => $appt->appointment_date,
+                'appointment_type' => $appt->appointment_type,
+                'treatment_type'   => $appt->appointment_type,
+            ];
+        })->filter()->values();
+
+        return response()->json(['data' => $result]);
     }
 }

@@ -248,6 +248,17 @@ function toStreamUrl(url) {
   return `${base}/api/media/stream/${storagePath}`;
 }
 
+function getYouTubeId(url) {
+  if (!url || typeof url !== 'string') return null;
+  const embedMatch = url.match(/youtube\.com\/embed\/([^?&/]+)/);
+  if (embedMatch) return embedMatch[1];
+  const watchMatch = url.match(/youtube\.com\/watch\?.*v=([^&]+)/);
+  if (watchMatch) return watchMatch[1];
+  const shortMatch = url.match(/youtu\.be\/([^?&/]+)/);
+  if (shortMatch) return shortMatch[1];
+  return null;
+}
+
 function formatDuration(seconds) {
   if (!seconds || isNaN(seconds) || !isFinite(seconds)) return null;
   const m = Math.floor(seconds / 60);
@@ -266,6 +277,7 @@ function VideoPreview({ m, className }) {
   const videoSrc = toStreamUrl(rawSrc);
   const resolvedThumb = resolveStorageUrl(m.thumb, '');
   const isProcessing = m.status === 'processing';
+  const ytId = getYouTubeId(rawSrc);
 
   // Lazy loading — only load video when in viewport
   useEffect(() => {
@@ -286,7 +298,7 @@ function VideoPreview({ m, className }) {
 
   const stopProp = (e) => e.stopPropagation();
 
-  // Playing state — full video player
+  // Playing state — YouTube iframe or native video
   if (playing) {
     return (
       <div
@@ -295,16 +307,27 @@ function VideoPreview({ m, className }) {
         style={{ zIndex: 10, overflow: 'visible' }}
         onClick={stopProp} onMouseDown={stopProp} onPointerDown={stopProp} onTouchStart={stopProp}
       >
-        <video
-          ref={videoRef}
-          src={videoSrc}
-          controls autoPlay playsInline preload="auto"
-          className="w-full h-full object-contain"
-          style={{ pointerEvents: 'auto', position: 'relative', zIndex: 11 }}
-          poster={resolvedThumb || undefined}
-          onError={() => { setError(true); setPlaying(false); }}
-          onClick={stopProp} onMouseDown={stopProp} onPointerDown={stopProp} onTouchStart={stopProp}
-        />
+        {ytId ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+            style={{ border: 'none', position: 'relative', zIndex: 11 }}
+            onClick={stopProp} onMouseDown={stopProp}
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            src={videoSrc}
+            controls autoPlay playsInline preload="auto"
+            className="w-full h-full object-contain"
+            style={{ pointerEvents: 'auto', position: 'relative', zIndex: 11 }}
+            poster={resolvedThumb || undefined}
+            onError={() => { setError(true); setPlaying(false); }}
+            onClick={stopProp} onMouseDown={stopProp} onPointerDown={stopProp} onTouchStart={stopProp}
+          />
+        )}
       </div>
     );
   }
@@ -329,15 +352,17 @@ function VideoPreview({ m, className }) {
     );
   }
 
-  const hasThumb = resolvedThumb && !resolvedThumb.endsWith('.mp4') && !resolvedThumb.endsWith('.webm') && !resolvedThumb.endsWith('.mov');
+  const ytThumb = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null;
+  const effectiveThumb = resolvedThumb || ytThumb;
+  const hasThumb = effectiveThumb && !effectiveThumb.endsWith('.mp4') && !effectiveThumb.endsWith('.webm') && !effectiveThumb.endsWith('.mov');
   const durationLabel = formatDuration(duration || m.duration);
 
   return (
     <div ref={containerRef} className="relative bg-black flex items-center justify-center cursor-pointer group aspect-video w-full overflow-hidden rounded-lg" onClick={handlePlay}>
       {/* Thumbnail or video metadata preview */}
       {hasThumb ? (
-        <img src={resolvedThumb} alt="Video" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
-      ) : inView ? (
+        <img src={effectiveThumb} alt="Video" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
+      ) : inView && !ytId ? (
         <video
           src={rawSrc ? `${rawSrc}#t=0.5` : videoSrc}
           muted preload="metadata" playsInline

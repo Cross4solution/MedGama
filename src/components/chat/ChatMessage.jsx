@@ -163,7 +163,7 @@ function ChatMessage({ message, leftAvatar, rightAvatar }) {
         <div className={`rounded-2xl px-4 py-2.5 shadow-sm transition-opacity duration-200 ${
           isDoctor
             ? 'bg-gradient-to-br from-teal-600 to-emerald-600 text-white rounded-br-md'
-            : 'bg-white border border-gray-100 text-gray-800 rounded-bl-md'
+            : 'bg-white border border-gray-200 text-gray-900 rounded-bl-md shadow-[0_1px_4px_rgba(0,0,0,0.06)]'
         } ${isSending ? 'opacity-60' : 'opacity-100'} ${isFailed ? 'ring-2 ring-red-300' : ''}`}>
           {hasText && (
             <p className="text-[13px] leading-relaxed whitespace-pre-line">{message.text}</p>
@@ -178,7 +178,7 @@ function ChatMessage({ message, leftAvatar, rightAvatar }) {
             </div>
           )}
 
-          <p className={`text-[10px] mt-1.5 flex items-center gap-2 ${isDoctor ? 'text-teal-100' : 'text-gray-400'}`}>
+          <p className={`text-[10px] mt-1.5 flex items-center gap-2 ${isDoctor ? 'text-teal-100' : 'text-gray-500'}`}>
             <span>{message.time}</span>
             {isSending && <span className="italic">Sending...</span>}
             {isFailed && <span className="text-red-300 font-medium">Failed</span>}

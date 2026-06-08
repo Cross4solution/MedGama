@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { doctorAPI, appointmentAPI } from '../../lib/api';
 
 const APPOINTMENT_TYPES = [
-  { id: 'in_person', icon: MapPin, color: 'bg-blue-50 text-blue-600 border-blue-200' },
-  { id: 'video', icon: Video, color: 'bg-teal-50 text-teal-600 border-teal-200' },
+  { id: 'in_person', icon: MapPin, color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
+  { id: 'video', icon: Video, color: 'bg-blue-50 text-[#2D8CFF] border-blue-200' },
   { id: 'phone', icon: Phone, color: 'bg-violet-50 text-violet-600 border-violet-200' },
 ];
 
@@ -53,7 +53,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
 
   const TYPE_LABELS = {
     in_person: { en: 'In-Person Visit', tr: 'Yüz Yüze Muayene' },
-    video: { en: 'Video Consultation', tr: 'Online Görüşme' },
+    video: { en: 'Telehealth', tr: 'Görüntülü Görüşme' },
     phone: { en: 'Phone Consultation', tr: 'Telefon Görüşmesi' },
   };
 
@@ -75,7 +75,28 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
   const dateStr = selectedDate
     ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
     : null;
-  const daySlots = dateStr ? (availability[dateStr] || []) : [];
+  
+  // Filter out past time slots if selected date is today
+  const daySlots = useMemo(() => {
+    if (!dateStr) return [];
+    const slots = availability[dateStr] || [];
+    
+    // Check if selected date is today
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    
+    if (dateStr !== todayStr) return slots;
+    
+    // Filter out past slots for today
+    const now = new Date();
+    return slots.filter(slot => {
+      const timeStr = slot.start_time?.slice(0, 5) || slot.start_time;
+      if (!timeStr) return true;
+      const [hh, mm] = timeStr.split(':').map(Number);
+      const slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm);
+      return slotTime.getTime() >= now.getTime();
+    });
+  }, [dateStr, availability]);
 
   const isPast = (day) => {
     const d = new Date(calYear, calMonth, day);
@@ -155,7 +176,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
           <div>
             <h2 className="text-lg font-bold text-gray-900">
               {initialType === 'video'
-                ? (isTr ? 'Online Görüşme Randevusu' : 'Online Consultation Booking')
+                ? (isTr ? 'Görüntülü Görüşme Randevusu' : 'Telehealth Appointment')
                 : (isTr ? 'Randevu Al' : 'Book Appointment')}
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">{doctorName}</p>

@@ -23,15 +23,19 @@ class User extends Authenticatable
     protected $keyType = 'string';
     public $incrementing = false;
 
+    // Mass-assignment koruması: is_crm_active ve crm_expires_at fillable'dan
+    // ÇIKARILDI — bu CRM gating alanları sadece servis/admin/seeder katmanında
+    // forceFill ile setlenmeli (kullanıcı updateProfile ile abonelik kazanamaz).
     protected $fillable = [
         'email', 'password', 'fullname', 'avatar', 'profile_image', 'role_id', 'user_level', 'mobile',
         'mobile_verified', 'email_verified', 'email_verified_at', 'email_verification_code',
         'password_reset_code', 'password_reset_expires_at',
         'city_id', 'country_id', 'country', 'preferred_language',
         'date_of_birth', 'gender', 'is_verified', 'verification_status', 'admin_verification_note',
-        'last_login', 'clinic_id', 'hospital_id',
+        'last_login', 'clinic_id', 'hospital_id', 'is_active',
         'medical_history', 'notification_preferences', 'clinic_name',
-        'is_crm_active', 'crm_expires_at', 'added_by_clinic',
+        'added_by_clinic',
+        'guardian_email', 'guardian_consent_at',
     ];
 
     protected $hidden = [
@@ -48,6 +52,7 @@ class User extends Authenticatable
             'is_verified'              => 'boolean',
             'is_active'                => 'boolean',
             'date_of_birth'            => 'date',
+            'guardian_consent_at'      => 'datetime',
             'last_login'               => 'datetime',
             'medical_history'          => 'encrypted',
             'notification_preferences' => 'encrypted:array',
@@ -135,6 +140,14 @@ class User extends Authenticatable
     public function clinic()
     {
         return $this->belongsTo(Clinic::class);
+    }
+
+    /**
+     * Sales CRM leads assigned to this user (salesperson).
+     */
+    public function assignedLeads()
+    {
+        return $this->hasMany(Lead::class, 'assigned_to');
     }
 
     public function hospital()
@@ -298,6 +311,11 @@ class User extends Authenticatable
         return $this->role_id === 'clinicOwner';
     }
 
+    public function isSalesperson(): bool
+    {
+        return $this->role_id === 'salesperson';
+    }
+
     public function isHospital(): bool
     {
         return $this->role_id === 'hospital';
@@ -344,6 +362,13 @@ class User extends Authenticatable
         if ($this->isHospital()) {
             return (bool) $this->is_crm_active
                 && (!$this->crm_expires_at || now()->lessThanOrEqualTo($this->crm_expires_at));
+        }
+
+        // Salesperson inherits their clinic's CRM subscription
+        if ($this->isSalesperson()) {
+            return $this->clinic_id && $this->clinic
+                && (bool) $this->clinic->is_crm_active
+                && (!$this->clinic->crm_expires_at || now()->lessThanOrEqualTo($this->clinic->crm_expires_at));
         }
 
         return false;

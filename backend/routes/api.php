@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CalendarSlotController;
 use App\Http\Controllers\Api\PatientRecordController;
 use App\Http\Controllers\Api\DigitalAnamnesisController;
 use App\Http\Controllers\Api\CrmController;
+use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\ExaminationController;
 use App\Http\Controllers\Api\BillingController;
@@ -33,6 +34,8 @@ use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\ClinicVerificationController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\DoctorFaqController;
+use App\Http\Controllers\Api\AccreditationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +53,11 @@ Route::get('/health', function () {
 // ║  Check: GET /api/system/init-db-status                          ║
 // ╚══════════════════════════════════════════════════════════════════╝
 Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Request $request) {
+    // Production guard — disabled unless explicitly opted-in via env
+    if (app()->environment('production') && !config('app.allow_destructive_init')) {
+        abort(404);
+    }
+
     if ($request->query('key') !== 'MedaGama2026SecretInit') {
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
@@ -63,47 +71,54 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
         \Illuminate\Support\Facades\DB::statement('SELECT 1');
         $dbHost = config('database.connections.' . config('database.default') . '.host');
     } catch (\Throwable $e) {
-        return response()->json(['status' => 'error', 'step' => 'db_connection', 'message' => $e->getMessage()], 500);
+        \Illuminate\Support\Facades\Log::error('init-db db_connection failed', ['exception' => $e]);
+        return response()->json(['error' => 'Operation failed'], 500);
     }
 
     $isFresh = $request->query('fresh') === '1';
-    $result  = ['db_host' => $dbHost, 'mode' => $isFresh ? 'migrate:fresh --seed' : 'migrate + seed'];
+    $result  = ['db_host' => $dbHost, 'mode' => $isFresh ? 'db:wipe+migrate+seed' : 'migrate+seed'];
 
-    // ── Step 2: Migrate ──
-    try {
-        if ($isFresh) {
-            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
-        } else {
-            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+    // ── Step 2: Wipe Database (if fresh) ──
+    if ($isFresh) {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('db:wipe', ['--force' => true]);
+            $result['wipe_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('init-db db_wipe failed', ['exception' => $e]);
+            return response()->json(['error' => 'Operation failed'], 500);
         }
-        $result['migrate_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
-    } catch (\Throwable $e) {
-        return response()->json([
-            'status'  => 'error',
-            'step'    => 'migrate',
-            'message' => $e->getMessage(),
-            'trace'   => substr($e->getTraceAsString(), 0, 3000),
-        ] + $result, 500);
     }
 
-    // ── Step 3: Seed ──
+    // ── Step 3: Migrate ──
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $result['migrate_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\Log::error('init-db migrate failed', ['exception' => $e]);
+        return response()->json(['error' => 'Operation failed'], 500);
+    }
+
+    // ── Step 4: Seed ──
     try {
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         $result['seed_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
     } catch (\Throwable $e) {
-        $result['seed_error'] = $e->getMessage();
+        \Illuminate\Support\Facades\Log::error('init-db seed failed', ['exception' => $e]);
+        $result['seed_error'] = 'Operation failed';
     }
 
-    // ── Step 4: Verify counts ──
+    // ── Step 5: Verify counts ──
     try {
         $result['counts'] = [
             'users'            => \Illuminate\Support\Facades\DB::table('users')->count(),
             'med_stream_posts' => \Illuminate\Support\Facades\DB::table('med_stream_posts')->count(),
             'clinics'          => \Illuminate\Support\Facades\DB::table('clinics')->count(),
             'hospitals'        => \Illuminate\Support\Facades\DB::table('hospitals')->count(),
+            'accreditations'   => \Illuminate\Support\Facades\DB::table('accreditations')->count(),
         ];
     } catch (\Throwable $e) {
-        $result['counts_error'] = $e->getMessage();
+        \Illuminate\Support\Facades\Log::error('init-db counts failed', ['exception' => $e]);
+        $result['counts_error'] = 'Operation failed';
     }
 
     return response()->json(['status' => 'success'] + $result);
@@ -111,6 +126,10 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
 
 // ── Status check: tail the background migration log ──
 Route::get('/system/init-db-status', function (\Illuminate\Http\Request $request) {
+    if (app()->environment('production') && !config('app.allow_destructive_init')) {
+        abort(404);
+    }
+
     if ($request->query('key') !== 'MedaGama2026SecretInit') {
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
@@ -184,7 +203,7 @@ Route::get('/search/live', [SearchController::class, 'live']);
 | Catalog Routes (Public — read only)
 |--------------------------------------------------------------------------
 */
-Route::prefix('catalog')->middleware('cache.headers:public')->group(function () {
+Route::prefix('catalog')->middleware('cache.headers:public;max_age=60')->group(function () {
     Route::get('/search', [CatalogController::class, 'search']);
     Route::get('/popular', [CatalogController::class, 'popular']);
     Route::get('/specialties', [CatalogController::class, 'specialties']);
@@ -243,8 +262,8 @@ Route::prefix('social')->middleware('auth:sanctum')->group(function () {
 | Clinic Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/clinics', [ClinicController::class, 'index'])->middleware('cache.headers:public');
-Route::get('/clinics/{codename}', [ClinicController::class, 'show'])->middleware('cache.headers:public');
+Route::get('/clinics', [ClinicController::class, 'index'])->middleware('cache.headers:public;max_age=60');
+Route::get('/clinics/{codename}', [ClinicController::class, 'show'])->middleware('cache.headers:public;max_age=60');
 
 // Clinic reviews & staff — public read
 Route::get('/clinics/{id}/reviews', [ClinicController::class, 'reviews']);
@@ -267,22 +286,32 @@ Route::middleware('auth:sanctum')->group(function () {
     // Clinic Verification
     Route::get('/clinic-verification/status', [ClinicVerificationController::class, 'status']);
     Route::post('/clinic-verification/submit', [ClinicVerificationController::class, 'submit']);
+
+    // Clinic Accreditations
+    Route::get('/clinics/{clinicId}/accreditations', [AccreditationController::class, 'clinicAccreditations']);
+    Route::post('/clinics/{clinicId}/accreditations', [AccreditationController::class, 'attachAccreditations']);
+    Route::delete('/clinics/{clinicId}/accreditations/{accreditationId}', [AccreditationController::class, 'detachAccreditation']);
 });
+
+// Public: List all available accreditations (for dropdown)
+Route::get('/accreditations', [AccreditationController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------
 | Doctor Routes (Public)
 |--------------------------------------------------------------------------
 */
-Route::get('/doctors', [DoctorController::class, 'index'])->middleware('cache.headers:public');
-Route::get('/doctors/suggestions', [DoctorController::class, 'suggestions'])->middleware('cache.headers:public');
-Route::get('/doctors/{id}', [DoctorController::class, 'show'])->middleware('cache.headers:public');
-Route::get('/doctors/{id}/reviews', [DoctorController::class, 'reviews'])->middleware('cache.headers:public');
-Route::get('/doctors/{id}/availability', [DoctorController::class, 'availability'])->middleware('cache.headers:public');
+Route::get('/doctors', [DoctorController::class, 'index'])->middleware('cache.headers:public;max_age=60');
+Route::get('/doctors/suggestions', [DoctorController::class, 'suggestions'])->middleware('cache.headers:public;max_age=60');
+Route::get('/doctors/{id}', [DoctorController::class, 'show'])->middleware('cache.headers:public;max_age=60');
+Route::get('/doctors/{id}/reviews', [DoctorController::class, 'reviews'])->middleware('cache.headers:public;max_age=60');
+Route::get('/doctors/{id}/availability', [DoctorController::class, 'availability'])->middleware('cache.headers:public;max_age=60');
+Route::get('/doctors/{id}/faqs', [DoctorFaqController::class, 'index'])->middleware('cache.headers:public;max_age=60');
 Route::post('/doctors/{id}/reviews', [DoctorController::class, 'submitReview'])->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/doctors/my-reviews', [DoctorController::class, 'myReviews']);
     Route::get('/doctors/reviewable-appointments', [DoctorController::class, 'reviewableAppointments']);
+    Route::get('/clinics/reviewable-appointments', [ClinicController::class, 'reviewableAppointments']);
     Route::put('/doctors/reviews/{reviewId}/respond', [DoctorController::class, 'respondToReview']);
 });
 
@@ -304,6 +333,13 @@ Route::prefix('doctor-profile')->middleware('auth:sanctum')->group(function () {
     // Verification documents (Doc §8.3)
     Route::get('/verification', [DoctorProfileController::class, 'verificationRequests']);
     Route::post('/verification', [DoctorProfileController::class, 'submitVerification']);
+
+    // Doctor FAQs (CRM CRUD)
+    Route::get('/faqs', [DoctorFaqController::class, 'myFaqs']);
+    Route::post('/faqs', [DoctorFaqController::class, 'store']);
+    Route::put('/faqs/reorder', [DoctorFaqController::class, 'reorder']);
+    Route::put('/faqs/{id}', [DoctorFaqController::class, 'update']);
+    Route::delete('/faqs/{id}', [DoctorFaqController::class, 'destroy']);
 });
 
 /*
@@ -314,6 +350,8 @@ Route::prefix('doctor-profile')->middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/appointments/calendar-events', [AppointmentController::class, 'calendarEvents']);
     Route::patch('/appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->middleware('verified.doctor');
+    // Onaylı Review Sistemi — doktor/klinik manuel "Gelmedi" işaretleme
+    Route::put('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow']);
     Route::get('/appointments', [AppointmentController::class, 'index']);
     Route::get('/appointments/{appointment}', [AppointmentController::class, 'show']);
     Route::post('/appointments', [AppointmentController::class, 'store'])->middleware('verified.doctor');
@@ -414,9 +452,45 @@ Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospi
 
 /*
 |--------------------------------------------------------------------------
+| CRM — Sales Leads Pipeline (doctor/clinicOwner/hospital/salesperson)
+|--------------------------------------------------------------------------
+| Salesperson sees only assigned leads (enforced in controller). Manager
+| roles see all clinic leads. Salesperson management is manager-only.
+*/
+Route::prefix('crm/leads')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospital,superAdmin,saasAdmin,salesperson', 'crm.access'])->group(function () {
+    Route::get('/', [LeadController::class, 'index']);
+    Route::post('/', [LeadController::class, 'store']);
+    Route::get('/stats', [LeadController::class, 'stats']);
+    Route::get('/{id}', [LeadController::class, 'show']);
+    Route::put('/{id}', [LeadController::class, 'update']);
+    Route::put('/{id}/stage', [LeadController::class, 'updateStage']);
+    Route::put('/{id}/assign', [LeadController::class, 'assign']);
+    Route::post('/{id}/activities', [LeadController::class, 'addActivity']);
+    Route::delete('/{id}', [LeadController::class, 'destroy']);
+});
+
+Route::prefix('crm/salespeople')->middleware(['auth:sanctum', 'role:clinicOwner,hospital,superAdmin,saasAdmin', 'crm.access'])->group(function () {
+    Route::get('/', [LeadController::class, 'listSalespeople']);
+    Route::post('/', [LeadController::class, 'createSalesperson']);
+    Route::put('/{id}/toggle', [LeadController::class, 'toggleSalesperson']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | CRM — Billing / Invoicing (Bölüm 7.5)
 |--------------------------------------------------------------------------
 */
+// ── Doctor Billing (MVP — no CRM gate, all authenticated doctors) ──────────────
+Route::prefix('doctor/billing')->middleware(['auth:sanctum', 'role:doctor'])->group(function () {
+    Route::get('/invoices', [BillingController::class, 'index']);
+    Route::post('/invoices', [BillingController::class, 'store']);
+    Route::get('/invoices/{id}', [BillingController::class, 'show']);
+    Route::put('/invoices/{id}', [BillingController::class, 'update']);
+    Route::delete('/invoices/{id}', [BillingController::class, 'destroy']);
+    Route::get('/stats', [BillingController::class, 'stats']);
+    Route::get('/patient-search', [BillingController::class, 'patientSearch']);
+});
+
 Route::prefix('crm/billing')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospital,superAdmin', 'crm.access'])->group(function () {
     Route::get('/invoices', [BillingController::class, 'index']);
     Route::post('/invoices', [BillingController::class, 'store']);
@@ -470,7 +544,8 @@ Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor', 'crm.access'])-
 */
 Route::prefix('medstream')->group(function () {
     // Public read (optional auth to resolve is_liked/is_bookmarked flags)
-    Route::middleware('optional.auth')->group(function () {
+    // 60sn public cache — kataloglar gibi statik/yarı statik içerik
+    Route::middleware(['optional.auth', 'cache.headers:public;max_age=60'])->group(function () {
         Route::get('/posts', [MedStreamController::class, 'posts']);
         Route::get('/posts/{post}', [MedStreamController::class, 'showPost']);
         Route::get('/posts/{post}/comments', [MedStreamController::class, 'comments']);
@@ -666,6 +741,21 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:superAdmin,saasAdmin']
     // Feature toggles (system settings)
     Route::get('/feature-toggles', [SuperAdminController::class, 'featureToggles']);
     Route::put('/feature-toggles', [SuperAdminController::class, 'updateFeatureToggle']);
+
+    // Security — breach reporting (KVKK Md. 12 / GDPR Art. 33)
+    Route::post('/security/breach-report', function (\Illuminate\Http\Request $request, \App\Services\BreachNotificationService $svc) {
+        $data = $request->validate([
+            'summary'           => 'required|string|max:1000',
+            'severity'          => 'sometimes|in:low,medium,high,critical',
+            'affected_user_ids' => 'sometimes|array',
+            'affected_user_ids.*' => 'integer',
+            'detected_at'       => 'sometimes|date',
+            'vector'            => 'sometimes|string|max:500',
+        ]);
+        $data['reporter'] = $request->user()?->email ?? 'admin';
+        $payload = $svc->notifyBreach($data);
+        return response()->json(['ok' => true, 'incident' => $payload], 201);
+    });
 
     // Audit logs
     Route::get('/audit-logs', [SuperAdminController::class, 'auditLogs']);

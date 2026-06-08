@@ -20,6 +20,9 @@ export function getRedirectForRole(roleId) {
     case 'hospital':
       // Hospital is a management-only role — land directly in CRM panel
       return '/crm';
+    case 'salesperson':
+      // Salesperson is a CRM-only role — land directly on their leads pipeline
+      return '/crm/leads';
     case 'clinicOwner':
     case 'clinic':
     case 'doctor':

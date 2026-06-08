@@ -1,5 +1,9 @@
 <?php
 
+// TODO: Migration timestamp collision with 2026_03_14_160000_add_examination_fields_and_icd10_table.php.
+// Not renaming because both migrations are already in git history / deployed (migrations table records).
+// Renaming would re-run them on existing databases. Future migrations: ensure unique HHMMSS prefixes.
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 

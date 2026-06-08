@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getCountryNames } from '../data/cityLoader';
-import countryCodes from '../data/countryCodes';
 import TimelineFilterSidebar from 'components/timeline/TimelineFilterSidebar';
 import TimelineControls from 'components/timeline/TimelineControls';
 import ActiveFilterChips from 'components/timeline/ActiveFilterChips';
@@ -22,14 +21,19 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
   // API'den gelen postlar
   const [apiPosts, setApiPosts] = useState([]);
   const [apiLoaded, setApiLoaded] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
     setApiLoaded(false);
+    setIsRefreshing(true);
     const params = { per_page: 50, sort };
     if (specialtyFilter) params.specialization = specialtyFilter;
     if (textQuery)       params.search = textQuery;
     if (countryName)     params.country = countryName;
     medStreamAPI.posts(params).then((res) => {
+      if (controller.signal.aborted) return;
+      console.log('[ExploreTimeline] API response:', res);
       const list = res?.data || [];
       if (list.length) {
         const apiIds = list.map(p => p.id);
@@ -79,10 +83,19 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
           };
         }));
       } else {
+        console.warn('[ExploreTimeline] API returned empty data array');
         setApiPosts([]);
       }
       setApiLoaded(true);
-    }).catch(() => setApiLoaded(true));
+      setIsRefreshing(false);
+    }).catch((err) => {
+      if (controller.signal.aborted) return;
+      console.error('[ExploreTimeline] API error:', err, err?.status, err?.message);
+      setApiPosts([]);
+      setApiLoaded(true);
+      setIsRefreshing(false);
+    });
+    return () => controller.abort();
   }, [refreshKey, sort, textQuery, specialtyFilter, countryName]);
 
   // Kaynak data — mock fallback
@@ -176,7 +189,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
 
   const hasMore = paged.length < filtered.length;
 
-  return { items: paged, hasMore, total: filtered.length };
+  return { items: paged, hasMore, total: filtered.length, apiLoaded };
 }
 
 // Card ve Skeleton bileşenleri ayrı dosyalara taşındı
@@ -439,7 +452,7 @@ export default function ExploreTimeline() {
 
   // Removed: EN-only Procedure/Symptom state and helpers (panel dropped)
 
-  const { items, hasMore, total } = useExploreFeed({
+  const { items, hasMore, total, apiLoaded } = useExploreFeed({
     mode: user ? 'user' : 'guest',
     countryName,
     specialtyFilter: specialty,
@@ -496,12 +509,7 @@ export default function ExploreTimeline() {
     setPage(1);
   }, [query, specialty, countryName, sort, tab]);
 
-  // Girişliyse, AuthContext.country (örn. 'TR') değerine göre ülke adını otomatik ön seç
-  useEffect(() => {
-    if (!country || countryName) return;
-    const entry = Object.entries(countryCodes).find(([, code]) => (code || '').toLowerCase() === String(country).toLowerCase());
-    if (entry) setCountryName(entry[0]);
-  }, [country, countryName]);
+  // Country auto-select disabled: MedStream opens with All countries by default
 
   // Görünüm sabit: LinkedIn benzeri tek sütun liste
 
@@ -712,24 +720,42 @@ export default function ExploreTimeline() {
                   </div>
                 </div>
               )}
-              <VirtualizedFeed
-                items={items}
-                keyExtractor={(it) => it.id}
-                gap="1rem"
-                renderItem={(it) => (
-                  <TimelineCard item={it} disabledActions={disabledActions} view={'list'} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
-                )}
-              />
-              {isLoadingMore && <div className="space-y-4 mt-4">{[1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}</div>}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
-                <p className="text-xs text-gray-400 font-medium">Showing <span className="text-gray-600 font-semibold">{items.length}</span> of <span className="text-gray-600 font-semibold">{total}</span></p>
-                {hasMore && (
-                  <>
-                    <button onClick={() => setPage(p => p + 1)} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200">Load more</button>
-                    <span ref={loadMoreRef} className="sr-only">Observer</span>
-                  </>
-                )}
-              </div>
+              {!apiLoaded ? (
+                <div className="space-y-4">
+                  {[1,2,3].map((i) => <SkeletonCard key={`init-sk-${i}`} />)}
+                </div>
+              ) : items.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                  </div>
+                  <p className="text-sm font-semibold text-gray-600 mb-1">No posts found</p>
+                  <p className="text-xs text-gray-400">Try adjusting your filters or check back later.</p>
+                </div>
+              ) : (
+                <>
+                  <VirtualizedFeed
+                    items={items}
+                    keyExtractor={(it) => it.id}
+                    gap="1rem"
+                    renderItem={(it) => (
+                      <TimelineCard item={it} disabledActions={disabledActions} view={'list'} onOpen={() => navigate(`/post/${encodeURIComponent(it.id)}`, { state: { item: it } })} />
+                    )}
+                  />
+                  {isLoadingMore && <div className="space-y-4 mt-4">{[1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}</div>}
+                  {items.length > 0 && (
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
+                      <p className="text-xs text-gray-400 font-medium">Showing <span className="text-gray-600 font-semibold">{items.length}</span> of <span className="text-gray-600 font-semibold">{total}</span></p>
+                      {hasMore && (
+                        <>
+                          <button onClick={() => setPage(p => p + 1)} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200">Load more</button>
+                          <span ref={loadMoreRef} className="sr-only">Observer</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </section>
         </div>

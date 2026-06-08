@@ -18,6 +18,12 @@ Schedule::command('appointments:send-reminders')
     ->withoutOverlapping()
     ->runInBackground();
 
+// Onaylı Review Sistemi — geçmiş confirmed randevuları otomatik tamamla
+Schedule::command('appointments:auto-complete')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping()
+    ->runInBackground();
+
 // GDPR Art. 5(1)(e) — Prune expired soft-deleted records daily at 03:00
 // User: 3 years, Appointment/DigitalAnamnesis/PatientRecord: 10 years
 Schedule::command('model:prune', [

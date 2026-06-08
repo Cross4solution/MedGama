@@ -7,6 +7,8 @@ const DEFAULT_CONSENT = {
   analytics: false,
   marketing: false,
   functional: false,
+  // KVKK Md. 9 — explicit consent for transferring personal data outside Türkiye / the EEA.
+  crossBorder: false,
 };
 
 const CookieConsentContext = createContext(null);
@@ -55,11 +57,11 @@ export function CookieConsentProvider({ children }) {
   }, []);
 
   const acceptAll = useCallback(() => {
-    saveConsent({ necessary: true, analytics: true, marketing: true, functional: true });
+    saveConsent({ necessary: true, analytics: true, marketing: true, functional: true, crossBorder: true });
   }, [saveConsent]);
 
   const declineAll = useCallback(() => {
-    saveConsent({ necessary: true, analytics: false, marketing: false, functional: false });
+    saveConsent({ necessary: true, analytics: false, marketing: false, functional: false, crossBorder: false });
   }, [saveConsent]);
 
   const acceptSelected = useCallback((selected) => {

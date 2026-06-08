@@ -82,6 +82,8 @@ export default function ReviewsTab({ clinicId, guardAction }) {
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
   const [reviewError, setReviewError] = useState(null);
+  // Onaylı Review Sistemi — bu klinik için yorum yapılabilecek randevu
+  const [reviewableAppointment, setReviewableAppointment] = useState(null);
 
   // Load stats
   useEffect(() => {
@@ -93,6 +95,19 @@ export default function ReviewsTab({ clinicId, guardAction }) {
         review_count: data?.review_count || 0,
         can_review: !!data?.can_review,
       });
+    }).catch(() => {});
+  }, [clinicId]);
+
+  // Onaylı Review — yorum yapılabilir randevuları çek ve bu klinik için olanı bul
+  useEffect(() => {
+    if (!clinicId) return;
+    clinicAPI.reviewableAppointments().then(r => {
+      const list = r?.data?.data || r?.data || [];
+      const match = Array.isArray(list) ? list.find(a => a.clinic_id === clinicId) : null;
+      if (match) {
+        setReviewableAppointment(match);
+        setNewTreatmentType(match.treatment_type || match.appointment_type || '');
+      }
     }).catch(() => {});
   }, [clinicId]);
 
@@ -116,7 +131,17 @@ export default function ReviewsTab({ clinicId, guardAction }) {
     if (newRating < 1 || newComment.trim().length < 10) return;
     setReviewSubmitting(true);
     setReviewError(null);
-    clinicAPI.submitReview(clinicId, { rating: newRating, comment: newComment, treatment_type: newTreatmentType || undefined })
+    if (!reviewableAppointment?.appointment_id) {
+      setReviewError(t('clinicDetail.reviewNeedAppointment', 'Yorum yapmak için tamamlanmış randevu gerekli.'));
+      setReviewSubmitting(false);
+      return;
+    }
+    clinicAPI.submitReview(clinicId, {
+      rating: newRating,
+      comment: newComment,
+      treatment_type: newTreatmentType || reviewableAppointment.treatment_type || undefined,
+      appointment_id: reviewableAppointment.appointment_id,
+    })
       .then(() => {
         setReviewSuccess(true);
         setNewRating(0);
@@ -183,7 +208,8 @@ export default function ReviewsTab({ clinicId, guardAction }) {
           <StarRating rating={newRating} size="w-5 h-5" interactive onChange={setNewRating} />
           <input value={newTreatmentType} onChange={e => setNewTreatmentType(e.target.value)}
             placeholder={t('clinicDetail.treatmentTypePlaceholder', 'Treatment type (e.g. Dental Cleaning)')}
-            className="w-full mt-2 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-200 focus:border-teal-400 outline-none"
+            readOnly={!!reviewableAppointment?.treatment_type}
+            className={`w-full mt-2 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-200 focus:border-teal-400 outline-none ${reviewableAppointment?.treatment_type ? 'bg-gray-100 cursor-not-allowed' : ''}`}
           />
           <textarea value={newComment} onChange={e => setNewComment(e.target.value)}
             placeholder={t('clinicDetail.reviewPlaceholder', 'Share your experience (min. 10 characters)...')} rows={3}

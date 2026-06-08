@@ -334,13 +334,45 @@ const RegisterForm = ({
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1 text-left">
-              {t('auth.dateOfBirth')}
+              {t('auth.dateOfBirth')} {(fd.role ?? 'patient') === 'patient' && <span className="text-red-500">*</span>}
             </label>
             <DateOfBirthPicker
               value={fd.birthDate ?? ''}
               onChange={(iso) => handleInputChange({ target: { name: 'birthDate', value: iso } })}
             />
+            {errors.birthDate && <p className="text-red-500 text-xs mt-1 text-left">{errors.birthDate}</p>}
           </div>
+          {/* Parental consent — KVKK / GDPR Art. 8 — required when patient is under 18 */}
+          {(() => {
+            if ((fd.role ?? 'patient') !== 'patient' || !fd.birthDate) return null;
+            const dob = new Date(fd.birthDate);
+            if (Number.isNaN(dob.getTime())) return null;
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+            if (age >= 18) return null;
+            return (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3">
+                <p className="text-xs text-amber-800 leading-relaxed mb-2">
+                  18 yaş altı kayıt için veli onayı gereklidir. Lütfen veli e-posta adresini giriniz.
+                </p>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="email"
+                    name="guardianEmail"
+                    value={fd.guardianEmail ?? ''}
+                    onChange={handleInputChange}
+                    className={`w-full h-10 pl-9 pr-3 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-colors ${errors.guardianEmail ? 'border-red-500' : 'border-amber-300'}`}
+                    placeholder="veli@example.com"
+                    required
+                  />
+                </div>
+                {errors.guardianEmail && <p className="text-red-500 text-xs mt-1 text-left">{errors.guardianEmail}</p>}
+              </div>
+            );
+          })()}
           {(fd.role ?? 'patient') === 'patient' && (
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1 text-left">

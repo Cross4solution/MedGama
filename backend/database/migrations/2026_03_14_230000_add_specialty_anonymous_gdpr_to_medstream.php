@@ -28,17 +28,19 @@ return new class extends Migration
         });
 
         // ── 2. Doctor Follows (feed algoritması) ──
-        Schema::create('doctor_follows', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('follower_id')->index();
-            $table->uuid('following_id')->index();
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
+        if (!Schema::hasTable('doctor_follows')) {
+            Schema::create('doctor_follows', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->uuid('follower_id')->index();
+                $table->uuid('following_id')->index();
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
 
-            $table->foreign('follower_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->foreign('following_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->unique(['follower_id', 'following_id']);
-        });
+                $table->foreign('follower_id')->references('id')->on('users')->cascadeOnDelete();
+                $table->foreign('following_id')->references('id')->on('users')->cascadeOnDelete();
+                $table->unique(['follower_id', 'following_id']);
+            });
+        }
     }
 
     public function down(): void

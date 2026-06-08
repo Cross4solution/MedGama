@@ -13,6 +13,7 @@ import { NotificationsProvider } from './context/NotificationsContext';
 import { CookieConsentProvider } from './context/CookieConsentContext';
 import scrollConfig from './config/scroll';
 import ScrollToTopButton from './components/common/ScrollToTopButton';
+import PrivateRoute from './components/auth/PrivateRoute';
 const OnboardingWizard = React.lazy(() => import('./pages/DoctorOnboarding.jsx'));
 
 // Lazy-loaded pages for code splitting
@@ -44,7 +45,9 @@ const DataPrivacyRightsPage = React.lazy(() => import('./pages/DataPrivacyRights
 const SearchResults = React.lazy(() => import('./pages/SearchResults'));
 const DashboardRedirect = React.lazy(() => import('./pages/DashboardRedirect'));
 const DoctorDashboard = React.lazy(() => import('./pages/DoctorDashboard'));
+const DoctorBilling = React.lazy(() => import('./pages/DoctorBilling'));
 const PatientDashboard = React.lazy(() => import('./pages/PatientDashboard'));
+const PatientAppointments = React.lazy(() => import('./pages/PatientAppointments'));
 const MedicalArchive = React.lazy(() => import('./pages/MedicalArchive'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 const ServerErrorPage = React.lazy(() => import('./pages/ServerErrorPage'));
@@ -81,6 +84,8 @@ const CRMPrescriptions = React.lazy(() => import('./pages/crm/CRMPrescriptions')
 const CRMMessages = React.lazy(() => import('./pages/crm/CRMMessages'));
 const CRMDocuments = React.lazy(() => import('./pages/crm/CRMDocuments'));
 const CRMBranches = React.lazy(() => import('./pages/crm/CRMBranches'));
+const CRMLeads = React.lazy(() => import('./pages/crm/CRMLeads'));
+const CRMSalespeople = React.lazy(() => import('./pages/crm/CRMSalespeople'));
 
 // Admin Pages
 const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
@@ -305,6 +310,10 @@ function AppContent() {
   const showFooter = footerOnlyOn.includes(location.pathname);
   
   const isDoctorChat = String(location.pathname || '').startsWith('/doctor-chat');
+  const CRM_ROLES = ['doctor', 'clinic', 'clinicOwner', 'hospital', 'salesperson'];
+  const crm = (el) => <PrivateRoute roles={CRM_ROLES}>{el}</PrivateRoute>;
+  // Salesperson management is restricted to clinic owners / hospitals (not salespeople themselves)
+  const crmManager = (el) => <PrivateRoute roles={['clinic', 'clinicOwner', 'hospital']}>{el}</PrivateRoute>;
   return (
     <div className={hasSidebar ? "lg:pl-[12rem]" : ""}>
       {/* Global Header - auth sayfalarında gizle */}
@@ -321,20 +330,21 @@ function AppContent() {
         <Route path="/home" element={<HomeV2 />} />
         <Route path="/home-v2" element={<HomeV2 />} />
         {/* Canonical URL: /medstream — /explore kept as backward-compat redirect */}
-        <Route path="/medstream" element={<ExploreTimeline />} />
+        <Route path="/medstream" element={<PrivateRoute><ExploreTimeline /></PrivateRoute>} />
         <Route path="/explore" element={<Navigate to="/medstream" replace />} />
-        <Route path="/saved" element={<SavedPosts />} />
-        <Route path="/saved-clinics" element={<SavedClinics />} />
+        <Route path="/saved" element={<PrivateRoute><SavedPosts /></PrivateRoute>} />
+        <Route path="/saved-clinics" element={<PrivateRoute><SavedClinics /></PrivateRoute>} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/doctors-departments" element={<DoctorsDepartments />} />
         <Route path="/clinic" element={<ClinicDetailPage />} />
         <Route path="/clinic/:id" element={<ClinicDetailPage />} />
-        <Route path="/clinic-edit" element={<ClinicProfileEdit />} />
-        <Route path="/doctor-chat" element={<DoctorChatPage />} />
-        <Route path="/telehealth" element={<TelehealthPage />} />
-        <Route path="/patient-dashboard" element={<PatientDashboard />} />
-        <Route path="/medical-archive" element={<MedicalArchive />} />
-        <Route path="/telehealth-appointment" element={<TelehealthAppointmentPage />} />
+        <Route path="/clinic-edit" element={<PrivateRoute roles={['clinic', 'clinicOwner']}><ClinicProfileEdit /></PrivateRoute>} />
+        <Route path="/doctor-chat" element={<PrivateRoute><DoctorChatPage /></PrivateRoute>} />
+        <Route path="/telehealth" element={<PrivateRoute><TelehealthPage /></PrivateRoute>} />
+        <Route path="/patient-dashboard" element={<PrivateRoute roles={['patient']}><PatientDashboard /></PrivateRoute>} />
+        <Route path="/patient/appointments" element={<PrivateRoute roles={['patient']}><PatientAppointments /></PrivateRoute>} />
+        <Route path="/medical-archive" element={<PrivateRoute roles={['patient']}><MedicalArchive /></PrivateRoute>} />
+        <Route path="/telehealth-appointment" element={<PrivateRoute roles={['patient', 'doctor']}><TelehealthAppointmentPage /></PrivateRoute>} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/cookie-policy" element={<CookiePolicyPage />} />
@@ -345,8 +355,8 @@ function AppContent() {
         <Route path="/auth" element={<LoginPage role="patient" />} />
         <Route path="/login" element={<LoginPage role="patient" />} />
         <Route path="/register" element={<LoginPage role="patient" />} />
-        <Route path="/dashboard" element={<DashboardRedirect />} />
-        <Route path="/onboarding" element={<OnboardingWizard />} />
+        <Route path="/dashboard" element={<PrivateRoute><DashboardRedirect /></PrivateRoute>} />
+        <Route path="/onboarding" element={<PrivateRoute><OnboardingWizard /></PrivateRoute>} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -358,46 +368,49 @@ function AppContent() {
         <Route path="/doctor-login" element={<LoginPage role="doctor" />} />
         <Route path="/clinic-login" element={<LoginPage role="clinic" />} />
         <Route path="/hospital-login" element={<LoginPage role="hospital" />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<CRMSettings standalone />} />
+        <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/settings" element={<PrivateRoute><CRMSettings standalone /></PrivateRoute>} />
         <Route path="/doctor/:id" element={<DoctorProfilePage />} />
         <Route path="/post/:id" element={<PostDetail />} />
         {/* Doctor Dashboard — MedaGama main panel (NOT CRM) */}
-        <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        <Route path="/doctor/dashboard" element={<PrivateRoute roles={['doctor']}><DoctorDashboard /></PrivateRoute>} />
+        <Route path="/doctor/billing" element={<PrivateRoute roles={['doctor']}><DoctorBilling /></PrivateRoute>} />
         {/* Clinic Routes */}
-        <Route path="/clinic/onboarding" element={<ClinicOnboarding />} />
-        <Route path="/clinic/dashboard" element={<ClinicDashboard />} />
-        <Route path="/clinic/team" element={<ClinicTeam />} />
+        <Route path="/clinic/onboarding" element={<PrivateRoute roles={['clinic', 'clinicOwner']}><ClinicOnboarding /></PrivateRoute>} />
+        <Route path="/clinic/dashboard" element={<PrivateRoute roles={['clinic', 'clinicOwner']}><ClinicDashboard /></PrivateRoute>} />
+        <Route path="/clinic/team" element={<PrivateRoute roles={['clinic', 'clinicOwner']}><ClinicTeam /></PrivateRoute>} />
         {/* CRM Routes */}
-        <Route path="/crm" element={<CRMLayout><CRMDashboard /></CRMLayout>} />
-        <Route path="/crm/appointments" element={<CRMLayout><CRMAppointments /></CRMLayout>} />
-        <Route path="/crm/patients" element={<CRMLayout><CRMPatients /></CRMLayout>} />
-        <Route path="/crm/patient-360" element={<CRMLayout><CRMPatient360 /></CRMLayout>} />
-        <Route path="/crm/reports" element={<CRMLayout><CRMReports /></CRMLayout>} />
-        <Route path="/crm/settings" element={<CRMLayout><CRMSettings /></CRMLayout>} />
-        <Route path="/crm/integrations" element={<CRMLayout><CRMIntegrations /></CRMLayout>} />
-        <Route path="/crm/billing" element={<CRMLayout><CRMBilling /></CRMLayout>} />
-        <Route path="/crm/examination" element={<CRMLayout><CRMExamination /></CRMLayout>} />
-        <Route path="/crm/medstream" element={<CRMLayout><CRMMedStream /></CRMLayout>} />
-        <Route path="/crm/telehealth" element={<CRMLayout><CRMTelehealth /></CRMLayout>} />
-        <Route path="/crm/calendar" element={<CRMLayout><CRMSmartCalendar /></CRMLayout>} />
-        <Route path="/crm/revenue" element={<CRMLayout><CRMRevenue /></CRMLayout>} />
-        <Route path="/crm/support" element={<CRMLayout><CRMSupport /></CRMLayout>} />
-        <Route path="/crm/faq" element={<CRMLayout><CRMFaq /></CRMLayout>} />
-        <Route path="/crm/staff" element={<CRMLayout><CRMStaff /></CRMLayout>} />
-        <Route path="/crm/clinic-manager" element={<CRMLayout><CRMClinicManager /></CRMLayout>} />
-        <Route path="/crm/reviews" element={<CRMLayout><CRMReviews /></CRMLayout>} />
-        <Route path="/crm/contact-inbox" element={<CRMLayout><CRMContactInbox /></CRMLayout>} />
-        <Route path="/crm/prescriptions" element={<CRMLayout><CRMPrescriptions /></CRMLayout>} />
-        <Route path="/crm/messages" element={<CRMLayout><CRMMessages /></CRMLayout>} />
-        <Route path="/crm/documents" element={<CRMLayout><CRMDocuments /></CRMLayout>} />
-        <Route path="/crm/branches" element={<CRMLayout><CRMBranches /></CRMLayout>} />
+        <Route path="/crm" element={crm(<CRMLayout><CRMDashboard /></CRMLayout>)} />
+        <Route path="/crm/appointments" element={crm(<CRMLayout><CRMAppointments /></CRMLayout>)} />
+        <Route path="/crm/patients" element={crm(<CRMLayout><CRMPatients /></CRMLayout>)} />
+        <Route path="/crm/patient-360" element={crm(<CRMLayout><CRMPatient360 /></CRMLayout>)} />
+        <Route path="/crm/reports" element={crm(<CRMLayout><CRMReports /></CRMLayout>)} />
+        <Route path="/crm/settings" element={crm(<CRMLayout><CRMSettings /></CRMLayout>)} />
+        <Route path="/crm/integrations" element={crm(<CRMLayout><CRMIntegrations /></CRMLayout>)} />
+        <Route path="/crm/billing" element={crm(<CRMLayout><CRMBilling /></CRMLayout>)} />
+        <Route path="/crm/examination" element={crm(<CRMLayout><CRMExamination /></CRMLayout>)} />
+        <Route path="/crm/medstream" element={crm(<CRMLayout><CRMMedStream /></CRMLayout>)} />
+        <Route path="/crm/telehealth" element={crm(<CRMLayout><CRMTelehealth /></CRMLayout>)} />
+        <Route path="/crm/calendar" element={crm(<CRMLayout><CRMSmartCalendar /></CRMLayout>)} />
+        <Route path="/crm/revenue" element={crm(<CRMLayout><CRMRevenue /></CRMLayout>)} />
+        <Route path="/crm/support" element={crm(<CRMLayout><CRMSupport /></CRMLayout>)} />
+        <Route path="/crm/faq" element={crm(<CRMLayout><CRMFaq /></CRMLayout>)} />
+        <Route path="/crm/staff" element={crm(<CRMLayout><CRMStaff /></CRMLayout>)} />
+        <Route path="/crm/clinic-manager" element={crm(<CRMLayout><CRMClinicManager /></CRMLayout>)} />
+        <Route path="/crm/reviews" element={crm(<CRMLayout><CRMReviews /></CRMLayout>)} />
+        <Route path="/crm/contact-inbox" element={crm(<CRMLayout><CRMContactInbox /></CRMLayout>)} />
+        <Route path="/crm/prescriptions" element={crm(<CRMLayout><CRMPrescriptions /></CRMLayout>)} />
+        <Route path="/crm/messages" element={crm(<CRMLayout><CRMMessages /></CRMLayout>)} />
+        <Route path="/crm/documents" element={crm(<CRMLayout><CRMDocuments /></CRMLayout>)} />
+        <Route path="/crm/branches" element={crm(<CRMLayout><CRMBranches /></CRMLayout>)} />
+        <Route path="/crm/leads" element={crm(<CRMLayout><CRMLeads /></CRMLayout>)} />
+        <Route path="/crm/salespeople" element={crmManager(<CRMLayout><CRMSalespeople /></CRMLayout>)} />
         <Route path="/browse/treatments" element={<BrowseTreatments />} />
         <Route path="/browse/clinics" element={<BrowseClinics />} />
-        <Route path="/crm/help" element={<CRMLayout><CRMSettings /></CRMLayout>} />
+        <Route path="/crm/help" element={crm(<CRMLayout><CRMSettings /></CRMLayout>)} />
         {/* Admin Routes — nested under AdminLayout (Outlet pattern, zero remount) */}
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/admin" element={<PrivateRoute roles={['superAdmin', 'saasAdmin']}><AdminLayout /></PrivateRoute>}>
           <Route index element={<AdminDashboard />} />
           <Route path="verification" element={<AdminVerification />} />
           <Route path="verification/review" element={<AdminVerificationReview />} />
@@ -448,6 +461,12 @@ function OnboardingGate() {
       } else {
         navigate('/onboarding', { replace: true });
       }
+    }
+
+    // Reverse guard: if onboarding IS completed, never show onboarding page again
+    if ((isDoctor || isClinicOwner) && user.onboarding_completed === true && isOnboardingPage) {
+      const dash = isClinicOwner ? '/clinic/dashboard' : '/crm';
+      navigate(dash, { replace: true });
     }
   }, [user, location.pathname, navigate]);
 

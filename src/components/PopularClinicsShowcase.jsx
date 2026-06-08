@@ -17,28 +17,28 @@ function ClinicCard({ clinic, onClick, onView }) {
       tabIndex={0}
       onClick={() => onClick(clinic)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(clinic); } }}
-      className="group rounded-2xl border border-gray-200 bg-white overflow-hidden hover:border-gray-300 hover:shadow-md transition-all duration-200 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-400/40"
+      className="group rounded-md border border-[#e5edf5] bg-white overflow-hidden shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px] hover:shadow-[rgba(50,50,93,0.12)_0px_16px_32px_0px] hover:border-[#d8d6df] transition-all duration-200 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0d9488]/40"
     >
       <div className="relative h-40 overflow-hidden">
         <img src={clinic.image} alt={clinic.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" loading="lazy" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-        <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-white/95 backdrop-blur-sm rounded-lg px-2 py-1 shadow-sm">
+        <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-white/95 backdrop-blur-sm rounded-[4px] px-2 py-1 shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px]">
           <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-          <span className="text-xs font-bold text-gray-900">{formatRating(clinic.rating)}</span>
+          <span className="text-xs font-semibold text-[#061b31]">{formatRating(clinic.rating)}</span>
         </div>
       </div>
       <div className="flex-1 flex flex-col p-3.5">
-        <h3 className="text-sm font-bold text-gray-900 line-clamp-1">{clinic.name}</h3>
-        <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
-          <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+        <h3 className="text-sm font-normal tracking-[-0.025em] text-[#061b31] line-clamp-1">{clinic.name}</h3>
+        <div className="flex items-center gap-1 mt-1 text-xs text-[#50617a]">
+          <MapPin className="w-3 h-3 text-[#64748d] flex-shrink-0" />
           <span className="truncate">{clinic.city} · {clinic.dept}</span>
         </div>
         <div className="mt-auto pt-3 flex items-center justify-between">
-          <span className="text-[11px] text-gray-400 font-medium">{clinic.reviews} {t('home.reviews')}</span>
+          <span className="text-[11px] text-[#64748d] font-normal">{clinic.reviews} {t('home.reviews')}</span>
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onView(clinic); }}
-            className="px-3.5 py-1.5 bg-teal-600 text-white text-xs font-semibold rounded-lg hover:bg-teal-700 transition-colors shadow-sm"
+            className="px-3.5 py-1.5 bg-[#0d9488] text-white text-xs font-semibold rounded-[4px] hover:bg-[#0f766e] transition-colors shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px]"
           >
             {t('common.view')}
           </button>
@@ -55,9 +55,9 @@ function ScrollArrow({ direction, onClick }) {
       type="button"
       aria-label={direction === 'left' ? 'Previous' : 'Next'}
       onClick={onClick}
-      className={`hidden md:flex absolute ${direction === 'left' ? '-left-5' : '-right-5'} top-1/2 -translate-y-1/2 z-10 h-9 w-9 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all`}
+      className={`hidden md:flex absolute ${direction === 'left' ? '-left-5' : '-right-5'} top-1/2 -translate-y-1/2 z-10 h-9 w-9 items-center justify-center rounded-full bg-white border border-[#e5edf5] shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px] hover:shadow-[rgba(50,50,93,0.12)_0px_16px_32px_0px] hover:border-[#d8d6df] transition-all`}
     >
-      <Icon className="w-4 h-4 text-gray-600" />
+      <Icon className="w-4 h-4 text-[#50617a]" />
     </button>
   );
 }
@@ -104,8 +104,8 @@ export default function PopularClinicsShowcase({
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Top: Popular Treatments */}
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-gray-900">{title}</h2>
-          <Link to={viewAllHref} className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('home.viewAll')} →</Link>
+          <h2 className="text-lg font-normal tracking-[-0.025em] text-[#061b31]">{title}</h2>
+          <Link to={viewAllHref} className="text-xs font-semibold text-[#0d9488] hover:text-[#0f766e] transition-colors">{t('home.viewAll')} →</Link>
         </div>
         <div className="relative mb-10">
           <ScrollArrow direction="left" onClick={() => scrollByAmount(scrollRefTop, -1)} />
@@ -132,8 +132,8 @@ export default function PopularClinicsShowcase({
 
         {/* Bottom: Popular Clinics */}
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-gray-900">{midTitle}</h2>
-          <Link to={viewAllClinicsHref} className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('home.viewAll')} →</Link>
+          <h2 className="text-lg font-normal tracking-[-0.025em] text-[#061b31]">{midTitle}</h2>
+          <Link to={viewAllClinicsHref} className="text-xs font-semibold text-[#0d9488] hover:text-[#0f766e] transition-colors">{t('home.viewAll')} →</Link>
         </div>
         <div className="relative">
           <ScrollArrow direction="left" onClick={() => scrollByAmount(scrollRefBottom, -1)} />

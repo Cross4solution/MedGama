@@ -47,6 +47,8 @@ import {
   ShieldAlert,
   MapPin,
   Image,
+  Target,
+  Briefcase,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -66,7 +68,26 @@ import { playNotificationSound } from '../../utils/notificationSound';
 const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = false } = {}) => {
   const isClinic = role === 'clinic' || role === 'clinicOwner';
   const isHospital = role === 'hospital';
+  const isSalesperson = role === 'salesperson';
   const doctorUnverified = role === 'doctor' && !isVerified;
+
+  // ── Salesperson: minimal nav — only assigned leads ─────────────
+  if (isSalesperson) {
+    return [
+      {
+        title: t('crm.sidebar.main'),
+        items: [
+          { label: t('crm.sidebar.leads', 'Leadler'), icon: Target, path: '/crm/leads' },
+        ],
+      },
+      {
+        title: t('crm.sidebar.system'),
+        items: [
+          { label: t('crm.sidebar.settings'), icon: Settings, path: '/crm/settings' },
+        ],
+      },
+    ];
+  }
 
   // ── L4 Hospital: completely separate nav ───────────────────────
   if (isHospital) {
@@ -76,6 +97,8 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
         items: [
           { label: t('crm.sidebar.dashboard'), icon: LayoutDashboard, path: '/crm' },
           { label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin, path: '/crm/branches' },
+          { label: t('crm.sidebar.leads', 'Leadler'), icon: Target, path: '/crm/leads' },
+          { label: t('crm.sidebar.salespeople', 'Satışçılar'), icon: Briefcase, path: '/crm/salespeople' },
           { label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' },
           { label: t('crm.sidebar.medstream', 'MedStream'), icon: Rss, path: '/crm/medstream' },
           { label: t('crm.sidebar.contactInbox', 'Contact Messages'), icon: Mail, path: '/crm/contact-inbox', badge: chatUnreadCount > 0 ? chatUnreadCount : undefined },
@@ -106,6 +129,7 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
     { label: t('crm.sidebar.appointments'), icon: CalendarDays, path: '/crm/appointments', locked: doctorUnverified },
     { label: t('crm.sidebar.smartCalendar', 'Smart Calendar'), icon: CalendarCheck, path: '/crm/calendar' },
     { label: t('crm.sidebar.patients'), icon: Users, path: '/crm/patients' },
+    { label: t('crm.sidebar.leads', 'Leadler'), icon: Target, path: '/crm/leads' },
   ];
   if (!isClinic) {
     mainItems.push({ label: t('crm.sidebar.examination'), icon: Stethoscope, path: '/crm/examination' });
@@ -113,6 +137,7 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
   mainItems.push({ label: t('crm.sidebar.telehealth', 'Telehealth'), icon: Video, path: '/crm/telehealth', locked: !isPremium });
   mainItems.push({ label: t('crm.sidebar.contactInbox', 'Contact Messages'), icon: Mail, path: '/crm/contact-inbox', locked: !isPremium, badge: chatUnreadCount > 0 ? chatUnreadCount : undefined });
   if (isClinic) {
+    mainItems.push({ label: t('crm.sidebar.salespeople', 'Satışçılar'), icon: Briefcase, path: '/crm/salespeople' });
     mainItems.push({ label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' });
     mainItems.push({ label: t('crm.sidebar.clinicManager', 'Clinic Management'), icon: Building2, path: '/crm/clinic-manager', locked: !isPremium });
   }
@@ -139,7 +164,7 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
   ];
 };
 
-const CRM_ALLOWED_ROLES = ['doctor', 'clinic', 'clinicOwner', 'hospital', 'superAdmin', 'saasAdmin'];
+const CRM_ALLOWED_ROLES = ['doctor', 'clinic', 'clinicOwner', 'hospital', 'salesperson', 'superAdmin', 'saasAdmin'];
 
 // Smooth loading overlay for page transitions
 const PageTransitionLoader = () => (
@@ -327,7 +352,8 @@ const CRMLayout = ({ children }) => {
     if (!user) return;
     fetchUnreadCount();
     const echo = getEcho();
-    const interval = setInterval(fetchUnreadCount, echo ? 60000 : 15000);
+    // Polling minimum 30s — server yükünü azaltır (Echo varsa 60s)
+    const interval = setInterval(fetchUnreadCount, echo ? 60000 : 30000);
     return () => clearInterval(interval);
   }, [user, fetchUnreadCount]);
 
@@ -381,7 +407,7 @@ const CRMLayout = ({ children }) => {
   // CRM access control — redirect unauthorized users
   React.useEffect(() => {
     if (!user) {
-      navigate('/login', { replace: true });
+      navigate(localStorage.getItem('auth_logout') === '1' ? '/' : '/login', { replace: true });
       return;
     }
     const role = user?.role || user?.role_id || 'patient';

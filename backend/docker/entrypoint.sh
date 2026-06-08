@@ -80,9 +80,10 @@ else
     echo "════════════════════════════════════════════════════════════════"
 fi
 
-# ── 7a. Seed database (initial data for hospital/clinic/doctors) ──
-echo "→ Seeding database..."
-php artisan db:seed --force 2>&1 || echo "⚠ Seeding failed (DB may not be ready yet)"
+# ── 7a. Seeding is intentionally NOT run on every container restart.
+#       It is destructive when re-run. Run manually for first-time deploy:
+#         First-time deploy: php artisan db:seed --force
+
 
 # ── 8. Debug: show registered routes ──
 echo "→ Registered routes (init/ping/health):"

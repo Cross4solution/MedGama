@@ -3,6 +3,41 @@ import { API_BASE_URL } from '../config/apiBase';
 
 const BASE_URL = API_BASE_URL;
 
+// ── Error Messages (centralized for future i18n migration) ──
+// API katmanı hook çağıramaz, bu yüzden sabit obje. İleride useTranslation'a migrate kolay.
+export const ERROR_MESSAGES = {
+  timeout: 'İstek zaman aşımına uğradı. Lütfen bağlantınızı kontrol edip tekrar deneyin.',
+  network: 'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.',
+  unauthorized: 'Oturum süreniz doldu. Lütfen tekrar giriş yapın.',
+  forbidden: 'Bu işlemi gerçekleştirme yetkiniz bulunmuyor.',
+  validation: 'Girdiğiniz bilgilerde hata var. Lütfen kontrol edin.',
+  notFound: 'Aradığınız kayıt bulunamadı.',
+  rateLimit: 'Çok fazla istek gönderdiniz. Lütfen biraz bekleyin.',
+  serverError: 'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.',
+  generic: (status) => `Bir hata oluştu (${status})`,
+};
+
+// ── Tek kaynak token okuyucu (3 ayrı key arası tutarsızlığı önler) ──
+// Öncelik: sessionStorage → localStorage(access_token) → auth_state(token) → google_access_token
+export function getStoredToken() {
+  try {
+    const ss = (typeof sessionStorage !== 'undefined')
+      ? (sessionStorage.getItem('access_token') || sessionStorage.getItem('google_access_token'))
+      : null;
+    if (ss) return ss;
+    const ls = localStorage.getItem('access_token');
+    if (ls) return ls;
+    const saved = localStorage.getItem('auth_state');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed?.token) return parsed.token;
+    }
+    const g = localStorage.getItem('google_access_token');
+    if (g) return g;
+  } catch {}
+  return null;
+}
+
 // Debug: verify which API URL was baked into this build (check browser console)
 if (typeof window !== 'undefined') {
   console.info('[MedaGama] API_BASE =', BASE_URL);
@@ -17,13 +52,11 @@ const api = axios.create({
 
 // ── Request Interceptor — attach JWT token + Accept-Language ──
 api.interceptors.request.use((config) => {
-  try {
-    const saved = localStorage.getItem('auth_state');
-    if (saved) {
-      const { token } = JSON.parse(saved);
-      if (token) config.headers.Authorization = `Bearer ${token}`;
-    }
-  } catch {}
+  // Tek source-of-truth: getStoredToken() — 3 farklı key arası tutarsızlığı engeller
+  const tk = getStoredToken();
+  if (tk) {
+    config.headers.Authorization = `Bearer ${tk}`;
+  }
   // Send current UI language to backend for locale-aware responses
   try {
     const lang = localStorage.getItem('preferred_language') || 'en';
@@ -45,40 +78,44 @@ api.interceptors.response.use(
       const url = error.config?.url || '';
       const isLoginOrRegister = url.includes('/login') || url.includes('/register');
       if (!isLoginOrRegister) {
-        try { localStorage.removeItem('auth_state'); } catch {}
+        // 401: tüm token storage'larını temizle (localStorage + sessionStorage)
+        try {
+          localStorage.removeItem('auth_state');
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('google_access_token');
+          sessionStorage.removeItem('access_token');
+          sessionStorage.removeItem('google_access_token');
+        } catch {}
         window.dispatchEvent(new CustomEvent('auth:logout'));
       }
     }
 
     // Human-readable Turkish messages for common status codes
+    // TODO: i18n migration — replace ERROR_MESSAGES with t() in components consuming err.message
     let message;
     if (!error.response) {
-      if (error.code === 'ECONNABORTED') {
-        message = 'İstek zaman aşımına uğradı. Lütfen bağlantınızı kontrol edip tekrar deneyin.';
-      } else {
-        message = 'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.';
-      }
+      message = error.code === 'ECONNABORTED' ? ERROR_MESSAGES.timeout : ERROR_MESSAGES.network;
     } else {
       // Try to use backend message first, then provide Turkish fallback
       const rawMsg = data?.message || data?.error || '';
       if (status === 401) {
-        message = rawMsg || 'Oturum süreniz doldu. Lütfen tekrar giriş yapın.';
+        message = rawMsg || ERROR_MESSAGES.unauthorized;
       } else if (status === 403) {
-        message = 'Bu işlemi gerçekleştirme yetkiniz bulunmuyor.';
+        message = ERROR_MESSAGES.forbidden;
       } else if (status === 422 && data?.errors) {
         const firstField = Object.keys(data.errors)[0];
         const firstErr = data.errors[firstField];
         message = Array.isArray(firstErr) ? firstErr[0] : String(firstErr);
       } else if (status === 422) {
-        message = rawMsg || 'Girdiğiniz bilgilerde hata var. Lütfen kontrol edin.';
+        message = rawMsg || ERROR_MESSAGES.validation;
       } else if (status === 404) {
-        message = 'Aradığınız kayıt bulunamadı.';
+        message = ERROR_MESSAGES.notFound;
       } else if (status === 429) {
-        message = 'Çok fazla istek gönderdiniz. Lütfen biraz bekleyin.';
+        message = ERROR_MESSAGES.rateLimit;
       } else if (status >= 500) {
-        message = 'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.';
+        message = ERROR_MESSAGES.serverError;
       } else {
-        message = rawMsg || `Bir hata oluştu (${status})`;
+        message = rawMsg || ERROR_MESSAGES.generic(status);
       }
     }
 
@@ -136,6 +173,17 @@ export const clinicAPI = {
   reviews: (id, params) => api.get(`/clinics/${id}/reviews`, { params }),
   reviewStats: (id) => api.get(`/clinics/${id}/review-stats`),
   submitReview: (id, payload) => api.post(`/clinics/${id}/reviews`, payload),
+  reviewableAppointments: () => api.get('/clinics/reviewable-appointments'),
+  // Accreditations
+  getAccreditations: (clinicId) => api.get(`/clinics/${clinicId}/accreditations`),
+  updateAccreditations: (clinicId, accreditationIds) => api.post(`/clinics/${clinicId}/accreditations`, {
+    accreditation_ids: accreditationIds,
+    certificate_number: [],
+    issued_at: [],
+    expires_at: [],
+    document_url: [],
+  }),
+  removeAccreditation: (clinicId, accreditationId) => api.delete(`/clinics/${clinicId}/accreditations/${accreditationId}`),
   // Onboarding
   onboardingProfile: () => api.get('/clinic-onboarding'),
   updateOnboarding: (payload) => api.put('/clinic-onboarding', payload),
@@ -144,6 +192,11 @@ export const clinicAPI = {
     fd.append('logo', file);
     return api.post('/clinic-onboarding/logo', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
+};
+
+// ── Accreditations ──
+export const accreditationAPI = {
+  list: () => api.get('/accreditations'),
 };
 
 // ── Clinic Verification ──
@@ -193,6 +246,7 @@ export const doctorAPI = {
   myReviews: (params) => api.get('/doctors/my-reviews', { params }),
   respondToReview: (reviewId, response) => api.put(`/doctors/reviews/${reviewId}/respond`, { response }),
   reviewableAppointments: () => api.get('/doctors/reviewable-appointments'),
+  faqs: (id) => api.get(`/doctors/${id}/faqs`),
 };
 
 // ── Doctor Profile (own profile management + onboarding) ──
@@ -209,6 +263,12 @@ export const doctorProfileAPI = {
   // Verification documents (Doc §8.3)
   getVerificationRequests: () => api.get('/doctor-profile/verification'),
   submitVerification: (formData) => api.post('/doctor-profile/verification', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  // Doctor FAQs (CRM CRUD)
+  getFaqs: () => api.get('/doctor-profile/faqs'),
+  createFaq: (data) => api.post('/doctor-profile/faqs', data),
+  updateFaq: (id, data) => api.put(`/doctor-profile/faqs/${id}`, data),
+  deleteFaq: (id) => api.delete(`/doctor-profile/faqs/${id}`),
+  reorderFaqs: (order) => api.put('/doctor-profile/faqs/reorder', { order }),
 };
 
 // ── Appointment Service ──
@@ -220,6 +280,7 @@ export const appointmentAPI = {
   delete: (id) => api.delete(`/appointments/${id}`),
   calendarEvents: (params) => api.get('/appointments/calendar-events', { params }),
   reschedule: (id, payload) => api.patch(`/appointments/${id}/reschedule`, payload),
+  markNoShow: (id) => api.put(`/appointments/${id}/no-show`),
 };
 
 // ── Calendar Slot Service ──
@@ -284,6 +345,17 @@ export const patientAPI = {
   addTag: (id, tag) => api.post(`/crm/patients/${id}/tags`, { tag }),
   removeTag: (tagId) => api.delete(`/crm/patients/tags/${tagId}`),
   setStage: (id, stage) => api.post(`/crm/patients/${id}/stage`, { stage }),
+};
+
+// ── Doctor Billing (MVP — no CRM gate required) ──
+export const doctorBillingAPI = {
+  invoices: (params) => api.get('/doctor/billing/invoices', { params }),
+  getInvoice: (id) => api.get(`/doctor/billing/invoices/${id}`),
+  createInvoice: (payload) => api.post('/doctor/billing/invoices', payload),
+  updateInvoice: (id, payload) => api.put(`/doctor/billing/invoices/${id}`, payload),
+  deleteInvoice: (id) => api.delete(`/doctor/billing/invoices/${id}`),
+  stats: (params) => api.get('/doctor/billing/stats', { params }),
+  patientSearch: (q) => api.get('/doctor/billing/patient-search', { params: { q } }),
 };
 
 // ── CRM Billing / Invoicing (Bölüm 7.5) ──
@@ -353,6 +425,23 @@ export const crmAPI = {
   updateStage: (id, payload) => api.put(`/crm/stages/${id}`, payload),
   archivedRecords: (params) => api.get('/crm/archived-records', { params }),
   createArchivedRecord: (payload) => api.post('/crm/archived-records', payload),
+};
+
+// ── Sales CRM — Leads + Salespeople ──
+export const leadAPI = {
+  list: (params) => api.get('/crm/leads', { params }),
+  stats: () => api.get('/crm/leads/stats'),
+  create: (payload) => api.post('/crm/leads', payload),
+  show: (id) => api.get(`/crm/leads/${id}`),
+  update: (id, payload) => api.put(`/crm/leads/${id}`, payload),
+  updateStage: (id, payload) => api.put(`/crm/leads/${id}/stage`, payload),
+  assign: (id, payload) => api.put(`/crm/leads/${id}/assign`, payload),
+  addActivity: (id, payload) => api.post(`/crm/leads/${id}/activities`, payload),
+  remove: (id) => api.delete(`/crm/leads/${id}`),
+  // Salespeople (managers only)
+  listSalespeople: () => api.get('/crm/salespeople'),
+  createSalesperson: (payload) => api.post('/crm/salespeople', payload),
+  toggleSalesperson: (id) => api.put(`/crm/salespeople/${id}/toggle`),
 };
 
 // ── MedStream Service ──

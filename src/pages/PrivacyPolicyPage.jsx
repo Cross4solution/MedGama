@@ -182,6 +182,64 @@ export default function PrivacyPolicyPage() {
             </ul>
           </div>
 
+          {/* 7b. Subprocessors & Cross-Border Transfers — KVKK Md. 9 / GDPR Art. 28 & 46 */}
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">7.1 Veri İşleyiciler ve Yurtdışı Aktarımı (KVKK Md. 9 / GDPR Art. 28 &amp; 46)</h2>
+            <p className="text-gray-700 leading-relaxed mb-3">
+              Hizmetlerimizin sağlanabilmesi için aşağıdaki alt-işleyiciler (subprocessors) ile çalışmaktayız.
+              Bu sağlayıcıların bir kısmı verilerinizi Avrupa Ekonomik Alanı (AEA) dışında işleyebilir.
+              Yurtdışı aktarımlar; Standart Sözleşme Hükümleri (SCC), KVKK Md. 9 kapsamındaki açık rıza ve
+              veri işleyici sözleşmeleri (DPA) gibi uygun güvenceler altında gerçekleştirilir.
+            </p>
+            <div className="overflow-x-auto border border-gray-200 rounded-xl">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Servis</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Amaç</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Bölge</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Yasal Dayanak</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-600">
+                  <tr className="border-b border-gray-100">
+                    <td className="px-4 py-2.5 font-medium text-gray-800">TiDB Cloud (AWS)</td>
+                    <td className="px-4 py-2.5">Veritabanı barındırma</td>
+                    <td className="px-4 py-2.5">EU / US</td>
+                    <td className="px-4 py-2.5">SCC + KVKK Md. 9 açık rıza</td>
+                  </tr>
+                  <tr className="border-b border-gray-100 bg-gray-50/50">
+                    <td className="px-4 py-2.5 font-medium text-gray-800">Render</td>
+                    <td className="px-4 py-2.5">Backend hosting</td>
+                    <td className="px-4 py-2.5">EU / US</td>
+                    <td className="px-4 py-2.5">SCC</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="px-4 py-2.5 font-medium text-gray-800">Vercel</td>
+                    <td className="px-4 py-2.5">Frontend hosting / CDN</td>
+                    <td className="px-4 py-2.5">Global</td>
+                    <td className="px-4 py-2.5">SCC</td>
+                  </tr>
+                  <tr className="border-b border-gray-100 bg-gray-50/50">
+                    <td className="px-4 py-2.5 font-medium text-gray-800">Google Maps</td>
+                    <td className="px-4 py-2.5">Harita servisi</td>
+                    <td className="px-4 py-2.5">Global</td>
+                    <td className="px-4 py-2.5">DPA + Çerez rızası</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-2.5 font-medium text-gray-800">Sentry (opsiyonel)</td>
+                    <td className="px-4 py-2.5">Hata izleme</td>
+                    <td className="px-4 py-2.5">EU</td>
+                    <td className="px-4 py-2.5">DPA</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Yurtdışı aktarıma ilişkin açık rızanızı çerez tercihleri panelinden istediğiniz zaman geri alabilirsiniz.
+            </p>
+          </div>
+
           {/* 8. Data Retention */}
           <div>
             <h2 className="text-lg font-semibold text-gray-900 mb-2">8. Data Retention (Art. 13(2)(a) GDPR)</h2>

@@ -25,12 +25,10 @@ import BeforeAfterTab from '../components/clinic/tabs/BeforeAfterTab';
 import LocationTab from '../components/clinic/tabs/LocationTab';
 import MedstreamProfileFeed from '../components/profile/MedstreamProfileFeed';
 
-// Mock Data
+// Mock Data (services/gallery/before-after remain as demo content; clinic identity is 100% API-driven)
 import {
-  clinicInfo,
   aboutData,
   servicesData,
-  departmentsData,
   galleryData,
   beforeAfterData,
   priceRangesData,
@@ -71,12 +69,12 @@ const ClinicDetailPage = () => {
 
   // Social hook (follow / favorite)
   const clinicMeta = {
-    name: apiClinic?.fullname || apiClinic?.name || clinicInfo.name,
+    name: apiClinic?.fullname || apiClinic?.name || '',
     codename: apiClinic?.codename || clinicParam || '',
-    avatar: apiClinic?.avatar || clinicInfo.heroImage,
-    address: apiClinic?.address || clinicInfo.location,
-    rating: resolveClinicRating(apiClinic, clinicInfo.rating),
-    reviewCount: resolveClinicReviewCount(apiClinic, clinicInfo.reviewCount),
+    avatar: apiClinic?.avatar || '',
+    address: apiClinic?.address || '',
+    rating: resolveClinicRating(apiClinic, 0),
+    reviewCount: resolveClinicReviewCount(apiClinic, 0),
     specialty: apiClinic?.specialty || '',
   };
   const socialCallbacks = {
@@ -91,30 +89,13 @@ const ClinicDetailPage = () => {
   };
   const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('clinic', apiClinic?.id, initialSocial, clinicMeta, socialCallbacks);
 
-  // L4 Rule: hospitals do not accept direct appointments — branches handle them
-  const isHospitalProfile = apiClinic?.level === 4 || apiClinic?.hospital_role === true;
-
   // UI State
   const [activeTab, setActiveTab] = useState('genel-bakis');
   
-  // Clinic Doctors State
-  const [clinicDoctors, setClinicDoctors] = useState([]);
-
-  useEffect(() => {
-    if (apiClinic?.id) {
-      clinicAPI.staff(apiClinic.id).then((res) => {
-        const list = res?.data || [];
-        setClinicDoctors(list);
-      }).catch(() => {});
-    }
-  }, [apiClinic?.id]);
-
   // Prices Tab State
   const [selectedService, setSelectedService] = useState(null);
-
-  // Doctors Tab State
-  const [selectedDept, setSelectedDept] = useState(null);
-  const doctorsText = 'Our expert doctors provide comprehensive care across multiple specialties, focusing on patient safety and outcomes.';
+  
+  // Doctors (from API)
   
   // Gallery State
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -129,7 +110,17 @@ const ClinicDetailPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'genel-bakis':
-        return <OverviewTab aboutTitle={aboutData.title} aboutP1={aboutData.paragraph1} aboutP2={aboutData.paragraph2} doctors={clinicDoctors} onBookAppointment={() => setBookModal(true)} onSwitchToDoctors={() => setActiveTab('doktorlar')} />;
+        return (
+          <OverviewTab
+            aboutTitle={aboutData.title}
+            aboutP1={aboutData.paragraph1}
+            aboutP2={aboutData.paragraph2}
+            doctors={apiClinic?.doctors || []}
+            accreditations={apiClinic?.accreditations || []}
+            onBookAppointment={() => setBookModal(true)}
+            onSwitchToDoctors={() => setActiveTab('doktorlar')}
+          />
+        );
       case 'prices':
         return (
           <PricesTab 
@@ -141,12 +132,7 @@ const ClinicDetailPage = () => {
       case 'doktorlar':
         return (
           <DoctorsTab
-            doctorsText={doctorsText}
-            doctors={clinicDoctors}
-            deptDoctors={departmentsData}
-            selectedDept={selectedDept}
-            setSelectedDept={setSelectedDept}
-            onBookAppointment={() => setBookModal(true)}
+            doctors={apiClinic?.doctors || []}
           />
         );
       case 'degerlendirmeler':
@@ -174,7 +160,11 @@ const ClinicDetailPage = () => {
           />
         );
       case 'konum':
-        return <LocationTab locationAddress="Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul" />;
+        return <LocationTab 
+          locationAddress={apiClinic?.address || "Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul"} 
+          latitude={apiClinic?.latitude}
+          longitude={apiClinic?.longitude}
+        />;
       case 'medstream':
         return <MedstreamProfileFeed clinicId={apiClinic?.id} />;
       default:
@@ -205,14 +195,14 @@ const ClinicDetailPage = () => {
           <div className="flex-1 min-w-0">
             {/* Hero Section */}
             <ClinicHero
-              image={apiClinic?.avatar || clinicInfo.heroImage}
-              name={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
-              location={apiClinic?.address || clinicInfo.location}
-              rating={resolveClinicRating(apiClinic, clinicInfo.rating)}
-              reviews={resolveClinicReviewCount(apiClinic, clinicInfo.reviewCount)}
+              image={apiClinic?.avatar || apiClinic?.background_image || ''}
+              name={apiClinic?.fullname || apiClinic?.name || ''}
+              location={apiClinic?.address || ''}
+              rating={resolveClinicRating(apiClinic, 0)}
+              reviews={resolveClinicReviewCount(apiClinic, 0)}
               badgeNode={null}
-              isFavorite={isFavorited}
-              onToggleFavorite={guardAction(toggleFavorite)}
+              isFavorite={(user?.role !== 'doctor' && user?.role_id !== 'doctor') ? isFavorited : false}
+              onToggleFavorite={(user?.role !== 'doctor' && user?.role_id !== 'doctor') ? guardAction(toggleFavorite) : undefined}
               isFollowing={isFollowing}
               followLoading={followLoading}
               onToggleFollow={guardAction(toggleFollow)}
@@ -230,14 +220,7 @@ const ClinicDetailPage = () => {
 
           {/* Sidebar */}
           <div className="lg:w-80 space-y-4 lg:sticky lg:top-24 h-max">
-            {/* L4 Rule: no appointment buttons on hospital profiles */}
-            {!isHospitalProfile && (
-              <ContactActions
-                onTelehealth={guardAction(() => setOnlineBookModal(true))}
-                onBook={guardAction(() => setBookModal(true))}
-                onMessage={guardAction(() => setMessageModal(true))}
-              />
-            )}
+            <ContactActions onTelehealth={guardAction(() => setOnlineBookModal(true))} onBook={guardAction(() => setBookModal(true))} onMessage={guardAction(() => setMessageModal(true))} />
             <PriceRangeList items={priceRangesData} />
           </div>
         </div>
@@ -247,14 +230,14 @@ const ClinicDetailPage = () => {
         open={bookModal}
         onClose={() => setBookModal(false)}
         targetId={apiClinic?.id}
-        targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
+        targetName={apiClinic?.fullname || apiClinic?.name || ''}
         targetType="clinic"
       />
       <BookAppointmentModal
         open={onlineBookModal}
         onClose={() => setOnlineBookModal(false)}
         targetId={apiClinic?.id}
-        targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
+        targetName={apiClinic?.fullname || apiClinic?.name || ''}
         targetType="clinic"
         initialType="video"
       />
@@ -262,7 +245,7 @@ const ClinicDetailPage = () => {
         open={messageModal}
         onClose={() => setMessageModal(false)}
         targetId={apiClinic?.id}
-        targetName={apiClinic?.fullname || apiClinic?.name || clinicInfo.name}
+        targetName={apiClinic?.fullname || apiClinic?.name || ''}
         targetType="clinic"
       />
     </div>

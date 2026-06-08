@@ -395,6 +395,8 @@ class DoctorService
                 'specialty'        => $appt->doctor?->doctorProfile?->specialty?->getTranslation('name', app()->getLocale()),
                 'appointment_date' => $appt->appointment_date,
                 'appointment_type' => $appt->appointment_type,
+                // Onaylı Review Sistemi — frontend treatment_type field için
+                'treatment_type'   => $appt->appointment_type,
             ])
             ->toArray();
     }

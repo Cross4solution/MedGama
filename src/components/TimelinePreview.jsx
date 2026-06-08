@@ -105,27 +105,27 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
     <section id="timeline" className="pt-0 pb-2">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-gray-900">Medstream</h2>
+          <h2 className="text-lg font-normal tracking-[-0.025em] text-[#061b31]">Medstream</h2>
           {onViewAll ? (
             <button
               type="button"
               onClick={onViewAll}
-              className="text-sm text-teal-700 hover:text-teal-800 hover:underline"
+              className="text-sm text-[#0d9488] hover:text-[#0f766e] hover:underline"
             >
               View All Updates
             </button>
           ) : (
-            <Link to="/explore" className="text-sm text-teal-700 hover:text-teal-800 hover:underline">View all updates items</Link>
+            <Link to="/explore" className="text-sm text-[#0d9488] hover:text-[#0f766e] hover:underline">View all updates items</Link>
           )}
         </div>
-        <div className="rounded-2xl border border-gray-200 bg-gray-50/50 overflow-hidden">
+        <div className="rounded-md border border-[#e5edf5] bg-[#f8fafd] overflow-hidden shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px]">
           {/* Scrollable feed area */}
           <div ref={scrollRef} className="h-[72vh] overflow-y-auto px-2.5 pt-3 pb-3">
             {loading ? (
               <div className="space-y-3">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="max-w-xl mx-auto animate-pulse">
-                    <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
+                    <div className="bg-white rounded-md border border-[#e5edf5] p-4 space-y-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gray-200 rounded-full" />
                         <div className="space-y-1.5 flex-1">

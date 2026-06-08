@@ -64,6 +64,12 @@ class CheckCrmAccess
             // Hospital admin → own subscription
             $isActive  = (bool) $user->is_crm_active;
             $expiresAt = $user->crm_expires_at;
+        } elseif ($role === 'salesperson') {
+            // Salesperson → inherits their clinic's CRM subscription
+            if ($user->clinic_id && $user->clinic) {
+                $isActive  = (bool) $user->clinic->is_crm_active;
+                $expiresAt = $user->clinic->crm_expires_at;
+            }
         } else {
             // Any other role (patient, etc.) — no CRM access
             return $this->forbidden();

@@ -32,6 +32,7 @@ const AuthPages = () => {
     phoneCode: '+90',
     phone: '',
     birthDate: '',
+    guardianEmail: '',
     city: '',
     medicalHistory: '',
     clinicName: '',
@@ -83,6 +84,29 @@ const AuthPages = () => {
       if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Şifreler eşleşmiyor.';
       if (!formData.acceptTerms) newErrors.acceptTerms = 'Kullanım Koşullarını kabul etmelisiniz.';
       if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'Gizlilik Politikasını kabul etmelisiniz.';
+      // KVKK / GDPR Art. 8 — patient must provide birth_date; minors require guardian_email.
+      if ((formData.role || 'patient') === 'patient') {
+        if (!formData.birthDate) {
+          newErrors.birthDate = 'Doğum tarihi zorunludur.';
+        } else {
+          const dob = new Date(formData.birthDate);
+          if (!Number.isNaN(dob.getTime())) {
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+            if (age < 18) {
+              if (!formData.guardianEmail) {
+                newErrors.guardianEmail = '18 yaş altı kayıt için veli e-postası gereklidir.';
+              } else if (!/\S+@\S+\.\S+/.test(formData.guardianEmail)) {
+                newErrors.guardianEmail = 'Geçerli bir veli e-posta adresi giriniz.';
+              } else if (formData.guardianEmail.toLowerCase() === (formData.email || '').toLowerCase()) {
+                newErrors.guardianEmail = 'Veli e-postası kullanıcının e-postasından farklı olmalıdır.';
+              }
+            }
+          }
+        }
+      }
     }
 
     setErrors(newErrors);
@@ -115,6 +139,7 @@ const AuthPages = () => {
           mobile: formData.phone ? `${formData.phoneCode}${formData.phone}`.replace(/\s/g, '') : undefined,
           city_id: formData.city ? parseInt(formData.city) : undefined,
           date_of_birth: formData.birthDate || undefined,
+          ...(formData.guardianEmail ? { guardian_email: formData.guardianEmail } : {}),
           ...(formData.role === 'clinic' ? { role_id: 'clinicOwner', clinic_name: formData.clinicName || undefined } : {}),
           ...(formData.role === 'patient' && formData.medicalHistory ? { medical_history: String(formData.medicalHistory).trim() } : {}),
         };

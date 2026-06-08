@@ -40,8 +40,8 @@ class AuthService
             ]);
         }
 
-        // Hardcoded for testing - always use 123456
-        $verificationCode = '123456';
+        // Cryptographically random 6-digit verification code
+        $verificationCode = (string) random_int(100000, 999999);
 
         $user = DB::transaction(function () use ($data, $clinicId, $verificationCode) {
             // Determine user_level from role_id
@@ -70,6 +70,8 @@ class AuthService
                 'clinic_id'               => $clinicId,
                 'clinic_name'             => $data['clinic_name'] ?? null,
                 'medical_history'         => $data['medical_history'] ?? null,
+                'guardian_email'          => $data['guardian_email'] ?? null,
+                'guardian_consent_at'     => !empty($data['guardian_email']) ? now() : null,
                 'avatar'                  => null,
                 'email_verified'          => false,
                 'email_verification_code' => $verificationCode,
@@ -99,8 +101,11 @@ class AuthService
         $roleId = $data['role_id'] ?? 'patient';
         $isAutoVerifyRole = in_array($roleId, ['hospital', 'clinic', 'clinicOwner', 'superAdmin', 'saasAdmin']);
 
-        // In demo/log mode, also auto-verify patients and doctors so testing is frictionless
-        $isDemoMail = in_array(config('mail.default'), ['log', 'array']);
+        // In LOCAL environment with log/array mail driver, auto-verify patients and doctors
+        // for frictionless testing. NEVER apply this shortcut in production — patients/doctors
+        // must always receive a real verification code in production.
+        $isDemoMail = app()->environment('local')
+            && in_array(config('mail.default'), ['log', 'array']);
 
         $autoVerified = $isAutoVerifyRole || $isDemoMail;
 
@@ -270,8 +275,8 @@ class AuthService
             return;
         }
 
-        // Hardcoded for testing - always use 123456
-        $code = '123456';
+        // Cryptographically random 6-digit resend code
+        $code = (string) random_int(100000, 999999);
         $user->update(['email_verification_code' => $code]);
 
         $this->sendVerificationEmail($user->email, $code, $user->fullname);

@@ -32,13 +32,13 @@ export default function CoreBoxes() {
             const Icon = ICONS[i % ICONS.length];
             const theme = PALETTE[i % PALETTE.length];
             return (
-              <div key={i} className="relative rounded-2xl border border-gray-200 bg-white overflow-hidden">
+              <div key={i} className="relative rounded-md border border-[#e5edf5] bg-white overflow-hidden shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px] hover:shadow-[rgba(50,50,93,0.12)_0px_16px_32px_0px] transition-shadow">
                 <div className="relative p-5 sm:p-6 flex flex-col h-full">
-                  <div className={`w-11 h-11 rounded-xl ${theme.bg} mb-4 flex items-center justify-center flex-shrink-0`}>
+                  <div className={`w-11 h-11 rounded-md ${theme.bg} mb-4 flex items-center justify-center flex-shrink-0`}>
                     <Icon className={`w-5 h-5 ${theme.fg}`} aria-hidden="true" />
                   </div>
-                  <h3 className="font-bold text-gray-900 text-sm sm:text-[15px] leading-5 sm:leading-6 mb-2">{f.title}</h3>
-                  <p className="text-[13px] sm:text-sm text-gray-500 leading-5 sm:leading-relaxed flex-grow">
+                  <h3 className="font-normal text-[#061b31] tracking-[-0.025em] text-sm sm:text-[15px] leading-5 sm:leading-6 mb-2">{f.title}</h3>
+                  <p className="text-[13px] sm:text-sm text-[#64748d] leading-5 sm:leading-relaxed flex-grow">
                     {f.desc}
                   </p>
                 </div>

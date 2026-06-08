@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import SEOHead, { buildPhysicianSchema } from '../components/seo/SEOHead';
-import MapboxView from 'components/map/MapboxView';
+import MapboxMap from '../components/map/MapboxView';
 import {
   Award, Stethoscope, Heart, CheckCircle, Shield, Users, MapPin, X,
   ChevronLeft, ChevronRight, Minus, Video, Loader2, GraduationCap, Globe,
@@ -18,6 +18,8 @@ import SendMessageModal from '../components/modals/SendMessageModal';
 import DoctorBookingModal from '../components/modals/DoctorBookingModal';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import MedstreamProfileFeed from '../components/profile/MedstreamProfileFeed';
+// import DoctorFaqSection from '../components/doctor/DoctorFaqSection'; // component yok, geçici devre dışı
+const DoctorFaqSection = () => null;
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
@@ -93,7 +95,6 @@ const DoctorProfilePage = () => {
   const { guardAction } = useAuthGuard();
   const { user: authUser } = useAuth();
   const { notify } = useToast();
-  const isOwner = authUser && (authUser.id === doctorId);
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [doctor, setDoctor] = useState(null);
@@ -117,6 +118,8 @@ const DoctorProfilePage = () => {
   const [reviewError, setReviewError] = useState(null);
   const [reviewSort, setReviewSort] = useState('newest');
   const [canReview, setCanReview] = useState(false);
+  // Onaylı Review Sistemi — bu doktor için yorumlanabilir randevu
+  const [reviewableAppointment, setReviewableAppointment] = useState(null);
 
   // Message modal
   const [messageModal, setMessageModal] = useState(false);
@@ -183,9 +186,16 @@ const DoctorProfilePage = () => {
   const { isFollowing, isFavorited, followerCount, followLoading, toggleFollow, toggleFavorite } = useSocial('doctor', doctorId, initialSocial, doctorMeta, socialCallbacks);
 
   // Derived
+  // isOwner: works with both UUID and slug URLs since we compare loaded doctor.id
+  const isOwner = !!(authUser && doctor && authUser.id === doctor.id);
   const doctorName = doctor?.fullname || 'Doctor';
   const doctorTitle = profile?.title || '';
   const specialty = profile?.specialty || '';
+  
+  // Remove "Dr." prefix from name if title already contains it
+  const displayName = (doctorTitle && doctorName.startsWith('Dr. ')) 
+    ? doctorName.replace(/^Dr\.\s+/, '') 
+    : doctorName;
   const avatarUrl = resolveStorageUrl(doctor?.avatar);
   const bio = profile?.bio || '';
   const experienceYears = profile?.experience_years || '';
@@ -195,7 +205,8 @@ const DoctorProfilePage = () => {
   const education = profile?.education || [];
   const certifications = profile?.certifications || [];
   const languages = profile?.languages || [];
-  const locationAddress = profile?.address || '';
+  const locationAddress = profile?.full_address_text || profile?.address || '';
+  const mapCoordinates = profile?.map_coordinates || null;
   const onlineConsultation = profile?.online_consultation || false;
   const operatingHours = profile?.operating_hours || null;
   const hasProfile = profile && profile.onboarding_completed;
@@ -212,12 +223,35 @@ const DoctorProfilePage = () => {
     return () => document.removeEventListener('keydown', onKey);
   }, [galleryOpen, gallery.length]);
 
+  // Onaylı Review — yorumlanabilir randevuları çek
+  useEffect(() => {
+    if (!doctorId) return;
+    doctorAPI.reviewableAppointments().then(r => {
+      const list = r?.data?.data || r?.data || [];
+      const match = Array.isArray(list) ? list.find(a => a.doctor_id === doctorId) : null;
+      if (match) {
+        setReviewableAppointment(match);
+        setNewTreatmentType(match.treatment_type || match.appointment_type || '');
+        setCanReview(true);
+      }
+    }).catch(() => {});
+  }, [doctorId]);
+
   // Submit review
   const handleReviewSubmit = () => {
     if (newRating < 1 || newComment.trim().length < 10) return;
+    if (!reviewableAppointment?.appointment_id) {
+      setReviewError(t('doctorProfile.reviewNeedAppointment', 'Yorum yapmak için tamamlanmış randevu gerekli.'));
+      return;
+    }
     setReviewSubmitting(true);
     setReviewError(null);
-    doctorAPI.submitReview(doctorId, { rating: newRating, comment: newComment, treatment_type: newTreatmentType || undefined })
+    doctorAPI.submitReview(doctorId, {
+      rating: newRating,
+      comment: newComment,
+      treatment_type: newTreatmentType || reviewableAppointment.treatment_type || undefined,
+      appointment_id: reviewableAppointment.appointment_id,
+    })
       .then(() => { setReviewSuccess(true); setCanReview(false); setNewRating(0); setNewComment(''); setNewTreatmentType(''); loadReviews(1, reviewSort); })
       .catch((err) => {
         const status = err?.response?.status || err?.status;
@@ -234,6 +268,7 @@ const DoctorProfilePage = () => {
     { id: 'medstream', label: 'Medstream' },
     { id: 'services', label: t('doctorProfile.services') },
     { id: 'reviews', label: `${t('doctorProfile.reviews')} (${reviewStats.review_count})` },
+    { id: 'faq', label: t('doctorProfile.faq', 'FAQ') },
     { id: 'gallery', label: t('doctorProfile.gallery') },
     { id: 'location', label: t('doctorProfile.location') },
   ];
@@ -259,13 +294,13 @@ const DoctorProfilePage = () => {
     <div className="min-h-screen bg-gray-50/50">
       {/* ═══ SEO Meta + Schema.org ═══ */}
       <SEOHead
-        title={`${doctorTitle ? doctorTitle + ' ' : ''}${doctorName} — ${specialty}`}
-        description={`${doctorName} — ${specialty}. ${bio?.slice(0, 150) || ''}`}
-        canonical={`/doctor/${doctorId}`}
+        title={`${doctorTitle ? doctorTitle + ' ' : ''}${displayName} — ${specialty}`}
+        description={`${displayName} — ${specialty}. ${bio?.slice(0, 150) || ''}`}
+        canonical={profile?.slug ? `/doctor/${profile.slug}` : `/doctor/${doctorId}`}
         image={avatarUrl}
         type="profile"
         jsonLd={buildPhysicianSchema({
-          name: `${doctorTitle ? doctorTitle + ' ' : ''}${doctorName}`,
+          name: `${doctorTitle ? doctorTitle + ' ' : ''}${displayName}`,
           image: avatarUrl,
           description: bio,
           specialty,
@@ -316,7 +351,7 @@ const DoctorProfilePage = () => {
               />
               <div className="pt-1">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <h1 className="text-xl md:text-2xl font-extrabold text-gray-900">{doctorTitle ? `${doctorTitle} ` : ''}{doctorName}</h1>
+                  <h1 className="text-xl md:text-2xl font-extrabold text-gray-900">{doctorTitle ? `${doctorTitle} ` : ''}{displayName}</h1>
                   {doctor.is_verified && (
                     <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
                       <BadgeCheck className="w-3 h-3" /> {t('doctorProfile.verified')}
@@ -364,34 +399,36 @@ const DoctorProfilePage = () => {
               </div>
             </div>
 
-                {/* Action buttons */}
-                <div className="flex items-center gap-2 flex-shrink-0 sm:pt-2">
-                  <button onClick={guardAction(toggleFavorite)}
-                    className={`p-2.5 rounded-xl border transition-all ${isFavorited ? 'bg-red-50 text-red-500 border-red-200' : 'bg-white text-gray-400 border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200'}`}
-                  >
-                    <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
-                  </button>
-                  <button onClick={guardAction(() => navigate(`/doctor-chat?startWith=${doctorId}`))}
-                    className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-violet-50 hover:text-violet-600 hover:border-violet-200 transition-all"
-                  >
-                    <MessageSquare className="w-5 h-5" />
-                  </button>
-                  <button onClick={guardAction(toggleFollow)} disabled={followLoading}
-                    className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 min-w-[100px] justify-center ${
-                      isFollowing ? 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200' : 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm'
-                    } ${followLoading ? 'opacity-60' : ''}`}
-                  >
-                    {followLoading ? <Loader2 className="w-4 h-4 animate-spin" /> :
-                      isFollowing ? <><CheckCircle className="w-4 h-4" />{t('doctorProfile.following')}</> : <>{t('doctorProfile.follow')}</>
-                    }
-                  </button>
-                </div>
+            {/* Action buttons */}
+            <div className="flex items-center gap-2 flex-shrink-0 sm:pt-2">
+              {(authUser?.role !== 'doctor' && authUser?.role_id !== 'doctor') && (
+                <button onClick={guardAction(toggleFavorite)}
+                  className={`p-2.5 rounded-xl border transition-all ${isFavorited ? 'bg-red-50 text-red-500 border-red-200' : 'bg-white text-gray-400 border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200'}`}
+                >
+                  <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+                </button>
+              )}
+              <button onClick={guardAction(() => navigate(`/doctor-chat?startWith=${doctorId}`))}
+                className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-violet-50 hover:text-violet-600 hover:border-violet-200 transition-all"
+              >
+                <MessageSquare className="w-5 h-5" />
+              </button>
+              <button onClick={guardAction(toggleFollow)} disabled={followLoading}
+                className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 min-w-[100px] justify-center ${
+                  isFollowing ? 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200' : 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm'
+                } ${followLoading ? 'opacity-60' : ''}`}
+              >
+                {followLoading ? <Loader2 className="w-4 h-4 animate-spin" /> :
+                  isFollowing ? <><CheckCircle className="w-4 h-4" />{t('doctorProfile.following')}</> : <>{t('doctorProfile.follow')}</>
+                }
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ═══ Profile not completed ═══ */}
-      {!hasProfile && (
+      {/* ═══ Profile not completed (only visible to profile owner) ═══ */}
+      {!hasProfile && isOwner && (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-6">
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
             <p className="text-sm text-amber-800 font-medium">{t('doctorProfile.profileNotComplete')}</p>
@@ -640,6 +677,11 @@ const DoctorProfilePage = () => {
                   <MedstreamProfileFeed authorId={doctorId} />
                 )}
 
+                {/* ── FAQ ── */}
+                {activeTab === 'faq' && (
+                  <DoctorFaqSection doctorId={doctorId} />
+                )}
+
                 {/* ── Gallery ── */}
                 {activeTab === 'gallery' && (
                   <div className="space-y-4">
@@ -688,9 +730,17 @@ const DoctorProfilePage = () => {
                 {activeTab === 'location' && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-bold text-gray-900">{t('doctorProfile.location')}</h3>
-                    {locationAddress ? (<>
-                      <div className="flex items-start gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 mt-0.5 text-teal-600 flex-shrink-0" /><span>{locationAddress}</span></div>
-                      <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm"><MapboxView address={locationAddress} height="320px" zoom={15} /></div>
+                    {locationAddress || (profile?.latitude && profile?.longitude) ? (<>
+                      {locationAddress && <div className="flex items-start gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 mt-0.5 text-teal-600 flex-shrink-0" /><span>{locationAddress}</span></div>}
+                      <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                        <MapboxMap
+                          address={locationAddress}
+                          lat={profile?.latitude ? parseFloat(profile.latitude) : undefined}
+                          lng={profile?.longitude ? parseFloat(profile.longitude) : undefined}
+                          height="320px"
+                          zoom={15}
+                        />
+                      </div>
                     </>) : <p className="text-sm text-gray-400 italic">{t('doctorProfile.noLocationYet')}</p>}
                   </div>
                 )}
@@ -700,40 +750,22 @@ const DoctorProfilePage = () => {
 
           {/* ═══ Sticky Sidebar ═══ */}
           <div className="lg:w-80 space-y-4 lg:sticky lg:top-20 h-max">
-            {/* Booking CTA (Level 3+ Only) */}
-            {doctor.level !== 2 ? (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-t-2xl">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2"><Calendar className="w-4 h-4" /> {t('booking.title')}</h3>
-                </div>
-                <div className="p-4 space-y-2.5">
-                  <button onClick={guardAction(() => setBookModal(true))} className="w-full py-3 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors shadow-sm flex items-center justify-center gap-2">
-                    <Calendar className="w-4 h-4" /> {t('doctorProfile.bookAppointment')}
-                  </button>
-                  {onlineConsultation && (
-                    <button onClick={guardAction(() => setOnlineBookModal(true))} className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors shadow-sm flex items-center justify-center gap-2">
-                      <Video className="w-4 h-4" /> {t('doctorProfile.onlineConsultation')}
-                    </button>
-                  )}
-                </div>
+            {/* Booking CTA */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-t-2xl">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2"><Calendar className="w-4 h-4" /> {t('booking.title')}</h3>
               </div>
-            ) : (
-              <div className="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-2xl shadow-sm border border-indigo-100 p-5">
-                <div className="w-10 h-10 rounded-xl bg-white border border-indigo-100 flex items-center justify-center mb-3 text-indigo-600">
-                  <Heart className="w-5 h-5 fill-current" />
-                </div>
-                <h3 className="text-sm font-bold text-gray-900 mb-1">{t('doctorProfile.indieDoctorTitle', 'Independent Professional')}</h3>
-                <p className="text-[11px] text-gray-500 leading-relaxed mb-4">
-                  {t('doctorProfile.indieDoctorDesc', 'This doctor provides services independently. Follow and stay tuned via MedStream for updates and medical insights.')}
-                </p>
-                <button onClick={guardAction(toggleFollow)} disabled={followLoading}
-                  className="w-full py-2.5 bg-indigo-600 text-white rounded-xl font-semibold text-xs hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
-                >
-                  {isFollowing ? <CheckCircle className="w-3.5 h-3.5" /> : <Users className="w-3.5 h-3.5" />}
-                  {isFollowing ? t('doctorProfile.following') : t('doctorProfile.follow')}
+              <div className="p-4 space-y-2.5">
+                <button onClick={guardAction(() => setBookModal(true))} className="w-full py-3 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+                  <Calendar className="w-4 h-4" /> {t('doctorProfile.bookAppointment')}
                 </button>
+                {onlineConsultation && (
+                  <button onClick={guardAction(() => setOnlineBookModal(true))} className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+                    <Video className="w-4 h-4" /> {t('doctorProfile.onlineConsultation')}
+                  </button>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Price Range */}
             {prices.length > 0 && (

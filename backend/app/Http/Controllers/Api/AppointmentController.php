@@ -200,6 +200,39 @@ class AppointmentController extends Controller
     }
 
     /**
+     * PUT /api/appointments/{appointment}/no-show
+     * Doktor/klinik bir randevuyu manuel olarak "no_show" (gelmedi) olarak işaretler.
+     */
+    public function markNoShow(Request $request, Appointment $appointment): JsonResponse
+    {
+        $user = $request->user();
+
+        // Yetki kontrolü — yalnızca randevunun doktoru veya klinik sahibi
+        $isDoctor       = $appointment->doctor_id === $user->id;
+        $isClinicOwner  = $appointment->clinic_id
+            && \App\Models\Clinic::where('id', $appointment->clinic_id)
+                ->where('owner_id', $user->id)
+                ->exists();
+
+        if (!$isDoctor && !$isClinicOwner && !$user->isAdmin()) {
+            return response()->json(['message' => 'Bu randevu için yetkiniz yok.'], 403);
+        }
+
+        // Sadece confirmed ya da completed randevular no_show'a çevrilebilir
+        if (!in_array($appointment->status, ['confirmed', 'completed'], true)) {
+            return response()->json([
+                'message' => 'Yalnızca onaylı veya tamamlanmış randevular "Gelmedi" olarak işaretlenebilir.',
+            ], 422);
+        }
+
+        $appointment->update([
+            'status' => 'no_show',
+        ]);
+
+        return (new AppointmentResource($appointment->fresh()))->response();
+    }
+
+    /**
      * PATCH /api/appointments/{appointment}/reschedule
      * Drag-drop reschedule — updates date & time.
      */

@@ -23,6 +23,8 @@ class Appointment extends Model
         'appointment_date', 'appointment_time', 'status', 'confirmation_note',
         'video_conference_link', 'meeting_id', 'meeting_url', 'meeting_status',
         'doctor_note', 'created_by', 'is_active',
+        // Onaylı Review Sistemi alanları
+        'deposit_status', 'auto_completed_at',
     ];
 
     protected function casts(): array
@@ -32,6 +34,7 @@ class Appointment extends Model
             'is_active'         => 'boolean',
             'doctor_note'       => 'encrypted',
             'confirmation_note' => 'encrypted',
+            'auto_completed_at' => 'datetime',
         ];
     }
 
