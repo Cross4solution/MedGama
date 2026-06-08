@@ -244,6 +244,7 @@ class BillingService
         $paidAmount = number_format($invoice->paid_amount, 2);
         $remaining = number_format($invoice->remainingAmount(), 2);
         $notes = $invoice->notes ? e($invoice->notes) : '';
+        $notesBlock = $notes !== '' ? "<div class='notes-box'><h4>Notes</h4><p>{$notes}</p></div>" : '';
 
         // Barcode (Code 128 simulated with invoice number display)
         $barcodeText = $invoiceNo;
@@ -362,7 +363,7 @@ class BillingService
     </div>
 
     <!-- Notes -->
-    {$notes ? "<div class='notes-box'><h4>Notes</h4><p>{$notes}</p></div>" : ""}
+    {$notesBlock}
 
     <!-- Footer with barcode -->
     <div class="footer">
