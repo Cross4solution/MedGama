@@ -19,8 +19,15 @@ export default function CityCombobox({
 
   const filtered = useMemo(() => {
     const q = normalize(query || '');
-    if (!q) return options;
-    return options.filter((opt) => normalize(opt).includes(q));
+    const matched = !q ? options : options.filter((opt) => normalize(opt).includes(q));
+    // Render performansı: DOM'a en fazla 50 öğe bas (filtre tüm liste üzerinde çalışır)
+    return matched.slice(0, 50);
+  }, [options, query]);
+
+  const totalMatches = useMemo(() => {
+    const q = normalize(query || '');
+    if (!q) return options.length;
+    return options.filter((opt) => normalize(opt).includes(q)).length;
   }, [options, query]);
 
   useEffect(() => {
@@ -87,6 +94,11 @@ export default function CityCombobox({
             wheelFactor={wheelFactor}
             onSelect={(opt) => { onChange && onChange(opt); setOpen(false); setQuery(''); }}
           />
+          {totalMatches > filtered.length && (
+            <div className="px-3 py-1.5 text-[11px] text-gray-400 border-t border-gray-100">
+              {totalMatches} sonuç — aramaya devam edin
+            </div>
+          )}
         </div>
       )}
     </div>

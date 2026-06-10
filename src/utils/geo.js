@@ -47,7 +47,7 @@ export function listTurkeyProvinces() {
 
 
 // Cache versioning to invalidate older small city lists
-const CITY_CACHE_VERSION = 'v9';
+const CITY_CACHE_VERSION = 'v10';
 const MIN_CITY_THRESHOLD = 30;
 
 // Ülke bazlı özel limitler (boş bırakıyoruz). Varsayılan: 100.
@@ -102,7 +102,9 @@ function getPopularCitiesList(country) {
 }
 
 function applyCityLimit(country, list) {
-  const lim = (COUNTRY_CITY_LIMITS[country] ?? 100); // varsayılan 100
+  // Varsayılan: limit YOK (tüm şehirler aranabilir olmalı — Berlin gibi büyük şehirler
+  // alfabetik kesimde kaybolmasın). COUNTRY_CITY_LIMITS ile özel ülkeye limit verilebilir.
+  const lim = (COUNTRY_CITY_LIMITS[country] ?? Number.MAX_SAFE_INTEGER);
   if (!Array.isArray(list)) return list;
   const unique = Array.from(new Set(list));
   const sorted = unique.sort((a,b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
