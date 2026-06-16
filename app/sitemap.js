@@ -1,4 +1,5 @@
 import { API_ORIGIN, SITE_URL } from '@/lib/seo-server';
+import { getProviderCombinations } from '@/lib/tedaviler-data';
 
 async function safeList(path) {
   try {
@@ -32,6 +33,7 @@ export default async function sitemap() {
     '/kvkk',
     '/cookie-policy',
     '/data-rights',
+    '/tedaviler',
   ];
 
   const staticUrls = staticPaths.map((p) => ({
@@ -71,5 +73,20 @@ export default async function sitemap() {
     dynamicUrls = [];
   }
 
-  return [...staticUrls, ...dynamicUrls];
+  // Programmatic SEO: /tedaviler/[specialty]/[city] for combinations that
+  // actually have providers. Capped at 500 to keep the sitemap reasonable.
+  let tedaviUrls = [];
+  try {
+    const combos = await getProviderCombinations(500);
+    tedaviUrls = combos.map(({ specialtySlug, citySlug }) => ({
+      url: `${SITE_URL}/tedaviler/${specialtySlug}/${citySlug}`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    }));
+  } catch {
+    tedaviUrls = [];
+  }
+
+  return [...staticUrls, ...dynamicUrls, ...tedaviUrls];
 }

@@ -14,6 +14,14 @@ export default function Footer() {
   ];
 
 
+  // Popüler programatik SEO landing linkleri (crawl giriş noktası).
+  const popularTreatments = [
+    { label: 'İstanbul Kardiyoloji', href: '/tedaviler/kardiyoloji/istanbul' },
+    { label: 'Ankara Ortopedi', href: '/tedaviler/ortopedi/ankara' },
+    { label: 'İstanbul Dermatoloji', href: '/tedaviler/dermatoloji/istanbul' },
+    { label: 'Tüm Tedaviler', href: '/tedaviler' },
+  ];
+
   const legalLinks = [
     { label: t('footer.privacyPolicy'), href: '/privacy-policy' },
     { label: t('footer.cookiePolicy'), href: '/cookie-policy' },
@@ -26,7 +34,7 @@ export default function Footer() {
     <footer className="bg-[#1C6A83] text-white/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
         {/* Main grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-2">
@@ -44,6 +52,18 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {quickLinks.map((l) => (
                 <li key={l.label}>
+                  <a href={l.href} className="text-sm text-white/70 hover:text-white transition-colors">{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Popüler Tedaviler — programatik SEO crawl giriş noktası */}
+          <div>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Popüler Tedaviler</h3>
+            <ul className="space-y-2.5">
+              {popularTreatments.map((l) => (
+                <li key={l.href}>
                   <a href={l.href} className="text-sm text-white/70 hover:text-white transition-colors">{l.label}</a>
                 </li>
               ))}
