@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { appointmentAPI, clinicAPI, clinicManagerAPI } from '../lib/api';

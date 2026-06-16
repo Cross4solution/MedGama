@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from '@/compat/router';
 import SEOHead, { buildPhysicianSchema } from '../components/seo/SEOHead';
 import MapboxMap from '../components/map/MapboxMap';
 import {

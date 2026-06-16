@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/compat/router';
 import { Cookie, Shield, BarChart3, Megaphone, Settings, ExternalLink } from 'lucide-react';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import SEOHead from '../components/seo/SEOHead';

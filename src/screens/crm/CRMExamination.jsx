@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@/compat/router';
 import {
   Stethoscope, Search, Plus, X, Trash2, ChevronDown, ChevronUp,
   Upload, FileImage, File, Eye, Clock, User, Calendar, Pill,

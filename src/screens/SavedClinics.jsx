@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { Building2, Loader2, Trash2, MapPin, Star, Heart, User2, Stethoscope } from 'lucide-react';
 import { socialAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';

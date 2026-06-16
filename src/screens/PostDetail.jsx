@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from '@/compat/router';
 import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, FileText, Play, Download, Bookmark } from 'lucide-react';
 import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';

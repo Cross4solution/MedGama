@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import {
   X, User, Mail, Phone, FileText, Clock, CalendarDays,

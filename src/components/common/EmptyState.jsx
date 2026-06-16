@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 
 const ILLUSTRATIONS = {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { getRedirectFromLoginResult, getRedirectForRole } from '../utils/authRedirect';
 import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff, Phone, Loader2, Heart, Building2 } from 'lucide-react';

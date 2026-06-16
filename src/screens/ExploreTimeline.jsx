@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { getCountryNames } from '../data/cityLoader';
 import TimelineFilterSidebar from 'components/timeline/TimelineFilterSidebar';
 import TimelineControls from 'components/timeline/TimelineControls';

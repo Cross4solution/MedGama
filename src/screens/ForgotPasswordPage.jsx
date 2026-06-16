@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from '@/compat/router';
 import { authAPI } from '../lib/api';
 import { Mail, ArrowRight, ArrowLeft, RefreshCw, CheckCircle2, KeyRound, Eye, EyeOff } from 'lucide-react';
 import SEOHead from '../components/seo/SEOHead';

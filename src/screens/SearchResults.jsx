@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import {
   Search, MapPin, Star, Video, X, SlidersHorizontal,

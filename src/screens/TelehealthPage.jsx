@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { Video, Calendar, CheckCircle, XCircle, ChevronLeft, ChevronRight, X, AlertTriangle, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { appointmentAPI } from '../lib/api';

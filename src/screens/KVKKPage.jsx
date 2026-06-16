@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/compat/router';
 import { Shield, ExternalLink, Scale, FileText, UserCheck, Lock, Eye, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SEOHead from '../components/seo/SEOHead';

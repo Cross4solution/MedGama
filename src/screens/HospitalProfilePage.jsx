@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link } from '@/compat/router';
 import {
   MapPin, Phone, Mail, Globe, Building2, Users, ChevronRight,
   CheckCircle, Loader2, Heart, Star, ArrowRight, Stethoscope,

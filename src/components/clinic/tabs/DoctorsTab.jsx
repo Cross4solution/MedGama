@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { Star, Stethoscope, Clock, Languages } from 'lucide-react';
 import resolveStorageUrl from '../../../utils/resolveStorageUrl';
 import { useTranslation } from 'react-i18next';

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import { Compass } from 'lucide-react';
 import { SearchSections } from '../components/search';

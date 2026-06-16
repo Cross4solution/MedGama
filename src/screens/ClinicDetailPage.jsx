@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@/compat/router';
 import ClinicHero from '../components/clinic/ClinicHero';
 import Tabs from '../components/tabs/Tabs';
 import ContactActions from '../components/clinic/ContactActions';

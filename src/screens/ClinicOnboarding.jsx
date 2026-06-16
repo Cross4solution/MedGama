@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI, catalogAPI } from '../lib/api';

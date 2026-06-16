@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import {
   Users, Search, ChevronLeft, ChevronRight, Shield, ShieldCheck, ShieldX,

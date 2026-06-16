@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from '@/compat/router';
 import { useAuth } from '../../context/AuthContext';
 import SEOHead from '../seo/SEOHead';
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import PhoneNumberInput from '../components/forms/PhoneNumberInput';
 import { listCountriesAll } from '../utils/geo';

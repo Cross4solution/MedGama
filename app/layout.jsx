@@ -1,5 +1,6 @@
 import '@/assets/index.css';
 import Providers from './providers';
+import SiteChrome from './SiteChrome';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://medagama.com';
 
@@ -28,7 +29,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="tr">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <SiteChrome>{children}</SiteChrome>
+        </Providers>
       </body>
     </html>
   );

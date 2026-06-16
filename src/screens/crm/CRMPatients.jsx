@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import {
   Users, Search, Plus, Filter, Eye, Tag, X, User, Mail, Phone,
   Calendar, ChevronLeft, ChevronRight, Activity, Loader2,

@@ -1,7 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import { Star, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link } from '@/compat/router';
 
 function formatRating(value) {
   const n = typeof value === 'number' ? value : Number(value);

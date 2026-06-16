@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 
 const DashboardRedirect = () => {

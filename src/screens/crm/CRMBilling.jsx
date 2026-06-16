@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import {
   Receipt, CreditCard, Banknote, Building2, Plus, Search, Filter,
   ChevronLeft, ChevronRight, X, Check, AlertTriangle, Clock,

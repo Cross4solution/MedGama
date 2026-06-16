@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from '@/compat/router';
 import ThreadsSidebar from 'components/chat/ThreadsSidebar';
 import ChatHeader from 'components/chat/ChatHeader';
 import ChatMessageList from 'components/chat/ChatMessageList';

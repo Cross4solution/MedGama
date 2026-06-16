@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
-import { NavLink, useLocation, useNavigate, Outlet } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate, Outlet } from '@/compat/router';
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -212,7 +212,7 @@ const NAV_SECTIONS = [
   },
 ];
 
-const AdminLayout = () => {
+const AdminLayout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -509,7 +509,7 @@ const AdminLayout = () => {
             </div>
           }>
             <AnnouncementBanner />
-            <Outlet />
+            <Outlet>{children}</Outlet>
           </Suspense>
         </main>
       </div>

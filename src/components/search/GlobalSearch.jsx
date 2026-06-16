@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { Stethoscope, Building2, BadgeCheck, ArrowRight, Loader2, Tag } from 'lucide-react';
 import { searchAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';

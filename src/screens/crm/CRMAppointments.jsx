@@ -7,7 +7,7 @@ import {
   ShieldAlert, Upload, Lock, FileCheck, CheckCircle, Crown, Sparkles,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { appointmentAPI, doctorProfileAPI, clinicVerificationAPI } from '../../lib/api';

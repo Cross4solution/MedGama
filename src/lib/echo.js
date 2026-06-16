@@ -3,7 +3,10 @@ import Pusher from 'pusher-js';
 import { API_BASE_URL } from '../config/apiBase';
 
 // Make Pusher available globally (required by laravel-echo)
-window.Pusher = Pusher;
+// SSR guard: bu modül Next prerender sırasında import edilebilir; window orada yok.
+if (typeof window !== 'undefined') {
+  window.Pusher = Pusher;
+}
 
 /**
  * Laravel Echo instance for real-time WebSocket communication.
@@ -16,6 +19,7 @@ window.Pusher = Pusher;
  */
 
 function getAuthToken() {
+  if (typeof localStorage === 'undefined') return '';
   try {
     const fromState = JSON.parse(localStorage.getItem('auth_state') || '{}')?.token;
     return fromState || localStorage.getItem('access_token') || '';

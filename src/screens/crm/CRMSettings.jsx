@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@/compat/router';
 import {
   Settings, User, Bell, Shield, Clock, Globe, Palette, Mail,
   Phone, MapPin, Camera, Save, Eye, EyeOff, Lock as LockIcon, Key,

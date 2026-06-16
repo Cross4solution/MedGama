@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from '@/compat/router';
 import { Heart, MessageCircle, MapPin, Share2, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2, Bookmark, Loader2, Volume2, Film } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';

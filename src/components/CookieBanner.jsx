@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { Shield, Settings, Check, X, ChevronDown, ChevronUp, Cookie, ExternalLink } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 
 const COOKIE_CATEGORIES = [

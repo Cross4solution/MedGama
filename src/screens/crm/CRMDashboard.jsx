@@ -38,7 +38,7 @@ import {
   PieChart,
   Image,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/compat/router';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import AiInsightBanner from '../../components/crm/AiInsightBanner';

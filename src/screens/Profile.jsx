@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../i18n';
 import LangFlag from '../components/ui/LangFlag';
 import { useCookieConsent } from '../context/CookieConsentContext';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from '@/compat/router';
 import GlobalSuggest from '../components/forms/GlobalSuggest';
 import { jsPDF } from 'jspdf';
 import resolveStorageUrl from '../utils/resolveStorageUrl';

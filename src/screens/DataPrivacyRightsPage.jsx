@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import {

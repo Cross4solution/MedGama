@@ -1,6 +1,6 @@
 import React from 'react';
 import { Award, Calendar, ChevronRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import resolveStorageUrl from '../../../utils/resolveStorageUrl';
 import AccreditationBadges from '../AccreditationBadges';
 

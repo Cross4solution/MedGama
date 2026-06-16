@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 

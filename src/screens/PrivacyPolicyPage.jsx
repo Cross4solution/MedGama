@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/compat/router';
 import { Shield, ExternalLink } from 'lucide-react';
 import SEOHead from '../components/seo/SEOHead';
 

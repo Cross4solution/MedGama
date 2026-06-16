@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import {
   User, Mail, Phone, MapPin, Calendar, AlertCircle,

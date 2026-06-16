@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { appointmentAPI } from '../lib/api';

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from '@/compat/router';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import ProTeaser from '../../components/crm/ProTeaser';
