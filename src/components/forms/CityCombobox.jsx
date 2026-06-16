@@ -19,7 +19,20 @@ export default function CityCombobox({
 
   const filtered = useMemo(() => {
     const q = normalize(query || '');
-    const matched = !q ? options : options.filter((opt) => normalize(opt).includes(q));
+    if (!q) return options.slice(0, 50);
+    // Prefix-öncelikli sıralama: "ber" → önce "Ber..." (Berlin), sonra "...ber..." (Abenberg)
+    // 0 = tam başlangıç eşleşmesi, 1 = kelime başı eşleşmesi, 2 = içeren
+    const rank = (name) => {
+      const n = normalize(name);
+      if (n.startsWith(q)) return 0;
+      if (n.split(/[\s\-]+/).some((w) => w.startsWith(q))) return 1;
+      return 2;
+    };
+    const matched = options
+      .filter((opt) => normalize(opt).includes(q))
+      .map((opt) => [opt, rank(opt)])
+      .sort((a, b) => a[1] - b[1] || a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }))
+      .map((x) => x[0]);
     // Render performansı: DOM'a en fazla 50 öğe bas (filtre tüm liste üzerinde çalışır)
     return matched.slice(0, 50);
   }, [options, query]);
