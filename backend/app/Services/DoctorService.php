@@ -156,10 +156,12 @@ class DoctorService
         if (!$doctor) return null;
         $id = $doctor->id;
 
-        // Review stats
-        $reviews = DoctorReview::where('doctor_id', $id)->visible();
-        $reviewCount = $reviews->count();
-        $avgRating   = $reviewCount > 0 ? round($reviews->avg('rating'), 1) : null;
+        // Review stats — tek aggregate sorgu (count + avg ayrı sorgu yerine)
+        $stats = DoctorReview::where('doctor_id', $id)->visible()
+            ->selectRaw('COUNT(*) as cnt, AVG(rating) as avg_rating')
+            ->first();
+        $reviewCount = (int) ($stats->cnt ?? 0);
+        $avgRating   = $reviewCount > 0 ? round((float) $stats->avg_rating, 1) : null;
 
         // Upcoming availability summary (next 7 days)
         $upcomingSlots = CalendarSlot::where('doctor_id', $id)

@@ -16,14 +16,46 @@ use Illuminate\Http\Request;
 
 class CatalogController extends Controller
 {
+    /**
+     * Catalog cache invalidation — driver-agnostic açık key forget (tag YOK).
+     * Bir katalog tipi değiştiğinde ilgili full-list ve locale'li search cache'lerini siler.
+     * Desteklenen locale'ler: en, tr (uygulamada kullanılanlar).
+     */
+    private function forgetCatalogCache(string $type): void
+    {
+        $keys = [
+            'specialty'     => ['catalog:specialties:all', 'catalog:specialties:search:'],
+            'city'          => ['catalog:cities:all', 'catalog:cities:search:'],
+            'disease'       => ['catalog:diseases:all'],
+            'symptom'       => ['catalog:symptoms:all'],
+            'treatment_tag' => ['catalog:treatment_tags:all'],
+        ][$type] ?? [];
+
+        foreach ($keys as $key) {
+            if (str_ends_with($key, ':search:')) {
+                // Locale'li search cache'leri (specialtiesSearch / citiesSearch)
+                foreach (['en', 'tr'] as $locale) {
+                    cache()->forget($key . $locale);
+                }
+            } else {
+                cache()->forget($key);
+            }
+        }
+    }
+
     // ── Specialties ──
 
     public function specialties(Request $request)
     {
-        $specialties = Specialty::active()
-            ->ordered()
-            ->when($request->code, fn($q, $v) => $q->where('code', $v))
-            ->get();
+        // Filtreli istekleri cache'leme — sadece tam liste cache'lenir (nadir değişir, 1 saat TTL)
+        if ($request->code) {
+            $specialties = Specialty::active()->ordered()->where('code', $request->code)->get();
+            return response()->json(['specialties' => $specialties]);
+        }
+
+        $specialties = cache()->remember('catalog:specialties:all', 3600, function () {
+            return Specialty::active()->ordered()->get();
+        });
 
         return response()->json(['specialties' => $specialties]);
     }
@@ -40,6 +72,7 @@ class CatalogController extends Controller
         ]);
 
         $specialty = Specialty::create($validated);
+        $this->forgetCatalogCache('specialty');
 
         return response()->json(['specialty' => $specialty], 201);
     }
@@ -55,6 +88,7 @@ class CatalogController extends Controller
         ]);
 
         $specialty->update($validated);
+        $this->forgetCatalogCache('specialty');
 
         return response()->json(['specialty' => $specialty->fresh()]);
     }
@@ -62,6 +96,7 @@ class CatalogController extends Controller
     public function destroySpecialty(string $id)
     {
         Specialty::active()->findOrFail($id)->update(['is_active' => false]);
+        $this->forgetCatalogCache('specialty');
         return response()->json(['message' => 'Specialty deleted.']);
     }
 
@@ -122,10 +157,19 @@ class CatalogController extends Controller
 
     public function cities(Request $request)
     {
-        $cities = City::active()
-            ->when($request->country_id, fn($q, $v) => $q->byCountry($v))
-            ->when($request->code, fn($q, $v) => $q->where('code', $v))
-            ->get();
+        // Filtreli istekleri cache'leme — sadece tam liste cache'lenir (nadir değişir, 1 saat TTL)
+        if ($request->country_id || $request->code) {
+            $cities = City::active()
+                ->when($request->country_id, fn($q, $v) => $q->byCountry($v))
+                ->when($request->code, fn($q, $v) => $q->where('code', $v))
+                ->get();
+
+            return response()->json(['cities' => $cities]);
+        }
+
+        $cities = cache()->remember('catalog:cities:all', 3600, function () {
+            return City::active()->get();
+        });
 
         return response()->json(['cities' => $cities]);
     }
@@ -141,6 +185,7 @@ class CatalogController extends Controller
         ]);
 
         $city = City::create($validated);
+        $this->forgetCatalogCache('city');
 
         return response()->json(['city' => $city], 201);
     }
@@ -154,6 +199,7 @@ class CatalogController extends Controller
         ]);
 
         $city->update($validated);
+        $this->forgetCatalogCache('city');
 
         return response()->json(['city' => $city->fresh()]);
     }
@@ -161,6 +207,7 @@ class CatalogController extends Controller
     public function destroyCity(string $id)
     {
         City::active()->findOrFail($id)->update(['is_active' => false]);
+        $this->forgetCatalogCache('city');
         return response()->json(['message' => 'City deleted.']);
     }
 
@@ -168,9 +215,15 @@ class CatalogController extends Controller
 
     public function diseases(Request $request)
     {
-        $diseases = DiseaseCondition::active()
-            ->when($request->code, fn($q, $v) => $q->where('code', $v))
-            ->get();
+        // Filtreli istekleri cache'leme — sadece tam liste cache'lenir (nadir değişir, 1 saat TTL)
+        if ($request->code) {
+            $diseases = DiseaseCondition::active()->where('code', $request->code)->get();
+            return response()->json(['diseases' => $diseases]);
+        }
+
+        $diseases = cache()->remember('catalog:diseases:all', 3600, function () {
+            return DiseaseCondition::active()->get();
+        });
 
         return response()->json(['diseases' => $diseases]);
     }
@@ -187,6 +240,7 @@ class CatalogController extends Controller
         ]);
 
         $disease = DiseaseCondition::create($validated);
+        $this->forgetCatalogCache('disease');
 
         return response()->json(['disease' => $disease], 201);
     }
@@ -202,6 +256,7 @@ class CatalogController extends Controller
         ]);
 
         $disease->update($validated);
+        $this->forgetCatalogCache('disease');
 
         return response()->json(['disease' => $disease->fresh()]);
     }
@@ -210,11 +265,19 @@ class CatalogController extends Controller
 
     public function treatmentTags(Request $request)
     {
-        $tags = TreatmentTag::active()
-            ->ordered()
-            ->with('specialty:id,code,name')
-            ->when($request->specialty_id, fn($q, $v) => $q->where('specialty_id', $v))
-            ->get();
+        // Filtreli istekleri cache'leme — sadece tam liste cache'lenir (nadir değişir, 1 saat TTL)
+        if ($request->specialty_id) {
+            $tags = TreatmentTag::active()->ordered()
+                ->with('specialty:id,code,name')
+                ->where('specialty_id', $request->specialty_id)
+                ->get();
+
+            return response()->json(['treatment_tags' => $tags]);
+        }
+
+        $tags = cache()->remember('catalog:treatment_tags:all', 3600, function () {
+            return TreatmentTag::active()->ordered()->with('specialty:id,code,name')->get();
+        });
 
         return response()->json(['treatment_tags' => $tags]);
     }
@@ -233,6 +296,7 @@ class CatalogController extends Controller
         ]);
 
         $tag = TreatmentTag::create($validated);
+        $this->forgetCatalogCache('treatment_tag');
 
         return response()->json(['treatment_tag' => $tag->load('specialty:id,code,name')], 201);
     }
@@ -250,6 +314,7 @@ class CatalogController extends Controller
         ]);
 
         $tag->update($validated);
+        $this->forgetCatalogCache('treatment_tag');
 
         return response()->json(['treatment_tag' => $tag->fresh()->load('specialty:id,code,name')]);
     }
@@ -257,6 +322,7 @@ class CatalogController extends Controller
     public function destroyTreatmentTag(string $id)
     {
         TreatmentTag::active()->findOrFail($id)->update(['is_active' => false]);
+        $this->forgetCatalogCache('treatment_tag');
         return response()->json(['message' => 'Treatment tag deactivated.']);
     }
 
@@ -320,9 +386,18 @@ class CatalogController extends Controller
 
     public function symptoms(Request $request)
     {
-        $symptoms = SymptomSpecialtyMapping::active()
-            ->when($request->symptom, fn($q, $v) => $q->where('symptom', 'like', "%{$v}%"))
-            ->get();
+        // Filtreli istekleri cache'leme — sadece tam liste cache'lenir (nadir değişir, 1 saat TTL)
+        if ($request->symptom) {
+            $symptoms = SymptomSpecialtyMapping::active()
+                ->where('symptom', 'like', "%{$request->symptom}%")
+                ->get();
+
+            return response()->json(['symptoms' => $symptoms]);
+        }
+
+        $symptoms = cache()->remember('catalog:symptoms:all', 3600, function () {
+            return SymptomSpecialtyMapping::active()->get();
+        });
 
         return response()->json(['symptoms' => $symptoms]);
     }
@@ -338,6 +413,7 @@ class CatalogController extends Controller
         ]);
 
         $mapping = SymptomSpecialtyMapping::create($validated);
+        $this->forgetCatalogCache('symptom');
 
         return response()->json(['symptom' => $mapping], 201);
     }
@@ -352,6 +428,7 @@ class CatalogController extends Controller
         ]);
 
         $mapping->update($validated);
+        $this->forgetCatalogCache('symptom');
 
         return response()->json(['symptom' => $mapping->fresh()]);
     }

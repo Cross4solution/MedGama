@@ -45,12 +45,24 @@ services:
         sync: false
 
       # ── Queue / Cache ──
+      # Default: database driver (Render starter has no Redis → deploy stays green).
       - key: QUEUE_CONNECTION
         value: database
       - key: CACHE_DRIVER
         value: database
       - key: SESSION_DRIVER
         value: database
+
+      # ── Redis (OPT-IN — leave unset to keep database cache/queue) ──
+      # To enable Redis: provision a Redis service, then set these and switch
+      # QUEUE_CONNECTION=redis / CACHE_STORE=redis above. If unset, the app keeps
+      # using the database driver — nothing breaks.
+      # - key: REDIS_HOST
+      #   sync: false          # Redis host
+      # - key: REDIS_PORT
+      #   value: "6379"
+      # - key: REDIS_PASSWORD
+      #   sync: false          # Redis password (or leave null)
 
       # ── Mail ──
       - key: MAIL_MAILER
