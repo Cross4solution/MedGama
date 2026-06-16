@@ -230,9 +230,9 @@ class DatabaseSeeder extends Seeder
                     'codename'  => 'elite-dental-clinic',
                     'fullname'  => 'Elite Dental Ağız ve Diş Sağlığı Kliniği',
                     'avatar'    => 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&q=80',
-                    'address'   => 'Bağdat Cad. No:142, Kadıköy/İstanbul',
-                    'phone'     => '+902163456789',
-                    'biography' => 'İmplant, ortodonti ve estetik diş hekimliğinde uzmanlık. 20 yıllık tecrübesiyle İstanbul\'un en güvenilir diş kliniği.',
+                    'address'   => 'Lara Cad. No:142, Muratpaşa/Antalya',
+                    'phone'     => '+902423456789',
+                    'biography' => 'İmplant, ortodonti ve estetik diş hekimliğinde uzmanlık. 20 yıllık tecrübesiyle Antalya\'nın en güvenilir diş kliniği.',
                     'specialties'=> ['Diş Hekimliği', 'Ortodonti', 'İmplant', 'Estetik Diş'],
                     'hospital_index' => null,
                 ],
@@ -246,8 +246,8 @@ class DatabaseSeeder extends Seeder
                     'codename'  => 'vision-eye-clinic',
                     'fullname'  => 'Vision Göz Hastalıkları Merkezi',
                     'avatar'    => 'https://images.unsplash.com/photo-1584982751601-97dcc096659c?w=400&q=80',
-                    'address'   => 'Nispetiye Cad. No:30, Etiler/İstanbul',
-                    'phone'     => '+902122129999',
+                    'address'   => 'Atatürk Cad. No:30, Nilüfer/Bursa',
+                    'phone'     => '+902242129999',
                     'biography' => 'Excimer lazer, katarakt ve retina tedavisinde öncü göz merkezi. Avrupa standartlarında teknoloji ile net görüş.',
                     'specialties'=> ['Göz Hastalıkları', 'Lazer Göz', 'Katarakt'],
                     'hospital_index' => 2, // Memorial
@@ -354,6 +354,7 @@ class DatabaseSeeder extends Seeder
                 'profile'  => [
                     'title'            => 'Uzm. Dr.',
                     'specialty'        => 'Kardiyoloji',
+                    'address'          => 'Levent, Beşiktaş/İstanbul',
                     'bio'              => 'Kardiyoloji alanında 12 yıllık deneyime sahip uzman hekim. Ekokardiyografi, stres testi ve kalp ritim bozukluklarının tanı ve tedavisinde uzmanlaşmıştır.',
                     'experience_years' => '12',
                     'languages'        => ['Turkish', 'English'],
@@ -381,6 +382,7 @@ class DatabaseSeeder extends Seeder
                 'profile'  => [
                     'title'            => 'Prof. Dr.',
                     'specialty'        => 'Göz Hastalıkları',
+                    'address'          => 'Atatürk Cad. No:30, Nilüfer/Bursa',
                     'bio'              => 'Oftalmoloji alanında 20 yıllık akademik kariyer. Retina cerrahisi, glokom tedavisi ve refraktif cerrahide Türkiye\'nin önde gelen uzmanlarından.',
                     'experience_years' => '20',
                     'languages'        => ['Turkish', 'English', 'German'],
@@ -408,6 +410,7 @@ class DatabaseSeeder extends Seeder
                 'profile'  => [
                     'title'            => 'Uzm. Dr.',
                     'specialty'        => 'Diş Hekimliği – Ortodonti',
+                    'address'          => 'Lara Cad. No:142, Muratpaşa/Antalya',
                     'bio'              => 'Ortodonti ve estetik diş hekimliğinde uzman. Invisalign sertifikalı, metal ve şeffaf braket uygulamaları, dijital gülüş tasarımı konularında geniş deneyim.',
                     'experience_years' => '9',
                     'languages'        => ['Turkish', 'English'],
@@ -435,6 +438,7 @@ class DatabaseSeeder extends Seeder
                 'profile'  => [
                     'title'            => 'Doç. Dr.',
                     'specialty'        => 'Ortopedi ve Travmatoloji',
+                    'address'          => 'Atatürk Bulvarı No:55, Çankaya/Ankara',
                     'bio'              => 'Diz eklemi artroskopisi, omuz cerrahisi ve spor yaralanmaları konusunda Ankara\'nın deneyimli uzmanı. Uluslararası kongrelerde 50\'den fazla bildiri.',
                     'experience_years' => '15',
                     'languages'        => ['Turkish', 'English', 'French'],
@@ -462,6 +466,7 @@ class DatabaseSeeder extends Seeder
                 'profile'  => [
                     'title'            => 'Uzm. Dr.',
                     'specialty'        => 'Kardiyoloji – Girişimsel',
+                    'address'          => 'Alsancak, Mustafa Bey Cad. No:12, Konak/İzmir',
                     'bio'              => 'Girişimsel kardiyoloji, koroner anjiyografi ve perkütan koroner girişim (PCI) alanında uzmanlaşmış. Özellikle kadın kalp hastalıkları üzerine araştırma yapıyor.',
                     'experience_years' => '11',
                     'languages'        => ['Turkish', 'English', 'Arabic'],

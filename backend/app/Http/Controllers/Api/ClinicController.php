@@ -17,17 +17,57 @@ class ClinicController extends Controller
 {
     /**
      * GET /api/clinics — Public brief list
+     *
+     * Query params:
+     *  - name      : klinik adı (mevcut davranış, korunur)
+     *  - city      : şehir adı (klinik adres metninde aranır) — Round 4 landing
+     *  - city_id   : cities.id (UUID) — şehir adına çözülüp adreste aranır
+     *  - specialty : uzmanlık adı/kodu — klinik specialties JSON'unda VEYA
+     *                kliniğin doktorlarının uzmanlığında (whereHas) aranır
+     *  - per_page  : sayfalama (default 20)
      */
     public function index(Request $request)
     {
+        // city_id verilmişse şehir adını cities tablosundan çöz (adres metni eşleştirmesi için)
+        $cityName = trim((string) $request->city);
+        if (!$cityName && $request->city_id) {
+            $cityModel = \App\Models\City::find($request->city_id);
+            // name translatable → çözülmüş string döner
+            $cityName = $cityModel?->name ?? '';
+        }
+
+        $specialty = trim((string) $request->specialty);
+
         $clinics = Clinic::active()
+            // ── İsim (mevcut davranış, korunur) ──
             ->when($request->name, function ($q, $v) {
                 $q->where(function ($inner) use ($v) {
                     TurkishStr::addNormalizedSearch($inner, 'fullname', $v, 'or');
                     TurkishStr::addNormalizedSearch($inner, 'name', $v, 'or');
                 });
             })
-            ->select('id', 'name', 'codename', 'fullname', 'avatar', 'address', 'is_verified')
+            // ── Şehir: klinik adres metninde ara (klinikte city_id kolonu yok) ──
+            ->when($cityName, function ($q, $v) {
+                TurkishStr::addNormalizedSearch($q, 'address', $v, 'and');
+            })
+            // ── Uzmanlık: klinik specialties JSON'unda VEYA doktorlarının uzmanlığında ──
+            ->when($specialty, function ($q, $v) {
+                $q->where(function ($inner) use ($v) {
+                    // 1) Klinik specialties serbest metin JSON alanı
+                    TurkishStr::addNormalizedSearch($inner, 'specialties', $v, 'or');
+                    // 2) Kliniğin doktorlarının uzmanlığı (serbest metin + FK)
+                    $inner->orWhereHas('doctors.doctorProfile', function ($pq) use ($v) {
+                        $pq->where(function ($sq) use ($v) {
+                            TurkishStr::addNormalizedSearch($sq, 'specialty', $v, 'and');
+                            $sq->orWhereHas('specialtyRelation', function ($rel) use ($v) {
+                                TurkishStr::addNormalizedSearch($rel, 'name', $v, 'and');
+                            });
+                        });
+                    });
+                });
+            })
+            // brief response: specialties eklendi (frontend join'e gerek kalmaz)
+            ->select('id', 'name', 'codename', 'fullname', 'avatar', 'address', 'specialties', 'is_verified')
             ->paginate($request->per_page ?? 20);
 
         return response()->json($clinics);

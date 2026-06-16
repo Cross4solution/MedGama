@@ -37,7 +37,8 @@ class DoctorService
             ->with([
                 'doctorProfile:id,user_id,clinic_id,title,specialty,specialty_id,sub_specialties,experience_years,address,online_consultation,bio,languages,prices',
                 'doctorProfile.specialtyRelation:id,name',
-                'clinic:id,name,codename,avatar',
+                // address brief listede şehir join'ine gerek bırakmaz (Round 4 landing)
+                'clinic:id,name,codename,avatar,address',
             ])
             ->select([
                 'id', 'fullname', 'avatar', 'email', 'city_id',
@@ -74,9 +75,50 @@ class DoctorService
             });
         }
 
-        // ── City ──
+        // ── Specialty by name or code (Round 4 landing: /api/doctors?specialty=Kardiyoloji) ──
+        // specialty_id verilmemişse, isim/kod ile çözüp FK üzerinden filtrele;
+        // çözülemezse doctor_profiles.specialty serbest metin alanında ara.
+        if (empty($filters['specialty_id']) && ($specName = trim($filters['specialty'] ?? ''))) {
+            $matchedSpecIds = $this->findSpecialtyIdsByText($specName);
+            // Kod eşleşmesi (CARD, OPHT...) de destekle
+            $codeMatch = Specialty::active()
+                ->whereRaw('LOWER(code) = ?', [mb_strtolower($specName)])
+                ->pluck('id')->toArray();
+            $matchedSpecIds = array_values(array_unique(array_merge($matchedSpecIds, $codeMatch)));
+
+            $query->where(function ($q) use ($matchedSpecIds, $specName) {
+                if ($matchedSpecIds) {
+                    $q->whereHas('doctorProfile', function ($pq) use ($matchedSpecIds) {
+                        $pq->whereIn('specialty_id', $matchedSpecIds);
+                    });
+                }
+                // Serbest metin specialty alanı üzerinden de eşleştir (Türkçe normalize)
+                $q->orWhereHas('doctorProfile', function ($pq) use ($specName) {
+                    TurkishStr::addNormalizedSearch($pq, 'specialty', $specName, 'and');
+                });
+            });
+        }
+
+        // ── City by UUID (legacy: users.city_id — mevcut davranış korunur) ──
         if ($cityId = $filters['city_id'] ?? null) {
             $query->where('city_id', $cityId);
+        }
+
+        // ── City by name (Round 4 landing: /api/doctors?city=İstanbul) ──
+        // Doktorların users.city_id'si seed'de boş; şehir bilgisi doktor veya
+        // bağlı klinik adres metninde yer alır. city_id ile çakışmasın diye
+        // yalnızca city_id verilmemişse uygulanır.
+        if (empty($filters['city_id']) && ($cityName = trim($filters['city'] ?? ''))) {
+            $query->where(function ($q) use ($cityName) {
+                // Doktor profil adresi
+                $q->whereHas('doctorProfile', function ($pq) use ($cityName) {
+                    TurkishStr::addNormalizedSearch($pq, 'address', $cityName, 'and');
+                });
+                // VEYA bağlı kliniğin adresi
+                $q->orWhereHas('clinic', function ($cq) use ($cityName) {
+                    TurkishStr::addNormalizedSearch($cq, 'address', $cityName, 'and');
+                });
+            });
         }
 
         // ── Language spoken by doctor ──

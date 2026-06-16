@@ -16,7 +16,8 @@ class DoctorController extends Controller
      *
      * Query params: search_text, specialty_id, city_id, language,
      *               min_rating, gender, online_only, clinic_id,
-     *               verified, sort, per_page
+     *               verified, sort, per_page,
+     *               specialty (name/code), city (name) — Round 4 landing
      */
     public function index(Request $request): JsonResponse
     {
@@ -25,6 +26,8 @@ class DoctorController extends Controller
                 'search_text', 'specialty_id', 'city_id', 'language',
                 'min_rating', 'gender', 'online_only', 'clinic_id',
                 'verified', 'sort', 'per_page',
+                // Round 4 landing: name-based filters
+                'city',
                 // Legacy compat
                 'search', 'specialty',
             ]),
