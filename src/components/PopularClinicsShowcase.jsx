@@ -1,4 +1,5 @@
 import React, { useMemo, useRef } from 'react';
+import Image from 'next/image';
 import { Star, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from '@/compat/router';
@@ -20,7 +21,7 @@ function ClinicCard({ clinic, onClick, onView }) {
       className="group rounded-md border border-[#e5edf5] bg-white overflow-hidden shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px] hover:shadow-[rgba(50,50,93,0.12)_0px_16px_32px_0px] hover:border-[#d8d6df] transition-all duration-200 flex flex-col cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0d9488]/40"
     >
       <div className="relative h-40 overflow-hidden">
-        <img src={clinic.image} alt={clinic.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" loading="lazy" />
+        <Image src={clinic.image || '/images/default/placeholder.svg'} alt={clinic.name} fill sizes="(max-width: 768px) 100vw, 320px" className="object-cover group-hover:scale-[1.03] transition-transform duration-300" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
         <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-white/95 backdrop-blur-sm rounded-[4px] px-2 py-1 shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px]">
           <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />

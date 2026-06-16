@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import Image from 'next/image';
 import { useParams, useNavigate, Link } from '@/compat/router';
 // SEO meta + Physician JSON-LD artık app/doctor/[id]/page.jsx generateMetadata + server script ile üretiliyor (Faz 3).
 import MapboxMap from '../components/map/MapboxMap';
@@ -50,7 +51,7 @@ function ReviewCard({ review, t }) {
   return (
     <div className="p-4 border border-gray-100 rounded-xl hover:border-gray-200 transition-all">
       <div className="flex items-start gap-3">
-        <img src={resolveStorageUrl(patient.avatar)} alt={patient.fullname} className="w-9 h-9 rounded-full object-cover border border-gray-100 flex-shrink-0" />
+        <Image src={resolveStorageUrl(patient.avatar)} alt={patient.fullname || 'Patient'} width={36} height={36} className="w-9 h-9 rounded-full object-cover border border-gray-100 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
@@ -310,10 +311,13 @@ const DoctorProfilePage = () => {
 
       {/* ═══ Hero Section ═══ */}
       <div className="relative h-36 md:h-44 overflow-hidden">
-        <img
+        <Image
           src="/images/doctor-profile-bg.webp"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-teal-900/60 via-teal-800/40 to-emerald-900/50" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
@@ -325,7 +329,8 @@ const DoctorProfilePage = () => {
         <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-5 md:p-6">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="flex items-start gap-4">
-              <img src={avatarUrl} alt={doctorName}
+              <Image src={avatarUrl} alt={doctorName}
+                width={96} height={96}
                 className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover ring-4 ring-white shadow-lg flex-shrink-0"
                 onError={(e) => { e.currentTarget.src = DEFAULT_AVATAR; }}
               />
@@ -674,7 +679,7 @@ const DoctorProfilePage = () => {
                               className="group relative w-full pb-[100%] bg-gray-100 rounded-xl overflow-hidden border border-gray-200"
                               onClick={() => { setGalleryIndex(idx); setGalleryOpen(true); }}
                             >
-                              <img src={src} alt={`Gallery ${idx+1}`} loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" />
+                              <Image src={src} alt={`${doctorName} gallery ${idx+1}`} fill sizes="(max-width: 768px) 33vw, 200px" className="object-cover group-hover:scale-[1.03] transition-transform duration-300" />
                             </button>
                           ))}
                         </div>
@@ -683,7 +688,7 @@ const DoctorProfilePage = () => {
                             <div className="fixed inset-0 bg-black/70 backdrop-blur-lg" onClick={() => setGalleryOpen(false)} />
                             <div className="relative z-[101] flex items-center justify-center">
                               <div className="relative w-[88vw] h-[88vw] md:w-[70vh] md:h-[70vh] max-w-[1100px] max-h-[1100px] rounded-2xl overflow-hidden shadow-2xl bg-black/20 flex items-center justify-center">
-                                <img src={gallery[galleryIndex]} alt={`Gallery ${galleryIndex+1}`} className="w-full h-full object-cover" />
+                                <Image src={gallery[galleryIndex]} alt={`${doctorName} gallery ${galleryIndex+1}`} fill sizes="(max-width: 768px) 88vw, 70vh" className="object-cover" />
                                 <button onClick={() => setGalleryOpen(false)} className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"><X className="w-5 h-5" /></button>
                               </div>
                               {gallery.length > 1 && (<>

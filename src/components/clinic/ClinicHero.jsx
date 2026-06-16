@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { MapPin, Star, Heart, CheckCircle, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
@@ -21,10 +22,13 @@ export default function ClinicHero({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6 mt-4">
       <div className="relative h-56 md:h-72">
-        <img 
+        <Image
           src={resolveStorageUrl(image)}
           alt={`${name} - Modern clinic environment`}
-          className="w-full h-full object-cover"
+          fill
+          priority
+          sizes="(max-width: 768px) 100vw, 1024px"
+          className="object-cover"
           onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />

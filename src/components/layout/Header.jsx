@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import Image from 'next/image';
 import { Link, useNavigate, useLocation } from '@/compat/router';
 import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2, Cpu, LayoutDashboard, Newspaper, CalendarClock, Bookmark, Settings, ArrowUpRight, Video, Monitor, Bell, MessageCircle, Check, CheckCheck, Trash2, Clock, BellOff, LogOut, Shield, ChevronDown, Heart, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -253,12 +254,13 @@ const Header = () => {
             const logoTo = '/home-v2';
             return (
               <Link to={logoTo} onClick={closeMenu} className="flex items-center cursor-pointer select-none ml-9 sm:ml-9">
-                <img
+                <Image
                   src="/images/logo/logo.svg"
                   alt="MedaGama Logo"
+                  width={176}
+                  height={40}
+                  priority
                   className="h-9 md:h-10 w-auto object-contain"
-                  loading="eager"
-                  decoding="async"
                 />
               </Link>
             );
@@ -473,9 +475,11 @@ const Header = () => {
                       className="flex items-center gap-2 px-1.5 py-1 rounded-lg border border-transparent hover:bg-gray-50 transition-colors cursor-pointer"
                       title={user.name}
                     >
-                      <img
+                      <Image
                         src={resolveStorageUrl(user.avatar)}
                         alt={user.name}
+                        width={28}
+                        height={28}
                         className="w-7 h-7 rounded-full object-cover border border-gray-200"
                         onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }}
                       />
@@ -565,9 +569,11 @@ const Header = () => {
                   className="p-0.5 rounded-full border border-gray-200 overflow-hidden"
                   title={user.name}
                 >
-                  <img
+                  <Image
                     src={resolveStorageUrl(user.avatar)}
                     alt={user.name}
+                    width={28}
+                    height={28}
                     className="w-7 h-7 rounded-full object-cover"
                     onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }}
                   />

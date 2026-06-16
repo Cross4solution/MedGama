@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 
 export default function Footer() {
@@ -29,7 +30,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-2">
-              <img src="/images/logo/favicon-icon-white.png" alt="MedaGama" className="h-8 w-auto object-contain" />
+              <Image src="/images/logo/favicon-icon-white.png" alt="MedaGama" width={31} height={32} className="h-8 w-auto object-contain" />
               <span className="text-white text-2xl font-semibold tracking-tight">MedaGama</span>
             </div>
             <p className="text-sm leading-relaxed text-white/60">

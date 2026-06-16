@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { Link, useNavigate } from '@/compat/router';
 import { Heart, MessageCircle, MapPin, Share2, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2, Bookmark, Loader2, Volume2, Film } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
@@ -361,7 +362,7 @@ function VideoPreview({ m, className }) {
     <div ref={containerRef} className="relative bg-black flex items-center justify-center cursor-pointer group aspect-video w-full overflow-hidden rounded-lg" onClick={handlePlay}>
       {/* Thumbnail or video metadata preview */}
       {hasThumb ? (
-        <img src={effectiveThumb} alt="Video" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
+        <Image src={effectiveThumb} alt="Video thumbnail" fill sizes="(max-width: 768px) 100vw, 600px" className="object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
       ) : inView && !ytId ? (
         <video
           src={rawSrc ? `${rawSrc}#t=0.5` : videoSrc}
@@ -995,7 +996,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                       className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'}`}
                       onClick={(e)=>{ e.stopPropagation(); if (!disabledActions) setShowEmoji(v=>!v); }}
                     >
-                      <img src="/images/icon/smile-circle-svgrepo-com.svg" alt="emoji" className="w-4 h-4 opacity-50" />
+                      <Image src="/images/icon/smile-circle-svgrepo-com.svg" alt="" width={16} height={16} className="w-4 h-4 opacity-50" />
                     </button>
                     {commentText.trim() && (
                       <button
@@ -1307,7 +1308,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       ) : (
         <>
           <div className={`relative h-60 overflow-hidden`}>
-            <img src={item.img} alt={item.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]" />
+            <Image src={item.img || '/images/default/placeholder.svg'} alt={item.title || 'Post image'} fill sizes="(max-width: 768px) 100vw, 600px" className="object-cover transition-transform duration-300 group-hover:scale-[1.01]" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
             <div className="absolute top-3 right-3">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">

@@ -10,6 +10,8 @@ const ChatRoundIcon = (props) => (
   <img
     src="/images/icon/chat-round-line-svgrepo-com.svg"
     alt="Messages"
+    loading="lazy"
+    decoding="async"
     {...props}
   />
 );
