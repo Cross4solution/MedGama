@@ -537,7 +537,8 @@ const LoginPage = ({ role = 'patient' }) => {
         <meta property="og:title" content={role === 'doctor' ? 'Doctor Sign In | MedaGama' : role === 'clinic' ? 'Clinic Sign In | MedaGama' : 'Sign In | MedaGama'} />
         <meta property="og:description" content={t(config.metaDescKey)} />
         <meta property="og:type" content="website" />
-        <meta name="robots" content="index, follow" />
+        {/* Auth pages are thin/duplicative — keep them out of the index. */}
+        <meta name="robots" content="noindex, follow" />
         <link rel="canonical" href={`https://medagama.com${role === 'patient' ? '/login' : role === 'doctor' ? '/doctor-login' : '/clinic-login'}`} />
       </Helmet>
 

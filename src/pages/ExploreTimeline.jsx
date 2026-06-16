@@ -12,6 +12,7 @@ import SPECIALTIES from '../data/specialties';
 import { medStreamAPI } from '../lib/api';
 import { resizeImages } from '../utils/imageResize';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
+import SEOHead from '../components/seo/SEOHead';
 
 // Basit mock feed üretici: guest için random, user için follow-first + location mix simülasyonu
 
@@ -558,6 +559,12 @@ export default function ExploreTimeline() {
 
   return (
     <div className="min-h-screen pt-2 sm:pt-8">
+      <SEOHead
+        title="MedStream — Sağlık Akışı"
+        description="Doktorlar, klinikler ve hastaneler tarafından paylaşılan güncel sağlık içerikleri. MedaGama MedStream akışını keşfedin."
+        canonical="/medstream"
+        alternates
+      />
       <div className="min-h-screen w-full fixed top-0 left-0 -z-10"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-6 pb-12 relative">
         {/* Hidden pickers for composer */}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../lib/api';
 import { Mail, ArrowRight, ArrowLeft, RefreshCw, CheckCircle2, KeyRound, Eye, EyeOff } from 'lucide-react';
+import SEOHead from '../components/seo/SEOHead';
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -116,6 +117,7 @@ export default function ForgotPasswordPage() {
   if (step === 4) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4">
+        <SEOHead title="Şifremi Unuttum" canonical="/forgot-password" noIndex />
         <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-emerald-600" />
@@ -135,6 +137,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4">
+      <SEOHead title="Şifremi Unuttum" canonical="/forgot-password" noIndex />
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 max-w-md w-full">
 
         {/* Icon */}

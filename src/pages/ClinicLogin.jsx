@@ -7,6 +7,7 @@ import PhoneVerification from '../components/auth/PhoneVerification';
 import TermsPopup from '../components/auth/TermsPopup';
 import PrivacyPopup from '../components/auth/PrivacyPopup';
 import { useTranslation } from 'react-i18next';
+import SEOHead from '../components/seo/SEOHead';
 
 const ClinicLogin = () => {
   const navigate = useNavigate();
@@ -94,6 +95,7 @@ const ClinicLogin = () => {
 
   return (
     <>
+    <SEOHead title="Klinik Girişi" canonical="/clinic-login" noIndex />
     <div className="min-h-screen w-full flex relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800" />

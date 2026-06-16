@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import SEOHead from '../seo/SEOHead';
 
 /**
  * Frontend-side route guard. Backend remains the source of truth.
@@ -36,5 +37,14 @@ export default function PrivateRoute({ children, roles }) {
     }
   }
 
-  return children;
+  // Default every authenticated/private route to noindex (crawl-budget + privacy).
+  // Pages that should still be indexable (e.g. /medstream, which is also auth-gated)
+  // render their own <SEOHead> afterward; react-helmet-async's later instance wins,
+  // overriding this default robots tag for those specific pages.
+  return (
+    <>
+      <SEOHead noIndex />
+      {children}
+    </>
+  );
 }

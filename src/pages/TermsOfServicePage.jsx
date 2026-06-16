@@ -1,9 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SEOHead from '../components/seo/SEOHead';
 
 const TermsOfServicePage = () => {
   return (
     <div>
+      <SEOHead
+        title="Kullanım Koşulları"
+        description="MedaGama Kullanım Koşulları — platformu kullanırken geçerli olan hak ve yükümlülükler."
+        canonical="/terms-of-service"
+        alternates
+      />
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header Section */}

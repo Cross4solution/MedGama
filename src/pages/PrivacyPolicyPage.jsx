@@ -1,10 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, ExternalLink } from 'lucide-react';
+import SEOHead from '../components/seo/SEOHead';
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEOHead
+        title="Gizlilik Politikası"
+        description="MedaGama Gizlilik Politikası — kişisel verilerinizi nasıl topladığımız, kullandığımız ve koruduğumuz hakkında bilgi."
+        canonical="/privacy-policy"
+        alternates
+      />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Header */}
         <div className="mb-8">
