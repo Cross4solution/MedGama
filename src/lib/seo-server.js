@@ -9,6 +9,42 @@ export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || 'https://medagama.com';
 export const SITE_NAME = 'MedaGama';
 
+/**
+ * Build an `alternates` block with hreflang languages for a canonical path.
+ * No locale-prefixed routing yet (no /tr/, /en/) — all hreflangs point to the
+ * same single URL, which is valid and gives Google a language signal. When
+ * locale routing lands, the href values become `${SITE_URL}/tr${path}` etc.
+ * @param {string} path canonical path, e.g. '/about' or '/doctor/123'
+ */
+export function altLanguages(path) {
+  return {
+    canonical: path,
+    languages: {
+      tr: `${SITE_URL}${path}`,
+      en: `${SITE_URL}${path}`,
+      'x-default': `${SITE_URL}${path}`,
+    },
+  };
+}
+
+/**
+ * Resolve a possibly-relative image/storage path to an absolute URL.
+ * - Already absolute (http/https) → returned as-is.
+ * - Storage path (e.g. '/storage/...') → prefixed with API_ORIGIN.
+ * - Other site-relative path → prefixed with SITE_URL.
+ */
+export function absoluteUrl(path) {
+  if (!path || typeof path !== 'string') return undefined;
+  const p = path.trim();
+  if (!p) return undefined;
+  if (/^https?:\/\//i.test(p)) return p;
+  const rel = p.startsWith('/') ? p : `/${p}`;
+  // Backend-served media (uploads) live under API_ORIGIN; static site assets
+  // under SITE_URL. Storage/media paths get the API origin.
+  if (/^\/(storage|media|uploads|avatars?)\b/i.test(rel)) return `${API_ORIGIN}${rel}`;
+  return `${SITE_URL}${rel}`;
+}
+
 /** Trim a string to a safe meta-description length. */
 export function clamp(str, max = 160) {
   if (!str) return str;
@@ -120,6 +156,28 @@ export function buildOrganizationSchema() {
       email: 'info@medagama.com',
       contactType: 'customer service',
     },
+  };
+}
+
+export function buildFaqSchema(faqs = []) {
+  const valid = (Array.isArray(faqs) ? faqs : [])
+    .map((f) => ({
+      question: f?.question || f?.q || f?.title,
+      answer: f?.answer || f?.a || f?.content,
+    }))
+    .filter((f) => f.question && f.answer);
+  if (valid.length === 0) return undefined;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: valid.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: String(f.answer),
+      },
+    })),
   };
 }
 

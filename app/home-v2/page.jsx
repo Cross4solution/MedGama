@@ -3,13 +3,14 @@ import {
   buildWebSiteSchema,
   buildOrganizationSchema,
   jsonLdString,
+  altLanguages,
 } from '@/lib/seo-server';
 
 export const metadata = {
   title: 'MedaGama — Dijital Sağlık ve Randevu Platformu',
   description:
     'Uzman doktorlar, güvenli telehealth ve modern tedavi yöntemleri tek bir platformda. Randevu al, doktor yorumlarını oku, sağlık turizmini planla.',
-  alternates: { canonical: '/home-v2' },
+  alternates: altLanguages('/home-v2'),
   openGraph: {
     title: 'MedaGama — Dijital Sağlık ve Randevu Platformu',
     description:

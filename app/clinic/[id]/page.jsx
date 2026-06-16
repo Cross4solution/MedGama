@@ -2,7 +2,10 @@ import ClinicDetailPage from '@/screens/ClinicDetailPage';
 import {
   fetchJson,
   clamp,
+  absoluteUrl,
+  altLanguages,
   buildMedicalClinicSchema,
+  buildBreadcrumbSchema,
   jsonLdString,
 } from '@/lib/seo-server';
 
@@ -19,23 +22,31 @@ async function getClinicData(codename) {
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const c = await getClinicData(id);
-  if (!c) return { title: 'Klinik', alternates: { canonical: `/clinic/${id}` } };
+  if (!c) return { title: 'Klinik', alternates: altLanguages(`/clinic/${id}`) };
 
   const name = c.fullname || c.name || 'Klinik';
   const description = clamp(
     c.description || c.bio || `${name} — MedaGama üzerinden randevu alın ve uzman ekibi inceleyin.`,
   );
-  const image = c.avatar || undefined;
+  const image = absoluteUrl(c.avatar);
 
   return {
     title: name,
     description,
-    alternates: { canonical: `/clinic/${id}` },
+    alternates: altLanguages(`/clinic/${id}`),
     openGraph: {
       title: `${name} | MedaGama`,
       description,
       url: `/clinic/${id}`,
       type: 'website',
+      ...(image && {
+        images: [{ url: image, width: 1200, height: 630, alt: name }],
+      }),
+    },
+    twitter: {
+      card: image ? 'summary_large_image' : 'summary',
+      title: `${name} | MedaGama`,
+      description,
       ...(image && { images: [image] }),
     },
   };
@@ -46,6 +57,7 @@ export default async function Page({ params }) {
   const c = await getClinicData(id);
 
   let schema = null;
+  let breadcrumb = null;
   if (c) {
     const name = c.fullname || c.name;
     const specialties = Array.isArray(c.doctors)
@@ -64,13 +76,18 @@ export default async function Page({ params }) {
       : undefined;
     schema = buildMedicalClinicSchema({
       name,
-      image: c.avatar || undefined,
+      image: absoluteUrl(c.avatar),
       description: c.description || c.bio || undefined,
       address: c.address || undefined,
       telephone: c.phone || c.telephone || undefined,
       specialties: specialties?.length ? specialties : undefined,
       url: `/clinic/${id}`,
     });
+    breadcrumb = buildBreadcrumbSchema([
+      { name: 'Ana Sayfa', path: '/' },
+      { name: 'Klinikler', path: '/browse/clinics' },
+      { name, path: `/clinic/${id}` },
+    ]);
   }
 
   return (
@@ -79,6 +96,12 @@ export default async function Page({ params }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLdString(schema) }}
+        />
+      )}
+      {breadcrumb && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }}
         />
       )}
       <ClinicDetailPage />

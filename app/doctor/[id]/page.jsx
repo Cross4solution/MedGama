@@ -2,7 +2,11 @@ import DoctorProfile from '@/screens/DoctorProfile';
 import {
   fetchJson,
   clamp,
+  absoluteUrl,
+  altLanguages,
   buildPhysicianSchema,
+  buildBreadcrumbSchema,
+  buildFaqSchema,
   jsonLdString,
 } from '@/lib/seo-server';
 
@@ -15,10 +19,18 @@ async function getDoctorData(id) {
   return { doctor: d, stats: data.review_stats || {} };
 }
 
+// Backend: GET /api/doctors/{id}/faqs → { data: [{ question, answer }] } (public, active only)
+async function getDoctorFaqs(id) {
+  const data = await fetchJson(`/api/doctors/${id}/faqs`, 300);
+  const list = data?.data || data?.faqs || (Array.isArray(data) ? data : null);
+  return Array.isArray(list) ? list : [];
+}
+
 export async function generateMetadata({ params }) {
   const { id } = await params; // Next 15: params async
   const res = await getDoctorData(id);
-  if (!res) return { title: 'Doktor', alternates: { canonical: `/doctor/${id}` } };
+  if (!res)
+    return { title: 'Doktor', alternates: altLanguages(`/doctor/${id}`) };
 
   const { doctor: d } = res;
   const name = d.fullname || d.name || 'Doktor';
@@ -29,17 +41,25 @@ export async function generateMetadata({ params }) {
   const description = clamp(
     profile.bio || `${name} ile MedaGama üzerinden online randevu alın.`,
   );
-  const image = d.avatar || undefined;
+  const image = absoluteUrl(d.avatar);
 
   return {
     title,
     description,
-    alternates: { canonical: `/doctor/${id}` },
+    alternates: altLanguages(`/doctor/${id}`),
     openGraph: {
       title: `${title} | MedaGama`,
       description,
       url: `/doctor/${id}`,
       type: 'profile',
+      ...(image && {
+        images: [{ url: image, width: 1200, height: 630, alt: name }],
+      }),
+    },
+    twitter: {
+      card: image ? 'summary_large_image' : 'summary',
+      title: `${title} | MedaGama`,
+      description,
       ...(image && { images: [image] }),
     },
   };
@@ -47,15 +67,20 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { id } = await params;
-  const res = await getDoctorData(id);
+  const [res, faqs] = await Promise.all([
+    getDoctorData(id),
+    getDoctorFaqs(id),
+  ]);
 
   let schema = null;
+  let breadcrumb = null;
   if (res) {
     const { doctor: d, stats } = res;
     const profile = d.doctor_profile || d.doctorProfile || {};
+    const name = d.fullname || d.name;
     schema = buildPhysicianSchema({
-      name: d.fullname || d.name,
-      image: d.avatar || undefined,
+      name,
+      image: absoluteUrl(d.avatar),
       description: profile.bio || undefined,
       specialty: profile.specialty || profile.specialtyRelation?.name || undefined,
       rating: stats.average_rating || profile.avg_rating || undefined,
@@ -63,7 +88,14 @@ export default async function Page({ params }) {
       languages: Array.isArray(profile.languages) ? profile.languages : undefined,
       url: `/doctor/${id}`,
     });
+    breadcrumb = buildBreadcrumbSchema([
+      { name: 'Ana Sayfa', path: '/' },
+      { name: 'Doktorlar', path: '/doctors-departments' },
+      { name, path: `/doctor/${id}` },
+    ]);
   }
+
+  const faqSchema = buildFaqSchema(faqs);
 
   return (
     <>
@@ -71,6 +103,18 @@ export default async function Page({ params }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLdString(schema) }}
+        />
+      )}
+      {breadcrumb && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumb) }}
+        />
+      )}
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }}
         />
       )}
       <DoctorProfile />

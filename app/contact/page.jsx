@@ -1,10 +1,11 @@
 import ContactPage from '@/screens/ContactPage';
+import { altLanguages } from '@/lib/seo-server';
 
 export const metadata = {
   title: 'İletişim',
   description:
     'MedaGama ekibiyle iletişime geçin. Sorularınız, iş birlikleri ve destek talepleriniz için bize ulaşın.',
-  alternates: { canonical: '/contact' },
+  alternates: altLanguages('/contact'),
   openGraph: {
     title: 'İletişim | MedaGama',
     description: 'Sorularınız ve destek talepleriniz için MedaGama ile iletişime geçin.',

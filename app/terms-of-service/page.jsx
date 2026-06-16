@@ -1,10 +1,11 @@
 import TermsOfServicePage from '@/screens/TermsOfServicePage';
+import { altLanguages } from '@/lib/seo-server';
 
 export const metadata = {
   title: 'Kullanım Koşulları',
   description:
     'MedaGama kullanım koşulları: platformu kullanırken geçerli olan hak ve yükümlülükleri inceleyin.',
-  alternates: { canonical: '/terms-of-service' },
+  alternates: altLanguages('/terms-of-service'),
   openGraph: {
     title: 'Kullanım Koşulları | MedaGama',
     description: 'Platformu kullanırken geçerli olan hak ve yükümlülükler.',
