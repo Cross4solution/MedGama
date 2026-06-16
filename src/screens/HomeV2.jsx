@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from '@/compat/router';
@@ -9,7 +10,7 @@ import PopularClinicsShowcase from '../components/PopularClinicsShowcase';
 import TimelinePreview from '../components/TimelinePreview';
 import { clinicAPI } from '../lib/api';
 import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
-import SEOHead, { buildWebSiteSchema, buildOrganizationSchema } from '../components/seo/SEOHead';
+// SEO meta + WebSite/Organization JSON-LD artık app/page.jsx (ve app/home-v2) generateMetadata + server script ile üretiliyor (Faz 3).
 
 // Fallback mock data — used when API is unavailable
 const FALLBACK_CLINICS = [
@@ -56,12 +57,6 @@ export default function HomeV2() {
 
   return (
     <div className="min-h-screen bg-white">
-      <SEOHead
-        title={t('home.heroTitle', 'Find Trusted Doctors & Clinics')}
-        description={t('home.heroSubtitle', 'Book appointments, read reviews, access telehealth — your health, simplified.')}
-        canonical="/"
-        jsonLd={[buildWebSiteSchema(), buildOrganizationSchema()]}
-      />
       {false ? (
         <></>
       ) : (

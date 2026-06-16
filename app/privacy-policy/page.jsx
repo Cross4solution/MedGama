@@ -1,3 +1,18 @@
-'use client';
 import PrivacyPolicyPage from '@/screens/PrivacyPolicyPage';
-export default function Page() { return <PrivacyPolicyPage />; }
+
+export const metadata = {
+  title: 'Gizlilik Politikası',
+  description:
+    'MedaGama gizlilik politikası: kişisel verilerinizi nasıl topladığımız, işlediğimiz ve koruduğumuz hakkında bilgi edinin.',
+  alternates: { canonical: '/privacy-policy' },
+  openGraph: {
+    title: 'Gizlilik Politikası | MedaGama',
+    description: 'Kişisel verilerinizi nasıl koruduğumuz hakkında bilgi edinin.',
+    url: '/privacy-policy',
+    type: 'website',
+  },
+};
+
+export default function Page() {
+  return <PrivacyPolicyPage />;
+}

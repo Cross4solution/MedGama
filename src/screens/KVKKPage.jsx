@@ -1,8 +1,9 @@
+'use client';
 import React from 'react';
 import { Link } from '@/compat/router';
 import { Shield, ExternalLink, Scale, FileText, UserCheck, Lock, Eye, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import SEOHead from '../components/seo/SEOHead';
+// SEO meta + canonical artık app/kvkk/page.jsx generateMetadata ile sunucuda üretiliyor (Faz 3).
 
 const KVKK_SECTIONS = [
   {
@@ -68,12 +69,6 @@ export default function KVKKPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <SEOHead
-        title={t('kvkk.title', 'KVKK Aydınlatma Metni')}
-        description={t('kvkk.subtitle', 'MedaGama KVKK Aydınlatma Metni — 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında verilerinizin işlenmesi hakkında.')}
-        canonical="/kvkk"
-        alternates
-      />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Header */}
         <div className="mb-10">

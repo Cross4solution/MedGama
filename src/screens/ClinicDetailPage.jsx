@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect } from 'react';
 import { useParams } from '@/compat/router';
 import ClinicHero from '../components/clinic/ClinicHero';
@@ -11,7 +12,7 @@ import useSocial from '../hooks/useSocial';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI } from '../lib/api';
 import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
-import SEOHead, { buildMedicalBusinessSchema } from '../components/seo/SEOHead';
+// SEO meta + MedicalClinic JSON-LD artık app/clinic/[id]/page.jsx generateMetadata + server script ile üretiliyor (Faz 3).
 import BookAppointmentModal from '../components/modals/BookAppointmentModal';
 import SendMessageModal from '../components/modals/SendMessageModal';
 
@@ -174,21 +175,6 @@ const ClinicDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <SEOHead
-        title={`${clinicMeta.name} — ${clinicMeta.specialty || t('clinicDetail.clinic', 'Clinic')}`}
-        description={`${clinicMeta.name} — ${clinicMeta.address || ''}. ${clinicMeta.specialty || ''} ${t('clinicDetail.tab_degerlendirmeler', 'Reviews')}: ${clinicMeta.rating}★ (${clinicMeta.reviewCount})`}
-        canonical={`/clinic/${clinicParam}`}
-        image={apiClinic?.avatar}
-        jsonLd={buildMedicalBusinessSchema({
-          name: clinicMeta.name,
-          image: apiClinic?.avatar,
-          description: clinicMeta.specialty,
-          address: clinicMeta.address,
-          rating: clinicMeta.rating,
-          reviewCount: clinicMeta.reviewCount,
-          url: `https://medagama.com/clinic/${clinicParam}`,
-        })}
-      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Main Content */}

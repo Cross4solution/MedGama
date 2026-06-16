@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { Navigate, useLocation } from '@/compat/router';
 import { useAuth } from '../../context/AuthContext';

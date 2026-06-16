@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { Link } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
@@ -6,7 +7,7 @@ import {
   Shield, Download, Trash2, Eye, PenLine, Ban, ArrowRightLeft,
   Bell, Settings, FileText, AlertTriangle, CheckCircle, Clock, ExternalLink
 } from 'lucide-react';
-import SEOHead from '../components/seo/SEOHead';
+// SEO meta + canonical artık app/data-rights/page.jsx generateMetadata ile sunucuda üretiliyor (Faz 3).
 
 const GDPR_RIGHTS = [
   {
@@ -158,12 +159,6 @@ export default function DataPrivacyRightsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <SEOHead
-        title="Veri Gizliliği Haklarınız"
-        description="KVKK ve GDPR kapsamında veri haklarınız: erişim, düzeltme, silme ve taşınabilirlik. MedaGama'da verilerinizi yönetin."
-        canonical="/data-rights"
-        alternates
-      />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Header */}
         <div className="mb-8">

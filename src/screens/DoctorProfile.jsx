@@ -1,6 +1,7 @@
+'use client';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from '@/compat/router';
-import SEOHead, { buildPhysicianSchema } from '../components/seo/SEOHead';
+// SEO meta + Physician JSON-LD artık app/doctor/[id]/page.jsx generateMetadata + server script ile üretiliyor (Faz 3).
 import MapboxMap from '../components/map/MapboxMap';
 import {
   Award, Stethoscope, Heart, CheckCircle, Shield, Users, MapPin, X,
@@ -291,26 +292,6 @@ const DoctorProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50">
-      {/* ═══ SEO Meta + Schema.org ═══ */}
-      <SEOHead
-        title={`${doctorTitle ? doctorTitle + ' ' : ''}${displayName} — ${specialty}`}
-        description={`${displayName} — ${specialty}. ${bio?.slice(0, 150) || ''}`}
-        canonical={profile?.slug ? `/doctor/${profile.slug}` : `/doctor/${doctorId}`}
-        image={avatarUrl}
-        type="profile"
-        jsonLd={buildPhysicianSchema({
-          name: `${doctorTitle ? doctorTitle + ' ' : ''}${displayName}`,
-          image: avatarUrl,
-          description: bio,
-          specialty,
-          rating: reviewStats.average_rating,
-          reviewCount: reviewStats.review_count,
-          address: locationAddress,
-          languages,
-          url: `https://medagama.com/doctor/${doctorId}`,
-        })}
-      />
-
       {/* ═══ Owner Preview Bar ═══ */}
       {isOwner && (
         <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-200 sticky top-0 z-40">

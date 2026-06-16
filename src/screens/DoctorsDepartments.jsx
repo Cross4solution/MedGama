@@ -1,6 +1,7 @@
+'use client';
 import React, { useState } from 'react';
 import { Plus, Star, MessageSquare, MapPin, BadgeDollarSign, User, Building2, Pencil, Trash2, X, AlertTriangle } from 'lucide-react';
-import SEOHead from '../components/seo/SEOHead';
+// SEO meta + canonical artık app/doctors-departments/page.jsx generateMetadata ile sunucuda üretiliyor (Faz 3).
 
 // Mock data (can be replaced with API)
 const INITIAL_DEPARTMENTS = [
@@ -97,12 +98,6 @@ export default function DoctorsDepartments() {
 
   return (
     <div className="min-h-screen">
-      <SEOHead
-        title="Doktorlar ve Bölümler"
-        description="Uzmanlık alanlarına göre doktorları ve klinik bölümlerini keşfedin. MedaGama ile size uygun uzmanı bulun ve randevu alın."
-        canonical="/doctors-departments"
-        alternates
-      />
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* Page Header */}
         <div className="flex items-center justify-between mb-6">
