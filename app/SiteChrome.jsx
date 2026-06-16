@@ -6,6 +6,7 @@
 // document.title YÖNETİLMEZ — Next Metadata API hallediyor (App.js'teki titleMap effect'i ATLANDI).
 import React, { useEffect, Suspense } from 'react';
 import { usePathname } from 'next/navigation';
+import { stripLocale } from '@/lib/locales';
 import { useNavigate, useNavigationType } from '@/compat/router';
 import { useAuth } from '@/context/AuthContext';
 import SidebarPatient from '@/components/SidebarPatient';
@@ -16,7 +17,7 @@ import scrollConfig from '@/config/scroll';
 
 function OnboardingGate() {
   const { user } = useAuth();
-  const pathname = usePathname() || '/';
+  const pathname = stripLocale(usePathname() || '/');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,7 +50,7 @@ function OnboardingGate() {
 }
 
 export default function SiteChrome({ children }) {
-  const pathname = usePathname() || '/';
+  const pathname = stripLocale(usePathname() || '/');
   const navType = useNavigationType();
   const navigate = useNavigate();
   const { user } = useAuth();

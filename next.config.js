@@ -31,7 +31,7 @@ const nextConfig = {
       { source: '/storage/:path*', destination: `${BACKEND}/storage/:path*` },
       // CRA'daki /500 rotası App Router'da rezerve isim (pages/500.html ile çakışıyor).
       // Aynı sayfayı /server-error altından servis et, /500 URL'i korunur.
-      { source: '/500', destination: '/server-error' },
+      { source: '/500', destination: '/tr/server-error' },
     ];
   },
   // Mevcut görseller public/ altında — Next Image optimizasyonu opsiyonel, şimdilik unoptimized

@@ -3,6 +3,8 @@
 // Schema builders mirror the logic in src/components/seo/SEOHead.jsx but are
 // framework-agnostic so generateMetadata + server JSON-LD can use them.
 
+import { LOCALES, DEFAULT_LOCALE } from './locales';
+
 export const API_ORIGIN =
   process.env.NEXT_PUBLIC_API_ORIGIN || 'https://medagama-backend.onrender.com';
 export const SITE_URL =
@@ -10,20 +12,22 @@ export const SITE_URL =
 export const SITE_NAME = 'MedaGama';
 
 /**
- * Build an `alternates` block with hreflang languages for a canonical path.
- * No locale-prefixed routing yet (no /tr/, /en/) — all hreflangs point to the
- * same single URL, which is valid and gives Google a language signal. When
- * locale routing lands, the href values become `${SITE_URL}/tr${path}` etc.
- * @param {string} path canonical path, e.g. '/about' or '/doctor/123'
+ * Build an `alternates` block with real per-locale hreflang URLs.
+ * `path` is the LOCALE-LESS canonical path (e.g. '/about' or '/doctor/123').
+ * Produces `${SITE_URL}/tr/about`, `${SITE_URL}/en/about`, … plus x-default=tr.
+ * Canonical points to the default-locale (tr) URL.
+ * @param {string} path locale-less canonical path, e.g. '/about'
  */
 export function altLanguages(path) {
+  const clean = !path || path === '/' ? '' : (path.startsWith('/') ? path : `/${path}`);
+  const languages = {};
+  for (const loc of LOCALES) {
+    languages[loc] = `${SITE_URL}/${loc}${clean}`;
+  }
+  languages['x-default'] = `${SITE_URL}/${DEFAULT_LOCALE}${clean}`;
   return {
-    canonical: path,
-    languages: {
-      tr: `${SITE_URL}${path}`,
-      en: `${SITE_URL}${path}`,
-      'x-default': `${SITE_URL}${path}`,
-    },
+    canonical: `${SITE_URL}/${DEFAULT_LOCALE}${clean}`,
+    languages,
   };
 }
 

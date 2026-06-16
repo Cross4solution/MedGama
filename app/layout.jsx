@@ -1,6 +1,7 @@
 import '@/assets/index.css';
+import { headers } from 'next/headers';
 import Providers from './providers';
-import SiteChrome from './SiteChrome';
+import { DEFAULT_LOCALE, isLocale, isRtl } from '@/lib/locales';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://medagama.com';
 
@@ -24,14 +25,19 @@ export const viewport = {
   initialScale: 1,
 };
 
-// TR ana pazar — locale routing Faz 3'te eklenince dinamikleşecek
-export default function RootLayout({ children }) {
+// <html lang>/dir locale'e göre. Locale'i middleware'in set ettiği 'x-locale'
+// header'ından okuyoruz (root layout [locale] segmentine erişemez).
+// SiteChrome artık app/[locale]/layout.jsx içinde — burada sadece global kabuk.
+export default async function RootLayout({ children }) {
+  const h = await headers();
+  const hdr = h.get('x-locale');
+  const locale = isLocale(hdr) ? hdr : DEFAULT_LOCALE;
+  const dir = isRtl(locale) ? 'rtl' : 'ltr';
+
   return (
-    <html lang="tr">
+    <html lang={locale} dir={dir}>
       <body>
-        <Providers>
-          <SiteChrome>{children}</SiteChrome>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

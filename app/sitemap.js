@@ -1,4 +1,5 @@
 import { API_ORIGIN, SITE_URL } from '@/lib/seo-server';
+import { LOCALES, DEFAULT_LOCALE } from '@/lib/locales';
 import { getProviderCombinations } from '@/lib/tedaviler-data';
 
 async function safeList(path) {
@@ -14,6 +15,22 @@ async function safeList(path) {
   } catch {
     return [];
   }
+}
+
+// Locale-siz bir path'i her dil için bir URL'e açar + hreflang alternates ekler.
+// `p` '' (kök) veya '/about' gibi locale-siz path.
+function localizeEntries(p, { priority = 0.7, changeFrequency = 'weekly', lastModified } = {}) {
+  const languages = {};
+  for (const loc of LOCALES) {
+    languages[loc] = `${SITE_URL}/${loc}${p}`;
+  }
+  return LOCALES.map((loc) => ({
+    url: `${SITE_URL}/${loc}${p}`,
+    lastModified,
+    changeFrequency,
+    priority,
+    alternates: { languages },
+  }));
 }
 
 export default async function sitemap() {
@@ -36,12 +53,9 @@ export default async function sitemap() {
     '/tedaviler',
   ];
 
-  const staticUrls = staticPaths.map((p) => ({
-    url: `${SITE_URL}${p}`,
-    lastModified: now,
-    changeFrequency: 'weekly',
-    priority: p === '' ? 1 : 0.7,
-  }));
+  const staticUrls = staticPaths.flatMap((p) =>
+    localizeEntries(p, { priority: p === '' ? 1 : 0.7, lastModified: now })
+  );
 
   let dynamicUrls = [];
   try {
@@ -52,38 +66,28 @@ export default async function sitemap() {
 
     const doctorUrls = docs
       .filter((d) => d && d.id)
-      .map((d) => ({
-        url: `${SITE_URL}/doctor/${d.id}`,
-        lastModified: now,
-        changeFrequency: 'weekly',
-        priority: 0.8,
-      }));
+      .flatMap((d) => localizeEntries(`/doctor/${d.id}`, { priority: 0.8, lastModified: now }));
 
     const clinicUrls = clinics
       .filter((c) => c && (c.codename || c.id))
-      .map((c) => ({
-        url: `${SITE_URL}/clinic/${c.codename || c.id}`,
-        lastModified: now,
-        changeFrequency: 'weekly',
-        priority: 0.8,
-      }));
+      .flatMap((c) =>
+        localizeEntries(`/clinic/${c.codename || c.id}`, { priority: 0.8, lastModified: now })
+      );
 
     dynamicUrls = [...doctorUrls, ...clinicUrls];
   } catch {
     dynamicUrls = [];
   }
 
-  // Programmatic SEO: /tedaviler/[specialty]/[city] for combinations that
-  // actually have providers. Capped at 500 to keep the sitemap reasonable.
+  // Programmatic SEO: /tedaviler/[specialty]/[city]. Capped to keep the sitemap
+  // reasonable AFTER multiplying by locale count.
   let tedaviUrls = [];
   try {
-    const combos = await getProviderCombinations(500);
-    tedaviUrls = combos.map(({ specialtySlug, citySlug }) => ({
-      url: `${SITE_URL}/tedaviler/${specialtySlug}/${citySlug}`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    }));
+    const cap = Math.max(50, Math.floor(500 / LOCALES.length));
+    const combos = await getProviderCombinations(cap);
+    tedaviUrls = combos.flatMap(({ specialtySlug, citySlug }) =>
+      localizeEntries(`/tedaviler/${specialtySlug}/${citySlug}`, { priority: 0.7, lastModified: now })
+    );
   } catch {
     tedaviUrls = [];
   }

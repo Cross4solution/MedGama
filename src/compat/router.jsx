@@ -10,25 +10,53 @@ import {
   useParams as useNextParams,
 } from 'next/navigation';
 import React, { useMemo, useCallback, useEffect } from 'react';
+import { LOCALES, DEFAULT_LOCALE, isLocale } from '@/lib/locales';
 
-function toHref(to) {
+function rawHref(to) {
   if (typeof to === 'string') return to;
   if (!to) return '#';
   return `${to.pathname || ''}${to.search || ''}${to.hash || ''}` || '#';
 }
 
+// Mevcut pathname'in ilk segmentinden aktif locale'i çıkarır.
+export function useCurrentLocale() {
+  const pathname = usePathname() || '/';
+  const seg = pathname.split('/').filter(Boolean)[0];
+  return isLocale(seg) ? seg : DEFAULT_LOCALE;
+}
+
+// Bir href'i aktif locale ile prefix'ler. Harici (http) ve zaten locale'li
+// olanlara DOKUNMAZ. Böylece component'lerdeki <Link to="/about"> → /tr/about olur.
+function prependLocale(href, locale) {
+  if (!href || typeof href !== 'string') return href || '#';
+  if (href === '#') return href;
+  // Harici / protokol-bağımsız / mailto/tel / hash-only → dokunma
+  if (/^(https?:)?\/\//i.test(href) || /^(mailto:|tel:|#)/i.test(href)) return href;
+  if (!href.startsWith('/')) return href; // göreli (relative) link — dokunma
+  const first = href.split('/').filter(Boolean)[0];
+  if (isLocale(first)) return href; // zaten locale-prefixli
+  const loc = isLocale(locale) ? locale : DEFAULT_LOCALE;
+  return href === '/' ? `/${loc}` : `/${loc}${href}`;
+}
+
+// toHref: locale-aware. Hook context'i olmayan yerlerde locale undefined gelebilir.
+function toHref(to, locale) {
+  return prependLocale(rawHref(to), locale);
+}
+
 export function useNavigate() {
   const router = useRouter();
+  const locale = useCurrentLocale();
   return useCallback((to, opts) => {
     if (typeof to === 'number') {
       if (to < 0) router.back();
       else router.forward();
       return;
     }
-    const url = toHref(to);
+    const url = toHref(to, locale);
     if (opts && opts.replace) router.replace(url);
     else router.push(url);
-  }, [router]);
+  }, [router, locale]);
 }
 
 export function useLocation() {
@@ -67,27 +95,30 @@ export function useNavigationType() {
 }
 
 export const Link = React.forwardRef(function Link({ to, replace, state, reloadDocument, ...rest }, ref) {
-  return <NextLink ref={ref} href={toHref(to)} replace={replace} {...rest} />;
+  const locale = useCurrentLocale();
+  return <NextLink ref={ref} href={toHref(to, locale)} replace={replace} {...rest} />;
 });
 
 export const NavLink = React.forwardRef(function NavLink({ to, className, style, children, end, ...rest }, ref) {
   const pathname = usePathname() || '/';
-  const href = typeof to === 'string' ? to : (to && to.pathname) || '';
-  const isActive = end ? pathname === href : (href !== '/' ? pathname.startsWith(href) : pathname === '/');
+  const locale = useCurrentLocale();
+  const target = prependLocale(typeof to === 'string' ? to : (to && to.pathname) || '', locale);
+  const isActive = end ? pathname === target : (target !== `/${locale}` && target !== '/' ? pathname.startsWith(target) : pathname === target);
   const cls = typeof className === 'function' ? className({ isActive }) : className;
   const sty = typeof style === 'function' ? style({ isActive }) : style;
   const kids = typeof children === 'function' ? children({ isActive }) : children;
-  return <NextLink ref={ref} href={href || '#'} className={cls} style={sty} {...rest}>{kids}</NextLink>;
+  return <NextLink ref={ref} href={target || '#'} className={cls} style={sty} {...rest}>{kids}</NextLink>;
 });
 
 // Deklaratif yönlendirme — mount'ta yönlendirir.
 export function Navigate({ to, replace = false }) {
   const router = useRouter();
+  const locale = useCurrentLocale();
   useEffect(() => {
-    const url = toHref(to);
+    const url = toHref(to, locale);
     if (replace) router.replace(url);
     else router.push(url);
-  }, [to, replace, router]);
+  }, [to, replace, router, locale]);
   return null;
 }
 
