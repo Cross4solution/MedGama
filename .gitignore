@@ -31,3 +31,5 @@ yarn-error.log*
 /backend/bootstrap/cache/*
 /backend/.phpunit.result.cache
 .claude/settings.local.json
+.next/
+next-env.d.ts

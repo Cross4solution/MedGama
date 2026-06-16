@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
-    "checkJs": true,
+    "checkJs": false,
     "allowJs": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "moduleResolution": "node",
-    "lib": ["es2020", "dom", "dom.iterable"]
+    "lib": ["es2020", "dom", "dom.iterable"],
+    "paths": {
+      "@/*": ["*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "app", "next-env.d.ts"]
 }

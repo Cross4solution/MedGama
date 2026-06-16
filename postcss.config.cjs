@@ -1,6 +1,7 @@
+// Next.js + Tailwind 3 uyumlu format (plugin'ler string isim olarak)
 module.exports = {
-  plugins: [
-    require('tailwindcss'),
-    require('autoprefixer'),
-  ],
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
 };
