@@ -327,7 +327,7 @@ export default function GlobalSuggest({
               disabled={disabled}
               placeholder={tags.length === 0 ? (placeholder || defaultPlaceholder) : (multi ? 'Add more...' : '')}
               autoComplete="off"
-              className="flex-1 outline-none text-sm bg-transparent placeholder:text-gray-400 disabled:cursor-not-allowed pl-4"
+              className="flex-1 outline-none text-sm bg-transparent placeholder:text-gray-400 disabled:cursor-not-allowed text-left"
             />
             {loading && <Loader2 className="w-3.5 h-3.5 text-teal-500 animate-spin flex-shrink-0" />}
           </div>
