@@ -36,14 +36,23 @@ import {
   tabsConfig
 } from '../data/clinicMockData';
 
-const ClinicDetailPage = () => {
+const ClinicDetailPage = ({ initialClinic }) => {
   const { user } = useAuth();
   const { notify } = useToast();
   const { guardAction } = useAuthGuard();
   const { t } = useTranslation();
   const { id: clinicParam } = useParams();
-  const [apiClinic, setApiClinic] = useState(null);
-  const [initialSocial, setInitialSocial] = useState({});
+  // SSR initial data (from app/clinic/[id]/page.jsx server fetch) → clinic object
+  const [apiClinic, setApiClinic] = useState(initialClinic || null);
+  const [initialSocial, setInitialSocial] = useState(
+    initialClinic
+      ? {
+          isFollowing: !!initialClinic.is_followed,
+          isFavorited: !!initialClinic.is_favorited,
+          followerCount: initialClinic.followers_count || 0,
+        }
+      : {}
+  );
 
   // Modal states
   const [bookModal, setBookModal] = useState(false);

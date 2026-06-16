@@ -117,7 +117,7 @@ export default async function Page({ params }) {
           dangerouslySetInnerHTML={{ __html: jsonLdString(faqSchema) }}
         />
       )}
-      <DoctorProfile />
+      <DoctorProfile initialDoctor={res || undefined} />
     </>
   );
 }

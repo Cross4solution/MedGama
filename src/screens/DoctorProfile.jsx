@@ -89,18 +89,25 @@ function ReviewCard({ review, t }) {
 /* ═══════════════════════════════════════════
    MAIN PAGE
    ═══════════════════════════════════════════ */
-const DoctorProfilePage = () => {
+const DoctorProfilePage = ({ initialDoctor }) => {
   const { id: doctorId } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { guardAction } = useAuthGuard();
   const { user: authUser } = useAuth();
   const { notify } = useToast();
+  // SSR initial data (from app/doctor/[id]/page.jsx server fetch) → { doctor, stats }
+  const initDoc = initialDoctor?.doctor || null;
+  const initStats = initialDoctor?.stats || null;
   const [activeTab, setActiveTab] = useState('overview');
-  const [loading, setLoading] = useState(true);
-  const [doctor, setDoctor] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [reviewStats, setReviewStats] = useState({ average_rating: null, review_count: 0 });
+  const [loading, setLoading] = useState(!initDoc);
+  const [doctor, setDoctor] = useState(initDoc);
+  const [profile, setProfile] = useState(initDoc?.doctor_profile || null);
+  const [reviewStats, setReviewStats] = useState(
+    initStats && (initStats.average_rating != null || initStats.review_count != null)
+      ? { average_rating: initStats.average_rating ?? null, review_count: initStats.review_count ?? 0 }
+      : { average_rating: null, review_count: 0 }
+  );
   const [completedAppts, setCompletedAppts] = useState(0);
   const [initialSocial, setInitialSocial] = useState({});
 

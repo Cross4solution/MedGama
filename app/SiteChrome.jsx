@@ -163,21 +163,30 @@ export default function SiteChrome({ children }) {
 
   const isDoctorChat = String(pathname || '').startsWith('/doctor-chat');
 
+  // Header/Sidebar/Footer/CookieBanner compat-shim üzerinden useSearchParams çağırabilir →
+  // bunlar CSR bailout'a yol açar. Bu yüzden YALNIZCA kabuk parçaları Suspense altında.
+  // {children} (sayfa içeriği) Suspense DIŞINDA render edilir; böylece server component
+  // sayfalar (doctor/clinic/post detay) SSR'da gerçek içerikle gelir (SEO için kritik).
   return (
-    // Header/Sidebar/children compat-shim üzerinden useSearchParams çağırabilir.
-    // Tüm kabuk + içerik tek bir CSR bailout sınırı (Suspense) altında kalmalı.
-    <Suspense fallback={null}>
-      <div className={hasSidebar ? 'lg:pl-[12rem]' : ''}>
+    <div className={hasSidebar ? 'lg:pl-[12rem]' : ''}>
+      <Suspense fallback={null}>
         {showHeader && <Header />}
         {hasSidebar && <SidebarPatient />}
-        <div className={showHeader ? (hasOwnContainer || isDoctorChat ? 'pt-14' : 'pt-12') : ''}>
+      </Suspense>
+      <div className={showHeader ? (hasOwnContainer || isDoctorChat ? 'pt-14' : 'pt-12') : ''}>
+        {/* İçerik kendi Suspense sınırında: useSearchParams kullanan sayfalar (ör. /notifications,
+            /search) burada CSR bailout yapar ama doctor/clinic gibi kullanmayan sayfalar SSR'da
+            gerçek içerikle gelir — bailout artık tüm kabuğu değil, sadece o sayfa altağacını kapsar. */}
+        <Suspense fallback={null}>
           {children}
-        </div>
+        </Suspense>
+      </div>
+      <Suspense fallback={null}>
         {showFooter && <Footer />}
         {showCookieBanner && <CookieBanner />}
         {!isAuthPage && <ScrollToTopButton />}
         <OnboardingGate />
-      </div>
-    </Suspense>
+      </Suspense>
+    </div>
   );
 }
