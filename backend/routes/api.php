@@ -59,7 +59,8 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
         abort(404);
     }
 
-    if ($request->query('key') !== 'MedaGama2026SecretInit') {
+    // Secret sourced from env (INIT_DB_KEY); legacy fallback in config — rotate ASAP.
+    if (!hash_equals((string) config('app.init_db_key'), (string) $request->query('key'))) {
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
 
@@ -131,7 +132,8 @@ Route::get('/system/init-db-status', function (\Illuminate\Http\Request $request
         abort(404);
     }
 
-    if ($request->query('key') !== 'MedaGama2026SecretInit') {
+    // Secret sourced from env (INIT_DB_KEY); legacy fallback in config — rotate ASAP.
+    if (!hash_equals((string) config('app.init_db_key'), (string) $request->query('key'))) {
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
 

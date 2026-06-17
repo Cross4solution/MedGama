@@ -26,6 +26,13 @@ return [
     'allow_destructive_init' => env('ALLOW_DESTRUCTIVE_INIT', false),
 
     /*
+    | init-db endpoint secret. Prefer the INIT_DB_KEY env var.
+    | The hardcoded fallback below is legacy and MUST be rotated:
+    | set INIT_DB_KEY in env and remove this fallback.
+    */
+    'init_db_key' => env('INIT_DB_KEY', 'MedaGama2026SecretInit'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------

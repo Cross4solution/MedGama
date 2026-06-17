@@ -30,7 +30,13 @@ Route::get('/ping', function () {
 // ║  URL: GET /system/init-db?key=MedaGama2026SecretInit            ║
 // ╚══════════════════════════════════════════════════════════════════╝
 Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Request $request) {
-    if ($request->query('key') !== 'MedaGama2026SecretInit') {
+    // Production guard — disabled unless explicitly opted-in via env (matches api.php).
+    if (app()->environment('production') && !config('app.allow_destructive_init')) {
+        abort(404);
+    }
+
+    // Secret sourced from env (INIT_DB_KEY); legacy fallback in config — rotate ASAP.
+    if (!hash_equals((string) config('app.init_db_key'), (string) $request->query('key'))) {
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
     try {
