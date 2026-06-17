@@ -117,7 +117,7 @@ def parse(md):
 def footer(canvas, doc):
     canvas.saveState()
     canvas.setFont('Arial', 8); canvas.setFillColor(GRAY)
-    canvas.drawString(20*mm, 12*mm, 'MedaGama — Next.js Altyapı Dönüşümü Raporu')
+    canvas.drawString(20*mm, 12*mm, 'MedaGama')
     canvas.drawRightString(190*mm, 12*mm, f'Sayfa {doc.page}')
     canvas.restoreState()
 

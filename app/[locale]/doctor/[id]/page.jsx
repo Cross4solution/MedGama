@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import DoctorProfile from '@/screens/DoctorProfile';
 import {
   fetchJson,
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }) {
   const { id } = await params; // Next 15: params async
   const res = await getDoctorData(id);
   if (!res)
-    return { title: 'Doktor', alternates: altLanguages(`/doctor/${id}`) };
+    return { title: 'Bulunamadı | MedaGama', robots: { index: false } };
 
   const { doctor: d } = res;
   const name = d.fullname || d.name || 'Doktor';
@@ -71,6 +72,9 @@ export default async function Page({ params }) {
     getDoctorData(id),
     getDoctorFaqs(id),
   ]);
+
+  // Soft-404 fix: unknown doctor → real HTTP 404 via not-found boundary.
+  if (!res) notFound();
 
   let schema = null;
   let breadcrumb = null;

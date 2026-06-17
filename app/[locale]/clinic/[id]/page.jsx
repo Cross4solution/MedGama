@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import ClinicDetailPage from '@/screens/ClinicDetailPage';
 import {
   fetchJson,
@@ -22,7 +23,7 @@ async function getClinicData(codename) {
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const c = await getClinicData(id);
-  if (!c) return { title: 'Klinik', alternates: altLanguages(`/clinic/${id}`) };
+  if (!c) return { title: 'Bulunamadı | MedaGama', robots: { index: false } };
 
   const name = c.fullname || c.name || 'Klinik';
   const description = clamp(
@@ -55,6 +56,9 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const { id } = await params;
   const c = await getClinicData(id);
+
+  // Soft-404 fix: unknown clinic → real HTTP 404 via not-found boundary.
+  if (!c) notFound();
 
   let schema = null;
   let breadcrumb = null;

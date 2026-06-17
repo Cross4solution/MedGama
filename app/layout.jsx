@@ -1,7 +1,17 @@
 import '@/assets/index.css';
+import { Inter } from 'next/font/google';
 import { headers } from 'next/headers';
 import Providers from './providers';
 import { DEFAULT_LOCALE, isLocale, isRtl } from '@/lib/locales';
+
+// Self-hosted Inter with font-display: swap (Core Web Vitals: no render-block,
+// no FOIT). variable exposes --font-inter; className applies Inter to <body>.
+// Existing Tailwind/CSS Inter references stay valid — same family, now swap.
+const inter = Inter({
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://medagama.com';
 
@@ -17,6 +27,10 @@ export const metadata = {
   applicationName: 'MedaGama',
   authors: [{ name: 'MedaGama' }],
   robots: { index: true, follow: true },
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export const viewport = {
@@ -35,8 +49,8 @@ export default async function RootLayout({ children }) {
   const dir = isRtl(locale) ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir}>
-      <body>
+    <html lang={locale} dir={dir} className={inter.variable}>
+      <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>
     </html>

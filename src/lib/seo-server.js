@@ -154,6 +154,9 @@ export function buildOrganizationSchema() {
     name: SITE_NAME,
     url: SITE_URL,
     logo: `${SITE_URL}/images/logo/logo.svg`,
+    description:
+      'Uzman doktorlar, klinikler ve güvenli telehealth tek bir dijital sağlık platformunda.',
+    // Sosyal medya hesapları bağlandığında bu diziye eklenecek (örn. LinkedIn, X, Instagram).
     sameAs: [],
     contactPoint: {
       '@type': 'ContactPoint',

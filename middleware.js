@@ -42,11 +42,16 @@ export function middleware(req) {
     return res;
   }
 
-  // Locale-prefixsiz → /<locale><path> 'e yönlendir
+  // Locale-prefixsiz → /<locale><path> 'e yönlendir.
+  // 307 (temporary) KALMALI — 308/301 DEĞİL. Hedef locale, kullanıcının
+  // i18next çerezine ve Accept-Language başlığına göre DEĞİŞKEN
+  // (pickLocale). Kalıcı redirect tarayıcı/CDN tarafından cache'lenir;
+  // /en tercih eden bir kullanıcıyı kalıcı olarak /tr'ye kilitler.
+  // Deterministik olmayan redirect için 307 doğru olandır.
   const locale = pickLocale(req);
   const url = req.nextUrl.clone();
   url.pathname = `/${locale}${pathname === '/' ? '' : pathname}`;
-  const res = NextResponse.redirect(url);
+  const res = NextResponse.redirect(url); // default 307 (temporary) — intentional
   res.headers.set('x-locale', locale);
   return res;
 }
