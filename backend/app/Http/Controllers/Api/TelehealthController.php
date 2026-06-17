@@ -72,6 +72,17 @@ class TelehealthController extends Controller
         $appointment = Appointment::findOrFail($appointmentId);
         $this->authorizeParticipant($request->user(), $appointment);
 
+        // Transkripsiyon (Deepgram, ABD) KVKK/HIPAA gereği KAPALI — PHI'nin üçüncü taraf
+        // bulutta işlenmemesi için. BAA + açık rıza sonrası TELEHEALTH_RECORDING=true ile açılır.
+        // Görüşme (video/ses) bu durumdan etkilenmez; yalnızca canlı altyazı devre dışıdır.
+        if (!env('TELEHEALTH_RECORDING', false)) {
+            return response()->json([
+                'enabled' => false,
+                'mode'    => 'disabled',
+                'message' => 'Transkripsiyon KVKK/HIPAA gereği devre dışı.',
+            ], 200);
+        }
+
         $keyData = $this->deepgram->createTemporaryKey(600);
         $wsUrl   = $this->deepgram->getStreamingUrl([
             'language' => $request->query('lang', 'en'),

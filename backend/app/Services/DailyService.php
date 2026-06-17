@@ -17,12 +17,27 @@ class DailyService
     private ?string $apiKey;
     private string $baseUrl;
     private string $domain;
+    private bool $recordingEnabled;
 
     public function __construct()
     {
         $this->apiKey  = config('services.daily.api_key');
         $this->baseUrl = config('services.daily.base_url', 'https://api.daily.co/v1');
         $this->domain  = config('services.daily.domain', 'medgama');
+
+        // Kayıt KVKK/HIPAA gereği VARSAYILAN OLARAK KAPALI — ses/video PHI'nin üçüncü
+        // taraf bulutta (Daily.co, ABD) saklanmaması için. Yalnızca imzalı BAA + hasta
+        // açık rızası sonrası env ile (TELEHEALTH_RECORDING=true) açılabilir.
+        $this->recordingEnabled = (bool) env('TELEHEALTH_RECORDING', false);
+    }
+
+    /**
+     * Resolve the Daily.co `enable_recording` property.
+     * Returns 'off' unless recording is explicitly enabled via env (post-BAA + consent).
+     */
+    private function recordingMode(): string
+    {
+        return $this->recordingEnabled ? 'cloud' : 'off';
     }
 
     /**
@@ -67,7 +82,8 @@ class DailyService
                     'enable_screenshare'  => true,
                     'exp'                 => $options['exp'] ?? now()->addHours(2)->timestamp,
                     'eject_at_room_exp'   => true,
-                    'enable_recording'    => $options['enable_recording'] ?? 'cloud',
+                    // KVKK/HIPAA gereği kapalı — BAA + açık rıza sonrası env ile açılabilir.
+                    'enable_recording'    => $options['enable_recording'] ?? $this->recordingMode(),
                 ],
             ], $options['room_overrides'] ?? []);
 
@@ -137,7 +153,8 @@ class DailyService
                         'room_name'        => $roomName,
                         'is_owner'         => false,
                         'exp'              => now()->addHours(2)->timestamp,
-                        'enable_recording' => 'cloud',
+                        // KVKK/HIPAA gereği kapalı — BAA + açık rıza sonrası env ile açılabilir.
+                        'enable_recording' => $this->recordingMode(),
                     ], $properties),
                 ]);
 

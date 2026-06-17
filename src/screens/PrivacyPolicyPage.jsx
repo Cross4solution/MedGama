@@ -228,6 +228,30 @@ export default function PrivacyPolicyPage() {
                     <td className="px-4 py-2.5">Global</td>
                     <td className="px-4 py-2.5">DPA + Çerez rızası</td>
                   </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="px-4 py-2.5 font-medium text-gray-800">Daily.co</td>
+                    <td className="px-4 py-2.5">Telehealth görüntülü görüşme (kayıt KAPALI)</td>
+                    <td className="px-4 py-2.5">US</td>
+                    <td className="px-4 py-2.5">DPA — görüşme kaydı saklanmaz</td>
+                  </tr>
+                  <tr className="border-b border-gray-100 bg-gray-50/50">
+                    <td className="px-4 py-2.5 font-medium text-gray-800">Deepgram</td>
+                    <td className="px-4 py-2.5">Canlı transkripsiyon (devre dışı — kullanılmıyor)</td>
+                    <td className="px-4 py-2.5">US</td>
+                    <td className="px-4 py-2.5">Devre dışı (KVKK/HIPAA)</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="px-4 py-2.5 font-medium text-gray-800">Pusher / Reverb</td>
+                    <td className="px-4 py-2.5">Gerçek zamanlı bildirim</td>
+                    <td className="px-4 py-2.5">EU / Global</td>
+                    <td className="px-4 py-2.5">DPA</td>
+                  </tr>
+                  <tr className="border-b border-gray-100 bg-gray-50/50">
+                    <td className="px-4 py-2.5 font-medium text-gray-800">Google Analytics</td>
+                    <td className="px-4 py-2.5">Anonim analitik (IP anonimleştirilir, PHI maskelenir)</td>
+                    <td className="px-4 py-2.5">Global</td>
+                    <td className="px-4 py-2.5">Çerez onayına bağlı</td>
+                  </tr>
                   <tr>
                     <td className="px-4 py-2.5 font-medium text-gray-800">Sentry (opsiyonel)</td>
                     <td className="px-4 py-2.5">Hata izleme</td>
@@ -239,6 +263,12 @@ export default function PrivacyPolicyPage() {
             </div>
             <p className="text-xs text-gray-500 mt-2">
               Yurtdışı aktarıma ilişkin açık rızanızı çerez tercihleri panelinden istediğiniz zaman geri alabilirsiniz.
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              KVKK Md. 10 aydınlatma kapsamında: Telehealth görüşmeleri canlı yürütülür; ses/görüntü kaydı ve
+              transkripsiyon (Daily.co, Deepgram) varsayılan olarak KAPALIDIR ve üçüncü taraf bulutta saklanmaz.
+              Bu özellikler yalnızca ilgili sağlayıcılarla imzalı veri işleme/BAA sözleşmesi ve hastanın açık rızası
+              (KVKK Md. 9) sonrası etkinleştirilebilir.
             </p>
           </div>
 

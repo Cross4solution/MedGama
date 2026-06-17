@@ -15,6 +15,44 @@ import { useCookieConsent } from '@/context/CookieConsentContext';
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
+// KVKK/HIPAA/GDPR — PHI içeren dinamik path'leri maskele.
+// GA'ya sağlık bağlamlı tekil URL (hasta/doktor/post id, tedavi+şehir) GÖNDERİLMEZ;
+// yalnızca sayfa TİPİ gönderilir. Örn: /tr/doctor/123 → /doctor/[id]
+const LOCALE_PREFIX = /^\/(tr|en|de|ar|ru)(?=\/|$)/;
+
+export function redactPath(pathname) {
+  if (!pathname || typeof pathname !== 'string') return pathname;
+
+  // 1) Locale prefix'i ayır (maskelemeyi locale'den bağımsız uygula).
+  const localeMatch = pathname.match(LOCALE_PREFIX);
+  const locale = localeMatch ? localeMatch[0] : '';
+  let p = locale ? pathname.slice(locale.length) || '/' : pathname;
+
+  // 2) Bilinen dinamik route'ların id/segmentlerini placeholder ile değiştir.
+  const rules = [
+    [/^\/doctor\/[^/]+/, '/doctor/[id]'],
+    [/^\/clinic\/[^/]+/, '/clinic/[id]'],
+    [/^\/post\/[^/]+/, '/post/[id]'],
+    // /tedaviler/[specialty]/[city]
+    [/^\/tedaviler\/[^/]+\/[^/]+/, '/tedaviler/[specialty]/[city]'],
+    [/^\/tedaviler\/[^/]+/, '/tedaviler/[specialty]'],
+    // CRM hasta detay path'leri (patient-360 vb.)
+    [/^\/crm\/patient-360\/[^/]+/, '/crm/patient-360/[id]'],
+    [/^\/crm\/patients?\/[^/]+/, '/crm/patient/[id]'],
+    [/^\/appointment\/[^/]+/, '/appointment/[id]'],
+    [/^\/telehealth\/[^/]+/, '/telehealth/[id]'],
+  ];
+
+  for (const [re, replacement] of rules) {
+    if (re.test(p)) {
+      p = p.replace(re, replacement);
+      break;
+    }
+  }
+
+  return locale ? `${locale}${p === '/' ? '' : p}` : p;
+}
+
 export default function Analytics() {
   const { hasConsent } = useCookieConsent();
   const pathname = usePathname();
@@ -27,8 +65,10 @@ export default function Analytics() {
   useEffect(() => {
     if (!enabled) return;
     if (typeof window === 'undefined' || typeof window.gtag !== 'function') return;
+    // PHI içeren dinamik segment'leri maskele; sadece sayfa tipini GA'ya gönder.
+    const safePath = redactPath(pathname);
     const query = searchParams?.toString();
-    const url = query ? `${pathname}?${query}` : pathname;
+    const url = query ? `${safePath}?${query}` : safePath;
     window.gtag('config', GA_ID, { page_path: url });
   }, [enabled, pathname, searchParams]);
 
