@@ -214,9 +214,9 @@ const CRMIntegrations = () => {
       <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
         <Lock className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
         <div>
-          <p className="text-xs font-semibold text-amber-800">Coming Soon — Phase 2</p>
+          <p className="text-xs font-semibold text-amber-800">Yakında — Faz 2</p>
           <p className="text-[11px] text-amber-600 leading-relaxed mt-0.5">
-            Integration connections will be available in the next release. Configuration panels are shown for preview purposes only.
+            Entegrasyon bağlantıları (E-Nabız, Medula, E-Reçete, MHRS, E-Fatura) bir sonraki sürümde aktif olacaktır. Aşağıdaki yapılandırma panelleri ve durum bilgileri yalnızca önizleme amaçlıdır; gerçek bağlantı yoktur.
           </p>
         </div>
       </div>

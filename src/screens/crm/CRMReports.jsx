@@ -1,42 +1,34 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  PieChart, BarChart3, TrendingUp, Download, Calendar, Users, DollarSign,
-  CalendarDays, Clock, Activity, FileText, ArrowUpRight, Filter, Lock,
-  FileSpreadsheet, Loader2,
+  TrendingUp, Download, DollarSign, Receipt, Clock, FileText, Lock,
+  FileSpreadsheet, Loader2, AlertCircle, Users, CalendarDays, Activity,
 } from 'lucide-react';
+import {
+  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+} from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import ProTeaser from '../../components/crm/ProTeaser';
+import { doctorBillingAPI, billingAPI } from '../../lib/api';
 import { exportPDF, exportExcel } from '../../utils/exportUtils';
 
-const REPORT_CARDS = [
-  { title: 'Patient Demographics', description: 'Age, gender, location distribution of your patient base', icon: Users, color: 'bg-violet-50 text-violet-600 border-violet-200', stats: '1,284 patients' },
-  { title: 'Appointment Analytics', description: 'Appointment trends, no-show rates, peak hours analysis', icon: CalendarDays, color: 'bg-blue-50 text-blue-600 border-blue-200', stats: '342 this month' },
-  { title: 'Revenue Report', description: 'Monthly income breakdown, payment methods, outstanding balances', icon: DollarSign, color: 'bg-emerald-50 text-emerald-600 border-emerald-200', stats: '€21.7k this month' },
-  { title: 'Treatment Outcomes', description: 'Success rates, follow-up compliance, patient satisfaction scores', icon: Activity, color: 'bg-pink-50 text-pink-600 border-pink-200', stats: '94% satisfaction' },
-  { title: 'Prescription Analysis', description: 'Most prescribed medications, renewal rates, drug interactions', icon: FileText, color: 'bg-amber-50 text-amber-600 border-amber-200', stats: '156 active Rx' },
-  { title: 'Operational Efficiency', description: 'Average wait times, consultation duration, staff utilization', icon: Clock, color: 'bg-cyan-50 text-cyan-600 border-cyan-200', stats: '18 min avg wait' },
+// Reports that need data sources not yet exposed by the backend — shown honestly as "yakında".
+const UPCOMING_REPORTS = [
+  { title: 'Hasta Demografisi', description: 'Yaş, cinsiyet, lokasyon dağılımı', icon: Users },
+  { title: 'Randevu Analitiği', description: 'Randevu trendleri, gelmedi oranları, yoğun saatler', icon: CalendarDays },
+  { title: 'Tedavi Sonuçları', description: 'Başarı oranları, takip uyumu, memnuniyet skorları', icon: Activity },
+  { title: 'Reçete Analizi', description: 'En çok yazılan ilaçlar, yenileme oranları', icon: FileText },
+  { title: 'Operasyonel Verimlilik', description: 'Ortalama bekleme süresi, muayene süresi', icon: Clock },
 ];
 
-const MONTHLY_OVERVIEW = [
-  { label: 'Total Appointments', value: '342', change: '+8%', trend: 'up' },
-  { label: 'New Patients', value: '47', change: '+15%', trend: 'up' },
-  { label: 'No-Show Rate', value: '4.2%', change: '-1.3%', trend: 'down' },
-  { label: 'Avg. Consultation', value: '22 min', change: '+2 min', trend: 'up' },
-  { label: 'Patient Satisfaction', value: '4.8/5', change: '+0.1', trend: 'up' },
-  { label: 'Revenue per Patient', value: '€168', change: '+€12', trend: 'up' },
-];
-
-const TOP_DIAGNOSES = [
-  { name: 'Hypertension', count: 48, percent: 18 },
-  { name: 'Type 2 Diabetes', count: 35, percent: 13 },
-  { name: 'Upper Respiratory Infection', count: 28, percent: 10 },
-  { name: 'Anxiety/Depression', count: 24, percent: 9 },
-  { name: 'Hypothyroidism', count: 19, percent: 7 },
-  { name: 'Migraine', count: 16, percent: 6 },
-  { name: 'Asthma', count: 14, percent: 5 },
-  { name: 'Other', count: 86, percent: 32 },
-];
+const fmtMoney = (v, cur = 'EUR') => {
+  const n = Number(v || 0);
+  try {
+    return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(n);
+  } catch {
+    return `${n.toLocaleString('tr-TR')} ${cur}`;
+  }
+};
 
 const CRMReports = () => {
   const { t } = useTranslation();
@@ -46,79 +38,97 @@ const CRMReports = () => {
   const [exporting, setExporting] = useState(false);
   const exportRef = useRef(null);
 
-  // Close export dropdown on outside click
+  const [stats, setStats] = useState(null);
+  const [chart, setChart] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     const handler = (e) => { if (exportRef.current && !exportRef.current.contains(e.target)) setExportOpen(false); };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // ── Build export data from page content ──
-  const buildExportData = () => {
-    const summaryCards = MONTHLY_OVERVIEW.map(m => ({
-      label: m.label,
-      value: `${m.value} (${m.change})`,
-    }));
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // doctorBillingAPI.stats has no CRM gate (all authenticated doctors); revenue-chart is CRM-gated → optional.
+      const statsRes = await doctorBillingAPI.stats();
+      setStats(statsRes?.data ?? null);
 
-    const tables = [
-      {
-        title: 'Monthly Overview KPIs',
-        headers: ['Metric', 'Value', 'Change', 'Trend'],
-        rows: MONTHLY_OVERVIEW.map(m => [m.label, m.value, m.change, m.trend]),
-      },
-      {
-        title: 'Top Diagnoses',
-        headers: ['#', 'Diagnosis', 'Count', 'Percentage'],
-        rows: TOP_DIAGNOSES.map((d, i) => [String(i + 1), d.name, String(d.count), `${d.percent}%`]),
-      },
-      {
-        title: 'Available Reports',
-        headers: ['Report', 'Description', 'Stats'],
-        rows: REPORT_CARDS.map(r => [r.title, r.description, r.stats]),
-      },
-    ];
+      try {
+        const chartRes = await billingAPI.revenueChart({ period });
+        const raw = chartRes?.data?.data ?? chartRes?.data ?? [];
+        const series = Array.isArray(raw)
+          ? raw.map((p) => ({
+              label: p.label ?? p.date ?? p.period ?? '',
+              revenue: Number(p.revenue ?? p.total ?? p.amount ?? 0),
+            }))
+          : [];
+        setChart(series);
+      } catch {
+        setChart([]); // CRM gate / not available — chart stays hidden
+      }
+    } catch (err) {
+      console.error('Reports fetch error:', err);
+      setError(t('common.loadError', 'Veriler yüklenirken bir hata oluştu.'));
+      setStats(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [period, t]);
 
-    return { summaryCards, tables };
-  };
+  useEffect(() => {
+    if (user?.role_id === 'doctor' && !isPro) return;
+    fetchData();
+  }, [fetchData, user, isPro]);
+
+  const currency = stats?.currency || 'EUR';
+
+  const kpis = stats ? [
+    { label: 'Toplam Gelir', value: fmtMoney(stats.total_revenue, currency), icon: DollarSign },
+    { label: 'Bu Ay Gelir', value: fmtMoney(stats.monthly_revenue, currency), icon: TrendingUp },
+    { label: 'Bugün Gelir', value: fmtMoney(stats.today_revenue, currency), icon: TrendingUp },
+    { label: 'Toplam Fatura', value: String(stats.total_invoices ?? 0), icon: Receipt },
+    { label: 'Beklenen Gelir', value: fmtMoney(stats.expected_revenue, currency), icon: Clock },
+    { label: 'Tahsil Edilecek', value: fmtMoney(stats.receivable_amount, currency), icon: AlertCircle },
+  ] : [];
+
+  const buildExportData = () => ({
+    summaryCards: kpis.map((k) => ({ label: k.label, value: k.value })),
+    tables: [
+      {
+        title: 'Gelir & Faturalama Özeti',
+        headers: ['Metrik', 'Değer'],
+        rows: kpis.map((k) => [k.label, k.value]),
+      },
+      ...(chart.length ? [{
+        title: 'Gelir Grafiği',
+        headers: ['Dönem', 'Gelir'],
+        rows: chart.map((c) => [c.label, fmtMoney(c.revenue, currency)]),
+      }] : []),
+    ],
+  });
 
   const handleExportPDF = () => {
-    setExporting(true);
-    setExportOpen(false);
+    setExporting(true); setExportOpen(false);
     try {
       const { summaryCards, tables } = buildExportData();
-      exportPDF({
-        title: 'Reports & Analytics',
-        subtitle: `Period: ${period} — ${new Date().toLocaleDateString()}`,
-        summary: summaryCards,
-        tables,
-        filename: `reports-analytics-${period}-${new Date().toISOString().slice(0, 10)}.pdf`,
-      });
-    } catch (err) {
-      console.error('PDF Export error:', err);
-    } finally {
-      setExporting(false);
-    }
+      exportPDF({ title: 'Raporlar & Analitik', subtitle: `Dönem: ${period} — ${new Date().toLocaleDateString('tr-TR')}`, summary: summaryCards, tables, filename: `raporlar-${period}-${new Date().toISOString().slice(0, 10)}.pdf` });
+    } catch (err) { console.error('PDF Export error:', err); } finally { setExporting(false); }
   };
 
   const handleExportExcel = () => {
-    setExporting(true);
-    setExportOpen(false);
+    setExporting(true); setExportOpen(false);
     try {
       const { summaryCards, tables } = buildExportData();
-      exportExcel({
-        title: 'Reports & Analytics',
-        summary: summaryCards,
-        tables,
-        filename: `reports-analytics-${period}-${new Date().toISOString().slice(0, 10)}.xlsx`,
-      });
-    } catch (err) {
-      console.error('Excel Export error:', err);
-    } finally {
-      setExporting(false);
-    }
+      exportExcel({ title: 'Raporlar & Analitik', summary: summaryCards, tables, filename: `raporlar-${period}-${new Date().toISOString().slice(0, 10)}.xlsx` });
+    } catch (err) { console.error('Excel Export error:', err); } finally { setExporting(false); }
   };
 
   if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="reports" />;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -133,22 +143,18 @@ const CRMReports = () => {
             ))}
           </div>
           <div className="relative" ref={exportRef}>
-            <button onClick={() => setExportOpen(p => !p)} disabled={exporting}
+            <button onClick={() => setExportOpen((p) => !p)} disabled={exporting || !stats}
               className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50">
               {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              <span className="hidden sm:inline">{t('common.export', 'Export')}</span>
+              <span className="hidden sm:inline">{t('common.export', 'Dışa aktar')}</span>
             </button>
             {exportOpen && (
-              <div className="absolute right-0 mt-1.5 w-48 bg-white rounded-xl shadow-xl border border-gray-200/60 z-30 overflow-hidden animate-fadeIn">
-                <button onClick={handleExportPDF}
-                  className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <FileText className="w-4 h-4 text-red-500" />
-                  <span className="font-medium">Export as PDF</span>
+              <div className="absolute right-0 mt-1.5 w-48 bg-white rounded-xl shadow-xl border border-gray-200/60 z-30 overflow-hidden">
+                <button onClick={handleExportPDF} className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                  <FileText className="w-4 h-4 text-red-500" /><span className="font-medium">PDF olarak</span>
                 </button>
-                <button onClick={handleExportExcel}
-                  className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100">
-                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                  <span className="font-medium">Export as Excel</span>
+                <button onClick={handleExportExcel} className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100">
+                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" /><span className="font-medium">Excel olarak</span>
                 </button>
               </div>
             )}
@@ -156,73 +162,75 @@ const CRMReports = () => {
         </div>
       </div>
 
-      {/* Monthly Overview KPIs */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {MONTHLY_OVERVIEW.map((m) => (
-          <div key={m.label} className="bg-white rounded-xl border border-gray-200/60 p-3 sm:p-4 hover:shadow-md transition-shadow">
-            <p className="text-lg sm:text-xl font-bold text-gray-900">{m.value}</p>
-            <p className="text-[10px] text-gray-500 font-medium mt-0.5">{m.label}</p>
-            <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold mt-1 ${m.label === 'No-Show Rate' ? (m.trend === 'down' ? 'text-emerald-600' : 'text-red-500') : (m.trend === 'up' ? 'text-emerald-600' : 'text-red-500')}`}>
-              {m.trend === 'up' ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingUp className="w-2.5 h-2.5 rotate-180" />}
-              {m.change}
-            </span>
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+          <Loader2 className="w-8 h-8 mb-2 animate-spin text-teal-500" />
+          <p className="text-sm font-medium">{t('common.loading', 'Yükleniyor...')}</p>
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center justify-center py-20 text-red-400">
+          <AlertCircle className="w-10 h-10 mb-2 opacity-60" />
+          <p className="text-sm font-medium text-red-500">{error}</p>
+          <button onClick={fetchData} className="mt-3 text-xs font-semibold text-teal-600 hover:text-teal-700">{t('common.retry', 'Tekrar dene')}</button>
+        </div>
+      ) : (
+        <>
+          {/* Real Billing KPIs */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {kpis.map((k) => (
+              <div key={k.label} className="bg-white rounded-xl border border-gray-200/60 p-3 sm:p-4 hover:shadow-md transition-shadow">
+                <k.icon className="w-4 h-4 text-teal-500 mb-1.5" />
+                <p className="text-base sm:text-lg font-bold text-gray-900">{k.value}</p>
+                <p className="text-[10px] text-gray-500 font-medium mt-0.5">{k.label}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* Report Cards Grid */}
-      <div>
-        <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.reports.availableReports')}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {REPORT_CARDS.map((r) => (
-            <div key={r.title} className={`relative bg-white rounded-2xl border border-gray-200/60 p-5 transition-shadow group opacity-75`}>
-              <div className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-bold uppercase">
-                <Lock className="w-2.5 h-2.5" /> Coming Soon
+          {/* Revenue Chart (only if CRM revenue-chart endpoint returned data) */}
+          {chart.length > 0 && (
+            <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="w-4 h-4 text-gray-400" />
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.reports.revenueTrend', 'Gelir Grafiği')}</h2>
               </div>
-              <div className="flex items-start justify-between mb-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${r.color}`}>
-                  <r.icon className="w-5 h-5" />
-                </div>
-              </div>
-              <h3 className="text-sm font-bold text-gray-900 mb-1">{r.title}</h3>
-              <p className="text-xs text-gray-500 leading-relaxed mb-3">{r.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-gray-400">{r.stats}</span>
-                <span className="text-[11px] font-medium text-gray-300 flex items-center gap-1">
-                  <Download className="w-3 h-3" /> PDF
-                </span>
-              </div>
+              <ResponsiveContainer width="100%" height={280}>
+                <AreaChart data={chart} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                  <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                  <Tooltip formatter={(v) => fmtMoney(v, currency)} />
+                  <Area type="monotone" dataKey="revenue" stroke="#14b8a6" strokeWidth={2} fill="url(#rev)" />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
-          ))}
-        </div>
-      </div>
+          )}
 
-      {/* Top Diagnoses */}
-      <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <PieChart className="w-4 h-4 text-gray-400" />
-            <h2 className="text-sm font-bold text-gray-900">{t('crm.reports.topDiagnoses')}</h2>
+          {/* Upcoming reports — honest "yakında" */}
+          <div>
+            <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.reports.upcoming', 'Yakında Eklenecek Raporlar')}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {UPCOMING_REPORTS.map((r) => (
+                <div key={r.title} className="relative bg-white rounded-2xl border border-gray-200/60 p-5 opacity-75">
+                  <div className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-bold uppercase">
+                    <Lock className="w-2.5 h-2.5" /> Yakında
+                  </div>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center border border-gray-200 bg-gray-50 mb-3">
+                    <r.icon className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <h3 className="text-sm font-bold text-gray-900 mb-1">{r.title}</h3>
+                  <p className="text-xs text-gray-500 leading-relaxed">{r.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          <span className="text-xs text-gray-400">{TOP_DIAGNOSES.reduce((s, d) => s + d.count, 0)} {t('crm.reports.totalCases')}</span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {TOP_DIAGNOSES.map((d, i) => (
-            <div key={d.name} className="flex items-center gap-3">
-              <span className="text-xs font-bold text-gray-400 w-5 text-right">{i + 1}</span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-medium text-gray-700 truncate">{d.name}</span>
-                  <span className="text-[11px] font-semibold text-gray-500">{d.count} ({d.percent}%)</span>
-                </div>
-                <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-teal-500 rounded-full" style={{ width: `${d.percent}%` }} />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };
