@@ -347,6 +347,13 @@ export const patientAPI = {
   setStage: (id, stage) => api.post(`/crm/patients/${id}/stage`, { stage }),
 };
 
+// ── CRM Reports / Analytics (provider-scoped, read-only) ──
+export const reportAPI = {
+  appointments: () => api.get('/crm/reports/appointments'),
+  patients: () => api.get('/crm/reports/patients'),
+  services: () => api.get('/crm/reports/services'),
+};
+
 // ── Doctor Billing (MVP — no CRM gate required) ──
 export const doctorBillingAPI = {
   invoices: (params) => api.get('/doctor/billing/invoices', { params }),

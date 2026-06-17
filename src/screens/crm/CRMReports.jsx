@@ -4,22 +4,60 @@ import {
   FileSpreadsheet, Loader2, AlertCircle, Users, CalendarDays, Activity,
 } from 'lucide-react';
 import {
-  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import ProTeaser from '../../components/crm/ProTeaser';
-import { doctorBillingAPI, billingAPI } from '../../lib/api';
+import { doctorBillingAPI, billingAPI, reportAPI } from '../../lib/api';
 import { exportPDF, exportExcel } from '../../utils/exportUtils';
 
-// Reports that need data sources not yet exposed by the backend — shown honestly as "yakında".
+// Reports that genuinely need data sources not yet captured by the backend — honest "yakında".
 const UPCOMING_REPORTS = [
-  { title: 'Hasta Demografisi', description: 'Yaş, cinsiyet, lokasyon dağılımı', icon: Users },
-  { title: 'Randevu Analitiği', description: 'Randevu trendleri, gelmedi oranları, yoğun saatler', icon: CalendarDays },
   { title: 'Tedavi Sonuçları', description: 'Başarı oranları, takip uyumu, memnuniyet skorları', icon: Activity },
   { title: 'Reçete Analizi', description: 'En çok yazılan ilaçlar, yenileme oranları', icon: FileText },
   { title: 'Operasyonel Verimlilik', description: 'Ortalama bekleme süresi, muayene süresi', icon: Clock },
 ];
+
+// Türkçe randevu durumu etiketleri
+const STATUS_LABELS = {
+  pending: 'Bekliyor',
+  confirmed: 'Onaylandı',
+  cancelled: 'İptal',
+  completed: 'Tamamlandı',
+  no_show: 'Gelmedi',
+};
+const STATUS_COLORS = {
+  pending: '#f59e0b',
+  confirmed: '#3b82f6',
+  cancelled: '#ef4444',
+  completed: '#14b8a6',
+  no_show: '#a855f7',
+};
+const TYPE_LABELS = {
+  inPerson: 'Yüz yüze',
+  online: 'Online',
+  phone: 'Telefon',
+  examination: 'Muayene',
+};
+const SERVICE_COLORS = ['#14b8a6', '#3b82f6', '#f59e0b', '#a855f7', '#ef4444', '#10b981'];
+
+// Küçük "veri yok" boş durum bileşeni (kilit DEĞİL)
+const EmptyState = ({ message }) => (
+  <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+    <Activity className="w-8 h-8 mb-2 opacity-40" />
+    <p className="text-xs font-medium">{message}</p>
+  </div>
+);
+
+const fmtDay = (iso) => {
+  try {
+    return new Date(iso).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' });
+  } catch {
+    return iso;
+  }
+};
 
 const fmtMoney = (v, cur = 'EUR') => {
   const n = Number(v || 0);
@@ -40,6 +78,9 @@ const CRMReports = () => {
 
   const [stats, setStats] = useState(null);
   const [chart, setChart] = useState([]);
+  const [apptReport, setApptReport] = useState(null);
+  const [patientReport, setPatientReport] = useState(null);
+  const [serviceReport, setServiceReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -70,6 +111,16 @@ const CRMReports = () => {
       } catch {
         setChart([]); // CRM gate / not available — chart stays hidden
       }
+
+      // ── Analytics reports (provider-scoped) — each optional, "veri yok" on empty ──
+      const [apptRes, patRes, svcRes] = await Promise.allSettled([
+        reportAPI.appointments(),
+        reportAPI.patients(),
+        reportAPI.services(),
+      ]);
+      setApptReport(apptRes.status === 'fulfilled' ? (apptRes.value?.data ?? null) : null);
+      setPatientReport(patRes.status === 'fulfilled' ? (patRes.value?.data ?? null) : null);
+      setServiceReport(svcRes.status === 'fulfilled' ? (svcRes.value?.data ?? null) : null);
     } catch (err) {
       console.error('Reports fetch error:', err);
       setError(t('common.loadError', 'Veriler yüklenirken bir hata oluştu.'));
@@ -85,6 +136,31 @@ const CRMReports = () => {
   }, [fetchData, user, isPro]);
 
   const currency = stats?.currency || 'EUR';
+
+  // ── Derived analytics data ──
+  const statusData = (apptReport?.status_distribution ?? [])
+    .filter((s) => s.count > 0)
+    .map((s) => ({ name: STATUS_LABELS[s.status] ?? s.status, value: s.count, key: s.status }));
+  const apptHasData = statusData.length > 0;
+
+  const apptSeries = (apptReport?.timeseries ?? []).map((p) => ({ label: fmtDay(p.date), count: p.count }));
+  const apptSeriesHasData = apptSeries.some((p) => p.count > 0);
+
+  const noShowRate = apptReport?.no_show_rate ?? 0;
+
+  const services = [
+    ...(serviceReport?.appointment_types ?? []),
+    ...(serviceReport?.record_types ?? []),
+  ]
+    .filter((s) => s.count > 0)
+    .map((s) => ({ name: TYPE_LABELS[s.label] ?? s.label, count: s.count }));
+  const servicesHasData = services.length > 0;
+
+  const patientKpis = patientReport ? [
+    { label: 'Toplam Hasta', value: String(patientReport.total_patients ?? 0), icon: Users },
+    { label: 'Bu Ay Yeni Hasta', value: String(patientReport.new_this_month ?? 0), icon: TrendingUp },
+    { label: 'Gelmedi Oranı', value: `%${noShowRate}`, icon: AlertCircle },
+  ] : [];
 
   const kpis = stats ? [
     { label: 'Toplam Gelir', value: fmtMoney(stats.total_revenue, currency), icon: DollarSign },
@@ -208,6 +284,105 @@ const CRMReports = () => {
                   <Area type="monotone" dataKey="revenue" stroke="#14b8a6" strokeWidth={2} fill="url(#rev)" />
                 </AreaChart>
               </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* Hasta Demografisi (gerçek veri) */}
+          {patientReport && (
+            <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Users className="w-4 h-4 text-gray-400" />
+                <h2 className="text-sm font-bold text-gray-900">Hasta Demografisi</h2>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                {patientKpis.map((k) => (
+                  <div key={k.label} className="bg-gray-50 rounded-xl border border-gray-100 p-3">
+                    <k.icon className="w-4 h-4 text-teal-500 mb-1.5" />
+                    <p className="text-lg font-bold text-gray-900">{k.value}</p>
+                    <p className="text-[10px] text-gray-500 font-medium mt-0.5">{k.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Randevu Analitiği (gerçek veri) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Durum dağılımı pie */}
+            <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <CalendarDays className="w-4 h-4 text-gray-400" />
+                <h2 className="text-sm font-bold text-gray-900">Randevu Durum Dağılımı</h2>
+              </div>
+              {apptHasData ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={(e) => `${e.value}`}>
+                      {statusData.map((d) => (
+                        <Cell key={d.key} fill={STATUS_COLORS[d.key] ?? '#94a3b8'} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState message="Henüz randevu verisi yok" />
+              )}
+            </div>
+
+            {/* Son 30 gün zaman serisi */}
+            <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Activity className="w-4 h-4 text-gray-400" />
+                <h2 className="text-sm font-bold text-gray-900">Son 30 Gün Randevu Trendi</h2>
+              </div>
+              {apptSeriesHasData ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <AreaChart data={apptSeries} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="appt" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#94a3b8' }} interval={4} />
+                    <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="count" name="Randevu" stroke="#3b82f6" strokeWidth={2} fill="url(#appt)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState message="Son 30 günde randevu yok" />
+              )}
+            </div>
+          </div>
+
+          {/* Tedavi / Hizmet Analizi (gerçek veri) */}
+          {serviceReport && (
+            <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="w-4 h-4 text-gray-400" />
+                <h2 className="text-sm font-bold text-gray-900">Hizmet / Tedavi Analizi</h2>
+              </div>
+              {servicesHasData ? (
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={services} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                    <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                    <Tooltip />
+                    <Bar dataKey="count" name="Adet" radius={[6, 6, 0, 0]}>
+                      {services.map((s, i) => (
+                        <Cell key={s.name} fill={SERVICE_COLORS[i % SERVICE_COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState message="Henüz hizmet/tedavi verisi yok" />
+              )}
             </div>
           )}
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\DigitalAnamnesisController;
 use App\Http\Controllers\Api\CrmController;
 use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\PatientController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ExaminationController;
 use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\MedStreamController;
@@ -430,6 +431,18 @@ Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospi
     Route::post('/patients/{id}/tags', [PatientController::class, 'addTag']);
     Route::delete('/patients/tags/{tagId}', [PatientController::class, 'removeTag']);
     Route::post('/patients/{id}/stage', [PatientController::class, 'setStage']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| CRM — Reports / Analytics (provider-scoped, read-only)
+|--------------------------------------------------------------------------
+| Doctor → kendi verisi, clinicOwner/hospital → klinik verisi.
+*/
+Route::prefix('crm/reports')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospital,superAdmin,saasAdmin', 'crm.access'])->group(function () {
+    Route::get('/appointments', [ReportController::class, 'appointments']);
+    Route::get('/patients', [ReportController::class, 'patients']);
+    Route::get('/services', [ReportController::class, 'services']);
 });
 
 /*
