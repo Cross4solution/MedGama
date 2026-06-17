@@ -1,7 +1,9 @@
 import '@/assets/index.css';
+import { Suspense } from 'react';
 import { Inter } from 'next/font/google';
 import { headers } from 'next/headers';
 import Providers from './providers';
+import Analytics from './Analytics';
 import { DEFAULT_LOCALE, isLocale, isRtl } from '@/lib/locales';
 
 // Self-hosted Inter with font-display: swap (Core Web Vitals: no render-block,
@@ -27,6 +29,11 @@ export const metadata = {
   applicationName: 'MedaGama',
   authors: [{ name: 'MedaGama' }],
   robots: { index: true, follow: true },
+  // Search Console doğrulaması — env set edilince <meta name="google-site-verification">
+  // otomatik eklenir; env yoksa hiçbir meta eklenmez.
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+  },
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
@@ -51,7 +58,14 @@ export default async function RootLayout({ children }) {
   return (
     <html lang={locale} dir={dir} className={inter.variable}>
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          {/* GA4 — consent-aware. CookieConsentProvider altında ki izni okuyabilsin.
+              Suspense: useSearchParams CSR bailout gerektirir. */}
+          <Suspense fallback={null}>
+            <Analytics />
+          </Suspense>
+        </Providers>
       </body>
     </html>
   );

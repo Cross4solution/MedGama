@@ -21,6 +21,9 @@ const CRA_ENV = [
   'REACT_APP_SITE_URL',
 ].reduce((acc, k) => { acc[k] = process.env[k] || ''; return acc; }, {});
 
+// NOT: NEXT_PUBLIC_GA_ID ve NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+// NEXT_PUBLIC_ prefix'i sayesinde Next tarafından otomatik client'a inlenir.
+// CRA_ENV listesine eklemeye GEREK YOK (yalnızca REACT_APP_* için gerekiyor).
 const nextConfig = {
   reactStrictMode: true,
   env: CRA_ENV,
