@@ -23,6 +23,7 @@ class AppointmentResource extends JsonResource
             'status'                => $this->status,
             // Onaylı Review Sistemi alanları
             'deposit_status'        => $this->deposit_status,
+            'deposit_amount'        => $this->deposit_amount,
             'auto_completed_at'     => $this->auto_completed_at?->toISOString(),
             'confirmation_note'     => $this->confirmation_note,
             'doctor_note'           => $this->doctor_note,

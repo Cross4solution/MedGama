@@ -27,6 +27,18 @@ class AppointmentPolicy
     }
 
     /**
+     * Cancel: the patient (own appointment), the doctor, or the clinic owner.
+     * Hasta YALNIZCA kendi randevusunu iptal edebilir.
+     */
+    public function cancel(User $user, Appointment $appointment): bool
+    {
+        return $user->id === $appointment->patient_id
+            || $user->id === $appointment->doctor_id
+            || ($user->isClinicOwner() && $user->clinic_id === $appointment->clinic_id)
+            || $user->isAdmin();
+    }
+
+    /**
      * Only the patient, doctor, or clinic owner can delete the appointment.
      */
     public function delete(User $user, Appointment $appointment): bool

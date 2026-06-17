@@ -353,6 +353,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->middleware('verified.doctor');
     // Onaylı Review Sistemi — doktor/klinik manuel "Gelmedi" işaretleme
     Route::put('/appointments/{appointment}/no-show', [AppointmentController::class, 'markNoShow']);
+    // Randevu iptali — hasta KENDİ randevusunu, doktor/klinik de iptal edebilir (policy: cancel)
+    Route::put('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel']);
     Route::get('/appointments', [AppointmentController::class, 'index']);
     Route::get('/appointments/{appointment}', [AppointmentController::class, 'show']);
     Route::post('/appointments', [AppointmentController::class, 'store'])->middleware('verified.doctor');

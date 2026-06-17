@@ -186,6 +186,26 @@ class AppointmentController extends Controller
     }
 
     /**
+     * PUT /api/appointments/{appointment}/cancel
+     * Hasta KENDİ randevusunu iptal edebilir; doktor/klinik de iptal edebilir.
+     * Yalnızca pending veya confirmed randevular iptal edilebilir.
+     */
+    public function cancel(Request $request, Appointment $appointment): JsonResponse
+    {
+        $this->authorize('cancel', $appointment);
+
+        if (!in_array($appointment->status, ['pending', 'confirmed'], true)) {
+            return response()->json([
+                'message' => 'Yalnızca onay bekleyen veya onaylanmış randevular iptal edilebilir.',
+            ], 422);
+        }
+
+        $appointment = $this->appointmentService->cancel($request->user(), $appointment);
+
+        return (new AppointmentResource($appointment))->response();
+    }
+
+    /**
      * GET /api/appointments/calendar-events
      * Returns appointments formatted for FullCalendar (flat array, no pagination).
      */

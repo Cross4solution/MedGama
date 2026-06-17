@@ -277,6 +277,7 @@ export const appointmentAPI = {
   get: (id) => api.get(`/appointments/${id}`),
   create: (payload) => api.post('/appointments', payload),
   update: (id, payload) => api.put(`/appointments/${id}`, payload),
+  cancel: (id) => api.put(`/appointments/${id}/cancel`),
   delete: (id) => api.delete(`/appointments/${id}`),
   calendarEvents: (params) => api.get('/appointments/calendar-events', { params }),
   reschedule: (id, payload) => api.patch(`/appointments/${id}/reschedule`, payload),

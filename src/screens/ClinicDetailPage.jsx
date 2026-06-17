@@ -227,6 +227,7 @@ const ClinicDetailPage = ({ initialClinic }) => {
         targetId={apiClinic?.id}
         targetName={apiClinic?.fullname || apiClinic?.name || ''}
         targetType="clinic"
+        clinicDoctors={apiClinic?.doctors || []}
       />
       <BookAppointmentModal
         open={onlineBookModal}
@@ -234,6 +235,7 @@ const ClinicDetailPage = ({ initialClinic }) => {
         targetId={apiClinic?.id}
         targetName={apiClinic?.fullname || apiClinic?.name || ''}
         targetType="clinic"
+        clinicDoctors={apiClinic?.doctors || []}
         initialType="video"
       />
       <SendMessageModal
@@ -242,6 +244,7 @@ const ClinicDetailPage = ({ initialClinic }) => {
         targetId={apiClinic?.id}
         targetName={apiClinic?.fullname || apiClinic?.name || ''}
         targetType="clinic"
+        clinicDoctors={apiClinic?.doctors || []}
       />
     </div>
   );

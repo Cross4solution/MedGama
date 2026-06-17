@@ -24,7 +24,7 @@ class Appointment extends Model
         'video_conference_link', 'meeting_id', 'meeting_url', 'meeting_status',
         'doctor_note', 'created_by', 'is_active',
         // Onaylı Review Sistemi alanları
-        'deposit_status', 'auto_completed_at',
+        'deposit_status', 'deposit_amount', 'auto_completed_at',
         // Otomatik hatırlatma gönderim flag'leri
         'reminder_24h_sent_at', 'reminder_1h_sent_at',
     ];

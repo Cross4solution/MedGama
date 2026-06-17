@@ -16,8 +16,10 @@ class StoreAppointmentRequest extends FormRequest
         $isDoctor = $this->isCreatedByDoctor();
 
         $rules = [
-            'doctor_id'         => 'required|uuid|exists:users,id',
-            'clinic_id'         => 'sometimes|uuid|exists:clinics,id',
+            // doctor_id artık clinic_id varsa zorunlu değil (klinik randevusu)
+            // ancak klinik randevusunda da seçilen klinik doktoru gönderilir.
+            'doctor_id'         => 'required_without:clinic_id|nullable|uuid|exists:users,id',
+            'clinic_id'         => 'required_without:doctor_id|nullable|uuid|exists:clinics,id',
             'appointment_type'  => 'required|in:inPerson,online,phone',
             'slot_id'           => 'sometimes|nullable|uuid|exists:calendar_slots,id',
             'appointment_date'  => 'required|date|after_or_equal:today',

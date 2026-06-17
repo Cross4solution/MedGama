@@ -15,8 +15,6 @@ import { resizeImages } from '../utils/imageResize';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import SEOHead from '../components/seo/SEOHead';
 
-// Basit mock feed üretici: guest için random, user için follow-first + location mix simülasyonu
-
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
 function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you', refreshKey = 0, injectedPosts = [], onApiRefresh }) {
@@ -100,76 +98,8 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     return () => controller.abort();
   }, [refreshKey, sort, textQuery, specialtyFilter, countryName]);
 
-  // Kaynak data — mock fallback
-  const base = useMemo(() => {
-    const specialties = SPECIALTIES;
-    const clinics = ['Anadolu Health Center','Memorial','Ege University','Acibadem','Medicana','Florence Nightingale'];
-    const cities = ['Istanbul, TR','Ankara, TR','Izmir, TR','Berlin, DE','Munich, DE','London, GB','New York, US'];
-    const items = [];
-    for (let i = 0; i < 120; i++) {
-      const sp = specialties[i % specialties.length];
-      const cl = clinics[i % clinics.length];
-      const ct = cities[i % cities.length];
-      // Tüm içerikleri doktor veya klinik güncellemesi yapıyoruz
-      const isDoctor = i % 2 === 0; // Yarısı doktor, yarısı klinik güncellemesi
-      const isClinic = !isDoctor;
-      
-      const doctorUpdates = [
-        'We are pleased to announce that our clinic has successfully performed over 500 minimally invasive cardiac procedures this year with a 99% success rate.',
-        'Our research team has published a new study on advanced treatment methods in the Journal of Medical Innovation.',
-        'We are proud to introduce our new state-of-the-art cardiac catheterization lab for more accurate diagnoses.'
-      ];
-      
-      const clinicUpdates = [
-        'We are excited to announce the opening of our new cardiology wing with cutting-edge technology.',
-        'Our hospital has been recognized as a Center of Excellence for Cardiac Care.',
-        'We are proud to introduce our new patient-centered care program for personalized treatment plans.'
-      ];
-      
-      const updateText = isDoctor 
-        ? doctorUpdates[i % doctorUpdates.length]
-        : clinicUpdates[i % clinicUpdates.length];
-      // build media list (1-4 images) for LinkedIn-like grid
-      const mediaPool = [
-        { url: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
-        { url: '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg' },
-        { url: '/images/care-team-with-patient_720.jpg' },
-        { url: '/images/doctor-explaining_720.jpg' },
-      ];
-      const mediaCount = 1 + (i % 4); // 1..4
-      const media = mediaPool.slice(0, mediaCount);
-
-      items.push({
-        id: `it-${i+1}`,
-        type: isDoctor ? 'doctor_update' : 'clinic_update',
-        title: isDoctor ? `Dr. ${['Ahmet','Ayşe','Mehmet','Elif','Can'][i%5]}` : `${cl}`,
-        subtitle: sp,
-        city: ct,
-        img: i % 2 === 0 ? '/images/petr-magera-huwm7malj18-unsplash_720.jpg' : '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg',
-        text: updateText,
-        likes: 20 + (i % 100),
-        comments: 2 + (i % 15),
-        specialty: sp,
-        countryCode: ct.split(', ')[1],
-        // LinkedIn-like additions
-        actor: {
-          id: isDoctor ? `doc-${(i%20)+1}` : `clinic-${(i%20)+1}`,
-          role: isDoctor ? 'doctor' : 'clinic',
-          name: isDoctor ? ("Dr. " + ['Ahmet','Ayşe','Mehmet','Elif','Can'][i%5]) : cl,
-          title: sp,
-          avatarUrl: '/images/default/default-avatar.svg',
-        },
-        socialContext: i % 5 === 0 ? 'MedaGama bunu beğendi' : (i % 7 === 0 ? 'Bir bağlantın bunu beğendi' : ''),
-        timeAgo: (1 + (i % 6)) + ' gün',
-        visibility: 'public',
-        media,
-      });
-    }
-    return items;
-  }, []);
-
-  // API verileri varsa onları kullan — mock fallback DISABLED (mock IDs cause 404/422 on real API)
-  // Don't show mock data while API is still loading (prevents flash on navigation)
+  // Yalnızca API verileri kullanılır (mock feed üretici kaldırıldı).
+  // API yüklenirken boş gösterilir (navigasyonda flash önlenir).
   const baseSource = !apiLoaded ? [] : apiPosts;
   const source = injectedPosts.length > 0 ? [...injectedPosts, ...baseSource] : baseSource;
 

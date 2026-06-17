@@ -51,7 +51,7 @@ export default function PatientAppointments() {
     if (!selectedAppointment) return;
     setCancellingId(selectedAppointment.id);
     try {
-      await appointmentAPI.update(selectedAppointment.id, { status: 'cancelled' });
+      await appointmentAPI.cancel(selectedAppointment.id);
       setAppointments(prev => prev.map(a => 
         a.id === selectedAppointment.id ? { ...a, status: 'cancelled' } : a
       ));

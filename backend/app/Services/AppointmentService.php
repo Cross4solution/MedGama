@@ -71,10 +71,17 @@ class AppointmentService
             // 1. Resolve patient
             $patientId = $this->resolvePatientId($data, $isCreatedByDoctor);
 
-            // 2. Build appointment payload
+            // 2. Kapora (deposit) altyapısı — ÖDEMESİZ.
+            // GERÇEK TAHSİLAT YOK: yalnızca durum/tutar kaydı yapılır.
+            // İleride payment gateway başarılı tahsilatta deposit_status='paid' yapacaktır.
+            // Kural: kapora tutarı tanımlıysa -> 'pending' + deposit_amount; değilse -> 'skipped'.
+            // Doktor/klinik profilinde henüz kapora alanı yok; istek payload'ında gelebilir.
+            [$depositStatus, $depositAmount] = $this->resolveDeposit($data);
+
+            // 3. Build appointment payload
             $appointmentData = [
                 'patient_id'        => $patientId,
-                'doctor_id'         => $data['doctor_id'],
+                'doctor_id'         => $data['doctor_id'] ?? null,
                 'clinic_id'         => $data['clinic_id'] ?? null,
                 'appointment_type'  => $data['appointment_type'],
                 'slot_id'           => $data['slot_id'] ?? null,
@@ -82,15 +89,17 @@ class AppointmentService
                 'appointment_time'  => $data['appointment_time'],
                 'confirmation_note' => $data['confirmation_note'] ?? null,
                 'status'            => 'pending',
+                'deposit_status'    => $depositStatus,
+                'deposit_amount'    => $depositAmount,
                 'created_by'        => $createdBy->id,
             ];
 
-            // 3. Lock & close the slot (inside transaction for consistency)
-            if (!empty($appointmentData['slot_id'])) {
-                $this->lockSlot($appointmentData['slot_id'], $data['doctor_id']);
+            // 4. Lock & close the slot (inside transaction for consistency)
+            if (!empty($appointmentData['slot_id']) && !empty($appointmentData['doctor_id'])) {
+                $this->lockSlot($appointmentData['slot_id'], $appointmentData['doctor_id']);
             }
 
-            // 4. Create appointment
+            // 5. Create appointment
             return Appointment::create($appointmentData);
         });
 
@@ -129,6 +138,54 @@ class AppointmentService
         }
 
         return $appointment;
+    }
+
+    /**
+     * Cancel an appointment (status -> cancelled) and release its slot.
+     * Yetki kontrolü controller'da yapılır (hasta kendi randevusu / doktor / klinik).
+     */
+    public function cancel(User $cancelledBy, Appointment $appointment): Appointment
+    {
+        DB::transaction(function () use ($appointment) {
+            $appointment->update(['status' => 'cancelled']);
+
+            // Slotu tekrar uygun hale getir
+            if ($appointment->slot_id) {
+                CalendarSlot::where('id', $appointment->slot_id)
+                    ->update(['is_available' => true]);
+            }
+        });
+
+        $appointment->refresh()->load(['patient', 'doctor']);
+
+        // İptal bildirimleri (transaction dışında, kritik değil)
+        $this->sendStatusChangeNotifications($appointment, 'cancelled', $cancelledBy);
+
+        return $appointment;
+    }
+
+    /**
+     * Kapora (deposit) durum + tutarını çözümler. — ÖDEMESİZ.
+     * GERÇEK TAHSİLAT YOK: yalnızca durum/tutar kaydı.
+     *
+     * Kural:
+     *  - deposit_amount payload'da > 0 ise  -> ['pending', amount]
+     *  - aksi halde                         -> ['skipped', null]
+     *
+     * NOT: Doktor/klinik profilinde henüz kapora tutarı alanı yok.
+     * Alan eklendiğinde burada profilden okunabilir. Şimdilik payload veya 'skipped'.
+     *
+     * @return array{0:string,1:?float}
+     */
+    private function resolveDeposit(array $data): array
+    {
+        $amount = isset($data['deposit_amount']) ? (float) $data['deposit_amount'] : 0.0;
+
+        if ($amount > 0) {
+            return ['pending', $amount]; // ödeme adımı ileride 'paid' yapacak
+        }
+
+        return ['skipped', null];
     }
 
     /**
