@@ -28,6 +28,22 @@ class AppServiceProvider extends ServiceProvider
         // Broadcast database notifications via WebSocket in real-time
         Event::listen(NotificationSent::class, BroadcastNotificationCreated::class);
 
+        // Rate limiter: general API — 120 req/min.
+        // Authenticated → keyed by user id; anonymous → keyed by IP.
+        // Generous enough for normal use + parallel frontend requests,
+        // tight enough to deter scraping / DoS. Auth throttles below stay stricter.
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(120)
+                ->by($request->user()?->id ?: $request->ip())
+                ->response(function () {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Too many requests. Please try again later.',
+                        'code'    => 'RATE_LIMIT_EXCEEDED',
+                    ], 429);
+                });
+        });
+
         // Rate limiter: login — 5 attempts per minute per IP
         RateLimiter::for('auth-login', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip())->response(function () {

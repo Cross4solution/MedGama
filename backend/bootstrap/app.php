@@ -41,6 +41,10 @@ return Application::configure(basePath: dirname(__DIR__))
             ],
             append: [
                 \App\Http\Middleware\SetLocale::class,
+                // General API rate limit (120/min, user-id or IP based).
+                // Stricter auth-specific throttles (login/register/password)
+                // are applied per-route and remain in effect.
+                'throttle:api',
             ],
         );
     })
