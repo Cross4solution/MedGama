@@ -1,72 +1,142 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import {
   MessageSquare, Search, Plus, Send, Paperclip, Image, Smile, Phone, Video,
   MoreVertical, X, Check, CheckCheck, Clock, Circle, ChevronLeft, Star,
-  Archive, Trash2, Filter, Users,
+  Archive, Trash2, Filter, Users, Loader2, AlertCircle,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
+import { messageAPI } from '../../lib/api';
 
-// ─── Mock Data ───────────────────────────────────────────────
-const MOCK_CONVERSATIONS = [
-  { id: 1, name: 'Zeynep Kaya', avatar: null, online: true, lastMessage: 'Thank you doctor, I will follow the prescription.', lastTime: '10:32', unread: 0, type: 'patient', starred: false },
-  { id: 2, name: 'Ali Yilmaz', avatar: null, online: false, lastMessage: 'When should I come for the follow-up?', lastTime: '09:45', unread: 2, type: 'patient', starred: true },
-  { id: 3, name: 'MedaGama System', avatar: null, online: true, lastMessage: 'New appointment request from Burak Sahin.', lastTime: '09:12', unread: 1, type: 'system', starred: false },
-  { id: 4, name: 'Selin Acar', avatar: null, online: true, lastMessage: 'I uploaded my test results to the portal.', lastTime: 'Yesterday', unread: 0, type: 'patient', starred: false },
-  { id: 5, name: 'Secretary - Aylin', avatar: null, online: true, lastMessage: 'Dr., your 14:00 appointment has been rescheduled to 15:00.', lastTime: 'Yesterday', unread: 0, type: 'staff', starred: true },
-  { id: 6, name: 'Mehmet Ozkan', avatar: null, online: false, lastMessage: 'My blood sugar levels have been unstable this week.', lastTime: 'Yesterday', unread: 3, type: 'patient', starred: false },
-  { id: 7, name: 'Fatma Koc', avatar: null, online: false, lastMessage: 'Should I continue the same dosage?', lastTime: 'Feb 14', unread: 0, type: 'patient', starred: false },
-  { id: 8, name: 'Elif Arslan', avatar: null, online: false, lastMessage: 'The procedure went well, thank you!', lastTime: 'Feb 13', unread: 0, type: 'patient', starred: false },
-  { id: 9, name: 'Lab Department', avatar: null, online: true, lastMessage: 'Results for patient #00004 are ready.', lastTime: 'Feb 13', unread: 1, type: 'staff', starred: false },
-  { id: 10, name: 'Deniz Korkmaz', avatar: null, online: false, lastMessage: 'I have some questions about my medication.', lastTime: 'Feb 12', unread: 0, type: 'patient', starred: false },
-];
+// ─── Helpers ─────────────────────────────────────────────────
+const getInitials = (name) => {
+  if (!name) return '?';
+  return name.split(' ').filter(Boolean).map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+};
 
-const MOCK_MESSAGES = {
-  1: [
-    { id: 1, sender: 'patient', text: 'Good morning doctor, I wanted to ask about my prescription.', time: '10:15', status: 'read' },
-    { id: 2, sender: 'doctor', text: 'Good morning Zeynep. Of course, what would you like to know?', time: '10:18', status: 'read' },
-    { id: 3, sender: 'patient', text: 'Should I take the medication before or after meals?', time: '10:20', status: 'read' },
-    { id: 4, sender: 'doctor', text: 'Take it 30 minutes before meals, twice a day. If you experience any side effects, please let me know immediately.', time: '10:25', status: 'read' },
-    { id: 5, sender: 'patient', text: 'Thank you doctor, I will follow the prescription.', time: '10:32', status: 'read' },
-  ],
-  2: [
-    { id: 1, sender: 'patient', text: 'Hello doctor, my surgery was last week.', time: '09:30', status: 'read' },
-    { id: 2, sender: 'doctor', text: 'Yes Ali, how are you feeling? Any pain or discomfort?', time: '09:35', status: 'read' },
-    { id: 3, sender: 'patient', text: 'I feel much better now. The wound is healing well.', time: '09:40', status: 'read' },
-    { id: 4, sender: 'patient', text: 'When should I come for the follow-up?', time: '09:45', status: 'delivered' },
-  ],
-  3: [
-    { id: 1, sender: 'system', text: 'New appointment request from Burak Sahin for Feb 16, 13:00. Type: New Patient, Method: In-Person.', time: '09:12', status: 'read' },
-  ],
-  6: [
-    { id: 1, sender: 'patient', text: 'Doctor, I need to talk about my blood sugar levels.', time: '14:00', status: 'read' },
-    { id: 2, sender: 'patient', text: 'They have been very unstable this week, ranging from 180 to 280.', time: '14:02', status: 'delivered' },
-    { id: 3, sender: 'patient', text: 'My blood sugar levels have been unstable this week.', time: '14:05', status: 'delivered' },
-  ],
+// Konuşmanın karşı taraf görünen adını çöz (direct: diğer katılımcı, group: title)
+const resolveConversationName = (conv, currentUserId, t) => {
+  if (conv.title) return conv.title;
+  if (conv.type === 'direct' && Array.isArray(conv.participants)) {
+    const other = conv.participants.find((p) => p.id !== currentUserId);
+    if (other) return other.fullname || t('crm.messages.unknownUser', 'Bilinmeyen');
+  }
+  return t('crm.messages.conversation', 'Konuşma');
+};
+
+// type → UI tipi (avatar rengi/filtre için): system / staff / patient
+const resolveConvType = (conv, currentUserId) => {
+  if (conv.type === 'group') return 'staff';
+  if (Array.isArray(conv.participants)) {
+    const other = conv.participants.find((p) => p.id !== currentUserId);
+    const roleId = other?.role_id || '';
+    if (roleId === 'patient') return 'patient';
+    if (['superAdmin', 'saasAdmin'].includes(roleId)) return 'system';
+    return 'staff';
+  }
+  return 'patient';
+};
+
+const formatTime = (iso) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return 'Dün';
+  return d.toLocaleDateString([], { day: '2-digit', month: 'short' });
 };
 
 // ─── Component ───────────────────────────────────────────────
 const CRMMessages = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const currentUserId = user?.id;
+
+  const [conversations, setConversations] = useState([]);
+  const [loadingConvs, setLoadingConvs] = useState(true);
+  const [convError, setConvError] = useState(null);
+
   const [activeConversation, setActiveConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [loadingMsgs, setLoadingMsgs] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [messageText, setMessageText] = useState('');
+  const [sending, setSending] = useState(false);
   const [filterType, setFilterType] = useState('all');
   const [mobileShowChat, setMobileShowChat] = useState(false);
   const messagesEndRef = useRef(null);
 
+  // ── Konuşma listesini yükle ──
+  const loadConversations = useCallback(async () => {
+    setLoadingConvs(true);
+    setConvError(null);
+    try {
+      const res = await messageAPI.conversations();
+      // Laravel paginate → { data: [...] }
+      const list = res?.data?.data ?? res?.data ?? [];
+      const mapped = (Array.isArray(list) ? list : []).map((conv) => ({
+        ...conv,
+        name: resolveConversationName(conv, currentUserId, t),
+        uiType: resolveConvType(conv, currentUserId),
+        lastMessage: conv.latest_message?.body || '',
+        lastTime: formatTime(conv.latest_message?.created_at || conv.updated_at),
+        unread: conv.unread_count || 0,
+        starred: false,
+        online: false,
+      }));
+      setConversations(mapped);
+    } catch (err) {
+      setConvError(err?.message || t('crm.messages.loadError', 'Konuşmalar yüklenemedi.'));
+      setConversations([]);
+    } finally {
+      setLoadingConvs(false);
+    }
+  }, [currentUserId, t]);
+
+  useEffect(() => {
+    loadConversations();
+  }, [loadConversations]);
+
+  // ── Aktif konuşmanın mesajlarını yükle ──
+  const loadMessages = useCallback(async (conversationId) => {
+    if (!conversationId) return;
+    setLoadingMsgs(true);
+    try {
+      const res = await messageAPI.messages(conversationId);
+      const list = res?.data?.data ?? res?.data ?? [];
+      // API newest-first döner → kronolojik (eski→yeni) sıraya çevir
+      const chrono = (Array.isArray(list) ? list : []).slice().reverse();
+      setMessages(chrono);
+      // Okundu işaretle + listedeki unread sıfırla
+      try { await messageAPI.markRead(conversationId); } catch {}
+      setConversations((prev) => prev.map((c) => (c.id === conversationId ? { ...c, unread: 0 } : c)));
+    } catch {
+      setMessages([]);
+    } finally {
+      setLoadingMsgs(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeConversation) loadMessages(activeConversation);
+  }, [activeConversation, loadMessages]);
+
   const filtered = useMemo(() => {
-    return MOCK_CONVERSATIONS.filter((c) => {
+    return conversations.filter((c) => {
       if (filterType === 'unread' && c.unread === 0) return false;
       if (filterType === 'starred' && !c.starred) return false;
-      if (filterType === 'patient' && c.type !== 'patient') return false;
-      if (filterType === 'staff' && c.type !== 'staff' && c.type !== 'system') return false;
-      if (searchQuery && !c.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      if (filterType === 'patient' && c.uiType !== 'patient') return false;
+      if (filterType === 'staff' && c.uiType !== 'staff' && c.uiType !== 'system') return false;
+      if (searchQuery && !(c.name || '').toLowerCase().includes(searchQuery.toLowerCase())) return false;
       return true;
     });
-  }, [searchQuery, filterType]);
+  }, [conversations, searchQuery, filterType]);
 
-  const activeChat = MOCK_CONVERSATIONS.find((c) => c.id === activeConversation);
-  const messages = MOCK_MESSAGES[activeConversation] || [];
+  const activeChat = conversations.find((c) => c.id === activeConversation);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -81,7 +151,32 @@ const CRMMessages = () => {
     setMobileShowChat(false);
   };
 
-  const totalUnread = MOCK_CONVERSATIONS.reduce((sum, c) => sum + c.unread, 0);
+  const handleSend = async () => {
+    const body = messageText.trim();
+    if (!body || !activeConversation || sending) return;
+    setSending(true);
+    try {
+      const res = await messageAPI.sendMessage(activeConversation, { body, type: 'text' });
+      const newMsg = res?.data?.message ?? res?.data ?? null;
+      if (newMsg) {
+        setMessages((prev) => [...prev, newMsg]);
+        // Konuşma listesinde son mesajı güncelle
+        setConversations((prev) => prev.map((c) => (
+          c.id === activeConversation
+            ? { ...c, lastMessage: body, lastTime: formatTime(newMsg.created_at) }
+            : c
+        )));
+      }
+      setMessageText('');
+    } catch (err) {
+      // Sessiz başarısızlık yerine kullanıcıya geri bildirim
+      setConvError(err?.message || t('crm.messages.sendError', 'Mesaj gönderilemedi.'));
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const totalUnread = conversations.reduce((sum, c) => sum + (c.unread || 0), 0);
 
   const MessageStatus = ({ status }) => {
     if (status === 'read') return <CheckCheck className="w-3.5 h-3.5 text-blue-500" />;
@@ -135,7 +230,20 @@ const CRMMessages = () => {
 
           {/* Conversation Items */}
           <div className="flex-1 overflow-y-auto">
-            {filtered.length === 0 ? (
+            {loadingConvs ? (
+              <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                <Loader2 className="w-6 h-6 mb-2 animate-spin" />
+                <p className="text-sm">{t('common.loading', 'Yükleniyor...')}</p>
+              </div>
+            ) : convError ? (
+              <div className="flex flex-col items-center justify-center py-12 text-gray-400 px-4 text-center">
+                <AlertCircle className="w-8 h-8 mb-2 text-rose-400" />
+                <p className="text-sm">{convError}</p>
+                <button onClick={loadConversations} className="mt-3 text-xs text-teal-600 font-medium hover:underline">
+                  {t('common.retry', 'Tekrar dene')}
+                </button>
+              </div>
+            ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                 <MessageSquare className="w-8 h-8 mb-2 opacity-40" />
                 <p className="text-sm">{t('crm.messages.noConversations')}</p>
@@ -152,11 +260,11 @@ const CRMMessages = () => {
                   {/* Avatar */}
                   <div className="relative flex-shrink-0">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold ${
-                      conv.type === 'system' ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white' :
-                      conv.type === 'staff' ? 'bg-gradient-to-br from-violet-400 to-violet-600 text-white' :
+                      conv.uiType === 'system' ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white' :
+                      conv.uiType === 'staff' ? 'bg-gradient-to-br from-violet-400 to-violet-600 text-white' :
                       'bg-gradient-to-br from-gray-200 to-gray-300 text-gray-600'
                     }`}>
-                      {conv.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                      {getInitials(conv.name)}
                     </div>
                     {conv.online && (
                       <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white" />
@@ -203,17 +311,17 @@ const CRMMessages = () => {
                   </button>
                   <div className="relative">
                     <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold ${
-                      activeChat.type === 'system' ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white' :
-                      activeChat.type === 'staff' ? 'bg-gradient-to-br from-violet-400 to-violet-600 text-white' :
+                      activeChat.uiType === 'system' ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white' :
+                      activeChat.uiType === 'staff' ? 'bg-gradient-to-br from-violet-400 to-violet-600 text-white' :
                       'bg-gradient-to-br from-gray-200 to-gray-300 text-gray-600'
                     }`}>
-                      {activeChat.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                      {getInitials(activeChat.name)}
                     </div>
                     {activeChat.online && <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white" />}
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900">{activeChat.name}</p>
-                    <p className="text-[11px] text-gray-400">{activeChat.online ? t('crm.messages.online') : t('crm.messages.offline')} · {activeChat.type}</p>
+                    <p className="text-[11px] text-gray-400">{activeChat.online ? t('crm.messages.online') : t('crm.messages.offline')} · {activeChat.uiType}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -225,26 +333,38 @@ const CRMMessages = () => {
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-3 bg-gray-50/30">
-                {messages.map((msg) => {
-                  const isDoctor = msg.sender === 'doctor';
-                  return (
-                    <div key={msg.id} className={`flex ${isDoctor ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[75%] sm:max-w-[65%] rounded-2xl px-4 py-2.5 ${
-                        isDoctor
-                          ? 'bg-teal-600 text-white rounded-br-md'
-                          : msg.sender === 'system'
-                          ? 'bg-blue-50 text-blue-800 border border-blue-200 rounded-bl-md'
-                          : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm'
-                      }`}>
-                        <p className="text-sm leading-relaxed">{msg.text}</p>
-                        <div className={`flex items-center justify-end gap-1 mt-1 ${isDoctor ? 'text-teal-200' : 'text-gray-400'}`}>
-                          <span className="text-[10px]">{msg.time}</span>
-                          {isDoctor && <MessageStatus status={msg.status} />}
+                {loadingMsgs ? (
+                  <div className="flex items-center justify-center py-12 text-gray-400">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  </div>
+                ) : messages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                    <MessageSquare className="w-8 h-8 mb-2 opacity-40" />
+                    <p className="text-sm">{t('crm.messages.noMessages', 'Henüz mesaj yok')}</p>
+                  </div>
+                ) : (
+                  messages.map((msg) => {
+                    const isMine = msg.sender_id === currentUserId || msg.is_mine === true;
+                    const isSystem = msg.type === 'system';
+                    return (
+                      <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[75%] sm:max-w-[65%] rounded-2xl px-4 py-2.5 ${
+                          isMine
+                            ? 'bg-teal-600 text-white rounded-br-md'
+                            : isSystem
+                            ? 'bg-blue-50 text-blue-800 border border-blue-200 rounded-bl-md'
+                            : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm'
+                        }`}>
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{msg.body}</p>
+                          <div className={`flex items-center justify-end gap-1 mt-1 ${isMine ? 'text-teal-200' : 'text-gray-400'}`}>
+                            <span className="text-[10px]">{formatTime(msg.created_at)}</span>
+                            {isMine && <MessageStatus status={msg.read_at ? 'read' : 'sent'} />}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
@@ -262,14 +382,15 @@ const CRMMessages = () => {
                       onChange={(e) => setMessageText(e.target.value)}
                       placeholder={t('crm.messages.typeMessage')}
                       className="w-full px-4 py-2.5 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none resize-none"
-                      onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); setMessageText(''); } }}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                     />
                   </div>
                   <button
-                    disabled={!messageText.trim()}
+                    onClick={handleSend}
+                    disabled={!messageText.trim() || sending}
                     className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center hover:bg-teal-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
                   >
-                    <Send className="w-4 h-4" />
+                    {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   </button>
                 </div>
               </div>

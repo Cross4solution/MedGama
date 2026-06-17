@@ -448,9 +448,10 @@ const RegisterForm = ({
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5 flex-shrink-0"
                 />
                 <span className="text-sm text-gray-500 text-left leading-relaxed">
-                  {t('auth.healthDataConsent')} <span className="text-gray-400 text-xs">({t('auth.optionalGDPR9')})</span>
+                  {t('auth.healthDataConsent')} <span className="text-red-500">*</span>
                 </span>
               </label>
+              {errors.acceptHealthData && <p className="text-red-500 text-xs ml-7 text-left">{errors.acceptHealthData}</p>}
             </>
           )}
 

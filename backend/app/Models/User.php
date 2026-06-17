@@ -36,6 +36,7 @@ class User extends Authenticatable
         'medical_history', 'notification_preferences', 'clinic_name',
         'added_by_clinic',
         'guardian_email', 'guardian_consent_at',
+        'health_data_consent_at', 'health_data_consent_ip',
     ];
 
     protected $hidden = [
@@ -53,6 +54,7 @@ class User extends Authenticatable
             'is_active'                => 'boolean',
             'date_of_birth'            => 'date',
             'guardian_consent_at'      => 'datetime',
+            'health_data_consent_at'   => 'datetime',
             'last_login'               => 'datetime',
             'medical_history'          => 'encrypted',
             'notification_preferences' => 'encrypted:array',

@@ -72,6 +72,9 @@ class AuthService
                 'medical_history'         => $data['medical_history'] ?? null,
                 'guardian_email'          => $data['guardian_email'] ?? null,
                 'guardian_consent_at'     => !empty($data['guardian_email']) ? now() : null,
+                // KVKK Md. 6 / GDPR Art. 9 — sağlık verisi açık rızası (kim/ne zaman + IP)
+                'health_data_consent_at'  => !empty($data['health_data_consent']) ? now() : null,
+                'health_data_consent_ip'  => !empty($data['health_data_consent']) ? (request()?->ip()) : null,
                 'avatar'                  => null,
                 'email_verified'          => false,
                 'email_verification_code' => $verificationCode,
@@ -93,6 +96,33 @@ class AuthService
 
             return $user;
         });
+
+        // KVKK Md. 6 / GDPR Art. 9 — sağlık verisi açık rızası verildiyse audit kaydı.
+        // Self-register sırasında auth()->id() henüz NULL olduğundan accessor = yeni kullanıcı.
+        if (!empty($data['health_data_consent']) && $user->health_data_consent_at) {
+            try {
+                \App\Models\HealthDataAuditLog::log(
+                    accessorId: $user->id,
+                    patientId: $user->id,
+                    resourceType: 'health_data_consent',
+                    resourceId: $user->id,
+                    action: 'consent_granted',
+                );
+                \App\Models\AuditLog::create([
+                    'user_id'       => $user->id,
+                    'action'        => 'consent_granted',
+                    'resource_type' => 'User',
+                    'resource_id'   => $user->id,
+                    'new_values'    => ['health_data_consent_at' => (string) $user->health_data_consent_at],
+                    'ip_address'    => request()?->ip(),
+                    'user_agent'    => request()?->userAgent(),
+                    'description'   => 'Sağlık verisi açık rızası verildi (KVKK Md. 6 / GDPR Art. 9)',
+                    'created_at'    => now(),
+                ]);
+            } catch (\Throwable $e) {
+                \Log::warning('Health data consent audit failed: ' . $e->getMessage());
+            }
+        }
 
         // Roles that NEVER need email verification during register:
         //   • hospital    → admin-provisioned accounts

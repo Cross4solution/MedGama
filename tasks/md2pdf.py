@@ -16,7 +16,7 @@ ARIAL_B = '/System/Library/Fonts/Supplemental/Arial Bold.ttf'
 pdfmetrics.registerFont(TTFont('Arial', ARIAL))
 pdfmetrics.registerFont(TTFont('Arial-Bold', ARIAL_B))
 
-TEAL = colors.HexColor('#0d9488')
+TEAL = colors.HexColor('#1d4ed8')   # mavi tema (eski teal yerine)
 INK = colors.HexColor('#1f2937')
 GRAY = colors.HexColor('#6b7280')
 
@@ -36,8 +36,8 @@ S = {
   'small': mk('small', fontSize=9, textColor=GRAY),
   'h2feat': mk('h2feat', fontName='Arial-Bold', fontSize=15, leading=21, textColor=colors.white,
                spaceBefore=16, spaceAfter=8, backColor=TEAL, borderPadding=(8,10,8,10), leftIndent=0),
-  'callout': mk('callout', fontSize=10.5, leading=15, textColor=colors.HexColor('#0f766e'),
-                backColor=colors.HexColor('#ccfbf1'), borderColor=TEAL, borderWidth=0,
+  'callout': mk('callout', fontSize=10.5, leading=15, textColor=colors.HexColor('#1e3a8a'),
+                backColor=colors.HexColor('#dbeafe'), borderColor=TEAL, borderWidth=0,
                 borderPadding=(8,10,8,10), spaceBefore=2, spaceAfter=10, fontName='Arial-Bold'),
 }
 

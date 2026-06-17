@@ -46,6 +46,8 @@ class RegisterRequest extends FormRequest
             'clinic_name'   => 'sometimes|string|max:255',
             'medical_history' => 'sometimes|nullable|string|max:5000',
             'guardian_email' => ($isMinor ? 'required' : 'nullable') . '|email|max:255|different:email',
+            // KVKK Md. 6 / GDPR Art. 9 — hasta için sağlık verisi açık rızası zorunlu (accepted).
+            'health_data_consent' => $isPatient ? 'required|accepted' : 'sometimes|boolean',
         ];
     }
 
@@ -59,6 +61,8 @@ class RegisterRequest extends FormRequest
             'guardian_email.required' => '18 yaş altı kayıt için veli e-posta adresi zorunludur.',
             'guardian_email.email' => 'Geçerli bir veli e-posta adresi giriniz.',
             'guardian_email.different' => 'Veli e-postası kullanıcının e-postasından farklı olmalıdır.',
+            'health_data_consent.required' => 'Sağlık verilerinizin işlenmesine açık rıza vermeniz zorunludur.',
+            'health_data_consent.accepted' => 'Sağlık verilerinizin işlenmesine açık rıza vermeniz zorunludur.',
         ];
     }
 }

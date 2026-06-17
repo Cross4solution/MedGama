@@ -25,6 +25,8 @@ class Appointment extends Model
         'doctor_note', 'created_by', 'is_active',
         // Onaylı Review Sistemi alanları
         'deposit_status', 'auto_completed_at',
+        // Otomatik hatırlatma gönderim flag'leri
+        'reminder_24h_sent_at', 'reminder_1h_sent_at',
     ];
 
     protected function casts(): array
@@ -35,6 +37,8 @@ class Appointment extends Model
             'doctor_note'       => 'encrypted',
             'confirmation_note' => 'encrypted',
             'auto_completed_at' => 'datetime',
+            'reminder_24h_sent_at' => 'datetime',
+            'reminder_1h_sent_at'  => 'datetime',
         ];
     }
 

@@ -85,6 +85,10 @@ const AuthPages = () => {
       if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Şifreler eşleşmiyor.';
       if (!formData.acceptTerms) newErrors.acceptTerms = 'Kullanım Koşullarını kabul etmelisiniz.';
       if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'Gizlilik Politikasını kabul etmelisiniz.';
+      // KVKK Md. 6 / GDPR Art. 9 — hasta için sağlık verisi açık rızası zorunlu.
+      if ((formData.role || 'patient') === 'patient' && !formData.acceptHealthData) {
+        newErrors.acceptHealthData = 'Sağlık verilerinizin işlenmesine açık rıza vermelisiniz.';
+      }
       // KVKK / GDPR Art. 8 — patient must provide birth_date; minors require guardian_email.
       if ((formData.role || 'patient') === 'patient') {
         if (!formData.birthDate) {
@@ -141,6 +145,8 @@ const AuthPages = () => {
           city_id: formData.city ? parseInt(formData.city) : undefined,
           date_of_birth: formData.birthDate || undefined,
           ...(formData.guardianEmail ? { guardian_email: formData.guardianEmail } : {}),
+          // KVKK Md. 6 / GDPR Art. 9 — sağlık verisi açık rızası (hasta için zorunlu)
+          ...(formData.role === 'patient' ? { health_data_consent: !!formData.acceptHealthData } : {}),
           ...(formData.role === 'clinic' ? { role_id: 'clinicOwner', clinic_name: formData.clinicName || undefined } : {}),
           ...(formData.role === 'patient' && formData.medicalHistory ? { medical_history: String(formData.medicalHistory).trim() } : {}),
         };
