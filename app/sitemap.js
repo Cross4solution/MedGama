@@ -2,12 +2,18 @@ import { API_ORIGIN, SITE_URL } from '@/lib/seo-server';
 import { LOCALES, DEFAULT_LOCALE } from '@/lib/locales';
 import { getProviderCombinations } from '@/lib/tedaviler-data';
 
-async function safeList(path) {
+// Build sırasında backend yavaş/cold-start ise sitemap route'u 60s budget'ı aşıp
+// Vercel build'ini kırabilir. Her fetch'e sıkı timeout → asla asılı kalmaz.
+async function safeList(path, timeoutMs = 8000) {
   try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), timeoutMs);
     const res = await fetch(`${API_ORIGIN}${path}`, {
       next: { revalidate: 3600 },
       headers: { Accept: 'application/json' },
+      signal: ctrl.signal,
     });
+    clearTimeout(t);
     if (!res.ok) return [];
     const json = await res.json();
     // Laravel paginator → { data: [...] }
@@ -15,6 +21,14 @@ async function safeList(path) {
   } catch {
     return [];
   }
+}
+
+// Bir promise'i süre sınırıyla sarmalar; aşılırsa fallback döner (build asılmasın).
+function withTimeout(promise, ms, fallback) {
+  return Promise.race([
+    promise,
+    new Promise((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
 }
 
 // Locale-siz bir path'i her dil için bir URL'e açar + hreflang alternates ekler.
@@ -84,7 +98,7 @@ export default async function sitemap() {
   let tedaviUrls = [];
   try {
     const cap = Math.max(50, Math.floor(500 / LOCALES.length));
-    const combos = await getProviderCombinations(cap);
+    const combos = await withTimeout(getProviderCombinations(cap), 15000, []);
     tedaviUrls = combos.flatMap(({ specialtySlug, citySlug }) =>
       localizeEntries(`/tedaviler/${specialtySlug}/${citySlug}`, { priority: 0.7, lastModified: now })
     );

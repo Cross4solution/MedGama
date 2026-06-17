@@ -10,6 +10,7 @@ import { useToast } from '../../context/ToastContext';
 import { useNotifications } from '../../context/NotificationsContext';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import { playNotificationSound } from '../../utils/notificationSound';
+import LanguageSwitcher from '../ui/LanguageSwitcher';
 
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout, hydrated, isPro } = useAuth();
@@ -284,6 +285,7 @@ const Header = () => {
 
           {/* Right cluster: actions (desktop) + mobile trigger */}
           <div className="flex items-center justify-end gap-2">
+            <LanguageSwitcher />
             <div className="hidden md:flex items-center space-x-2.5">
               {!hydrated ? null : !user ? (
                 <>
