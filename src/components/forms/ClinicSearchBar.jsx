@@ -32,7 +32,7 @@ export default function ClinicSearchBar({
             options={countryOptions}
             value={country}
             onChange={(val) => { onCountryChange?.(val); onCityChange?.(''); }}
-            placeholder="All Countries"
+            placeholder={t('search.allCountries')}
             getFlagUrl={getFlagUrl}
           />
         </div>
@@ -45,7 +45,7 @@ export default function ClinicSearchBar({
             onChange={onCityChange}
             disabled={!country}
             loading={citiesLoading}
-            placeholder="All Cities"
+            placeholder={t('search.allCities')}
           />
         </div>
         {/* Specialty */}
@@ -55,7 +55,7 @@ export default function ClinicSearchBar({
             options={specialtyOptions}
             value={specialty}
             onChange={onSpecialtyChange}
-            placeholder="All Specialties"
+            placeholder={t('search.allSpecialties')}
             hideChevron
             triggerClassName={`w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg text-base md:text-sm bg-white text-left`}
           />
@@ -67,7 +67,7 @@ export default function ClinicSearchBar({
             options={priceOptions}
             value={priceRange}
             onChange={onPriceRangeChange}
-            placeholder="All Prices"
+            placeholder={t('search.allPrices')}
             hideChevron
             searchable={false}
             triggerClassName={`w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg text-base md:text-sm bg-white text-left`}

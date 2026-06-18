@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@/compat/router';
 import { Stethoscope, Building2, BadgeCheck, ArrowRight, Loader2, Tag } from 'lucide-react';
 import { searchAPI } from '../../lib/api';
@@ -6,6 +7,7 @@ import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 export default function GlobalSearch() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -119,7 +121,7 @@ export default function GlobalSearch() {
         onChange={(e) => { setQuery(e.target.value); setOpen(true); setActiveIndex(-1); }}
         onFocus={() => { if (query.trim().length >= 2) setOpen(true); }}
         onKeyDown={onKeyDown}
-        placeholder="Search Clinics or Doctors"
+        placeholder={t('search.clinicsOrDoctorsPlaceholder')}
         autoComplete="off"
         className="w-full border border-gray-100 rounded-full pl-11 pr-11 py-3.5 text-base bg-white/95 backdrop-blur shadow-[0_6px_20px_-5px_rgba(28,106,131,0.35),0_2px_6px_-2px_rgba(2,6,23,0.2)] hover:shadow-[0_10px_30px_-10px_rgba(28,106,131,0.45),0_4px_12px_-3px_rgba(2,6,23,0.25)] focus:shadow-[0_12px_36px_-12px_rgba(28,106,131,0.55),0_6px_16px_-4px_rgba(2,6,23,0.3)] focus:outline-none focus:ring-4 focus:ring-teal-500/20 focus:border-transparent transition-all duration-200"
       />
@@ -130,7 +132,7 @@ export default function GlobalSearch() {
           {loading && <Loader2 className="w-4 h-4 text-teal-500 animate-spin" />}
           <button
             type="button"
-            aria-label="Clear"
+            aria-label={t('search.clear')}
             className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full w-7 h-7 flex items-center justify-center transition-colors"
             onClick={() => { setQuery(''); setActiveIndex(-1); setOpen(false); inputRef.current?.focus(); }}
           >
@@ -147,7 +149,7 @@ export default function GlobalSearch() {
           {loading && !hasResults && (
             <div className="px-4 py-6 flex items-center justify-center gap-2 text-sm text-gray-400">
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Searching...</span>
+              <span>{t('search.searching')}</span>
             </div>
           )}
 
@@ -156,7 +158,7 @@ export default function GlobalSearch() {
             <div>
               <div className="px-4 pt-3 pb-1.5 flex items-center gap-2">
                 <Tag className="w-3.5 h-3.5 text-emerald-500" />
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Treatments & Symptoms</span>
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">{t('search.treatmentsSymptoms')}</span>
                 <span className="text-[11px] text-gray-300">({treatments.length})</span>
               </div>
               <ul role="listbox">
@@ -202,7 +204,7 @@ export default function GlobalSearch() {
             <div>
               <div className="px-4 pt-3 pb-1.5 flex items-center gap-2">
                 <Stethoscope className="w-3.5 h-3.5 text-blue-500" />
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Doctors</span>
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">{t('search.doctors')}</span>
                 <span className="text-[11px] text-gray-300">({doctors.length})</span>
               </div>
               <ul role="listbox">
@@ -256,7 +258,7 @@ export default function GlobalSearch() {
             <div>
               <div className="px-4 pt-3 pb-1.5 flex items-center gap-2">
                 <Building2 className="w-3.5 h-3.5 text-teal-500" />
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Clinics</span>
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">{t('search.clinics')}</span>
                 <span className="text-[11px] text-gray-300">({clinics.length})</span>
               </div>
               <ul role="listbox">
@@ -309,7 +311,7 @@ export default function GlobalSearch() {
       {open && noResults && (
         <div className="absolute z-30 mt-2 w-full bg-white border border-gray-200/80 rounded-2xl shadow-xl overflow-hidden">
           <div className="px-4 py-5 text-center">
-            <p className="text-sm text-gray-400">No results found for "<span className="font-medium text-gray-600">{query.trim()}</span>"</p>
+            <p className="text-sm text-gray-400">{t('search.noResultsFor')} "<span className="font-medium text-gray-600">{query.trim()}</span>"</p>
           </div>
         </div>
       )}
