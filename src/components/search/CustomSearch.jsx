@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function CustomSearch() {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.language || 'en';
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
@@ -151,12 +151,12 @@ export default function CustomSearch() {
         <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-[11rem,11rem,1.1fr,auto,1.1fr,auto] items-start">
         {/* 1. Country */}
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Country</label>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('search.country')}</label>
           <CountryCombobox
             options={countries}
             value={country}
             onChange={(val) => { setCountry((val || '').trim()); setCity(''); }}
-            placeholder="Select country"
+            placeholder={t('search.selectCountry')}
             triggerClassName="w-full h-10 border border-gray-300 rounded-xl px-3 text-sm bg-white text-left hover:border-gray-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
             getFlagUrl={(name) => {
               const code = getFlagCode(name);
@@ -167,7 +167,7 @@ export default function CustomSearch() {
 
         {/* 2. City */}
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">{adminType === 'state' ? 'State/Province' : 'City'}</label>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">{adminType === 'state' ? t('search.stateProvince') : t('search.city')}</label>
           <CityCombobox
             options={country ? citiesOptions : []}
             value={city}
@@ -175,20 +175,20 @@ export default function CustomSearch() {
             disabled={!country}
             loading={loadingCities}
             wheelFactor={1}
-            placeholder={country ? 'Select...' : 'Choose country first'}
+            placeholder={country ? t('search.selectPlaceholder') : t('search.chooseCountryFirst')}
             triggerClassName={`w-full h-10 border border-gray-300 rounded-xl px-3 text-sm bg-white text-left transition-all ${!country ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400'}`}
           />
         </div>
 
         {/* 3. Symptom */}
         <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Symptom / Procedure</label>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('search.symptomProcedure')}</label>
           <GlobalSuggest
             type="symptom"
             value={symptom}
             onChange={setSymptom}
             disabled={disableSymptom}
-            placeholder="Symptom or Procedure (e.g., nasal congestion)"
+            placeholder={t('search.symptomPlaceholder')}
             allowCustom={true}
           />
         </div>
@@ -196,20 +196,20 @@ export default function CustomSearch() {
         <div className="flex items-center justify-center col-span-1 sm:col-span-2 md:col-span-1 md:pt-[44px] py-1 md:py-0">
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="flex-1 h-px bg-gray-200 md:hidden"></div>
-            <span className="text-xs font-medium text-gray-400 tracking-wider">or</span>
+            <span className="text-xs font-medium text-gray-400 tracking-wider">{t('search.or')}</span>
             <div className="flex-1 h-px bg-gray-200 md:hidden"></div>
           </div>
         </div>
 
         {/* 4. Specialty */}
         <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Specialty / Disease</label>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('search.specialtyDisease')}</label>
           <GlobalSuggest
             type="specialty"
             value={specialty}
             onChange={setSpecialty}
             disabled={disableSpecialty}
-            placeholder="Type a specialty or illness (e.g., ENT or Crohn's)"
+            placeholder={t('search.specialtyPlaceholder')}
             allowCustom={true}
           />
         </div>
@@ -225,7 +225,7 @@ export default function CustomSearch() {
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <span>Search</span>
+            <span>{t('search.searchButton')}</span>
           </button>
         </div>
       </div>

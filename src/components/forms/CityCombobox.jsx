@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function CityCombobox({
   options = [],
@@ -11,6 +12,7 @@ export default function CityCombobox({
   lockBodyScroll = false, // header kaymasını önlemek için varsayılan false
   triggerClassName = '',
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   // Sonsuz kaydırma: DOM'a kaç öğe basılacağı (aşağı indikçe artar)
@@ -96,7 +98,7 @@ export default function CityCombobox({
           <div className="p-2">
             <input
               className="w-full border border-gray-200 rounded px-2 py-1 text-base md:text-sm"
-              placeholder="Search city"
+              placeholder={t('search.searchCity')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               autoFocus
