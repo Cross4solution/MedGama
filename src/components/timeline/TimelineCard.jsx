@@ -602,6 +602,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const actorLink = (() => {
     const actorId = item?.actor?.id;
     const actorRole = item?.actor?.role;
+    const actorHandle = item?.actor?.username;
+    // Twitter-style MedStream profile when a handle is available
+    if (actorHandle) return `/@${actorHandle}`;
     // If the post author is the current user, go to /profile
     if (authUser?.id && actorId === authUser.id) return '/profile';
     // Doctors have a public profile page

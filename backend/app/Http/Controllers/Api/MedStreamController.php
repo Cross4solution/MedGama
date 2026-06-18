@@ -12,8 +12,10 @@ use App\Http\Requests\MedStream\UpdateReportRequest;
 use App\Http\Requests\MedStream\ToggleBookmarkRequest;
 use App\Http\Resources\MedStreamPostResource;
 use App\Http\Resources\MedStreamCommentResource;
+use App\Models\DoctorFollow;
 use App\Models\MedStreamComment;
 use App\Models\MedStreamPost;
+use App\Models\User;
 use App\Services\MedStreamService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -496,5 +498,55 @@ class MedStreamController extends Controller
     public function followCounts(string $userId): JsonResponse
     {
         return response()->json($this->medStreamService->followCounts($userId));
+    }
+
+    #[OA\Get(
+        path: '/medstream/u/{username}',
+        summary: 'Public Twitter-style profile by handle (@username)',
+        tags: ['MedStream'],
+        parameters: [
+            new OA\Parameter(name: 'username', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Profile + follow counts'),
+            new OA\Response(response: 404, description: 'Not found'),
+        ]
+    )]
+    public function profile(string $username, Request $request): JsonResponse
+    {
+        $user = User::where('username', $username)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Profile not found.'], 404);
+        }
+
+        // Bio: own column, falling back to doctor profile bio when present
+        $bio = $user->bio ?: optional($user->doctorProfile()->first())->bio;
+
+        $canPost = in_array($user->role_id, ['doctor', 'clinic', 'clinicOwner', 'hospital'], true);
+
+        // Follow state for the (optionally) authenticated viewer
+        $viewerId = $request->user()?->id;
+        $isFollowing = $viewerId
+            ? DoctorFollow::where('follower_id', $viewerId)->where('following_id', $user->id)->exists()
+            : false;
+
+        return response()->json([
+            'user' => [
+                'id'          => $user->id,
+                'username'    => $user->username,
+                'fullname'    => $user->fullname,
+                'avatar'      => $user->avatar,
+                'cover_image' => $user->cover_image,
+                'bio'         => $bio,
+                'role_id'     => $user->role_id,
+                'is_verified' => (bool) $user->is_verified,
+                'country'     => $user->country,
+                'created_at'  => $user->created_at?->toISOString(),
+            ],
+            'counts'       => $this->medStreamService->followCounts($user->id),
+            'can_post'     => $canPost,
+            'is_following' => $isFollowing,
+        ]);
     }
 }

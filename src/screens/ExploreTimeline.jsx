@@ -58,6 +58,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
             actor: {
               id: p.author_id,
               role: authorRole,
+              username: p.author?.username || null,
               name: p.author?.fullname || 'Doctor',
               title: clinicName || (authorRole === 'doctor' ? 'Doctor' : ''),
               avatarUrl: resolveStorageUrl(p.author?.avatar),
@@ -566,11 +567,12 @@ export default function ExploreTimeline() {
           {/* Feed (RIGHT) */}
           <section className="order-1 lg:order-2">
             <div className="max-w-[680px] mx-auto lg:mx-0 lg:ml-6">
-              {/* Composer (doctors/clinics only) */}
+              {/* Composer — clinics, clinic groups (hospitals) and doctors only (NOT patients) */}
               {(() => {
                 const isDoctor = !!(user && (user.role === 'doctor' || (user?.specialty || user?.hospital || user?.access)));
                 const isClinic = !!(user && (user.role === 'clinic' || user.role === 'clinicOwner'));
-                if (!isDoctor && !isClinic) return null;
+                const isHospital = !!(user && user.role === 'hospital');
+                if (!isDoctor && !isClinic && !isHospital) return null;
                 const isUnverifiedDoctor = isDoctor && !user?.is_verified;
                 return (
                   <div className={`bg-white rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow duration-300 mb-4 ${isUnverifiedDoctor ? 'border-amber-200 opacity-80' : 'border-gray-100'}`}>

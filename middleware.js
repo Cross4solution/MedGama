@@ -25,6 +25,14 @@ function pickLocale(req) {
   return DEFAULT_LOCALE;
 }
 
+// medstream.co (ve www) → MedStream feed odaklı domain.
+// Kök adres feed'i gösterir (rewrite — URL medstream.co'da kalır); profiller
+// (/@handle), post detayı vb. aynı route'larla bu domainde de çalışır.
+function isMedstreamHost(req) {
+  const host = (req.headers.get('host') || '').toLowerCase().split(':')[0];
+  return host === 'medstream.co' || host === 'www.medstream.co';
+}
+
 export function middleware(req) {
   const { pathname, search } = req.nextUrl;
 
@@ -33,12 +41,24 @@ export function middleware(req) {
     return NextResponse.next();
   }
 
-  const first = pathname.split('/').filter(Boolean)[0];
+  const medstreamHost = isMedstreamHost(req);
+  const segments = pathname.split('/').filter(Boolean);
+  const first = segments[0];
 
-  // Zaten locale-prefixli → header set edip geç
+  // Zaten locale-prefixli
   if (isLocale(first)) {
+    // medstream.co/<locale> (kök) → feed'i göster (rewrite)
+    if (medstreamHost && segments.length === 1) {
+      const url = req.nextUrl.clone();
+      url.pathname = `/${first}/medstream`;
+      const res = NextResponse.rewrite(url);
+      res.headers.set('x-locale', first);
+      res.headers.set('x-brand', 'medstream');
+      return res;
+    }
     const res = NextResponse.next();
     res.headers.set('x-locale', first);
+    if (medstreamHost) res.headers.set('x-brand', 'medstream');
     return res;
   }
 
@@ -50,6 +70,16 @@ export function middleware(req) {
   // Deterministik olmayan redirect için 307 doğru olandır.
   const locale = pickLocale(req);
   const url = req.nextUrl.clone();
+
+  // medstream.co/ (kök) → feed'i doğrudan göster (rewrite, redirect değil)
+  if (medstreamHost && pathname === '/') {
+    url.pathname = `/${locale}/medstream`;
+    const res = NextResponse.rewrite(url);
+    res.headers.set('x-locale', locale);
+    res.headers.set('x-brand', 'medstream');
+    return res;
+  }
+
   url.pathname = `/${locale}${pathname === '/' ? '' : pathname}`;
   const res = NextResponse.redirect(url); // default 307 (temporary) — intentional
   res.headers.set('x-locale', locale);

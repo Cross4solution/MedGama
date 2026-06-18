@@ -27,7 +27,7 @@ class User extends Authenticatable
     // ÇIKARILDI — bu CRM gating alanları sadece servis/admin/seeder katmanında
     // forceFill ile setlenmeli (kullanıcı updateProfile ile abonelik kazanamaz).
     protected $fillable = [
-        'email', 'password', 'fullname', 'avatar', 'profile_image', 'role_id', 'user_level', 'mobile',
+        'email', 'password', 'fullname', 'username', 'cover_image', 'bio', 'avatar', 'profile_image', 'role_id', 'user_level', 'mobile',
         'mobile_verified', 'email_verified', 'email_verified_at', 'email_verification_code',
         'password_reset_code', 'password_reset_expires_at',
         'city_id', 'country_id', 'country', 'preferred_language',

@@ -521,6 +521,9 @@ export const medStreamAPI = {
   toggleFollow: (userId) => api.post(`/medstream/follow/${userId}`),
   followCounts: (userId) => api.get(`/medstream/follow-counts/${userId}`),
 
+  // Public Twitter-style profile by handle (@username)
+  profile: (username) => api.get(`/medstream/u/${encodeURIComponent(username)}`),
+
   // Secure file download (forces browser download)
   downloadFile: (path, filename) => api.get('/medstream/download', {
     params: { path, filename },

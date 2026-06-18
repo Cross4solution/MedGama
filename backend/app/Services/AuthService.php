@@ -60,6 +60,11 @@ class AuthService
                 'email'                   => $data['email'],
                 'password'                => $data['password'],
                 'fullname'                => $data['fullname'],
+                'username'                => \App\Support\Username::generate(
+                    $data['fullname'],
+                    $roleId,
+                    $data['clinic_name'] ?? null,
+                ),
                 'mobile'                  => $data['mobile'] ?? null,
                 'role_id'                 => $roleId,
                 'user_level'              => $levelMap[$roleId] ?? 1,

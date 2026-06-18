@@ -41,6 +41,7 @@ class MedStreamPostResource extends JsonResource
             ] : [
                 'id'       => $this->author->id,
                 'fullname' => $this->author->fullname,
+                'username' => $this->author->username,
                 'avatar'   => self::resolveMediaUrl($this->author->avatar),
                 'role_id'  => $this->author->role_id,
             ]),

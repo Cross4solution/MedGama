@@ -566,6 +566,8 @@ Route::prefix('medstream')->group(function () {
         Route::get('/posts', [MedStreamController::class, 'posts']);
         Route::get('/posts/{post}', [MedStreamController::class, 'showPost']);
         Route::get('/posts/{post}/comments', [MedStreamController::class, 'comments']);
+        // Public Twitter-style profile by handle (@username)
+        Route::get('/u/{username}', [MedStreamController::class, 'profile']);
     });
 
     // Secure file download (path-validated, no auth needed for public posts)
@@ -575,19 +577,21 @@ Route::prefix('medstream')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/feed', [MedStreamController::class, 'feed']);
 
-        Route::post('/posts', [MedStreamController::class, 'storePost'])->middleware('verified.doctor');
-        Route::put('/posts/{post}', [MedStreamController::class, 'updatePost'])->middleware('verified.doctor');
-        Route::delete('/posts/{post}', [MedStreamController::class, 'destroyPost'])->middleware('verified.doctor');
+        // Publish (posts) — clinics, clinic groups, doctors only (NOT patients)
+        Route::post('/posts', [MedStreamController::class, 'storePost'])->middleware('medstream.publish');
+        Route::put('/posts/{post}', [MedStreamController::class, 'updatePost'])->middleware('medstream.publish');
+        Route::delete('/posts/{post}', [MedStreamController::class, 'destroyPost'])->middleware('medstream.publish');
 
-        Route::post('/posts/{post}/comments', [MedStreamController::class, 'storeComment'])->middleware('verified.doctor');
-        Route::put('/comments/{comment}', [MedStreamController::class, 'updateComment'])->middleware('verified.doctor');
-        Route::delete('/comments/{comment}', [MedStreamController::class, 'destroyComment'])->middleware('verified.doctor');
+        // Engage (comment / like / bookmark) — any authenticated user, including patients
+        Route::post('/posts/{post}/comments', [MedStreamController::class, 'storeComment']);
+        Route::put('/comments/{comment}', [MedStreamController::class, 'updateComment']);
+        Route::delete('/comments/{comment}', [MedStreamController::class, 'destroyComment']);
 
-        Route::post('/posts/{post}/like', [MedStreamController::class, 'toggleLike'])->middleware('verified.doctor');
+        Route::post('/posts/{post}/like', [MedStreamController::class, 'toggleLike']);
         Route::post('/posts/{post}/report', [MedStreamController::class, 'storeReport']);
 
         Route::get('/bookmarks', [MedStreamController::class, 'bookmarks']);
-        Route::post('/bookmarks', [MedStreamController::class, 'toggleBookmark'])->middleware('verified.doctor');
+        Route::post('/bookmarks', [MedStreamController::class, 'toggleBookmark']);
 
         Route::post('/follow/{userId}', [MedStreamController::class, 'toggleFollow']);
         Route::get('/follow-counts/{userId}', [MedStreamController::class, 'followCounts']);

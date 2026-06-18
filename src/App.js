@@ -329,8 +329,9 @@ function AppContent() {
         <Route path="/" element={<HomeV2 />} />
         <Route path="/home" element={<HomeV2 />} />
         <Route path="/home-v2" element={<HomeV2 />} />
-        {/* Canonical URL: /medstream — /explore kept as backward-compat redirect */}
-        <Route path="/medstream" element={<PrivateRoute><ExploreTimeline /></PrivateRoute>} />
+        {/* Canonical URL: /medstream — public feed (guests can browse; composer is gated inside).
+            /explore kept as backward-compat redirect */}
+        <Route path="/medstream" element={<ExploreTimeline />} />
         <Route path="/explore" element={<Navigate to="/medstream" replace />} />
         <Route path="/saved" element={<PrivateRoute><SavedPosts /></PrivateRoute>} />
         <Route path="/saved-clinics" element={<PrivateRoute><SavedClinics /></PrivateRoute>} />
