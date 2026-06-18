@@ -1,6 +1,7 @@
 // Locale configuration — çok dilli URL routing (Faz "locale routing").
-// tr = varsayılan (prefix yine de var: /tr/...). en/de/ar/ru ek diller.
-export const LOCALES = ['tr', 'en', 'de', 'ar', 'ru'];
+// tr = varsayılan (prefix yine de var: /tr/...). Diğerleri ek diller.
+// Sağlık turizmi odaklı 9 dil: tr/en/de/ar/ru/fr/es/it/az.
+export const LOCALES = ['tr', 'en', 'de', 'ar', 'ru', 'fr', 'es', 'it', 'az'];
 export const DEFAULT_LOCALE = 'tr';
 export const RTL_LOCALES = ['ar'];
 

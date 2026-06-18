@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 // - Statik/asset/api/_next/sitemap/robots BYPASS.
 // - x-locale response header set eder (root layout <html lang>/dir için okur).
 
-const LOCALES = ['tr', 'en', 'de', 'ar', 'ru'];
+const LOCALES = ['tr', 'en', 'de', 'ar', 'ru', 'fr', 'es', 'it', 'az'];
 const DEFAULT_LOCALE = 'tr';
 
 function isLocale(x) {
