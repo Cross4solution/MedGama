@@ -47,7 +47,8 @@ export function listTurkeyProvinces() {
 
 
 // Cache versioning to invalidate older small city lists
-const CITY_CACHE_VERSION = 'v10';
+// v11: cities filtered to population >= 15,000 (villages removed, GeoNames-based)
+const CITY_CACHE_VERSION = 'v11';
 const MIN_CITY_THRESHOLD = 30;
 
 // Ülke bazlı özel limitler (boş bırakıyoruz). Varsayılan: 100.

@@ -13,13 +13,16 @@ export default function CityCombobox({
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+  // Sonsuz kaydırma: DOM'a kaç öğe basılacağı (aşağı indikçe artar)
+  const PAGE = 50;
+  const [visibleCount, setVisibleCount] = useState(PAGE);
   const ref = useRef(null);
 
   const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-  const filtered = useMemo(() => {
+  const sorted = useMemo(() => {
     const q = normalize(query || '');
-    if (!q) return options.slice(0, 50);
+    if (!q) return options;
     // Prefix-öncelikli sıralama: "ber" → önce "Ber..." (Berlin), sonra "...ber..." (Abenberg)
     // 0 = tam başlangıç eşleşmesi, 1 = kelime başı eşleşmesi, 2 = içeren
     const rank = (name) => {
@@ -28,20 +31,18 @@ export default function CityCombobox({
       if (n.split(/[\s\-]+/).some((w) => w.startsWith(q))) return 1;
       return 2;
     };
-    const matched = options
+    return options
       .filter((opt) => normalize(opt).includes(q))
       .map((opt) => [opt, rank(opt)])
       .sort((a, b) => a[1] - b[1] || a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }))
       .map((x) => x[0]);
-    // Render performansı: DOM'a en fazla 50 öğe bas (filtre tüm liste üzerinde çalışır)
-    return matched.slice(0, 50);
   }, [options, query]);
 
-  const totalMatches = useMemo(() => {
-    const q = normalize(query || '');
-    if (!q) return options.length;
-    return options.filter((opt) => normalize(opt).includes(q)).length;
-  }, [options, query]);
+  // Render performansı: DOM'a yalnızca görünür sayıda öğe bas
+  const filtered = useMemo(() => sorted.slice(0, visibleCount), [sorted, visibleCount]);
+
+  // Arama/options değişince görünür sayacı sıfırla
+  useEffect(() => { setVisibleCount(PAGE); }, [query, options]);
 
   useEffect(() => {
     const onClick = (e) => {
@@ -105,13 +106,10 @@ export default function CityCombobox({
             className="max-h-64 overflow-y-auto text-sm"
             items={filtered}
             wheelFactor={wheelFactor}
+            hasMore={sorted.length > filtered.length}
+            onLoadMore={() => setVisibleCount((c) => Math.min(c + PAGE, sorted.length))}
             onSelect={(opt) => { onChange && onChange(opt); setOpen(false); setQuery(''); }}
           />
-          {totalMatches > filtered.length && (
-            <div className="px-3 py-1.5 text-[11px] text-gray-400 border-t border-gray-100">
-              {totalMatches} sonuç — aramaya devam edin
-            </div>
-          )}
         </div>
       )}
     </div>
@@ -119,7 +117,7 @@ export default function CityCombobox({
 }
 
 // Internal helper component to provide smooth and slower wheel scrolling
-function SlowScrollList({ className = '', items = [], onSelect, wheelFactor = 1 }) {
+function SlowScrollList({ className = '', items = [], onSelect, wheelFactor = 1, hasMore = false, onLoadMore }) {
   const listRef = useRef(null);
 
   React.useEffect(() => {
@@ -134,10 +132,18 @@ function SlowScrollList({ className = '', items = [], onSelect, wheelFactor = 1 
     return () => el.removeEventListener('wheel', onWheel);
   }, [wheelFactor]);
 
+  // Sonsuz kaydırma: dibe yaklaşınca daha fazla yükle
+  const handleScroll = (e) => {
+    if (!hasMore || !onLoadMore) return;
+    const el = e.currentTarget;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 80) onLoadMore();
+  };
+
   return (
     <ul
       ref={listRef}
       className={className}
+      onScroll={handleScroll}
       style={wheelFactor !== 1 ? { scrollBehavior: 'smooth' } : undefined}
     >
       {items.map((opt) => (
