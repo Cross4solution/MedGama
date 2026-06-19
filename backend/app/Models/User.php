@@ -23,6 +23,21 @@ class User extends Authenticatable
     protected $keyType = 'string';
     public $incrementing = false;
 
+    // Auto-generate a MedStream handle (@username) on creation when none is set,
+    // so every account — including seeded/demo ones — has a public profile URL.
+    protected static function booted(): void
+    {
+        static::creating(function (User $user) {
+            if (empty($user->username)) {
+                $user->username = \App\Support\Username::generate(
+                    $user->fullname ?? 'user',
+                    $user->role_id ?? 'patient',
+                    $user->clinic_name,
+                );
+            }
+        });
+    }
+
     // Mass-assignment koruması: is_crm_active ve crm_expires_at fillable'dan
     // ÇIKARILDI — bu CRM gating alanları sadece servis/admin/seeder katmanında
     // forceFill ile setlenmeli (kullanıcı updateProfile ile abonelik kazanamaz).
