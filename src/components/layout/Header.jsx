@@ -12,6 +12,11 @@ import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import { playNotificationSound } from '../../utils/notificationSound';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
 
+// MedStream is a standalone, Twitter-like destination. When NEXT_PUBLIC_MEDSTREAM_URL
+// is set (e.g. https://medstream.co) the nav link opens that separate site in a new
+// tab; until the domain is connected it falls back to the in-site feed (also new tab).
+const MEDSTREAM_URL = process.env.NEXT_PUBLIC_MEDSTREAM_URL || '/medstream';
+
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout, hydrated, isPro } = useAuth();
   const { t } = useTranslation();
@@ -275,9 +280,10 @@ const Header = () => {
             <Link to="/for-patients" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               {t('header.forPatients')}
             </Link>
-            <Link to="/medstream" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
+            <a href={MEDSTREAM_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               {t('sidebar.medstream', 'MedStream')}
-            </Link>
+              <ArrowUpRight className="w-3.5 h-3.5 opacity-60" />
+            </a>
             <Link to="/vasco-ai" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               Vasco AI
             </Link>
@@ -656,10 +662,11 @@ const Header = () => {
                 <Home className="w-4 h-4" />
                 <span>{t('nav.home')}</span>
               </Link>
-              <Link to="/medstream" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
+              <a href={MEDSTREAM_URL} target="_blank" rel="noopener noreferrer" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Video className="w-4 h-4" />
                 <span>{t('sidebar.medstream', 'MedStream')}</span>
-              </Link>
+                <ArrowUpRight className="w-3.5 h-3.5 opacity-50 ml-auto" />
+              </a>
               <Link to="/vasco-ai" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Cpu className="w-4 h-4" />
                 <span>Vasco AI</span>
