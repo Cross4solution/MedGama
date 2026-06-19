@@ -120,8 +120,8 @@ export default function HomeV2() {
         items={clinics}
         title={t('home.popularTreatments')}
         midTitle={t('home.popularClinics')}
-        onCardClick={(c) => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate(c.codename ? `/clinic/${c.codename}` : '/clinic'); }}
-        onViewClick={(c) => { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch {} navigate(c.codename ? `/clinic/${c.codename}` : '/clinic'); }}
+        onCardClick={(c) => navigate(c.codename ? `/clinic/${c.codename}` : '/clinic')}
+        onViewClick={(c) => navigate(c.codename ? `/clinic/${c.codename}` : '/clinic')}
       />
 
       {/* Footer is rendered globally in App.js */}
