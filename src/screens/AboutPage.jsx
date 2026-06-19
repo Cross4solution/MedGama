@@ -69,23 +69,23 @@ export default function AboutPage() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0e7c7b] via-[#0d9488] to-[#0f766e]">
         <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '22px 22px' }} />
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-24 text-center">
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-white/90 text-xs font-semibold tracking-wide backdrop-blur">
-            <HeartPulse className="w-3.5 h-3.5" /> MedaGama
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-12 pb-8 text-center">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-white/90 text-[11px] font-semibold tracking-wide backdrop-blur">
+            <HeartPulse className="w-3 h-3" /> MedaGama
           </span>
-          <h1 className="mt-5 text-4xl sm:text-5xl font-bold text-white tracking-tight">{t('about.title')}</h1>
-          <p className="mt-5 max-w-2xl mx-auto text-lg text-teal-50/90 leading-relaxed">
+          <h1 className="mt-3 text-3xl sm:text-4xl font-bold text-white tracking-tight">{t('about.title')}</h1>
+          <p className="mt-3 max-w-2xl mx-auto text-[15px] text-teal-50/90 leading-relaxed">
             Hastaları uzman doktorlar ve onaylı klinik/hastanelerle aynı dijital platformda buluşturan,
             dil ve lokasyon bağımsız sağlık ve sağlık turizmi pazar yeri.
           </p>
         </div>
         {/* Stats band */}
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pb-12">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-2xl overflow-hidden bg-white/15 shadow-xl">
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-xl overflow-hidden bg-white/15 shadow-lg">
             {STATS.map((s) => (
-              <div key={s.label} className="bg-white/95 px-4 py-6 text-center">
-                <div className="text-3xl font-bold text-[#0f766e]">{s.value}</div>
-                <div className="mt-1 text-xs font-medium text-gray-500 uppercase tracking-wide">{s.label}</div>
+              <div key={s.label} className="bg-white/95 px-4 py-4 text-center">
+                <div className="text-2xl font-bold text-[#0f766e]">{s.value}</div>
+                <div className="mt-0.5 text-[11px] font-medium text-gray-500 uppercase tracking-wide">{s.label}</div>
               </div>
             ))}
           </div>
