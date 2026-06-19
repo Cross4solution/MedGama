@@ -275,6 +275,9 @@ const Header = () => {
             <Link to="/for-patients" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               {t('header.forPatients')}
             </Link>
+            <Link to="/medstream" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
+              {t('sidebar.medstream', 'MedStream')}
+            </Link>
             <Link to="/vasco-ai" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               Vasco AI
             </Link>
@@ -652,6 +655,10 @@ const Header = () => {
               <Link to="/home-v2" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Home className="w-4 h-4" />
                 <span>{t('nav.home')}</span>
+              </Link>
+              <Link to="/medstream" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
+                <Video className="w-4 h-4" />
+                <span>{t('sidebar.medstream', 'MedStream')}</span>
               </Link>
               <Link to="/vasco-ai" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Cpu className="w-4 h-4" />
