@@ -137,7 +137,7 @@ const ClinicVerificationModal = ({ isOpen, onClose, onStatusChange }) => {
       setFiles({});
       if (onStatusChange) onStatusChange('pending_review');
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || 'Submission failed';
+      const msg = err?.response?.data?.message || err?.message || t('crm.clinicVerification.submissionFailed', 'Submission failed');
       setError(msg);
     } finally {
       setSubmitting(false);
@@ -312,7 +312,7 @@ const ClinicVerificationModal = ({ isOpen, onClose, onStatusChange }) => {
                                 <Upload className="w-3 h-3" />
                                 <span>{t('crm.clinicVerification.dragOrClick', 'Drag & drop or click')}</span>
                               </div>
-                              <p className="text-[9px] text-gray-300 mt-1">PDF, JPG, PNG — max 10MB</p>
+                              <p className="text-[9px] text-gray-300 mt-1">{t('crm.clinicVerification.fileHint', 'PDF, JPG, PNG — max 10MB')}</p>
                             </button>
                           )}
                         </div>

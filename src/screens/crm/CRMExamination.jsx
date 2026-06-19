@@ -43,8 +43,8 @@ const VitalsAlertBanner = ({ vitalsAlert, t }) => {
           <ShieldAlert className="w-4.5 h-4.5 text-red-600" />
         </div>
         <div>
-          <p className="text-sm font-bold text-red-800">Vital Bulguları Uyarısı</p>
-          <p className="text-xs text-red-600">{vitalsAlert.alerts.length} değer normal aralık dışında</p>
+          <p className="text-sm font-bold text-red-800">{t('crm.examination.vitalsAlertTitle', 'Vital Signs Alert')}</p>
+          <p className="text-xs text-red-600">{t('crm.examination.vitalsAlertDesc', '{{count}} value(s) outside the normal range', { count: vitalsAlert.alerts.length })}</p>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -67,7 +67,7 @@ const VitalsAlertBanner = ({ vitalsAlert, t }) => {
                 {alert.label}: {alert.value}{alert.unit}
               </p>
               <p className="text-[10px] text-gray-500">
-                Normal: {alert.normal} {alert.unit}
+                {t('crm.examination.normalLabel', 'Normal')}: {alert.normal} {alert.unit}
               </p>
             </div>
             <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-md flex-shrink-0 ${
@@ -75,7 +75,7 @@ const VitalsAlertBanner = ({ vitalsAlert, t }) => {
                 ? 'bg-red-100 text-red-700'
                 : 'bg-blue-100 text-blue-700'
             }`}>
-              {alert.status === 'high' ? 'YÜKSEK' : 'DÜŞÜK'}
+              {alert.status === 'high' ? t('crm.examination.high', 'HIGH') : t('crm.examination.low', 'LOW')}
             </span>
           </div>
         ))}
@@ -129,7 +129,7 @@ const TreatmentTagSearch = ({ selectedDiagnoses, onAdd, onRemove, t }) => {
   return (
     <div className="space-y-3">
       <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
-        {t('crm.examination.diagnosis', 'Diagnosis')} (Symptoms & Treatments)
+        {t('crm.examination.diagnosis', 'Diagnosis')} ({t('crm.examination.symptomsTreatments', 'Symptoms & Treatments')})
       </label>
 
       {/* Selected diagnoses */}
@@ -650,7 +650,7 @@ const PrintableReport = ({ exam, t }) => {
       {(icd10 || diagnoses.length > 0) && (
         <div className="print-section">
           <div className="print-section-title">
-            {t('crm.examination.print.diagnoses', 'Diagnoses')} (Symptoms & Treatments)
+            {t('crm.examination.print.diagnoses', 'Diagnoses')} ({t('crm.examination.symptomsTreatments', 'Symptoms & Treatments')})
           </div>
           {diagnoses.map((d, i) => (
             <span key={i} className="print-icd-badge">{d.desc || d.name}</span>
@@ -841,7 +841,7 @@ const CRMExamination = () => {
   // ─── Save Examination ───
   const handleSave = async () => {
     if (!patientId) {
-      setSaveError('Lütfen hasta ID giriniz.');
+      setSaveError(t('crm.examination.patientIdRequired', 'Please enter a patient ID.'));
       return;
     }
     setIsSaving(true);
@@ -866,7 +866,7 @@ const CRMExamination = () => {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 5000);
     } catch (err) {
-      setSaveError(err?.message || 'Kayıt sırasında hata oluştu.');
+      setSaveError(err?.message || t('crm.examination.saveError', 'An error occurred while saving.'));
     } finally {
       setIsSaving(false);
     }
@@ -886,7 +886,7 @@ const CRMExamination = () => {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch {
-      alert('PDF indirme sırasında hata oluştu.');
+      alert(t('crm.examination.pdfError', 'An error occurred while downloading the PDF.'));
     } finally {
       setPdfLoading(false);
     }
@@ -1007,7 +1007,7 @@ const CRMExamination = () => {
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-bold text-emerald-800">Muayene kaydı başarıyla oluşturuldu</p>
+                    <p className="text-sm font-bold text-emerald-800">{t('crm.examination.examCreated', 'Examination record created successfully')}</p>
                     <p className="text-xs text-emerald-600">ID: {lastSavedExam.id}</p>
                   </div>
                 </div>
@@ -1017,7 +1017,7 @@ const CRMExamination = () => {
                   className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-semibold hover:bg-emerald-700 transition-all shadow-sm disabled:opacity-60"
                 >
                   {pdfLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                  Reçete PDF
+                  {t('crm.examination.prescriptionPdf', 'Prescription PDF')}
                 </button>
               </div>
             )}
@@ -1045,33 +1045,33 @@ const CRMExamination = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Hasta ID *</label>
+                  <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.examination.patientIdLabel', 'Patient ID')} *</label>
                   <input
                     type="text"
                     value={patientId}
                     onChange={(e) => { setPatientId(e.target.value); if (!e.target.value) setPatientName(''); }}
-                    placeholder="Hasta UUID"
+                    placeholder={t('crm.examination.patientUuid', 'Patient UUID')}
                     readOnly={!!navState.patientId}
                     className={`w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent ${navState.patientId ? 'bg-gray-50 text-gray-500' : ''}`}
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Klinik ID</label>
+                  <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.examination.clinicIdLabel', 'Clinic ID')}</label>
                   <input
                     type="text"
                     value={clinicId}
                     onChange={(e) => setClinicId(e.target.value)}
-                    placeholder="Opsiyonel"
+                    placeholder={t('crm.examination.optional', 'Optional')}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Randevu ID</label>
+                  <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">{t('crm.examination.appointmentIdLabel', 'Appointment ID')}</label>
                   <input
                     type="text"
                     value={appointmentId}
                     onChange={(e) => setAppointmentId(e.target.value)}
-                    placeholder="Opsiyonel"
+                    placeholder={t('crm.examination.optional', 'Optional')}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
                 </div>
@@ -1086,8 +1086,8 @@ const CRMExamination = () => {
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { key: 'systolic', label: 'Sistolik', placeholder: '120', icon: Heart, unit: 'mmHg', color: 'border-red-200 focus:ring-red-400' },
-                  { key: 'diastolic', label: 'Diyastolik', placeholder: '80', icon: Heart, unit: 'mmHg', color: 'border-red-200 focus:ring-red-400' },
+                  { key: 'systolic', label: t('crm.examination.print.systolic', 'Systolic'), placeholder: '120', icon: Heart, unit: 'mmHg', color: 'border-red-200 focus:ring-red-400' },
+                  { key: 'diastolic', label: t('crm.examination.print.diastolic', 'Diastolic'), placeholder: '80', icon: Heart, unit: 'mmHg', color: 'border-red-200 focus:ring-red-400' },
                   { key: 'pulse', label: t('crm.examination.heartRate'), placeholder: '72', icon: Activity, unit: 'bpm', color: 'border-pink-200 focus:ring-pink-400' },
                   { key: 'temperature', label: t('crm.examination.temperature'), placeholder: '36.6', icon: Thermometer, unit: '°C', color: 'border-orange-200 focus:ring-orange-400' },
                   { key: 'spo2', label: 'SpO₂', placeholder: '98', icon: Activity, unit: '%', color: 'border-blue-200 focus:ring-blue-400' },
@@ -1121,23 +1121,23 @@ const CRMExamination = () => {
               </h2>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Tanı Notu</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.examination.diagnosisNote', 'Diagnosis Note')}</label>
                 <textarea
                   rows={3}
                   value={diagnosisNote}
                   onChange={(e) => setDiagnosisNote(e.target.value)}
-                  placeholder="Tanıya ilişkin notlar..."
+                  placeholder={t('crm.examination.diagnosisNotePlaceholder', 'Notes related to the diagnosis...')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">Muayene Notu</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.examination.examinationNote', 'Examination Note')}</label>
                 <textarea
                   rows={4}
                   value={examinationNote}
                   onChange={(e) => setExaminationNote(e.target.value)}
-                  placeholder="Fizik muayene bulguları, şikayet, plan..."
+                  placeholder={t('crm.examination.examinationNotePlaceholder', 'Physical examination findings, complaint, plan...')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
                 />
               </div>
@@ -1145,13 +1145,13 @@ const CRMExamination = () => {
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
                   <ClipboardCheck className="w-3.5 h-3.5 text-emerald-500" />
-                  Tedavi Planı / Treatment Plan
+                  {t('crm.examination.print.treatmentPlan', 'Treatment Plan')}
                 </label>
                 <textarea
                   rows={3}
                   value={treatmentPlan}
                   onChange={(e) => setTreatmentPlan(e.target.value)}
-                  placeholder="Önerilen tedavi yaklaşımı, kontrol tarihi, yaşam tarzı önerileri..."
+                  placeholder={t('crm.examination.treatmentPlanPlaceholder', 'Recommended treatment approach, follow-up date, lifestyle advice...')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
                 />
               </div>
@@ -1273,7 +1273,7 @@ const CRMExamination = () => {
                       className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl text-xs font-medium hover:bg-blue-100 transition-colors disabled:opacity-60"
                     >
                       {pdfLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
-                      Reçete PDF
+                      {t('crm.examination.prescriptionPdf', 'Prescription PDF')}
                     </button>
                   </>
                 )}
@@ -1310,7 +1310,7 @@ const CRMExamination = () => {
                 onClick={loadExaminations}
                 className="text-xs text-teal-600 hover:text-teal-700 font-medium px-2 py-1 rounded-lg hover:bg-teal-50 transition-colors"
               >
-                Yenile
+                {t('crm.examination.refresh', 'Refresh')}
               </button>
             </div>
 
@@ -1318,7 +1318,7 @@ const CRMExamination = () => {
               {historyLoading ? (
                 <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                   <Loader2 className="w-8 h-8 animate-spin mb-2" />
-                  <p className="text-sm font-medium">Yükleniyor...</p>
+                  <p className="text-sm font-medium">{t('common.loading', 'Loading...')}</p>
                 </div>
               ) : filteredHistory.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-gray-400">
@@ -1327,7 +1327,7 @@ const CRMExamination = () => {
                 </div>
               ) : (
                 filteredHistory.map((exam) => {
-                  const patientName = exam.patient?.fullname || 'Hasta';
+                  const patientName = exam.patient?.fullname || t('common.patient', 'Patient');
                   const initials = patientName.split(' ').map((n) => n[0]).join('').slice(0, 2);
                   const hasAlert = exam.vitals_alert?.is_alert;
                   const vitalsData = exam.vitals || {};
@@ -1353,7 +1353,7 @@ const CRMExamination = () => {
                               <span className="text-[11px] text-gray-400">{new Date(exam.created_at).toLocaleDateString('tr-TR')}</span>
                               {hasAlert && (
                                 <span className="inline-flex items-center gap-1 text-[9px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded-md">
-                                  <AlertTriangle className="w-2.5 h-2.5" /> ALERT
+                                  <AlertTriangle className="w-2.5 h-2.5" /> {t('crm.examination.alert', 'ALERT')}
                                 </span>
                               )}
                             </div>
@@ -1415,7 +1415,7 @@ const CRMExamination = () => {
                     {/* Patient info */}
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-base font-bold text-gray-900">{selectedExamDetail.patient?.fullname || 'Hasta'}</p>
+                        <p className="text-base font-bold text-gray-900">{selectedExamDetail.patient?.fullname || t('common.patient', 'Patient')}</p>
                         <p className="text-xs text-gray-500">{new Date(selectedExamDetail.created_at).toLocaleDateString('tr-TR')}</p>
                       </div>
                       {selectedExamDetail.icd10_code && (
@@ -1434,10 +1434,10 @@ const CRMExamination = () => {
                         <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('crm.examination.vitals')}</p>
                         <div className="grid grid-cols-4 gap-2">
                           {[
-                            { label: 'Sistolik', value: selectedExamDetail.vitals.systolic, unit: 'mmHg' },
-                            { label: 'Diyastolik', value: selectedExamDetail.vitals.diastolic, unit: 'mmHg' },
-                            { label: 'Nabız', value: selectedExamDetail.vitals.pulse, unit: 'bpm' },
-                            { label: 'Ateş', value: selectedExamDetail.vitals.temperature, unit: '°C' },
+                            { label: t('crm.examination.print.systolic', 'Systolic'), value: selectedExamDetail.vitals.systolic, unit: 'mmHg' },
+                            { label: t('crm.examination.print.diastolic', 'Diastolic'), value: selectedExamDetail.vitals.diastolic, unit: 'mmHg' },
+                            { label: t('crm.examination.print.pulse', 'Pulse'), value: selectedExamDetail.vitals.pulse, unit: 'bpm' },
+                            { label: t('crm.examination.print.temperature', 'Temperature'), value: selectedExamDetail.vitals.temperature, unit: '°C' },
                             { label: 'SpO₂', value: selectedExamDetail.vitals.spo2, unit: '%' },
                           ].filter(v => v.value).map((v) => (
                             <div key={v.label} className="bg-gray-50 rounded-lg px-3 py-2 text-center border border-gray-100">
@@ -1452,7 +1452,7 @@ const CRMExamination = () => {
                     {/* Diagnosis note */}
                     {selectedExamDetail.diagnosis_note && (
                       <div>
-                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Tanı Notu</p>
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('crm.examination.diagnosisNote', 'Diagnosis Note')}</p>
                         <p className="text-sm text-gray-600 bg-teal-50 rounded-xl px-3 py-2 border border-teal-100">{selectedExamDetail.diagnosis_note}</p>
                       </div>
                     )}
@@ -1468,8 +1468,8 @@ const CRMExamination = () => {
                                 <Pill className="w-3.5 h-3.5 text-teal-500" />{m.drug_name}
                               </p>
                               <div className="flex items-center gap-3 mt-1">
-                                <span className="text-[11px] text-gray-500">Doz: <strong className="text-gray-700">{m.dosage}</strong></span>
-                                {m.duration && <span className="text-[11px] text-gray-500">Süre: <strong className="text-gray-700">{m.duration}</strong></span>}
+                                <span className="text-[11px] text-gray-500">{t('crm.examination.print.dosage', 'Dosage')}: <strong className="text-gray-700">{m.dosage}</strong></span>
+                                {m.duration && <span className="text-[11px] text-gray-500">{t('crm.examination.print.duration', 'Duration')}: <strong className="text-gray-700">{m.duration}</strong></span>}
                               </div>
                             </div>
                           ))}
@@ -1481,7 +1481,7 @@ const CRMExamination = () => {
                     {selectedExamDetail.treatment_plan && (
                       <div>
                         <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-                          <ClipboardCheck className="w-3 h-3 text-emerald-500" /> Tedavi Planı
+                          <ClipboardCheck className="w-3 h-3 text-emerald-500" /> {t('crm.examination.print.treatmentPlan', 'Treatment Plan')}
                         </p>
                         <p className="text-sm text-gray-600 bg-emerald-50 rounded-xl px-3 py-2 border border-emerald-100 whitespace-pre-wrap">{selectedExamDetail.treatment_plan}</p>
                       </div>
@@ -1490,7 +1490,7 @@ const CRMExamination = () => {
                     {/* Examination note */}
                     {selectedExamDetail.examination_note && (
                       <div>
-                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Muayene Notu</p>
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('crm.examination.examinationNote', 'Examination Note')}</p>
                         <p className="text-sm text-gray-600 bg-amber-50 rounded-xl px-3 py-2 border border-amber-100 whitespace-pre-wrap">{selectedExamDetail.examination_note}</p>
                       </div>
                     )}
@@ -1511,7 +1511,7 @@ const CRMExamination = () => {
                     className="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-xl transition-colors flex items-center gap-1.5 disabled:opacity-60"
                   >
                     {pdfLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                    Reçete PDF İndir
+                    {t('crm.examination.downloadPrescriptionPdf', 'Download Prescription PDF')}
                   </button>
                   <button
                     onClick={() => { setSelectedExam(null); setSelectedExamDetail(null); }}

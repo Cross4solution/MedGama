@@ -134,7 +134,7 @@ export default function AdminSystemSettings() {
         }
         return updated;
       });
-      showSuccess('Setting updated');
+      showSuccess(t('admin.settings.toastSettingUpdated'));
     } catch {
       fetchToggles();
     }
@@ -152,7 +152,7 @@ export default function AdminSystemSettings() {
     try {
       await adminAPI.updateFeatureToggle('platform.global_announcement', announcement);
       setAnnouncementDirty(false);
-      showSuccess('Global announcement updated');
+      showSuccess(t('admin.settings.toastAnnouncementUpdated'));
       // Update local groups state
       setGroups(prev => {
         const updated = { ...prev };
@@ -175,7 +175,7 @@ export default function AdminSystemSettings() {
         adminAPI.updateFeatureToggle('platform.pro_annual_price', parseFloat(proAnnual) || 0),
       ]);
       setPricingDirty(false);
-      showSuccess('Package pricing updated');
+      showSuccess(t('admin.settings.toastPricingUpdated'));
     } catch { fetchToggles(); }
     setUpdating(null);
   };
@@ -185,7 +185,7 @@ export default function AdminSystemSettings() {
     try {
       await adminAPI.updateFeatureToggle('platform.commission_rate', parseFloat(commissionRate) || 0);
       setCommissionDirty(false);
-      showSuccess('Commission rate updated');
+      showSuccess(t('admin.settings.toastCommissionUpdated'));
     } catch { fetchToggles(); }
     setUpdating(null);
   };
@@ -233,7 +233,7 @@ export default function AdminSystemSettings() {
         <button onClick={handleRefresh} disabled={refreshing}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50">
           <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-          Refresh
+          {t('common.refresh')}
         </button>
       </div>
 
@@ -255,16 +255,16 @@ export default function AdminSystemSettings() {
               </div>
               <div>
                 <h2 className={`text-sm font-bold ${maintenanceMode ? 'text-red-800' : 'text-gray-900'}`}>
-                  Maintenance Mode
+                  {t('admin.settings.maintenanceMode')}
                 </h2>
-                <p className="text-xs text-gray-500">Show maintenance page to all non-admin users</p>
+                <p className="text-xs text-gray-500">{t('admin.settings.maintenanceModeDesc')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                 maintenanceMode ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500'
               }`}>
-                {maintenanceMode ? 'ACTIVE' : 'OFF'}
+                {maintenanceMode ? t('admin.settings.active') : t('admin.settings.off')}
               </span>
               <ToggleSwitch
                 enabled={maintenanceMode}
@@ -280,8 +280,7 @@ export default function AdminSystemSettings() {
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-red-700">
-                <span className="font-bold">Warning:</span> All doctors and patients are currently seeing a "System Under Maintenance" page. 
-                The admin panel is <span className="font-semibold">not affected</span>. Disable this switch to restore normal access.
+                <span className="font-bold">{t('admin.settings.warningLabel')}</span> {t('admin.settings.maintenanceWarningPart1')} <span className="font-semibold">{t('admin.settings.maintenanceWarningEmphasis')}</span>{t('admin.settings.maintenanceWarningPart2')}
               </p>
             </div>
           </div>
@@ -296,8 +295,8 @@ export default function AdminSystemSettings() {
               <Megaphone className="w-4 h-4 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-900">Global Announcement</h2>
-              <p className="text-xs text-gray-500">Broadcast a banner message to all user dashboards</p>
+              <h2 className="text-sm font-bold text-gray-900">{t('admin.settings.globalAnnouncement')}</h2>
+              <p className="text-xs text-gray-500">{t('admin.settings.globalAnnouncementDesc')}</p>
             </div>
           </div>
         </div>
@@ -306,14 +305,14 @@ export default function AdminSystemSettings() {
             value={announcement}
             onChange={e => { setAnnouncement(e.target.value); setAnnouncementDirty(true); }}
             rows={3}
-            placeholder="Type an announcement to broadcast to all users... (leave empty to hide banner)"
+            placeholder={t('admin.settings.announcementPlaceholder')}
             className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none resize-none transition-all"
           />
           {/* Live preview */}
           {announcement.trim() && (
             <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
               <p className="text-[10px] font-semibold text-blue-500 uppercase tracking-wide mb-1.5 flex items-center gap-1">
-                <Eye className="w-3 h-3" /> Live Preview
+                <Eye className="w-3 h-3" /> {t('admin.settings.livePreview')}
               </p>
               <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg px-4 py-2.5 text-white">
                 <div className="flex items-center gap-2">
@@ -331,7 +330,7 @@ export default function AdminSystemSettings() {
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
             >
               {updating === 'platform.global_announcement' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              Save Announcement
+              {t('admin.settings.saveAnnouncement')}
             </button>
           </div>
         </div>
@@ -347,8 +346,8 @@ export default function AdminSystemSettings() {
               <CreditCard className="w-4 h-4 text-emerald-600" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-900">Financials</h2>
-              <p className="text-xs text-gray-500">Package pricing & platform commission</p>
+              <h2 className="text-sm font-bold text-gray-900">{t('admin.settings.financials')}</h2>
+              <p className="text-xs text-gray-500">{t('admin.settings.financialsDesc')}</p>
             </div>
           </div>
         </div>
@@ -357,11 +356,11 @@ export default function AdminSystemSettings() {
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3 flex items-center gap-1.5">
             <CreditCard className="w-3.5 h-3.5 text-emerald-500" />
-            Package Pricing
+            {t('admin.settings.packagePricing')}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1.5 block">Pro Monthly Price ($)</label>
+              <label className="text-xs font-medium text-gray-600 mb-1.5 block">{t('admin.settings.proMonthlyPrice')}</label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">$</span>
                 <input
@@ -376,7 +375,7 @@ export default function AdminSystemSettings() {
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1.5 block">Pro Annual Price ($)</label>
+              <label className="text-xs font-medium text-gray-600 mb-1.5 block">{t('admin.settings.proAnnualPrice')}</label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">$</span>
                 <input
@@ -393,7 +392,7 @@ export default function AdminSystemSettings() {
           </div>
           {proMonthly && proAnnual && parseFloat(proAnnual) < parseFloat(proMonthly) * 12 && (
             <p className="text-[10px] text-emerald-600 mt-2">
-              Annual plan saves users <span className="font-bold">${(parseFloat(proMonthly) * 12 - parseFloat(proAnnual)).toFixed(2)}/year</span> ({Math.round((1 - parseFloat(proAnnual) / (parseFloat(proMonthly) * 12)) * 100)}% off)
+              {t('admin.settings.annualSavingsPrefix')} <span className="font-bold">{t('admin.settings.annualSavingsAmount', { amount: (parseFloat(proMonthly) * 12 - parseFloat(proAnnual)).toFixed(2) })}</span> {t('admin.settings.annualSavingsPercent', { percent: Math.round((1 - parseFloat(proAnnual) / (parseFloat(proMonthly) * 12)) * 100) })}
             </p>
           )}
           <div className="flex justify-end mt-3">
@@ -403,7 +402,7 @@ export default function AdminSystemSettings() {
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
             >
               {updating === 'pricing' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              Save Pricing
+              {t('admin.settings.savePricing')}
             </button>
           </div>
         </div>
@@ -412,11 +411,11 @@ export default function AdminSystemSettings() {
         <div className="px-5 py-4">
           <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3 flex items-center gap-1.5">
             <Percent className="w-3.5 h-3.5 text-amber-500" />
-            Commission Rate
+            {t('admin.settings.commissionRate')}
           </h3>
           <div className="flex flex-wrap items-end gap-3">
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1.5 block">Per Appointment (%)</label>
+              <label className="text-xs font-medium text-gray-600 mb-1.5 block">{t('admin.settings.perAppointment')}</label>
               <div className="relative">
                 <input
                   type="number"
@@ -437,11 +436,11 @@ export default function AdminSystemSettings() {
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
             >
               {updating === 'platform.commission_rate' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              Save Rate
+              {t('admin.settings.saveRate')}
             </button>
           </div>
           <p className="text-[10px] text-gray-400 mt-2">
-            This rate is applied to every appointment and reflected in the Financials dashboard revenue calculations.
+            {t('admin.settings.commissionHint')}
           </p>
         </div>
       </div>
@@ -493,7 +492,7 @@ export default function AdminSystemSettings() {
                       </div>
                       {setting.description && <p className="text-xs text-gray-500 mt-0.5 ml-5.5">{setting.description}</p>}
                       {setting.updated_at && (
-                        <p className="text-[10px] text-gray-400 mt-1 ml-5.5">Last updated: {new Date(setting.updated_at).toLocaleString()}</p>
+                        <p className="text-[10px] text-gray-400 mt-1 ml-5.5">{t('admin.settings.lastUpdatedValue', { date: new Date(setting.updated_at).toLocaleString() })}</p>
                       )}
                     </div>
 
@@ -501,7 +500,7 @@ export default function AdminSystemSettings() {
                       {setting.type === 'boolean' ? (
                         <div className="flex items-center gap-2">
                           <span className={`text-xs font-medium ${setting.value ? 'text-emerald-600' : 'text-gray-400'}`}>
-                            {setting.value ? 'Enabled' : 'Disabled'}
+                            {setting.value ? t('admin.settings.enabled') : t('admin.settings.disabled')}
                           </span>
                           <ToggleSwitch
                             enabled={!!setting.value}
@@ -558,6 +557,7 @@ export default function AdminSystemSettings() {
 
 // ─── Inline Input (for generic string/integer settings) ──────
 function InlineInput({ value, type, onSave, loading }) {
+  const { t } = useTranslation();
   const [val, setVal] = useState(value ?? '');
   const [dirty, setDirty] = useState(false);
   useEffect(() => { setVal(value ?? ''); setDirty(false); }, [value]);
@@ -581,7 +581,7 @@ function InlineInput({ value, type, onSave, loading }) {
           disabled={loading}
           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-white bg-purple-600 hover:bg-purple-700 transition-colors disabled:opacity-50"
         >
-          {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Save
+          {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} {t('common.save')}
         </button>
       )}
     </div>

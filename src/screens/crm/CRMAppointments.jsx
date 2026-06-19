@@ -28,31 +28,33 @@ for (let h = 8; h <= 18; h++) {
 }
 
 const TYPE_CONFIG = {
-  inPerson: { label: 'In-Person', color: '#3b82f6', bg: 'bg-blue-500', light: 'bg-blue-50 text-blue-700 border-blue-200', icon: MapPin },
-  online:   { label: 'Video Call', color: '#10b981', bg: 'bg-emerald-500', light: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: Video },
-  phone:    { label: 'Phone', color: '#f59e0b', bg: 'bg-amber-500', light: 'bg-amber-50 text-amber-700 border-amber-200', icon: Phone },
+  inPerson: { labelKey: 'crm.appointments.typeInPerson', color: '#3b82f6', bg: 'bg-blue-500', light: 'bg-blue-50 text-blue-700 border-blue-200', icon: MapPin },
+  online:   { labelKey: 'crm.appointments.typeVideoCall', color: '#10b981', bg: 'bg-emerald-500', light: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: Video },
+  phone:    { labelKey: 'crm.appointments.typePhone', color: '#f59e0b', bg: 'bg-amber-500', light: 'bg-amber-50 text-amber-700 border-amber-200', icon: Phone },
 };
 
 const STATUS_CONFIG = {
-  pending:   { label: 'Pending', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
-  confirmed: { label: 'Confirmed', cls: 'bg-blue-50 text-blue-700 border-blue-200' },
-  completed: { label: 'Completed', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  cancelled: { label: 'Cancelled', cls: 'bg-red-50 text-red-600 border-red-200' },
-  no_show:   { label: 'No Show', cls: 'bg-orange-50 text-orange-600 border-orange-200' },
+  pending:   { labelKey: 'crm.appointments.statusPending', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
+  confirmed: { labelKey: 'crm.appointments.statusConfirmed', cls: 'bg-blue-50 text-blue-700 border-blue-200' },
+  completed: { labelKey: 'crm.appointments.statusCompleted', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  cancelled: { labelKey: 'crm.appointments.statusCancelled', cls: 'bg-red-50 text-red-600 border-red-200' },
+  no_show:   { labelKey: 'crm.appointments.statusNoShow', cls: 'bg-orange-50 text-orange-600 border-orange-200' },
 };
 
 const StatusBadge = ({ status }) => {
+  const { t } = useTranslation();
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${cfg.cls}`}>{cfg.label}</span>;
+  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${cfg.cls}`}>{t(cfg.labelKey)}</span>;
 };
 
 const TypeBadge = ({ type }) => {
+  const { t } = useTranslation();
   const cfg = TYPE_CONFIG[type] || TYPE_CONFIG.inPerson;
   const Icon = cfg.icon;
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${cfg.light}`}>
       <Icon className="w-3 h-3" />
-      {cfg.label}
+      {t(cfg.labelKey)}
     </span>
   );
 };
@@ -81,11 +83,11 @@ const mapApi = (a) => ({
 // Gatekeeper Modal — Verification & Upgrade
 // ═══════════════════════════════════════════════════
 const DOC_TYPES = [
-  { value: 'diploma', label: 'Diploma / Medical Degree' },
-  { value: 'specialty_certificate', label: 'Specialty Certificate' },
-  { value: 'clinic_license', label: 'Clinic License' },
-  { value: 'id_card', label: 'ID Card / Passport' },
-  { value: 'other', label: 'Other' },
+  { value: 'diploma', labelKey: 'crm.appointments.docDiploma' },
+  { value: 'specialty_certificate', labelKey: 'crm.appointments.docSpecialtyCertificate' },
+  { value: 'clinic_license', labelKey: 'crm.appointments.docClinicLicense' },
+  { value: 'id_card', labelKey: 'crm.appointments.docIdCard' },
+  { value: 'other', labelKey: 'crm.appointments.docOther' },
 ];
 
 const GatekeeperModal = ({ isOpen, onClose, user, needsVerification, needsUpgrade }) => {
@@ -129,7 +131,7 @@ const GatekeeperModal = ({ isOpen, onClose, user, needsVerification, needsUpgrad
       setSubmitted(true);
       notify({ type: 'success', message: t('crm.verification.docUploaded', 'Document uploaded successfully. Under review.') });
     } catch (err) {
-      notify({ type: 'error', message: err?.message || 'Upload failed.' });
+      notify({ type: 'error', message: err?.message || t('crm.appointments.uploadFailed') });
     } finally {
       setUploading(false);
     }
@@ -214,7 +216,7 @@ const GatekeeperModal = ({ isOpen, onClose, user, needsVerification, needsUpgrad
                         className="w-full h-9 border border-gray-300 rounded-lg px-3 text-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none bg-white"
                       >
                         {DOC_TYPES.map(dt => (
-                          <option key={dt.value} value={dt.value}>{dt.label}</option>
+                          <option key={dt.value} value={dt.value}>{t(dt.labelKey)}</option>
                         ))}
                       </select>
                     </div>
@@ -378,40 +380,40 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
         payload.patient_id = user?.id;
       }
       await appointmentAPI.create(payload);
-      notify({ type: 'success', message: 'Appointment created successfully.' });
+      notify({ type: 'success', message: t('crm.appointments.created') });
       onCreated();
       onClose();
     } catch (err) {
-      const msg = err?.errors ? Object.values(err.errors)[0]?.[0] : err?.message || 'Failed to create appointment.';
+      const msg = err?.errors ? Object.values(err.errors)[0]?.[0] : err?.message || t('crm.appointments.createError');
       notify({ type: 'error', message: msg });
     } finally {
       setCreating(false);
     }
   };
 
-  const stepTitles = ['Appointment Type', 'Date & Time', 'Confirm'];
+  const stepTitles = [t('crm.appointments.stepType'), t('crm.appointments.stepDateTime'), t('crm.appointments.stepConfirm')];
   const TypeIcon = TYPE_CONFIG[form.appointment_type]?.icon || MapPin;
 
   return (
     <CRMModal
       isOpen={isOpen}
       onClose={onClose}
-      title="New Appointment"
-      subtitle={`Step ${step} of 3 — ${stepTitles[step - 1]}`}
+      title={t('crm.appointments.newAppointment')}
+      subtitle={t('crm.appointments.stepOf', { step, total: 3, title: stepTitles[step - 1] })}
       icon={CalendarDays}
       footer={
         <>
           <ModalCancelButton onClick={() => step > 1 ? setStep(s => s - 1) : onClose()}>
-            {step > 1 ? 'Back' : 'Cancel'}
+            {step > 1 ? t('common.back') : t('common.cancel')}
           </ModalCancelButton>
           {step < 3 ? (
             <ModalPrimaryButton onClick={() => setStep(s => s + 1)} disabled={!canNext()}>
-              Next <ArrowRight className="w-3.5 h-3.5" />
+              {t('common.next')} <ArrowRight className="w-3.5 h-3.5" />
             </ModalPrimaryButton>
           ) : (
             <ModalPrimaryButton onClick={handleCreate} disabled={creating}>
               {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-              {creating ? 'Creating...' : 'Create Appointment'}
+              {creating ? t('crm.appointments.creating') : t('crm.appointments.createAppointment')}
             </ModalPrimaryButton>
           )}
         </>
@@ -429,7 +431,7 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
         {/* Step 1: Type Selection */}
         {step === 1 && (
           <div className="space-y-3">
-            <p className="text-sm text-gray-500 mb-4">Select the appointment type:</p>
+            <p className="text-sm text-gray-500 mb-4">{t('crm.appointments.selectType')}</p>
             {Object.entries(TYPE_CONFIG).map(([key, cfg]) => {
               const Icon = cfg.icon;
               const selected = form.appointment_type === key;
@@ -446,11 +448,11 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
                     <Icon className="w-5 h-5" />
                   </div>
                   <div className="text-left flex-1">
-                    <p className="text-sm font-bold text-gray-900">{cfg.label}</p>
+                    <p className="text-sm font-bold text-gray-900">{t(cfg.labelKey)}</p>
                     <p className="text-xs text-gray-500">
-                      {key === 'inPerson' && 'Face-to-face consultation at the clinic'}
-                      {key === 'online' && 'Video call via secure link'}
-                      {key === 'phone' && 'Phone consultation'}
+                      {key === 'inPerson' && t('crm.appointments.typeInPersonDesc')}
+                      {key === 'online' && t('crm.appointments.typeVideoCallDesc')}
+                      {key === 'phone' && t('crm.appointments.typePhoneDesc')}
                     </p>
                   </div>
                   {selected && (
@@ -469,7 +471,7 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <ModalLabel required icon={CalendarDays}>Date</ModalLabel>
+                <ModalLabel required icon={CalendarDays}>{t('common.date')}</ModalLabel>
                 <ModalInput
                   type="date"
                   value={form.appointment_date}
@@ -477,28 +479,28 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
                 />
               </div>
               <div>
-                <ModalLabel required icon={Clock}>Time</ModalLabel>
+                <ModalLabel required icon={Clock}>{t('common.time')}</ModalLabel>
                 <ModalSelect
                   value={form.appointment_time}
                   onChange={(e) => setForm(f => ({ ...f, appointment_time: e.target.value }))}
                 >
-                  <option value="">Select time</option>
+                  <option value="">{t('crm.appointments.selectTime')}</option>
                   {TIME_SLOTS.map(ts => <option key={ts} value={ts}>{ts}</option>)}
                 </ModalSelect>
               </div>
             </div>
             <div className="border-t border-gray-100 pt-5">
-              <ModalLabel icon={UserPlus}>Patient Name</ModalLabel>
+              <ModalLabel icon={UserPlus}>{t('crm.appointments.patientName')}</ModalLabel>
               <ModalInput
                 type="text"
                 value={form.patient_name}
                 onChange={(e) => setForm(f => ({ ...f, patient_name: e.target.value }))}
-                placeholder="Patient full name"
+                placeholder={t('crm.appointments.patientNamePlaceholder')}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <ModalLabel icon={Mail}>Email</ModalLabel>
+                <ModalLabel icon={Mail}>{t('common.email')}</ModalLabel>
                 <ModalInput
                   type="email"
                   value={form.patient_email}
@@ -507,7 +509,7 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
                 />
               </div>
               <div>
-                <ModalLabel icon={Phone}>Phone</ModalLabel>
+                <ModalLabel icon={Phone}>{t('common.phone')}</ModalLabel>
                 <ModalInput
                   type="tel"
                   value={form.patient_phone}
@@ -525,37 +527,37 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
             <div className="bg-gradient-to-br from-teal-50 to-emerald-50 rounded-xl p-5 border border-teal-100">
               <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <CalendarCheck className="w-4 h-4 text-teal-600" />
-                Appointment Summary
+                {t('crm.appointments.summary')}
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Type</p>
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">{t('common.type')}</p>
                   <div className="flex items-center gap-1.5 mt-1">
                     <TypeIcon className="w-3.5 h-3.5" style={{ color: TYPE_CONFIG[form.appointment_type]?.color }} />
-                    <span className="text-sm font-semibold text-gray-800">{TYPE_CONFIG[form.appointment_type]?.label}</span>
+                    <span className="text-sm font-semibold text-gray-800">{t(TYPE_CONFIG[form.appointment_type]?.labelKey)}</span>
                   </div>
                 </div>
                 <div>
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Date</p>
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">{t('common.date')}</p>
                   <p className="text-sm font-semibold text-gray-800 mt-1">{form.appointment_date || '—'}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Time</p>
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">{t('common.time')}</p>
                   <p className="text-sm font-semibold text-gray-800 mt-1">{form.appointment_time || '—'}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Patient</p>
-                  <p className="text-sm font-semibold text-gray-800 mt-1">{form.patient_name || 'Self'}</p>
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">{t('common.patient')}</p>
+                  <p className="text-sm font-semibold text-gray-800 mt-1">{form.patient_name || t('crm.appointments.self')}</p>
                 </div>
               </div>
             </div>
             <div>
-              <ModalLabel icon={FileText}>Notes <span className="text-gray-400 font-normal">(optional)</span></ModalLabel>
+              <ModalLabel icon={FileText}>{t('common.notes')} <span className="text-gray-400 font-normal">({t('crm.appointments.optional')})</span></ModalLabel>
               <ModalTextarea
                 value={form.confirmation_note}
                 onChange={(e) => setForm(f => ({ ...f, confirmation_note: e.target.value }))}
                 rows={3}
-                placeholder="Additional notes..."
+                placeholder={t('crm.appointments.additionalNotes')}
               />
             </div>
           </div>
@@ -569,6 +571,7 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
 // Appointment Detail Modal
 // ═══════════════════════════════════════════════════
 const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   if (!appointment) return null;
   const a = appointment;
@@ -586,7 +589,7 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
                 <TypeIcon className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-gray-900">Appointment Details</h2>
+                <h2 className="text-base font-bold text-gray-900">{t('crm.appointments.details')}</h2>
                 <TypeBadge type={a.appointment_type} />
               </div>
             </div>
@@ -603,33 +606,33 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
               {(a.patient?.fullname || 'P').split(' ').map(n => n[0]).join('').slice(0, 2)}
             </div>
             <div>
-              <p className="text-base font-bold text-gray-900">{a.patient?.fullname || 'Patient'}</p>
+              <p className="text-base font-bold text-gray-900">{a.patient?.fullname || t('common.patient')}</p>
               <p className="text-xs text-gray-500">{a.patient?.email || ''}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Date</p>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('common.date')}</p>
               <p className="text-sm text-gray-800 font-medium mt-0.5">{a.date}</p>
             </div>
             <div>
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Time</p>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('common.time')}</p>
               <p className="text-sm text-gray-800 font-medium mt-0.5">{a.time}</p>
             </div>
             <div>
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Doctor</p>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('common.doctor')}</p>
               <p className="text-sm text-gray-800 font-medium mt-0.5">{a.doctor?.fullname || '—'}</p>
             </div>
             <div>
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Status</p>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('common.status')}</p>
               <div className="mt-0.5"><StatusBadge status={a.status} /></div>
             </div>
           </div>
 
           {a.notes && (
             <div>
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Notes</p>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('common.notes')}</p>
               <p className="text-sm text-gray-600 bg-gray-50 rounded-xl px-3 py-2">{a.notes}</p>
             </div>
           )}
@@ -642,11 +645,11 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
               <>
                 <button onClick={() => onStatusChange(a.id, 'cancelled')} disabled={!!updating}
                   className="px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50">
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button onClick={() => onStatusChange(a.id, 'no_show')} disabled={!!updating}
                   className="px-3 py-2 text-xs font-medium text-orange-600 hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50">
-                  No Show
+                  {t('crm.appointments.statusNoShow')}
                 </button>
               </>
             )}
@@ -655,13 +658,13 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
             {a.status === 'pending' && (
               <button onClick={() => onStatusChange(a.id, 'confirmed')} disabled={!!updating}
                 className="px-4 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50">
-                Confirm
+                {t('crm.appointments.confirm')}
               </button>
             )}
             {(a.status === 'confirmed' || a.status === 'pending') && (
               <button onClick={() => onStatusChange(a.id, 'completed')} disabled={!!updating}
                 className="px-4 py-2 text-xs font-semibold bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
-                Complete
+                {t('crm.appointments.complete')}
               </button>
             )}
             {a.status === 'completed' && (
@@ -670,7 +673,7 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition-all shadow-sm"
               >
                 <Stethoscope className="w-3.5 h-3.5" />
-                Start Examination
+                {t('crm.appointments.startExamination')}
               </button>
             )}
           </div>
@@ -786,13 +789,13 @@ const CRMAppointments = () => {
 
     try {
       await appointmentAPI.update(apt.id, { appointment_date: newDate, appointment_time: newTime });
-      notify({ type: 'success', message: 'Appointment rescheduled.' });
+      notify({ type: 'success', message: t('crm.appointments.rescheduled') });
     } catch (err) {
       dropInfo.revert();
       setAppointments(prev => prev.map(a => a.id === apt.id ? apt : a));
-      notify({ type: 'error', message: err?.message || 'Failed to reschedule.' });
+      notify({ type: 'error', message: err?.message || t('crm.appointments.rescheduleError') });
     }
-  }, [appointments, notify]);
+  }, [appointments, notify, t]);
 
   // ── Status update ──
   const handleStatusChange = useCallback(async (id, newStatus) => {
@@ -806,15 +809,15 @@ const CRMAppointments = () => {
     setSelectedAppointment(null);
     try {
       await appointmentAPI.update(id, { status: newStatus });
-      const msgs = { confirmed: 'Appointment confirmed.', cancelled: 'Appointment cancelled.', completed: 'Appointment completed.', no_show: 'Marked as No Show.' };
-      notify({ type: 'success', message: msgs[newStatus] || 'Updated.' });
+      const msgs = { confirmed: t('crm.appointments.confirmedMsg'), cancelled: t('crm.appointments.cancelledMsg'), completed: t('crm.appointments.completedMsg'), no_show: t('crm.appointments.noShowMsg') };
+      notify({ type: 'success', message: msgs[newStatus] || t('crm.appointments.updated') });
     } catch (err) {
       setAppointments(prev);
-      notify({ type: 'error', message: err?.message || 'Update failed.' });
+      notify({ type: 'error', message: err?.message || t('crm.appointments.updateError') });
     } finally {
       setUpdating(null);
     }
-  }, [appointments, notify]);
+  }, [appointments, notify, t]);
 
   // ── Stats ──
   const stats = useMemo(() => ({
@@ -866,8 +869,8 @@ const CRMAppointments = () => {
                 <AlertCircle className="w-4 h-4 text-amber-600" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-gray-900">Pending Requests</h2>
-                <p className="text-[11px] text-gray-500">{pendingRequests.length} awaiting confirmation</p>
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.appointments.pendingRequests')}</h2>
+                <p className="text-[11px] text-gray-500">{t('crm.appointments.awaitingConfirmation', { count: pendingRequests.length })}</p>
               </div>
             </div>
           </div>
@@ -879,18 +882,18 @@ const CRMAppointments = () => {
                     {(apt.patient?.fullname || 'P').split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 truncate">{apt.patient?.fullname || 'Patient'}</p>
+                    <p className="text-sm font-semibold text-gray-900 truncate">{apt.patient?.fullname || t('common.patient')}</p>
                     <p className="text-[11px] text-gray-500">{apt.date} · {apt.time} · <TypeBadge type={apt.appointment_type} /></p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">
                   <button onClick={() => handleStatusChange(apt.id, 'confirmed')} disabled={!!updating}
                     className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-teal-600 text-white rounded-lg text-[11px] font-semibold hover:bg-teal-700 disabled:opacity-50">
-                    <CheckCircle2 className="w-3 h-3" /> Confirm
+                    <CheckCircle2 className="w-3 h-3" /> {t('crm.appointments.confirm')}
                   </button>
                   <button onClick={() => handleStatusChange(apt.id, 'cancelled')} disabled={!!updating}
                     className="inline-flex items-center gap-1 px-2.5 py-1.5 text-red-600 bg-red-50 rounded-lg text-[11px] font-semibold hover:bg-red-100 disabled:opacity-50">
-                    <XCircle className="w-3 h-3" /> Decline
+                    <XCircle className="w-3 h-3" /> {t('crm.appointments.decline')}
                   </button>
                 </div>
               </div>
@@ -902,11 +905,11 @@ const CRMAppointments = () => {
       {/* ── Stats Row ── */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {[
-          { label: 'Total', value: stats.total, color: 'text-gray-900', bg: 'bg-gray-50 border-gray-200' },
-          { label: 'Pending', value: stats.pending, color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
-          { label: 'Confirmed', value: stats.confirmed, color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
-          { label: 'Completed', value: stats.completed, color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
-          { label: 'Cancelled', value: stats.cancelled, color: 'text-red-600', bg: 'bg-red-50 border-red-200' },
+          { label: t('common.total'), value: stats.total, color: 'text-gray-900', bg: 'bg-gray-50 border-gray-200' },
+          { label: t('crm.appointments.statusPending'), value: stats.pending, color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
+          { label: t('crm.appointments.statusConfirmed'), value: stats.confirmed, color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
+          { label: t('crm.appointments.statusCompleted'), value: stats.completed, color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
+          { label: t('crm.appointments.statusCancelled'), value: stats.cancelled, color: 'text-red-600', bg: 'bg-red-50 border-red-200' },
         ].map((s) => (
           <div key={s.label} className={`rounded-xl border px-4 py-3 ${s.bg}`}>
             <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
@@ -922,17 +925,17 @@ const CRMAppointments = () => {
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2 flex-1 max-w-xs">
               <Search className="w-4 h-4 text-gray-400" />
-              <input type="text" placeholder="Search patients..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+              <input type="text" placeholder={t('crm.appointments.searchPatients')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
             </div>
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
               className="text-xs border border-gray-200 rounded-lg px-2.5 py-2 bg-white text-gray-600 focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="no_show">No Show</option>
+              <option value="all">{t('crm.appointments.allStatus')}</option>
+              <option value="pending">{t('crm.appointments.statusPending')}</option>
+              <option value="confirmed">{t('crm.appointments.statusConfirmed')}</option>
+              <option value="completed">{t('crm.appointments.statusCompleted')}</option>
+              <option value="cancelled">{t('crm.appointments.statusCancelled')}</option>
+              <option value="no_show">{t('crm.appointments.statusNoShow')}</option>
             </select>
           </div>
           <div className="flex items-center gap-2">
@@ -941,7 +944,7 @@ const CRMAppointments = () => {
               {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
                 <div key={key} className="flex items-center gap-1">
                   <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cfg.color }} />
-                  <span className="text-[10px] text-gray-500 font-medium">{cfg.label}</span>
+                  <span className="text-[10px] text-gray-500 font-medium">{t(cfg.labelKey)}</span>
                 </div>
               ))}
             </div>
@@ -958,7 +961,7 @@ const CRMAppointments = () => {
               }`}
             >
               {isRestricted ? <Lock className="w-3.5 h-3.5" /> : <Plus className="w-4 h-4" />}
-              New Appointment
+              {t('crm.appointments.newAppointment')}
             </button>
           </div>
         </div>
@@ -999,10 +1002,10 @@ const CRMAppointments = () => {
               eventContent={renderEventContent}
               nowIndicator={true}
               buttonText={{
-                today: 'Today',
-                month: 'Month',
-                week: 'Week',
-                day: 'Day',
+                today: t('crm.appointments.today'),
+                month: t('crm.calendar.month'),
+                week: t('crm.calendar.week'),
+                day: t('crm.calendar.day'),
               }}
             />
           )}

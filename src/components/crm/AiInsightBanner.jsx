@@ -194,7 +194,7 @@ export default function AiInsightBanner({ appointments, alerts, stats, patients 
               }, 200);
             }}
             className="w-7 h-7 rounded-lg hover:bg-white/60 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
-            aria-label="Next insight"
+            aria-label={t('crm.dashboard.nextInsight', 'Next insight')}
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -217,7 +217,7 @@ export default function AiInsightBanner({ appointments, alerts, stats, patients 
                   ? 'w-4 h-1 bg-violet-400'
                   : 'w-1 h-1 bg-gray-300 hover:bg-gray-400'
               }`}
-              aria-label={`Insight ${i + 1}`}
+              aria-label={t('crm.dashboard.insightN', 'Insight {{n}}', { n: i + 1 })}
             />
           ))}
         </div>

@@ -134,7 +134,7 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
         <div>
           <ModalLabel required icon={Users}>{t('common.patient', 'Patient')}</ModalLabel>
           {patientsLoading ? (
-            <div className="flex items-center gap-2 text-xs text-gray-400 h-10"><Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading patients...</div>
+            <div className="flex items-center gap-2 text-xs text-gray-400 h-10"><Loader2 className="w-3.5 h-3.5 animate-spin" /> {t('crm.billing.loadingPatients', 'Loading patients...')}</div>
           ) : (
             <ModalSelect value={form.patient_id} onChange={e => setForm({ ...form, patient_id: e.target.value })}>
               <option value="">{t('crm.billing.selectPatient', 'Select patient...')}</option>
@@ -154,10 +154,10 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
 
           {/* Table header */}
           <div className="hidden sm:grid grid-cols-12 gap-2 px-3 mb-1.5">
-            <span className="col-span-4 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Description</span>
-            <span className="col-span-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Category</span>
-            <span className="col-span-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide text-center">Qty</span>
-            <span className="col-span-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide text-right">Price</span>
+            <span className="col-span-4 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">{t('crm.billing.description', 'Description')}</span>
+            <span className="col-span-3 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">{t('crm.billing.category', 'Category')}</span>
+            <span className="col-span-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide text-center">{t('crm.billing.qty', 'Qty')}</span>
+            <span className="col-span-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wide text-right">{t('crm.billing.price', 'Price')}</span>
             <span className="col-span-1" />
           </div>
 
@@ -165,10 +165,10 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
             {items.map((item, i) => (
               <div key={i} className="bg-gray-50/80 rounded-xl p-3 border border-gray-100">
                 <div className="grid grid-cols-12 gap-2 items-center">
-                  <input type="text" placeholder="Description *" value={item.description}
+                  <input type="text" placeholder={t('crm.billing.descriptionRequired', 'Description *')} value={item.description}
                     onChange={e => updateItem(i, 'description', e.target.value)}
                     className="col-span-12 sm:col-span-4 h-9 px-3 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white" />
-                  <input type="text" placeholder="Category" value={item.category}
+                  <input type="text" placeholder={t('crm.billing.category', 'Category')} value={item.category}
                     onChange={e => updateItem(i, 'category', e.target.value)}
                     className="col-span-6 sm:col-span-3 h-9 px-3 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white" />
                   <input type="number" min="1" placeholder="1" value={item.quantity}
@@ -195,7 +195,7 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
         {/* Financial Settings */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div>
-            <ModalLabel icon={CircleDollarSign}>Currency</ModalLabel>
+            <ModalLabel icon={CircleDollarSign}>{t('crm.billing.currency', 'Currency')}</ModalLabel>
             <ModalSelect value={form.currency} onChange={e => setForm({ ...form, currency: e.target.value })}>
               {['EUR', 'USD', 'TRY', 'GBP'].map(c => <option key={c} value={c}>{c}</option>)}
             </ModalSelect>
@@ -241,16 +241,16 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
         <div>
           <ModalLabel icon={FileText}>{t('common.notes', 'Notes')}</ModalLabel>
           <ModalTextarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2}
-            placeholder="Additional notes for the invoice..." />
+            placeholder={t('crm.billing.notesPlaceholder', 'Additional notes for the invoice...')} />
         </div>
 
         {/* Totals Summary */}
         <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl px-5 py-4 space-y-2 border border-gray-200/60">
-          <div className="flex justify-between text-xs"><span className="text-gray-500">Subtotal</span><span className="font-semibold text-gray-700">{fmt(subtotal, form.currency)}</span></div>
-          <div className="flex justify-between text-xs"><span className="text-gray-500">Tax ({form.tax_rate}%)</span><span className="font-semibold text-gray-700">{fmt(taxAmount, form.currency)}</span></div>
-          {discount > 0 && <div className="flex justify-between text-xs"><span className="text-gray-500">Discount</span><span className="font-semibold text-red-500">-{fmt(discount, form.currency)}</span></div>}
+          <div className="flex justify-between text-xs"><span className="text-gray-500">{t('crm.billing.subtotal', 'Subtotal')}</span><span className="font-semibold text-gray-700">{fmt(subtotal, form.currency)}</span></div>
+          <div className="flex justify-between text-xs"><span className="text-gray-500">{t('crm.billing.tax', 'Tax')} ({form.tax_rate}%)</span><span className="font-semibold text-gray-700">{fmt(taxAmount, form.currency)}</span></div>
+          {discount > 0 && <div className="flex justify-between text-xs"><span className="text-gray-500">{t('crm.billing.discount', 'Discount')}</span><span className="font-semibold text-red-500">-{fmt(discount, form.currency)}</span></div>}
           <div className="flex justify-between text-sm font-bold border-t border-gray-200 pt-2.5 mt-1">
-            <span className="text-gray-900">Grand Total</span>
+            <span className="text-gray-900">{t('crm.billing.grandTotal', 'Grand Total')}</span>
             <span className="text-teal-700">{fmt(grandTotal, form.currency)}</span>
           </div>
         </div>
@@ -299,14 +299,14 @@ const PaymentModal = ({ invoice, onClose, onUpdated, t }) => {
             <p className="text-xs text-gray-500">{invoice.invoice_number}</p>
             <p className="text-sm font-bold text-gray-900">{invoice.patient?.fullname}</p>
             <div className="flex justify-between mt-2 text-xs">
-              <span className="text-gray-500">Grand Total: <strong>{fmt(invoice.grand_total, invoice.currency)}</strong></span>
-              <span className="text-amber-600">Remaining: <strong>{fmt(remaining, invoice.currency)}</strong></span>
+              <span className="text-gray-500">{t('crm.billing.grandTotal', 'Grand Total')}: <strong>{fmt(invoice.grand_total, invoice.currency)}</strong></span>
+              <span className="text-amber-600">{t('crm.billing.remaining', 'Remaining')}: <strong>{fmt(remaining, invoice.currency)}</strong></span>
             </div>
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('common.amount')} *</label>
             <input type="number" min="0.01" max={remaining} step="0.01" value={amount}
-              onChange={e => setAmount(e.target.value)} placeholder={`Max: ${remaining.toFixed(2)}`}
+              onChange={e => setAmount(e.target.value)} placeholder={`${t('crm.billing.max', 'Max')}: ${remaining.toFixed(2)}`}
               onKeyDown={blockNonNumeric}
               className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
           </div>
@@ -314,9 +314,9 @@ const PaymentModal = ({ invoice, onClose, onUpdated, t }) => {
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('crm.billing.paymentMethod', 'Payment Method')}</label>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { key: 'cash', label: 'Cash', icon: Banknote },
-                { key: 'credit_card', label: 'Card', icon: CreditCard },
-                { key: 'bank_transfer', label: 'Bank', icon: Building2 },
+                { key: 'cash', label: t('crm.billing.cash', 'Cash'), icon: Banknote },
+                { key: 'credit_card', label: t('crm.billing.cardShort', 'Card'), icon: CreditCard },
+                { key: 'bank_transfer', label: t('crm.billing.bankShort', 'Bank'), icon: Building2 },
               ].map(m => (
                 <button key={m.key} onClick={() => setMethod(m.key)}
                   className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border-2 transition-all text-xs font-medium ${
@@ -560,7 +560,7 @@ const CRMBilling = () => {
                     <tr><td colSpan={7} className="text-center py-16">
                       <Receipt className="w-10 h-10 text-gray-200 mx-auto mb-2" />
                       <p className="text-sm text-gray-400">{t('common.noResults')}</p>
-                      <button onClick={() => setShowCreate(true)} className="mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium">Create your first invoice</button>
+                      <button onClick={() => setShowCreate(true)} className="mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium">{t('crm.billing.createFirstInvoice', 'Create your first invoice')}</button>
                     </td></tr>
                   ) : invoices.map(inv => (
                     <tr key={inv.id} className="hover:bg-gray-50/50 transition-colors group">
@@ -573,7 +573,7 @@ const CRMBilling = () => {
                       </td>
                       <td className="px-3 py-3.5">
                         <p className="text-xs text-gray-700">{inv.issue_date}</p>
-                        {inv.due_date && <p className="text-[10px] text-gray-400">Due: {inv.due_date}</p>}
+                        {inv.due_date && <p className="text-[10px] text-gray-400">{t('crm.billing.due', 'Due')}: {inv.due_date}</p>}
                       </td>
                       <td className="px-3 py-3.5 text-right">
                         <span className="text-sm font-bold text-gray-900">{fmt(inv.grand_total, inv.currency)}</span>
@@ -585,12 +585,12 @@ const CRMBilling = () => {
                       <td className="px-5 py-3.5 text-right">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => handleDownloadPdf(inv.id)}
-                            className="w-7 h-7 rounded-lg hover:bg-blue-50 flex items-center justify-center text-gray-400 hover:text-blue-600" title="Download PDF">
+                            className="w-7 h-7 rounded-lg hover:bg-blue-50 flex items-center justify-center text-gray-400 hover:text-blue-600" title={t('crm.billing.downloadPdf', 'Download PDF')}>
                             <Download className="w-3.5 h-3.5" />
                           </button>
                           {inv.status !== 'paid' && inv.status !== 'cancelled' && (
                             <button onClick={() => setPaymentInvoice(inv)}
-                              className="w-7 h-7 rounded-lg hover:bg-emerald-50 flex items-center justify-center text-gray-400 hover:text-emerald-600" title="Record Payment">
+                              className="w-7 h-7 rounded-lg hover:bg-emerald-50 flex items-center justify-center text-gray-400 hover:text-emerald-600" title={t('crm.billing.recordPayment', 'Record Payment')}>
                               <Wallet className="w-3.5 h-3.5" />
                             </button>
                           )}
@@ -606,7 +606,7 @@ const CRMBilling = () => {
             {pagination.last_page > 1 && (
               <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50/30">
                 <p className="text-xs text-gray-500">
-                  {((page - 1) * perPage) + 1}–{Math.min(page * perPage, pagination.total)} of {pagination.total}
+                  {((page - 1) * perPage) + 1}–{Math.min(page * perPage, pagination.total)} {t('common.of', 'of')} {pagination.total}
                 </p>
                 <div className="flex items-center gap-1">
                   <button disabled={page === 1} onClick={() => setPage(page - 1)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 disabled:opacity-40"><ChevronLeft className="w-4 h-4" /></button>
@@ -637,7 +637,7 @@ const CRMBilling = () => {
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
                 <h2 className="text-sm font-bold text-gray-900">{t('crm.billing.debtorList', 'Outstanding Balances')}</h2>
-                <span className="text-xs text-gray-500">({outstanding.length} patients)</span>
+                <span className="text-xs text-gray-500">({t('crm.billing.patientsCount', '{{count}} patients', { count: outstanding.length })})</span>
               </div>
             </div>
             {outstanding.length === 0 ? (
@@ -662,10 +662,10 @@ const CRMBilling = () => {
                               <div key={i} className="flex items-center gap-3 text-xs flex-wrap">
                                 <span className="font-mono text-teal-600 font-medium">{inv.invoice_number}</span>
                                 <span className="text-gray-400">{inv.issue_date}</span>
-                                <span className="text-gray-500">Total: {fmt(inv.grand_total)}</span>
-                                <span className="text-emerald-600">Paid: {fmt(inv.paid_amount)}</span>
-                                <span className="text-red-600 font-semibold">Remaining: {fmt(inv.remaining)}</span>
-                                {inv.overdue && <span className="text-[10px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">OVERDUE</span>}
+                                <span className="text-gray-500">{t('crm.billing.totalLabel', 'Total')}: {fmt(inv.grand_total)}</span>
+                                <span className="text-emerald-600">{t('crm.billing.paid', 'Paid')}: {fmt(inv.paid_amount)}</span>
+                                <span className="text-red-600 font-semibold">{t('crm.billing.remaining', 'Remaining')}: {fmt(inv.remaining)}</span>
+                                {inv.overdue && <span className="text-[10px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">{t('crm.billing.overdue', 'OVERDUE')}</span>}
                               </div>
                             ))}
                           </div>
@@ -673,7 +673,7 @@ const CRMBilling = () => {
                       </div>
                       <div className="text-right flex-shrink-0">
                         <p className="text-lg font-bold text-red-600">{fmt(entry.total_owed)}</p>
-                        <p className="text-[10px] text-gray-400 mt-0.5">{entry.invoice_count} invoice(s)</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">{t('crm.billing.invoiceCount', '{{count}} invoice(s)', { count: entry.invoice_count })}</p>
                       </div>
                     </div>
                   </div>

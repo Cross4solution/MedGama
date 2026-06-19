@@ -75,7 +75,7 @@ const PricingModal = ({ open, onClose, t }) => {
                 {t('pro.pricing.feature', 'Feature')}
               </div>
               <div className="px-4 py-2.5 text-center">
-                <span className="text-xs font-semibold text-gray-700">Free</span>
+                <span className="text-xs font-semibold text-gray-700">{t('pro.pricing.free', 'Free')}</span>
               </div>
               <div className="px-4 py-2.5 text-center bg-teal-50/50">
                 <span className="text-xs font-bold text-teal-700 flex items-center justify-center gap-1">
@@ -314,7 +314,7 @@ const ProTeaser = ({ page = 'crm' }) => {
                       <Sparkles className="w-5 h-5 text-white" />
                     </div>
                     <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border" style={{ background: 'rgba(10,110,111,0.15)', borderColor: 'rgba(10,110,111,0.3)', color: '#5EEAD4' }}>
-                      Professional
+                      {t('pro.teaser.professionalBadge', 'Professional')}
                     </span>
                   </div>
                   <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight tracking-tight">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { blockNonNumericInt } from '../../utils/numericInput';
 import {
   Stethoscope, MapPin, FileText, Plus, Pencil, Trash2, X, Save, Tag,
@@ -25,9 +26,9 @@ const LANGS = [
 ];
 
 const TABS = [
-  { key: 'specialties', label: 'Specialties', icon: Stethoscope, color: 'purple' },
-  { key: 'cities', label: 'Cities', icon: MapPin, color: 'blue' },
-  { key: 'treatments', label: 'Treatments & Symptoms', icon: Tag, color: 'emerald' },
+  { key: 'specialties', labelKey: 'admin.catalog.tabSpecialties', icon: Stethoscope, color: 'purple' },
+  { key: 'cities', labelKey: 'admin.catalog.tabCities', icon: MapPin, color: 'blue' },
+  { key: 'treatments', labelKey: 'admin.catalog.tabTreatments', icon: Tag, color: 'emerald' },
 ];
 
 // ─── Specialty icon mapping ──────────────────────────────────
@@ -71,6 +72,7 @@ function SuccessToast({ message, show, onClose }) {
 
 // ─── Multi-language name input ───────────────────────────────
 function MultiLangInput({ value, onChange, label }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const val = value || {};
 
@@ -79,7 +81,7 @@ function MultiLangInput({ value, onChange, label }) {
       <div className="flex items-center justify-between mb-1.5">
         <label className="text-xs font-semibold text-gray-700">{label}</label>
         <button type="button" onClick={() => setExpanded(!expanded)} className="text-[10px] text-purple-600 hover:underline flex items-center gap-1">
-          <Globe className="w-3 h-3" /> {expanded ? 'Less' : `${LANGS.length} languages`}
+          <Globe className="w-3 h-3" /> {expanded ? t('admin.catalog.less') : t('admin.catalog.languagesCount', { count: LANGS.length })}
         </button>
       </div>
       <div className="grid grid-cols-2 gap-2 mb-1">
@@ -118,6 +120,7 @@ function MultiLangInput({ value, onChange, label }) {
 
 // ─── Create / Edit modal (sidebar-centered) ──────────────────
 function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
+  const { t } = useTranslation();
   const isEdit = !!item;
   const isTreatment = type === 'treatments';
   const [form, setForm] = useState({
@@ -135,7 +138,7 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
   const [error, setError] = useState('');
   const [aliasInput, setAliasInput] = useState({ en: '', tr: '' });
 
-  const typeLabel = type === 'specialties' ? 'Specialty' : type === 'cities' ? 'City' : 'Treatment Tag';
+  const typeLabel = type === 'specialties' ? t('admin.catalog.typeSpecialty') : type === 'cities' ? t('admin.catalog.typeCity') : t('admin.catalog.typeTreatmentTag');
 
   const addAlias = (lang) => {
     const val = aliasInput[lang]?.trim();
@@ -154,9 +157,9 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
   };
 
   const handleSave = async () => {
-    if (!form.name?.en || !form.name?.tr) { setError('English and Turkish names are required.'); return; }
-    if (!isEdit && !form.code) { setError(isTreatment ? 'Slug is required.' : 'Code is required.'); return; }
-    if (isTreatment && !form.specialty_id) { setError('Please select a specialty.'); return; }
+    if (!form.name?.en || !form.name?.tr) { setError(t('admin.catalog.errNameRequired')); return; }
+    if (!isEdit && !form.code) { setError(isTreatment ? t('admin.catalog.errSlugRequired') : t('admin.catalog.errCodeRequired')); return; }
+    if (isTreatment && !form.specialty_id) { setError(t('admin.catalog.errSelectSpecialty')); return; }
 
     setSaving(true);
     setError('');
@@ -184,7 +187,7 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
       onSaved();
       onClose();
     } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to save. Check inputs.');
+      setError(err?.response?.data?.message || t('admin.catalog.errSaveFailed'));
     }
     setSaving(false);
   };
@@ -205,8 +208,8 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
                  <Tag className="w-4 h-4 text-emerald-600" />}
               </div>
               <div>
-                <h3 className="text-sm font-bold text-gray-900">{isEdit ? 'Edit' : 'Create New'} {typeLabel}</h3>
-                <p className="text-[10px] text-gray-500">{isEdit ? `Editing ${item.code || item.slug}` : 'Fill in the details below'}</p>
+                <h3 className="text-sm font-bold text-gray-900">{isEdit ? t('admin.catalog.editType', { type: typeLabel }) : t('admin.catalog.createType', { type: typeLabel })}</h3>
+                <p className="text-[10px] text-gray-500">{isEdit ? t('admin.catalog.editingItem', { code: item.code || item.slug }) : t('admin.catalog.fillDetails')}</p>
               </div>
             </div>
             <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"><X className="w-4 h-4" /></button>
@@ -223,14 +226,14 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
             {isTreatment && (
               <div>
                 <label className="text-xs font-semibold text-gray-700 mb-1.5 block">
-                  Specialty <span className="text-red-500">*</span>
+                  {t('admin.catalog.specialty')} <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={form.specialty_id}
                   onChange={e => setForm(f => ({ ...f, specialty_id: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all bg-white"
                 >
-                  <option value="">Select specialty...</option>
+                  <option value="">{t('admin.catalog.selectSpecialty')}</option>
                   {specialties.map(s => (
                     <option key={s.id} value={s.id}>{getName(s, 'en')} ({s.code})</option>
                   ))}
@@ -241,14 +244,14 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
             {/* Code / Slug */}
             <div>
               <label className="text-xs font-semibold text-gray-700 mb-1.5 block">
-                {isTreatment ? 'Slug' : 'Code'} {!isEdit && <span className="text-red-500">*</span>}
+                {isTreatment ? t('admin.catalog.slug') : t('admin.catalog.code')} {!isEdit && <span className="text-red-500">*</span>}
               </label>
               <input
                 type="text"
                 value={form.code}
                 onChange={e => setForm(f => ({ ...f, code: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))}
                 disabled={isEdit}
-                placeholder={isTreatment ? 'e.g. botox-treatment' : type === 'cities' ? 'e.g. istanbul' : 'e.g. cardiology'}
+                placeholder={isTreatment ? t('admin.catalog.slugPlaceholder') : type === 'cities' ? t('admin.catalog.cityCodePlaceholder') : t('admin.catalog.specialtyCodePlaceholder')}
                 className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all disabled:bg-gray-50 disabled:text-gray-500"
               />
             </div>
@@ -256,7 +259,7 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
             {/* Icon selector — Specialties only */}
             {type === 'specialties' && (
               <div>
-                <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Icon</label>
+                <label className="text-xs font-semibold text-gray-700 mb-1.5 block">{t('admin.catalog.icon')}</label>
                 <div className="flex flex-wrap gap-1.5">
                   {ICON_OPTIONS.map(key => {
                     const Ic = SPECIALTY_ICONS[key];
@@ -280,20 +283,20 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
             )}
 
             {/* Name (multi-lang) */}
-            <MultiLangInput label="Name *" value={form.name} onChange={name => setForm(f => ({ ...f, name }))} />
+            <MultiLangInput label={t('admin.catalog.nameLabel')} value={form.name} onChange={name => setForm(f => ({ ...f, name }))} />
 
             {/* Description (multi-lang) — specialties & treatments */}
             {type !== 'cities' && (
-              <MultiLangInput label="Description" value={form.description} onChange={description => setForm(f => ({ ...f, description }))} />
+              <MultiLangInput label={t('admin.catalog.descriptionLabel')} value={form.description} onChange={description => setForm(f => ({ ...f, description }))} />
             )}
 
             {/* Aliases — treatments only */}
             {isTreatment && (
               <div>
                 <label className="text-xs font-semibold text-gray-700 mb-1.5 block flex items-center gap-1">
-                  <Hash className="w-3 h-3 text-gray-400" /> Aliases (Colloquial Terms)
+                  <Hash className="w-3 h-3 text-gray-400" /> {t('admin.catalog.aliasesLabel')}
                 </label>
-                <p className="text-[10px] text-gray-400 mb-2">Add everyday terms patients might search for, e.g. "wrinkle treatment", "kırışıklık giderme"</p>
+                <p className="text-[10px] text-gray-400 mb-2">{t('admin.catalog.aliasesHint')}</p>
                 {['en', 'tr'].map(lang => (
                   <div key={lang} className="mb-2">
                     <div className="flex items-center gap-1.5 mb-1">
@@ -306,7 +309,7 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
                         value={aliasInput[lang] || ''}
                         onChange={e => setAliasInput(a => ({ ...a, [lang]: e.target.value }))}
                         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addAlias(lang); } }}
-                        placeholder={lang === 'en' ? 'e.g. wrinkle removal' : 'e.g. kırışıklık giderme'}
+                        placeholder={lang === 'en' ? t('admin.catalog.aliasPlaceholderEn') : t('admin.catalog.aliasPlaceholderTr')}
                         className="flex-1 px-2.5 py-1.5 border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
                       />
                       <button type="button" onClick={() => addAlias(lang)} className="px-2.5 py-1.5 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg text-xs font-medium hover:bg-emerald-100 transition-colors">
@@ -331,7 +334,7 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
             {/* Country ID — cities */}
             {type === 'cities' && (
               <div>
-                <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Country ID</label>
+                <label className="text-xs font-semibold text-gray-700 mb-1.5 block">{t('admin.catalog.countryId')}</label>
                 <input
                   type="number"
                   value={form.country_id}
@@ -346,7 +349,7 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
             {(type === 'specialties' || isTreatment) && (
               <div>
                 <label className="text-xs font-semibold text-gray-700 mb-1.5 block flex items-center gap-1">
-                  <ArrowUpDown className="w-3 h-3 text-gray-400" /> Display Order
+                  <ArrowUpDown className="w-3 h-3 text-gray-400" /> {t('admin.catalog.displayOrder')}
                 </label>
                 <input
                   type="number"
@@ -361,12 +364,12 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
 
           {/* Footer */}
           <div className="px-5 py-4 border-t border-gray-100 flex justify-end gap-2 bg-gray-50/30 rounded-b-2xl">
-            <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+            <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">{t('common.cancel')}</button>
             <button onClick={handleSave} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-50 shadow-sm ${
               isTreatment ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-purple-600 hover:bg-purple-700'
             }`}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              {isEdit ? 'Update' : 'Create'}
+              {isEdit ? t('admin.catalog.update') : t('admin.catalog.create')}
             </button>
           </div>
         </div>
@@ -392,6 +395,7 @@ function getDesc(item, lang = 'en') {
    MAIN: Catalog & System — Data Factory
    ═══════════════════════════════════════════ */
 export default function AdminCatalog() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('specialties');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -441,14 +445,14 @@ export default function AdminCatalog() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to deactivate this item?')) return;
+    if (!window.confirm(t('admin.catalog.confirmDeactivate'))) return;
     setDeleteLoading(id);
     try {
       if (activeTab === 'specialties') await adminAPI.deleteSpecialty(id);
       else if (activeTab === 'cities') await adminAPI.deleteCity(id);
       else if (activeTab === 'treatments') await adminAPI.deleteTreatmentTag(id);
       setItems(prev => prev.filter(i => i.id !== id));
-      showSuccess('Item deactivated');
+      showSuccess(t('admin.catalog.itemDeactivated'));
     } catch {}
     setDeleteLoading(null);
   };
@@ -458,7 +462,7 @@ export default function AdminCatalog() {
 
   const handleSaved = () => {
     fetchItems();
-    showSuccess(editItem ? 'Item updated successfully' : 'Item created successfully');
+    showSuccess(editItem ? t('admin.catalog.itemUpdated') : t('admin.catalog.itemCreated'));
   };
 
   const filtered = items.filter(item => {
@@ -483,19 +487,19 @@ export default function AdminCatalog() {
         <div>
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Stethoscope className="w-5 h-5 text-purple-600" />
-            Catalog & System
+            {t('admin.catalog.title')}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage specialties, cities, and treatment tags</p>
+          <p className="text-sm text-gray-500 mt-0.5">{t('admin.catalog.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleRefresh} disabled={refreshing}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50">
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
+            {t('common.refresh')}
           </button>
           <button onClick={handleCreate} className="inline-flex items-center gap-1.5 px-4 py-2 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700 transition-all shadow-sm">
             <Plus className="w-4 h-4" />
-            Add New
+            {t('admin.catalog.addNew')}
           </button>
         </div>
       </div>
@@ -511,7 +515,7 @@ export default function AdminCatalog() {
             }`}
           >
             <tab.icon className={`w-3.5 h-3.5 ${activeTab === tab.key ? (tab.color === 'purple' ? 'text-purple-600' : tab.color === 'blue' ? 'text-blue-600' : 'text-emerald-600') : ''}`} />
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>
@@ -522,7 +526,7 @@ export default function AdminCatalog() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
-            placeholder={activeTab === 'treatments' ? 'Search by name, slug or alias...' : `Search ${activeTab} by name or code...`}
+            placeholder={activeTab === 'treatments' ? t('admin.catalog.searchTreatmentsPlaceholder') : t('admin.catalog.searchPlaceholder', { tab: t(`admin.catalog.tabName.${activeTab}`) })}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-9 pr-8 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
@@ -558,8 +562,8 @@ export default function AdminCatalog() {
             {activeTab === 'treatments' ? <Tag className="w-12 h-12 mb-3 opacity-30" /> :
              activeTab === 'cities' ? <MapPin className="w-12 h-12 mb-3 opacity-30" /> :
              <Stethoscope className="w-12 h-12 mb-3 opacity-30" />}
-            <p className="text-sm font-medium">No {activeTab} found</p>
-            <p className="text-xs mt-1">{search ? 'Try a different search term' : 'Click "+ Add New" to create one'}</p>
+            <p className="text-sm font-medium">{t('admin.catalog.noItemsFound', { tab: t(`admin.catalog.tabName.${activeTab}`) })}</p>
+            <p className="text-xs mt-1">{search ? t('admin.catalog.tryDifferentSearch') : t('admin.catalog.clickAddNew')}</p>
           </div>
         </div>
       ) : (
@@ -571,33 +575,33 @@ export default function AdminCatalog() {
                   {/* Specialties columns */}
                   {activeTab === 'specialties' && (
                     <>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[50px]">Icon</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Name ({displayLang.toUpperCase()})</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">Code</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Description</th>
-                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[60px]">Order</th>
-                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">Langs</th>
-                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">Actions</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[50px]">{t('admin.catalog.colIcon')}</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colName', { lang: displayLang.toUpperCase() })}</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">{t('admin.catalog.colCode')}</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('common.description')}</th>
+                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[60px]">{t('admin.catalog.colOrder')}</th>
+                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('admin.catalog.colLangs')}</th>
+                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('common.actions')}</th>
                     </>
                   )}
                   {/* Cities columns */}
                   {activeTab === 'cities' && (
                     <>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[100px]">Code</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Name ({displayLang.toUpperCase()})</th>
-                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">Langs</th>
-                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">Actions</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[100px]">{t('admin.catalog.colCode')}</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colName', { lang: displayLang.toUpperCase() })}</th>
+                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('admin.catalog.colLangs')}</th>
+                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('common.actions')}</th>
                     </>
                   )}
                   {/* Treatments columns */}
                   {activeTab === 'treatments' && (
                     <>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[120px]">Slug</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Name ({displayLang.toUpperCase()})</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Specialty</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Aliases</th>
-                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[60px]">Order</th>
-                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">Actions</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[120px]">{t('admin.catalog.slug')}</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colName', { lang: displayLang.toUpperCase() })}</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.specialty')}</th>
+                      <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.catalog.colAliases')}</th>
+                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[60px]">{t('admin.catalog.colOrder')}</th>
+                      <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[80px]">{t('common.actions')}</th>
                     </>
                   )}
                 </tr>
@@ -632,11 +636,11 @@ export default function AdminCatalog() {
                         </td>
                         <td className="px-4 py-3 text-center">
                           <div className="flex items-center justify-center gap-1">
-                            <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors" title="Edit">
+                            <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors" title={t('common.edit')}>
                               <Pencil className="w-3.5 h-3.5" />
                             </button>
                             {deleteLoading === item.id ? <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" /> : (
-                              <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors" title="Deactivate">
+                              <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors" title={t('admin.catalog.deactivate')}>
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             )}
@@ -666,11 +670,11 @@ export default function AdminCatalog() {
                         </td>
                         <td className="px-4 py-3 text-center">
                           <div className="flex items-center justify-center gap-1">
-                            <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors" title="Edit">
+                            <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors" title={t('common.edit')}>
                               <Pencil className="w-3.5 h-3.5" />
                             </button>
                             {deleteLoading === item.id ? <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" /> : (
-                              <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors" title="Deactivate">
+                              <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors" title={t('admin.catalog.deactivate')}>
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             )}
@@ -713,11 +717,11 @@ export default function AdminCatalog() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors" title="Edit">
+                          <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors" title={t('common.edit')}>
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
                           {deleteLoading === item.id ? <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" /> : (
-                            <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors" title="Deactivate">
+                            <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors" title={t('admin.catalog.deactivate')}>
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           )}
@@ -733,11 +737,11 @@ export default function AdminCatalog() {
           {/* Footer */}
           <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/30">
             <span className="text-xs text-gray-500">
-              {filtered.length} of {items.length} {activeTab} shown
-              {search && <span className="ml-1 text-purple-600 font-medium">— filtered by "{search}"</span>}
+              {t('admin.catalog.shownCount', { shown: filtered.length, total: items.length, tab: t(`admin.catalog.tabName.${activeTab}`) })}
+              {search && <span className="ml-1 text-purple-600 font-medium">{t('admin.catalog.filteredBy', { search })}</span>}
             </span>
             <span className="text-xs text-gray-400">
-              Viewing in <span className="font-semibold text-gray-600">{LANGS.find(l => l.code === displayLang)?.label || displayLang}</span>
+              {t('admin.catalog.viewingIn')} <span className="font-semibold text-gray-600">{LANGS.find(l => l.code === displayLang)?.label || displayLang}</span>
             </span>
           </div>
         </div>

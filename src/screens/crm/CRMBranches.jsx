@@ -55,7 +55,7 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
 
   const handleSave = async () => {
     if (!form.name.trim()) {
-      notify({ type: 'error', message: t('branches.nameRequired', 'Branch name is required.') });
+      notify({ type: 'error', message: t('crm.branches.nameRequired', 'Branch name is required.') });
       return;
     }
 
@@ -84,13 +84,13 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
       notify({
         type: 'success',
         message: isEdit
-          ? t('branches.updated', 'Branch updated successfully.')
-          : t('branches.created', 'Branch created successfully.'),
+          ? t('crm.branches.updated', 'Branch updated successfully.')
+          : t('crm.branches.created', 'Branch created successfully.'),
       });
       onSaved?.(result?.data);
       onClose();
     } catch (err) {
-      const msg = err?.message || err?.data?.message || 'Failed to save branch.';
+      const msg = err?.message || err?.data?.message || t('crm.branches.saveError', 'Failed to save branch.');
       notify({ type: 'error', message: msg });
     } finally {
       setSaving(false);
@@ -103,24 +103,24 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
     <CRMModal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEdit ? t('branches.editBranch', 'Edit Branch') : t('branches.addBranch', 'Add New Branch')}
+      title={isEdit ? t('crm.branches.editBranch', 'Edit Branch') : t('crm.branches.addBranch', 'Add New Branch')}
     >
       <div className="space-y-4">
         <div>
-          <ModalLabel>{t('branches.name', 'Branch Name')} *</ModalLabel>
+          <ModalLabel>{t('crm.branches.name', 'Branch Name')} *</ModalLabel>
           <ModalInput
-            placeholder={t('branches.namePlaceholder', 'e.g. Downtown Clinic')}
+            placeholder={t('crm.branches.namePlaceholder', 'e.g. Downtown Clinic')}
             value={form.name}
             onChange={set('name')}
           />
         </div>
 
         <div>
-          <ModalLabel>{t('branches.address', 'Address')}</ModalLabel>
+          <ModalLabel>{t('crm.branches.address', 'Address')}</ModalLabel>
           <textarea
             className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
             rows={2}
-            placeholder={t('branches.addressPlaceholder', 'Full street address')}
+            placeholder={t('crm.branches.addressPlaceholder', 'Full street address')}
             value={form.address}
             onChange={set('address')}
           />
@@ -128,7 +128,7 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <ModalLabel>{t('branches.city', 'City')}</ModalLabel>
+            <ModalLabel>{t('crm.branches.city', 'City')}</ModalLabel>
             <ModalInput
               placeholder="Istanbul"
               value={form.city}
@@ -136,7 +136,7 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
             />
           </div>
           <div>
-            <ModalLabel>{t('branches.country', 'Country')}</ModalLabel>
+            <ModalLabel>{t('crm.branches.country', 'Country')}</ModalLabel>
             <ModalInput
               placeholder="Turkey"
               value={form.country}
@@ -147,7 +147,7 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <ModalLabel>{t('branches.phone', 'Phone')}</ModalLabel>
+            <ModalLabel>{t('crm.branches.phone', 'Phone')}</ModalLabel>
             <ModalInput
               placeholder="+90 212 000 0000"
               value={form.phone}
@@ -155,7 +155,7 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
             />
           </div>
           <div>
-            <ModalLabel>{t('branches.email', 'Email')}</ModalLabel>
+            <ModalLabel>{t('crm.branches.email', 'Email')}</ModalLabel>
             <ModalInput
               type="email"
               placeholder="branch@hospital.com"
@@ -169,20 +169,20 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
         <div>
           <ModalLabel className="flex items-center gap-1">
             <MapPin className="w-3.5 h-3.5 text-teal-500" />
-            {t('branches.coordinates', 'Map Coordinates')}
+            {t('crm.branches.coordinates', 'Map Coordinates')}
           </ModalLabel>
           <div className="grid grid-cols-2 gap-3">
             <ModalInput
               type="number"
               step="any"
-              placeholder={t('branches.latitude', 'Latitude')}
+              placeholder={t('crm.branches.latitude', 'Latitude')}
               value={form.lat}
               onChange={set('lat')}
             />
             <ModalInput
               type="number"
               step="any"
-              placeholder={t('branches.longitude', 'Longitude')}
+              placeholder={t('crm.branches.longitude', 'Longitude')}
               value={form.lng}
               onChange={set('lng')}
             />
@@ -195,7 +195,7 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
               className="mt-1 inline-flex items-center gap-1 text-xs text-teal-600 hover:underline"
             >
               <Globe className="w-3 h-3" />
-              {t('branches.previewMap', 'Preview on map')}
+              {t('crm.branches.previewMap', 'Preview on map')}
             </a>
           )}
         </div>
@@ -217,8 +217,8 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
           </button>
           <span className="text-sm text-gray-700">
             {form.is_active
-              ? t('branches.active', 'Active')
-              : t('branches.inactive', 'Inactive')}
+              ? t('crm.branches.active', 'Active')
+              : t('crm.branches.inactive', 'Inactive')}
           </span>
         </div>
 
@@ -233,7 +233,7 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
             ) : isEdit ? (
               t('common.saveChanges', 'Save Changes')
             ) : (
-              t('branches.createBranch', 'Create Branch')
+              t('crm.branches.createBranch', 'Create Branch')
             )}
           </ModalPrimaryButton>
         </div>
@@ -269,7 +269,7 @@ const BranchCard = ({ branch, onEdit, onDelete }) => {
                 ) : (
                   <XCircle className="w-3 h-3" />
                 )}
-                {branch.is_active ? t('branches.active', 'Active') : t('branches.inactive', 'Inactive')}
+                {branch.is_active ? t('crm.branches.active', 'Active') : t('crm.branches.inactive', 'Inactive')}
               </span>
             </div>
             {(branch.city || branch.country) && (
@@ -324,11 +324,11 @@ const BranchCard = ({ branch, onEdit, onDelete }) => {
       <div className="mt-4 pt-3 border-t border-gray-50 flex items-center gap-4">
         <div className="flex items-center gap-1.5 text-xs text-gray-500">
           <Building2 className="w-3.5 h-3.5 text-gray-400" />
-          <span>{branch.clinics_count ?? 0} {t('branches.clinics', 'clinics')}</span>
+          <span>{branch.clinics_count ?? 0} {t('crm.branches.clinics', 'clinics')}</span>
         </div>
         <div className="flex items-center gap-1.5 text-xs text-gray-500">
           <Globe className="w-3.5 h-3.5 text-gray-400" />
-          <span>{branch.doctors_count ?? 0} {t('branches.doctors', 'doctors')}</span>
+          <span>{branch.doctors_count ?? 0} {t('crm.branches.doctors', 'doctors')}</span>
         </div>
         {hasCoords && (
           <a
@@ -337,7 +337,7 @@ const BranchCard = ({ branch, onEdit, onDelete }) => {
             rel="noopener noreferrer"
             className="ml-auto flex items-center gap-1 text-xs text-teal-600 hover:underline"
           >
-            {t('branches.viewMap', 'View on map')}
+            {t('crm.branches.viewMap', 'View on map')}
             <ChevronRight className="w-3 h-3" />
           </a>
         )}
@@ -352,11 +352,11 @@ const DeleteConfirmModal = ({ branch, onClose, onConfirm, deleting }) => {
   if (!branch) return null;
 
   return (
-    <CRMModal isOpen onClose={onClose} title={t('branches.deleteBranch', 'Delete Branch')}>
+    <CRMModal isOpen onClose={onClose} title={t('crm.branches.deleteBranch', 'Delete Branch')}>
       <p className="text-sm text-gray-600 mb-6">
-        {t('branches.deleteConfirm', 'Are you sure you want to delete')}{' '}
+        {t('crm.branches.deleteConfirm', 'Are you sure you want to delete')}{' '}
         <strong>{branch.name}</strong>?{' '}
-        {t('branches.deleteWarning', 'This action cannot be undone.')}
+        {t('crm.branches.deleteWarning', 'This action cannot be undone.')}
       </p>
       <div className="flex justify-end gap-2">
         <ModalCancelButton onClick={onClose} disabled={deleting} />
@@ -391,11 +391,11 @@ export default function CRMBranches() {
       const res = await branchAPI.list();
       setBranches(res?.data ?? []);
     } catch (err) {
-      notify({ type: 'error', message: t('branches.loadError', 'Failed to load branches.') });
+      notify({ type: 'error', message: t('crm.branches.loadError', 'Failed to load branches.') });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [notify, t]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -407,11 +407,11 @@ export default function CRMBranches() {
     setDeleteModal((d) => ({ ...d, deleting: true }));
     try {
       await branchAPI.delete(deleteModal.branch.id);
-      notify({ type: 'success', message: t('branches.deleted', 'Branch deleted.') });
+      notify({ type: 'success', message: t('crm.branches.deleted', 'Branch deleted.') });
       setBranches((prev) => prev.filter((b) => b.id !== deleteModal.branch.id));
       setDeleteModal({ branch: null, deleting: false });
     } catch (err) {
-      notify({ type: 'error', message: t('branches.deleteError', 'Failed to delete branch.') });
+      notify({ type: 'error', message: t('crm.branches.deleteError', 'Failed to delete branch.') });
       setDeleteModal((d) => ({ ...d, deleting: false }));
     }
   };
@@ -430,10 +430,10 @@ export default function CRMBranches() {
         <div>
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <MapPin className="w-5 h-5 text-teal-600" />
-            {t('branches.title', 'Branch Management')}
+            {t('crm.branches.title', 'Branch Management')}
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            {t('branches.subtitle', 'Manage your hospital\'s branch locations')}
+            {t('crm.branches.subtitle', 'Manage your hospital\'s branch locations')}
           </p>
         </div>
         <button
@@ -441,7 +441,7 @@ export default function CRMBranches() {
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors shadow-sm"
         >
           <Plus className="w-4 h-4" />
-          {t('branches.addBranch', 'Add Branch')}
+          {t('crm.branches.addBranch', 'Add Branch')}
         </button>
       </div>
 
@@ -450,7 +450,7 @@ export default function CRMBranches() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
           type="text"
-          placeholder={t('branches.searchPlaceholder', 'Search branches by name, city or address...')}
+          placeholder={t('crm.branches.searchPlaceholder', 'Search branches by name, city or address...')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
@@ -477,15 +477,15 @@ export default function CRMBranches() {
           </div>
           <p className="text-gray-500 font-medium">
             {search
-              ? t('branches.noResults', 'No branches match your search.')
-              : t('branches.empty', 'No branches yet. Add your first location.')}
+              ? t('crm.branches.noResults', 'No branches match your search.')
+              : t('crm.branches.empty', 'No branches yet. Add your first location.')}
           </p>
           {!search && (
             <button
               onClick={() => setFormModal({ open: true, branch: null })}
               className="mt-4 px-4 py-2 rounded-xl border border-teal-200 text-teal-600 text-sm font-medium hover:bg-teal-50 transition-colors"
             >
-              {t('branches.addFirst', '+ Add First Branch')}
+              {t('crm.branches.addFirst', '+ Add First Branch')}
             </button>
           )}
         </div>

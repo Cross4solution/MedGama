@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle, CheckCircle, ChevronLeft, ChevronRight, Loader2,
   Eye, EyeOff, UserX, Search, X, Shield, MessageSquare, Flag,
@@ -27,10 +28,11 @@ function SuccessToast({ message, show, onClose }) {
 
 // ─── Status badge ────────────────────────────────────────────
 function StatusBadge({ status }) {
+  const { t } = useTranslation();
   const map = {
-    pending:  { bg: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock, label: 'Pending' },
-    reviewed: { bg: 'bg-blue-50 text-blue-700 border-blue-200', icon: CheckCircle, label: 'Dismissed' },
-    hidden:   { bg: 'bg-red-50 text-red-700 border-red-200', icon: EyeOff, label: 'Hidden' },
+    pending:  { bg: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock, label: t('common.pending') },
+    reviewed: { bg: 'bg-blue-50 text-blue-700 border-blue-200', icon: CheckCircle, label: t('admin.moderation.dismissed') },
+    hidden:   { bg: 'bg-red-50 text-red-700 border-red-200', icon: EyeOff, label: t('admin.moderation.hidden') },
   };
   const s = map[status] || map.pending;
   const Icon = s.icon;
@@ -43,6 +45,7 @@ function StatusBadge({ status }) {
 
 // ─── Detail Inspection Modal (sidebar-centered) ──────────────
 function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
+  const { t } = useTranslation();
   if (!report) return null;
   const r = report;
   const post = r.post;
@@ -59,8 +62,8 @@ function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
                 <Flag className="w-4 h-4 text-red-600" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-gray-900">Report Detail</h3>
-                <p className="text-[10px] text-gray-500">Report #{r.id?.toString().slice(0, 8)}</p>
+                <h3 className="text-sm font-bold text-gray-900">{t('admin.moderation.reportDetail')}</h3>
+                <p className="text-[10px] text-gray-500">{t('admin.moderation.reportNo', { id: r.id?.toString().slice(0, 8) })}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -74,8 +77,8 @@ function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
             <div className="flex items-center gap-3 p-3 bg-amber-50/50 rounded-xl border border-amber-200/50">
               <img src={resolveStorageUrl(r.reporter?.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-8 h-8 rounded-full object-cover border border-amber-200" />
               <div className="flex-1">
-                <p className="text-xs font-semibold text-gray-700">{r.reporter?.fullname || 'Unknown Reporter'}</p>
-                <p className="text-[10px] text-gray-500">Reported on {r.created_at ? new Date(r.created_at).toLocaleString() : '—'}</p>
+                <p className="text-xs font-semibold text-gray-700">{r.reporter?.fullname || t('admin.moderation.unknownReporter')}</p>
+                <p className="text-[10px] text-gray-500">{t('admin.moderation.reportedOn', { date: r.created_at ? new Date(r.created_at).toLocaleString() : '—' })}</p>
               </div>
               <Flag className="w-4 h-4 text-amber-500 flex-shrink-0" />
             </div>
@@ -83,10 +86,10 @@ function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
             {/* Reason */}
             <div>
               <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1.5 block flex items-center gap-1">
-                <MessageSquare className="w-3 h-3" /> Report Reason
+                <MessageSquare className="w-3 h-3" /> {t('admin.moderation.reportReason')}
               </label>
               <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm text-gray-700">
-                {r.reason || 'No reason provided'}
+                {r.reason || t('admin.moderation.noReasonProvided')}
               </div>
             </div>
 
@@ -94,28 +97,28 @@ function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
             {post && (
               <div>
                 <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1.5 block flex items-center gap-1">
-                  <ScrollText className="w-3 h-3" /> Reported Post
+                  <ScrollText className="w-3 h-3" /> {t('admin.moderation.reportedPost')}
                 </label>
                 <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
                   <div className="flex items-center gap-2.5 mb-3">
                     <img src={resolveStorageUrl(post.author?.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-9 h-9 rounded-full object-cover border-2 border-gray-200" />
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">{post.author?.fullname || 'Unknown Author'}</p>
+                      <p className="text-sm font-semibold text-gray-900">{post.author?.fullname || t('admin.moderation.unknownAuthor')}</p>
                       <p className="text-[10px] text-gray-400">{post.created_at ? new Date(post.created_at).toLocaleString() : ''}</p>
                     </div>
                     {post.is_hidden && (
-                      <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-semibold border border-red-200">Hidden</span>
+                      <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-600 font-semibold border border-red-200">{t('admin.moderation.hidden')}</span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{post.content || '(no text content)'}</p>
+                  <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{post.content || t('admin.moderation.noTextContent')}</p>
                   {post.media_url && (
                     <div className="mt-3">
                       {(post.post_type === 'image' || post.post_type === 'mixed') ? (
-                        <img src={resolveStorageUrl(post.media_url)} alt="Post media" className="w-full max-h-64 object-cover rounded-lg border border-gray-200" />
+                        <img src={resolveStorageUrl(post.media_url)} alt={t('admin.moderation.postMedia')} className="w-full max-h-64 object-cover rounded-lg border border-gray-200" />
                       ) : (
                         <div className="flex items-center gap-2 text-xs text-gray-500 p-3 bg-gray-50 rounded-lg border border-gray-100">
                           <ImageIcon className="w-4 h-4 text-gray-400" />
-                          Media attachment ({post.post_type})
+                          {t('admin.moderation.mediaAttachment', { type: post.post_type })}
                         </div>
                       )}
                     </div>
@@ -135,7 +138,7 @@ function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors disabled:opacity-50"
                 >
                   {loading === r.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
-                  Dismiss Report
+                  {t('admin.moderation.dismissReport')}
                 </button>
                 <button
                   onClick={() => onHide(r.id)}
@@ -143,7 +146,7 @@ function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors disabled:opacity-50"
                 >
                   {loading === r.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <EyeOff className="w-3.5 h-3.5" />}
-                  Hide Post
+                  {t('admin.moderation.hidePost')}
                 </button>
                 {post?.author_id && (
                   <button
@@ -152,12 +155,12 @@ function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-red-600 hover:bg-red-700 transition-colors disabled:opacity-50 shadow-sm ml-auto"
                   >
                     {loading === post.author_id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserX className="w-3.5 h-3.5" />}
-                    Ban User
+                    {t('admin.moderation.banUser')}
                   </button>
                 )}
               </div>
             ) : (
-              <p className="text-xs text-gray-400 italic text-center">This report has been resolved — {r.admin_status === 'reviewed' ? 'Dismissed' : 'Post Hidden'}</p>
+              <p className="text-xs text-gray-400 italic text-center">{t('admin.moderation.reportResolved', { status: r.admin_status === 'reviewed' ? t('admin.moderation.dismissed') : t('admin.moderation.postHidden') })}</p>
             )}
           </div>
         </div>
@@ -168,6 +171,7 @@ function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
 
 // ─── Confirm Action Modal ────────────────────────────────────
 function ConfirmModal({ open, title, message, confirmLabel, danger, loading, onConfirm, onCancel }) {
+  const { t } = useTranslation();
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onCancel}>
@@ -181,14 +185,14 @@ function ConfirmModal({ open, title, message, confirmLabel, danger, loading, onC
             <p className="text-xs text-gray-500 mt-1">{message}</p>
           </div>
           <div className="px-5 py-3.5 flex justify-end gap-2">
-            <button onClick={onCancel} className="px-4 py-2 rounded-xl text-xs font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button onClick={onCancel} className="px-4 py-2 rounded-xl text-xs font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">{t('common.cancel')}</button>
             <button
               onClick={onConfirm}
               disabled={loading}
               className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white transition-colors disabled:opacity-50 shadow-sm ${danger ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-600 hover:bg-amber-700'}`}
             >
               {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              {confirmLabel || 'Confirm'}
+              {confirmLabel || t('common.confirm')}
             </button>
           </div>
         </div>
@@ -201,6 +205,7 @@ function ConfirmModal({ open, title, message, confirmLabel, danger, loading, onC
    MAIN: MedStream Moderation — Surgical Center
    ═══════════════════════════════════════════ */
 export default function AdminModeration() {
+  const { t } = useTranslation();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('pending');
@@ -250,7 +255,7 @@ export default function AdminModeration() {
     try {
       await adminAPI.approveReport(id);
       setReports(prev => prev.map(r => r.id === id ? { ...r, admin_status: 'reviewed' } : r));
-      showSuccess('Report dismissed — post kept visible');
+      showSuccess(t('admin.moderation.toastDismissed'));
       if (selectedReport?.id === id) setSelectedReport(p => ({ ...p, admin_status: 'reviewed' }));
     } catch {}
     setActionLoading(null);
@@ -261,7 +266,7 @@ export default function AdminModeration() {
     try {
       await adminAPI.removeReport(id);
       setReports(prev => prev.map(r => r.id === id ? { ...r, admin_status: 'hidden', post: r.post ? { ...r.post, is_hidden: true } : null } : r));
-      showSuccess('Post hidden from all users');
+      showSuccess(t('admin.moderation.toastHidden'));
       if (selectedReport?.id === id) setSelectedReport(p => ({ ...p, admin_status: 'hidden', post: p.post ? { ...p.post, is_hidden: true } : null }));
     } catch {}
     setActionLoading(null);
@@ -273,7 +278,7 @@ export default function AdminModeration() {
       id: report.id,
       authorId: report.post?.author_id,
       authorName: report.post?.author?.fullname,
-      label: `Suspend "${report.post?.author?.fullname || 'this user'}"? They will lose access to the entire platform.`,
+      label: t('admin.moderation.suspendConfirm', { name: report.post?.author?.fullname || t('admin.moderation.thisUser') }),
     });
   };
 
@@ -284,7 +289,7 @@ export default function AdminModeration() {
     try {
       if (type === 'suspend') {
         await adminAPI.suspendUser(authorId, true);
-        showSuccess(`User "${confirmAction.authorName}" has been suspended`);
+        showSuccess(t('admin.moderation.toastSuspended', { name: confirmAction.authorName }));
       }
     } catch {}
     setActionLoading(null);
@@ -297,17 +302,17 @@ export default function AdminModeration() {
     if (!date) return '—';
     const d = new Date(date);
     const diff = (Date.now() - d.getTime()) / 1000;
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    if (diff < 60) return t('admin.moderation.justNow');
+    if (diff < 3600) return t('admin.moderation.minutesAgo', { count: Math.floor(diff / 60) });
+    if (diff < 86400) return t('admin.moderation.hoursAgo', { count: Math.floor(diff / 3600) });
     return d.toLocaleDateString();
   };
 
   const FILTERS = [
-    { key: 'pending', label: 'Pending', icon: Clock, count: pendingCount },
-    { key: 'reviewed', label: 'Dismissed', icon: CheckCircle, count: reviewedCount },
-    { key: 'hidden', label: 'Hidden', icon: EyeOff, count: hiddenCount },
-    { key: 'all', label: 'All', icon: Flag, count: null },
+    { key: 'pending', label: t('common.pending'), icon: Clock, count: pendingCount },
+    { key: 'reviewed', label: t('admin.moderation.dismissed'), icon: CheckCircle, count: reviewedCount },
+    { key: 'hidden', label: t('admin.moderation.hidden'), icon: EyeOff, count: hiddenCount },
+    { key: 'all', label: t('common.all'), icon: Flag, count: null },
   ];
 
   return (
@@ -319,14 +324,14 @@ export default function AdminModeration() {
         <div>
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Flag className="w-5 h-5 text-purple-600" />
-            MedStream Moderation
+            {t('admin.moderation.title')}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">Review reported content, take action on violations</p>
+          <p className="text-sm text-gray-500 mt-0.5">{t('admin.moderation.subtitle')}</p>
         </div>
         <button onClick={handleRefresh} disabled={refreshing}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50">
           <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-          Refresh
+          {t('common.refresh')}
         </button>
       </div>
 
@@ -338,21 +343,21 @@ export default function AdminModeration() {
             <span className="text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">LIVE</span>
           </div>
           <p className="text-2xl font-bold text-amber-700">{pendingCount}</p>
-          <p className="text-xs font-medium text-amber-600 mt-0.5">Pending Review</p>
+          <p className="text-xs font-medium text-amber-600 mt-0.5">{t('admin.moderation.pendingReview')}</p>
         </div>
         <div className="bg-white border border-blue-200 rounded-2xl px-4 py-3.5 shadow-sm">
           <div className="flex items-center justify-between mb-1">
             <CheckCircle className="w-4 h-4 text-blue-500" />
           </div>
           <p className="text-2xl font-bold text-blue-700">{reviewedCount}</p>
-          <p className="text-xs font-medium text-blue-600 mt-0.5">Dismissed</p>
+          <p className="text-xs font-medium text-blue-600 mt-0.5">{t('admin.moderation.dismissed')}</p>
         </div>
         <div className="bg-white border border-red-200 rounded-2xl px-4 py-3.5 shadow-sm">
           <div className="flex items-center justify-between mb-1">
             <EyeOff className="w-4 h-4 text-red-500" />
           </div>
           <p className="text-2xl font-bold text-red-700">{hiddenCount}</p>
-          <p className="text-xs font-medium text-red-600 mt-0.5">Content Hidden</p>
+          <p className="text-xs font-medium text-red-600 mt-0.5">{t('admin.moderation.contentHidden')}</p>
         </div>
       </div>
 
@@ -381,7 +386,7 @@ export default function AdminModeration() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by author or reporter name..."
+            placeholder={t('admin.moderation.searchPlaceholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-9 pr-8 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
@@ -403,8 +408,8 @@ export default function AdminModeration() {
         <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
             <Shield className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm font-medium text-gray-600">All Clear</p>
-            <p className="text-xs mt-1">No reports matching the current filter</p>
+            <p className="text-sm font-medium text-gray-600">{t('admin.moderation.allClear')}</p>
+            <p className="text-xs mt-1">{t('admin.moderation.noReportsFilter')}</p>
           </div>
         </div>
       ) : (
@@ -413,13 +418,13 @@ export default function AdminModeration() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Reported Content</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[130px]">Author</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[130px]">Reporter</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[140px]">Reason</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">Time</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">Status</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[140px]">Actions</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('admin.moderation.colReportedContent')}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[130px]">{t('admin.moderation.colAuthor')}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[130px]">{t('admin.moderation.colReporter')}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[140px]">{t('admin.moderation.colReason')}</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">{t('admin.moderation.colTime')}</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[90px]">{t('common.status')}</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs w-[140px]">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -491,14 +496,14 @@ export default function AdminModeration() {
                             <button
                               onClick={() => handleDismiss(r.id)}
                               className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors"
-                              title="Dismiss report"
+                              title={t('admin.moderation.dismissReport')}
                             >
                               <CheckCircle className="w-3.5 h-3.5" />
                             </button>
                             <button
                               onClick={() => handleHide(r.id)}
                               className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
-                              title="Hide post"
+                              title={t('admin.moderation.hidePost')}
                             >
                               <EyeOff className="w-3.5 h-3.5" />
                             </button>
@@ -506,14 +511,14 @@ export default function AdminModeration() {
                               <button
                                 onClick={() => handleBanRequest(r)}
                                 className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
-                                title="Ban user"
+                                title={t('admin.moderation.banUser')}
                               >
                                 <UserX className="w-3.5 h-3.5" />
                               </button>
                             )}
                           </div>
                         ) : (
-                          <span className="text-[10px] text-gray-400 italic">Resolved</span>
+                          <span className="text-[10px] text-gray-400 italic">{t('admin.moderation.resolved')}</span>
                         )}
                       </td>
                     </tr>
@@ -526,12 +531,12 @@ export default function AdminModeration() {
           {/* Footer + Pagination */}
           <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/30">
             <span className="text-xs text-gray-500">
-              {reports.length} report(s) shown
-              {search && <span className="ml-1 text-purple-600 font-medium">— filtered by "{search}"</span>}
+              {t('admin.moderation.reportsShown', { count: reports.length })}
+              {search && <span className="ml-1 text-purple-600 font-medium">{t('admin.moderation.filteredBy', { search })}</span>}
             </span>
             {lastPage > 1 && (
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400">Page {page}/{lastPage}</span>
+                <span className="text-xs text-gray-400">{t('admin.moderation.pageShort', { page, lastPage })}</span>
                 <div className="flex gap-1">
                   <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
                     <ChevronLeft className="w-4 h-4" />
@@ -555,10 +560,10 @@ export default function AdminModeration() {
           <div className="flex-1">
             <p className="text-sm font-semibold text-purple-900 flex items-center gap-1.5">
               <Lock className="w-3.5 h-3.5" />
-              Moderation Actions Are Audited
+              {t('admin.moderation.auditTitle')}
             </p>
             <p className="text-xs text-purple-700/80 mt-0.5">
-              Every moderation decision (dismiss, hide, ban) is logged in Audit Logs with admin identity, timestamp, and affected post/user (e.g., "Post #123 hidden by Admin [Name]").
+              {t('admin.moderation.auditDesc')}
             </p>
           </div>
         </div>
@@ -577,9 +582,9 @@ export default function AdminModeration() {
       {/* Confirm Modal */}
       <ConfirmModal
         open={!!confirmAction}
-        title={confirmAction?.type === 'suspend' ? 'Ban User' : 'Confirm Action'}
+        title={confirmAction?.type === 'suspend' ? t('admin.moderation.banUser') : t('admin.moderation.confirmAction')}
         message={confirmAction?.label || ''}
-        confirmLabel={confirmAction?.type === 'suspend' ? 'Ban User' : 'Confirm'}
+        confirmLabel={confirmAction?.type === 'suspend' ? t('admin.moderation.banUser') : t('common.confirm')}
         danger={true}
         loading={!!actionLoading}
         onConfirm={executeConfirmedAction}

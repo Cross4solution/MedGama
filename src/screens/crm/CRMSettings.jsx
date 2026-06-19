@@ -27,13 +27,13 @@ function hasValidCoordinates(coords) {
   return !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
 }
 
-function OpenStreetMapPreview({ coordinates, height = 200 }) {
+function OpenStreetMapPreview({ coordinates, height = 200, t }) {
   const lat = parseFloat(coordinates?.lat);
   const lng = parseFloat(coordinates?.lng);
   if (isNaN(lat) || isNaN(lng)) {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50/50 flex items-center justify-center p-4" style={{ height }}>
-        <p className="text-xs text-amber-500">Enter latitude and longitude to see the map preview</p>
+        <p className="text-xs text-amber-500">{t('crm.settings.mapPlaceholder', 'Enter latitude and longitude to see the map preview')}</p>
       </div>
     );
   }
@@ -63,16 +63,16 @@ const DEFAULT_HOURS = DAYS.map(day => ({
 }));
 
 const ALL_TABS = [
-  { key: 'profile', label: 'Profile', icon: User },
-  { key: 'gallery', label: 'Gallery', icon: Image },
-  { key: 'hours', label: 'Operating Hours', icon: Clock },
-  { key: 'services', label: 'Services & Pricing', icon: Stethoscope },
-  { key: 'social', label: 'Social & Contact', icon: Link2 },
-  { key: 'verification', label: 'Verification', icon: ShieldCheck },
-  { key: 'clinic', label: 'Clinic Info', icon: Building2, crmOnly: true },
-  { key: 'notifications', label: 'Notifications', icon: Bell },
-  { key: 'security', label: 'Security', icon: Shield },
-  { key: 'billing', label: 'Billing', icon: CreditCard, crmOnly: true },
+  { key: 'profile', labelKey: 'crm.settings.profile', label: 'Profile', icon: User },
+  { key: 'gallery', labelKey: 'crm.settings.galleryTab', label: 'Gallery', icon: Image },
+  { key: 'hours', labelKey: 'crm.settings.hoursTab', label: 'Operating Hours', icon: Clock },
+  { key: 'services', labelKey: 'crm.settings.servicesTab', label: 'Services & Pricing', icon: Stethoscope },
+  { key: 'social', labelKey: 'crm.settings.socialTab', label: 'Social & Contact', icon: Link2 },
+  { key: 'verification', labelKey: 'crm.settings.verificationTab', label: 'Verification', icon: ShieldCheck },
+  { key: 'clinic', labelKey: 'crm.settings.clinicInfo', label: 'Clinic Info', icon: Building2, crmOnly: true },
+  { key: 'notifications', labelKey: 'crm.settings.notifications', label: 'Notifications', icon: Bell },
+  { key: 'security', labelKey: 'crm.settings.security', label: 'Security', icon: Shield },
+  { key: 'billing', labelKey: 'crm.settings.billing', label: 'Billing', icon: CreditCard, crmOnly: true },
 ];
 
 const CRMSettings = ({ standalone = false }) => {
@@ -412,7 +412,7 @@ const CRMSettings = ({ standalone = false }) => {
                   }`}
                 >
                   <tab.icon className={`w-4 h-4 flex-shrink-0 ${tab.locked ? 'text-gray-300' : activeTab === tab.key ? 'text-teal-600' : 'text-gray-400'}`} />
-                  {tab.label}
+                  {t(tab.labelKey, tab.label)}
                   {tab.locked && <LockIcon className="w-3 h-3 ml-auto text-gray-400" />}
                 </button>
               ))}
@@ -428,8 +428,8 @@ const CRMSettings = ({ standalone = false }) => {
               {/* Personal Info */}
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100">
-                  <h2 className="text-sm font-bold text-gray-900">Personal Information</h2>
-                  <p className="text-xs text-gray-400 mt-0.5">Update your personal details and professional profile</p>
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.personalInfo', 'Personal Information')}</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.updatePersonalDetails', 'Update your personal details and professional profile')}</p>
                 </div>
                 {profileLoading ? (
                   <div className="px-6 py-10 flex justify-center"><Loader2 className="w-6 h-6 text-teal-600 animate-spin" /></div>
@@ -441,72 +441,72 @@ const CRMSettings = ({ standalone = false }) => {
                         {(profile.firstName || '?')[0]}{(profile.lastName || '?')[0]}
                       </div>
                       <div>
-                        <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"><Camera className="w-3.5 h-3.5" /> Change Photo</button>
-                        <p className="text-[10px] text-gray-400 mt-0.5">JPG, PNG. Max 5MB</p>
+                        <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"><Camera className="w-3.5 h-3.5" /> {t('crm.settings.changePhoto', 'Change Photo')}</button>
+                        <p className="text-[10px] text-gray-400 mt-0.5">{t('crm.settings.photoHint', 'JPG, PNG. Max 5MB')}</p>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">First Name</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.firstName', 'First Name')}</label>
                         <input type="text" value={profile.firstName} onChange={(e) => setProfile({...profile, firstName: e.target.value})}
                           className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Last Name</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.lastName', 'Last Name')}</label>
                         <input type="text" value={profile.lastName} onChange={(e) => setProfile({...profile, lastName: e.target.value})}
                           className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Email</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.email', 'Email')}</label>
                         <input type="email" value={profile.email} disabled
                           className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-500 cursor-not-allowed" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Phone</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.phone', 'Phone')}</label>
                         <input type="tel" value={profile.phone} onChange={(e) => setProfile({...profile, phone: e.target.value})}
                           className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Professional Title</label>
-                        <input type="text" value={profile.title} onChange={(e) => setProfile({...profile, title: e.target.value})} placeholder="e.g. Kardiyoloji Uzmanı"
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.titleField', 'Professional Title')}</label>
+                        <input type="text" value={profile.title} onChange={(e) => setProfile({...profile, title: e.target.value})} placeholder={t('crm.settings.titlePlaceholder', 'e.g. Kardiyoloji Uzmanı')}
                           className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Specialty</label>
-                        <input type="text" value={profile.specialty} onChange={(e) => setProfile({...profile, specialty: e.target.value})} placeholder="e.g. Cardiology"
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.specialty', 'Specialty')}</label>
+                        <input type="text" value={profile.specialty} onChange={(e) => setProfile({...profile, specialty: e.target.value})} placeholder={t('crm.settings.specialtyPlaceholder', 'e.g. Cardiology')}
                           className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Experience</label>
-                        <input type="text" value={profile.experienceYears} onChange={(e) => setProfile({...profile, experienceYears: e.target.value})} placeholder="e.g. 15+"
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.experience', 'Experience')}</label>
+                        <input type="text" value={profile.experienceYears} onChange={(e) => setProfile({...profile, experienceYears: e.target.value})} placeholder={t('crm.settings.experiencePlaceholder', 'e.g. 15+')}
                           className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">License Number</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.licenseNumber', 'License Number')}</label>
                         <input type="text" value={profile.licenseNumber} onChange={(e) => setProfile({...profile, licenseNumber: e.target.value})}
                           className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">Bio / About</label>
-                      <textarea rows={4} value={profile.bio} onChange={(e) => setProfile({...profile, bio: e.target.value})} placeholder="Tell patients about yourself..."
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.bioLabel', 'Bio / About')}</label>
+                      <textarea rows={4} value={profile.bio} onChange={(e) => setProfile({...profile, bio: e.target.value})} placeholder={t('crm.settings.bioPlaceholder', 'Tell patients about yourself...')}
                         className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">Address</label>
-                      <input type="text" value={doctorAddress} onChange={(e) => setDoctorAddress(e.target.value)} placeholder="Office address"
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.address', 'Address')}</label>
+                      <input type="text" value={doctorAddress} onChange={(e) => setDoctorAddress(e.target.value)} placeholder={t('crm.settings.officeAddress', 'Office address')}
                         className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1.5">Website</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.website', 'Website')}</label>
                         <input type="text" value={doctorWebsite} onChange={(e) => setDoctorWebsite(e.target.value)} placeholder="https://..."
                           className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                       </div>
                       <label className="flex items-center gap-3 self-end pb-1.5 cursor-pointer">
                         <input type="checkbox" checked={onlineConsultation} onChange={e => setOnlineConsultation(e.target.checked)} className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500" />
-                        <span className="text-sm text-gray-700 font-medium">Telehealth Available</span>
+                        <span className="text-sm text-gray-700 font-medium">{t('crm.settings.telehealthAvailable', 'Telehealth Available')}</span>
                       </label>
                     </div>
                     {/* Spoken Languages — GlobalSuggest */}
@@ -593,7 +593,7 @@ const CRMSettings = ({ standalone = false }) => {
                   {profileSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> {t('crm.settings.profileSaved', 'Profile updated successfully')}</span>}
                   <button onClick={saveProfile} disabled={profileSaving}
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
-                    {profileSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save Changes
+                    {profileSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('crm.settings.saveChanges', 'Save Changes')}
                   </button>
                 </div>
               </div>
@@ -602,18 +602,18 @@ const CRMSettings = ({ standalone = false }) => {
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm font-bold text-gray-900">Services</h2>
-                    <p className="text-xs text-gray-400 mt-0.5">Services you offer to patients</p>
+                    <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.servicesHeading', 'Services')}</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.servicesSubtitle', 'Services you offer to patients')}</p>
                   </div>
-                  <button type="button" onClick={() => setDoctorServices(s => [...s, { name: '', description: '' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
+                  <button type="button" onClick={() => setDoctorServices(s => [...s, { name: '', description: '' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('common.add', 'Add')}</button>
                 </div>
                 <div className="px-6 py-4 space-y-2">
-                  {doctorServices.length === 0 && <p className="text-xs text-gray-400 italic">No services added yet</p>}
+                  {doctorServices.length === 0 && <p className="text-xs text-gray-400 italic">{t('crm.settings.noServicesYet', 'No services added yet')}</p>}
                   {doctorServices.map((svc, i) => (
                     <div key={i} className="grid sm:grid-cols-2 gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100 relative">
                       <button type="button" onClick={() => setDoctorServices(s => s.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
-                      <input value={svc.name} onChange={e => { const n = [...doctorServices]; n[i].name = e.target.value; setDoctorServices(n); }} placeholder="Service name" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
-                      <input value={svc.description} onChange={e => { const n = [...doctorServices]; n[i].description = e.target.value; setDoctorServices(n); }} placeholder="Description" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={svc.name} onChange={e => { const n = [...doctorServices]; n[i].name = e.target.value; setDoctorServices(n); }} placeholder={t('crm.settings.serviceNamePlaceholder', 'Service name')} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={svc.description} onChange={e => { const n = [...doctorServices]; n[i].description = e.target.value; setDoctorServices(n); }} placeholder={t('crm.settings.serviceDesc', 'Description')} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
                     </div>
                   ))}
                 </div>
@@ -623,19 +623,19 @@ const CRMSettings = ({ standalone = false }) => {
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm font-bold text-gray-900">Pricing</h2>
-                    <p className="text-xs text-gray-400 mt-0.5">Price ranges for your services</p>
+                    <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.pricingHeading', 'Pricing')}</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.pricingSubtitle', 'Price ranges for your services')}</p>
                   </div>
-                  <button type="button" onClick={() => setDoctorPrices(p => [...p, { label: '', min: '', max: '', currency: '₺' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
+                  <button type="button" onClick={() => setDoctorPrices(p => [...p, { label: '', min: '', max: '', currency: '₺' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('common.add', 'Add')}</button>
                 </div>
                 <div className="px-6 py-4 space-y-2">
-                  {doctorPrices.length === 0 && <p className="text-xs text-gray-400 italic">No prices added yet</p>}
+                  {doctorPrices.length === 0 && <p className="text-xs text-gray-400 italic">{t('crm.settings.noPricesYet', 'No prices added yet')}</p>}
                   {doctorPrices.map((pr, i) => (
                     <div key={i} className="grid grid-cols-4 gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100 relative">
                       <button type="button" onClick={() => setDoctorPrices(p => p.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
-                      <input value={pr.label} onChange={e => { const n = [...doctorPrices]; n[i].label = e.target.value; setDoctorPrices(n); }} placeholder="Service" className="col-span-2 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
-                      <input value={pr.min} onChange={e => { const n = [...doctorPrices]; n[i].min = e.target.value; setDoctorPrices(n); }} placeholder="Min ₺" type="number" onKeyDown={blockNonNumeric} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
-                      <input value={pr.max} onChange={e => { const n = [...doctorPrices]; n[i].max = e.target.value; setDoctorPrices(n); }} placeholder="Max ₺" type="number" onKeyDown={blockNonNumeric} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={pr.label} onChange={e => { const n = [...doctorPrices]; n[i].label = e.target.value; setDoctorPrices(n); }} placeholder={t('crm.settings.serviceLabel', 'Service')} className="col-span-2 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={pr.min} onChange={e => { const n = [...doctorPrices]; n[i].min = e.target.value; setDoctorPrices(n); }} placeholder={t('crm.settings.minPrice', 'Min ₺')} type="number" onKeyDown={blockNonNumeric} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={pr.max} onChange={e => { const n = [...doctorPrices]; n[i].max = e.target.value; setDoctorPrices(n); }} placeholder={t('crm.settings.maxPrice', 'Max ₺')} type="number" onKeyDown={blockNonNumeric} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
                     </div>
                   ))}
                 </div>
@@ -645,19 +645,19 @@ const CRMSettings = ({ standalone = false }) => {
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm font-bold text-gray-900">Education</h2>
-                    <p className="text-xs text-gray-400 mt-0.5">Your academic background</p>
+                    <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.educationHeading', 'Education')}</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.educationSubtitle', 'Your academic background')}</p>
                   </div>
-                  <button type="button" onClick={() => setDoctorEducation(e => [...e, { degree: '', school: '', year: '' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
+                  <button type="button" onClick={() => setDoctorEducation(e => [...e, { degree: '', school: '', year: '' }])} className="text-xs text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t('common.add', 'Add')}</button>
                 </div>
                 <div className="px-6 py-4 space-y-2">
-                  {doctorEducation.length === 0 && <p className="text-xs text-gray-400 italic">No education added yet</p>}
+                  {doctorEducation.length === 0 && <p className="text-xs text-gray-400 italic">{t('crm.settings.noEducationYet', 'No education added yet')}</p>}
                   {doctorEducation.map((edu, i) => (
                     <div key={i} className="grid sm:grid-cols-3 gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100 relative">
                       <button type="button" onClick={() => setDoctorEducation(e => e.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
-                      <input value={edu.degree} onChange={e => { const n = [...doctorEducation]; n[i].degree = e.target.value; setDoctorEducation(n); }} placeholder="Degree" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
-                      <input value={edu.school} onChange={e => { const n = [...doctorEducation]; n[i].school = e.target.value; setDoctorEducation(n); }} placeholder="School" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
-                      <input value={edu.year} onChange={e => { const n = [...doctorEducation]; n[i].year = e.target.value; setDoctorEducation(n); }} placeholder="Year" className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={edu.degree} onChange={e => { const n = [...doctorEducation]; n[i].degree = e.target.value; setDoctorEducation(n); }} placeholder={t('crm.settings.degree', 'Degree')} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={edu.school} onChange={e => { const n = [...doctorEducation]; n[i].school = e.target.value; setDoctorEducation(n); }} placeholder={t('crm.settings.school', 'School')} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
+                      <input value={edu.year} onChange={e => { const n = [...doctorEducation]; n[i].year = e.target.value; setDoctorEducation(n); }} placeholder={t('crm.settings.year', 'Year')} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
                     </div>
                   ))}
                 </div>
@@ -689,7 +689,7 @@ const CRMSettings = ({ standalone = false }) => {
                       <>
                         <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                         <p className="text-sm font-medium text-gray-600">{t('crm.settings.dropPhotos', 'Drop photos here or click to upload')}</p>
-                        <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP — max 5MB each, up to 10 files</p>
+                        <p className="text-xs text-gray-400 mt-1">{t('crm.settings.galleryFormatsHint', 'JPG, PNG, WebP — max 5MB each, up to 10 files')}</p>
                       </>
                     )}
                   </div>
@@ -716,7 +716,7 @@ const CRMSettings = ({ standalone = false }) => {
                             <GripVertical className="w-4 h-4 text-white drop-shadow-lg" />
                           </div>
                           {idx === 0 && (
-                            <span className="absolute bottom-2 left-2 text-[10px] font-bold text-white bg-teal-600 px-2 py-0.5 rounded-full">Cover</span>
+                            <span className="absolute bottom-2 left-2 text-[10px] font-bold text-white bg-teal-600 px-2 py-0.5 rounded-full">{t('crm.settings.cover', 'Cover')}</span>
                           )}
                         </div>
                       ))}
@@ -799,7 +799,7 @@ const CRMSettings = ({ standalone = false }) => {
                 </div>
               </div>
               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-end gap-3">
-                {hoursSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Saved</span>}
+                {hoursSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> {t('crm.settings.saved', 'Saved')}</span>}
                 <button onClick={saveOperatingHours} disabled={hoursSaving}
                   className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
                   {hoursSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('crm.settings.saveHours', 'Save Hours')}
@@ -831,12 +831,12 @@ const CRMSettings = ({ standalone = false }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-[11px] font-medium text-gray-600 mb-1">{t('crm.settings.serviceName', 'Service Name')}</label>
-                        <input value={svc.name} onChange={(e) => updateService(i, 'name', e.target.value)} placeholder="e.g. Dental Whitening"
+                        <input value={svc.name} onChange={(e) => updateService(i, 'name', e.target.value)} placeholder={t('crm.settings.serviceNameExample', 'e.g. Dental Whitening')}
                           className="w-full h-9 px-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-teal-400" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-medium text-gray-600 mb-1">{t('crm.settings.serviceDesc', 'Description')}</label>
-                        <input value={svc.description || ''} onChange={(e) => updateService(i, 'description', e.target.value)} placeholder="Brief description"
+                        <input value={svc.description || ''} onChange={(e) => updateService(i, 'description', e.target.value)} placeholder={t('crm.settings.briefDescription', 'Brief description')}
                           className="w-full h-9 px-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-teal-400" />
                       </div>
                       <div>
@@ -869,7 +869,7 @@ const CRMSettings = ({ standalone = false }) => {
                 ))}
               </div>
               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-end gap-3">
-                {servicesSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Saved</span>}
+                {servicesSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> {t('crm.settings.saved', 'Saved')}</span>}
                 <button onClick={saveServices} disabled={servicesSaving}
                   className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
                   {servicesSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('crm.settings.saveServices', 'Save Services')}
@@ -935,7 +935,7 @@ const CRMSettings = ({ standalone = false }) => {
                       <p className="text-[10px] text-gray-400">{t('crm.settings.coordsHelper', 'Enter coordinates to display your location on the map. You can find them on openstreetmap.org.')}</p>
 
                       {hasValidCoordinates(socialInfo.map_coordinates) && (
-                        <OpenStreetMapPreview coordinates={socialInfo.map_coordinates} height={200} />
+                        <OpenStreetMapPreview coordinates={socialInfo.map_coordinates} height={200} t={t} />
                       )}
                     </div>
                   </div>
@@ -968,7 +968,7 @@ const CRMSettings = ({ standalone = false }) => {
 
               <div className="flex justify-end">
                 <div className="flex items-center gap-3">
-                  {socialSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Saved</span>}
+                  {socialSaved && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> {t('crm.settings.saved', 'Saved')}</span>}
                   <button onClick={saveSocial} disabled={socialSaving}
                     className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
                     {socialSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('crm.settings.saveSocial', 'Save Contact Info')}
@@ -1121,53 +1121,53 @@ const CRMSettings = ({ standalone = false }) => {
           {activeTab === 'clinic' && (
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100">
-                <h2 className="text-sm font-bold text-gray-900">Clinic Information</h2>
-                <p className="text-xs text-gray-400 mt-0.5">Update your clinic details</p>
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.clinicInfoTitle', 'Clinic Information')}</h2>
+                <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.clinicInfoDesc', 'Update your clinic details')}</p>
               </div>
               <div className="px-6 py-5 space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Clinic Name</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.clinicName', 'Clinic Name')}</label>
                   <input type="text" value={clinic.name} onChange={(e) => setClinic({...clinic, name: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Address</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.address', 'Address')}</label>
                   <input type="text" value={clinic.address} onChange={(e) => setClinic({...clinic, address: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">City</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.city', 'City')}</label>
                     <input type="text" value={clinic.city} onChange={(e) => setClinic({...clinic, city: e.target.value})}
                       className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Country</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.country', 'Country')}</label>
                     <input type="text" value={clinic.country} onChange={(e) => setClinic({...clinic, country: e.target.value})}
                       className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Phone</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.phone', 'Phone')}</label>
                     <input type="tel" value={clinic.phone} onChange={(e) => setClinic({...clinic, phone: e.target.value})}
                       className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Email</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.email', 'Email')}</label>
                     <input type="email" value={clinic.email} onChange={(e) => setClinic({...clinic, email: e.target.value})}
                       className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Working Hours</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.workingHours', 'Working Hours')}</label>
                   <input type="text" value={clinic.workingHours} onChange={(e) => setClinic({...clinic, workingHours: e.target.value})}
                     className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                 </div>
               </div>
               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex justify-end">
                 <button className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
-                  <Save className="w-4 h-4" /> Save Changes
+                  <Save className="w-4 h-4" /> {t('crm.settings.saveChanges', 'Save Changes')}
                 </button>
               </div>
             </div>
@@ -1177,19 +1177,19 @@ const CRMSettings = ({ standalone = false }) => {
           {activeTab === 'notifications' && (
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100">
-                <h2 className="text-sm font-bold text-gray-900">Notification Preferences</h2>
-                <p className="text-xs text-gray-400 mt-0.5">Choose how you want to be notified</p>
+                <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.notificationPreferences', 'Notification Preferences')}</h2>
+                <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.chooseNotifications', 'Choose how you want to be notified')}</p>
               </div>
               <div className="px-6 py-5 space-y-6">
                 {[
-                  { title: 'Push Notifications', items: [
-                    { key: 'pushAppointments', label: 'Upcoming appointments' },
-                    { key: 'pushMessages', label: 'New messages' },
-                    { key: 'pushUrgent', label: 'Urgent alerts & critical results' },
+                  { title: t('crm.settings.pushNotifications', 'Push Notifications'), items: [
+                    { key: 'pushAppointments', label: t('crm.settings.upcomingAppointments', 'Upcoming appointments') },
+                    { key: 'pushMessages', label: t('crm.settings.newMessages', 'New messages') },
+                    { key: 'pushUrgent', label: t('crm.settings.urgentAlertsResults', 'Urgent alerts & critical results') },
                   ]},
-                  { title: 'Appointment Reminders', items: [
-                    { key: 'emailAppointments', label: 'Appointment confirmations & reminders' },
-                    { key: 'emailMessages', label: 'New patient messages' },
+                  { title: t('crm.settings.appointmentReminders', 'Appointment Reminders'), items: [
+                    { key: 'emailAppointments', label: t('crm.settings.apptConfirmReminders', 'Appointment confirmations & reminders') },
+                    { key: 'emailMessages', label: t('crm.settings.newPatientMessages', 'New patient messages') },
                   ]},
                 ].map((section) => (
                   <div key={section.title}>
@@ -1213,7 +1213,7 @@ const CRMSettings = ({ standalone = false }) => {
               </div>
               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex justify-end">
                 <button className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
-                  <Save className="w-4 h-4" /> Save Preferences
+                  <Save className="w-4 h-4" /> {t('crm.settings.savePreferences', 'Save Preferences')}
                 </button>
               </div>
             </div>
@@ -1224,11 +1224,11 @@ const CRMSettings = ({ standalone = false }) => {
             <div className="space-y-4">
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100">
-                  <h2 className="text-sm font-bold text-gray-900">Change Password</h2>
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.changePassword', 'Change Password')}</h2>
                 </div>
                 <div className="px-6 py-5 space-y-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Current Password</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.currentPassword', 'Current Password')}</label>
                     <div className="relative">
                       <input type={showPassword ? 'text' : 'password'} className="w-full sm:w-96 h-10 px-3 pr-10 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -1238,31 +1238,31 @@ const CRMSettings = ({ standalone = false }) => {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">New Password</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.newPassword', 'New Password')}</label>
                       <input type="password" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1.5">Confirm New Password</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.confirmNewPassword', 'Confirm New Password')}</label>
                       <input type="password" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                     </div>
                   </div>
                 </div>
                 <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex justify-end">
                   <button className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
-                    <Key className="w-4 h-4" /> Update Password
+                    <Key className="w-4 h-4" /> {t('crm.settings.updatePassword', 'Update Password')}
                   </button>
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl border border-red-200 shadow-sm p-6">
-                <h2 className="text-sm font-bold text-red-700 mb-1">Danger Zone</h2>
-                <p className="text-xs text-gray-500 mb-4">Irreversible actions</p>
+                <h2 className="text-sm font-bold text-red-700 mb-1">{t('crm.settings.dangerZone', 'Danger Zone')}</h2>
+                <p className="text-xs text-gray-500 mb-4">{t('crm.settings.irreversibleActions', 'Irreversible actions')}</p>
                 <div className="flex items-center gap-3">
                   <button className="px-4 py-2 border border-red-300 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors flex items-center gap-1.5">
-                    <LogOut className="w-3.5 h-3.5" /> Sign Out All Devices
+                    <LogOut className="w-3.5 h-3.5" /> {t('crm.settings.signOutAllDevices', 'Sign Out All Devices')}
                   </button>
                   <button className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors flex items-center gap-1.5">
-                    <Trash2 className="w-3.5 h-3.5" /> Delete Account
+                    <Trash2 className="w-3.5 h-3.5" /> {t('crm.settings.deleteAccount', 'Delete Account')}
                   </button>
                 </div>
               </div>
@@ -1348,41 +1348,41 @@ const CRMSettings = ({ standalone = false }) => {
           {activeTab === 'billing' && (
             <div className="space-y-4">
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-6">
-                <h2 className="text-sm font-bold text-gray-900 mb-1">Current Plan</h2>
+                <h2 className="text-sm font-bold text-gray-900 mb-1">{t('crm.settings.currentPlan', 'Current Plan')}</h2>
                 <div className="flex items-center justify-between mt-3 p-4 bg-gradient-to-r from-teal-50 to-emerald-50 rounded-xl border border-teal-200">
                   <div>
-                    <p className="text-base font-bold text-teal-800">Professional Plan</p>
-                    <p className="text-xs text-teal-600 mt-0.5">Unlimited patients · All features · Priority support</p>
+                    <p className="text-base font-bold text-teal-800">{t('crm.settings.professionalPlan', 'Professional Plan')}</p>
+                    <p className="text-xs text-teal-600 mt-0.5">{t('crm.settings.planFeatures', 'Unlimited patients · All features · Priority support')}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-bold text-teal-800">€99<span className="text-xs font-normal text-teal-600">/mo</span></p>
-                    <p className="text-[10px] text-teal-500">Next billing: Mar 1, 2026</p>
+                    <p className="text-xl font-bold text-teal-800">€99<span className="text-xs font-normal text-teal-600">{t('crm.settings.perMonth', '/mo')}</span></p>
+                    <p className="text-[10px] text-teal-500">{t('crm.settings.nextBilling', 'Next billing')}: Mar 1, 2026</p>
                   </div>
                 </div>
               </div>
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-6">
-                <h2 className="text-sm font-bold text-gray-900 mb-3">Payment Method</h2>
+                <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.settings.paymentMethod', 'Payment Method')}</h2>
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
                   <CreditCard className="w-8 h-8 text-gray-400" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">•••• •••• •••• 4242</p>
-                    <p className="text-[11px] text-gray-400">Expires 12/2027</p>
+                    <p className="text-[11px] text-gray-400">{t('crm.settings.expires', 'Expires')} 12/2027</p>
                   </div>
-                  <button className="ml-auto text-xs font-medium text-teal-600 hover:text-teal-700">Change</button>
+                  <button className="ml-auto text-xs font-medium text-teal-600 hover:text-teal-700">{t('crm.settings.change', 'Change')}</button>
                 </div>
               </div>
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-6">
-                <h2 className="text-sm font-bold text-gray-900 mb-3">Billing History</h2>
+                <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.settings.billingHistory', 'Billing History')}</h2>
                 <div className="space-y-2">
                   {[
-                    { date: 'Feb 1, 2026', amount: '€99.00', status: 'Paid' },
-                    { date: 'Jan 1, 2026', amount: '€99.00', status: 'Paid' },
-                    { date: 'Dec 1, 2025', amount: '€99.00', status: 'Paid' },
+                    { date: 'Feb 1, 2026', amount: '€99.00', status: t('crm.settings.paid', 'Paid') },
+                    { date: 'Jan 1, 2026', amount: '€99.00', status: t('crm.settings.paid', 'Paid') },
+                    { date: 'Dec 1, 2025', amount: '€99.00', status: t('crm.settings.paid', 'Paid') },
                   ].map((b, i) => (
                     <div key={i} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                       <div>
                         <p className="text-xs font-medium text-gray-700">{b.date}</p>
-                        <p className="text-[10px] text-gray-400">Professional Plan</p>
+                        <p className="text-[10px] text-gray-400">{t('crm.settings.professionalPlan', 'Professional Plan')}</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-xs font-semibold text-gray-900">{b.amount}</span>

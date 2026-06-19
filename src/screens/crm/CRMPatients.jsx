@@ -84,7 +84,7 @@ const AddTagModal = ({ patientId, patientName, onClose, onAdded, t }) => {
       onAdded();
       onClose();
     } catch {
-      alert('Failed to add tag');
+      alert(t('crm.patients.addTagError'));
     } finally {
       setLoading(false);
     }
@@ -99,7 +99,7 @@ const AddTagModal = ({ patientId, patientName, onClose, onAdded, t }) => {
         </div>
         <form onSubmit={handleSubmit} className="px-5 py-4 space-y-3">
           <input ref={inputRef} type="text" value={tagValue} onChange={(e) => setTagValue(e.target.value)}
-            placeholder="VIP, Chronic, Post-Op..." maxLength={100}
+            placeholder={t('crm.patients.tagPlaceholder')} maxLength={100}
             className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
           <div className="flex justify-end gap-2">
             <button type="button" onClick={onClose} className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl">{t('common.cancel')}</button>
@@ -119,8 +119,14 @@ const SetStageModal = ({ patientId, patientName, currentStage, onClose, onUpdate
   const [loading, setLoading] = useState(false);
 
   const STAGE_PRESETS = [
-    'Initial Consultation', 'Diagnostic', 'Treatment', 'Follow-up',
-    'Post-Surgery', 'Rehabilitation', 'Monitoring', 'Discharged',
+    { value: 'Initial Consultation', label: t('crm.patients.stageInitialConsultation') },
+    { value: 'Diagnostic', label: t('crm.patients.stageDiagnostic') },
+    { value: 'Treatment', label: t('crm.patients.stageTreatment') },
+    { value: 'Follow-up', label: t('crm.patients.stageFollowUp') },
+    { value: 'Post-Surgery', label: t('crm.patients.stagePostSurgery') },
+    { value: 'Rehabilitation', label: t('crm.patients.stageRehabilitation') },
+    { value: 'Monitoring', label: t('crm.patients.stageMonitoring') },
+    { value: 'Discharged', label: t('crm.patients.stageDischarged') },
   ];
 
   const handleSubmit = async (e) => {
@@ -132,7 +138,7 @@ const SetStageModal = ({ patientId, patientName, currentStage, onClose, onUpdate
       onUpdated();
       onClose();
     } catch {
-      alert('Failed to update stage');
+      alert(t('crm.patients.setStageError'));
     } finally {
       setLoading(false);
     }
@@ -148,14 +154,14 @@ const SetStageModal = ({ patientId, patientName, currentStage, onClose, onUpdate
         <form onSubmit={handleSubmit} className="px-5 py-4 space-y-3">
           <div className="flex flex-wrap gap-1.5 mb-2">
             {STAGE_PRESETS.map((s) => (
-              <button key={s} type="button" onClick={() => setStageValue(s)}
-                className={`text-[10px] font-medium px-2 py-1 rounded-lg border transition-colors ${stageValue === s ? 'bg-teal-50 text-teal-700 border-teal-300' : 'text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
-                {s}
+              <button key={s.value} type="button" onClick={() => setStageValue(s.value)}
+                className={`text-[10px] font-medium px-2 py-1 rounded-lg border transition-colors ${stageValue === s.value ? 'bg-teal-50 text-teal-700 border-teal-300' : 'text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
+                {s.label}
               </button>
             ))}
           </div>
           <input type="text" value={stageValue} onChange={(e) => setStageValue(e.target.value)}
-            placeholder="Or type a custom stage..." maxLength={100}
+            placeholder={t('crm.patients.customStagePlaceholder')} maxLength={100}
             className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
           <div className="flex justify-end gap-2">
             <button type="button" onClick={onClose} className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl">{t('common.cancel')}</button>
@@ -280,7 +286,7 @@ const CRMPatients = () => {
           <p className="text-sm text-gray-500 mt-0.5">{t('crm.patients.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={handleRefresh} className="w-9 h-9 rounded-xl border border-gray-200 hover:bg-gray-50 flex items-center justify-center text-gray-500 transition-colors" title="Refresh">
+          <button onClick={handleRefresh} className="w-9 h-9 rounded-xl border border-gray-200 hover:bg-gray-50 flex items-center justify-center text-gray-500 transition-colors" title={t('common.refresh')}>
             <RefreshCw className="w-4 h-4" />
           </button>
           <button onClick={() => navigate('/crm/appointments')} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md">
@@ -391,7 +397,7 @@ const CRMPatients = () => {
                   <td colSpan={7} className="text-center py-16">
                     <Users className="w-10 h-10 text-gray-200 mx-auto mb-2" />
                     <p className="text-sm text-gray-400">{t('common.noResults')}</p>
-                    <p className="text-xs text-gray-300 mt-1">Patients who book appointments will appear here</p>
+                    <p className="text-xs text-gray-300 mt-1">{t('crm.patients.emptyHint')}</p>
                   </td>
                 </tr>
               ) : (
@@ -412,8 +418,8 @@ const CRMPatients = () => {
                           <div className="min-w-0">
                             <p className="text-sm font-semibold text-gray-900 truncate">{p.fullname}</p>
                             <p className="text-[11px] text-gray-400">
-                              {p.gender === 'F' ? 'Female' : p.gender === 'M' ? 'Male' : '—'}
-                              {age ? `, ${age}y` : ''}
+                              {p.gender === 'F' ? t('crm.patients.female') : p.gender === 'M' ? t('crm.patients.male') : '—'}
+                              {age ? `, ${age}${t('crm.patients.yearsShort')}` : ''}
                               {p.country ? ` · ${p.country}` : ''}
                             </p>
                           </div>
@@ -430,7 +436,7 @@ const CRMPatients = () => {
                           {(p.tags || []).length === 0 ? (
                             <button onClick={() => setTagModal({ id: p.id, name: p.fullname })}
                               className="text-[10px] text-gray-400 hover:text-teal-600 flex items-center gap-0.5">
-                              <Plus className="w-2.5 h-2.5" /> tag
+                              <Plus className="w-2.5 h-2.5" /> {t('crm.patients.tagLower')}
                             </button>
                           ) : (
                             <>
@@ -455,7 +461,7 @@ const CRMPatients = () => {
                         ) : (
                           <button onClick={() => setStageModal({ id: p.id, name: p.fullname, stage: '' })}
                             className="text-[10px] text-gray-400 hover:text-teal-600 flex items-center gap-0.5">
-                            <Plus className="w-2.5 h-2.5" /> stage
+                            <Plus className="w-2.5 h-2.5" /> {t('crm.patients.stageLower')}
                           </button>
                         )}
                       </td>
@@ -479,17 +485,17 @@ const CRMPatients = () => {
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => navigate(`/crm/patient-360?id=${p.id}`)}
                             className="w-8 h-8 rounded-lg hover:bg-teal-50 flex items-center justify-center text-gray-400 hover:text-teal-600 transition-colors"
-                            title="Patient 360°">
+                            title={t('crm.patients.patient360')}>
                             <Eye className="w-4 h-4" />
                           </button>
                           <button onClick={() => navigate(`/crm/appointments`)}
                             className="w-8 h-8 rounded-lg hover:bg-blue-50 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors"
-                            title="Book Appointment">
+                            title={t('crm.patients.bookAppointment')}>
                             <Calendar className="w-4 h-4" />
                           </button>
                           <button onClick={() => navigate(`/crm/billing`)}
                             className="w-8 h-8 rounded-lg hover:bg-amber-50 flex items-center justify-center text-gray-400 hover:text-amber-600 transition-colors"
-                            title="Create Invoice">
+                            title={t('crm.patients.createInvoice')}>
                             <Receipt className="w-4 h-4" />
                           </button>
                         </div>
