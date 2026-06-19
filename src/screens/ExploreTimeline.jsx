@@ -15,6 +15,7 @@ import { resizeImages } from '../utils/imageResize';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import SEOHead from '../components/seo/SEOHead';
 import { useTranslation } from 'react-i18next';
+import { useIsMedstream } from '../context/BrandContext';
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
@@ -130,6 +131,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
 
 export default function ExploreTimeline() {
   const { t } = useTranslation();
+  const focused = useIsMedstream(); // medstream.co → single-column Twitter-like feed
   const { user, country } = useAuth();
   const disabledActions = false; // allow interactions for all users
   const navigate = useNavigate();
@@ -500,7 +502,7 @@ export default function ExploreTimeline() {
         alternates
       />
       <div className="min-h-screen w-full fixed top-0 left-0 -z-10"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-6 pb-12 relative">
+      <div className={`${focused ? 'max-w-[680px]' : 'max-w-7xl'} mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-6 pb-12 relative`}>
         {/* Hidden pickers for composer */}
         <input ref={imageInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=>{
           const files = Array.from(e?.target?.files || []);
@@ -552,8 +554,9 @@ export default function ExploreTimeline() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
-          {/* Filters (LEFT) */}
+        <div className={focused ? '' : 'grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8'}>
+          {/* Filters (LEFT) — hidden in the standalone medstream.co feed */}
+          {!focused && (
           <TimelineFilterSidebar
             query={query}
             onQueryChange={setQuery}
@@ -565,10 +568,11 @@ export default function ExploreTimeline() {
             specialtyOptions={specialtyOptions}
             user={user}
           />
+          )}
 
           {/* Feed (RIGHT) */}
-          <section className="order-1 lg:order-2">
-            <div className="max-w-[680px] mx-auto lg:mx-0 lg:ml-6">
+          <section className={focused ? '' : 'order-1 lg:order-2'}>
+            <div className={focused ? 'max-w-[680px] mx-auto' : 'max-w-[680px] mx-auto lg:mx-0 lg:ml-6'}>
               {/* Composer — clinics, clinic groups (hospitals) and doctors only (NOT patients) */}
               {(() => {
                 const isDoctor = !!(user && (user.role === 'doctor' || (user?.specialty || user?.hospital || user?.access)));

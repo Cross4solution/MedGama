@@ -7,7 +7,9 @@
 import React, { useEffect, Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import { stripLocale } from '@/lib/locales';
-import { useNavigate, useNavigationType } from '@/compat/router';
+import { Link, useNavigate, useNavigationType } from '@/compat/router';
+import { BrandProvider } from '@/context/BrandContext';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useAuth } from '@/context/AuthContext';
 import SidebarPatient from '@/components/SidebarPatient';
 import CookieBanner from '@/components/CookieBanner';
@@ -49,11 +51,12 @@ function OnboardingGate() {
   return null;
 }
 
-export default function SiteChrome({ children }) {
+export default function SiteChrome({ children, brand = 'medagama' }) {
   const pathname = stripLocale(usePathname() || '/');
   const navType = useNavigationType();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isMedstream = brand === 'medstream';
 
   // Bridge for toast SPA navigation (ToastContext uses this)
   useEffect(() => {
@@ -168,7 +171,31 @@ export default function SiteChrome({ children }) {
   // bunlar CSR bailout'a yol açar. Bu yüzden YALNIZCA kabuk parçaları Suspense altında.
   // {children} (sayfa içeriği) Suspense DIŞINDA render edilir; böylece server component
   // sayfalar (doctor/clinic/post detay) SSR'da gerçek içerikle gelir (SEO için kritik).
+  // medstream.co — standalone Twitter-like shell: a slim top bar + the centered
+  // feed only. No marketing header, sidebar, footer or cookie banner.
+  if (isMedstream) {
+    return (
+      <BrandProvider brand="medstream">
+        <div className="min-h-screen bg-white">
+          <Suspense fallback={null}>
+            <header className="sticky top-0 z-30 h-12 flex items-center justify-between px-4 border-b border-gray-100 bg-white/90 backdrop-blur">
+              <Link to="/" className="flex items-center gap-1.5 font-bold text-[#0f766e]">
+                <span className="text-base tracking-tight">MedStream</span>
+              </Link>
+              <LanguageSwitcher compact />
+            </header>
+          </Suspense>
+          <Suspense fallback={null}>{children}</Suspense>
+          <Suspense fallback={null}>
+            <OnboardingGate />
+          </Suspense>
+        </div>
+      </BrandProvider>
+    );
+  }
+
   return (
+    <BrandProvider brand={brand}>
     <div className={hasSidebar ? 'lg:pl-[12rem]' : ''}>
       <Suspense fallback={null}>
         {showHeader && <Header />}
@@ -189,5 +216,6 @@ export default function SiteChrome({ children }) {
         <OnboardingGate />
       </Suspense>
     </div>
+    </BrandProvider>
   );
 }
