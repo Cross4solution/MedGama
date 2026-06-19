@@ -8,10 +8,12 @@ import { useAuth } from '../../context/AuthContext';
 import useAuthGuard from '../../hooks/useAuthGuard';
 import ShareMenu from '../ShareMenu';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import { useTranslation } from 'react-i18next';
 
 export default function TimelinePostCard({ post }) {
   const { user } = useAuth();
   const { guardAction } = useAuthGuard();
+  const { t } = useTranslation();
   const isPatient = user?.role === 'patient';
   const badgeVariant = (post?.badge?.color && ['teal','blue','purple','amber','green','red','gray'].includes(post.badge.color)) ? post.badge.color : 'blue';
   return (
@@ -81,13 +83,13 @@ export default function TimelinePostCard({ post }) {
                     <MessageCircle className="w-5 h-5" strokeWidth={2.5} />
                     <span>{post.engagement.comments}</span>
                   </div>
-                  <ShareMenu title="Share" url={typeof window !== 'undefined' ? window.location.href : ''} showNative={false} />
+                  <ShareMenu title={t('medstream.share')} url={typeof window !== 'undefined' ? window.location.href : ''} showNative={false} />
                 </>
               )}
             </>
           }
           right={!isPatient && post.hasAppointmentButton ? (
-            <TimelineButton className="w-full sm:w-auto" onClick={guardAction(() => {})}>Book Appointment</TimelineButton>
+            <TimelineButton className="w-full sm:w-auto" onClick={guardAction(() => {})}>{t('medstream.bookAppointment')}</TimelineButton>
           ) : null}
         />
       </div>

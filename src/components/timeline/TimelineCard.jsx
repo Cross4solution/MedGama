@@ -732,9 +732,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
       await medStreamAPI.deletePost(item.id);
       setDeleted(true);
       setShowDeleteConfirm(false);
-      showSuccessToast('Post deleted');
+      showSuccessToast(t('medstream.postDeleted'));
     } catch {
-      showSuccessToast('Failed to delete post');
+      showSuccessToast(t('medstream.deletePostFailed'));
     } finally {
       setDeleting(false);
     }
@@ -775,7 +775,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             {!compact && (
               <div ref={moreMenuRef} className="flex items-center gap-1 text-gray-500 relative">
                 <span className="text-xs text-[rgba(0,0,0,0.6)]">{timeLabel}</span>
-                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label="More options" onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>
+                <button type="button" className="p-2 rounded-full hover:bg-gray-100" aria-label={t('medstream.moreOptions')} onClick={(e)=>{ e.stopPropagation(); setShowMoreMenu(v=>!v); }}>
                   <MoreHorizontal className="w-5 h-5" />
                 </button>
                 {showMoreMenu && (
@@ -787,7 +787,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         onClick={() => { setShowDeleteConfirm(true); setShowMoreMenu(false); }}
                       >
                         <Trash2 className="w-4 h-4" />
-                        <span className="font-medium">Delete</span>
+                        <span className="font-medium">{t('medstream.delete')}</span>
                       </button>
                     )}
                     {!(authUser?.id && (item?.author_id === authUser.id || item?.actor?.id === authUser.id)) && (
@@ -797,7 +797,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                         onClick={() => { setShowReportModal(true); setShowMoreMenu(false); }}
                       >
                         <AlertTriangle className="w-4 h-4" />
-                        <span className="font-medium">Report</span>
+                        <span className="font-medium">{t('medstream.report')}</span>
                       </button>
                     )}
                   </div>
@@ -816,7 +816,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   className="ml-1 text-sm text-gray-500 hover:text-blue-600 font-semibold no-underline hover:underline"
                   onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
                 >
-                  ...see more
+                  {t('medstream.seeMore')}
                 </button>
               )}
             </p>
@@ -826,7 +826,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 className="mt-1 text-xs text-gray-500 hover:text-blue-600 font-semibold no-underline hover:underline"
                 onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
               >
-                see less
+                {t('medstream.seeLess')}
               </button>
             )}
           </div>
@@ -948,7 +948,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               className="text-gray-400 hover:text-gray-600 hover:underline transition-colors"
               onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
             >
-              <span className="tabular-nums font-medium">{commentCount}</span> comments
+              <span className="tabular-nums font-medium">{commentCount}</span> {t('medstream.commentsCount')}
             </button>
           </div>
 
@@ -957,10 +957,10 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             <div className="px-3 pb-3 mt-0 border-t border-gray-100 pt-2.5 relative min-h-0 transform-gpu">
               {/* New comment input */}
               <div className="flex items-center gap-2">
-                <AvatarImg src={resolveStorageUrl(authUser?.avatar)} alt="Your avatar" className="w-6 h-6 rounded-full object-cover" />
+                <AvatarImg src={resolveStorageUrl(authUser?.avatar)} alt={t('medstream.yourAvatar')} className="w-6 h-6 rounded-full object-cover" />
                 <div className="relative flex-1">
                   <input
-                    placeholder={(disabledActions || isGuest || isUnverifiedDoctor) ? (isUnverifiedDoctor ? 'Comments disabled — verification pending' : 'Sign in to comment…') : 'Add a comment…'}
+                    placeholder={(disabledActions || isGuest || isUnverifiedDoctor) ? (isUnverifiedDoctor ? t('medstream.commentsDisabledPending') : t('medstream.signInToComment')) : t('medstream.addComment')}
                     className={`w-full border border-gray-300 rounded-full pl-3 ${commentText.trim() ? 'pr-[4.5rem]' : 'pr-9'} py-1.5 text-[13px] transition-all ${(disabledActions || isGuest || isUnverifiedDoctor) ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-transparent hover:border-gray-400 focus:ring-1 focus:ring-gray-400 focus:border-gray-400'}`}
                     disabled={disabledActions || isGuest || isUnverifiedDoctor}
                     onFocus={() => { if (isGuest) showSuccessToast(loginRequiredMsg); }}
@@ -994,7 +994,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
                     <button
                       type="button"
-                      aria-label={disabledActions ? 'Login to add emoji' : 'Add emoji'}
+                      aria-label={disabledActions ? t('medstream.loginToAddEmoji') : t('medstream.addEmoji')}
                       disabled={disabledActions}
                       className={`p-1.5 rounded-full transition ${disabledActions ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'}`}
                       onClick={(e)=>{ e.stopPropagation(); if (!disabledActions) setShowEmoji(v=>!v); }}
@@ -1036,7 +1036,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   {showEmoji && !disabledActions && (
                     <div ref={emojiPickerRef} className="absolute right-0 bottom-full mb-2" style={{ zIndex: 9999 }}>
                       <EmojiPicker
-                        onSelect={(e)=>{ setCommentText(t => t + e); setShowEmoji(false); }}
+                        onSelect={(e)=>{ setCommentText(prev => prev + e); setShowEmoji(false); }}
                       />
                     </div>
                   )}
@@ -1069,7 +1069,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                                 <div className="flex items-center gap-1.5 flex-shrink-0">
                                   <span className="text-[11px] text-gray-400">{formatTimeAgo(c.time)}</span>
                                   {(c.author_id === authUser?.id || c.user_id === authUser?.id) && (
-                                    <button type="button" className="p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all" title="Delete" onClick={(e)=>{
+                                    <button type="button" className="p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all" title={t('medstream.delete')} onClick={(e)=>{
                                       e.stopPropagation();
                                       setDeleteCommentConfirm({ id: c.id, isReply: false, parentId: null });
                                     }}>
@@ -1081,7 +1081,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                               <p className="text-[13px] text-[rgba(0,0,0,0.9)] leading-[1.43] mt-1">{c.text}</p>
                               <div className="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">
                                 {c.author_id !== authUser?.id && c.user_id !== authUser?.id && (
-                                  <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
+                                  <button type="button" className="font-semibold hover:text-blue-600 hover:underline transition-colors" onClick={(e)=>{ e.stopPropagation(); setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>{t('medstream.reply')}</button>
                                 )}
                               </div>
                               {/* Nested replies — recursive */}
@@ -1107,8 +1107,8 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                               {replyTo === c.id && (
                                 <div className="mt-1.5 ml-2 pl-3 border-l-2 border-teal-200">
                                   <div className="flex items-center gap-2">
-                                    <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitReply(e); }} placeholder="Write a reply..." className="flex-1 border border-gray-300 rounded-full px-3 py-1 text-[12px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" onClick={(e) => e.stopPropagation()} />
-                                    <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitReply}>Post</button>
+                                    <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitReply(e); }} placeholder={t('medstream.writeReply')} className="flex-1 border border-gray-300 rounded-full px-3 py-1 text-[12px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" onClick={(e) => e.stopPropagation()} />
+                                    <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitReply}>{t('medstream.post')}</button>
                                   </div>
                                 </div>
                               )}
@@ -1122,14 +1122,14 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                           className="w-full py-2.5 text-[13px] font-semibold text-teal-600 hover:text-teal-700 hover:bg-teal-50/50 rounded-lg transition-colors"
                           onClick={(e) => { e.stopPropagation(); setVisibleCommentCount(prev => prev + 3); }}
                         >
-                          Daha fazla yorum yükle ({remainingCount})
+                          {t('medstream.loadMoreComments', { count: remainingCount })}
                         </button>
                       )}
                     </>
                   );
                 })()}
                 {commentsLoaded && apiComments.length === 0 && localComments.length === 0 && (
-                  <p className="py-3 text-center text-xs text-gray-400">No comments yet. Be the first!</p>
+                  <p className="py-3 text-center text-xs text-gray-400">{t('medstream.noCommentsYet')}</p>
                 )}
               </div>
             </div>
@@ -1140,7 +1140,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           {/* Delete Comment Confirmation Dialog */}
           {deleteCommentConfirm && (
             <div className="mx-3 mb-2 rounded-xl border border-red-200 bg-red-50/80 p-3" onClick={(e) => e.stopPropagation()}>
-              <p className="text-xs font-semibold text-red-700 mb-2">Are you sure you want to delete this comment?</p>
+              <p className="text-xs font-semibold text-red-700 mb-2">{t('medstream.deleteCommentConfirm')}</p>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -1162,14 +1162,14 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     setDeleteCommentConfirm(null);
                   }}
                 >
-                  Delete
+                  {t('medstream.delete')}
                 </button>
                 <button
                   type="button"
                   className="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors"
                   onClick={(e) => { e.stopPropagation(); setDeleteCommentConfirm(null); }}
                 >
-                  Cancel
+                  {t('medstream.cancel')}
                 </button>
               </div>
             </div>
@@ -1179,7 +1179,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           {item?.media_processing && (
             <div className="mx-3 mb-1 rounded-lg border border-sky-200 bg-sky-50/80 px-3 py-2 flex items-center gap-2">
               <Loader2 className="w-4 h-4 text-sky-600 animate-spin flex-shrink-0" />
-              <span className="text-xs font-medium text-sky-700">Video is being processed. It will appear shortly.</span>
+              <span className="text-xs font-medium text-sky-700">{t('medstream.videoProcessingBanner')}</span>
             </div>
           )}
 
@@ -1195,7 +1195,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               ) : (
                 <ThumbsUp className="w-[15px] h-[15px]" strokeWidth={1.6} fill="none" />
               )}
-              <span>Like</span>
+              <span>{t('medstream.like')}</span>
             </button>
             <button
               type="button"
@@ -1203,7 +1203,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               onClick={(e)=>{ e.stopPropagation(); if (disabledActions) return; setShowCommentsPreview(v=>!v); }}
             >
               <MessageCircle className="w-[15px] h-[15px]" strokeWidth={1.6} />
-              <span>Comment</span>
+              <span>{t('medstream.comment')}</span>
             </button>
             <button
               type="button"
@@ -1211,15 +1211,15 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               onClick={handleBookmark}
             >
               <Bookmark className="w-[15px] h-[15px]" strokeWidth={bookmarked ? 2.2 : 1.6} fill={bookmarked ? 'currentColor' : 'none'} />
-              <span>Save</span>
+              <span>{t('medstream.save')}</span>
             </button>
-            <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-sm" />
+            <ShareMenu title={t('medstream.share')} url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-sm" />
           </div>
           {/* Report Modal */}
           <Modal
             open={showReportModal}
             onClose={() => { setShowReportModal(false); }}
-            title="Submit Report"
+            title={t('medstream.submitReport')}
             footer={
               <div className="flex items-center justify-end gap-2">
                 <button
@@ -1227,7 +1227,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
                   onClick={() => setShowReportModal(false)}
                 >
-                  Cancel
+                  {t('medstream.cancel')}
                 </button>
                 <button
                   type="button"
@@ -1237,55 +1237,55 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                     if (item?.id) {
                       medStreamAPI.reportPost(item.id, `${reportReason}${reportDesc ? ': ' + reportDesc : ''}`).catch(() => {});
                     }
-                    showSuccessToast('Report submitted');
+                    showSuccessToast(t('medstream.reportSubmitted'));
                     setShowReportModal(false);
                     setReportReason('');
                     setReportDesc('');
                   }}
                 >
-                  Submit
+                  {t('medstream.submit')}
                 </button>
               </div>
             }
           >
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">Reason</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('medstream.reason')}</label>
                 <select
                   value={reportReason}
                   onChange={(e)=>setReportReason(e.target.value)}
                   className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none appearance-none cursor-pointer"
                 >
-                  <option value="">Select...</option>
-                  <option value="spam">Spam</option>
-                  <option value="misleading">Misleading information</option>
-                  <option value="inappropriate">Inappropriate content</option>
-                  <option value="other">Other</option>
+                  <option value="">{t('medstream.select')}</option>
+                  <option value="spam">{t('medstream.reportSpam')}</option>
+                  <option value="misleading">{t('medstream.reportMisleading')}</option>
+                  <option value="inappropriate">{t('medstream.reportInappropriate')}</option>
+                  <option value="other">{t('medstream.reportOther')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">Description (optional)</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('medstream.descriptionOptional')}</label>
                 <textarea
                   rows={3}
                   value={reportDesc}
                   onChange={(e)=>setReportDesc(e.target.value)}
-                  placeholder="Briefly describe the issue..."
+                  placeholder={t('medstream.describeIssue')}
                   className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none resize-none"
                 />
               </div>
             </div>
           </Modal>
           {/* Delete Confirmation Modal */}
-          <Modal open={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} title="Delete Post">
+          <Modal open={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} title={t('medstream.deletePost')}>
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">Are you sure you want to delete this post? This action cannot be undone.</p>
+              <p className="text-sm text-gray-600">{t('medstream.deletePostConfirm')}</p>
               <div className="flex items-center justify-end gap-2">
                 <button
                   type="button"
                   className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
                   onClick={() => setShowDeleteConfirm(false)}
                 >
-                  Cancel
+                  {t('medstream.cancel')}
                 </button>
                 <button
                   type="button"
@@ -1293,7 +1293,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                   disabled={deleting}
                   onClick={handleDelete}
                 >
-                  {deleting ? 'Deleting...' : 'Delete'}
+                  {deleting ? t('medstream.deleting') : t('medstream.delete')}
                 </button>
               </div>
             </div>
@@ -1340,13 +1340,13 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 <span className="inline-flex items-center gap-1 font-medium" aria-label="comments"><MessageCircle className="w-3.5 h-3.5" />{item.comments}</span>
               </div>
               <div className="flex items-center gap-0.5 bg-gray-50 rounded-full p-0.5 shadow-sm">
-                <button type="button" aria-label="Like" className="p-1.5 rounded-full transition text-gray-500 hover:bg-gray-100 hover:text-teal-600" onClick={(e)=>e.stopPropagation()}>
+                <button type="button" aria-label={t('medstream.like')} className="p-1.5 rounded-full transition text-gray-500 hover:bg-gray-100 hover:text-teal-600" onClick={(e)=>e.stopPropagation()}>
                   <ThumbsUp className="w-3.5 h-3.5" strokeWidth={1.6} fill="none" />
                 </button>
-                <button type="button" aria-label="Comment" className="p-1.5 rounded-full transition text-gray-500 hover:bg-gray-100 hover:text-teal-600" onClick={(e)=>e.stopPropagation()}>
+                <button type="button" aria-label={t('medstream.comment')} className="p-1.5 rounded-full transition text-gray-500 hover:bg-gray-100 hover:text-teal-600" onClick={(e)=>e.stopPropagation()}>
                   <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.6} />
                 </button>
-                <ShareMenu title="Share" url={shareUrl} showNative={false} />
+                <ShareMenu title={t('medstream.share')} url={shareUrl} showNative={false} />
               </div>
             </div>
           </div>

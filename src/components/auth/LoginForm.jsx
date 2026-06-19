@@ -81,7 +81,7 @@ const LoginForm = ({
         img.className = 'h-5 w-5';
         const span = document.createElement('span');
         span.className = 'text-sm font-medium';
-        span.textContent = 'Continue with Google';
+        span.textContent = t('auth.continueWithGoogle');
         b.appendChild(img);
         b.appendChild(span);
         b.addEventListener('click', () => {
@@ -142,7 +142,7 @@ const LoginForm = ({
               className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm sm:text-base ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Enter your password"
+              placeholder={t('auth.passwordPlaceholder')}
             />
             <button
               type="button"
@@ -213,21 +213,21 @@ const LoginForm = ({
 
         {/* Role login switcher */}
         <div className="w-full pt-3 mt-1 border-t border-gray-100">
-          <p className="text-xs text-gray-400 text-center mb-2.5">Sign in as a different role</p>
+          <p className="text-xs text-gray-400 text-center mb-2.5">{t('auth.signInDifferentRole')}</p>
           <div className="flex gap-2">
             <a
               href="/doctor-login"
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700 text-sm font-semibold transition-all"
             >
               <Stethoscope className="w-4 h-4" />
-              Doctor
+              {t('common.doctor')}
             </a>
             <a
               href="/clinic-login"
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-blue-200 bg-blue-50/60 hover:bg-blue-100 hover:border-blue-400 text-blue-700 text-sm font-semibold transition-all"
             >
               <Building2 className="w-4 h-4" />
-              Clinic
+              {t('common.clinic')}
             </a>
           </div>
         </div>

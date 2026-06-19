@@ -16,8 +16,7 @@ function formatBytes(bytes) {
 }
 
 export default function SendMessageModal({ open, onClose, targetId, targetName, targetType = 'doctor' }) {
-  const { i18n } = useTranslation();
-  const isTr = i18n.language?.startsWith('tr');
+  const { t } = useTranslation();
   const { notify } = useToast();
 
   const [message, setMessage] = useState('');
@@ -37,11 +36,11 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
       const combined = [...prev];
       for (const f of incoming) {
         if (combined.length >= MAX_FILES) {
-          setError(isTr ? `En fazla ${MAX_FILES} dosya ekleyebilirsiniz.` : `Maximum ${MAX_FILES} files allowed.`);
+          setError(t('message.maxFilesAllowed', { count: MAX_FILES }));
           break;
         }
         if (f.size > MAX_FILE_SIZE) {
-          setError(isTr ? `"${f.name}" 5 MB sınırını aşıyor.` : `"${f.name}" exceeds 5 MB limit.`);
+          setError(t('message.fileTooLarge', { name: f.name }));
           continue;
         }
         if (combined.some(x => x.name === f.name && x.size === f.size)) continue;
@@ -49,7 +48,7 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
       }
       return combined;
     });
-  }, [isTr]);
+  }, [t]);
 
   const removeFile = (idx) => setFiles(prev => prev.filter((_, i) => i !== idx));
 
@@ -70,11 +69,11 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
       setSent(true);
       notify({
         type: 'success',
-        message: isTr ? 'Mesajınız kliniğe iletildi.' : 'Your message has been delivered.',
+        message: t('message.delivered'),
       });
     } catch (err) {
       const msg = err?.response?.data?.message;
-      setError(msg || (isTr ? 'Mesaj gönderilemedi.' : 'Failed to send message.'));
+      setError(msg || t('message.sendFailed'));
     } finally {
       setSending(false);
     }
@@ -104,8 +103,8 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
         {/* Header */}
         <div className="border-b border-gray-100 px-5 py-4 rounded-t-2xl flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-gray-900">{isTr ? 'Mesaj Gönder' : 'Send Message'}</h2>
-            <p className="text-xs text-gray-500 mt-0.5">{isTr ? 'Alıcı' : 'To'}: {targetName}</p>
+            <h2 className="text-base font-bold text-gray-900">{t('message.sendMessage')}</h2>
+            <p className="text-xs text-gray-500 mt-0.5">{t('message.to')}: {targetName}</p>
           </div>
           <button onClick={handleClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
             <X className="w-4.5 h-4.5" />
@@ -119,37 +118,35 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
               <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="w-8 h-8 text-teal-600" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">{isTr ? 'Mesaj Gönderildi!' : 'Message Sent!'}</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">{t('message.messageSent')}</h3>
               <p className="text-sm text-gray-500 mb-6">
-                {isTr
-                  ? `Mesajınız ${targetName} adresine başarıyla iletildi.`
-                  : `Your message has been sent to ${targetName}.`}
+                {t('message.messageSentDesc', { name: targetName })}
               </p>
               <button onClick={handleClose} className="w-full py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors">
-                {isTr ? 'Kapat' : 'Close'}
+                {t('common.close')}
               </button>
             </div>
           ) : (
             <div className="space-y-4">
               {/* Subject */}
               <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">{isTr ? 'Konu (isteğe bağlı)' : 'Subject (optional)'}</label>
+                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">{t('message.subjectOptional')}</label>
                 <input
                   type="text"
                   value={subject}
                   onChange={e => setSubject(e.target.value)}
-                  placeholder={isTr ? 'Mesaj konusu...' : 'Message subject...'}
+                  placeholder={t('message.subjectPlaceholder')}
                   className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400"
                 />
               </div>
 
               {/* Message */}
               <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">{isTr ? 'Mesajınız' : 'Your Message'} *</label>
+                <label className="text-xs font-semibold text-gray-500 mb-1.5 block">{t('message.yourMessage')} *</label>
                 <textarea
                   value={message}
                   onChange={e => setMessage(e.target.value)}
-                  placeholder={isTr ? 'Mesajınızı yazın...' : 'Type your message...'}
+                  placeholder={t('message.messagePlaceholder')}
                   rows={4}
                   className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 resize-none"
                 />
@@ -194,7 +191,7 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
                     onClick={() => fileInputRef.current?.click()}
                     disabled={files.length >= MAX_FILES}
                     className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-30"
-                    title={isTr ? 'Dosya Ekle' : 'Attach File'}
+                    title={t('chat.attachFile')}
                   >
                     <Paperclip className="w-4 h-4" />
                   </button>
@@ -203,7 +200,7 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
                     onClick={() => imageInputRef.current?.click()}
                     disabled={files.length >= MAX_FILES}
                     className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-30"
-                    title={isTr ? 'Resim Ekle' : 'Attach Image'}
+                    title={t('chat.attachImage')}
                   >
                     <ImageIcon className="w-4 h-4" />
                   </button>
@@ -217,7 +214,7 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
                   className="px-5 py-2.5 bg-violet-600 text-white rounded-xl text-sm font-semibold hover:bg-violet-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  {isTr ? 'Gönder' : 'Send'}
+                  {t('message.send')}
                 </button>
               </div>
             </div>

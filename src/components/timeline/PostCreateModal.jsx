@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, Video, Smile, X, FileText, Send, Loader2 } from 'lucide-react';
 import { medStreamAPI } from '../../lib/api';
+import { useTranslation } from 'react-i18next';
 
 export default function PostCreateModal({ open, onClose, user, onPost, initialAction = undefined, onResetInitialAction = undefined }) {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
   const [photos, setPhotos] = useState([]);
@@ -175,18 +177,18 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Create post"
+          aria-label={t('medstream.createPostAria')}
           ref={dialogRef}
           tabIndex={-1}
           className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden mt-4 sm:mt-8"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
-            <h3 className="text-sm font-bold text-gray-900">Create Post</h3>
+            <h3 className="text-sm font-bold text-gray-900">{t('medstream.createPost')}</h3>
             <button
               onClick={onClose}
               className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-              aria-label="Close"
+              aria-label={t('medstream.close')}
             >
               <X className="w-4 h-4" />
             </button>
@@ -213,7 +215,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows={hasMedia ? 3 : 5}
-                placeholder={`What's on your mind, ${displayName}?`}
+                placeholder={t('medstream.whatsOnYourMind', { name: displayName })}
                 className="w-full text-sm leading-6 placeholder:text-gray-400 text-gray-900 outline-none resize-none bg-transparent"
               />
             </div>
@@ -224,25 +226,25 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                 <div className="rounded-xl border border-gray-200/80 bg-gray-50/50 p-3">
                   <div className="flex items-center justify-between mb-2.5">
                     <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                      Attachments ({photoUrls.length + videoUrls.length + papers.length})
+                      {t('medstream.attachments', { count: photoUrls.length + videoUrls.length + papers.length })}
                     </span>
                     <button
                       type="button"
                       onClick={() => { setPhotos([]); setVideos([]); setPapers([]); }}
                       className="text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors"
                     >
-                      Remove all
+                      {t('medstream.removeAll')}
                     </button>
                   </div>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {photoUrls.map((src, i) => (
                       <div key={`p${i}`} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200/60 shadow-sm bg-white">
                         <button type="button" onClick={() => setViewer({ type: 'photo', url: src })} className="absolute inset-0">
-                          <img src={src} alt={`photo-${i+1}`} className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105" />
+                          <img src={src} alt={t('medstream.photoLabel', { index: i + 1 })} className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105" />
                         </button>
                         <button
                           type="button"
-                          aria-label="Remove photo"
+                          aria-label={t('medstream.removePhoto')}
                           onClick={() => removePhotoAt(i)}
                           className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/50 backdrop-blur-sm text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/70"
                         >
@@ -250,7 +252,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                         </button>
                         <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/40 to-transparent h-6 pointer-events-none" />
                         <span className="absolute bottom-1 left-1.5 text-[9px] font-medium text-white/90">
-                          {photos[i]?.name?.slice(0, 12) || `Photo ${i+1}`}
+                          {photos[i]?.name?.slice(0, 12) || t('medstream.photoLabel', { index: i + 1 })}
                         </span>
                       </div>
                     ))}
@@ -261,7 +263,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                         </button>
                         <button
                           type="button"
-                          aria-label="Remove video"
+                          aria-label={t('medstream.removeVideo')}
                           onClick={() => removeVideoAt(i)}
                           className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/50 backdrop-blur-sm text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/70"
                         >
@@ -275,7 +277,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                         </div>
                         <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/50 to-transparent h-6 pointer-events-none" />
                         <span className="absolute bottom-1 left-1.5 text-[9px] font-medium text-white/90">
-                          {videos[i]?.name?.slice(0, 12) || `Video ${i+1}`}
+                          {videos[i]?.name?.slice(0, 12) || t('medstream.videoLabel', { index: i + 1 })}
                         </span>
                       </div>
                     ))}
@@ -286,7 +288,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                         <div key={`d${i}`} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200/60 shadow-sm bg-gradient-to-br from-violet-50 to-gray-50 flex flex-col items-center justify-center gap-1.5 p-2">
                           <button
                             type="button"
-                            aria-label="Remove document"
+                            aria-label={t('medstream.removeDocument')}
                             onClick={() => removePaperAt(i)}
                             className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/50 backdrop-blur-sm text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/70"
                           >
@@ -295,7 +297,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                           <div className="w-9 h-9 rounded-xl bg-violet-500 flex items-center justify-center shadow-sm">
                             <FileText className="w-4.5 h-4.5 text-white" />
                           </div>
-                          <span className="text-[9px] font-medium text-gray-600 truncate w-full text-center px-1">{file.name?.slice(0, 14) || 'Document'}</span>
+                          <span className="text-[9px] font-medium text-gray-600 truncate w-full text-center px-1">{file.name?.slice(0, 14) || t('medstream.documentLabel')}</span>
                           <span className="text-[8px] font-bold text-violet-600 bg-violet-100 px-1.5 py-0.5 rounded-full">{ext}</span>
                         </div>
                       );
@@ -309,7 +311,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                       <div className="w-7 h-7 rounded-lg bg-gray-100 group-hover:bg-teal-100 flex items-center justify-center transition-colors">
                         <Image className="w-3.5 h-3.5 text-gray-400 group-hover:text-teal-600 transition-colors" />
                       </div>
-                      <span className="text-[9px] font-medium text-gray-400 group-hover:text-teal-600">Add</span>
+                      <span className="text-[9px] font-medium text-gray-400 group-hover:text-teal-600">{t('medstream.add')}</span>
                     </button>
                   </div>
                 </div>
@@ -423,7 +425,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                           type="button"
                           className="hover:bg-teal-50 rounded-lg p-1 text-center transition-colors"
                           onClick={() => {
-                            setText(t => (t ? t + ' ' : '') + emoji);
+                            setText(prev => (prev ? prev + ' ' : '') + emoji);
                             setShowEmoji(false);
                           }}
                           title={emoji}
@@ -442,16 +444,16 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
           <div className="px-5 py-3 border-t border-gray-100 bg-gradient-to-r from-gray-50/60 to-white">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-1">
-                <button onClick={()=>photoRef.current?.click()} className="p-2 rounded-xl hover:bg-emerald-50 transition-colors group" aria-label="Add photo" title="Photo">
+                <button onClick={()=>photoRef.current?.click()} className="p-2 rounded-xl hover:bg-emerald-50 transition-colors group" aria-label={t('medstream.addPhoto')} title={t('medstream.photo')}>
                   <Image className="w-5 h-5 text-emerald-600" />
                 </button>
-                <button onClick={()=>videoRef.current?.click()} className="p-2 rounded-xl hover:bg-sky-50 transition-colors group" aria-label="Add video" title="Video">
+                <button onClick={()=>videoRef.current?.click()} className="p-2 rounded-xl hover:bg-sky-50 transition-colors group" aria-label={t('medstream.addVideo')} title={t('medstream.video')}>
                   <Video className="w-5 h-5 text-sky-600" />
                 </button>
-                <button onClick={()=>setShowEmoji((v)=>!v)} className={`p-2 rounded-xl transition-colors ${showEmoji ? 'bg-amber-50' : 'hover:bg-amber-50'}`} aria-label="Emoji" title="Emoji">
+                <button onClick={()=>setShowEmoji((v)=>!v)} className={`p-2 rounded-xl transition-colors ${showEmoji ? 'bg-amber-50' : 'hover:bg-amber-50'}`} aria-label={t('medstream.emoji')} title={t('medstream.emoji')}>
                   <Smile className="w-5 h-5 text-amber-600" />
                 </button>
-                <button onClick={()=>paperRef.current?.click()} className="p-2 rounded-xl hover:bg-violet-50 transition-colors group" aria-label="Research paper" title="Document">
+                <button onClick={()=>paperRef.current?.click()} className="p-2 rounded-xl hover:bg-violet-50 transition-colors group" aria-label={t('medstream.researchPaper')} title={t('medstream.document')}>
                   <FileText className="w-5 h-5 text-violet-600" />
                 </button>
               </div>
@@ -461,7 +463,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                 className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${canPost && !posting ? 'text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
               >
                 {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                {posting ? 'Posting...' : 'Post'}
+                {posting ? t('medstream.posting') : t('medstream.post')}
               </button>
             </div>
             {postError && !posting && (
@@ -471,7 +473,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                     <svg className="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-red-800">Upload failed</p>
+                    <p className="text-sm font-semibold text-red-800">{t('medstream.uploadFailed')}</p>
                     <p className="text-[13px] text-red-600 mt-0.5 leading-relaxed">{postError}</p>
                   </div>
                   <button onClick={() => setPostError('')} className="w-6 h-6 rounded-full hover:bg-red-100 flex items-center justify-center text-red-400 hover:text-red-600 transition-colors flex-shrink-0">
@@ -490,7 +492,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setViewer(null)} />
           <div className="absolute inset-0 flex items-center justify-center p-4">
             <div className="relative max-w-3xl w-full">
-              <button type="button" onClick={() => setViewer(null)} className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors z-10" aria-label="Close preview">
+              <button type="button" onClick={() => setViewer(null)} className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors z-10" aria-label={t('medstream.closePreview')}>
                 <X className="w-4 h-4 text-gray-700" />
               </button>
               <div className="bg-black rounded-2xl overflow-hidden shadow-2xl">

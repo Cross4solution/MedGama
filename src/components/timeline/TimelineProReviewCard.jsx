@@ -4,9 +4,11 @@ import ShareMenu from '../ShareMenu';
 import TimelineButton from './TimelineButton';
 import TimelineActionsRow from './TimelineActionsRow';
 import useAuthGuard from '../../hooks/useAuthGuard';
+import { useTranslation } from 'react-i18next';
 
 export default function TimelineProReviewCard({ professionalReview }) {
   const { guardAction } = useAuthGuard();
+  const { t } = useTranslation();
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
       <div className="p-6 pb-0">
@@ -19,7 +21,7 @@ export default function TimelineProReviewCard({ professionalReview }) {
               <div className="flex items-center space-x-2">
                 <h4 className="font-semibold text-gray-800">{professionalReview.title}</h4>
                 <span className="inline-flex items-center gap-1 border font-medium rounded-full text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border-blue-200 ">
-                  <span>PRO Review</span>
+                  <span>{t('medstream.proReview')}</span>
                 </span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
@@ -37,7 +39,7 @@ export default function TimelineProReviewCard({ professionalReview }) {
         <p className="text-gray-700 mb-4">{professionalReview.description}</p>
         <div className="grid grid-cols-3 gap-2 mb-4">
           {professionalReview.images?.map((src, idx) => (
-            <img key={idx} src={src} alt={`Review ${idx + 1}`} loading="lazy" className="w-full h-24 object-cover rounded-lg" />
+            <img key={idx} src={src} alt={t('medstream.reviewImageAlt', { index: idx + 1 })} loading="lazy" className="w-full h-24 object-cover rounded-lg" />
           ))}
         </div>
         <div className="grid grid-cols-3 gap-4 mb-4">
@@ -62,10 +64,10 @@ export default function TimelineProReviewCard({ professionalReview }) {
                 <MessageCircle className="w-5 h-5" />
                 <span>{professionalReview.engagement?.comments ?? 24}</span>
               </button>
-              <ShareMenu title="Share" showNative={false} />
+              <ShareMenu title={t('medstream.share')} showNative={false} />
             </>
           }
-          right={<TimelineButton className="w-full sm:w-auto">View Details</TimelineButton>}
+          right={<TimelineButton className="w-full sm:w-auto">{t('medstream.viewDetails')}</TimelineButton>}
         />
       </div>
     </div>

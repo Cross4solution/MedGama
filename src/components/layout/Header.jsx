@@ -270,10 +270,10 @@ const Header = () => {
           {/* Logoya daha da yakın menü */}
           <nav className="hidden md:flex items-center space-x-6 ml-auto mr-20">
             <Link to="/for-clinics" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
-              For Clinics
+              {t('header.forClinics')}
             </Link>
             <Link to="/for-patients" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
-              For Patients
+              {t('header.forPatients')}
             </Link>
             <Link to="/vasco-ai" className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors">
               Vasco AI
@@ -350,7 +350,7 @@ const Header = () => {
                             className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-700 rounded-lg hover:bg-teal-100 transition-colors"
                           >
                             <LayoutDashboard className="w-4 h-4 text-teal-600 flex-shrink-0" />
-                            <span className="font-medium text-teal-700">CRM Panel</span>
+                            <span className="font-medium text-teal-700">{t('header.crmPanel')}</span>
                           </button>
                         </div>
                       </div>
@@ -366,7 +366,7 @@ const Header = () => {
                     <button
                       onClick={() => setNotifOpen(p => !p)}
                       className="relative p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                      title="Notifications"
+                      title={t('notifications.title')}
                     >
                       <Bell className="w-5 h-5" />
                       {unreadCount > 0 && (
@@ -437,12 +437,12 @@ const Header = () => {
                                   </div>
                                   <div className="flex items-center gap-1 flex-shrink-0 mt-1">
                                     {isUnread && (
-                                      <div className="w-2 h-2 rounded-full bg-teal-500" title="Unread" />
+                                      <div className="w-2 h-2 rounded-full bg-teal-500" title={t('notifications.unreadLabel')} />
                                     )}
                                     <button
                                       onClick={(e) => { e.stopPropagation(); handleDeleteNotif(notif.id); }}
                                       className="p-1 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
-                                      title="Delete"
+                                      title={t('common.delete')}
                                     >
                                       <Trash2 className="w-3 h-3" />
                                     </button>
@@ -540,10 +540,10 @@ const Header = () => {
                     <button
                       onClick={() => { navigate('/crm'); }}
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-600 text-white text-sm font-semibold hover:from-teal-700 hover:via-teal-800 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-                      title="Go to Management Portal"
+                      title={t('header.goToManagementPortal')}
                     >
                       <LayoutDashboard className="w-4 h-4" />
-                      <span>CRM Panel</span>
+                      <span>{t('header.crmPanel')}</span>
                     </button>
                   ) : null}
                 </>
@@ -556,7 +556,7 @@ const Header = () => {
                 <button
                   onClick={() => setNotifOpen(p => !p)}
                   className="relative p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-                  title="Notifications"
+                  title={t('notifications.title')}
                 >
                   <Bell className="w-4.5 h-4.5" />
                   {unreadCount > 0 && (
@@ -567,7 +567,7 @@ const Header = () => {
                 </button>
                 <button
                   onClick={toggleMenu}
-                  aria-label={isMenuOpen ? 'Close profile menu' : 'Open profile menu'}
+                  aria-label={isMenuOpen ? t('header.closeProfileMenu') : t('header.openProfileMenu')}
                   className="p-0.5 rounded-full border border-gray-200 overflow-hidden"
                   title={user.name}
                 >
@@ -584,9 +584,9 @@ const Header = () => {
             ) : (
               <button
                 onClick={toggleMenu}
-                aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-label={isMenuOpen ? t('header.closeMenu') : t('header.openMenu')}
                 className="md:hidden p-1.5 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-                title="Menu"
+                title={t('common.menu')}
               >
                 {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -601,7 +601,7 @@ const Header = () => {
         <div className="absolute inset-0 bg-black/40" onClick={()=>setConfirmLogoutOpen(false)} />
         <div role="dialog" aria-modal="true" className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-sm w-[90%] p-5">
           <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('common.logout')}?</h3>
-          <p className="text-sm text-gray-600 mb-4">You are about to log out of your account. Are you sure?</p>
+          <p className="text-sm text-gray-600 mb-4">{t('header.logoutConfirm')}</p>
           <div className="flex justify-end gap-2">
             <button onClick={()=>setConfirmLogoutOpen(false)} className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">{t('common.cancel')}</button>
             <button onClick={()=>{ setConfirmLogoutOpen(false); logout({ skipConfirmation: true }); navigate('/'); }} className="px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">{t('common.logout')}</button>
@@ -680,31 +680,31 @@ const Header = () => {
             const roleLabel = String(role).charAt(0).toUpperCase() + String(role).slice(1);
             // Mirror mobile dropdown with SidebarPatient menu for patients
             const patientItems = [
-              { to: '/medstream', label: 'Medstream', icon: Video },
-              { to: '/saved', label: 'Saved Posts', icon: Bookmark },
-              { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
-              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
-              { to: '/telehealth', label: 'Telehealth', icon: Monitor },
-              { to: '/notifications', label: 'Notifications', icon: Bell },
-              { to: '/profile', label: 'Profile', icon: User },
+              { to: '/medstream', label: 'sidebar.medstream', icon: Video },
+              { to: '/saved', label: 'sidebar.savedPosts', icon: Bookmark },
+              { to: '/telehealth-appointment', label: 'sidebar.myAppointments', icon: CalendarClock },
+              { to: '/doctor-chat', label: 'sidebar.messages', icon: 'chat-conversation' },
+              { to: '/telehealth', label: 'sidebar.telehealth', icon: Monitor },
+              { to: '/notifications', label: 'sidebar.notifications', icon: Bell },
+              { to: '/profile', label: 'sidebar.profile', icon: User },
             ];
             const doctorItems = [
-              { to: '/medstream', label: 'Medstream', icon: Video },
-              { to: '/saved', label: 'Saved Posts', icon: Bookmark },
-              { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
-              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
-              { to: '/telehealth', label: 'Telehealth', icon: Monitor },
-              { to: '/notifications', label: 'Notifications', icon: Bell },
-              { to: '/profile', label: 'Profile', icon: User },
+              { to: '/medstream', label: 'sidebar.medstream', icon: Video },
+              { to: '/saved', label: 'sidebar.savedPosts', icon: Bookmark },
+              { to: '/telehealth-appointment', label: 'sidebar.myAppointments', icon: CalendarClock },
+              { to: '/doctor-chat', label: 'sidebar.messages', icon: 'chat-conversation' },
+              { to: '/telehealth', label: 'sidebar.telehealth', icon: Monitor },
+              { to: '/notifications', label: 'sidebar.notifications', icon: Bell },
+              { to: '/profile', label: 'sidebar.profile', icon: User },
             ];
             const clinicItems = [
-              { to: '/medstream', label: 'Medstream', icon: Video },
-              { to: '/saved', label: 'Saved Posts', icon: Bookmark },
-              { to: '/telehealth-appointment', label: 'Appointments', icon: CalendarClock },
-              { to: '/doctor-chat', label: 'Messages', icon: 'chat-conversation' },
-              { to: '/telehealth', label: 'Telehealth', icon: Monitor },
-              { to: '/notifications', label: 'Notifications', icon: Bell },
-              { to: '/profile', label: 'Profile', icon: User },
+              { to: '/medstream', label: 'sidebar.medstream', icon: Video },
+              { to: '/saved', label: 'sidebar.savedPosts', icon: Bookmark },
+              { to: '/telehealth-appointment', label: 'sidebar.myAppointments', icon: CalendarClock },
+              { to: '/doctor-chat', label: 'sidebar.messages', icon: 'chat-conversation' },
+              { to: '/telehealth', label: 'sidebar.telehealth', icon: Monitor },
+              { to: '/notifications', label: 'sidebar.notifications', icon: Bell },
+              { to: '/profile', label: 'sidebar.profile', icon: User },
             ];
             const showCRM = isPro && (role === 'doctor' || role === 'clinic' || role === 'clinicOwner');
             const items = role === 'clinic' ? clinicItems : (role === 'doctor' ? doctorItems : patientItems);
@@ -724,7 +724,7 @@ const Header = () => {
                 </div>
                 {/* Menu items */}
                 <div className="p-2">
-                  <div className="mb-2 px-3 pt-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Menu</div>
+                  <div className="mb-2 px-3 pt-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('common.menu')}</div>
                   {items.map((it, idx) => {
                     const active = it.to ? pathname === it.to : false;
                     const IconEl = it.icon === 'chat-conversation' ? MessageCircle : it.icon;
@@ -735,7 +735,7 @@ const Header = () => {
                             <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100/80 group-hover:bg-gray-200/60 transition-colors">
                               <IconEl className="w-3.5 h-3.5 text-gray-500 group-hover:text-gray-700" />
                             </span>
-                            {it.label}
+                            {t(it.label)}
                           </span>
                           <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
                         </a>
@@ -747,7 +747,7 @@ const Header = () => {
                           <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-teal-100/80' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
                             <IconEl className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
                           </span>
-                          {it.label}
+                          {t(it.label)}
                         </span>
                       </Link>
                     );

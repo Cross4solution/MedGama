@@ -14,6 +14,7 @@ import { medStreamAPI } from '../lib/api';
 import { resizeImages } from '../utils/imageResize';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import SEOHead from '../components/seo/SEOHead';
+import { useTranslation } from 'react-i18next';
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
@@ -128,6 +129,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
 // Card ve Skeleton bileşenleri ayrı dosyalara taşındı
 
 export default function ExploreTimeline() {
+  const { t } = useTranslation();
   const { user, country } = useAuth();
   const disabledActions = false; // allow interactions for all users
   const navigate = useNavigate();
@@ -579,7 +581,7 @@ export default function ExploreTimeline() {
                     {isUnverifiedDoctor && (
                       <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-amber-600 flex-shrink-0"><path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.871L13.637 3.591a1.914 1.914 0 0 0-3.274 0z"/><path d="M12 17h.01"/></svg>
-                        <span className="text-xs font-medium text-amber-800">Your account is under review. Posting is disabled until admin approval.</span>
+                        <span className="text-xs font-medium text-amber-800">{t('medstream.accountUnderReview')}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-3">
@@ -587,7 +589,7 @@ export default function ExploreTimeline() {
                         <img alt={user?.name || 'User'} loading="lazy" className="w-full h-full object-cover object-center" src={resolveStorageUrl(user?.avatar)} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                       </div>
                       <button type="button" onClick={()=>{ if (!isUnverifiedDoctor) setIsComposerOpen(true); }} disabled={isUnverifiedDoctor} className={`flex-1 text-left px-4 py-3 bg-gray-50/80 rounded-xl border border-gray-200/60 focus:outline-none focus:ring-2 focus:ring-teal-500/30 text-gray-500 transition-all duration-200 text-sm ${isUnverifiedDoctor ? 'cursor-not-allowed opacity-60' : 'hover:bg-gray-100/80 hover:border-gray-300/60'}`}>
-                        {isUnverifiedDoctor ? 'Posting disabled — verification pending' : 'Make a Post...'}
+                        {isUnverifiedDoctor ? t('medstream.postingDisabledPending') : t('medstream.makePost')}
                       </button>
                     </div>
                     {!isUnverifiedDoctor && (
@@ -596,22 +598,22 @@ export default function ExploreTimeline() {
                         <div className="flex items-center gap-0.5 sm:gap-1 flex-1 min-w-0 overflow-x-auto">
                           <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>imageInputRef.current?.click(),0); }} className="inline-flex items-center gap-1 sm:gap-1.5 text-gray-600 hover:text-emerald-600 py-2 px-2 sm:px-3 rounded-lg hover:bg-emerald-50/60 transition-all duration-200 flex-shrink-0" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-emerald-500" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
-                            <span className="text-sm font-medium hidden sm:inline">Photo</span>
+                            <span className="text-sm font-medium hidden sm:inline">{t('medstream.photo')}</span>
                           </button>
                           <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>videoInputRef.current?.click(),0); }} className="inline-flex items-center gap-1 sm:gap-1.5 text-gray-600 hover:text-sky-600 py-2 px-2 sm:px-3 rounded-lg hover:bg-sky-50/60 transition-all duration-200 flex-shrink-0" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-sky-500" aria-hidden="true"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
-                            <span className="text-sm font-medium hidden sm:inline">Video</span>
+                            <span className="text-sm font-medium hidden sm:inline">{t('medstream.video')}</span>
                           </button>
-                          <button onClick={()=>{ setIsComposerOpen(true); setShowEmojiModal(true); }} className="inline-flex items-center gap-1 sm:gap-1.5 text-gray-600 hover:text-amber-600 py-2 px-2 sm:px-3 rounded-lg hover:bg-amber-50/60 transition-all duration-200 flex-shrink-0" type="button" aria-label="Add emoji">
+                          <button onClick={()=>{ setIsComposerOpen(true); setShowEmojiModal(true); }} className="inline-flex items-center gap-1 sm:gap-1.5 text-gray-600 hover:text-amber-600 py-2 px-2 sm:px-3 rounded-lg hover:bg-amber-50/60 transition-all duration-200 flex-shrink-0" type="button" aria-label={t('medstream.addEmoji')}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-amber-500" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
-                            <span className="text-sm font-medium hidden sm:inline">Emoji</span>
+                            <span className="text-sm font-medium hidden sm:inline">{t('medstream.emoji')}</span>
                           </button>
                           <button onClick={()=>{ setIsComposerOpen(true); setTimeout(()=>paperInputRef.current?.click(),0); }} className="inline-flex items-center gap-1 sm:gap-1.5 text-gray-600 hover:text-indigo-600 py-2 px-2 sm:px-3 rounded-lg hover:bg-indigo-50/60 transition-all duration-200 flex-shrink-0" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-indigo-500" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg>
-                            <span className="text-sm font-medium hidden sm:inline">Research</span>
+                            <span className="text-sm font-medium hidden sm:inline">{t('medstream.research')}</span>
                           </button>
                         </div>
-                        <button type="button" onClick={()=>setIsComposerOpen(true)} className="px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200 flex-shrink-0">Post</button>
+                        <button type="button" onClick={()=>setIsComposerOpen(true)} className="px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200 flex-shrink-0">{t('medstream.post')}</button>
                       </div>
                     </div>
                     )}
@@ -621,9 +623,9 @@ export default function ExploreTimeline() {
               {/* Aktif filtre chipleri */}
               <ActiveFilterChips
                 items={[
-                  countryName && { label: `Country: ${countryName}`, onClear: () => setCountryName('') },
-                  specialty && { label: `Specialization: ${specialty}`, onClear: () => setSpecialty('') },
-                  query && { label: `Search: “${query}”`, onClear: () => setQuery('') },
+                  countryName && { label: t('medstream.filterCountry', { country: countryName }), onClear: () => setCountryName('') },
+                  specialty && { label: t('medstream.filterSpecialization', { specialty }), onClear: () => setSpecialty('') },
+                  query && { label: t('medstream.filterSearch', { query }), onClear: () => setQuery('') },
                 ].filter(Boolean)}
               />
               {/* Upload progress / error banners */}
@@ -632,7 +634,7 @@ export default function ExploreTimeline() {
                   <div className="flex items-center gap-3">
                     <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-teal-800">Uploading your post...</p>
+                      <p className="text-sm font-medium text-teal-800">{t('medstream.uploadingPost')}</p>
                       {uploadProgress > 0 && (
                         <div className="mt-1.5 w-full bg-teal-200 rounded-full h-1.5 overflow-hidden">
                           <div className="bg-teal-600 h-1.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
@@ -650,9 +652,9 @@ export default function ExploreTimeline() {
                       <svg className="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-amber-900">Upload couldn't be completed</p>
+                      <p className="text-sm font-semibold text-amber-900">{t('medstream.uploadIncomplete')}</p>
                       <p className="text-[13px] text-amber-700 mt-0.5 leading-relaxed">{uploadError}</p>
-                      <p className="text-[11px] text-amber-500 mt-1.5">Your post was not published. Please try again with a smaller file.</p>
+                      <p className="text-[11px] text-amber-500 mt-1.5">{t('medstream.postNotPublished')}</p>
                     </div>
                     <button onClick={() => setUploadError('')} className="w-7 h-7 rounded-full hover:bg-amber-100 flex items-center justify-center text-amber-400 hover:text-amber-600 transition-colors flex-shrink-0">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
@@ -669,8 +671,8 @@ export default function ExploreTimeline() {
                   <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
                     <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                   </div>
-                  <p className="text-sm font-semibold text-gray-600 mb-1">No posts found</p>
-                  <p className="text-xs text-gray-400">Try adjusting your filters or check back later.</p>
+                  <p className="text-sm font-semibold text-gray-600 mb-1">{t('medstream.noPosts')}</p>
+                  <p className="text-xs text-gray-400">{t('medstream.noPostsHint')}</p>
                 </div>
               ) : (
                 <>
@@ -685,10 +687,10 @@ export default function ExploreTimeline() {
                   {isLoadingMore && <div className="space-y-4 mt-4">{[1,2,3].map((i)=>(<SkeletonCard key={`sk-${i}`} />))}</div>}
                   {items.length > 0 && (
                     <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
-                      <p className="text-xs text-gray-400 font-medium">Showing <span className="text-gray-600 font-semibold">{items.length}</span> of <span className="text-gray-600 font-semibold">{total}</span></p>
+                      <p className="text-xs text-gray-400 font-medium">{t('medstream.showing')} <span className="text-gray-600 font-semibold">{items.length}</span> {t('medstream.ofWord')} <span className="text-gray-600 font-semibold">{total}</span></p>
                       {hasMore && (
                         <>
-                          <button onClick={() => setPage(p => p + 1)} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200">Load more</button>
+                          <button onClick={() => setPage(p => p + 1)} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200">{t('medstream.loadMore')}</button>
                           <span ref={loadMoreRef} className="sr-only">Observer</span>
                         </>
                       )}
@@ -704,10 +706,10 @@ export default function ExploreTimeline() {
         {isComposerOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
             <div className="absolute inset-0 bg-black/50" onClick={()=>setIsComposerOpen(false)}></div>
-            <div role="dialog" aria-modal="true" aria-label="Create post" tabIndex={-1} className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-visible animate-in fade-in zoom-in-95">
+            <div role="dialog" aria-modal="true" aria-label={t('medstream.createPostAria')} tabIndex={-1} className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-visible animate-in fade-in zoom-in-95">
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
-                <h3 className="text-lg font-bold text-gray-900">Create post</h3>
-                <button className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close" onClick={()=>setIsComposerOpen(false)}>
+                <h3 className="text-lg font-bold text-gray-900">{t('medstream.createPost')}</h3>
+                <button className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors" aria-label={t('medstream.close')} onClick={()=>setIsComposerOpen(false)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x w-5 h-5" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
                 </button>
               </div>
@@ -715,26 +717,26 @@ export default function ExploreTimeline() {
                 <div className="flex items-center gap-3">
                   <img alt={user?.name || 'User'} loading="lazy" className="w-10 h-10 rounded-full object-cover border" src={resolveStorageUrl(user?.avatar)} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{user?.name || 'Guest'}</div>
-                    <span className="inline-flex items-center gap-1 text-xs text-teal-800 bg-teal-50 border border-teal-100 px-2 py-1 rounded-md">{(user?.role === 'clinic' || user?.role === 'clinicOwner') ? 'Clinic' : 'Doctor'}</span>
+                    <div className="text-sm font-medium text-gray-900">{user?.name || t('medstream.guest')}</div>
+                    <span className="inline-flex items-center gap-1 text-xs text-teal-800 bg-teal-50 border border-teal-100 px-2 py-1 rounded-md">{(user?.role === 'clinic' || user?.role === 'clinicOwner') ? t('medstream.clinic') : t('medstream.doctor')}</span>
                   </div>
                 </div>
               </div>
               <div className="px-4 sm:px-5 pt-3">
-                <textarea rows={hasMedia ? 3 : 5} placeholder={`What's on your mind, ${user?.name || 'Guest'}?`} value={composerText} onChange={(e)=>setComposerText(e.target.value)} className={`w-full text-[17px] leading-7 placeholder:text-gray-400 text-gray-900 outline-none resize-none ${hasMedia ? 'min-h-[80px]' : 'min-h-[140px]'}`}></textarea>
+                <textarea rows={hasMedia ? 3 : 5} placeholder={t('medstream.whatsOnYourMind', { name: user?.name || t('medstream.guest') })} value={composerText} onChange={(e)=>setComposerText(e.target.value)} className={`w-full text-[17px] leading-7 placeholder:text-gray-400 text-gray-900 outline-none resize-none ${hasMedia ? 'min-h-[80px]' : 'min-h-[140px]'}`}></textarea>
               </div>
               {/* Media Preview */}
               {hasMedia && (
                 <div className="px-4 sm:px-5 pb-2">
                   <div className="rounded-xl border border-gray-200/80 bg-gray-50/50 p-2.5">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Attachments ({composerPhotoUrls.length + composerVideoUrls.length + composerPapers.length})</span>
-                      <button type="button" onClick={()=>{ setComposerPhotos([]); setComposerVideos([]); setComposerPapers([]); setComposerPaperNames([]); }} className="text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors">Remove all</button>
+                      <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">{t('medstream.attachments', { count: composerPhotoUrls.length + composerVideoUrls.length + composerPapers.length })}</span>
+                      <button type="button" onClick={()=>{ setComposerPhotos([]); setComposerVideos([]); setComposerPapers([]); setComposerPaperNames([]); }} className="text-[11px] font-medium text-rose-500 hover:text-rose-600 transition-colors">{t('medstream.removeAll')}</button>
                     </div>
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                       {composerPhotoUrls.map((src, i) => (
                         <div key={`cp${i}`} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200/60 shadow-sm bg-white">
-                          <img src={src} alt={`photo-${i+1}`} className="w-full h-full object-cover" />
+                          <img src={src} alt={t('medstream.photoLabel', { index: i + 1 })} className="w-full h-full object-cover" />
                           <button type="button" onClick={()=>setComposerPhotos(arr=>arr.filter((_,idx)=>idx!==i))} className="absolute top-1 right-1 w-5 h-5 bg-black/50 backdrop-blur-sm text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70">
                             <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                           </button>
@@ -764,7 +766,7 @@ export default function ExploreTimeline() {
                       ))}
                       <button type="button" onClick={()=>imageInputRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-400 bg-white hover:bg-teal-50/30 flex flex-col items-center justify-center gap-0.5 transition-all group">
                         <svg className="w-4 h-4 text-gray-400 group-hover:text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
-                        <span className="text-[9px] font-medium text-gray-400 group-hover:text-teal-600">Add</span>
+                        <span className="text-[9px] font-medium text-gray-400 group-hover:text-teal-600">{t('medstream.add')}</span>
                       </button>
                     </div>
                   </div>
@@ -772,24 +774,24 @@ export default function ExploreTimeline() {
               )}
               <div className="px-4 sm:px-5 pt-2 pb-4">
                 <div className="rounded-2xl border bg-white relative overflow-visible">
-                  <div className="px-4 py-3 text-sm text-gray-600 border-b">Add to your post</div>
+                  <div className="px-4 py-3 text-sm text-gray-600 border-b">{t('medstream.addToYourPost')}</div>
                   <div className="p-3">
                     <div className="flex flex-wrap gap-2 sm:gap-3">
-                      <button onClick={()=>imageInputRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add photo">
+                      <button onClick={()=>imageInputRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label={t('medstream.addPhoto')}>
                         <span className="w-6 h-6 grid place-items-center rounded bg-emerald-50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-image w-4 h-4 text-emerald-600" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg></span>
-                        <span className="text-sm">Photo</span>
+                        <span className="text-sm">{t('medstream.photo')}</span>
                       </button>
-                      <button onClick={()=>videoInputRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add video">
+                      <button onClick={()=>videoInputRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label={t('medstream.addVideo')}>
                         <span className="w-6 h-6 grid place-items-center rounded bg-sky-50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-video w-4 h-4 text-sky-600" aria-hidden="true"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg></span>
-                        <span className="text-sm">Video</span>
+                        <span className="text-sm">{t('medstream.video')}</span>
                       </button>
-                      <button ref={emojiAnchorModalRef} onClick={()=>setShowEmojiModal((v)=>!v)} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add emoji">
+                      <button ref={emojiAnchorModalRef} onClick={()=>setShowEmojiModal((v)=>!v)} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label={t('medstream.addEmoji')}>
                         <span className="w-6 h-6 grid place-items-center rounded"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-smile w-4 h-4 sm:w-5 sm:h-5 text-gray-800" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg></span>
-                        <span className="text-sm">Emoji</span>
+                        <span className="text-sm">{t('medstream.emoji')}</span>
                       </button>
-                      <button onClick={()=>paperInputRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label="Add research paper">
+                      <button onClick={()=>paperInputRef.current?.click()} className="h-10 border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 inline-flex items-center gap-2 text-gray-700" aria-label={t('medstream.researchPaper')}>
                         <span className="w-6 h-6 grid place-items-center rounded bg-indigo-50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-text w-4 h-4 text-indigo-600" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H8"></path></svg></span>
-                        <span className="text-sm whitespace-nowrap">Research Paper</span>
+                        <span className="text-sm whitespace-nowrap">{t('medstream.researchPaperLabel')}</span>
                       </button>
                     </div>
                     {showEmojiModal && (
@@ -810,7 +812,7 @@ export default function ExploreTimeline() {
                             ))}
                           </div>
                         </div>
-                        <div className="px-3 py-1 bg-gray-50 border-t border-gray-200 rounded-b-xl"><p className="text-xs text-gray-500 text-center">{EMOJI_LIST.length} emoji</p></div>
+                        <div className="px-3 py-1 bg-gray-50 border-t border-gray-200 rounded-b-xl"><p className="text-xs text-gray-500 text-center">{t('medstream.emojiCount', { count: EMOJI_LIST.length })}</p></div>
                       </div>
                     )}
                   </div>
@@ -823,7 +825,7 @@ export default function ExploreTimeline() {
                           <svg className="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-red-800">Upload failed</p>
+                          <p className="text-sm font-semibold text-red-800">{t('medstream.uploadFailed')}</p>
                           <p className="text-[13px] text-red-600 mt-0.5 leading-relaxed">{uploadError}</p>
                         </div>
                         <button onClick={() => setUploadError('')} className="w-6 h-6 rounded-full hover:bg-red-100 flex items-center justify-center text-red-400 hover:text-red-600 transition-colors flex-shrink-0">
@@ -839,10 +841,10 @@ export default function ExploreTimeline() {
                   )}
                   {composerPosting && (
                     <p className="text-xs text-gray-500 text-center">
-                      {uploadProgress > 0 ? `Uploading... ${uploadProgress}%` : 'Preparing upload...'}
+                      {uploadProgress > 0 ? t('medstream.uploadingProgress', { progress: uploadProgress }) : t('medstream.preparingUpload')}
                     </p>
                   )}
-                  <button onClick={handleComposerPost} disabled={(!composerText && !hasMedia) || composerPosting} className={`w-full py-2.5 rounded-xl text-white font-semibold transition-all duration-200 ${((!composerText && !hasMedia) || composerPosting) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-sm hover:shadow-md'}`}>{composerPosting ? 'Uploading...' : 'Post'}</button>
+                  <button onClick={handleComposerPost} disabled={(!composerText && !hasMedia) || composerPosting} className={`w-full py-2.5 rounded-xl text-white font-semibold transition-all duration-200 ${((!composerText && !hasMedia) || composerPosting) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-sm hover:shadow-md'}`}>{composerPosting ? t('medstream.uploading') : t('medstream.post')}</button>
                 </div>
               </div>
             </div>

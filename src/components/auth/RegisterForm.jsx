@@ -149,7 +149,7 @@ const RegisterForm = ({
               className={`w-full h-10 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm ${
                 (errors.firstName || localErrors.firstName) ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Your first name"
+              placeholder={t('auth.firstNamePlaceholder')}
             />
           </div>
           {(errors.firstName || localErrors.firstName) && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.firstName || localErrors.firstName}</p>}
@@ -168,7 +168,7 @@ const RegisterForm = ({
               className={`w-full h-10 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm ${
                 (errors.lastName || localErrors.lastName) ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Your last name"
+              placeholder={t('auth.lastNamePlaceholder')}
             />
           </div>
           {(errors.lastName || localErrors.lastName) && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.lastName || localErrors.lastName}</p>}
@@ -188,7 +188,7 @@ const RegisterForm = ({
               className={`w-full h-10 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm ${
                 (errors.clinicName || localErrors.clinicName) ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Your clinic name"
+              placeholder={t('auth.clinicNamePlaceholder')}
             />
           </div>
           {(errors.clinicName || localErrors.clinicName) && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.clinicName || localErrors.clinicName}</p>}
@@ -229,7 +229,7 @@ const RegisterForm = ({
               className={`w-full h-10 pl-9 pr-10 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Enter your password"
+              placeholder={t('auth.passwordPlaceholder')}
             />
             <button
               type="button"
@@ -255,7 +255,7 @@ const RegisterForm = ({
               className={`w-full h-10 pl-9 pr-10 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm ${
                 errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="Re-enter your password"
+              placeholder={t('auth.confirmPasswordPlaceholder')}
             />
             <button
               type="button"
@@ -268,12 +268,12 @@ const RegisterForm = ({
           {errors.confirmPassword && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.confirmPassword}</p>}
           {!errors.confirmPassword && fd.confirmPassword && fd.password && fd.confirmPassword !== fd.password && (
             <p className="text-amber-500 text-xs mt-1 text-left flex items-center gap-1">
-              <span>⚠</span> Passwords do not match
+              <span>⚠</span> {t('auth.passwordsDoNotMatch')}
             </p>
           )}
           {!errors.confirmPassword && fd.confirmPassword && fd.password && fd.confirmPassword === fd.password && fd.password.length >= 6 && (
             <p className="text-green-500 text-xs mt-1 text-left flex items-center gap-1">
-              <span>✓</span> Passwords match
+              <span>✓</span> {t('auth.passwordsMatch')}
             </p>
           )}
         </div>
@@ -308,7 +308,7 @@ const RegisterForm = ({
                   onChange={(val) => {
                     handleInputChange({ target: { name: 'country', value: val } });
                   }}
-                  placeholder="Select a country"
+                  placeholder={t('auth.selectCountryPlaceholder')}
                   triggerClassName="w-full h-11 border border-gray-300 rounded-xl pl-10 pr-3 text-sm bg-white text-left flex items-center gap-2 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
                   getFlagUrl={(name) => {
                     try {
@@ -355,7 +355,7 @@ const RegisterForm = ({
             return (
               <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3">
                 <p className="text-xs text-amber-800 leading-relaxed mb-2">
-                  18 yaş altı kayıt için veli onayı gereklidir. Lütfen veli e-posta adresini giriniz.
+                  {t('auth.guardianConsentNotice')}
                 </p>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -365,7 +365,7 @@ const RegisterForm = ({
                     value={fd.guardianEmail ?? ''}
                     onChange={handleInputChange}
                     className={`w-full h-10 pl-9 pr-3 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-colors ${errors.guardianEmail ? 'border-red-500' : 'border-amber-300'}`}
-                    placeholder="veli@example.com"
+                    placeholder={t('auth.guardianEmailPlaceholder')}
                     required
                   />
                 </div>

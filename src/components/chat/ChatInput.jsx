@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Paperclip, Image as ImageIcon, Send, X, FileText, Film, Music, File, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 const MAX_FILES = 10;
@@ -31,6 +32,7 @@ function getFileColor(file) {
 }
 
 export default function ChatInput({ message, onChange, onSend, sending = false }) {
+  const { t } = useTranslation();
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [dragOver, setDragOver] = useState(false);
@@ -45,13 +47,13 @@ export default function ChatInput({ message, onChange, onSend, sending = false }
     const totalCount = files.length + incoming.length;
 
     if (totalCount > MAX_FILES) {
-      setError(`Maximum ${MAX_FILES} files allowed`);
+      setError(t('chat.maxFilesAllowed', { count: MAX_FILES }));
       return;
     }
 
     const tooBig = incoming.find(f => f.size > MAX_FILE_SIZE);
     if (tooBig) {
-      setError(`"${tooBig.name}" is too large (${formatSize(tooBig.size)}). Max: 50 MB`);
+      setError(t('chat.fileTooLarge', { name: tooBig.name, size: formatSize(tooBig.size) }));
       return;
     }
 
@@ -126,8 +128,8 @@ export default function ChatInput({ message, onChange, onSend, sending = false }
         <div className="px-4 py-3 text-center">
           <div className="border-2 border-dashed border-teal-400 rounded-xl py-6 bg-teal-50/60">
             <Paperclip className="w-6 h-6 text-teal-500 mx-auto mb-1" />
-            <p className="text-sm font-medium text-teal-700">Drop files here</p>
-            <p className="text-xs text-teal-500 mt-0.5">Max 50 MB per file · Up to 10 files</p>
+            <p className="text-sm font-medium text-teal-700">{t('chat.dropFilesHere')}</p>
+            <p className="text-xs text-teal-500 mt-0.5">{t('chat.dropFilesHint')}</p>
           </div>
         </div>
       )}
@@ -205,7 +207,7 @@ export default function ChatInput({ message, onChange, onSend, sending = false }
             {/* Attach file button */}
             <button
               type="button"
-              aria-label="Attach file"
+              aria-label={t('chat.attachFile')}
               className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               onClick={() => fileInputRef.current?.click()}
             >
@@ -223,7 +225,7 @@ export default function ChatInput({ message, onChange, onSend, sending = false }
             {/* Insert image button */}
             <button
               type="button"
-              aria-label="Insert image"
+              aria-label={t('chat.attachImage')}
               className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               onClick={() => imageInputRef.current?.click()}
             >
@@ -243,7 +245,7 @@ export default function ChatInput({ message, onChange, onSend, sending = false }
               type="text"
               value={message}
               onChange={(e) => onChange?.(e.target.value)}
-              placeholder={hasFiles ? 'Add a caption...' : 'Type your message...'}
+              placeholder={hasFiles ? t('chat.addCaption') : t('chat.typeMessage')}
               className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50/50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 focus:bg-white transition-all placeholder:text-gray-400"
               onKeyDown={handleKeyDown}
               disabled={sending}
@@ -259,7 +261,7 @@ export default function ChatInput({ message, onChange, onSend, sending = false }
                   ? 'bg-gray-300 shadow-none cursor-not-allowed'
                   : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-teal-200/50 hover:shadow-lg'
               }`}
-              aria-label="Send message"
+              aria-label={t('chat.sendMessage')}
             >
               {sending ? (
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

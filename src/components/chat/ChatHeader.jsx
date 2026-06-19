@@ -1,14 +1,16 @@
 import React from 'react';
 import { ChevronLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 export default function ChatHeader({ activeContact, onVideoCall, onCall, onBack, typingUser }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white rounded-t-2xl">
       <div className="flex items-center gap-3">
         {onBack && (
           <button
-            aria-label="Back"
+            aria-label={t('common.back')}
             className="lg:hidden p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
             onClick={onBack}
           >
@@ -19,7 +21,7 @@ export default function ChatHeader({ activeContact, onVideoCall, onCall, onBack,
           <img 
             src={resolveStorageUrl(activeContact?.avatar)}
             onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} 
-            alt={activeContact?.name || 'Contact'} 
+            alt={activeContact?.name || t('chat.contact')}
             className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-md"
             style={{ objectPosition: 'center 20%' }}
             loading="lazy"
@@ -27,7 +29,7 @@ export default function ChatHeader({ activeContact, onVideoCall, onCall, onBack,
           <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${activeContact?.online ? 'bg-emerald-500' : 'bg-gray-300'}`} />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-gray-900 leading-tight">{activeContact?.name || 'Contact'}</h3>
+          <h3 className="text-sm font-bold text-gray-900 leading-tight">{activeContact?.name || t('chat.contact')}</h3>
           {typingUser ? (
             <span className="text-[11px] font-medium text-teal-600 flex items-center gap-1">
               <span className="inline-flex gap-0.5">
@@ -35,11 +37,11 @@ export default function ChatHeader({ activeContact, onVideoCall, onCall, onBack,
                 <span className="w-1 h-1 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                 <span className="w-1 h-1 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </span>
-              {typingUser} is typing
+              {t('chat.userIsTyping', { name: typingUser })}
             </span>
           ) : (
             <span className={`text-[11px] font-medium ${activeContact?.online ? 'text-emerald-600' : 'text-gray-400'}`}>
-              {activeContact?.online ? 'Online' : 'Offline'}
+              {activeContact?.online ? t('chat.online') : t('chat.offline')}
             </span>
           )}
         </div>

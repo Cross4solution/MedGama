@@ -1,11 +1,14 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { Share2, Link as LinkIcon, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * @param {{ url?: string, title?: string, className?: string, showNative?: boolean, buttonClassName?: string }} props
  */
-export default function ShareMenu({ url, title = 'Share', className = '', showNative = false, buttonClassName = '' }) {
+export default function ShareMenu({ url, title, className = '', showNative = false, buttonClassName = '' }) {
+  const { t } = useTranslation();
+  const label = title || t('share.share');
   const [open, setOpen] = React.useState(false);
   const btnRef = React.useRef(null);
   const panelRef = React.useRef(null);
@@ -99,19 +102,19 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
         aria-expanded={open}
       >
         <Share2 className="w-4 h-4" strokeWidth={1.8} aria-hidden="true" />
-        <span>{title}</span>
+        <span>{label}</span>
       </button>
 
       {open && createPortal(
         <div
           ref={panelRef}
           role="menu"
-          aria-label="Share options"
+          aria-label={t('share.shareOptions')}
           className="fixed z-[9999] rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5"
           style={{ top: pos.top, left: pos.left, width: pos.width }}
         >
           <div className="px-1.5 py-1.5">
-            <p className="px-3 py-1.5 text-[11px] font-medium text-gray-400 uppercase tracking-wider">Share via</p>
+            <p className="px-3 py-1.5 text-[11px] font-medium text-gray-400 uppercase tracking-wider">{t('share.shareVia')}</p>
             {showNative && (
               <button onClick={handleNativeShare} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition-colors">
                 <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100">
@@ -120,7 +123,7 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
                     <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
                   </svg>
                 </span>
-                <span>Share (System)</span>
+                <span>{t('share.shareSystem')}</span>
               </button>
             )}
             <a href={wa} target="_blank" rel="noopener noreferrer" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition-colors">
@@ -129,12 +132,12 @@ export default function ShareMenu({ url, title = 'Share', className = '', showNa
             </a>
             <a href={mail} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition-colors">
               <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100"><Mail className="w-4 h-4 text-orange-600" /></span>
-              <span>Email</span>
+              <span>{t('share.email')}</span>
             </a>
             <div className="mx-2 my-1 border-t border-gray-100" />
             <button onClick={handleCopy} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition-colors">
               <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100"><LinkIcon className="w-4 h-4 text-gray-600" /></span>
-              <span>Copy Link</span>
+              <span>{t('share.copyLink')}</span>
             </button>
           </div>
         </div>,

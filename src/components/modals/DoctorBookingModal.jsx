@@ -51,10 +51,10 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
     ? ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık']
     : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-  const TYPE_LABELS = {
-    in_person: { en: 'In-Person Visit', tr: 'Yüz Yüze Muayene' },
-    video: { en: 'Telehealth', tr: 'Görüntülü Görüşme' },
-    phone: { en: 'Phone Consultation', tr: 'Telefon Görüşmesi' },
+  const TYPE_LABEL_KEYS = {
+    in_person: 'booking.inPerson',
+    video: 'booking.video',
+    phone: 'booking.phone',
   };
 
   // Fetch availability when modal opens or step reaches 2
@@ -160,7 +160,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
 
   if (!open) return null;
 
-  const typeLabel = (id) => TYPE_LABELS[id]?.[isTr ? 'tr' : 'en'] || id;
+  const typeLabel = (id) => (TYPE_LABEL_KEYS[id] ? t(TYPE_LABEL_KEYS[id]) : id);
 
   // Level 2 (Independent) restriction check
   // Note: Parent component (DoctorProfile) already hides the buttons, but this is a safety gate.
@@ -176,8 +176,8 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
           <div>
             <h2 className="text-lg font-bold text-gray-900">
               {initialType === 'video'
-                ? (isTr ? 'Görüntülü Görüşme Randevusu' : 'Telehealth Appointment')
-                : (isTr ? 'Randevu Al' : 'Book Appointment')}
+                ? t('booking.telehealthAppointment')
+                : t('booking.title')}
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">{doctorName}</p>
           </div>
@@ -193,31 +193,29 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
               <CheckCircle2 className="w-8 h-8 text-teal-600" />
             </div>
             <h3 className="text-lg font-bold text-gray-900 mb-2">
-              {isTr ? 'Randevu Talebiniz Alındı!' : 'Appointment Requested!'}
+              {t('booking.appointmentRequested')}
             </h3>
             <p className="text-sm text-gray-500 mb-6">
-              {isTr
-                ? `${doctorName} ile randevu talebiniz başarıyla gönderildi. Onay için bekleyiniz.`
-                : `Your appointment request with ${doctorName} has been submitted. Please wait for confirmation.`}
+              {t('booking.appointmentConfirmMsg', { name: doctorName })}
             </p>
             <div className="bg-gray-50 rounded-xl p-4 text-left space-y-2 mb-6">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">{isTr ? 'Tarih' : 'Date'}</span>
+                <span className="text-gray-500">{t('booking.date')}</span>
                 <span className="font-medium text-gray-900">
                   {selectedDate?.toLocaleDateString(isTr ? 'tr-TR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">{isTr ? 'Saat' : 'Time'}</span>
+                <span className="text-gray-500">{t('booking.time')}</span>
                 <span className="font-medium text-gray-900">{selectedSlot?.start_time?.slice(0, 5)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">{isTr ? 'Tür' : 'Type'}</span>
+                <span className="text-gray-500">{t('booking.type')}</span>
                 <span className="font-medium text-gray-900">{typeLabel(appointmentType)}</span>
               </div>
             </div>
             <button onClick={handleClose} className="w-full py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors">
-              {isTr ? 'Tamam' : 'Done'}
+              {t('booking.done')}
             </button>
           </div>
         ) : (
@@ -238,7 +236,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
             {step === 1 && (
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-gray-700 mb-3">
-                  {isTr ? 'Randevu Türü' : 'Appointment Type'}
+                  {t('booking.step1Title')}
                 </h3>
                 {APPOINTMENT_TYPES.map(type => (
                   <button
@@ -261,7 +259,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
             {step === 2 && (
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-gray-700">
-                  {isTr ? 'Tarih ve Saat Seçin' : 'Select Date & Time'}
+                  {t('booking.step2Title')}
                 </h3>
 
                 {loadingSlots ? (
@@ -318,7 +316,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
                     {/* Time Slots — right side */}
                     <div className="w-44 flex-shrink-0">
                       <h4 className="text-xs font-semibold text-gray-500 mb-2">
-                        {isTr ? 'Uygun Saatler' : 'Available Times'}
+                        {t('booking.availableTimes')}
                       </h4>
                       {selectedDate ? (
                         daySlots.length > 0 ? (
@@ -340,12 +338,12 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
                           </div>
                         ) : (
                           <p className="text-xs text-gray-400 italic py-4 text-center">
-                            {isTr ? 'Bu tarihte uygun saat yok' : 'No slots available'}
+                            {t('booking.noSlotsAvailableShort')}
                           </p>
                         )
                       ) : (
                         <p className="text-xs text-gray-400 italic py-4 text-center">
-                          {isTr ? 'Önce bir tarih seçin' : 'Select a date first'}
+                          {t('booking.selectTimeFirst')}
                         </p>
                       )}
                     </div>
@@ -356,7 +354,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
                 <div className="flex gap-3 pt-1">
                   {!initialType && (
                     <button type="button" onClick={() => setStep(1)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
-                      {isTr ? 'Geri' : 'Back'}
+                      {t('booking.back')}
                     </button>
                   )}
                   <button
@@ -365,7 +363,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
                     disabled={!selectedSlot}
                     className="flex-1 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    {isTr ? 'İleri' : 'Next'}
+                    {t('booking.next')}
                   </button>
                 </div>
               </div>
@@ -375,7 +373,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
             {step === 3 && (
               <div className="space-y-4">
                 <h3 className="text-sm font-semibold text-gray-700">
-                  {isTr ? 'Onay' : 'Confirmation'}
+                  {t('booking.step4Title')}
                 </h3>
 
                 <div className="bg-gray-50 rounded-xl p-4 space-y-2.5">
@@ -399,12 +397,12 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
 
                 <div>
                   <label className="text-xs font-semibold text-gray-500 mb-1.5 block">
-                    {isTr ? 'Not (isteğe bağlı)' : 'Note (optional)'}
+                    {t('booking.noteOptional')}
                   </label>
                   <textarea
                     value={note}
                     onChange={e => setNote(e.target.value)}
-                    placeholder={isTr ? 'Şikayetinizi veya notunuzu yazın...' : 'Describe your symptoms or add a note...'}
+                    placeholder={t('booking.notePlaceholder')}
                     rows={2}
                     className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-200 focus:border-teal-400 resize-none"
                   />
@@ -412,7 +410,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
 
                 <div className="flex gap-3 pt-1">
                   <button type="button" onClick={() => setStep(2)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
-                    {isTr ? 'Geri' : 'Back'}
+                    {t('booking.back')}
                   </button>
                   <button
                     type="button"
@@ -421,7 +419,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
                     className="flex-1 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
                   >
                     {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                    {isTr ? 'Randevu Al' : 'Book Now'}
+                    {t('booking.bookNow')}
                   </button>
                 </div>
               </div>

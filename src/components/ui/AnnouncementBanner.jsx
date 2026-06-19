@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Info, AlertTriangle, CheckCircle, AlertCircle, X, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { announcementAPI } from '../../lib/api';
 
 const TYPE_CONFIG = {
@@ -10,6 +11,7 @@ const TYPE_CONFIG = {
 };
 
 export default function AnnouncementBanner() {
+  const { t } = useTranslation();
   const [announcements, setAnnouncements] = useState([]);
   const [dismissed, setDismissed] = useState(() => {
     try {
@@ -50,7 +52,7 @@ export default function AnnouncementBanner() {
               {ann.link_url && (
                 <a href={ann.link_url} target="_blank" rel="noopener noreferrer"
                   className={`inline-flex items-center gap-1 text-xs font-medium mt-1.5 underline ${cfg.text} opacity-90 hover:opacity-100`}>
-                  {ann.link_label || 'Learn more'} <ExternalLink className="w-3 h-3" />
+                  {ann.link_label || t('common.learnMore')} <ExternalLink className="w-3 h-3" />
                 </a>
               )}
             </div>

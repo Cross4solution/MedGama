@@ -131,7 +131,7 @@ export default function SavedPosts() {
             <h1 className="text-xl font-bold text-gray-900">
               {t('common.savedPosts', 'Saved Posts')}
             </h1>
-            <p className="text-sm text-gray-500">{total} {total === 1 ? 'post' : 'posts'} saved</p>
+            <p className="text-sm text-gray-500">{t('savedPosts.savedCount', { count: total })}</p>
           </div>
         </div>
 
@@ -144,9 +144,9 @@ export default function SavedPosts() {
           <div className="text-center py-20">
             <Bookmark className="w-16 h-16 text-gray-200 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('common.noSavedPosts', 'No saved posts yet')}</h3>
-            <p className="text-sm text-gray-400 mb-6">Save posts from your feed to find them here later.</p>
+            <p className="text-sm text-gray-400 mb-6">{t('savedPosts.emptyHint')}</p>
             <button onClick={() => navigate('/medstream')} className="px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors">
-              Browse Feed
+              {t('savedPosts.browseFeed')}
             </button>
           </div>
         ) : (
@@ -163,7 +163,7 @@ export default function SavedPosts() {
                   type="button"
                   onClick={() => setConfirmRemove(post.id)}
                   className="absolute top-3 right-3 p-2 rounded-full bg-white/90 shadow-sm border border-gray-200 text-gray-400 hover:text-red-500 hover:bg-red-50 hover:border-red-200 transition-all z-10"
-                  title="Remove from saved"
+                  title={t('savedPosts.removeFromSaved')}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -172,7 +172,7 @@ export default function SavedPosts() {
             {hasMore && (
               <div className="flex justify-center pt-4">
                 <button onClick={loadMore} disabled={loading} className="px-6 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors disabled:opacity-50">
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Load more'}
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t('savedPosts.loadMore')}
                 </button>
               </div>
             )}
@@ -189,20 +189,20 @@ export default function SavedPosts() {
           <div className="mx-auto w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center mb-3">
             <Trash2 className="w-6 h-6 text-rose-500" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900 mb-1">Remove Saved Post?</h3>
-          <p className="text-sm text-gray-500 mb-5">Are you sure you want to remove this post from your saved list?</p>
+          <h3 className="text-lg font-bold text-gray-900 mb-1">{t('savedPosts.removeModalTitle')}</h3>
+          <p className="text-sm text-gray-500 mb-5">{t('savedPosts.removeModalBody')}</p>
           <div className="flex gap-3">
             <button
               onClick={() => setConfirmRemove(null)}
               className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               onClick={() => handleUnsave(confirmRemove)}
               className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-rose-500 text-white hover:bg-rose-600 transition-colors"
             >
-              Remove
+              {t('savedPosts.remove')}
             </button>
           </div>
         </div>

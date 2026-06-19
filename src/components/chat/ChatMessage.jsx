@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { FileText, Film, Music, File, Download, X, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 function formatSize(bytes) {
@@ -28,6 +29,7 @@ function getAttachmentColor(type) {
 }
 
 function ImageLightbox({ src, alt, onClose }) {
+  const { t } = useTranslation();
   // Prevent body scroll while lightbox is open
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -58,7 +60,7 @@ function ImageLightbox({ src, alt, onClose }) {
       </button>
       <img src={src} alt={alt} className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }} />
       <a href={src} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="absolute bottom-6 right-6 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm flex items-center gap-2 transition-colors z-10">
-        <ExternalLink className="w-4 h-4" /> Open original
+        <ExternalLink className="w-4 h-4" /> {t('chat.openOriginal')}
       </a>
     </div>,
     document.body
@@ -66,6 +68,7 @@ function ImageLightbox({ src, alt, onClose }) {
 }
 
 function AttachmentPreview({ attachment, isDoctor }) {
+  const { t } = useTranslation();
   const [lightbox, setLightbox] = useState(false);
   const isImage = attachment.file_type?.startsWith('image/');
   const isVideo = attachment.file_type?.startsWith('video/');
@@ -132,7 +135,7 @@ function AttachmentPreview({ attachment, isDoctor }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className={`text-xs font-medium truncate ${isDoctor ? 'text-white' : 'text-gray-800'}`}>
-            {attachment.file_name || 'File'}
+            {attachment.file_name || t('chat.file')}
           </p>
           <p className={`text-[10px] ${isDoctor ? 'text-teal-200' : 'text-gray-400'}`}>
             {ext} {attachment.file_size ? `· ${formatSize(attachment.file_size)}` : ''}
@@ -145,6 +148,7 @@ function AttachmentPreview({ attachment, isDoctor }) {
 }
 
 function ChatMessage({ message, leftAvatar, rightAvatar }) {
+  const { t } = useTranslation();
   const isDoctor = message.sender === 'doctor';
   const attachments = message.attachments || [];
   const hasText = message.text?.trim();
@@ -155,10 +159,10 @@ function ChatMessage({ message, leftAvatar, rightAvatar }) {
     <div className={`flex ${isDoctor ? 'justify-end' : 'justify-start'}`}>
       <div className={`flex items-end max-w-xs lg:max-w-md gap-2.5 ${isDoctor ? 'flex-row-reverse' : ''}`}>
         {!isDoctor && (
-          <img src={resolveStorageUrl(leftAvatar)} alt="Contact" className="w-8 h-8 rounded-lg object-cover ring-1 ring-white shadow-sm flex-shrink-0" loading="lazy" style={{ objectPosition: 'center 20%' }} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
+          <img src={resolveStorageUrl(leftAvatar)} alt={t('chat.contact')} className="w-8 h-8 rounded-lg object-cover ring-1 ring-white shadow-sm flex-shrink-0" loading="lazy" style={{ objectPosition: 'center 20%' }} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
         )}
         {isDoctor && (
-          <img src={resolveStorageUrl(rightAvatar)} alt="You" className="w-8 h-8 rounded-lg object-cover ring-1 ring-white shadow-sm flex-shrink-0" loading="lazy" style={{ objectPosition: 'center 20%' }} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
+          <img src={resolveStorageUrl(rightAvatar)} alt={t('chat.you')} className="w-8 h-8 rounded-lg object-cover ring-1 ring-white shadow-sm flex-shrink-0" loading="lazy" style={{ objectPosition: 'center 20%' }} onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
         )}
         <div className={`rounded-2xl px-4 py-2.5 shadow-sm transition-opacity duration-200 ${
           isDoctor
@@ -180,13 +184,13 @@ function ChatMessage({ message, leftAvatar, rightAvatar }) {
 
           <p className={`text-[10px] mt-1.5 flex items-center gap-2 ${isDoctor ? 'text-teal-100' : 'text-gray-500'}`}>
             <span>{message.time}</span>
-            {isSending && <span className="italic">Sending...</span>}
-            {isFailed && <span className="text-red-300 font-medium">Failed</span>}
+            {isSending && <span className="italic">{t('chat.sending')}</span>}
+            {isFailed && <span className="text-red-300 font-medium">{t('chat.failed')}</span>}
             {isDoctor && !isSending && !isFailed && (
               <span className="inline-flex items-center gap-1">
-                {message.status === 'sent' && <span title="Sent">✓</span>}
-                {message.status === 'delivered' && <span title="Delivered">✓✓</span>}
-                {message.status === 'read' && <span title="Read" className="text-teal-300">✓✓</span>}
+                {message.status === 'sent' && <span title={t('chat.statusSent')}>✓</span>}
+                {message.status === 'delivered' && <span title={t('chat.statusDelivered')}>✓✓</span>}
+                {message.status === 'read' && <span title={t('chat.statusRead')} className="text-teal-300">✓✓</span>}
               </span>
             )}
           </p>

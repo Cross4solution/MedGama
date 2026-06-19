@@ -60,13 +60,13 @@ const TelehealthPage = () => {
       .filter(a => ['pending', 'confirmed'].includes(a.status))
       .map(a => ({
         id: a.id,
-        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || 'Patient',
+        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || t('common.patient'),
         start: getStartDate(a),
-        specialty: a.appointment_type === 'online' ? 'Online Telehealth' : (a.appointment_type || 'Consultation'),
+        specialty: a.appointment_type === 'online' ? t('telehealthPage.onlineTelehealth') : (a.appointment_type || t('crm.appointments.consultation')),
         raw: a,
       }))
       .sort((a, b) => a.start - b.start),
-    [appointments, getStartDate]
+    [appointments, getStartDate, t]
   );
 
   const completedSessions = useMemo(() =>
@@ -74,14 +74,14 @@ const TelehealthPage = () => {
       .filter(a => a.status === 'completed')
       .map(a => ({
         id: a.id,
-        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || 'Patient',
+        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || t('common.patient'),
         start: getStartDate(a),
         durationMin: 30,
-        status: 'Completed',
+        status: t('common.completed'),
         raw: a,
       }))
       .sort((a, b) => b.start - a.start),
-    [appointments, getStartDate]
+    [appointments, getStartDate, t]
   );
 
   const canceledSessions = useMemo(() =>
@@ -89,12 +89,12 @@ const TelehealthPage = () => {
       .filter(a => ['cancelled', 'canceled', 'no_show'].includes(a.status))
       .map(a => ({
         id: a.id,
-        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || 'Patient',
+        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || t('common.patient'),
         start: getStartDate(a),
-        reason: a.status === 'no_show' ? 'No show' : 'Cancelled',
+        reason: a.status === 'no_show' ? t('telehealthPage.noShow') : t('crm.appointments.cancelled'),
         raw: a,
       })),
-    [appointments, getStartDate]
+    [appointments, getStartDate, t]
   );
 
   const totals = {
@@ -339,7 +339,7 @@ const TelehealthPage = () => {
                 </div>
                 <button
                   type="button"
-                  aria-label="Close"
+                  aria-label={t('common.close')}
                   className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
                   onClick={() => setCancelModal({ open: false, session: null })}
                 >

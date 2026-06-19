@@ -12,10 +12,10 @@ import {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG = {
-  paid:      { label: 'Paid',      color: 'bg-emerald-100 text-emerald-700 border-emerald-200',  icon: CheckCircle  },
-  pending:   { label: 'Pending',   color: 'bg-amber-100  text-amber-700  border-amber-200',    icon: Clock        },
-  partial:   { label: 'Partial',   color: 'bg-blue-100   text-blue-700   border-blue-200',     icon: AlertCircle  },
-  cancelled: { label: 'Cancelled', color: 'bg-gray-100   text-gray-500   border-gray-200',     icon: XCircle      },
+  paid:      { labelKey: 'billing.statusPaid',      color: 'bg-emerald-100 text-emerald-700 border-emerald-200',  icon: CheckCircle  },
+  pending:   { labelKey: 'billing.statusPending',   color: 'bg-amber-100  text-amber-700  border-amber-200',    icon: Clock        },
+  partial:   { labelKey: 'billing.statusPartial',   color: 'bg-blue-100   text-blue-700   border-blue-200',     icon: AlertCircle  },
+  cancelled: { labelKey: 'billing.statusCancelled', color: 'bg-gray-100   text-gray-500   border-gray-200',     icon: XCircle      },
 };
 
 const CURRENCIES = ['EUR', 'USD', 'TRY', 'GBP'];
@@ -28,12 +28,13 @@ function fmt(amount, currency = 'EUR') {
 }
 
 function StatusBadge({ status }) {
+  const { t } = useTranslation();
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   const Icon = cfg.icon;
   return (
     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${cfg.color}`}>
       <Icon className="w-3 h-3" />
-      {cfg.label}
+      {t(cfg.labelKey)}
     </span>
   );
 }
@@ -41,6 +42,7 @@ function StatusBadge({ status }) {
 // ── Add Invoice Modal ─────────────────────────────────────────────────────────
 
 function PatientSearchDropdown({ value, onChange }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -94,7 +96,7 @@ function PatientSearchDropdown({ value, onChange }) {
           value={query}
           onChange={e => handleSearch(e.target.value)}
           onFocus={() => query && setOpen(true)}
-          placeholder="Search patient by name or email..."
+          placeholder={t('billing.searchPatientPlaceholder')}
           className="w-full pl-8 pr-8 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 focus:border-teal-400"
         />
         {(query || selected) && (
@@ -107,11 +109,11 @@ function PatientSearchDropdown({ value, onChange }) {
         <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
           {loading && (
             <div className="flex items-center gap-2 px-4 py-3 text-sm text-gray-400">
-              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Searching...
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> {t('common.searching')}
             </div>
           )}
           {!loading && results.length === 0 && query && (
-            <div className="px-4 py-3 text-sm text-gray-400">No patients found</div>
+            <div className="px-4 py-3 text-sm text-gray-400">{t('billing.noPatientsFound')}</div>
           )}
           {!loading && results.map(p => (
             <button
@@ -178,7 +180,7 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
     e.preventDefault();
     setError('');
     const errs = {};
-    if (!form.items.some(it => it.description && it.unit_price)) errs.items = 'At least one line item with description and price is required';
+    if (!form.items.some(it => it.description && it.unit_price)) errs.items = t('billing.errLineItemRequired');
     if (Object.keys(errs).length) { setFieldErrors(errs); return; }
     setFieldErrors({});
     try {
@@ -206,9 +208,9 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
         const flat = {};
         Object.entries(data.errors).forEach(([k, v]) => { flat[k] = Array.isArray(v) ? v[0] : v; });
         setFieldErrors(flat);
-        setError('Please fix the errors below.');
+        setError(t('billing.errFixBelow'));
       } else {
-        setError(data?.message || 'Failed to create invoice. Please check all fields and try again.');
+        setError(data?.message || t('billing.errCreateInvoice'));
       }
     } finally {
       setSaving(false);
@@ -227,7 +229,7 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
             <div className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center">
               <FileText className="w-4 h-4 text-teal-600" />
             </div>
-            <h2 className="text-base font-bold text-gray-900">New Invoice</h2>
+            <h2 className="text-base font-bold text-gray-900">{t('billing.newInvoice')}</h2>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
             <X className="w-4 h-4" />
@@ -245,24 +247,24 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
           {/* Patient & Dates */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Patient <span className="text-gray-400 font-normal">(optional)</span></label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('common.patient')} <span className="text-gray-400 font-normal">{t('billing.optionalParen')}</span></label>
               <PatientSearchDropdown value={form.patient_id} onChange={v => setField('patient_id', v)} />
               {fieldErrors.patient_id && <p className="text-xs text-red-500 mt-1">{fieldErrors.patient_id}</p>}
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Currency</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('billing.currency')}</label>
               <select value={form.currency} onChange={e => setField('currency', e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40">
                 {CURRENCIES.map(c => <option key={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Issue Date *</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('billing.issueDate')} *</label>
               <input type="date" value={form.issue_date} onChange={e => setField('issue_date', e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Due Date</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('billing.dueDate')}</label>
               <input type="date" value={form.due_date} onChange={e => setField('due_date', e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40" />
             </div>
@@ -272,12 +274,12 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
           <div>
             <div className="flex items-center justify-between mb-2">
               <div>
-                <label className="text-xs font-semibold text-gray-600">Line Items *</label>
+                <label className="text-xs font-semibold text-gray-600">{t('billing.lineItems')} *</label>
                 {fieldErrors.items && <p className="text-xs text-red-500 mt-0.5">{fieldErrors.items}</p>}
               </div>
               <button type="button" onClick={addItem}
                 className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1">
-                <Plus className="w-3.5 h-3.5" /> Add Item
+                <Plus className="w-3.5 h-3.5" /> {t('billing.addItem')}
               </button>
             </div>
             <div className="space-y-2.5">
@@ -286,7 +288,7 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
                   <input
                     value={item.description}
                     onChange={e => updateItem(idx, 'description', e.target.value)}
-                    placeholder="Description (e.g. Consultation)"
+                    placeholder={t('billing.descriptionPlaceholder')}
                     className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40"
                   />
                   <input
@@ -294,7 +296,7 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
                     value={item.quantity}
                     min="1"
                     onChange={e => updateItem(idx, 'quantity', e.target.value)}
-                    placeholder="Qty"
+                    placeholder={t('billing.qty')}
                     className="w-16 px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 text-center"
                   />
                   <input
@@ -303,7 +305,7 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
                     min="0"
                     step="0.01"
                     onChange={e => updateItem(idx, 'unit_price', e.target.value)}
-                    placeholder="Price"
+                    placeholder={t('billing.price')}
                     className="w-24 px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 text-right"
                   />
                   {form.items.length > 1 && (
@@ -320,22 +322,22 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
           {/* Tax / Discount / Payment */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Tax Rate (%)</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('billing.taxRate')}</label>
               <input type="number" value={form.tax_rate} min="0" max="100" step="0.01"
                 onChange={e => setField('tax_rate', e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Discount</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('billing.discount')}</label>
               <input type="number" value={form.discount_amount} min="0" step="0.01"
                 onChange={e => setField('discount_amount', e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Payment Method</label>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('billing.paymentMethod')}</label>
               <select value={form.payment_method} onChange={e => setField('payment_method', e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40">
-                <option value="">— Select —</option>
+                <option value="">{t('billing.selectDash')}</option>
                 {PAYMENT_METHODS.map(m => <option key={m} value={m}>{m.replace('_', ' ')}</option>)}
               </select>
             </div>
@@ -343,25 +345,25 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Notes</label>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t('common.notes')}</label>
             <textarea value={form.notes} onChange={e => setField('notes', e.target.value)} rows={2}
-              placeholder="Optional notes for this invoice..."
+              placeholder={t('billing.notesPlaceholder')}
               className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 resize-none" />
           </div>
 
           {/* Totals Summary */}
           <div className="rounded-xl bg-gray-50 border border-gray-200 px-4 py-3 space-y-1.5">
             <div className="flex justify-between text-xs text-gray-500">
-              <span>Subtotal</span><span>{fmt(subtotal, form.currency)}</span>
+              <span>{t('billing.subtotal')}</span><span>{fmt(subtotal, form.currency)}</span>
             </div>
             {taxAmt > 0 && <div className="flex justify-between text-xs text-gray-500">
-              <span>Tax ({form.tax_rate}%)</span><span>{fmt(taxAmt, form.currency)}</span>
+              <span>{t('billing.tax')} ({form.tax_rate}%)</span><span>{fmt(taxAmt, form.currency)}</span>
             </div>}
             {discount > 0 && <div className="flex justify-between text-xs text-gray-500">
-              <span>Discount</span><span>−{fmt(discount, form.currency)}</span>
+              <span>{t('billing.discount')}</span><span>−{fmt(discount, form.currency)}</span>
             </div>}
             <div className="flex justify-between text-sm font-bold text-gray-900 border-t border-gray-200 pt-1.5 mt-1.5">
-              <span>Grand Total</span><span className="text-teal-600">{fmt(grandTotal, form.currency)}</span>
+              <span>{t('billing.grandTotal')}</span><span className="text-teal-600">{fmt(grandTotal, form.currency)}</span>
             </div>
           </div>
         </form>
@@ -370,12 +372,12 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
         <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
           <button onClick={onClose} type="button"
             className="px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            Cancel
+            {t('common.cancel')}
           </button>
           <button onClick={handleSubmit} disabled={saving}
             className={`flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-lg transition-all shadow-sm ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'}`}>
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-            {saving ? 'Creating...' : 'Create Invoice'}
+            {saving ? t('billing.creating') : t('billing.createInvoice')}
           </button>
         </div>
       </div>
@@ -459,16 +461,16 @@ export default function DoctorBilling() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <FileText className="w-6 h-6 text-teal-600" />
-              Billing & Invoices
+              {t('billing.pageTitle')}
             </h1>
-            <p className="text-sm text-gray-500 mt-0.5">Manage your invoices and track payments</p>
+            <p className="text-sm text-gray-500 mt-0.5">{t('billing.pageSubtitle')}</p>
           </div>
           <button
             onClick={() => setAddModal(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white text-sm font-semibold rounded-xl hover:bg-teal-700 transition-all shadow-sm hover:shadow-md"
           >
             <Plus className="w-4 h-4" />
-            New Invoice
+            {t('billing.newInvoice')}
           </button>
         </div>
 
@@ -476,21 +478,21 @@ export default function DoctorBilling() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           {[
             {
-              label: 'Total This Month',
+              label: t('billing.totalThisMonth'),
               value: fmt(totalAmount, currency),
               icon: TrendingUp,
               color: 'text-teal-600',
               bg: 'bg-teal-50',
             },
             {
-              label: 'Pending Invoices',
+              label: t('billing.pendingInvoices'),
               value: pendingCount,
               icon: Clock,
               color: 'text-amber-600',
               bg: 'bg-amber-50',
             },
             {
-              label: 'Paid This Month',
+              label: t('billing.paidThisMonth'),
               value: paidCount,
               icon: CheckCircle,
               color: 'text-emerald-600',
@@ -519,7 +521,7 @@ export default function DoctorBilling() {
               <input
                 value={filterSearch}
                 onChange={e => setFilterSearch(e.target.value)}
-                placeholder="Search invoice # or patient..."
+                placeholder={t('billing.searchInvoicePlaceholder')}
                 className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 focus:border-teal-400"
               />
             </div>
@@ -528,9 +530,9 @@ export default function DoctorBilling() {
               onChange={e => setFilterStatus(e.target.value)}
               className="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40 bg-white"
             >
-              <option value="">All Statuses</option>
+              <option value="">{t('billing.allStatuses')}</option>
               {Object.entries(STATUS_CONFIG).map(([v, c]) => (
-                <option key={v} value={v}>{c.label}</option>
+                <option key={v} value={v}>{t(c.labelKey)}</option>
               ))}
             </select>
             <button
@@ -538,26 +540,26 @@ export default function DoctorBilling() {
               className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg border transition-colors ${showFilters ? 'bg-teal-50 border-teal-200 text-teal-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
             >
               <Filter className="w-4 h-4" />
-              Filters
+              {t('common.filter')}
               <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
             </button>
           </div>
           {showFilters && (
             <div className="px-3 pb-3 flex gap-3 border-t border-gray-100 pt-3">
               <div className="flex items-center gap-2">
-                <label className="text-xs text-gray-500 font-medium">From:</label>
+                <label className="text-xs text-gray-500 font-medium">{t('billing.from')}:</label>
                 <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)}
                   className="px-2 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40" />
               </div>
               <div className="flex items-center gap-2">
-                <label className="text-xs text-gray-500 font-medium">To:</label>
+                <label className="text-xs text-gray-500 font-medium">{t('billing.to')}:</label>
                 <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)}
                   className="px-2 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400/40" />
               </div>
               {(filterDateFrom || filterDateTo) && (
                 <button onClick={() => { setFilterDateFrom(''); setFilterDateTo(''); }}
                   className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-red-50">
-                  <X className="w-3 h-3" /> Clear dates
+                  <X className="w-3 h-3" /> {t('billing.clearDates')}
                 </button>
               )}
             </div>
@@ -575,13 +577,13 @@ export default function DoctorBilling() {
               <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-3">
                 <FileText className="w-7 h-7 text-gray-400" />
               </div>
-              <p className="text-sm font-semibold text-gray-700">No invoices yet</p>
-              <p className="text-xs text-gray-400 mt-1">Create your first invoice to get started</p>
+              <p className="text-sm font-semibold text-gray-700">{t('billing.noInvoices')}</p>
+              <p className="text-xs text-gray-400 mt-1">{t('billing.noInvoicesHint')}</p>
               <button
                 onClick={() => setAddModal(true)}
                 className="mt-4 flex items-center gap-1.5 px-4 py-2 bg-teal-600 text-white text-sm font-semibold rounded-xl hover:bg-teal-700 transition-colors"
               >
-                <Plus className="w-4 h-4" /> New Invoice
+                <Plus className="w-4 h-4" /> {t('billing.newInvoice')}
               </button>
             </div>
           ) : (
@@ -589,12 +591,12 @@ export default function DoctorBilling() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/60">
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-5 py-3">Invoice #</th>
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">Patient</th>
-                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">Date</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">Amount</th>
-                    <th className="text-center text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">Status</th>
-                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-5 py-3">Actions</th>
+                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-5 py-3">{t('billing.invoiceNumber')}</th>
+                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.patient')}</th>
+                    <th className="text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.date')}</th>
+                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.amount')}</th>
+                    <th className="text-center text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-3 py-3">{t('common.status')}</th>
+                    <th className="text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-5 py-3">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -622,7 +624,7 @@ export default function DoctorBilling() {
                       <td className="px-3 py-3.5 text-right">
                         <span className="text-sm font-bold text-gray-900">{fmt(inv.grand_total, inv.currency)}</span>
                         {inv.paid_amount > 0 && inv.status !== 'paid' && (
-                          <p className="text-[11px] text-emerald-600 font-medium">{fmt(inv.paid_amount, inv.currency)} paid</p>
+                          <p className="text-[11px] text-emerald-600 font-medium">{fmt(inv.paid_amount, inv.currency)} {t('billing.paidSuffix')}</p>
                         )}
                       </td>
                       <td className="px-3 py-3.5 text-center">
@@ -633,7 +635,7 @@ export default function DoctorBilling() {
                           {inv.status === 'pending' && (
                             <button
                               onClick={() => handleStatusChange(inv.id, 'paid')}
-                              title="Mark as Paid"
+                              title={t('billing.markAsPaid')}
                               className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 transition-colors"
                             >
                               <CheckCircle className="w-4 h-4" />
@@ -642,7 +644,7 @@ export default function DoctorBilling() {
                           {inv.status !== 'cancelled' && (
                             <button
                               onClick={() => handleStatusChange(inv.id, 'cancelled')}
-                              title="Cancel Invoice"
+                              title={t('billing.cancelInvoice')}
                               className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                             >
                               <XCircle className="w-4 h-4" />

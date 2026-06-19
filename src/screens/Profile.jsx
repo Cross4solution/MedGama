@@ -35,7 +35,7 @@ function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
       await authAPI.updateNotificationPrefs(prefs);
       showToast(t('profile.savePreferences') + ' ✓');
     } catch {
-      showToast('Failed to save preferences', 'error');
+      showToast(t('profile.savePrefsError'), 'error');
     }
     setSaving(false);
   };
@@ -53,7 +53,7 @@ function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
           {t('profile.notificationPreferences')}
         </h2>
         {!loaded ? (
-          <div className="py-6 text-center text-sm text-gray-400">Loading...</div>
+          <div className="py-6 text-center text-sm text-gray-400">{t('common.loading')}</div>
         ) : (
           <div className="divide-y divide-gray-100">
             {toggleItems.map(item => (
@@ -77,7 +77,7 @@ function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
         )}
       </div>
       <div className="flex justify-end">
-        <button onClick={savePrefs} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? 'Saving...' : t('profile.savePreferences')}</button>
+        <button onClick={savePrefs} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? t('common.saving') : t('profile.savePreferences')}</button>
       </div>
     </div>
   );
@@ -289,7 +289,7 @@ export default function Profile() {
           avatarFileRef.current = null;
         } catch (err) {
           console.error('[Profile] Avatar upload failed:', err?.message, err?.status, err?.data);
-          showToast(err?.message || 'Avatar upload failed. Please try again.', 'error');
+          showToast(err?.message || t('profile.avatarUploadFailed'), 'error');
           setSaving(false);
           return;
         }
@@ -302,7 +302,7 @@ export default function Profile() {
       });
       // Update local state with the server-returned avatar URL (not blob)
       updateUser({ name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage }, codeUpper);
-      showToast('Profile updated successfully');
+      showToast(t('profile.profileUpdated'));
     } catch (err) {
       // Still update local state so UI stays consistent (avatar preview etc.)
       updateUser({ name: limitedName || user.name, avatar: avatarUrl || user.avatar, preferredLanguage }, codeUpper);
@@ -310,12 +310,12 @@ export default function Profile() {
       const status = err?.status || 0;
       if (msg.includes('Network') || msg.includes('timeout') || !status) {
         // Backend unreachable — profile saved locally, no need to alarm user
-        showToast('Profile updated successfully');
+        showToast(t('profile.profileUpdated'));
       } else if (status === 401) {
         // Token expired or invalid — still saved locally
-        showToast('Profile updated locally. Please re-login to sync with server.');
+        showToast(t('profile.profileUpdatedLocally'));
       } else {
-        showToast(msg || 'Failed to update profile', 'error');
+        showToast(msg || t('profile.profileUpdateFailed'), 'error');
       }
     }
     setSaving(false);
@@ -323,14 +323,14 @@ export default function Profile() {
 
   const saveSecurity = async (e) => {
     e.preventDefault();
-    if (!oldPwd) { showToast('Please enter your current password.', 'error'); return; }
-    if (newPwd.length < 6) { showToast('New password must be at least 6 characters.', 'error'); return; }
-    if (newPwd !== newPwd2) { showToast('New passwords do not match.', 'error'); return; }
+    if (!oldPwd) { showToast(t('profile.enterCurrentPassword'), 'error'); return; }
+    if (newPwd.length < 6) { showToast(t('profile.passwordMinLength'), 'error'); return; }
+    if (newPwd !== newPwd2) { showToast(t('profile.passwordsDoNotMatch'), 'error'); return; }
     setSaving(true);
     try {
       // Try dedicated password endpoint first
       await authAPI.changePassword({ current_password: oldPwd, password: newPwd, password_confirmation: newPwd2 });
-      showToast('Password updated successfully ✓');
+      showToast(t('profile.passwordUpdated') + ' ✓');
       setOldPwd(''); setNewPwd(''); setNewPwd2('');
     } catch (err) {
       // If dedicated endpoint doesn't exist (404), fallback to updateProfile
@@ -340,11 +340,11 @@ export default function Profile() {
           showToast('Password updated successfully ✓');
           setOldPwd(''); setNewPwd(''); setNewPwd2('');
         } catch (err2) {
-          const msg = err2?.data?.message || err2?.message || 'Failed to update password.';
+          const msg = err2?.data?.message || err2?.message || t('profile.passwordUpdateFailed');
           showToast(msg, 'error');
         }
       } else {
-        const msg = err?.data?.message || err?.message || 'Failed to update password.';
+        const msg = err?.data?.message || err?.message || t('profile.passwordUpdateFailed');
         showToast(msg, 'error');
       }
     }
@@ -485,7 +485,7 @@ export default function Profile() {
                     onChange={(e) => setName(e.target.value)}
                     maxLength={30}
                     className="w-full border border-gray-200 rounded-xl px-3 text-sm h-10 hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
-                    placeholder="Your name"
+                    placeholder={t('profile.yourNamePlaceholder')}
                   />
                   <p className="mt-1 text-[11px] text-gray-400">{Math.max(0, 30 - (name?.length || 0))} {t('profile.charactersLeft')}</p>
                 </div>
@@ -495,7 +495,7 @@ export default function Profile() {
                     options={countriesEurope}
                     value={countryName}
                     onChange={setCountryName}
-                    placeholder="Select Country"
+                    placeholder={t('profile.selectCountry')}
                     triggerClassName="w-full border border-gray-300 rounded-lg px-3 text-sm bg-white h-10 flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow"
                     getFlagUrl={(name) => {
                       try {
@@ -556,7 +556,7 @@ export default function Profile() {
               </div>
 
               <div className="flex justify-end">
-                <button type="submit" disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? 'Saving...' : t('common.save')}</button>
+                <button type="submit" disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? t('common.saving') : t('common.save')}</button>
               </div>
             </form>
           )}
@@ -629,7 +629,7 @@ export default function Profile() {
                 </div>
               </div>
               <div className="flex justify-end">
-                <button type="submit" disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? 'Saving...' : t('common.save')}</button>
+                <button type="submit" disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? t('common.saving') : t('common.save')}</button>
               </div>
             </form>
           )}
@@ -659,7 +659,7 @@ export default function Profile() {
               <p className="text-xs text-gray-500 mt-1.5">{t('profile.medicalHistoryHint', 'Search and select your conditions, or type custom entries.')}</p>
               
               <div className="flex justify-end mt-4">
-                <button onClick={saveMedical} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? 'Saving...' : t('common.save')}</button>
+                <button onClick={saveMedical} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? t('common.saving') : t('common.save')}</button>
               </div>
             </div>
           )}
@@ -684,13 +684,13 @@ export default function Profile() {
                       <span className={`w-2 h-2 rounded-full ${cat.always || consent[cat.key] ? 'bg-green-500' : 'bg-gray-300'}`} />
                       <span className="text-gray-700">{cat.label}</span>
                       <span className={`text-[10px] font-medium ${cat.always || consent[cat.key] ? 'text-green-600' : 'text-gray-400'}`}>
-                        {cat.always ? 'Always' : consent[cat.key] ? 'On' : 'Off'}
+                        {cat.always ? t('profile.always') : consent[cat.key] ? t('profile.on') : t('profile.off')}
                       </span>
                     </div>
                   ))}
                 </div>
                 {consentTimestamp && (
-                  <p className="text-[10px] text-gray-400 mb-3">Last updated: {new Date(consentTimestamp).toLocaleString()}</p>
+                  <p className="text-[10px] text-gray-400 mb-3">{t('profile.lastUpdated')}: {new Date(consentTimestamp).toLocaleString()}</p>
                 )}
                 <div className="flex flex-wrap gap-2">
                   <button onClick={openCookieSettings} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-all">
@@ -795,17 +795,17 @@ export default function Profile() {
                         doc.text('For questions, contact dpo@medagama.com', pageW / 2, y + 5, { align: 'center' });
 
                         doc.save('medagama-data-' + new Date().toISOString().split('T')[0] + '.pdf');
-                        showToast('PDF downloaded successfully');
+                        showToast(t('profile.pdfDownloaded'));
                       } catch (err) {
                         console.error('PDF generation error:', err);
-                        showToast('Failed to generate PDF', 'error');
+                        showToast(t('profile.pdfFailed'), 'error');
                       }
                       setSaving(false);
                     }}
                     disabled={saving}
                     className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    <Download className="w-3.5 h-3.5" /> {saving ? 'Preparing...' : 'PDF Report'}
+                    <Download className="w-3.5 h-3.5" /> {saving ? t('profile.preparing') : t('profile.pdfReport')}
                   </button>
                   {/* CSV / Excel */}
                   <button
@@ -833,12 +833,12 @@ export default function Profile() {
                       const a = document.createElement('a'); a.href = url; a.download = `medagama-data-${new Date().toISOString().split('T')[0]}.csv`;
                       document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
                       setSaving(false);
-                      showToast('CSV exported — open with Excel or Google Sheets');
+                      showToast(t('profile.csvExported'));
                     }}
                     disabled={saving}
                     className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    <Download className="w-3.5 h-3.5" /> {saving ? 'Preparing...' : 'Excel / CSV'}
+                    <Download className="w-3.5 h-3.5" /> {saving ? t('profile.preparing') : t('profile.excelCsv')}
                   </button>
                 </div>
               </div>
@@ -894,13 +894,13 @@ export default function Profile() {
           <div className="mx-auto w-14 h-14 rounded-full bg-rose-100 flex items-center justify-center mb-4">
             <Trash2 className="w-7 h-7 text-rose-600" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900 text-center mb-2">Delete Your Account?</h3>
+          <h3 className="text-lg font-bold text-gray-900 text-center mb-2">{t('profile.deleteModalTitle')}</h3>
           <p className="text-sm text-gray-500 text-center mb-4 leading-relaxed">
-            This will <strong className="text-rose-600">permanently delete</strong> your account and all associated data including posts, comments, medical history, and personal information. This action <strong className="text-rose-600">cannot be undone</strong>.
+            {t('profile.deleteModalBody')}
           </p>
           {/* Confirmation input */}
           <div className="mb-5">
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Type <span className="font-bold text-rose-600">DELETE</span> to confirm</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">{t('profile.deleteModalTypePrefix')} <span className="font-bold text-rose-600">DELETE</span> {t('profile.deleteModalTypeSuffix')}</label>
             <input
               type="text"
               value={deleteConfirmText}
@@ -916,7 +916,7 @@ export default function Profile() {
               onClick={() => setShowDeleteModal(false)}
               className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-all"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               disabled={deleteConfirmText !== 'DELETE' || saving}
@@ -947,7 +947,7 @@ export default function Profile() {
                   : 'bg-gray-300 cursor-not-allowed'
               }`}
             >
-              {saving ? 'Deleting...' : 'Delete My Account'}
+              {saving ? t('profile.deleting') : t('profile.deleteMyAccount')}
             </button>
           </div>
         </div>

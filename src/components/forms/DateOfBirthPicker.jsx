@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const MONTHS = [
@@ -16,6 +17,7 @@ const MAX_YEAR = new Date().getFullYear();
  * value format: YYYY-MM-DD (ISO), onChange receives YYYY-MM-DD
  */
 export default function DateOfBirthPicker({ value = '', onChange, className = '', placeholder = 'DD / MM / YYYY' }) {
+  const { t } = useTranslation();
   const wrapperRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -329,7 +331,7 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
               onClick={() => { setDayStr(''); setMonthStr(''); setYearStr(''); onChange(''); setOpen(false); }}
               className="text-xs text-gray-500 hover:text-red-500 px-2 py-1 rounded hover:bg-red-50 transition-colors"
             >
-              Clear
+              {t('common.clear')}
             </button>
             <button
               type="button"
@@ -342,7 +344,7 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
               }}
               className="text-xs text-teal-600 hover:text-teal-700 px-2 py-1 rounded hover:bg-teal-50 transition-colors font-medium"
             >
-              Today
+              {t('datePicker.today')}
             </button>
           </div>
         </div>

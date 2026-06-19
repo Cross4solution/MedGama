@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { Phone as PhoneIcon } from 'lucide-react';
 import countryCodes from '../../data/countryCodes';
 import countryDialCodes from '../../data/countryDialCodes';
 import { getFlagCode } from '../../utils/geo';
 
 export default function PhoneNumberInput({ value = '', onChange, countryName, allowedCountryNames = null }) {
+  const { t } = useTranslation();
   const phoneWrapRef = useRef(null);
   const [showPhoneCodes, setShowPhoneCodes] = useState(false);
   const [phoneCodeQuery, setPhoneCodeQuery] = useState('');
@@ -212,7 +214,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
         type="button"
         onClick={() => setShowPhoneCodes((s)=>!s)}
         className="absolute left-9 top-1/2 -translate-y-1/2 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-none w-7 h-7 flex items-center justify-center focus:outline-none focus:ring-0 select-none"
-        aria-label="Choose phone country code"
+        aria-label={t('phoneInput.chooseCountryCode')}
       >
         {(phoneMeta[phoneCode]?.iso || isoFor(phoneMeta[phoneCode]?.name)) && (
           <img src={getFlagUrlByIso(phoneMeta[phoneCode]?.iso || isoFor(phoneMeta[phoneCode]?.name))} alt="" width={14} height={10} className="inline-block rounded-[2px]" />
@@ -281,7 +283,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
             <input
               value={phoneCodeQuery}
               onChange={(e)=>setPhoneCodeQuery(e.target.value)}
-              placeholder="Search country or code"
+              placeholder={t('phoneInput.searchCountryOrCode')}
               className="w-full border border-gray-300 rounded-md px-2 py-2 text-sm"
               onTouchMove={(e) => e.stopPropagation()}
               onMouseDown={(e) => e.stopPropagation()}
@@ -321,7 +323,7 @@ export default function PhoneNumberInput({ value = '', onChange, countryName, al
               className={`w-full text-left px-3 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-3 rounded-md ${ displayPhone.startsWith(c) ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
             >
               {iso && <img src={getFlagUrlByIso(iso)} alt="" width={20} height={15} className="inline-block rounded-sm" />}
-              <span className="flex-1 truncate">{meta.name || 'Country'}</span>
+              <span className="flex-1 truncate">{meta.name || t('common.country')}</span>
               <span className="text-gray-500">{c}</span>
             </button>
           );

@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Star, MessageSquare, MapPin, BadgeDollarSign, User, Building2, Pencil, Trash2, X, AlertTriangle } from 'lucide-react';
 // SEO meta + canonical artık app/doctors-departments/page.jsx generateMetadata ile sunucuda üretiliyor (Faz 3).
 
@@ -33,6 +34,7 @@ const INITIAL_DEPARTMENTS = [
 ];
 
 export default function DoctorsDepartments() {
+  const { t } = useTranslation();
   const [departments, setDepartments] = useState(INITIAL_DEPARTMENTS);
 
   // Modals state
@@ -59,8 +61,8 @@ export default function DoctorsDepartments() {
   const deleteDept = (id) => {
     setConfirm({
       open: true,
-      title: 'Delete Department',
-      desc: 'This will remove the department and all its doctors. Are you sure?',
+      title: t('doctorsDepartments.deleteDeptTitle'),
+      desc: t('doctorsDepartments.deleteDeptDesc'),
       onYes: () => setDepartments((prev) => prev.filter((d) => d.id !== id))
     });
   };
@@ -85,8 +87,8 @@ export default function DoctorsDepartments() {
   const deleteDoctor = (depId, docId) => {
     setConfirm({
       open: true,
-      title: 'Delete Doctor',
-      desc: 'This will remove the doctor from the department. Are you sure?',
+      title: t('doctorsDepartments.deleteDoctorTitle'),
+      desc: t('doctorsDepartments.deleteDoctorDesc'),
       onYes: () => setDepartments((prev) => prev.map((d) => d.id === depId ? { ...d, doctors: d.doctors.filter((u)=>u.id!==docId) } : d))
     });
   };
@@ -106,12 +108,12 @@ export default function DoctorsDepartments() {
               <Building2 className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900">Doctors & Departments</h1>
-              <p className="text-[11px] text-gray-400 font-medium">Manage your clinic departments and doctors</p>
+              <h1 className="text-lg font-bold text-gray-900">{t('doctorsDepartments.title')}</h1>
+              <p className="text-[11px] text-gray-400 font-medium">{t('doctorsDepartments.subtitle')}</p>
             </div>
           </div>
           <button onClick={openCreateDept} className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200">
-            <Plus className="w-4 h-4" /> New Department
+            <Plus className="w-4 h-4" /> {t('doctorsDepartments.newDepartment')}
           </button>
         </div>
 
@@ -138,9 +140,9 @@ export default function DoctorsDepartments() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
-                      <button onClick={()=>openEditDept(dep)} className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-medium border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors"><Pencil className="w-3 h-3" /> <span className="hidden sm:inline">Edit</span></button>
-                      <button onClick={()=>deleteDept(dep.id)} className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-medium text-rose-600 hover:bg-rose-50 transition-colors"><Trash2 className="w-3 h-3" /> <span className="hidden sm:inline">Delete</span></button>
-                      <button onClick={()=>openCreateDoctor(dep.id)} className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/60 transition-colors"><Plus className="w-3 h-3" /> <span className="hidden sm:inline">Doctor</span></button>
+                      <button onClick={()=>openEditDept(dep)} className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-medium border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors"><Pencil className="w-3 h-3" /> <span className="hidden sm:inline">{t('common.edit')}</span></button>
+                      <button onClick={()=>deleteDept(dep.id)} className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-medium text-rose-600 hover:bg-rose-50 transition-colors"><Trash2 className="w-3 h-3" /> <span className="hidden sm:inline">{t('common.delete')}</span></button>
+                      <button onClick={()=>openCreateDoctor(dep.id)} className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/60 transition-colors"><Plus className="w-3 h-3" /> <span className="hidden sm:inline">{t('common.doctor')}</span></button>
                     </div>
                   </div>
                 </div>
@@ -150,7 +152,7 @@ export default function DoctorsDepartments() {
                   {dep.doctors.length === 0 && (
                     <div className="py-6 text-center">
                       <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-2"><User className="w-4 h-4 text-gray-400" /></div>
-                      <p className="text-xs text-gray-400 font-medium">No doctors yet</p>
+                      <p className="text-xs text-gray-400 font-medium">{t('doctorsDepartments.noDoctorsYet')}</p>
                     </div>
                   )}
                   {dep.doctors.map((doc) => (
@@ -173,8 +175,8 @@ export default function DoctorsDepartments() {
                           </div>
                         </div>
                         <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <button onClick={()=>openEditDoctor(dep.id, doc)} className="px-2.5 py-1.5 rounded-lg text-[11px] font-medium border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors">Edit</button>
-                          <button onClick={()=>deleteDoctor(dep.id, doc.id)} className="px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-rose-600 hover:bg-rose-50 transition-colors">Delete</button>
+                          <button onClick={()=>openEditDoctor(dep.id, doc)} className="px-2.5 py-1.5 rounded-lg text-[11px] font-medium border border-gray-200/80 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors">{t('common.edit')}</button>
+                          <button onClick={()=>deleteDoctor(dep.id, doc.id)} className="px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-rose-600 hover:bg-rose-50 transition-colors">{t('common.delete')}</button>
                         </div>
                       </div>
                     </div>
@@ -192,22 +194,22 @@ export default function DoctorsDepartments() {
             <div className="absolute inset-0 flex items-center justify-center p-4">
               <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
                 <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-gray-900">{deptMode==='create' ? 'New Department' : 'Edit Department'}</h3>
+                  <h3 className="text-sm font-bold text-gray-900">{deptMode==='create' ? t('doctorsDepartments.newDepartment') : t('doctorsDepartments.editDepartment')}</h3>
                   <button onClick={()=>setDeptModalOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"><X className="w-4 h-4"/></button>
                 </div>
                 <div className="px-5 py-4 space-y-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Department Name</label>
-                    <input value={deptEditing?.name||''} onChange={(e)=>setDeptEditing((p)=>({...p, name:e.target.value}))} className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="e.g., ENT, Neurology" />
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('doctorsDepartments.departmentName')}</label>
+                    <input value={deptEditing?.name||''} onChange={(e)=>setDeptEditing((p)=>({...p, name:e.target.value}))} className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('doctorsDepartments.departmentNamePlaceholder')} />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Description</label>
-                    <textarea value={deptEditing?.info||''} onChange={(e)=>setDeptEditing((p)=>({...p, info:e.target.value}))} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="Short description" />
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('common.description')}</label>
+                    <textarea value={deptEditing?.info||''} onChange={(e)=>setDeptEditing((p)=>({...p, info:e.target.value}))} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('doctorsDepartments.shortDescription')} />
                   </div>
                 </div>
                 <div className="px-5 pb-4 flex items-center justify-end gap-2">
-                  <button onClick={()=>setDeptModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-                  <button onClick={saveDept} className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 rounded-xl shadow-md shadow-teal-200/50 transition-all duration-200">Save</button>
+                  <button onClick={()=>setDeptModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">{t('common.cancel')}</button>
+                  <button onClick={saveDept} className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 rounded-xl shadow-md shadow-teal-200/50 transition-all duration-200">{t('common.save')}</button>
                 </div>
               </div>
             </div>
@@ -221,32 +223,32 @@ export default function DoctorsDepartments() {
             <div className="absolute inset-0 flex items-center justify-center p-4">
               <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
                 <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-gray-900">{doctorEditing?.id ? 'Edit Doctor' : 'New Doctor'}</h3>
+                  <h3 className="text-sm font-bold text-gray-900">{doctorEditing?.id ? t('doctorsDepartments.editDoctor') : t('doctorsDepartments.newDoctor')}</h3>
                   <button onClick={()=>setDoctorModalOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"><X className="w-4 h-4"/></button>
                 </div>
                 <div className="px-5 py-4 grid grid-cols-1 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Name</label>
-                    <input value={doctorEditing?.name||''} onChange={(e)=>setDoctorEditing((p)=>({...p, name:e.target.value}))} className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="e.g., Dr. Jane Doe" />
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('common.name')}</label>
+                    <input value={doctorEditing?.name||''} onChange={(e)=>setDoctorEditing((p)=>({...p, name:e.target.value}))} className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('doctorsDepartments.doctorNamePlaceholder')} />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Specialty</label>
-                    <input value={doctorEditing?.specialty||''} onChange={(e)=>setDoctorEditing((p)=>({...p, specialty:e.target.value}))} className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="e.g., Cardiologist" />
+                    <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('common.specialty')}</label>
+                    <input value={doctorEditing?.specialty||''} onChange={(e)=>setDoctorEditing((p)=>({...p, specialty:e.target.value}))} className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('doctorsDepartments.specialtyPlaceholder')} />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Price (₺)</label>
-                      <input value={doctorEditing?.price||''} onChange={(e)=>setDoctorEditing((p)=>({...p, price: String(e.target.value).replace(/[^0-9]/g,'')}))} className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="e.g., 800" />
+                      <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('doctorsDepartments.priceTry')}</label>
+                      <input value={doctorEditing?.price||''} onChange={(e)=>setDoctorEditing((p)=>({...p, price: String(e.target.value).replace(/[^0-9]/g,'')}))} className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('doctorsDepartments.pricePlaceholder')} />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Next Availability</label>
+                      <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('doctorsDepartments.nextAvailability')}</label>
                       <input type="datetime-local" value={doctorEditing?.available||''} onChange={(e)=>setDoctorEditing((p)=>({...p, available:e.target.value}))} className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" />
                     </div>
                   </div>
                 </div>
                 <div className="px-5 pb-4 flex items-center justify-end gap-2">
-                  <button onClick={()=>setDoctorModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-                  <button onClick={saveDoctor} className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 rounded-xl shadow-md shadow-teal-200/50 transition-all duration-200">Save</button>
+                  <button onClick={()=>setDoctorModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">{t('common.cancel')}</button>
+                  <button onClick={saveDoctor} className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 rounded-xl shadow-md shadow-teal-200/50 transition-all duration-200">{t('common.save')}</button>
                 </div>
               </div>
             </div>
@@ -267,8 +269,8 @@ export default function DoctorsDepartments() {
                   <p className="text-sm text-gray-600 leading-relaxed">{confirm.desc}</p>
                 </div>
                 <div className="px-5 pb-4 flex items-center justify-end gap-2">
-                  <button onClick={()=>closeConfirm(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-                  <button onClick={()=>closeConfirm(true)} className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 rounded-xl shadow-md shadow-rose-200/50 transition-all duration-200">Confirm</button>
+                  <button onClick={()=>closeConfirm(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">{t('common.cancel')}</button>
+                  <button onClick={()=>closeConfirm(true)} className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 rounded-xl shadow-md shadow-rose-200/50 transition-all duration-200">{t('common.confirm')}</button>
                 </div>
               </div>
             </div>

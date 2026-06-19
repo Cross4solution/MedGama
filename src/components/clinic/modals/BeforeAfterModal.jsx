@@ -1,7 +1,8 @@
 import React from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-export default function BeforeAfterModal({ 
+export default function BeforeAfterModal({
   photos, 
   currentIndex, 
   isOpen, 
@@ -9,8 +10,9 @@ export default function BeforeAfterModal({
   onPrev, 
   onNext,
   sliderPosition,
-  setSliderPosition 
+  setSliderPosition
 }) {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   const currentPhoto = photos[currentIndex];
@@ -24,7 +26,7 @@ export default function BeforeAfterModal({
           {/* Before Image (full width) */}
           <img
             src={currentPhoto.before}
-            alt="Before"
+            alt={t('gallery.before')}
             className="absolute inset-0 w-full h-full object-cover"
           />
           {/* After Image (clipped by slider) */}
@@ -34,7 +36,7 @@ export default function BeforeAfterModal({
           >
             <img
               src={currentPhoto.after}
-              alt="After"
+              alt={t('gallery.after')}
               className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
@@ -67,8 +69,8 @@ export default function BeforeAfterModal({
             </div>
           </div>
           {/* Labels */}
-          <span className="absolute top-4 left-4 px-3 py-1.5 bg-black/60 text-white text-sm font-medium rounded-lg">Before</span>
-          <span className="absolute top-4 right-4 px-3 py-1.5 bg-teal-600 text-white text-sm font-medium rounded-lg">After</span>
+          <span className="absolute top-4 left-4 px-3 py-1.5 bg-black/60 text-white text-sm font-medium rounded-lg">{t('gallery.before')}</span>
+          <span className="absolute top-4 right-4 px-3 py-1.5 bg-teal-600 text-white text-sm font-medium rounded-lg">{t('gallery.after')}</span>
           {/* Title */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/60 text-white text-sm font-medium rounded-lg backdrop-blur">
             {currentPhoto.title}
@@ -78,7 +80,7 @@ export default function BeforeAfterModal({
             type="button"
             onClick={onClose}
             className="absolute top-3 right-3 md:top-4 md:right-4 h-10 w-10 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
-            aria-label="Close"
+            aria-label={t('common.close')}
           >
             <X className="w-6 h-6" />
           </button>
@@ -89,7 +91,7 @@ export default function BeforeAfterModal({
             type="button"
             onClick={onPrev}
             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[120%] h-10 w-10 md:h-11 md:w-11 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
-            aria-label="Previous"
+            aria-label={t('gallery.previous')}
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -100,7 +102,7 @@ export default function BeforeAfterModal({
             type="button"
             onClick={onNext}
             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[120%] h-10 w-10 md:h-11 md:w-11 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"
-            aria-label="Next"
+            aria-label={t('gallery.next')}
           >
             <ChevronRight className="w-6 h-6" />
           </button>
