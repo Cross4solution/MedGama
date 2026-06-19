@@ -43,12 +43,12 @@ export default function LanguageSwitcher({ compact = false }) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={`inline-flex items-center gap-1.5 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors ${compact ? 'px-2 py-1.5' : 'px-2.5 py-1.5'}`}
+        className={`inline-flex items-center gap-1 rounded-md hover:bg-gray-100 transition-colors ${compact ? 'px-1.5 py-1' : 'px-1.5 py-1'}`}
         aria-label="Dil seçimi"
       >
-        <LangFlag lang={currentLang} size={18} />
-        {!compact && <span className="text-sm font-medium text-gray-700">{currentLang?.code?.toUpperCase()}</span>}
-        <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+        <LangFlag lang={currentLang} size={15} />
+        {!compact && <span className="text-xs font-medium text-gray-500">{currentLang?.code?.toUpperCase()}</span>}
+        <ChevronDown className="w-3 h-3 text-gray-400" />
       </button>
       {open && (
         <div role="menu" className="absolute right-0 mt-1 w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-1">
