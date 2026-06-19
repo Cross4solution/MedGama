@@ -73,11 +73,15 @@ api.interceptors.response.use(
     const data = error.response?.data;
     const code = data?.code || null; // Backend error code: FORBIDDEN, VALIDATION_ERROR, etc.
 
-    // Auto-logout on 401 for any endpoint except login/register (token expired or invalid)
+    // Auto-logout on 401 for any endpoint except login/register (token expired or invalid).
+    // Only when the request actually carried a token — otherwise an anonymous visitor
+    // hitting an auth-only/optional-auth endpoint (e.g. a public clinic tab) would be
+    // wrongly kicked to the login screen. No token + 401 = expected, ignore.
     if (status === 401) {
       const url = error.config?.url || '';
       const isLoginOrRegister = url.includes('/login') || url.includes('/register');
-      if (!isLoginOrRegister) {
+      const hadToken = !!(error.config?.headers?.Authorization) || !!getStoredToken();
+      if (!isLoginOrRegister && hadToken) {
         // 401: tüm token storage'larını temizle (localStorage + sessionStorage)
         try {
           localStorage.removeItem('auth_state');
