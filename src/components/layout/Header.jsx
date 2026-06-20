@@ -93,7 +93,7 @@ const Header = () => {
         type: toastType,
         title: data.title || 'New notification',
         message: data.message || '',
-        timeout: 5000,
+        timeout: 0, // persist until the user clicks/closes (no auto-dismiss)
         actionUrl: data.action_url || data.link || null,
       });
     });
