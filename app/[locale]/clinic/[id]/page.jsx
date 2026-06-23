@@ -21,7 +21,7 @@ async function getClinicData(codename) {
 }
 
 export async function generateMetadata({ params }) {
-  const { id } = await params;
+  const { id, locale } = await params;
   const c = await getClinicData(id);
   if (!c) return { title: 'Bulunamadı | MedaGama', robots: { index: false } };
 
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
   return {
     title: name,
     description,
-    alternates: altLanguages(`/clinic/${id}`),
+    alternates: altLanguages(`/clinic/${id}`, locale),
     openGraph: {
       title: `${name} | MedaGama`,
       description,

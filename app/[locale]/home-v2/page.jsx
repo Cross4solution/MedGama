@@ -3,22 +3,24 @@ import {
   buildWebSiteSchema,
   buildOrganizationSchema,
   jsonLdString,
-  altLanguages,
+  buildMetadata,
 } from '@/lib/seo-server';
 
-export const metadata = {
-  title: 'MedaGama — Dijital Sağlık ve Randevu Platformu',
-  description:
-    'Uzman doktorlar, güvenli telehealth ve modern tedavi yöntemleri tek bir platformda. Randevu al, doktor yorumlarını oku, sağlık turizmini planla.',
-  alternates: altLanguages('/home-v2'),
-  openGraph: {
-    title: 'MedaGama — Dijital Sağlık ve Randevu Platformu',
-    description:
-      'Uzman doktorlar, güvenli telehealth ve modern tedavi yöntemleri tek bir platformda.',
-    url: '/home-v2',
-    type: 'website',
-  },
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return buildMetadata({
+    locale,
+    path: '/home-v2',
+    title: {
+      tr: 'MedaGama — Dijital Sağlık ve Randevu Platformu',
+      en: 'MedaGama — Digital Health & Appointment Platform',
+    },
+    description: {
+      tr: 'Uzman doktorlar, güvenli telehealth ve modern tedavi yöntemleri tek bir platformda. Randevu al, doktor yorumlarını oku, sağlık turizmini planla.',
+      en: 'Expert doctors, secure telehealth and modern treatments in one platform. Book appointments, read doctor reviews and plan medical travel.',
+    },
+  });
+}
 
 export default function Page() {
   return (

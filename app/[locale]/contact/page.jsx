@@ -1,18 +1,18 @@
 import ContactPage from '@/screens/ContactPage';
-import { altLanguages } from '@/lib/seo-server';
+import { buildMetadata } from '@/lib/seo-server';
 
-export const metadata = {
-  title: 'İletişim',
-  description:
-    'MedaGama ekibiyle iletişime geçin. Sorularınız, iş birlikleri ve destek talepleriniz için bize ulaşın.',
-  alternates: altLanguages('/contact'),
-  openGraph: {
-    title: 'İletişim | MedaGama',
-    description: 'Sorularınız ve destek talepleriniz için MedaGama ile iletişime geçin.',
-    url: '/contact',
-    type: 'website',
-  },
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return buildMetadata({
+    locale,
+    path: '/contact',
+    title: { tr: 'İletişim', en: 'Contact' },
+    description: {
+      tr: 'MedaGama ekibiyle iletişime geçin. Sorularınız, iş birlikleri ve destek talepleriniz için bize ulaşın.',
+      en: 'Get in touch with the MedaGama team for questions, partnerships and support requests.',
+    },
+  });
+}
 
 export default function Page() {
   return <ContactPage />;

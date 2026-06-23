@@ -1,19 +1,18 @@
 import AboutPage from '@/screens/AboutPage';
-import { altLanguages } from '@/lib/seo-server';
+import { buildMetadata } from '@/lib/seo-server';
 
-export const metadata = {
-  title: 'Hakkımızda',
-  description:
-    'MedaGama; uzman doktorları, klinikleri ve hastaları güvenli ve modern bir dijital sağlık platformunda buluşturur. Misyonumuzu ve değerlerimizi keşfedin.',
-  alternates: altLanguages('/about'),
-  openGraph: {
-    title: 'Hakkımızda | MedaGama',
-    description:
-      'MedaGama; uzman doktorları, klinikleri ve hastaları güvenli ve modern bir dijital sağlık platformunda buluşturur.',
-    url: '/about',
-    type: 'website',
-  },
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return buildMetadata({
+    locale,
+    path: '/about',
+    title: { tr: 'Hakkımızda', en: 'About Us' },
+    description: {
+      tr: 'MedaGama; uzman doktorları, klinikleri ve hastaları güvenli ve modern bir dijital sağlık platformunda buluşturur. Misyonumuzu ve değerlerimizi keşfedin.',
+      en: 'MedaGama connects expert doctors, clinics and patients on a secure, modern digital health platform. Discover our mission and values.',
+    },
+  });
+}
 
 export default function Page() {
   return <AboutPage />;

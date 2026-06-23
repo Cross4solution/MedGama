@@ -18,16 +18,56 @@ export const SITE_NAME = 'MedaGama';
  * Canonical points to the default-locale (tr) URL.
  * @param {string} path locale-less canonical path, e.g. '/about'
  */
-export function altLanguages(path) {
+export function altLanguages(path, locale = DEFAULT_LOCALE) {
   const clean = !path || path === '/' ? '' : (path.startsWith('/') ? path : `/${path}`);
+  const loc = LOCALES.includes(locale) ? locale : DEFAULT_LOCALE;
   const languages = {};
-  for (const loc of LOCALES) {
-    languages[loc] = `${SITE_URL}/${loc}${clean}`;
+  for (const l of LOCALES) {
+    languages[l] = `${SITE_URL}/${l}${clean}`;
   }
   languages['x-default'] = `${SITE_URL}/${DEFAULT_LOCALE}${clean}`;
   return {
-    canonical: `${SITE_URL}/${DEFAULT_LOCALE}${clean}`,
+    // Canonical = the page's OWN locale URL (not always the default locale).
+    canonical: `${SITE_URL}/${loc}${clean}`,
     languages,
+  };
+}
+
+/**
+ * Locale-aware Metadata builder for App Router generateMetadata().
+ * title/description accept a string OR a per-locale map ({ tr, en, ... }),
+ * resolved by `locale` with en→tr→first fallback. Produces correct per-locale
+ * canonical + hreflang + OpenGraph/Twitter.
+ * @param {{locale:string, path:string, title:(string|object), description:(string|object), image?:string}} opts
+ */
+export function buildMetadata({ locale, path, title, description, image }) {
+  const loc = LOCALES.includes(locale) ? locale : DEFAULT_LOCALE;
+  const pick = (v) =>
+    typeof v === 'string' || v == null
+      ? (v || '')
+      : (v[loc] || v.en || v.tr || Object.values(v)[0] || '');
+  const t = pick(title);
+  const d = clamp(pick(description));
+  const clean = !path || path === '/' ? '' : (path.startsWith('/') ? path : `/${path}`);
+  const url = `${SITE_URL}/${loc}${clean}`;
+  const ogTitle = t ? `${t} | ${SITE_NAME}` : SITE_NAME;
+  const img = image ? absoluteUrl(image) : undefined;
+  return {
+    title: t || undefined,
+    description: d || undefined,
+    alternates: altLanguages(path, loc),
+    openGraph: {
+      title: ogTitle,
+      description: d || undefined,
+      url,
+      type: 'website',
+      ...(img && { images: [img] }),
+    },
+    twitter: {
+      card: 'summary',
+      title: ogTitle,
+      description: d || undefined,
+    },
   };
 }
 

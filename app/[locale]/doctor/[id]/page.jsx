@@ -28,7 +28,7 @@ async function getDoctorFaqs(id) {
 }
 
 export async function generateMetadata({ params }) {
-  const { id } = await params; // Next 15: params async
+  const { id, locale } = await params; // Next 15: params async
   const res = await getDoctorData(id);
   if (!res)
     return { title: 'Bulunamadı | MedaGama', robots: { index: false } };
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
-    alternates: altLanguages(`/doctor/${id}`),
+    alternates: altLanguages(`/doctor/${id}`, locale),
     openGraph: {
       title: `${title} | MedaGama`,
       description,

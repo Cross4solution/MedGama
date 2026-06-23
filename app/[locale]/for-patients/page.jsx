@@ -1,19 +1,18 @@
 import ForPatientsPage from '@/screens/ForPatientsPage';
-import { altLanguages } from '@/lib/seo-server';
+import { buildMetadata } from '@/lib/seo-server';
 
-export const metadata = {
-  title: 'Hastalar İçin',
-  description:
-    'MedaGama ile uzman doktor bulun, online randevu alın, telehealth görüşmesi yapın ve sağlık yolculuğunuzu tek bir yerden yönetin.',
-  alternates: altLanguages('/for-patients'),
-  openGraph: {
-    title: 'Hastalar İçin | MedaGama',
-    description:
-      'Uzman doktor bulun, online randevu alın ve telehealth görüşmesi yapın.',
-    url: '/for-patients',
-    type: 'website',
-  },
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return buildMetadata({
+    locale,
+    path: '/for-patients',
+    title: { tr: 'Hastalar İçin', en: 'For Patients' },
+    description: {
+      tr: 'MedaGama ile uzman doktor bulun, online randevu alın, telehealth görüşmesi yapın ve sağlık yolculuğunuzu tek bir yerden yönetin.',
+      en: 'Find expert doctors, book appointments online, have telehealth consultations and manage your health journey in one place with MedaGama.',
+    },
+  });
+}
 
 export default function Page() {
   return <ForPatientsPage />;

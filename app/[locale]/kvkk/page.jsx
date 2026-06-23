@@ -1,18 +1,18 @@
 import KVKKPage from '@/screens/KVKKPage';
-import { altLanguages } from '@/lib/seo-server';
+import { buildMetadata } from '@/lib/seo-server';
 
-export const metadata = {
-  title: 'KVKK Aydınlatma Metni',
-  description:
-    'MedaGama KVKK aydınlatma metni: 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında haklarınız ve veri işleme esasları.',
-  alternates: altLanguages('/kvkk'),
-  openGraph: {
-    title: 'KVKK Aydınlatma Metni | MedaGama',
-    description: 'KVKK kapsamında haklarınız ve veri işleme esasları.',
-    url: '/kvkk',
-    type: 'website',
-  },
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return buildMetadata({
+    locale,
+    path: '/kvkk',
+    title: { tr: 'KVKK Aydınlatma Metni', en: 'KVKK Disclosure (PDPL)' },
+    description: {
+      tr: 'MedaGama KVKK aydınlatma metni: 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında haklarınız ve veri işleme esasları.',
+      en: 'MedaGama disclosure under Türkiye’s Personal Data Protection Law (No. 6698): your rights and data processing principles.',
+    },
+  });
+}
 
 export default function Page() {
   return <KVKKPage />;

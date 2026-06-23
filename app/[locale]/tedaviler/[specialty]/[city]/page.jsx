@@ -39,7 +39,7 @@ async function resolve(specialtySlug, citySlug) {
 }
 
 export async function generateMetadata({ params }) {
-  const { specialty, city } = await params;
+  const { specialty, city, locale } = await params;
   const r = await resolve(specialty, city);
   if (!r.specialty || !r.city || !r.providers) {
     return { title: 'Bulunamadı | MedaGama', robots: { index: false } };
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
-    alternates: altLanguages(path),
+    alternates: altLanguages(path, locale),
     openGraph: { title, description, url: path, type: 'website' },
   };
 }

@@ -10,7 +10,7 @@ async function getProfile(username) {
 }
 
 export async function generateMetadata({ params }) {
-  const { handle } = await params;
+  const { handle, locale } = await params;
   if (!handle || !handle.startsWith('@')) return {};
   const username = handle.slice(1);
   const d = await getProfile(username);
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
-    alternates: altLanguages(`/@${u.username}`),
+    alternates: altLanguages(`/@${u.username}`, locale),
     openGraph: {
       title: `${title} | MedStream`,
       description,

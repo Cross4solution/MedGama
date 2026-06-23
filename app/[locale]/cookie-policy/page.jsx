@@ -1,18 +1,18 @@
 import CookiePolicyPage from '@/screens/CookiePolicyPage';
-import { altLanguages } from '@/lib/seo-server';
+import { buildMetadata } from '@/lib/seo-server';
 
-export const metadata = {
-  title: 'Çerez Politikası',
-  description:
-    'MedaGama çerez politikası: web sitemizde hangi çerezleri kullandığımız ve tercihlerinizi nasıl yönetebileceğiniz.',
-  alternates: altLanguages('/cookie-policy'),
-  openGraph: {
-    title: 'Çerez Politikası | MedaGama',
-    description: 'Hangi çerezleri kullandığımız ve tercihlerinizi nasıl yönetebileceğiniz.',
-    url: '/cookie-policy',
-    type: 'website',
-  },
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return buildMetadata({
+    locale,
+    path: '/cookie-policy',
+    title: { tr: 'Çerez Politikası', en: 'Cookie Policy' },
+    description: {
+      tr: 'MedaGama çerez politikası: web sitemizde hangi çerezleri kullandığımız ve tercihlerinizi nasıl yönetebileceğiniz.',
+      en: 'MedaGama cookie policy: which cookies we use on our website and how you can manage your preferences.',
+    },
+  });
+}
 
 export default function Page() {
   return <CookiePolicyPage />;

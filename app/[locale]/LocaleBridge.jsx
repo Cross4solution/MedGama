@@ -9,11 +9,13 @@ import { isLocale, DEFAULT_LOCALE, isRtl } from '@/lib/locales';
 export default function LocaleBridge({ locale }) {
   const target = isLocale(locale) ? locale : DEFAULT_LOCALE;
 
-  // Senkron set: LocaleBridge ağaçta SiteChrome'dan ÖNCE render olduğundan, dili
-  // burada render anında değiştirmek aynı render geçişinde alt bileşenlerin doğru
-  // dille çizilmesini sağlar → useEffect'e bırakılan dil geçişi flash'ı kalkar.
-  // Kaynaklar bundle'da gömülü olduğu için changeLanguage senkron çözülür.
-  if (typeof window !== 'undefined' && i18n.language !== target) {
+  // Dili render anında set et — LocaleBridge ağaçta SiteChrome'dan ÖNCE render
+  // olduğundan alt bileşenler aynı render geçişinde doğru dille çizilir.
+  // Guard YOK: bu satır SUNUCUDA (SSR/SSG) da çalışır → ilk HTML route diliyle
+  // üretilir (çok-dilli SEO doğru; /en sayfası sunucuda da İngilizce gelir).
+  // 'use client' bileşeni olduğu için i18n (react-i18next) güvenle import edilir;
+  // kaynaklar bundle'da olduğundan changeLanguage senkron çözülür.
+  if (i18n.language !== target) {
     i18n.changeLanguage(target);
   }
 

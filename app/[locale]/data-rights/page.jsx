@@ -1,19 +1,18 @@
 import DataPrivacyRightsPage from '@/screens/DataPrivacyRightsPage';
-import { altLanguages } from '@/lib/seo-server';
+import { buildMetadata } from '@/lib/seo-server';
 
-export const metadata = {
-  title: 'Veri Sahibi Hakları',
-  description:
-    'MedaGama üzerindeki kişisel verilerinize erişme, düzeltme, silme ve veri taşınabilirliği taleplerinizi nasıl iletebileceğinizi öğrenin.',
-  alternates: altLanguages('/data-rights'),
-  openGraph: {
-    title: 'Veri Sahibi Hakları | MedaGama',
-    description:
-      'Kişisel verilerinize erişme, düzeltme ve silme taleplerinizi nasıl iletebilirsiniz.',
-    url: '/data-rights',
-    type: 'website',
-  },
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return buildMetadata({
+    locale,
+    path: '/data-rights',
+    title: { tr: 'Veri Sahibi Hakları', en: 'Data Subject Rights' },
+    description: {
+      tr: 'MedaGama üzerindeki kişisel verilerinize erişme, düzeltme, silme ve veri taşınabilirliği taleplerinizi nasıl iletebileceğinizi öğrenin.',
+      en: 'Learn how to exercise your rights to access, rectify, erase and port your personal data on MedaGama.',
+    },
+  });
+}
 
 export default function Page() {
   return <DataPrivacyRightsPage />;

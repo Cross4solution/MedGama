@@ -1,19 +1,18 @@
 import ForClinicsPage from '@/screens/ForClinicsPage';
-import { altLanguages } from '@/lib/seo-server';
+import { buildMetadata } from '@/lib/seo-server';
 
-export const metadata = {
-  title: 'Klinikler İçin',
-  description:
-    'Kliniğinizi MedaGama ile büyütün: hasta yönetimi, randevu takvimi, CRM ve dijital tanıtım araçları tek bir platformda.',
-  alternates: altLanguages('/for-clinics'),
-  openGraph: {
-    title: 'Klinikler İçin | MedaGama',
-    description:
-      'Hasta yönetimi, randevu takvimi ve CRM araçlarıyla kliniğinizi büyütün.',
-    url: '/for-clinics',
-    type: 'website',
-  },
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return buildMetadata({
+    locale,
+    path: '/for-clinics',
+    title: { tr: 'Klinikler İçin', en: 'For Clinics' },
+    description: {
+      tr: 'Kliniğinizi MedaGama ile büyütün: hasta yönetimi, randevu takvimi, CRM ve dijital tanıtım araçları tek bir platformda.',
+      en: 'Grow your clinic with MedaGama: patient management, appointment calendar, CRM and digital marketing tools in one platform.',
+    },
+  });
+}
 
 export default function Page() {
   return <ForClinicsPage />;

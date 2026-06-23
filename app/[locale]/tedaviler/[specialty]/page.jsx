@@ -42,7 +42,7 @@ async function resolve(specialtySlug) {
 }
 
 export async function generateMetadata({ params }) {
-  const { specialty } = await params;
+  const { specialty, locale } = await params;
   const { specialty: sp } = await resolve(specialty);
   if (!sp) return { title: 'Bulunamadı | MedaGama', robots: { index: false } };
   const name = trName(sp);
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
-    alternates: altLanguages(path),
+    alternates: altLanguages(path, locale),
     openGraph: { title, description, url: path, type: 'website' },
   };
 }

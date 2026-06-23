@@ -2,25 +2,24 @@
 // Server component.
 
 import Link from 'next/link';
-import { altLanguages, buildBreadcrumbSchema, jsonLdString } from '@/lib/seo-server';
+import { buildMetadata, buildBreadcrumbSchema, jsonLdString } from '@/lib/seo-server';
 import { slugify, trName } from '@/lib/slug';
 import { getSpecialties } from '@/lib/tedaviler-data';
 
 export const revalidate = 3600;
 
-export const metadata = {
-  title: 'Tedaviler ve Uzmanlık Alanları | MedaGama',
-  description:
-    'MedaGama üzerindeki tüm uzmanlık alanlarını keşfedin. Şehrinizdeki uzman doktor ve klinikleri bulun, online randevu alın.',
-  alternates: altLanguages('/tedaviler'),
-  openGraph: {
-    title: 'Tedaviler ve Uzmanlık Alanları | MedaGama',
-    description:
-      'Tüm uzmanlık alanlarını keşfedin, şehrinizdeki uzman doktor ve klinikleri bulun.',
-    url: '/tedaviler',
-    type: 'website',
-  },
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return buildMetadata({
+    locale,
+    path: '/tedaviler',
+    title: { tr: 'Tedaviler ve Uzmanlık Alanları', en: 'Treatments & Specialties' },
+    description: {
+      tr: 'MedaGama üzerindeki tüm uzmanlık alanlarını keşfedin. Şehrinizdeki uzman doktor ve klinikleri bulun, online randevu alın.',
+      en: 'Explore all specialties on MedaGama. Find expert doctors and clinics in your city and book online.',
+    },
+  });
+}
 
 export default async function Page() {
   const specialties = await getSpecialties();
