@@ -1020,7 +1020,7 @@
       "billingHistory": "Billing History",
       "change": "Change",
       "galleryTab": "Gallery",
-      "hoursTab": "Operating Hours",
+      "hoursTab": "Working Hours",
       "servicesTab": "Services & Pricing",
       "socialTab": "Social & Contact",
       "verificationTab": "Verification",
@@ -1524,7 +1524,7 @@
     "viewPublicProfile": "View Public Profile",
     "ownerBarText": "This is how patients see your profile.",
     "editSettings": "Edit in Settings",
-    "operatingHours": "Operating Hours",
+    "operatingHours": "Working Hours",
     "galleryComingSoon": "Gallery photos coming soon",
     "galleryComingSoonHint": "This doctor hasn't uploaded any clinic or office photos yet.",
     "appointment": "Appointment"
