@@ -22,7 +22,7 @@ export default function TimelinePostCard({ post }) {
       <div className="p-6 pb-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img src={resolveStorageUrl(post.clinic?.avatar || post.patient?.avatar)} alt="Avatar" loading="lazy" className="w-12 h-12 rounded-full object-cover" onError={(e) => { e.currentTarget.src = '/images/default/default-avatar.svg'; }} />
+            <img src={resolveStorageUrl(post.clinic?.avatar || post.patient?.avatar)} alt="Avatar" loading="lazy" className="w-12 h-12 rounded-full object-cover" onError={(e) => { e.currentTarget.src = post.clinic ? '/images/default/default-clinic.svg' : '/images/default/default-avatar.svg'; }} />
             <div>
               <div className="flex items-center space-x-2">
                 <h4 className="font-semibold text-gray-800">{post.clinic?.name || post.patient?.name}</h4>

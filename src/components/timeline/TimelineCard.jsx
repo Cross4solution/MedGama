@@ -12,10 +12,14 @@ import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
+const DEFAULT_CLINIC = '/images/default/default-clinic.svg';
+// Clinics / hospital groups are organizations → institution glyph, not a person.
+const ORG_ROLES = ['clinicOwner', 'clinic', 'hospital'];
+const fallbackForRole = (role) => (ORG_ROLES.includes(role) ? DEFAULT_CLINIC : DEFAULT_AVATAR);
 
-function AvatarImg({ src, alt, className }) {
+function AvatarImg({ src, alt, className, fallback = DEFAULT_AVATAR }) {
   const [failed, setFailed] = React.useState(false);
-  const imgSrc = failed || !src ? DEFAULT_AVATAR : resolveStorageUrl(src, DEFAULT_AVATAR);
+  const imgSrc = failed || !src ? fallback : resolveStorageUrl(src, fallback);
   return (
     <img
       src={imgSrc}
@@ -1321,7 +1325,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
           </div>
           <div className="p-5">
             <div className="flex items-center gap-3">
-              <AvatarImg src={avatarUrl} alt={item.title} className={`${compact ? 'w-10 h-10' : 'w-12 h-12'} rounded-full object-cover border`} />
+              <AvatarImg src={avatarUrl} alt={item.title} fallback={fallbackForRole(item?.actor?.role)} className={`${compact ? 'w-10 h-10' : 'w-12 h-12'} rounded-full object-cover border`} />
               <div className="min-w-0">
                 <h3 className={`font-semibold text-gray-900 truncate ${compact ? 'text-base' : 'text-lg'}`} title={item.title}>{item.title}</h3>
                 <p className="text-xs text-gray-600 flex items-center gap-1 mt-0.5">
