@@ -3,6 +3,8 @@ import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { appointmentAPI } from '../lib/api';
+import useAppointmentSync from '../hooks/useAppointmentSync';
+import AddToCalendar from '../components/AddToCalendar';
 import { 
   Calendar, Clock, MapPin, Video, Phone, Building2, User, 
   Loader2, AlertCircle, CheckCircle2, XCircle, X, ChevronRight 
@@ -41,6 +43,9 @@ export default function PatientAppointments() {
       setLoading(false);
     }
   };
+
+  // Real-time: refresh when any of this patient's appointments change anywhere.
+  useAppointmentSync(fetchAppointments);
 
   const handleCancelClick = (appointment) => {
     setSelectedAppointment(appointment);
@@ -258,6 +263,21 @@ export default function PatientAppointments() {
                           )}
                           {isTr ? 'İptal Et' : 'Cancel'}
                         </button>
+                      )}
+                      {(appointment.status === 'pending' || appointment.status === 'confirmed') && (
+                        <AddToCalendar
+                          appointment={{
+                            id: appointment.id,
+                            title: `${appointment.doctor?.fullname || appointment.doctor_name || (isTr ? 'Doktor' : 'Doctor')} — MedaGama`,
+                            date: appointment.appointment_date,
+                            time: appointment.appointment_time,
+                            durationMin: 30,
+                            description: getTypeLabel(appointment.appointment_type),
+                            location: appointment.appointment_type === 'online'
+                              ? (isTr ? 'Online görüşme' : 'Online consultation')
+                              : (appointment.clinic?.address || appointment.clinic?.fullname || ''),
+                          }}
+                        />
                       )}
                     </div>
                   </div>

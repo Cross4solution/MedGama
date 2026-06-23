@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { appointmentAPI, doctorProfileAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
+import useAppointmentSync from '../../hooks/useAppointmentSync';
 import ProTeaser from '../../components/crm/ProTeaser';
 
 const POLL_INTERVAL = 30000; // 30s
@@ -43,6 +44,9 @@ const CRMSmartCalendar = () => {
   const navigate = useNavigate();
   const { user, isPro } = useAuth();
   const calendarRef = useRef(null);
+
+  // Real-time: re-pull calendar events the instant an appointment changes.
+  useAppointmentSync(() => calendarRef.current?.getApi()?.refetchEvents());
 
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);

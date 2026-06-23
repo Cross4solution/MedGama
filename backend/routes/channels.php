@@ -29,6 +29,12 @@ Broadcast::channel('user.{userId}', function ($user, string $userId) {
     return $user->id === $userId;
 });
 
+// Clinic real-time channel — clinic owner/staff (appointment sync, CRM).
+Broadcast::channel('clinic.{clinicId}', function ($user, string $clinicId) {
+    return $user->clinic_id === $clinicId
+        || \App\Models\Clinic::where('id', $clinicId)->where('owner_id', $user->id)->exists();
+});
+
 // Telehealth 1:1 WebRTC signaling — only the appointment's doctor or patient.
 Broadcast::channel('telehealth.{appointmentId}', function ($user, string $appointmentId) {
     $appointment = Appointment::find($appointmentId);

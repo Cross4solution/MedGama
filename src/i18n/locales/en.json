@@ -1,4 +1,8 @@
 {
+  "calendar": {
+    "addToCalendar": "Add to calendar",
+    "appleOther": "Apple / .ics"
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",

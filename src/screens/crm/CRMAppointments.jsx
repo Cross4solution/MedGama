@@ -11,6 +11,7 @@ import { useNavigate } from '@/compat/router';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { appointmentAPI, doctorProfileAPI, clinicVerificationAPI } from '../../lib/api';
+import useAppointmentSync from '../../hooks/useAppointmentSync';
 import CRMModal, { ModalLabel, ModalInput, ModalSelect, ModalTextarea, ModalPrimaryButton, ModalCancelButton } from '../../components/crm/CRMModal';
 import ClinicVerificationModal from '../../components/crm/ClinicVerificationModal';
 import FullCalendar from '@fullcalendar/react';
@@ -702,6 +703,9 @@ const CRMAppointments = () => {
   const { user, isPro } = useAuth();
   const { notify } = useToast();
   const calendarRef = useRef(null);
+
+  // Real-time: re-pull when an appointment changes anywhere (book/cancel/reschedule).
+  useAppointmentSync(() => calendarRef.current?.getApi()?.refetchEvents());
 
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);

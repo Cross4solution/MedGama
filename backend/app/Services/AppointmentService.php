@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Appointment;
+use App\Events\AppointmentChanged;
 use App\Models\CalendarSlot;
 use App\Models\User;
 use App\Notifications\AppointmentBookedNotification;
@@ -114,6 +115,8 @@ class AppointmentService
         // 6. Notifications (outside transaction — non-critical)
         $this->sendBookedNotifications($appointment);
 
+        event(new AppointmentChanged($appointment, 'created'));
+
         return $appointment;
     }
 
@@ -142,6 +145,8 @@ class AppointmentService
             $this->sendStatusChangeNotifications($appointment, $newStatus, $updatedBy);
         }
 
+        event(new AppointmentChanged($appointment, $newStatus === 'cancelled' ? 'cancelled' : 'updated'));
+
         return $appointment;
     }
 
@@ -165,6 +170,8 @@ class AppointmentService
 
         // İptal bildirimleri (transaction dışında, kritik değil)
         $this->sendStatusChangeNotifications($appointment, 'cancelled', $cancelledBy);
+
+        event(new AppointmentChanged($appointment, 'cancelled'));
 
         return $appointment;
     }
@@ -206,6 +213,8 @@ class AppointmentService
 
             $appointment->delete();
         });
+
+        event(new AppointmentChanged($appointment, 'deleted'));
     }
 
     /**
@@ -316,7 +325,11 @@ class AppointmentService
             }
         });
 
-        return $appointment->refresh()->load(['patient:id,fullname,avatar,email,mobile', 'doctor:id,fullname,avatar', 'clinic:id,fullname']);
+        $appointment->refresh()->load(['patient:id,fullname,avatar,email,mobile', 'doctor:id,fullname,avatar', 'clinic:id,fullname']);
+
+        event(new AppointmentChanged($appointment, 'rescheduled'));
+
+        return $appointment;
     }
 
     // ── Private Helpers ──
