@@ -200,14 +200,23 @@ const TelehealthPage = () => {
       <div className="flex-1">
         <div className="px-4 pt-3 pb-4 sm:px-6 sm:pt-4 sm:pb-6">
           {/* Page Header */}
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center shadow-md shadow-teal-200/50">
-              <Video className="w-4 h-4 text-white" />
+          <div className="flex items-center justify-between gap-3 mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center shadow-md shadow-teal-200/50">
+                <Video className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-gray-900">{t('telehealthPage.title')}</h1>
+                <p className="text-[11px] text-gray-400 font-medium">{t('telehealthPage.subtitle')}</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">{t('telehealthPage.title')}</h1>
-              <p className="text-[11px] text-gray-400 font-medium">{t('telehealthPage.subtitle')}</p>
-            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/telehealth-appointment')}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-sm font-semibold shadow-sm hover:shadow-md hover:from-teal-700 hover:to-emerald-700 transition-all"
+            >
+              <Calendar className="w-4 h-4" /> {t('booking.title', 'Book Appointment')}
+            </button>
           </div>
 
           {/* Stats Cards */}

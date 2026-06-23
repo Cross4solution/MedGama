@@ -143,11 +143,15 @@ export default function TelehealthAppointmentPage() {
   // Auto-fill only for patients (not doctors — doctors enter patient info manually)
   useEffect(() => {
     if (user && !isDoctor) {
+      const dob = user.date_of_birth
+        ? (() => { const [y, m, d] = String(user.date_of_birth).slice(0, 10).split('-'); return (y && m && d) ? `${d}.${m}.${y}` : ''; })()
+        : '';
       setPatientInfo(prev => ({
         ...prev,
         fullName: prev.fullName || user.fullname || user.name || '',
         email: prev.email || user.email || '',
         phone: prev.phone || user.mobile || '',
+        birthDate: prev.birthDate || dob,
       }));
     }
   }, [user, isDoctor]);

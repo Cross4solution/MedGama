@@ -9,7 +9,6 @@ import { doctorAPI, appointmentAPI } from '../../lib/api';
 const APPOINTMENT_TYPES = [
   { id: 'in_person', icon: MapPin, color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
   { id: 'video', icon: Video, color: 'bg-blue-50 text-[#2D8CFF] border-blue-200' },
-  { id: 'phone', icon: Phone, color: 'bg-violet-50 text-violet-600 border-violet-200' },
 ];
 
 function getDaysInMonth(year, month) {

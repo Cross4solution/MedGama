@@ -1526,7 +1526,8 @@
     "editSettings": "Edit in Settings",
     "operatingHours": "Operating Hours",
     "galleryComingSoon": "Gallery photos coming soon",
-    "galleryComingSoonHint": "This doctor hasn't uploaded any clinic or office photos yet."
+    "galleryComingSoonHint": "This doctor hasn't uploaded any clinic or office photos yet.",
+    "appointment": "Appointment"
   },
   "crmReviews": {
     "title": "Patient Reviews",

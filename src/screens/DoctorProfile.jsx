@@ -200,10 +200,14 @@ const DoctorProfilePage = ({ initialDoctor }) => {
   const doctorTitle = profile?.title || '';
   const specialty = profile?.specialty || '';
   
-  // Remove "Dr." prefix from name if title already contains it
-  const displayName = (doctorTitle && doctorName.startsWith('Dr. ')) 
-    ? doctorName.replace(/^Dr\.\s+/, '') 
-    : doctorName;
+  // Compose the display name once, avoiding a duplicated title — the fullname may
+  // already include it (e.g. "Prof. Dr. Mustafa Çelik" with title "Prof. Dr.").
+  const nameHasTitle = doctorTitle && doctorName.toLowerCase().startsWith(doctorTitle.toLowerCase());
+  const displayName = nameHasTitle
+    ? doctorName
+    : (doctorName.startsWith('Dr. ')
+        ? `${doctorTitle} ${doctorName.replace(/^Dr\.\s+/, '')}`.trim()
+        : `${doctorTitle} ${doctorName}`.trim());
   const avatarUrl = resolveStorageUrl(doctor?.avatar);
   const bio = profile?.bio || '';
   const experienceYears = profile?.experience_years || '';
@@ -343,7 +347,7 @@ const DoctorProfilePage = ({ initialDoctor }) => {
               />
               <div className="pt-1">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <h1 className="text-xl md:text-2xl font-extrabold text-gray-900">{doctorTitle ? `${doctorTitle} ` : ''}{displayName}</h1>
+                  <h1 className="text-xl md:text-2xl font-extrabold text-gray-900">{displayName}</h1>
                   {doctor.is_verified && (
                     <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
                       <BadgeCheck className="w-3 h-3" /> {t('doctorProfile.verified')}
@@ -379,15 +383,6 @@ const DoctorProfilePage = ({ initialDoctor }) => {
                   {onlineConsultation && <span className="flex items-center gap-1 text-emerald-600 font-medium"><Video className="w-3.5 h-3.5" />{t('doctorProfile.onlineAvailable')}</span>}
                 </div>
 
-                {/* Languages */}
-                {languages.length > 0 && (
-                  <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                    <Globe className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                    {languages.map((l, i) => (
-                      <span key={i} className="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600">{l}</span>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
 
@@ -456,33 +451,29 @@ const DoctorProfilePage = ({ initialDoctor }) => {
                     ) : <p className="text-sm text-gray-400 italic">{t('doctorProfile.noBioYet')}</p>}
 
                     {/* Quick stats grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="flex flex-wrap gap-3">
                       {doctor.is_verified && (
-                        <div className="flex items-center gap-2.5 p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-teal-50 text-teal-600"><CheckCircle className="w-4 h-4" /></div>
-                          <span className="text-xs font-semibold text-gray-700">{t('doctorProfile.verified')}</span>
+                        <div className="flex-1 min-w-[150px] flex flex-col gap-2 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-teal-50 text-teal-600"><CheckCircle className="w-5 h-5" /></div>
+                          <span className="text-sm font-semibold text-gray-800 leading-snug">{t('doctorProfile.verified')}</span>
                         </div>
                       )}
                       {experienceYears && (
-                        <div className="flex items-center gap-2.5 p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-50 text-blue-600"><Shield className="w-4 h-4" /></div>
-                          <span className="text-xs font-semibold text-gray-700">{t('doctorProfile.yearsExperience', { count: experienceYears })}</span>
+                        <div className="flex-1 min-w-[150px] flex flex-col gap-2 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-50 text-blue-600"><Shield className="w-5 h-5" /></div>
+                          <span className="text-sm font-semibold text-gray-800 leading-snug">{t('doctorProfile.yearsExperience', { count: experienceYears })}</span>
                         </div>
                       )}
                       {onlineConsultation && (
-                        <div className="flex items-center gap-2.5 p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-violet-50 text-violet-600"><Video className="w-4 h-4" /></div>
-                          <span className="text-xs font-semibold text-gray-700">{t('doctorProfile.onlineAvailable')}</span>
+                        <div className="flex-1 min-w-[150px] flex flex-col gap-2 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-violet-50 text-violet-600"><Video className="w-5 h-5" /></div>
+                          <span className="text-sm font-semibold text-gray-800 leading-snug">{t('doctorProfile.onlineAvailable')}</span>
                         </div>
                       )}
-                      {languages.length > 0 && (
-                        <div className="flex items-center gap-2.5 p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-50 text-amber-600 flex-shrink-0"><Globe className="w-4 h-4" /></div>
-                          <div className="flex flex-wrap gap-1.5">
-                            {languages.map((l, i) => (
-                              <span key={i} className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white text-gray-700 border border-gray-200">{l}</span>
-                            ))}
-                          </div>
+                      {reviewStats.average_rating && (
+                        <div className="flex-1 min-w-[150px] flex flex-col gap-2 p-4 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 text-amber-600"><Star className="w-5 h-5" /></div>
+                          <span className="text-sm font-semibold text-gray-800 leading-snug">{reviewStats.average_rating} / 5 · {reviewStats.review_count}</span>
                         </div>
                       )}
                     </div>
@@ -745,7 +736,7 @@ const DoctorProfilePage = ({ initialDoctor }) => {
             {/* Booking CTA */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-t-2xl">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2"><Calendar className="w-4 h-4" /> {t('booking.title')}</h3>
+                <h3 className="text-sm font-bold text-white flex items-center gap-2"><Calendar className="w-4 h-4" /> {t('doctorProfile.appointment', 'Appointment')}</h3>
               </div>
               <div className="p-4 space-y-2.5">
                 <button onClick={guardAction(() => setBookModal(true))} className="w-full py-3 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors shadow-sm flex items-center justify-center gap-2">

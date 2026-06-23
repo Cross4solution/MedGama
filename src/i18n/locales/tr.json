@@ -1526,7 +1526,8 @@
     "editSettings": "Ayarlardan Düzenle",
     "operatingHours": "Çalışma Saatleri",
     "galleryComingSoon": "Galeri fotoğrafları yakında",
-    "galleryComingSoonHint": "Bu doktor henüz klinik veya ofis fotoğrafı yüklememiş."
+    "galleryComingSoonHint": "Bu doktor henüz klinik veya ofis fotoğrafı yüklememiş.",
+    "appointment": "Randevu"
   },
   "crmReviews": {
     "title": "Hasta Yorumları",
