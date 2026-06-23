@@ -722,6 +722,11 @@ export const telehealthAPI = {
   updateStatus: (appointmentId, meetingStatus) => api.put(`/telehealth/${appointmentId}/status`, { meeting_status: meetingStatus }),
 };
 
+// ── Vasco AI — symptom → specialist routing (never diagnoses) ──
+export const vascoAPI = {
+  suggest: (text, lang = 'tr', location = null) => api.post('/vasco/suggest', { text, lang, location }),
+};
+
 // ── Calendar ICS subscription feed (doctor/patient auto-sync, no OAuth) ──
 export const calendarFeedAPI = {
   info: () => api.get('/calendar/feed'),

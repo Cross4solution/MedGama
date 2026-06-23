@@ -1232,6 +1232,12 @@
   },
   "vascoAI": {
     "title": "Vasco AI",
+    "assistantTitle": "Describe your complaint, we'll find the right specialist",
+    "placeholder": "e.g. I've had chest pain and palpitations for two days...",
+    "ask": "Suggest",
+    "error": "Something went wrong, please try again.",
+    "vague": "Could you describe your complaint a bit more?",
+    "disclaimerShort": "Vasco AI does not diagnose; it only routes you to the right specialist.",
     "subtitle": "Your AI-powered health assistant",
     "startChat": "Start Chat",
     "askVasco": "Ask Vasco AI...",
