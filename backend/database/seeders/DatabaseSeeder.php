@@ -807,6 +807,12 @@ class DatabaseSeeder extends Seeder
         $this->call(MedStreamSampleSeeder::class);
 
         // ══════════════════════════════════════════════════════════════════
+        //  CLINIC ↔ TREATMENT TAGS (precise "treatment → clinics" mapping)
+        // ══════════════════════════════════════════════════════════════════
+
+        $this->call(ClinicTreatmentTagSeeder::class);
+
+        // ══════════════════════════════════════════════════════════════════
         //  CATALOG DATA
         // ══════════════════════════════════════════════════════════════════
 

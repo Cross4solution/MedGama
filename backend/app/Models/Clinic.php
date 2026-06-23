@@ -148,4 +148,11 @@ class Clinic extends Model
             ->orderBy('accreditations.sort_order')
             ->withTimestamps();
     }
+
+    public function treatmentTags()
+    {
+        return $this->belongsToMany(TreatmentTag::class, 'clinic_treatment_tag')
+            ->where('treatment_tags.is_active', true)
+            ->withTimestamps();
+    }
 }

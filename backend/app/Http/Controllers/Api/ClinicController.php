@@ -66,6 +66,10 @@ class ClinicController extends Controller
                     });
                 });
             })
+            // ── Tedavi tag'i: kesin eşleşme (bu tedaviyi sunan klinikler) ──
+            ->when($request->treatment_tag_id, function ($q, $v) {
+                $q->whereHas('treatmentTags', fn ($tq) => $tq->where('treatment_tags.id', $v));
+            })
             // brief response: specialties eklendi (frontend join'e gerek kalmaz)
             ->select('id', 'name', 'codename', 'fullname', 'avatar', 'address', 'specialties', 'is_verified')
             ->paginate($request->per_page ?? 20);

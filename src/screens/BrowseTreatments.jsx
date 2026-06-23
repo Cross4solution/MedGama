@@ -140,7 +140,9 @@ export default function BrowseTreatments() {
     setLoading(true);
     try {
       const params = { per_page: 20, page: pg };
-      if (specialtyFilter) params.specialty = specialtyFilter;
+      // Precise: a treatment selected → only clinics offering it. Else specialty.
+      if (activeTag) params.treatment_tag_id = activeTag.id;
+      else if (specialtyFilter) params.specialty = specialtyFilter;
       const res = await clinicAPI.list(params);
       const list = res?.data || [];
       setClinics(prev => (pg === 1 ? list : [...prev, ...list]));
@@ -149,7 +151,7 @@ export default function BrowseTreatments() {
       if (pg === 1) setClinics([]);
     }
     setLoading(false);
-  }, [specialtyFilter]);
+  }, [specialtyFilter, activeTag]);
 
   useEffect(() => { setPage(1); fetchClinics(1); }, [fetchClinics]);
 
