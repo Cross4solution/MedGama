@@ -39,7 +39,7 @@ function ClinicCard({ clinic, onClick, onView }) {
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onView(clinic); }}
-            className="px-2.5 py-1 text-[11px] font-medium text-[#0d9488] bg-[#0d9488]/10 hover:bg-[#0d9488]/16 rounded-md transition-colors"
+            className="px-2.5 py-1 text-[11px] font-semibold bg-[#0d9488] text-white rounded-md hover:bg-[#0f766e] transition-colors"
           >
             {t('common.view')}
           </button>
