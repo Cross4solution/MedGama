@@ -711,6 +711,10 @@ Route::prefix('telehealth')->middleware('auth:sanctum')->group(function () {
     Route::put('/{appointmentId}/status', [TelehealthController::class, 'updateStatus']);
 });
 
+// On-demand content translation (cached). Auth + throttled to curb abuse/quota.
+Route::post('/translate', [\App\Http\Controllers\Api\TranslationController::class, 'translate'])
+    ->middleware(['auth:sanctum', 'throttle:60,1']);
+
 /*
 |--------------------------------------------------------------------------
 | SuperAdmin — Platform Management (Dashboard, Verification, Moderation)

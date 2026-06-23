@@ -6,7 +6,7 @@ import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
 import Modal from '../common/Modal';
-import { medStreamAPI } from '../../lib/api';
+import { medStreamAPI, translateAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
@@ -417,10 +417,13 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const avatarUrl = resolveStorageUrl(item.avatar || item.actor?.avatarUrl);
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isGuest = !authUser;
   const isUnverifiedDoctor = !!(authUser && (authUser.role === 'doctor' || authUser.role_id === 'doctor') && !authUser.is_verified);
   const [expanded, setExpanded] = useState(false);
+  const [translated, setTranslated] = useState(null);
+  const [showOriginal, setShowOriginal] = useState(false);
+  const [translating, setTranslating] = useState(false);
   const [showCommentsPreview, setShowCommentsPreview] = useState(false);
   const [liked, setLiked] = useState(!!item?.is_liked);
   const [likeCount, setLikeCount] = useState(Number(item?.likes) || 0);
@@ -595,6 +598,20 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
   const displayText = expanded ? item.text : truncate(item.text);
   const isTruncated = !expanded && item?.text && displayText !== item.text;
+  const showingTranslation = !!translated && !showOriginal;
+  const bodyText = showingTranslation ? translated : displayText;
+  const targetLang = (i18n.language || 'en').split('-')[0];
+  const handleTranslate = async () => {
+    if (translated) { setShowOriginal((s) => !s); return; }
+    if (!item?.text) return;
+    setTranslating(true);
+    try {
+      const res = await translateAPI.translate(item.text, targetLang);
+      const data = res?.data || res;
+      if (data?.translated_text) setTranslated(data.translated_text);
+      setShowOriginal(false);
+    } catch { /* ignore */ } finally { setTranslating(false); }
+  };
   // Derive LinkedIn-like actor/meta fields
   const actorName = item?.actor?.name || item?.title || 'MedaGama';
   const actorTitle = item?.actor?.title || item?.subtitle || 'Healthcare';
@@ -812,9 +829,9 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
           {/* Text */}
           <div className="px-3 mt-2">
-            <p className="text-sm leading-[1.43] text-[rgba(0,0,0,0.9)]">
-              {displayText}
-              {isTruncated && (
+            <p className="text-sm leading-[1.43] text-[rgba(0,0,0,0.9)] whitespace-pre-line">
+              {bodyText}
+              {isTruncated && !showingTranslation && (
                 <button
                   type="button"
                   className="ml-1 text-sm text-gray-500 hover:text-blue-600 font-semibold no-underline hover:underline"
@@ -824,13 +841,27 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 </button>
               )}
             </p>
-            {expanded && (
+            {expanded && !showingTranslation && (
               <button
                 type="button"
                 className="mt-1 text-xs text-gray-500 hover:text-blue-600 font-semibold no-underline hover:underline"
                 onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
               >
                 {t('medstream.seeLess')}
+              </button>
+            )}
+            {item?.text && authUser && (
+              <button
+                type="button"
+                disabled={translating}
+                onClick={(e) => { e.stopPropagation(); handleTranslate(); }}
+                className="mt-1.5 block text-xs font-semibold text-teal-600 hover:text-teal-700 disabled:opacity-50"
+              >
+                {translating
+                  ? t('medstream.translating', 'Çevriliyor…')
+                  : translated
+                    ? (showOriginal ? t('medstream.translate', 'Çevir') : t('medstream.showOriginal', 'Orijinali göster'))
+                    : t('medstream.translate', 'Çevir')}
               </button>
             )}
           </div>

@@ -722,6 +722,11 @@ export const telehealthAPI = {
   updateStatus: (appointmentId, meetingStatus) => api.put(`/telehealth/${appointmentId}/status`, { meeting_status: meetingStatus }),
 };
 
+// ── Machine translation (on-demand, cached) ──
+export const translateAPI = {
+  translate: (text, target, source = null) => api.post('/translate', { text, target, source }),
+};
+
 // ── Hospital Public Profiles & CRM (L4) ──
 export const hospitalAPI = {
   getByCodename: (codename) => api.get(`/hospitals/${codename}`),
