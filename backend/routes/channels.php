@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Appointment;
 use App\Models\ChatConversation;
 use Illuminate\Support\Facades\Broadcast;
 
@@ -26,4 +27,12 @@ Broadcast::channel('notifications.{userId}', function ($user, string $userId) {
 
 Broadcast::channel('user.{userId}', function ($user, string $userId) {
     return $user->id === $userId;
+});
+
+// Telehealth 1:1 WebRTC signaling — only the appointment's doctor or patient.
+Broadcast::channel('telehealth.{appointmentId}', function ($user, string $appointmentId) {
+    $appointment = Appointment::find($appointmentId);
+
+    return $appointment
+        && ($user->id === $appointment->doctor_id || $user->id === $appointment->patient_id);
 });

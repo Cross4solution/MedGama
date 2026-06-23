@@ -104,9 +104,9 @@ const TelehealthPage = () => {
     canceled: canceledSessions.length,
   };
 
-  // ── Join handler → navigate to telehealth room ──
+  // ── Join handler → navigate to the 1:1 WebRTC call room ──
   const handleJoin = useCallback((session) => {
-    navigate(`/crm/telehealth?id=${session.id}`);
+    navigate(`/telehealth/call/${session.id}`);
   }, [navigate]);
 
   // ── Cancel handler ──

@@ -705,6 +705,7 @@ Route::prefix('clinic-manager')->middleware(['auth:sanctum'])->group(function ()
 */
 Route::prefix('telehealth')->middleware('auth:sanctum')->group(function () {
     Route::get('/{appointmentId}/session', [TelehealthController::class, 'session']);
+    Route::get('/{appointmentId}/webrtc', [TelehealthController::class, 'webrtcConfig']);
     Route::get('/{appointmentId}/transcription-token', [TelehealthController::class, 'transcriptionToken']);
     Route::get('/{appointmentId}/simulate-transcript', [TelehealthController::class, 'simulateTranscript']);
     Route::put('/{appointmentId}/status', [TelehealthController::class, 'updateStatus']);

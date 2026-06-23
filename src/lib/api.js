@@ -716,6 +716,7 @@ export const analyticsAPI = {
 // ── Telehealth — Daily.co + Deepgram (§4.4) ──
 export const telehealthAPI = {
   session: (appointmentId) => api.get(`/telehealth/${appointmentId}/session`),
+  webrtc: (appointmentId) => api.get(`/telehealth/${appointmentId}/webrtc`),
   transcriptionToken: (appointmentId, lang = 'en') => api.get(`/telehealth/${appointmentId}/transcription-token`, { params: { lang } }),
   simulateTranscript: (appointmentId, count = 1) => api.get(`/telehealth/${appointmentId}/simulate-transcript`, { params: { count } }),
   updateStatus: (appointmentId, meetingStatus) => api.put(`/telehealth/${appointmentId}/status`, { meeting_status: meetingStatus }),

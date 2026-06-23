@@ -142,6 +142,66 @@ class TelehealthController extends Controller
     }
 
     /**
+     * Self-hosted WebRTC config for a 1:1 appointment call.
+     * Returns ICE servers (STUN + ephemeral TURN), the private signaling channel
+     * name, this user's role, and peer info. No third-party SaaS; media is P2P
+     * and E2E-encrypted (DTLS-SRTP). TURN relays only encrypted packets.
+     */
+    public function webrtcConfig(Request $request, string $appointmentId): JsonResponse
+    {
+        $appointment = Appointment::with(['doctor:id,fullname,avatar', 'patient:id,fullname,avatar'])
+            ->findOrFail($appointmentId);
+
+        $this->authorizeParticipant($request->user(), $appointment);
+
+        $isDoctor = $request->user()->id === $appointment->doctor_id;
+
+        return response()->json([
+            'appointment' => [
+                'id'             => $appointment->id,
+                'status'         => $appointment->status,
+                'meeting_status' => $appointment->meeting_status,
+            ],
+            'channel'    => 'telehealth.' . $appointment->id, // private signaling channel
+            'role'       => $isDoctor ? 'doctor' : 'patient',
+            'is_caller'  => $isDoctor, // doctor initiates the offer
+            'self'       => $isDoctor ? $appointment->doctor : $appointment->patient,
+            'peer'       => $isDoctor ? $appointment->patient : $appointment->doctor,
+            'ice_servers' => $this->iceServers(),
+        ]);
+    }
+
+    /**
+     * Build the ICE server list: public STUN + (if configured) self-hosted coturn
+     * TURN with time-limited HMAC credentials (coturn `use-auth-secret`).
+     * Env: TURN_URLS (comma-separated, e.g. "turn:turn.example.com:3478,turns:turn.example.com:5349"),
+     *      TURN_SECRET, TURN_TTL (seconds, default 3600), STUN_URLS (optional).
+     */
+    private function iceServers(): array
+    {
+        $stun = env('STUN_URLS', 'stun:stun.l.google.com:19302');
+        $servers = [];
+        foreach (array_filter(array_map('trim', explode(',', $stun))) as $url) {
+            $servers[] = ['urls' => $url];
+        }
+
+        $turnUrls = array_filter(array_map('trim', explode(',', (string) env('TURN_URLS', ''))));
+        $secret = env('TURN_SECRET');
+        if ($turnUrls && $secret) {
+            $ttl = (int) env('TURN_TTL', 3600);
+            $username = (time() + $ttl) . ':medgama';
+            $credential = base64_encode(hash_hmac('sha1', $username, $secret, true));
+            $servers[] = [
+                'urls'       => array_values($turnUrls),
+                'username'   => $username,
+                'credential' => $credential,
+            ];
+        }
+
+        return $servers;
+    }
+
+    /**
      * Ensure the authenticated user is the doctor or patient of this appointment.
      */
     private function authorizeParticipant($user, Appointment $appointment): void
