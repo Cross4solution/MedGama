@@ -1,7 +1,29 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from '@/compat/router';
+
+// Short count-up animation for hero stats (e.g. "500+", "50K+", "%98")
+function CountUp({ value }) {
+  const parsed = String(value).match(/^(\D*)([\d.]+)(.*)$/);
+  const target = parsed ? parseFloat(parsed[2]) : 0;
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!parsed) return undefined;
+    let raf;
+    const dur = 900;
+    const t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      setN(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (!parsed) return <>{value}</>;
+  return <>{parsed[1]}{Math.round(n).toLocaleString('tr-TR')}{parsed[3]}</>;
+}
 import {
   Globe, ShieldCheck, Stethoscope, Users, Building2, HeartPulse,
   BadgeCheck, Languages, Target, Eye, ArrowRight, MapPin,
@@ -70,10 +92,10 @@ export default function AboutPage() {
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0e7c7b] via-[#0d9488] to-[#0f766e]">
         <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '22px 22px' }} />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-12 pb-8 text-center">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-white/90 text-[11px] font-semibold tracking-wide backdrop-blur">
-            <HeartPulse className="w-3 h-3" /> MedaGama
+          <span className="inline-flex items-center bg-white rounded-2xl px-5 py-3 shadow-lg">
+            <img src="/images/logo/logo.svg" alt="MedaGama" className="h-9 sm:h-10 w-auto object-contain" />
           </span>
-          <h1 className="mt-3 text-3xl sm:text-4xl font-bold text-white tracking-tight">{t('about.title')}</h1>
+          <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-white tracking-tight">{t('nav.about', 'Hakkımızda')}</h1>
           <p className="mt-3 max-w-2xl mx-auto text-[15px] text-teal-50/90 leading-relaxed">
             Hastaları uzman doktorlar ve onaylı klinik/hastanelerle aynı dijital platformda buluşturan,
             dil ve lokasyon bağımsız sağlık ve sağlık turizmi pazar yeri.
@@ -84,7 +106,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-xl overflow-hidden bg-white/15 shadow-lg">
             {STATS.map((s) => (
               <div key={s.label} className="bg-white/95 px-4 py-4 text-center">
-                <div className="text-2xl font-bold text-[#0f766e]">{s.value}</div>
+                <div className="text-2xl font-bold text-[#0f766e]"><CountUp value={s.value} /></div>
                 <div className="mt-0.5 text-[11px] font-medium text-gray-500 uppercase tracking-wide">{s.label}</div>
               </div>
             ))}

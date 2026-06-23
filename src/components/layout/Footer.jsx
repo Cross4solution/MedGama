@@ -37,10 +37,9 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <div className="mb-3">
-              <span className="inline-flex items-center bg-white rounded-xl px-3 py-2">
-                <Image src="/images/logo/logo.svg" alt="MedaGama Logo" width={176} height={40} className="h-9 w-auto object-contain" />
-              </span>
+            <div className="flex items-center gap-2 mb-2">
+              <Image src="/images/logo/favicon-icon-white.png" alt="MedaGama" width={31} height={32} className="h-8 w-auto object-contain" />
+              <span className="text-white text-2xl font-semibold tracking-tight">MedaGama</span>
             </div>
             <p className="text-sm leading-relaxed text-white/60">
               {t('footer.brandTagline')}
