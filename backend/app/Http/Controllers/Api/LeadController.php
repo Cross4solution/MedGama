@@ -136,7 +136,18 @@ class LeadController extends Controller
             $assignedTo = $user->id;
         }
 
-        $lead = DB::transaction(function () use ($validated, $user, $assignedTo) {
+        // Round-robin: a manager leaving the lead unassigned → auto-assign to the
+        // next active salesperson in rotation (cycles through the whole team).
+        $autoAssigned = false;
+        if (!$assignedTo && !$user->isSalesperson()) {
+            $next = app(\App\Services\LeadAssignmentService::class)->nextSalesperson($this->clinicId($user));
+            if ($next) {
+                $assignedTo = $next->id;
+                $autoAssigned = true;
+            }
+        }
+
+        $lead = DB::transaction(function () use ($validated, $user, $assignedTo, $autoAssigned) {
             $lead = Lead::create([
                 'clinic_id'          => $this->clinicId($user),
                 'assigned_to'        => $assignedTo,
@@ -153,7 +164,7 @@ class LeadController extends Controller
             $this->logActivity($lead->id, $user->id, 'note', 'Lead created.');
 
             if ($assignedTo) {
-                $this->logActivity($lead->id, $user->id, 'assignment', 'Lead assigned.', ['assigned_to' => $assignedTo]);
+                $this->logActivity($lead->id, $user->id, 'assignment', $autoAssigned ? 'Lead auto-assigned (round-robin).' : 'Lead assigned.', ['assigned_to' => $assignedTo, 'auto' => $autoAssigned]);
             }
 
             return $lead;
