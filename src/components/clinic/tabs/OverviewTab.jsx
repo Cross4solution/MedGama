@@ -4,7 +4,7 @@ import { useNavigate } from '@/compat/router';
 import resolveStorageUrl from '../../../utils/resolveStorageUrl';
 import AccreditationBadges from '../AccreditationBadges';
 
-export default function OverviewTab({ aboutTitle, aboutP1, aboutP2, doctors = [], accreditations = [], onBookAppointment, onSwitchToDoctors }) {
+export default function OverviewTab({ aboutTitle, aboutP1, aboutP2, doctors = [], accreditations = [], certifications = [], onBookAppointment, onSwitchToDoctors }) {
   const navigate = useNavigate();
 
   const previewDoctors = doctors.slice(0, 4);
@@ -85,6 +85,27 @@ export default function OverviewTab({ aboutTitle, aboutP1, aboutP2, doctors = []
         <div>
           <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Accreditations</h4>
           <AccreditationBadges accreditations={accreditations} variant="compact" />
+        </div>
+      )}
+
+      {certifications.filter(c => c?.name).length > 0 && (
+        <div>
+          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Certifications</h4>
+          <div className="flex flex-wrap gap-2">
+            {certifications.filter(c => c?.name).map((c, i) => (
+              c.image ? (
+                <a key={i} href={resolveStorageUrl(c.image)} target="_blank" rel="noreferrer"
+                  className="flex items-center gap-2 p-1.5 pr-3 rounded-xl border border-gray-200 bg-white hover:border-teal-300 hover:shadow-sm transition-all">
+                  <img src={resolveStorageUrl(c.image)} alt={c.name} className="w-10 h-10 rounded-lg object-cover" />
+                  <span className="text-xs font-medium text-gray-700">{c.name}{c.year ? ` · ${c.year}` : ''}</span>
+                </a>
+              ) : (
+                <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-xs font-medium border border-amber-100">
+                  <Award className="w-3.5 h-3.5" /> {c.name}{c.year ? ` · ${c.year}` : ''}
+                </span>
+              )
+            ))}
+          </div>
         </div>
       )}
     </div>

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { clinicAPI, catalogAPI } from '../lib/api';
 import MapboxSearchInput from '../components/map/MapboxSearchInput';
 import AccreditationsDropdown from '../components/forms/AccreditationsDropdown';
+import CertificationsEditor from '../components/forms/CertificationsEditor';
 import {
   Building2, MapPin, Phone, FileText, Camera, Loader2,
   CheckCircle2, ChevronRight, ChevronLeft, Stethoscope,
@@ -37,6 +38,7 @@ export default function ClinicOnboarding() {
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [accreditations, setAccreditations] = useState([]);
+  const [certifications, setCertifications] = useState([]);
 
   // Step 1: Specialties
   const [allSpecialties, setAllSpecialties] = useState([]);
@@ -62,6 +64,7 @@ export default function ClinicOnboarding() {
         setLongitude(c.longitude);
         setPhone(c.phone || '');
         setBiography(c.biography || '');
+        setCertifications(c.certifications || []);
         setSelectedSpecialties(c.specialties || []);
         if (c.avatar) setLogoPreview(c.avatar);
         if (c.onboarding_step > 0) setStep(Math.min(c.onboarding_step, 2));
@@ -116,6 +119,7 @@ export default function ClinicOnboarding() {
     try {
       if (step === 0) {
         const payload = { step: 0, name, phone, biography };
+        payload.certifications = certifications.filter(c => c.name);
         // Only add address and coordinates if they exist
         if (address) payload.address = address;
         if (latitude) payload.latitude = latitude;
@@ -313,6 +317,15 @@ export default function ClinicOnboarding() {
                   />
                   <p className="text-xs text-gray-500 mt-2">
                     {t('clinicOnboarding.accreditationsHint', 'Klinağinizin sahip olduğu profesyonel sertifikaları seçin. Hastalara güven aşılar.')}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('clinicOnboarding.certificates', 'Sertifikalar (görselli)')}
+                  </label>
+                  <CertificationsEditor value={certifications} onChange={setCertifications} />
+                  <p className="text-xs text-gray-500 mt-2">
+                    {t('clinicOnboarding.certificatesHint', 'Sertifika adı, yıl ve isterseniz belge görseli ekleyin.')}
                   </p>
                 </div>
               </div>

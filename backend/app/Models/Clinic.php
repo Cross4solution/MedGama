@@ -22,7 +22,7 @@ class Clinic extends Model
     protected $fillable = [
         'name', 'codename', 'fullname', 'avatar', 'background_image', 'owner_id', 'hospital_id',
         'address', 'phone', 'biography', 'map_coordinates', 'latitude', 'longitude', 'website', 'is_verified',
-        'is_crm_active', 'crm_expires_at', 'specialties',
+        'is_crm_active', 'crm_expires_at', 'specialties', 'certifications',
         'onboarding_completed', 'onboarding_step',
         'verification_status',
     ];
@@ -36,6 +36,7 @@ class Clinic extends Model
             'is_crm_active'  => 'boolean',
             'crm_expires_at' => 'datetime',
             'specialties'    => 'array',
+            'certifications' => 'array',
             'onboarding_completed' => 'boolean',
             'verification_status' => 'string',
         ];

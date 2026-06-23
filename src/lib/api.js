@@ -259,6 +259,11 @@ export const doctorProfileAPI = {
   update: (data) => api.put('/doctor-profile', data),
   updateOnboarding: (data) => api.put('/doctor-profile/onboarding', data),
   uploadGallery: (formData) => api.post('/doctor-profile/gallery', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  uploadCertificationImage: (file) => {
+    const fd = new FormData();
+    fd.append('image', file);
+    return api.post('/doctor-profile/certification-image', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
   deleteGalleryImage: (url) => api.delete('/doctor-profile/gallery', { data: { url } }),
   reorderGallery: (gallery) => api.put('/doctor-profile/gallery/reorder', { gallery }),
   updateOperatingHours: (operating_hours) => api.put('/doctor-profile/operating-hours', { operating_hours }),

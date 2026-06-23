@@ -73,6 +73,7 @@ class DoctorProfileController extends Controller
             'certifications.*.name'   => 'required_with:certifications|string',
             'certifications.*.issuer' => 'nullable|string',
             'certifications.*.year'   => 'nullable|string',
+            'certifications.*.image'  => 'nullable|string',
             'services'             => 'nullable|array',
             'services.*.name'        => 'required_with:services|string',
             'services.*.description' => 'nullable|string',
@@ -194,6 +195,28 @@ class DoctorProfileController extends Controller
             'gallery' => $gallery,
             'message' => 'Gallery updated',
         ]);
+    }
+
+    /**
+     * POST /api/doctor-profile/certification-image — Upload a single certificate
+     * image (doctor or clinic) and return its URL. The caller stores the URL in
+     * the certification/accreditation object and saves it via its own update.
+     */
+    public function uploadCertificationImage(Request $request)
+    {
+        $user = $request->user();
+
+        if (!in_array($user->role_id, ['doctor', 'clinicOwner', 'clinic', 'hospital', 'superAdmin'], true)) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        $request->validate([
+            'image' => 'required|file|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        $result = ImageService::optimiseGalleryImage($request->file('image'), 'certifications/' . $user->id);
+
+        return response()->json(['url' => $result['url']]);
     }
 
     /**

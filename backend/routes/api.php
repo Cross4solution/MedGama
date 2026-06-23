@@ -328,6 +328,7 @@ Route::prefix('doctor-profile')->middleware('auth:sanctum')->group(function () {
     Route::put('/', [DoctorProfileController::class, 'update']);
     Route::put('/onboarding', [DoctorProfileController::class, 'updateOnboarding']);
     Route::post('/gallery', [DoctorProfileController::class, 'uploadGallery']);
+    Route::post('/certification-image', [DoctorProfileController::class, 'uploadCertificationImage']);
     Route::delete('/gallery', [DoctorProfileController::class, 'deleteGalleryImage']);
     Route::put('/gallery/reorder', [DoctorProfileController::class, 'reorderGallery']);
     Route::put('/operating-hours', [DoctorProfileController::class, 'updateOperatingHours']);

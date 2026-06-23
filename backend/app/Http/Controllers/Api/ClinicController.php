@@ -314,6 +314,7 @@ class ClinicController extends Controller
                 'biography'            => $clinic->biography,
                 'map_coordinates'      => $clinic->map_coordinates,
                 'specialties'          => $clinic->specialties ?? [],
+                'certifications'       => $clinic->certifications ?? [],
                 'onboarding_step'      => $clinic->onboarding_step ?? 0,
                 'onboarding_completed' => $clinic->onboarding_completed ?? false,
                 'is_verified'          => $clinic->is_verified,
@@ -342,6 +343,10 @@ class ClinicController extends Controller
                 'phone'           => 'nullable|string|max:30',
                 'biography'       => 'nullable|string|max:5000',
                 'map_coordinates' => 'nullable|array',
+                'certifications'              => 'nullable|array',
+                'certifications.*.name'       => 'required_with:certifications|string',
+                'certifications.*.year'       => 'nullable|string',
+                'certifications.*.image'      => 'nullable|string',
             ]);
 
             $data = array_merge($validated, [

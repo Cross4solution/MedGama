@@ -14,6 +14,7 @@ import { LANGUAGES } from '../../i18n';
 import LangFlag from '../../components/ui/LangFlag';
 import { useAuth } from '../../context/AuthContext';
 import { doctorProfileAPI, authAPI } from '../../lib/api';
+import CertificationsEditor from '../../components/forms/CertificationsEditor';
 import { blockNonNumeric } from '../../utils/numericInput';
 import GlobalSuggest from '../../components/forms/GlobalSuggest';
 import StatusBadge from '../../components/ui/StatusBadge';
@@ -101,6 +102,7 @@ const CRMSettings = ({ standalone = false }) => {
   const [doctorServices, setDoctorServices] = useState([]);
   const [doctorPrices, setDoctorPrices] = useState([]);
   const [doctorEducation, setDoctorEducation] = useState([]);
+  const [doctorCertifications, setDoctorCertifications] = useState([]);
   const [doctorLanguages, setDoctorLanguages] = useState([]);
   const [onlineConsultation, setOnlineConsultation] = useState(false);
   const [doctorAddress, setDoctorAddress] = useState('');
@@ -163,6 +165,7 @@ const CRMSettings = ({ standalone = false }) => {
           setDoctorServices(dp.services || []);
           setDoctorPrices(dp.prices || []);
           setDoctorEducation(dp.education || []);
+          setDoctorCertifications(dp.certifications || []);
           setDoctorLanguages(dp.languages || []);
           setOnlineConsultation(!!dp.online_consultation);
           setDoctorAddress(dp.address || '');
@@ -256,6 +259,7 @@ const CRMSettings = ({ standalone = false }) => {
         services: doctorServices.filter(s => s.name),
         prices: doctorPrices.filter(p => p.label),
         education: doctorEducation.filter(e => e.degree || e.school),
+        certifications: doctorCertifications.filter(c => c.name),
         languages: doctorLanguages,
         online_consultation: onlineConsultation,
         address: doctorAddress,
@@ -660,6 +664,17 @@ const CRMSettings = ({ standalone = false }) => {
                       <input value={edu.year} onChange={e => { const n = [...doctorEducation]; n[i].year = e.target.value; setDoctorEducation(n); }} placeholder={t('crm.settings.year', 'Year')} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-teal-400" />
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Certifications */}
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.certificationsHeading', 'Certifications')}</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.certificationsSubtitle', 'Name, year and an optional certificate image')}</p>
+                </div>
+                <div className="px-6 py-4">
+                  <CertificationsEditor value={doctorCertifications} onChange={setDoctorCertifications} />
                 </div>
               </div>
             </div>

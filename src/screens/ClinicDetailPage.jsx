@@ -127,6 +127,7 @@ const ClinicDetailPage = ({ initialClinic }) => {
             aboutP2={aboutData.paragraph2}
             doctors={apiClinic?.doctors || []}
             accreditations={apiClinic?.accreditations || []}
+            certifications={apiClinic?.certifications || []}
             onBookAppointment={() => setBookModal(true)}
             onSwitchToDoctors={() => setActiveTab('doktorlar')}
           />
