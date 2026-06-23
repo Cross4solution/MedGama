@@ -19,7 +19,10 @@ const fallbackForRole = (role) => (ORG_ROLES.includes(role) ? DEFAULT_CLINIC : D
 
 function AvatarImg({ src, alt, className, fallback = DEFAULT_AVATAR }) {
   const [failed, setFailed] = React.useState(false);
-  const imgSrc = failed || !src ? fallback : resolveStorageUrl(src, fallback);
+  // src may already be pre-resolved to the generic person default upstream;
+  // treat that as "no avatar" so the role-based fallback (e.g. clinic) applies.
+  const isGenericDefault = typeof src === 'string' && src.endsWith('default-avatar.svg');
+  const imgSrc = failed || !src || isGenericDefault ? fallback : resolveStorageUrl(src, fallback);
   return (
     <img
       src={imgSrc}
@@ -774,10 +777,10 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             <div className={`flex items-start ${headerGap} min-w-0`}>
               {actorLink ? (
                 <Link to={actorLink} onClick={(e)=>e.stopPropagation()}>
-                  <AvatarImg src={actorAvatar} alt={actorName} className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
+                  <AvatarImg src={actorAvatar} alt={actorName} fallback={fallbackForRole(item?.actor?.role)} className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
                 </Link>
               ) : (
-                <AvatarImg src={actorAvatar} alt={actorName} className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
+                <AvatarImg src={actorAvatar} alt={actorName} fallback={fallbackForRole(item?.actor?.role)} className={`${avatarSize} rounded-full object-cover border ${compact ? 'ring-1 ring-gray-100' : ''}`} />
               )}
               <div className="min-w-0">
               {/* socialContext (e.g., liked by N) removed per design */}

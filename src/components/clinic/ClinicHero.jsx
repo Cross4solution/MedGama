@@ -52,7 +52,7 @@ export default function ClinicHero({
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={onToggleFavorite}
-              className={`p-2.5 rounded-xl border transition-all duration-200 ${
+              className={`p-2 rounded-lg border transition-colors ${
                 isFavorite ? 'bg-red-50 text-red-500 border-red-200' : 'bg-white text-gray-400 border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200'
               }`}
               aria-label={isFavorite ? 'Unfavorite' : 'Favorite'}
@@ -64,7 +64,7 @@ export default function ClinicHero({
               disabled={followLoading}
               className={`${isFollowing
                 ? 'bg-white text-teal-700 border-teal-300 hover:bg-teal-50'
-                : 'bg-teal-600 text-white hover:bg-teal-700 border-transparent'} border px-4 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 text-sm font-semibold shadow-sm hover:shadow-md min-w-[110px] ${followLoading ? 'opacity-60 cursor-wait' : ''}`}
+                : 'bg-teal-600 text-white hover:bg-teal-700 border-transparent'} border px-3.5 py-2 rounded-lg transition-colors flex items-center justify-center gap-1.5 text-[13px] font-semibold min-w-[92px] ${followLoading ? 'opacity-60 cursor-wait' : ''}`}
               aria-label={isFollowing ? 'Unfollow' : 'Follow'}
             >
               {followLoading ? (
