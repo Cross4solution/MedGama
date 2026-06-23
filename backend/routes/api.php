@@ -715,6 +715,13 @@ Route::prefix('telehealth')->middleware('auth:sanctum')->group(function () {
 Route::post('/translate', [\App\Http\Controllers\Api\TranslationController::class, 'translate'])
     ->middleware(['auth:sanctum', 'throttle:60,1']);
 
+// Calendar ICS subscription feed (doctor/patient auto-sync, no OAuth).
+Route::get('/calendar/feed/{token}', [\App\Http\Controllers\Api\CalendarFeedController::class, 'feed']); // PUBLIC (secret token)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/calendar/feed', [\App\Http\Controllers\Api\CalendarFeedController::class, 'info']);
+    Route::post('/calendar/feed/regenerate', [\App\Http\Controllers\Api\CalendarFeedController::class, 'regenerate']);
+});
+
 /*
 |--------------------------------------------------------------------------
 | SuperAdmin — Platform Management (Dashboard, Verification, Moderation)

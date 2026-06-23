@@ -722,6 +722,12 @@ export const telehealthAPI = {
   updateStatus: (appointmentId, meetingStatus) => api.put(`/telehealth/${appointmentId}/status`, { meeting_status: meetingStatus }),
 };
 
+// ── Calendar ICS subscription feed (doctor/patient auto-sync, no OAuth) ──
+export const calendarFeedAPI = {
+  info: () => api.get('/calendar/feed'),
+  regenerate: () => api.post('/calendar/feed/regenerate'),
+};
+
 // ── Machine translation (on-demand, cached) ──
 export const translateAPI = {
   translate: (text, target, source = null) => api.post('/translate', { text, target, source }),

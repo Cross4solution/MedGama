@@ -1,7 +1,17 @@
 {
   "calendar": {
     "addToCalendar": "Add to calendar",
-    "appleOther": "Apple / .ics"
+    "appleOther": "Apple / .ics",
+    "syncTitle": "Calendar Sync",
+    "syncSubtitle": "Get your appointments in Google / Apple / Outlook automatically — add once.",
+    "syncError": "Could not load the link.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "addGoogle": "Add to Google Calendar",
+    "addApple": "Apple / Outlook (webcal)",
+    "regen": "Reset link",
+    "regenConfirm": "The current subscription link will stop working. Continue?",
+    "syncNote": "This is a private link — don't share it. Calendar apps refresh every few minutes."
   },
   "common": {
     "save": "Save",

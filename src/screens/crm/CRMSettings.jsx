@@ -15,6 +15,7 @@ import LangFlag from '../../components/ui/LangFlag';
 import { useAuth } from '../../context/AuthContext';
 import { doctorProfileAPI, authAPI } from '../../lib/api';
 import CertificationsEditor from '../../components/forms/CertificationsEditor';
+import CalendarSyncCard from '../../components/crm/CalendarSyncCard';
 import { blockNonNumeric } from '../../utils/numericInput';
 import GlobalSuggest from '../../components/forms/GlobalSuggest';
 import StatusBadge from '../../components/ui/StatusBadge';
@@ -677,6 +678,8 @@ const CRMSettings = ({ standalone = false }) => {
                   <CertificationsEditor value={doctorCertifications} onChange={setDoctorCertifications} />
                 </div>
               </div>
+
+              <CalendarSyncCard />
             </div>
           )}
 

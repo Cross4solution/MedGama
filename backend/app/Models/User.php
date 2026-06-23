@@ -42,7 +42,7 @@ class User extends Authenticatable
     // ÇIKARILDI — bu CRM gating alanları sadece servis/admin/seeder katmanında
     // forceFill ile setlenmeli (kullanıcı updateProfile ile abonelik kazanamaz).
     protected $fillable = [
-        'email', 'password', 'fullname', 'username', 'cover_image', 'bio', 'avatar', 'profile_image', 'role_id', 'user_level', 'mobile',
+        'email', 'password', 'fullname', 'username', 'calendar_token', 'cover_image', 'bio', 'avatar', 'profile_image', 'role_id', 'user_level', 'mobile',
         'mobile_verified', 'email_verified', 'email_verified_at', 'email_verification_code',
         'password_reset_code', 'password_reset_expires_at',
         'city_id', 'country_id', 'country', 'preferred_language',
@@ -168,6 +168,19 @@ class User extends Authenticatable
         return $this->belongsToMany(Clinic::class, 'doctor_clinic', 'user_id', 'clinic_id')
             ->withPivot('is_primary')
             ->withTimestamps();
+    }
+
+    /**
+     * Lazily get (or generate) the secret token for this user's private ICS
+     * calendar subscription feed. Regenerate by setting calendar_token = null.
+     */
+    public function getOrCreateCalendarToken(): string
+    {
+        if (empty($this->calendar_token)) {
+            $this->calendar_token = \Illuminate\Support\Str::random(40);
+            $this->save();
+        }
+        return $this->calendar_token;
     }
 
     /**
