@@ -23,16 +23,16 @@ function TimelineControls({
         </div>
 
         {/* Center: Segmented toggle (desktop) */}
-        <div className="hidden md:flex items-center">
-          <div className="inline-flex rounded-xl bg-white border border-gray-200 p-1 gap-1 shadow-sm">
+        <div className="hidden md:flex items-center justify-center">
+          <div className="inline-flex rounded-full bg-gray-100/70 p-0.5 gap-0.5">
             <button
               type="button"
               aria-pressed={sort === 'recent'}
               onClick={() => onSortChange?.('recent')}
-              className={`text-sm w-36 py-2 rounded-lg focus:outline-none transition-all duration-200 inline-flex items-center justify-center gap-1.5 font-semibold ${
+              className={`text-[13px] px-4 py-1.5 rounded-full focus:outline-none transition-colors duration-200 inline-flex items-center justify-center gap-1.5 font-medium ${
                 sort === 'recent'
-                  ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50'
-                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                  ? 'bg-white text-teal-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               <Clock className="w-3.5 h-3.5" />
@@ -42,10 +42,10 @@ function TimelineControls({
               type="button"
               aria-pressed={sort === 'top'}
               onClick={() => onSortChange?.('top')}
-              className={`text-sm w-36 py-2 rounded-lg focus:outline-none transition-all duration-200 inline-flex items-center justify-center gap-1.5 font-semibold ${
+              className={`text-[13px] px-4 py-1.5 rounded-full focus:outline-none transition-colors duration-200 inline-flex items-center justify-center gap-1.5 font-medium ${
                 sort === 'top'
-                  ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50'
-                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                  ? 'bg-white text-teal-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               <TrendingUp className="w-3.5 h-3.5" />
@@ -54,13 +54,13 @@ function TimelineControls({
           </div>
         </div>
 
-        {/* Right: Location (desktop) */}
+        {/* Right: Location (desktop) — minimalist */}
         <div className="hidden md:flex flex-1 justify-end items-center gap-3">
           <button
             onClick={onUseLocation}
-            className="text-sm px-4 py-2 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium shadow-sm"
+            className="text-[13px] px-3 py-1.5 rounded-full border border-gray-200/70 hover:border-gray-300 hover:bg-gray-50 transition-colors duration-200 inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-800 font-medium"
           >
-            <MapPin className="w-4 h-4 text-teal-500" />
+            <MapPin className="w-3.5 h-3.5 text-teal-500" />
             Use my location
           </button>
           {geo?.lat && (
