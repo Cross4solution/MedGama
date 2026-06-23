@@ -10,7 +10,7 @@ import {
   Mail, Phone, CalendarDays, Sparkles, Info, Heart, Plus,
   Users, ClipboardList, TrendingUp, Search, AlertTriangle, ShieldAlert, X
 } from 'lucide-react';
-import { doctorAPI, appointmentAPI, calendarSlotAPI, catalogAPI } from '../lib/api';
+import { doctorAPI, appointmentAPI, calendarSlotAPI, catalogAPI, searchAPI } from '../lib/api';
 import { useTranslation } from 'react-i18next';
 import DoctorAppointmentManager from '../components/doctor/DoctorAppointmentManager';
 
@@ -122,6 +122,8 @@ export default function TelehealthAppointmentPage() {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [selectedSpecialty, setSelectedSpecialty] = useState(null);
+  const [doctorQuery, setDoctorQuery] = useState(''); // smart search (doctor/specialty/clinic)
+  const [searchMode, setSearchMode] = useState(false);
 
   // Specialties from catalog API
   const [specialties, setSpecialties] = useState([]);
@@ -195,6 +197,30 @@ export default function TelehealthAppointmentPage() {
       })));
     }).catch(() => setDoctors([])).finally(() => setLoadingDoctors(false));
   }, [selectedSpecialty]);
+
+  // Smart search: type a doctor name, specialty or clinic → matching doctors (with photos)
+  useEffect(() => {
+    const q = doctorQuery.trim();
+    if (q.length < 2) { setSearchMode(false); return; }
+    setSearchMode(true);
+    setSelectedSpecialty(null);
+    setLoadingDoctors(true);
+    const id = setTimeout(() => {
+      searchAPI.live(q).then((res) => {
+        const list = res?.doctors || res?.data?.doctors || [];
+        setDoctors(list.map(d => ({
+          id: d.id,
+          name: d.name || d.fullname,
+          avatar: d.avatar || '/images/caroline-lm-uqved8dypum-unsplash_720.jpg',
+          specialty: d.specialty || d.doctor_profile?.specialty || '',
+          is_verified: d.verified ?? d.is_verified,
+          rating: d.rating || 4.8,
+          experience: d.experience || d.doctor_profile?.experience_years || '',
+        })));
+      }).catch(() => setDoctors([])).finally(() => setLoadingDoctors(false));
+    }, 300);
+    return () => clearTimeout(id);
+  }, [doctorQuery]);
 
   useEffect(() => {
     if (!selectedDoctor || !selectedDate) return;
@@ -625,6 +651,26 @@ export default function TelehealthAppointmentPage() {
                   </div>
                 </div>
 
+                {/* Smart search — find a doctor by name, specialty or clinic */}
+                <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
+                  <h3 className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
+                    <Search className="w-4 h-4 text-teal-600" />
+                    {t('appointment.findDoctor', 'Doktor ara')}
+                  </h3>
+                  <p className="text-xs text-gray-400 mb-3">{t('appointment.findDoctorDesc', 'Doktor adı, uzmanlık veya klinik yazın')}</p>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={doctorQuery}
+                      onChange={(e) => setDoctorQuery(e.target.value)}
+                      placeholder={t('appointment.findDoctorPlaceholder', 'ör. Dr. Ayşe, Göz, Medicana...')}
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
+                    />
+                  </div>
+                  {searchMode && <p className="text-[11px] text-gray-400 mt-2">{t('appointment.orPickSpecialty', 'veya aşağıdan uzmanlık seçin')}</p>}
+                </div>
+
                 {/* Step 1: Specialty Selection */}
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
@@ -776,8 +822,8 @@ export default function TelehealthAppointmentPage() {
                   )}
                 </div>
 
-                {/* Step 2: Doctor Cards (shown only after specialty selection) */}
-                {selectedSpecialty && (
+                {/* Step 2: Doctor Cards (after specialty selection OR smart search) */}
+                {(selectedSpecialty || searchMode) && (
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
