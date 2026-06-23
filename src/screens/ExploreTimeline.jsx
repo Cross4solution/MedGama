@@ -131,7 +131,12 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
 
 export default function ExploreTimeline() {
   const { t } = useTranslation();
-  const focused = useIsMedstream(); // medstream.co → single-column Twitter-like feed
+  const isMedstreamHost = useIsMedstream(); // medstream.co domain
+  const [standaloneParam, setStandaloneParam] = useState(false);
+  useEffect(() => {
+    try { setStandaloneParam(new URLSearchParams(window.location.search).get('standalone') === '1'); } catch {}
+  }, []);
+  const focused = isMedstreamHost || standaloneParam; // single-column Twitter-like feed
   const { user, country } = useAuth();
   const disabledActions = false; // allow interactions for all users
   const navigate = useNavigate();

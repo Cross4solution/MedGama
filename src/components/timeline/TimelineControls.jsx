@@ -16,10 +16,10 @@ function TimelineControls({
       <div className="flex items-center justify-between">
         {/* Left: Title */}
         <div className="flex-1 min-w-0">
-          <h1 className="text-lg md:text-xl font-bold text-gray-900 tracking-tight">
+          <h1 className="text-[15px] font-semibold text-gray-700 tracking-tight">
             Explore Timeline
           </h1>
-          <p className="text-xs text-gray-400 mt-0.5 hidden md:block">Discover the latest from your medical network</p>
+          <p className="text-[11px] text-gray-400 mt-0.5 hidden md:block">Discover the latest from your medical network</p>
         </div>
 
         {/* Center: Segmented toggle (desktop) */}

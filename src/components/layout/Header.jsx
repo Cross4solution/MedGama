@@ -15,7 +15,7 @@ import LanguageSwitcher from '../ui/LanguageSwitcher';
 // MedStream is a standalone, Twitter-like destination. When NEXT_PUBLIC_MEDSTREAM_URL
 // is set (e.g. https://medstream.co) the nav link opens that separate site in a new
 // tab; until the domain is connected it falls back to the in-site feed (also new tab).
-const MEDSTREAM_URL = process.env.NEXT_PUBLIC_MEDSTREAM_URL || '/medstream';
+const MEDSTREAM_URL = process.env.NEXT_PUBLIC_MEDSTREAM_URL || '/medstream?standalone=1';
 
 const Header = () => {
   const { user, sidebarMobileOpen, setSidebarMobileOpen, logout, hydrated, isPro } = useAuth();
