@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
         //  CATALOG (Specialties, Cities, Diseases, Symptoms) — must run first
         // ══════════════════════════════════════════════════════════════════
         $this->call(CatalogSeeder::class);
+        $this->call(TreatmentTagSeeder::class);
         $this->call(TicketCategorySeeder::class);
         $this->call(AccreditationSeeder::class);
 
@@ -36,6 +37,7 @@ class DatabaseSeeder extends Seeder
         //  CATALOG (Specialties, Cities, Diseases, Symptoms) — must run first
         // ══════════════════════════════════════════════════════════════════
         $this->call(CatalogSeeder::class);
+        $this->call(TreatmentTagSeeder::class);
         $this->call(TicketCategorySeeder::class);
         $this->call(AccreditationSeeder::class);
 

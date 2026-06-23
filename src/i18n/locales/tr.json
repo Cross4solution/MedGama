@@ -1291,6 +1291,18 @@
     "privacyMatters": "Gizliliğiniz Önemlidir",
     "bannerText": "Temel işlevsellik, analitik ve kişisel içerik için çerezler kullanıyoruz. GDPR kapsamında verilerinizi siz kontrol edersiniz."
   },
+  "browse": {
+    "treatmentsSubtitle": "Tedavi türüne ve uzmanlığa göre klinik ve hastane bulun.",
+    "searchTreatments": "Tedavi ara (ör. implant, katarakt, tüp bebek)...",
+    "allSpecialties": "Tüm Uzmanlıklar",
+    "treatments": "Tedaviler",
+    "noTagsYet": "Bu uzmanlık için tedavi listesi henüz eklenmedi.",
+    "clinicsForTreatment": "\"{{name}}\" için klinikler",
+    "clinicsInSpecialty": "{{name}} klinikleri",
+    "allClinics": "Tüm klinikler",
+    "noTreatments": "Sonuç bulunamadı",
+    "tryDifferent": "Farklı bir arama veya filtre deneyin."
+  },
   "clinicDetail": {
     "ourDoctors": "Doktorlarımız",
     "viewAllDoctors": "Tüm {{count}} doktoru gör",

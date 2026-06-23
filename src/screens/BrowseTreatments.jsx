@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
-import { Search, Star, MapPin, Loader2, Stethoscope } from 'lucide-react';
+import { Search, Star, MapPin, Loader2, Stethoscope, ChevronRight, X } from 'lucide-react';
 import { clinicAPI, catalogAPI } from '../lib/api';
 import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
@@ -82,75 +82,97 @@ function CardSkeleton() {
   );
 }
 
-// Popular specialty pills for quick filter
-const POPULAR_SPECIALTIES = [
-  'Cardiology', 'Dentistry', 'Ophthalmology', 'Dermatology', 'Orthopedics',
-  'Plastic Surgery', 'Neurology', 'Oncology', 'General Surgery', 'Aesthetic Medicine',
-];
-
 export default function BrowseTreatments() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const lang = (i18n.language || 'en').split('-')[0];
+  const loc = (n) => (typeof n === 'string' ? n : (n?.[lang] || n?.en || n?.tr || Object.values(n || {})[0] || ''));
+
   const [clinics, setClinics] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [activeSpecialty, setActiveSpecialty] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [specialties, setSpecialties] = useState(POPULAR_SPECIALTIES);
 
-  // Fetch specialties from catalog
+  // Drill-down: Specialty → TreatmentTag → clinics
+  const [specialties, setSpecialties] = useState([]);
+  const [activeSpecialty, setActiveSpecialty] = useState(null); // {id, code, name}
+  const [tags, setTags] = useState([]);
+  const [activeTag, setActiveTag] = useState(null); // {id, slug, name}
+  const [loadingTags, setLoadingTags] = useState(false);
+
+  // Treatment search (across specialties)
+  const [search, setSearch] = useState('');
+  const [tagResults, setTagResults] = useState([]);
+
+  // Load specialties (objects)
   useEffect(() => {
     catalogAPI.specialties().then(res => {
-      const list = res?.data || [];
-      if (list.length) {
-        setSpecialties(list.map(s => s.name || s.label || s));
-      }
+      setSpecialties(res?.data?.specialties || res?.specialties || res?.data || []);
     }).catch(() => {});
   }, []);
+
+  // Load tags when a specialty is picked
+  useEffect(() => {
+    if (!activeSpecialty) { setTags([]); return; }
+    setLoadingTags(true);
+    catalogAPI.treatmentTags({ specialty_id: activeSpecialty.id })
+      .then(res => setTags(res?.data?.treatment_tags || res?.treatment_tags || []))
+      .catch(() => setTags([]))
+      .finally(() => setLoadingTags(false));
+  }, [activeSpecialty]);
+
+  // Treatment search (debounced) → jump to specialty+tag
+  useEffect(() => {
+    const q = search.trim();
+    if (q.length < 2) { setTagResults([]); return; }
+    const id = setTimeout(() => {
+      catalogAPI.treatmentTagsSearch(q)
+        .then(res => setTagResults(res?.data?.results || res?.results || []))
+        .catch(() => setTagResults([]));
+    }, 250);
+    return () => clearTimeout(id);
+  }, [search]);
+
+  // Clinic filter value = active specialty's English name (clinic.specialties is free text)
+  const specialtyFilter = useMemo(() => (activeSpecialty ? (activeSpecialty.name?.en || loc(activeSpecialty.name)) : ''), [activeSpecialty]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchClinics = useCallback(async (pg = 1) => {
     setLoading(true);
     try {
       const params = { per_page: 20, page: pg };
-      if (search) params.search = search;
-      if (activeSpecialty) params.specialty = activeSpecialty;
+      if (specialtyFilter) params.specialty = specialtyFilter;
       const res = await clinicAPI.list(params);
       const list = res?.data || [];
-      if (pg === 1) {
-        setClinics(list);
-      } else {
-        setClinics(prev => [...prev, ...list]);
-      }
+      setClinics(prev => (pg === 1 ? list : [...prev, ...list]));
       setHasMore(list.length === 20);
     } catch {
       if (pg === 1) setClinics([]);
     }
     setLoading(false);
-  }, [search, activeSpecialty]);
+  }, [specialtyFilter]);
 
   useEffect(() => { setPage(1); fetchClinics(1); }, [fetchClinics]);
 
-  const loadMore = () => {
-    const next = page + 1;
-    setPage(next);
-    fetchClinics(next);
-  };
+  const loadMore = () => { const next = page + 1; setPage(next); fetchClinics(next); };
 
   const handleClick = (clinic) => {
     window.scrollTo({ top: 0, behavior: 'auto' });
     navigate(clinic.codename ? `/clinic/${clinic.codename}` : '/clinic');
   };
 
-  const toggleSpecialty = (s) => {
-    setActiveSpecialty(prev => prev === s ? '' : s);
+  const pickSpecialty = (s) => { setActiveSpecialty(prev => (prev?.id === s.id ? null : s)); setActiveTag(null); };
+  const pickTagFromSearch = (r) => {
+    setSearch('');
+    setTagResults([]);
+    if (r.specialty) setActiveSpecialty({ id: r.specialty.id, code: r.specialty.code, name: r.specialty.name });
+    setActiveTag({ id: r.id, slug: r.slug, name: r.name });
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <Stethoscope className="w-7 h-7 text-teal-600" />
             <h1 className="text-2xl font-bold text-gray-900">{t('home.popularTreatments', 'Popular Treatments')}</h1>
@@ -158,34 +180,86 @@ export default function BrowseTreatments() {
           <p className="text-sm text-gray-500">{t('browse.treatmentsSubtitle', 'Find clinics and hospitals by treatment type and specialty.')}</p>
         </div>
 
-        {/* Search */}
+        {/* Treatment search (across specialties) */}
         <div className="relative mb-4">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('browse.searchTreatments', 'Search by treatment, specialty, or clinic name...')}
+            placeholder={t('browse.searchTreatments', 'Tedavi ara (ör. implant, katarakt, tüp bebek)...')}
             className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
           />
+          {tagResults.length > 0 && (
+            <div className="absolute z-20 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-72 overflow-y-auto">
+              {tagResults.map(r => (
+                <button key={r.id} type="button" onClick={() => pickTagFromSearch(r)}
+                  className="w-full text-left px-4 py-2.5 hover:bg-teal-50 flex items-center justify-between gap-2 border-b border-gray-50 last:border-0">
+                  <span className="text-sm text-gray-800">{loc(r.name)}</span>
+                  {r.specialty && <span className="text-[11px] text-gray-400">{loc(r.specialty.name)}</span>}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Specialty pills */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {specialties.slice(0, 12).map((s) => (
+        {/* Breadcrumb (drill-down state) */}
+        {(activeSpecialty || activeTag) && (
+          <div className="flex items-center flex-wrap gap-2 mb-4 text-sm">
+            <button onClick={() => { setActiveSpecialty(null); setActiveTag(null); }} className="text-gray-500 hover:text-teal-600">{t('browse.allSpecialties', 'Tüm Uzmanlıklar')}</button>
+            {activeSpecialty && (<><ChevronRight className="w-3.5 h-3.5 text-gray-300" /><span className="font-semibold text-gray-800">{loc(activeSpecialty.name)}</span></>)}
+            {activeTag && (<><ChevronRight className="w-3.5 h-3.5 text-gray-300" /><span className="inline-flex items-center gap-1 font-semibold text-teal-700">{loc(activeTag.name)}<button onClick={() => setActiveTag(null)} className="text-teal-400 hover:text-teal-600"><X className="w-3.5 h-3.5" /></button></span></>)}
+          </div>
+        )}
+
+        {/* Step 1: Specialty chips */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {specialties.slice(0, 24).map((s) => (
             <button
-              key={s}
-              onClick={() => toggleSpecialty(s)}
+              key={s.id || s.code}
+              onClick={() => pickSpecialty(s)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
-                activeSpecialty === s
+                activeSpecialty?.id === s.id
                   ? 'bg-teal-600 text-white border-teal-600'
                   : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300 hover:text-teal-700'
               }`}
             >
-              {s}
+              {loc(s.name)}
             </button>
           ))}
         </div>
+
+        {/* Step 2: Treatment-tag chips for the selected specialty */}
+        {activeSpecialty && (
+          <div className="mb-6 p-3 bg-white rounded-xl border border-gray-100">
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">{t('browse.treatments', 'Tedaviler')}</p>
+            {loadingTags ? (
+              <Loader2 className="w-4 h-4 animate-spin text-teal-500" />
+            ) : tags.length === 0 ? (
+              <p className="text-xs text-gray-400">{t('browse.noTagsYet', 'Bu uzmanlık için tedavi listesi henüz eklenmedi.')}</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {tags.map(tg => (
+                  <button key={tg.id} onClick={() => setActiveTag(prev => prev?.id === tg.id ? null : tg)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                      activeTag?.id === tg.id ? 'bg-teal-50 text-teal-700 border-teal-300' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-teal-300 hover:text-teal-700'
+                    }`}>
+                    {loc(tg.name)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Clinic results label */}
+        <p className="text-sm text-gray-500 mb-3">
+          {activeTag
+            ? t('browse.clinicsForTreatment', '"{{name}}" için klinikler', { name: loc(activeTag.name) })
+            : activeSpecialty
+              ? t('browse.clinicsInSpecialty', '{{name}} klinikleri', { name: loc(activeSpecialty.name) })
+              : t('browse.allClinics', 'Tüm klinikler')}
+        </p>
 
         {/* Grid */}
         {loading && page === 1 ? (
