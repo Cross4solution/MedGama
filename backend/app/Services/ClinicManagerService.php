@@ -162,8 +162,12 @@ class ClinicManagerService
     {
         $clinicIds = $this->resolveClinicIds($user);
 
+        // Include doctors whose PRIMARY clinic OR any pivot-linked clinic is in scope
         $query = User::where('role_id', 'doctor')
-            ->whereIn('clinic_id', $clinicIds)
+            ->where(function ($q) use ($clinicIds) {
+                $q->whereIn('clinic_id', $clinicIds)
+                  ->orWhereHas('clinics', fn ($c) => $c->whereIn('clinics.id', $clinicIds));
+            })
             ->with(['doctorProfile', 'clinic:id,name,fullname']);
 
         if (!empty($filters['search'])) {
@@ -272,25 +276,37 @@ class ClinicManagerService
         $clinicId = $this->resolveClinicId($manager);
         $doctor = User::where('role_id', 'doctor')->findOrFail($doctorId);
 
-        if ($doctor->clinic_id && $doctor->clinic_id !== $clinicId) {
-            abort(422, 'This doctor is already assigned to another clinic');
+        // Multi-clinic: a doctor may belong to several clinics via the pivot.
+        // The first clinic a doctor joins becomes their primary (users.clinic_id).
+        $isPrimary = empty($doctor->clinic_id);
+        $doctor->clinics()->syncWithoutDetaching([
+            $clinicId => ['is_primary' => $isPrimary],
+        ]);
+        if ($isPrimary) {
+            $doctor->update(['clinic_id' => $clinicId]);
         }
 
-        $doctor->update(['clinic_id' => $clinicId]);
         return $doctor->fresh(['doctorProfile', 'clinic:id,name,fullname']);
     }
 
     /**
-     * Remove a doctor from the clinic (unset clinic_id).
+     * Remove a doctor from THIS clinic (detach pivot). If it was the doctor's
+     * primary clinic, promote another linked clinic so they keep ≥1 affiliation.
      */
     public function removeDoctor(User $manager, string $doctorId): void
     {
-        $clinicIds = $this->resolveClinicIds($manager);
-        $doctor = User::where('role_id', 'doctor')
-            ->whereIn('clinic_id', $clinicIds)
-            ->findOrFail($doctorId);
+        $clinicId = $this->resolveClinicId($manager);
+        $doctor = User::where('role_id', 'doctor')->findOrFail($doctorId);
 
-        $doctor->update(['clinic_id' => null]);
+        $doctor->clinics()->detach($clinicId);
+
+        if ($doctor->clinic_id === $clinicId) {
+            $next = $doctor->clinics()->first();
+            $doctor->update(['clinic_id' => $next?->id]);
+            if ($next) {
+                $doctor->clinics()->updateExistingPivot($next->id, ['is_primary' => true]);
+            }
+        }
     }
 
     /**

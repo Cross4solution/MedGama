@@ -211,7 +211,10 @@ class ClinicController extends Controller
         $clinic = Clinic::active()->findOrFail($id);
 
         $staff = User::active()
-            ->where('clinic_id', $clinic->id)
+            ->where(function ($q) use ($clinic) {
+                $q->where('clinic_id', $clinic->id)
+                  ->orWhereHas('clinics', fn ($c) => $c->where('clinics.id', $clinic->id));
+            })
             ->with('doctorProfile:id,user_id,title,specialty,experience_years,onboarding_completed')
             ->select('id', 'fullname', 'email', 'avatar', 'role_id', 'is_verified', 'clinic_id', 'codename', 'created_at')
             ->paginate($request->per_page ?? 50);

@@ -11,14 +11,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('doctor_clinic', function (Blueprint $table) {
-            $table->uuid('id')->primary();
             $table->uuid('user_id');      // the doctor (users.id)
             $table->uuid('clinic_id');    // clinics.id
             $table->boolean('is_primary')->default(false);
             $table->timestamps();
 
-            $table->unique(['user_id', 'clinic_id']);
-            $table->index('user_id');
+            $table->primary(['user_id', 'clinic_id']);
             $table->index('clinic_id');
         });
 
@@ -28,7 +26,6 @@ return new class extends Migration
             $rows = [];
             foreach ($doctors as $d) {
                 $rows[] = [
-                    'id'         => (string) \Illuminate\Support\Str::uuid(),
                     'user_id'    => $d->id,
                     'clinic_id'  => $d->clinic_id,
                     'is_primary' => true,
