@@ -160,6 +160,17 @@ class User extends Authenticatable
     }
 
     /**
+     * Clinics a doctor works at (many-to-many). A doctor has one primary clinic
+     * (users.clinic_id) and may belong to additional clinics via the pivot.
+     */
+    public function clinics()
+    {
+        return $this->belongsToMany(Clinic::class, 'doctor_clinic', 'user_id', 'clinic_id')
+            ->withPivot('is_primary')
+            ->withTimestamps();
+    }
+
+    /**
      * Sales CRM leads assigned to this user (salesperson).
      */
     public function assignedLeads()
