@@ -851,5 +851,30 @@ class DatabaseSeeder extends Seeder
         $this->command->info('╠═══════════════════════════════════════════════════════════════════╣');
         $this->command->info('║  MEDSTREAM: 10 professional posts (3 video, 4 image, 3 text)    ║');
         $this->command->info('╚═══════════════════════════════════════════════════════════════════╝');
+
+        // Demo availability — every doctor gets bookable slots (next ~20 days, weekdays, hourly)
+        $slotDoctors = \App\Models\User::where('role_id', 'doctor')->get();
+        $slotTimes = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
+        $slotCount = 0;
+        foreach ($slotDoctors as $doc) {
+            for ($i = 1; $i <= 20; $i++) {
+                $date = now()->addDays($i);
+                if (in_array((int) $date->dayOfWeek, [0, 6], true)) {
+                    continue; // skip weekends
+                }
+                foreach ($slotTimes as $tm) {
+                    \App\Models\CalendarSlot::create([
+                        'doctor_id'        => $doc->id,
+                        'clinic_id'        => $doc->clinic_id,
+                        'slot_date'        => $date->toDateString(),
+                        'start_time'       => $tm,
+                        'duration_minutes' => 30,
+                        'is_available'     => true,
+                    ]);
+                    $slotCount++;
+                }
+            }
+        }
+        $this->command->info("Seeded {$slotCount} calendar slots for {$slotDoctors->count()} doctors.");
     }
 }
