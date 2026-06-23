@@ -1,7 +1,19 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
+import { Search } from 'lucide-react';
 
 export default function PricesTab({ services, selectedService, setSelectedService }) {
   const pricesRef = useRef(null);
+  const [query, setQuery] = useState('');
+
+  const filteredServices = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return services;
+    return services.filter((s) =>
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.description || '').toLowerCase().includes(q) ||
+      (s.prices || []).some((p) => (p.procedure || '').toLowerCase().includes(q)),
+    );
+  }, [services, query]);
 
   useEffect(() => {
     if (selectedService && pricesRef.current) {
@@ -14,9 +26,26 @@ export default function PricesTab({ services, selectedService, setSelectedServic
     <div className="space-y-6">
       <h3 className="text-lg font-bold text-gray-900">Top Services</h3>
 
+      {/* Search — narrow down treatments (helps when there are many) */}
+      {services.length > 4 && (
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Tedavi veya işlem ara..."
+            className="w-full pl-10 pr-3 py-2 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
+          />
+        </div>
+      )}
+
       {/* Service tiles */}
+      {filteredServices.length === 0 ? (
+        <div className="text-center py-8 text-sm text-gray-400">Aramanıza uygun tedavi bulunamadı.</div>
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {services.map((service) => (
+        {filteredServices.map((service) => (
           <button
             key={service.id}
             type="button"
@@ -33,6 +62,7 @@ export default function PricesTab({ services, selectedService, setSelectedServic
           </button>
         ))}
       </div>
+      )}
 
       {/* Prices of selected service */}
       {selectedService && (
