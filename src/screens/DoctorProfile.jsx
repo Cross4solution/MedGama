@@ -500,11 +500,19 @@ const DoctorProfilePage = ({ initialDoctor }) => {
                     {certifications.length > 0 && (
                       <div>
                         <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2"><Award className="w-4 h-4 text-teal-600" /> {t('doctorProfile.certifications')}</h3>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap items-start gap-3">
                           {certifications.map((cert, i) => (
-                            <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 text-violet-700 rounded-lg text-xs font-medium border border-violet-100">
-                              <Award className="w-3.5 h-3.5" /> {cert.name}{cert.year ? ` (${cert.year})` : ''}
-                            </span>
+                            cert.image ? (
+                              <a key={i} href={resolveStorageUrl(cert.image)} target="_blank" rel="noopener noreferrer"
+                                 className="group w-32 rounded-xl border border-violet-100 bg-violet-50/40 overflow-hidden hover:shadow-md transition-shadow">
+                                <img src={resolveStorageUrl(cert.image)} alt={cert.name || 'Certificate'} className="w-full h-20 object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                                <div className="px-2 py-1.5 text-[11px] font-medium text-violet-700 leading-tight">{cert.name}{cert.year ? ` (${cert.year})` : ''}</div>
+                              </a>
+                            ) : (
+                              <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 text-violet-700 rounded-lg text-xs font-medium border border-violet-100">
+                                <Award className="w-3.5 h-3.5" /> {cert.name}{cert.year ? ` (${cert.year})` : ''}
+                              </span>
+                            )
                           ))}
                         </div>
                       </div>
