@@ -55,7 +55,9 @@ class VascoService
     /** @return array{code:?string, follow_up:?string, rationale:string} */
     private function extract(string $text, string $lang, array $specialties): array
     {
-        $base = rtrim((string) env('VASCO_LLM_BASE', 'https://api.groq.com/openai/v1'), '/');
+        // Default: Google Gemini Flash-Lite (best Turkish + 1500 req/day free,
+        // OpenAI-compatible). Swap to Groq/Cerebras/self-host Ollama via env.
+        $base = rtrim((string) env('VASCO_LLM_BASE', 'https://generativelanguage.googleapis.com/v1beta/openai'), '/');
         $key = env('VASCO_LLM_KEY');
         if ($key) {
             try {
@@ -80,7 +82,7 @@ class VascoService
             . "If the complaint is too vague to choose, set code=null and provide follow_up.";
 
         $res = Http::timeout(15)->withToken($key)->post($base . '/chat/completions', [
-            'model'       => env('VASCO_LLM_MODEL', 'llama-3.3-70b-versatile'),
+            'model'       => env('VASCO_LLM_MODEL', 'gemini-2.5-flash-lite'),
             'temperature' => 0.2,
             'messages'    => [
                 ['role' => 'system', 'content' => $sys],
@@ -114,20 +116,24 @@ class VascoService
     /** Keyless fallback: match the complaint against a TR/EN keyword → specialty map + specialty names. */
     private function keywordExtract(string $text, array $specialties): array
     {
-        $t = mb_strtolower($text);
+        // Turkish-aware lowercase (PHP mb_strtolower mishandles İ/I).
+        $t = mb_strtolower(strtr($text, [
+            'İ' => 'i', 'I' => 'ı', 'Ş' => 'ş', 'Ç' => 'ç', 'Ğ' => 'ğ', 'Ü' => 'ü', 'Ö' => 'ö',
+        ]));
+        // Stems (no trailing suffix) so inflected forms match: "göğsümde", "bebeğimin".
         $map = [
-            'CARD' => ['kalp', 'göğüs ağr', 'çarpıntı', 'tansiyon', 'heart', 'chest pain', 'palpitation'],
-            'DERM' => ['cilt', 'kaşıntı', 'sivilce', 'akne', 'döküntü', 'ben', 'skin', 'rash', 'acne', 'mole'],
-            'DENT' => ['diş', 'dış eti', 'ağız', 'tooth', 'teeth', 'dental', 'gum'],
-            'OPHT' => ['göz', 'görme', 'eye', 'vision', 'sight'],
-            'ORTH' => ['kemik', 'eklem', 'diz', 'bel', 'kırık', 'bone', 'joint', 'knee', 'back pain', 'fracture'],
+            'CARD' => ['kalp', 'göğ', 'göğüs', 'çarpıntı', 'tansiyon', 'heart', 'chest', 'palpitation'],
+            'DERM' => ['cilt', 'kaşınt', 'sivilce', 'akne', 'döküntü', 'skin', 'rash', 'acne', 'mole'],
+            'DENT' => ['diş', 'ağız', 'tooth', 'teeth', 'dental', 'gum'],
+            'OPHT' => ['göz', 'görme', 'görüş', 'eye', 'vision', 'sight'],
+            'ORTH' => ['kemik', 'eklem', 'diz', 'bel ağr', 'omurga', 'kırık', 'bone', 'joint', 'knee', 'back pain', 'fracture'],
             'ENT'  => ['kulak', 'burun', 'boğaz', 'sinüs', 'ear', 'nose', 'throat', 'sinus'],
-            'GAST' => ['mide', 'karın', 'bağırsak', 'reflü', 'bulantı', 'stomach', 'abdomen', 'reflux', 'nausea'],
-            'NEUR' => ['baş ağr', 'migren', 'baş dön', 'nöbet', 'uyuşma', 'headache', 'migraine', 'dizziness', 'seizure'],
-            'GYNE' => ['gebe', 'adet', 'jinekolog', 'rahim', 'pregnan', 'menstru', 'gyneco'],
-            'PEDI' => ['çocuk', 'bebek', 'child', 'baby', 'infant'],
-            'PSYC' => ['depres', 'anksiyete', 'stres', 'uyku', 'panik', 'depress', 'anxiety', 'stress', 'panic'],
-            'PULM' => ['öksürük', 'nefes', 'astım', 'akciğer', 'cough', 'breath', 'asthma', 'lung'],
+            'GAST' => ['mide', 'karın', 'bağırsak', 'reflü', 'bulant', 'stomach', 'abdomen', 'reflux', 'nausea'],
+            'NEUR' => ['baş ağr', 'migren', 'baş dön', 'nöbet', 'uyuşma', 'headache', 'migraine', 'dizz', 'seizure'],
+            'GYNE' => ['hamile', 'gebe', 'adet', 'jinekolog', 'rahim', 'pregnan', 'menstru', 'gyneco'],
+            'PEDI' => ['bebeğ', 'bebek', 'çocuğ', 'çocuk', 'child', 'baby', 'infant'],
+            'PSYC' => ['depres', 'anksiyete', 'stres', 'uyku', 'uyuya', 'panik', 'depress', 'anxiety', 'stress', 'panic', 'insomnia'],
+            'PULM' => ['öksür', 'nefes', 'astım', 'akciğer', 'cough', 'breath', 'asthma', 'lung'],
             'UROL' => ['idrar', 'böbrek', 'prostat', 'urine', 'kidney', 'prostate'],
             'ENDO' => ['tiroid', 'şeker', 'diyabet', 'hormon', 'thyroid', 'diabet', 'hormone'],
         ];
