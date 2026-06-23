@@ -732,9 +732,7 @@ export default function TelehealthAppointmentPage() {
                   ) : specialties.length > 0 ? (() => {
                     const lang = i18n.language?.split('-')[0] || 'en';
                     const q = specialtySearch.trim().toLowerCase();
-                    const POPULAR_KEYS = ['cardio', 'dent', 'derma', 'orthop', 'ophthalm', 'neurol', 'general', 'psychiatr', 'gynecol', 'pediatr', 'family', 'internal'];
                     const getName = (sp) => sp.name || sp.name_translations?.[lang] || sp.name_translations?.en || sp.code || '';
-                    const isPopular = (sp) => { const n = getName(sp).toLowerCase(); return POPULAR_KEYS.some(k => n.includes(k)); };
 
                     if (q) {
                       // Search mode — fixed min-height prevents layout shift
@@ -773,60 +771,28 @@ export default function TelehealthAppointmentPage() {
                       );
                     }
 
-                    // Default: Popular + All Specialties sections
-                    const popular = specialties.filter(isPopular).slice(0, 6);
-                    const others = specialties.filter(sp => !isPopular(sp)).sort((a, b) => getName(a).localeCompare(getName(b)));
+                    // Single flat specialty list (alphabetical) — no popular grouping
+                    const all = [...specialties].sort((a, b) => getName(a).localeCompare(getName(b)));
 
                     return (
-                      <div className="space-y-4">
-                        {popular.length > 0 && (
-                          <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2.5">Popular Specialties</p>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                              {popular.map(sp => {
-                                const spName = getName(sp);
-                                const isActive = selectedSpecialty === sp.id;
-                                return (
-                                  <button
-                                    key={sp.id}
-                                    onClick={() => { setSelectedSpecialty(sp.id); setSelectedDoctor(null); setSpecialtySearch(''); }}
-                                    className={`px-3 py-3 rounded-xl text-sm font-semibold border transition-all duration-200 text-left shadow-sm ${
-                                      isActive
-                                        ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-200/50'
-                                        : 'bg-white text-gray-700 border-gray-200 hover:border-teal-400 hover:shadow-md hover:shadow-teal-50 hover:bg-teal-50/30'
-                                    }`}
-                                  >
-                                    {spName}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
-                        {others.length > 0 && (
-                          <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2.5">All Specialties</p>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                              {others.map(sp => {
-                                const spName = getName(sp);
-                                const isActive = selectedSpecialty === sp.id;
-                                return (
-                                  <button
-                                    key={sp.id}
-                                    onClick={() => { setSelectedSpecialty(sp.id); setSelectedDoctor(null); setSpecialtySearch(''); }}
-                                    className={`px-2.5 py-2 rounded-lg text-[12px] font-medium border transition-all duration-200 text-left ${
-                                      isActive
-                                        ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
-                                        : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300 hover:shadow-sm hover:bg-teal-50/20'
-                                    }`}
-                                  >
-                                    {spName}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                        {all.map(sp => {
+                          const spName = getName(sp);
+                          const isActive = selectedSpecialty === sp.id;
+                          return (
+                            <button
+                              key={sp.id}
+                              onClick={() => { setSelectedSpecialty(sp.id); setSelectedDoctor(null); setSpecialtySearch(''); }}
+                              className={`px-2.5 py-2 rounded-lg text-[12px] font-medium border transition-all duration-200 text-left ${
+                                isActive
+                                  ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
+                                  : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300 hover:shadow-sm hover:bg-teal-50/20'
+                              }`}
+                            >
+                              {spName}
+                            </button>
+                          );
+                        })}
                       </div>
                     );
                   })() : (
@@ -846,13 +812,14 @@ export default function TelehealthAppointmentPage() {
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                       <Users className="w-4 h-4 text-teal-600" />
-                      {t('appointment.doctors', 'Doctors')} — {(() => { const s = specialties.find(s => s.id === selectedSpecialty); const lang = i18n.language?.split('-')[0] || 'en'; return s?.name || s?.name_translations?.[lang] || s?.name_translations?.en || ''; })()}
+                      {t('appointment.doctors', 'Doctors')}{(() => { if (searchMode) return doctorQuery ? ` — "${doctorQuery}"` : ''; const s = specialties.find(s => s.id === selectedSpecialty); const lang = i18n.language?.split('-')[0] || 'en'; const n = s?.name || s?.name_translations?.[lang] || s?.name_translations?.en || ''; return n ? ` — ${n}` : ''; })()}
                     </h3>
-                    <button onClick={() => { setSelectedSpecialty(null); setSelectedDoctor(null); }} className="text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline transition-colors">{t('appointment.changeSpecialty', 'Change specialty')}</button>
+                    <button onClick={() => { setSelectedSpecialty(null); setSelectedDoctor(null); setDoctorQuery(''); }} className="text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline transition-colors">{searchMode ? t('appointment.clearSearch', 'Clear search') : t('appointment.changeSpecialty', 'Change specialty')}</button>
                   </div>
                   {(() => {
-                  // Telehealth seçiliyse yalnızca online konsültasyon kabul eden doktorları göster
-                  const visibleDoctors = appointmentType === 'online'
+                  // Telehealth seçiliyse yalnızca online konsültasyon kabul eden doktorları göster.
+                  // Arama modunda (isim/uzmanlık/klinik) kullanıcının aradığı tüm eşleşmeler gösterilir.
+                  const visibleDoctors = (appointmentType === 'online' && !searchMode)
                     ? doctors.filter((d) => d.online_consultation)
                     : doctors;
                   return loadingDoctors ? (
