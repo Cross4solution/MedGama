@@ -144,7 +144,7 @@ export default function AdminDashboard() {
           <textarea
             value={announcementText}
             onChange={e => setAnnouncementText(e.target.value)}
-            placeholder="Type your announcement message here..."
+            placeholder={t('admin.dashboard.announcementPlaceholder', 'Type your announcement message here...')}
             rows={3}
             className="w-full border border-purple-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all resize-none"
           />
