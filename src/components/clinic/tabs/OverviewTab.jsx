@@ -1,11 +1,13 @@
 import React from 'react';
 import { Award, Calendar, ChevronRight } from 'lucide-react';
 import { useNavigate } from '@/compat/router';
+import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../../../utils/resolveStorageUrl';
 import AccreditationBadges from '../AccreditationBadges';
 
 export default function OverviewTab({ aboutTitle, aboutP1, aboutP2, doctors = [], accreditations = [], certifications = [], onBookAppointment, onSwitchToDoctors }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const previewDoctors = doctors.slice(0, 4);
 
@@ -25,14 +27,14 @@ export default function OverviewTab({ aboutTitle, aboutP1, aboutP2, doctors = []
       {previewDoctors.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Our Doctors</h4>
+            <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">{t('clinicDetail.ourDoctors', 'Our Doctors')}</h4>
             {doctors.length > 4 && (
               <button
                 type="button"
                 onClick={onSwitchToDoctors}
                 className="text-xs font-medium text-teal-600 hover:text-teal-700 flex items-center gap-1 transition-colors"
               >
-                View all {doctors.length} doctors
+                {t('clinicDetail.viewAllDoctors', 'View all {{count}} doctors', { count: doctors.length })}
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             )}
@@ -72,7 +74,7 @@ export default function OverviewTab({ aboutTitle, aboutP1, aboutP2, doctors = []
                     className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg transition-colors"
                   >
                     <Calendar className="w-3.5 h-3.5" />
-                    Book
+                    {t('clinicDetail.book', 'Book')}
                   </button>
                 </div>
               );
@@ -83,14 +85,14 @@ export default function OverviewTab({ aboutTitle, aboutP1, aboutP2, doctors = []
 
       {accreditations.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Accreditations</h4>
+          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">{t('clinicDetail.accreditations', 'Accreditations')}</h4>
           <AccreditationBadges accreditations={accreditations} variant="compact" />
         </div>
       )}
 
       {certifications.filter(c => c?.name).length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Certifications</h4>
+          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">{t('clinicDetail.certifications', 'Certifications')}</h4>
           <div className="flex flex-wrap gap-2">
             {certifications.filter(c => c?.name).map((c, i) => (
               c.image ? (

@@ -1,7 +1,9 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function PricesTab({ services, selectedService, setSelectedService }) {
+  const { t } = useTranslation();
   const pricesRef = useRef(null);
   const [query, setQuery] = useState('');
 
@@ -24,7 +26,7 @@ export default function PricesTab({ services, selectedService, setSelectedServic
   }, [selectedService]);
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-bold text-gray-900">Top Services</h3>
+      <h3 className="text-lg font-bold text-gray-900">{t('clinicDetail.topServices', 'Top Services')}</h3>
 
       {/* Search — narrow down treatments (helps when there are many) */}
       {services.length > 4 && (
@@ -34,7 +36,7 @@ export default function PricesTab({ services, selectedService, setSelectedServic
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Tedavi veya işlem ara..."
+            placeholder={t('clinicDetail.treatmentSearchPlaceholder', 'Tedavi veya işlem ara...')}
             className="w-full pl-10 pr-3 py-2 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
           />
         </div>
@@ -42,7 +44,7 @@ export default function PricesTab({ services, selectedService, setSelectedServic
 
       {/* Service tiles */}
       {filteredServices.length === 0 ? (
-        <div className="text-center py-8 text-sm text-gray-400">Aramanıza uygun tedavi bulunamadı.</div>
+        <div className="text-center py-8 text-sm text-gray-400">{t('clinicDetail.noTreatmentMatch', 'Aramanıza uygun tedavi bulunamadı.')}</div>
       ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {filteredServices.map((service) => (
@@ -69,14 +71,14 @@ export default function PricesTab({ services, selectedService, setSelectedServic
         <div ref={pricesRef} className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-bold text-gray-900">
-              {services.find(s => s.id === selectedService)?.name} — Pricing
+              {services.find(s => s.id === selectedService)?.name} — {t('clinicDetail.pricing', 'Pricing')}
             </h4>
-            <button 
-              type="button" 
-              onClick={() => setSelectedService(null)} 
+            <button
+              type="button"
+              onClick={() => setSelectedService(null)}
               className="text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors"
             >
-              Hide
+              {t('clinicDetail.hide', 'Hide')}
             </button>
           </div>
           <div className="rounded-xl border border-gray-200 overflow-hidden">
@@ -84,10 +86,10 @@ export default function PricesTab({ services, selectedService, setSelectedServic
               <thead>
                 <tr className="bg-gray-50/80">
                   <th className="px-4 py-2.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                    Procedure
+                    {t('clinicDetail.procedure', 'Procedure')}
                   </th>
                   <th className="px-4 py-2.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                    Price Range
+                    {t('clinicDetail.priceRange', 'Price Range')}
                   </th>
                 </tr>
               </thead>
@@ -106,7 +108,7 @@ export default function PricesTab({ services, selectedService, setSelectedServic
             </table>
           </div>
           <p className="text-xs text-gray-400">
-            * Prices may vary depending on the complexity of the procedure and patient condition.
+            {t('clinicDetail.priceDisclaimer', '* Prices may vary depending on the complexity of the procedure and patient condition.')}
           </p>
         </div>
       )}
