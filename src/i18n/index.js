@@ -67,7 +67,10 @@ i18n
       escapeValue: false,
     },
     detection: {
-      order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
+      // 'path' first → on a /{locale}/... URL the correct language is picked at
+      // init (before first render), avoiding the post-hydration language flash.
+      order: ['path', 'querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
+      lookupFromPathIndex: 0,
       lookupQuerystring: 'lang',
       lookupCookie: 'i18next',
       lookupLocalStorage: 'preferred_language',
