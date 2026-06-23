@@ -72,6 +72,7 @@ const mapApi = (a) => ({
   doctor: a.doctor || {},
   clinic: a.clinic || {},
   notes: a.confirmation_note || a.doctor_note || '',
+  patient_medical_snapshot: a.patient_medical_snapshot || '',
   video_conference_link: a.video_conference_link || '',
   backgroundColor: (TYPE_CONFIG[a.appointment_type] || TYPE_CONFIG.inPerson).color,
   borderColor: (TYPE_CONFIG[a.appointment_type] || TYPE_CONFIG.inPerson).color,
@@ -629,6 +630,16 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
               <div className="mt-0.5"><StatusBadge status={a.status} /></div>
             </div>
           </div>
+
+          {/* Patient medical history / anamnesis (snapshot taken at booking) */}
+          {a.patient_medical_snapshot && (
+            <div className="rounded-xl border border-rose-100 bg-rose-50/50 p-3">
+              <p className="text-[10px] font-bold text-rose-600 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <Stethoscope className="w-3.5 h-3.5" /> {t('crm.appointments.medicalHistory', 'Tıbbi Geçmiş / Anamnez')}
+              </p>
+              <p className="text-[13px] text-gray-700 whitespace-pre-line leading-relaxed">{a.patient_medical_snapshot}</p>
+            </div>
+          )}
 
           {a.notes && (
             <div>

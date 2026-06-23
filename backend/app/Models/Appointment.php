@@ -22,7 +22,7 @@ class Appointment extends Model
         'patient_id', 'doctor_id', 'clinic_id', 'appointment_type', 'slot_id',
         'appointment_date', 'appointment_time', 'status', 'confirmation_note',
         'video_conference_link', 'meeting_id', 'meeting_url', 'meeting_status',
-        'doctor_note', 'created_by', 'is_active',
+        'doctor_note', 'patient_medical_snapshot', 'created_by', 'is_active',
         // Onaylı Review Sistemi alanları
         'deposit_status', 'deposit_amount', 'auto_completed_at',
         // Otomatik hatırlatma gönderim flag'leri
@@ -36,6 +36,7 @@ class Appointment extends Model
             'is_active'         => 'boolean',
             'doctor_note'       => 'encrypted',
             'confirmation_note' => 'encrypted',
+            'patient_medical_snapshot' => 'encrypted',
             'auto_completed_at' => 'datetime',
             'reminder_24h_sent_at' => 'datetime',
             'reminder_1h_sent_at'  => 'datetime',

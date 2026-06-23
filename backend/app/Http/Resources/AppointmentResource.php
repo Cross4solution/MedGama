@@ -27,6 +27,7 @@ class AppointmentResource extends JsonResource
             'auto_completed_at'     => $this->auto_completed_at?->toISOString(),
             'confirmation_note'     => $this->confirmation_note,
             'doctor_note'           => $this->doctor_note,
+            'patient_medical_snapshot' => $this->patient_medical_snapshot,
             'video_conference_link' => $this->video_conference_link,
             'created_by'            => $this->created_by,
             'created_at'            => $this->created_at?->toISOString(),

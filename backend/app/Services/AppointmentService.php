@@ -71,6 +71,10 @@ class AppointmentService
             // 1. Resolve patient
             $patientId = $this->resolvePatientId($data, $isCreatedByDoctor);
 
+            // 1b. Snapshot the patient's medical history (anamnesis) + booking symptoms,
+            // so they travel with the appointment for the doctor (encrypted at rest).
+            $snapshot = $this->buildMedicalSnapshot($patientId, $data);
+
             // 2. Kapora (deposit) altyapısı — ÖDEMESİZ.
             // GERÇEK TAHSİLAT YOK: yalnızca durum/tutar kaydı yapılır.
             // İleride payment gateway başarılı tahsilatta deposit_status='paid' yapacaktır.
@@ -88,6 +92,7 @@ class AppointmentService
                 'appointment_date'  => $data['appointment_date'],
                 'appointment_time'  => $data['appointment_time'],
                 'confirmation_note' => $data['confirmation_note'] ?? null,
+                'patient_medical_snapshot' => $snapshot,
                 'status'            => 'pending',
                 'deposit_status'    => $depositStatus,
                 'deposit_amount'    => $depositAmount,
@@ -315,6 +320,35 @@ class AppointmentService
     }
 
     // ── Private Helpers ──
+
+    /**
+     * Build the medical snapshot (patient's stored medical history + booking
+     * symptoms) attached to the appointment for the treating doctor.
+     */
+    private function buildMedicalSnapshot(?string $patientId, array $data): ?string
+    {
+        $parts = [];
+
+        if ($patientId) {
+            $patient = \App\Models\User::find($patientId);
+            $mh = $patient?->medical_history;
+            if (!empty($mh)) {
+                $text = is_array($mh)
+                    ? implode(', ', array_map(fn ($x) => is_array($x) ? ($x['name'] ?? $x['label'] ?? json_encode($x, JSON_UNESCAPED_UNICODE)) : (string) $x, $mh))
+                    : (string) $mh;
+                $text = trim($text);
+                if ($text !== '') {
+                    $parts[] = 'Tıbbi Geçmiş: ' . $text;
+                }
+            }
+        }
+
+        if (!empty($data['symptoms'])) {
+            $parts[] = 'Şikayet / Not: ' . trim((string) $data['symptoms']);
+        }
+
+        return $parts ? implode("\n", $parts) : null;
+    }
 
     /**
      * Resolve patient_id: if doctor is booking and no patient_id given,
