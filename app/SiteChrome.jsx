@@ -190,7 +190,9 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
               <LanguageSwitcher compact />
             </header>
           </Suspense>
-          <Suspense fallback={null}>{children}</Suspense>
+          <div className="min-h-[70vh]">
+            <Suspense fallback={null}>{children}</Suspense>
+          </div>
           <Suspense fallback={null}>
             <OnboardingGate />
           </Suspense>
@@ -206,10 +208,11 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
         {showHeader && <Header />}
         {hasSidebar && <SidebarPatient />}
       </Suspense>
-      <div className={showHeader ? (hasOwnContainer || isDoctorChat ? 'pt-14' : 'pt-12') : ''}>
-        {/* İçerik kendi Suspense sınırında: useSearchParams kullanan sayfalar (ör. /notifications,
-            /search) burada CSR bailout yapar ama doctor/clinic gibi kullanmayan sayfalar SSR'da
-            gerçek içerikle gelir — bailout artık tüm kabuğu değil, sadece o sayfa altağacını kapsar. */}
+      <div className={`${showHeader ? (hasOwnContainer || isDoctorChat ? 'pt-14' : 'pt-12') : ''} min-h-[70vh]`}>
+        {/* min-h: içerik async yüklenirken (Suspense/CSR bailout/veri) footer'ın
+            yukarı zıplamasını ve layout shift'i önler — içerik alanı yer ayırır.
+            İçerik kendi Suspense sınırında: useSearchParams kullanan sayfalar burada
+            CSR bailout yapar; kullanmayanlar SSR'da gerçek içerikle gelir. */}
         <Suspense fallback={null}>
           {children}
         </Suspense>
