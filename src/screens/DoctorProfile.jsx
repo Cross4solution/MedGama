@@ -356,13 +356,30 @@ const DoctorProfilePage = ({ initialDoctor }) => {
                 </div>
                 {specialty && <p className="text-sm text-teal-700 font-semibold mb-1">{specialty}</p>}
 
-                {/* Clinic Affiliation */}
-                {doctor.clinic && doctor.clinic.codename && (
-                  <Link to={`/clinic/${doctor.clinic.codename}`} className="inline-flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-700 font-medium mb-1.5 group">
-                    <Building2 className="w-3.5 h-3.5 text-indigo-400 group-hover:text-indigo-500" />
-                    {t('doctorProfile.workingAt', 'Working at')} <span className="font-semibold underline decoration-dotted">{doctor.clinic.fullname || doctor.clinic.name}</span>
-                  </Link>
-                )}
+                {/* Clinic Affiliation — all clinics the doctor works at */}
+                {(() => {
+                  const clinicList = (Array.isArray(doctor.clinics) && doctor.clinics.length > 0)
+                    ? doctor.clinics
+                    : (doctor.clinic ? [doctor.clinic] : []);
+                  const withCode = clinicList.filter(c => c && c.codename);
+                  if (withCode.length === 0) return null;
+                  return (
+                    <div className="flex items-center flex-wrap gap-x-1.5 gap-y-1 mb-1.5">
+                      <span className="inline-flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                        <Building2 className="w-3.5 h-3.5 text-indigo-400" />
+                        {t('doctorProfile.workingAt', 'Working at')}
+                      </span>
+                      {withCode.map((c, i) => (
+                        <React.Fragment key={c.codename}>
+                          {i > 0 && <span className="text-xs text-gray-300">·</span>}
+                          <Link to={`/clinic/${c.codename}`} className="text-xs text-indigo-600 hover:text-indigo-700 font-semibold underline decoration-dotted">
+                            {c.fullname || c.name}
+                          </Link>
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  );
+                })()}
 
                 {/* Rating */}
                 <div className="flex items-center gap-3 flex-wrap mb-2">

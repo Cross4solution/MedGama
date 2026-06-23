@@ -180,7 +180,7 @@ class DoctorService
         if ($isUuid) {
             $doctor = User::where('role_id', 'doctor')
                 ->where('is_active', true)
-                ->with(['doctorProfile', 'doctorProfile.specialtyRelation:id,name', 'clinic:id,name,fullname,codename,avatar,address,is_verified'])
+                ->with(['doctorProfile', 'doctorProfile.specialtyRelation:id,name', 'clinic:id,name,fullname,codename,avatar,address,is_verified', 'clinics:id,name,fullname,codename,avatar,address,is_verified'])
                 ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
                 ->find($idOrSlug);
         } else {
@@ -190,7 +190,7 @@ class DoctorService
 
             $doctor = User::where('role_id', 'doctor')
                 ->where('is_active', true)
-                ->with(['doctorProfile', 'doctorProfile.specialtyRelation:id,name', 'clinic:id,name,fullname,codename,avatar,address,is_verified'])
+                ->with(['doctorProfile', 'doctorProfile.specialtyRelation:id,name', 'clinic:id,name,fullname,codename,avatar,address,is_verified', 'clinics:id,name,fullname,codename,avatar,address,is_verified'])
                 ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
                 ->find($profile->user_id);
         }
