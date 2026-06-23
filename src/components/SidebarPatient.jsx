@@ -40,7 +40,7 @@ export default function SidebarPatient() {
     { to: '/patient/appointments', label: t('sidebar.myAppointments', 'Appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
-    { to: '/medical-archive', label: t('sidebar.medicalArchive', 'Medical Archive'), icon: FolderHeart },
+    { to: '/medical-archive', label: t('sidebar.medicalArchive', 'Archive'), icon: FolderHeart },
     { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: notifCount || undefined },
     { to: '/profile', label: t('sidebar.profile'), icon: User },
   ];
