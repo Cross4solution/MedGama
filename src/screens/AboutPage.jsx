@@ -92,9 +92,7 @@ export default function AboutPage() {
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0e7c7b] via-[#0d9488] to-[#0f766e]">
         <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '22px 22px' }} />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-12 pb-8 text-center">
-          <span className="inline-flex items-center bg-white rounded-2xl px-5 py-3 shadow-lg">
-            <img src="/images/logo/logo.svg" alt="MedaGama" className="h-9 sm:h-10 w-auto object-contain" />
-          </span>
+          <img src="/images/logo/logo.svg" alt="MedaGama" className="h-12 sm:h-14 w-auto object-contain mx-auto" />
           <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-white tracking-tight">{t('nav.about', 'Hakkımızda')}</h1>
           <p className="mt-3 max-w-2xl mx-auto text-[15px] text-teal-50/90 leading-relaxed">
             Hastaları uzman doktorlar ve onaylı klinik/hastanelerle aynı dijital platformda buluşturan,
