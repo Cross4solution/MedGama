@@ -205,18 +205,36 @@ export default function TelehealthAppointmentPage() {
     setSearchMode(true);
     setSelectedSpecialty(null);
     setLoadingDoctors(true);
+    const norm = (d) => ({
+      id: d.id,
+      name: d.name || d.fullname,
+      avatar: d.avatar || '/images/caroline-lm-uqved8dypum-unsplash_720.jpg',
+      specialty: d.specialty || d.doctor_profile?.specialty || '',
+      is_verified: d.verified ?? d.is_verified,
+      rating: d.rating || 4.8,
+      experience: d.experience || d.doctor_profile?.experience_years || '',
+    });
     const id = setTimeout(() => {
-      searchAPI.live(q).then((res) => {
-        const list = res?.doctors || res?.data?.doctors || [];
-        setDoctors(list.map(d => ({
-          id: d.id,
-          name: d.name || d.fullname,
-          avatar: d.avatar || '/images/caroline-lm-uqved8dypum-unsplash_720.jpg',
-          specialty: d.specialty || d.doctor_profile?.specialty || '',
-          is_verified: d.verified ?? d.is_verified,
-          rating: d.rating || 4.8,
-          experience: d.experience || d.doctor_profile?.experience_years || '',
-        })));
+      searchAPI.live(q).then(async (res) => {
+        const docList = res?.doctors || res?.data?.doctors || [];
+        const clinics = res?.clinics || res?.data?.clinics || [];
+        const merged = docList.slice();
+        // Clinic name match → also pull that clinic's doctors
+        if (clinics.length > 0) {
+          const lists = await Promise.all(
+            clinics.slice(0, 2).map(c =>
+              doctorAPI.list({ per_page: 50, clinic_id: c.id }).then(r => r?.data || []).catch(() => [])
+            )
+          );
+          lists.flat().forEach(cd => merged.push(cd));
+        }
+        const seen = new Set();
+        const unique = merged.filter(d => {
+          if (!d?.id || seen.has(d.id)) return false;
+          seen.add(d.id);
+          return true;
+        });
+        setDoctors(unique.map(norm));
       }).catch(() => setDoctors([])).finally(() => setLoadingDoctors(false));
     }, 300);
     return () => clearTimeout(id);
