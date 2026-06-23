@@ -19,7 +19,7 @@ const STEPS = [
 ];
 
 export default function ClinicOnboarding() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
 
@@ -39,6 +39,8 @@ export default function ClinicOnboarding() {
   const [logoPreview, setLogoPreview] = useState(null);
   const [accreditations, setAccreditations] = useState([]);
   const [certifications, setCertifications] = useState([]);
+  const [treatmentTagIds, setTreatmentTagIds] = useState([]);
+  const [offeredTags, setOfferedTags] = useState([]); // tags for selected specialties
 
   // Step 1: Specialties
   const [allSpecialties, setAllSpecialties] = useState([]);
@@ -65,6 +67,7 @@ export default function ClinicOnboarding() {
         setPhone(c.phone || '');
         setBiography(c.biography || '');
         setCertifications(c.certifications || []);
+        setTreatmentTagIds(c.treatment_tag_ids || []);
         setSelectedSpecialties(c.specialties || []);
         if (c.avatar) setLogoPreview(c.avatar);
         if (c.onboarding_step > 0) setStep(Math.min(c.onboarding_step, 2));
@@ -142,7 +145,7 @@ export default function ClinicOnboarding() {
           }
         }
       } else if (step === 1) {
-        await clinicAPI.updateOnboarding({ step: 1, specialties: selectedSpecialties });
+        await clinicAPI.updateOnboarding({ step: 1, specialties: selectedSpecialties, treatment_tag_ids: treatmentTagIds });
       } else if (step === 2) {
         await clinicAPI.updateOnboarding({ step: 2 });
         updateUser({ onboarding_completed: true });
@@ -157,7 +160,23 @@ export default function ClinicOnboarding() {
     } finally {
       setSaving(false);
     }
-  }, [step, name, address, latitude, longitude, phone, biography, logoFile, accreditations, selectedSpecialties, updateUser, navigate]);
+  }, [step, name, address, latitude, longitude, phone, biography, logoFile, accreditations, certifications, selectedSpecialties, treatmentTagIds, updateUser, navigate]);
+
+  // Fetch treatment tags for the clinic's selected specialties (for the picker)
+  useEffect(() => {
+    const ids = (selectedSpecialties || []).map(s => s.id).filter(Boolean);
+    if (ids.length === 0) { setOfferedTags([]); return; }
+    Promise.all(ids.map(id => catalogAPI.treatmentTags({ specialty_id: id })
+      .then(r => r?.data?.treatment_tags || r?.treatment_tags || []).catch(() => [])))
+      .then(lists => {
+        const flat = lists.flat();
+        const seen = new Set();
+        setOfferedTags(flat.filter(tg => tg?.id && !seen.has(tg.id) && seen.add(tg.id)));
+      });
+  }, [selectedSpecialties]);
+
+  const toggleTreatmentTag = (id) =>
+    setTreatmentTagIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
   const addDoctor = async () => {
     if (!newDoctor.fullname || !newDoctor.email) {
@@ -388,6 +407,31 @@ export default function ClinicOnboarding() {
                   })}
                 </div>
               )}
+
+              {/* Offered treatments (precise treatment → clinic mapping) */}
+              {offeredTags.length > 0 && (() => {
+                const lang = (i18n.language || 'en').split('-')[0];
+                const loc = (n) => (typeof n === 'string' ? n : (n?.[lang] || n?.en || n?.tr || ''));
+                return (
+                  <div className="mt-6 pt-5 border-t border-gray-100">
+                    <h3 className="text-sm font-bold text-gray-900">{t('clinicOnboarding.treatmentsTitle', 'Sunulan Tedaviler')}</h3>
+                    <p className="text-xs text-gray-500 mb-3">{t('clinicOnboarding.treatmentsSubtitle', 'Kliniğinizin sunduğu tedavileri seçin — hastalar tedaviye göre sizi bulur.')}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {offeredTags.map(tg => {
+                        const on = treatmentTagIds.includes(tg.id);
+                        return (
+                          <button key={tg.id} type="button" onClick={() => toggleTreatmentTag(tg.id)}
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                              on ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-gray-600 border-gray-200 hover:border-teal-300'
+                            }`}>
+                            {loc(tg.name)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           )}
 

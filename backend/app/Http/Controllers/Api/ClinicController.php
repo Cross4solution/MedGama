@@ -319,6 +319,7 @@ class ClinicController extends Controller
                 'map_coordinates'      => $clinic->map_coordinates,
                 'specialties'          => $clinic->specialties ?? [],
                 'certifications'       => $clinic->certifications ?? [],
+                'treatment_tag_ids'    => $clinic->treatmentTags()->pluck('treatment_tags.id'),
                 'onboarding_step'      => $clinic->onboarding_step ?? 0,
                 'onboarding_completed' => $clinic->onboarding_completed ?? false,
                 'is_verified'          => $clinic->is_verified,
@@ -368,9 +369,11 @@ class ClinicController extends Controller
                 $clinic->update($data);
             }
         } elseif ($step === 1) {
-            // Step 1: Specialties
+            // Step 1: Specialties + offered treatments
             $validated = $request->validate([
-                'specialties' => 'nullable|array',
+                'specialties'        => 'nullable|array',
+                'treatment_tag_ids'  => 'nullable|array',
+                'treatment_tag_ids.*' => 'uuid',
             ]);
 
             if (!$clinic) {
@@ -381,6 +384,10 @@ class ClinicController extends Controller
                 'specialties'     => $validated['specialties'] ?? [],
                 'onboarding_step' => max($clinic->onboarding_step, 2),
             ]);
+
+            if ($request->has('treatment_tag_ids')) {
+                $clinic->treatmentTags()->sync($validated['treatment_tag_ids'] ?? []);
+            }
         } elseif ($step === 2) {
             // Step 2: Team setup (doctors are created via /clinics/{id}/staff)
             if (!$clinic) {
