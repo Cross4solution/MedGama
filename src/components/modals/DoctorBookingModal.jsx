@@ -16,7 +16,9 @@ function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
 }
 
-export default function DoctorBookingModal({ open, onClose, doctorId, doctorName, initialType = null }) {
+export default function DoctorBookingModal({ open, onClose, doctorId, doctorName, initialType = null, onlineConsultation }) {
+  // Hide the video/telehealth option when the doctor has telehealth disabled
+  const availableTypes = APPOINTMENT_TYPES.filter((ty) => ty.id !== 'video' || onlineConsultation !== false);
   const { t, i18n } = useTranslation();
   const isTr = i18n.language?.startsWith('tr');
 
@@ -238,7 +240,7 @@ export default function DoctorBookingModal({ open, onClose, doctorId, doctorName
                 <h3 className="text-sm font-semibold text-gray-700 mb-3">
                   {t('booking.step1Title')}
                 </h3>
-                {APPOINTMENT_TYPES.map(type => (
+                {availableTypes.map(type => (
                   <button
                     key={type.id}
                     onClick={() => { setAppointmentType(type.id); setStep(2); }}

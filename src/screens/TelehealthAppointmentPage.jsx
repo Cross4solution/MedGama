@@ -782,20 +782,25 @@ export default function TelehealthAppointmentPage() {
                     </h3>
                     <button onClick={() => { setSelectedSpecialty(null); setSelectedDoctor(null); }} className="text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline transition-colors">{t('appointment.changeSpecialty', 'Change specialty')}</button>
                   </div>
-                  {loadingDoctors ? (
+                  {(() => {
+                  // Telehealth seçiliyse yalnızca online konsültasyon kabul eden doktorları göster
+                  const visibleDoctors = appointmentType === 'online'
+                    ? doctors.filter((d) => d.online_consultation)
+                    : doctors;
+                  return loadingDoctors ? (
                     <div className="flex items-center justify-center py-8">
                       <Loader2 className="w-6 h-6 animate-spin text-teal-500 mr-2" />
                       <span className="text-sm text-gray-400">{t('appointment.loadingDoctors', 'Loading doctors...')}</span>
                     </div>
-                  ) : doctors.length === 0 ? (
+                  ) : visibleDoctors.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                       <Stethoscope className="w-10 h-10 mb-3 text-gray-300" />
-                      <p className="text-sm font-medium text-gray-500">{t('appointment.noDoctors', 'No doctors available for this specialty')}</p>
+                      <p className="text-sm font-medium text-gray-500">{appointmentType === 'online' ? t('appointment.noTelehealthDoctors', 'No doctors offer telehealth for this specialty') : t('appointment.noDoctors', 'No doctors available for this specialty')}</p>
                       <p className="text-xs text-gray-400 mt-1">{t('appointment.tryDifferent', 'Please try a different specialty')}</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {doctors.map((doctor) => {
+                      {visibleDoctors.map((doctor) => {
                         const isSelected = selectedDoctor === doctor.id;
                         return (
                           <button
@@ -837,7 +842,7 @@ export default function TelehealthAppointmentPage() {
                         );
                       })}
                     </div>
-                  )}
+                  ); })()}
                 </div>
                 )}
               </div>

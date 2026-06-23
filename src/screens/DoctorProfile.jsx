@@ -788,8 +788,8 @@ const DoctorProfilePage = ({ initialDoctor }) => {
       </div>
 
       {/* Modals */}
-      <DoctorBookingModal open={bookModal} onClose={() => setBookModal(false)} doctorId={doctorId} doctorName={doctorName} />
-      <DoctorBookingModal open={onlineBookModal} onClose={() => setOnlineBookModal(false)} doctorId={doctorId} doctorName={doctorName} initialType="video" />
+      <DoctorBookingModal open={bookModal} onClose={() => setBookModal(false)} doctorId={doctorId} doctorName={doctorName} onlineConsultation={onlineConsultation} />
+      <DoctorBookingModal open={onlineBookModal} onClose={() => setOnlineBookModal(false)} doctorId={doctorId} doctorName={doctorName} initialType="video" onlineConsultation={onlineConsultation} />
       <SendMessageModal open={messageModal} onClose={() => setMessageModal(false)} targetId={doctorId} targetName={doctorName} targetType="doctor" />
     </div>
   );
