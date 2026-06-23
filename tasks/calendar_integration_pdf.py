@@ -77,9 +77,8 @@ def have_table():
 def options_table():
     data=[
         ('A · iCal / ICS','Tek yön (biz → onlar)','".ics ekle" butonu + abonelik linki. Google/Outlook/Apple hepsi okur. OAuth yok.','Kolay','En hızlı kazanım'),
-        ('B · Google Calendar','Çift yön','Doktor Google hesabını bağlar; randevular takvimine yazılır + meşgul saatleri okunur (çakışma önlenir).','Orta','En çok istenen'),
-        ('C · Outlook / M365','Çift yön','Microsoft Graph API; Outlook kullananlar için B ile aynı mantık.','Orta','Kurumsal hekimler'),
-        ('D · CalDAV','Çift yön','Apple Takvim ve genel standart. Daha az yaygın.','Zor','İleride'),
+        ('B · Google Calendar','Çift yön','Doktor Google hesabını bağlar; randevular takvimine yazılır + meşgul saatleri okunur (çakışma önlenir).','Zor','En çok istenen'),
+        ('C · Outlook / M365','Çift yön','Microsoft Graph API; Outlook kullananlar için B ile aynı mantık.','Zor','Kurumsal hekimler'),
     ]
     rows=[[Paragraph('Seçenek',CELLH),Paragraph('Yön',CELLH),Paragraph('Ne yapar',CELLH),Paragraph('Efor',CELLH),Paragraph('Kime',CELLH)]]
     for a,b,c,e,w in data:
@@ -97,7 +96,7 @@ def scenario_table():
         ('Google Calendar kullanan','Seçenek B — çift yön senkron','PLAN'),
         ('Outlook / Microsoft 365','Seçenek C — Graph API','PLAN'),
         ('Sadece "takvimime ekle" isteyen','Seçenek A — iCal/ICS','PLAN'),
-        ('Apple / diğer','Seçenek A (ekle) veya D (CalDAV)','PLAN'),
+        ('Apple / diğer','Seçenek A — iCal/ICS (Apple Takvim .ics okur)','PLAN'),
     ]
     rows=[[Paragraph('Hekim profili',CELLH),Paragraph('Çözüm',CELLH),Paragraph('Durum',CELLH)]]
     for a,b,st in data:
@@ -147,26 +146,8 @@ for t in [
     '<b>Faz 1 — iCal/ICS (hızlı):</b> Randevu onayına "Takvime ekle" (.ics) + hekime özel abonelik linki. Tüm takvimler okur, OAuth gerekmez.',
     '<b>Faz 2 — Google Calendar (çift yön):</b> Hekim Google hesabını bağlar; randevular yazılır + meşgul saatler okunur, çakışma önlenir. (En çok istenen.)',
     '<b>Faz 3 — Outlook / Microsoft 365:</b> Graph API ile aynı çift-yön deneyim.',
-    '<b>Faz 4 — CalDAV / Apple:</b> İhtiyaç olursa genel standart desteği.',
 ]:
     st.append(bullet(t))
-
-st.append(Paragraph('Riskler ve Notlar',H2))
-for t in [
-    '<b>Gizlilik (PHI):</b> Randevu başlığında hasta adı dış takvimde görünebilir → varsayılan başlığı genel tutma seçeneği ("MedaGama randevusu") sunulmalı.',
-    '<b>OAuth güvenliği:</b> Google/Microsoft erişim anahtarları şifreli saklanır; hekim istediğinde bağlantıyı koparabilir.',
-    '<b>Google/Microsoft doğrulaması:</b> Üretimde OAuth uygulaması için sağlayıcı onay süreci gerekir (zaman planına eklenmeli).',
-    '<b>Maliyet:</b> Google/Microsoft takvim API\'leri kota dahilinde ücretsizdir; maliyet yalnızca geliştirme eforudur.',
-]:
-    st.append(bullet(t,'#6b7280'))
-
-st.append(Spacer(1,8))
-note=Table([[Paragraph('<b>Sonuç:</b> İç takvim hazır ve sağlam. Müşterinin istediği dış senkron için önerimiz: '
-    '<b>Faz 1 (iCal) ile hızlı başlayıp, Faz 2 (Google çift yön) ile asıl değeri vermek.</b> '
-    'Mutabık kalınan seçeneklerle geliştirmeye başlayabiliriz.',P)]],colWidths=[170*mm])
-note.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),BLUE_L2),('BOX',(0,0),(-1,-1),0.6,BLUE),
-    ('LEFTPADDING',(0,0),(-1,-1),12),('RIGHTPADDING',(0,0),(-1,-1),12),('TOPPADDING',(0,0),(-1,-1),9),('BOTTOMPADDING',(0,0),(-1,-1),9)]))
-st.append(note)
 
 doc=SimpleDocTemplate('tasks/MedaGama-Takvim-Entegrasyonu.pdf',pagesize=A4,leftMargin=20*mm,rightMargin=20*mm,topMargin=16*mm,bottomMargin=18*mm)
 doc.build(st,onFirstPage=footer,onLaterPages=footer)
