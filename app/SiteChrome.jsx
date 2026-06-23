@@ -57,6 +57,11 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const isMedstream = brand === 'medstream';
+  // Focused, Twitter-like MedStream: the medstream.co host (brand) OR an explicit
+  // ?standalone=1 deep-link (header "MedStream ↗"). No sidebar, slim shell.
+  const isStandaloneParam = typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('standalone') === '1';
+  const isFocused = isMedstream || (isStandaloneParam && pathname.startsWith('/medstream'));
 
   // Bridge for toast SPA navigation (ToastContext uses this)
   useEffect(() => {
@@ -67,7 +72,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
 
   // Sidebar for all logged-in users (incl. patients), but not on CRM/admin/hospital/verify-email
   const isHospital = user?.role_id === 'hospital' || user?.role === 'hospital';
-  const hasSidebar = !!user && !isHospital && !pathname.startsWith('/crm') && !pathname.startsWith('/admin') && pathname !== '/verify-email';
+  const hasSidebar = !!user && !isHospital && !isFocused && !pathname.startsWith('/crm') && !pathname.startsWith('/admin') && pathname !== '/verify-email';
 
   // Wheel scroll override (config/scroll.js) — guarded for SSR
   useEffect(() => {
@@ -173,7 +178,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
   // sayfalar (doctor/clinic/post detay) SSR'da gerçek içerikle gelir (SEO için kritik).
   // medstream.co — standalone Twitter-like shell: a slim top bar + the centered
   // feed only. No marketing header, sidebar, footer or cookie banner.
-  if (isMedstream) {
+  if (isFocused) {
     return (
       <BrandProvider brand="medstream">
         <div className="min-h-screen bg-white">

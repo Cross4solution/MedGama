@@ -32,9 +32,9 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#1C6A83] text-white/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
         {/* Main grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-5 lg:gap-x-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="mb-3">
@@ -48,7 +48,7 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">{t('footer.services')}</h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1.5">
               {quickLinks.map((l) => (
                 <li key={l.label}>
                   <a href={l.href} className="text-sm text-white/70 hover:text-white transition-colors">{l.label}</a>
@@ -60,7 +60,7 @@ export default function Footer() {
           {/* Popüler Tedaviler — programatik SEO crawl giriş noktası */}
           <div>
             <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">{t('footer.popularTreatments')}</h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1.5">
               {popularTreatments.map((l) => (
                 <li key={l.href}>
                   <a href={l.href} className="text-sm text-white/70 hover:text-white transition-colors">{l.label}</a>
@@ -72,7 +72,7 @@ export default function Footer() {
           {/* Legal */}
           <div>
             <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">{t('footer.legal')}</h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1.5">
               {legalLinks.map((l) => (
                 <li key={l.label}>
                   <a href={l.href} className="text-sm text-white/70 hover:text-white transition-colors">{l.label}</a>
@@ -84,7 +84,7 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">{t('footer.contact')}</h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1.5">
               <li>
                 <a href="/contact" className="text-sm text-white/70 hover:text-white transition-colors">{t('footer.contactUs')}</a>
               </li>
@@ -93,7 +93,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-8 pt-4 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="mt-5 pt-3 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span className="text-xs text-white/50">© {year} MedaGama. {t('footer.allRightsReserved')}</span>
           <div className="flex items-center gap-4 text-xs text-white/50">
             <a href="/privacy-policy" className="hover:text-white transition-colors">{t('footer.privacyShort')}</a>
