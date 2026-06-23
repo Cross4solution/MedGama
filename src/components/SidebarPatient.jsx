@@ -31,8 +31,8 @@ export default function SidebarPatient() {
 
   const patientItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
-    { to: '/patient-dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: Activity },
     { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
+    { to: '/patient-dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: Activity },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorites'), icon: Heart },
     { to: '/patient/appointments', label: t('sidebar.myAppointments', 'Appointments'), icon: CalendarClock },

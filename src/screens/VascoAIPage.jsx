@@ -18,16 +18,6 @@ export default function VascoAIPage() {
           değildir; amacı doğru doktora ulaşmanızı kolaylaştırmaktır.
         </p>
 
-        <div className="mt-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          <Info className="h-5 w-5 shrink-0 mt-0.5" />
-          <span>
-            <strong>Önemli:</strong> Vasco AI tıbbi tavsiye, tanı veya tedavi sunmaz.
-            Verdiği yanıtlar yalnızca yönlendirme amaçlıdır. Sağlığınızla ilgili tüm
-            kararlar mutlaka bir hekimle birlikte alınmalıdır. Acil durumlarda en yakın
-            sağlık kuruluşuna başvurun.
-          </span>
-        </div>
-
         <h2 className="mt-10 text-2xl font-semibold text-gray-900">Vasco AI nedir?</h2>
         <p className="mt-3">
           Vasco AI, hastaların kendi cümleleriyle anlattığı şikâyetleri yorumlayarak,
@@ -104,6 +94,17 @@ export default function VascoAIPage() {
               <Link to="/contact" className="text-teal-600 hover:underline">bize ulaşın</Link>.
             </p>
           </div>
+        </div>
+
+        {/* Yasal uyarı — sayfa sonunda, göze batmadan */}
+        <div className="mt-12 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <Info className="h-5 w-5 shrink-0 mt-0.5" />
+          <span>
+            <strong>Önemli:</strong> Vasco AI tıbbi tavsiye, tanı veya tedavi sunmaz.
+            Verdiği yanıtlar yalnızca yönlendirme amaçlıdır. Sağlığınızla ilgili tüm
+            kararlar mutlaka bir hekimle birlikte alınmalıdır. Acil durumlarda en yakın
+            sağlık kuruluşuna başvurun.
+          </span>
         </div>
       </article>
     </div>
