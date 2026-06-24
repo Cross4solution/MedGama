@@ -1257,6 +1257,7 @@
     "thinking": "Vasco is thinking",
     "typeExample": "I've had a severe toothache for two days",
     "placeholder": "e.g. I've had chest pain and palpitations for two days...",
+    "answerPlaceholder": "Type your answer...",
     "ask": "Suggest",
     "error": "Something went wrong, please try again.",
     "vague": "Could you describe your complaint a bit more?",

@@ -23,6 +23,7 @@ function VascoAssistant() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [accumulated, setAccumulated] = useState(''); // multi-turn: prior complaint context
 
   const loc = (n) => (typeof n === 'string' ? n : (n?.[lang] || n?.en || n?.tr || (n ? Object.values(n)[0] : '')));
 
@@ -46,13 +47,18 @@ function VascoAssistant() {
   }, [t]);
 
   const ask = async (q) => {
-    const query = (q ?? text).trim();
-    if (query.length < 3 || loading) return;
-    if (q) setText(q);
+    const part = (q ?? text).trim();
+    if (part.length < 3 || loading) return;
+    // Multi-turn: if Vasco asked for more detail, fold the answer into the context.
+    const full = accumulated ? `${accumulated}. ${part}` : part;
     setLoading(true); setError(''); setResult(null);
     try {
-      const res = await vascoAPI.suggest(query, lang);
-      setResult(res?.data || res);
+      const res = await vascoAPI.suggest(full, lang);
+      const data = res?.data || res;
+      setResult(data);
+      // Resolved → reset thread; still vague (follow-up) → keep context for the next answer.
+      setAccumulated(data?.specialty ? '' : full);
+      setText('');
     } catch {
       setError(t('vascoAI.error', 'Bir sorun oluştu, tekrar deneyin.'));
     } finally {
@@ -87,7 +93,7 @@ function VascoAssistant() {
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) ask(); }}
             rows={2}
-            placeholder={animPh || t('vascoAI.placeholder', 'ör. İki gündür göğsümde ağrı ve çarpıntı var...')}
+            placeholder={accumulated ? t('vascoAI.answerPlaceholder', 'Yanıtınızı yazın...') : (animPh || t('vascoAI.placeholder', 'ör. İki gündür göğsümde ağrı ve çarpıntı var...'))}
             className="flex-1 resize-none border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
           />
           <button onClick={() => ask()} disabled={loading || text.trim().length < 3}
@@ -121,7 +127,10 @@ function VascoAssistant() {
                 {result.rationale && <span className="text-sm text-gray-500">{result.rationale}</span>}
               </div>
             ) : (
-              <p className="text-sm text-gray-700 mb-3">{result.follow_up || t('vascoAI.vague', 'Şikâyetinizi biraz daha açıklar mısınız?')}</p>
+              <div className="mb-3 flex items-start gap-2.5 rounded-2xl bg-teal-50/60 border border-teal-100 px-3.5 py-2.5">
+                <Bot className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-gray-700">{result.follow_up || t('vascoAI.vague', 'Şikâyetinizi biraz daha açıklar mısınız?')}</p>
+              </div>
             )}
 
             {result.doctors?.length > 0 && (
@@ -154,7 +163,7 @@ function VascoAssistant() {
               </Link>
             )}
 
-            <button type="button" onClick={() => { setResult(null); setText(''); }}
+            <button type="button" onClick={() => { setResult(null); setText(''); setAccumulated(''); }}
               className="mt-3 block text-xs font-medium text-gray-400 hover:text-gray-700">
               {t('vascoAI.askAnother', '↺ Yeni şikâyet')}
             </button>

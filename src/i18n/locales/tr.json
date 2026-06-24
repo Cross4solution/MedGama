@@ -1238,6 +1238,7 @@
     "thinking": "Vasco düşünüyor",
     "typeExample": "Dişimde iki gündür şiddetli ağrı var",
     "placeholder": "ör. İki gündür göğsümde ağrı ve çarpıntı var...",
+    "answerPlaceholder": "Yanıtınızı yazın...",
     "ask": "Öner",
     "error": "Bir sorun oluştu, tekrar deneyin.",
     "vague": "Şikâyetinizi biraz daha açıklar mısınız?",
