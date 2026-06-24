@@ -63,14 +63,14 @@ function VascoAssistant() {
   return (
     <div className="rounded-3xl border border-gray-200 shadow-xl shadow-teal-900/5 overflow-hidden bg-white">
       <style>{`
-        @keyframes vascoShimmer{0%{transform:translateX(-120%)}100%{transform:translateX(900%)}}
+        @keyframes vascoShimmer{0%{left:-15%;opacity:0}15%{opacity:.85}85%{opacity:.85}100%{left:115%;opacity:0}}
         @keyframes vascoDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
-        .vasco-shimmer{animation:vascoShimmer 1.6s ease-out 1 both}
+        .vasco-shimmer{animation:vascoShimmer 1.9s ease-in-out 1 forwards}
         .vasco-dots i{display:inline-block;width:4px;height:4px;border-radius:50%;background:currentColor;margin:0 1px;animation:vascoDot 1.4s infinite}
         .vasco-dots i:nth-child(2){animation-delay:.2s}.vasco-dots i:nth-child(3){animation-delay:.4s}
       `}</style>
       <div className="relative overflow-hidden bg-gradient-to-r from-teal-600 to-emerald-600 px-5 sm:px-7 py-4 flex items-center gap-2.5 text-white">
-        <span aria-hidden="true" className="vasco-shimmer pointer-events-none absolute inset-y-0 left-0 w-16 bg-white/25 blur-md" />
+        <span aria-hidden="true" className="vasco-shimmer pointer-events-none absolute inset-y-0 w-16 bg-white/25 blur-md" />
         <div className="relative w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
           <Bot className="w-4 h-4" />
         </div>
