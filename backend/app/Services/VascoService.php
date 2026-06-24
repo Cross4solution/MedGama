@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Log;
  */
 class VascoService
 {
-    public function suggest(string $text, string $lang = 'tr', ?string $location = null, int $limit = 8): array
+    public function suggest(string $text, string $lang = 'tr', ?string $location = null, int $limit = 10): array
     {
         $text = trim($text);
         if ($text === '') {

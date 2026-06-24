@@ -1263,7 +1263,7 @@
     "vague": "Could you describe your complaint a bit more?",
     "disclaimerShort": "Vasco AI does not diagnose; it only routes you to the right specialist.",
     "badge": "AI Routing Assistant",
-    "hero": "Describe your complaint in your own words; Vasco suggests the right specialty and the best-matching doctors on the platform. It doesn't diagnose — it routes you to the right doctor.",
+    "hero": "Describe your complaint; Vasco routes you to the right specialist. It doesn't diagnose.",
     "trust": "No diagnosis · Multilingual · Your complaint stays private",
     "browseDoctors": "View doctors in this specialty →",
     "askAnother": "↺ New complaint",

@@ -1243,7 +1243,7 @@
     "error": "Bir sorun oluştu, tekrar deneyin.",
     "vague": "Şikâyetinizi biraz daha açıklar mısınız?",
     "badge": "Yapay Zekâ Yönlendirme Asistanı",
-    "hero": "Şikâyetinizi kendi cümlelerinizle yazın; Vasco doğru uzmanlık alanını ve platformdaki en uygun doktorları önersin. Tanı koymaz — doğru doktora ulaştırır.",
+    "hero": "Şikâyetinizi yazın; Vasco sizi doğru uzmana yönlendirsin. Teşhis koymaz.",
     "trust": "Tanı koymaz · Çok dilli · Şikâyetiniz gizli tutulur",
     "browseDoctors": "Bu branştaki doktorları görüntüle →",
     "askAnother": "↺ Yeni şikâyet",

@@ -185,7 +185,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
           <Suspense fallback={null}>
             <header className="sticky top-0 z-30 h-12 flex items-center justify-between px-4 border-b border-gray-100 bg-white/90 backdrop-blur">
               <Link to="/" className="flex items-center gap-1.5 font-bold text-[#0f766e]">
-                <span className="text-base tracking-tight">MedStream</span>
+                <span className="text-base tracking-tight">Medstream</span>
               </Link>
               <LanguageSwitcher compact />
             </header>

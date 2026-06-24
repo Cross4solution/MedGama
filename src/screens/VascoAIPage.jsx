@@ -124,7 +124,6 @@ function VascoAssistant() {
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-sm font-semibold border border-teal-100">
                   <Stethoscope className="w-4 h-4" /> {loc(result.specialty.name)}
                 </span>
-                {result.rationale && <span className="text-sm text-gray-500">{result.rationale}</span>}
               </div>
             ) : (
               <div className="mb-3 flex items-start gap-2.5 rounded-2xl bg-teal-50/60 border border-teal-100 px-3.5 py-2.5">

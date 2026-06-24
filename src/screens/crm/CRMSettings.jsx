@@ -106,6 +106,7 @@ const CRMSettings = ({ standalone = false }) => {
   const [doctorCertifications, setDoctorCertifications] = useState([]);
   const [doctorTreatedConditions, setDoctorTreatedConditions] = useState([]);
   const [conditionInput, setConditionInput] = useState('');
+  const [conditionsError, setConditionsError] = useState('');
   const [doctorLanguages, setDoctorLanguages] = useState([]);
   const [onlineConsultation, setOnlineConsultation] = useState(false);
   const [doctorAddress, setDoctorAddress] = useState('');
@@ -250,6 +251,13 @@ const CRMSettings = ({ standalone = false }) => {
   };
 
   const saveProfile = async () => {
+    // Treated conditions are mandatory for doctors (powers Vasco symptom→doctor).
+    const isDoctorRole = user?.role === 'doctor' || user?.role_id === 'doctor';
+    if (isDoctorRole && doctorTreatedConditions.length === 0) {
+      setConditionsError(t('crm.settings.conditionsRequired', 'Lütfen baktığınız en az bir durum/semptom ekleyin.'));
+      return;
+    }
+    setConditionsError('');
     setProfileSaving(true);
     setProfileSaved(false);
     try {
@@ -686,8 +694,8 @@ const CRMSettings = ({ standalone = false }) => {
               {/* Treated conditions / symptoms — powers Vasco symptom→doctor matching */}
               <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100">
-                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.treatedConditionsHeading', 'Baktığım Durumlar / Şikâyetler')}</h2>
-                  <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.treatedConditionsSubtitle', 'Hastaların sizi semptomlarına göre bulabilmesi için baktığınız durumları ekleyin (ör. baş ağrısı, bel fıtığı).')}</p>
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.treatedConditionsHeading', 'Baktığım Durumlar / Şikâyetler')} <span className="text-red-500">*</span></h2>
+                  <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.treatedConditionsSubtitle', 'Hastaların sizi semptomlarına göre bulabilmesi için baktığınız durumları ekleyin (ör. baş ağrısı, bel fıtığı). Zorunlu.')}</p>
                 </div>
                 <div className="px-6 py-4">
                   <div className="flex flex-wrap gap-2 mb-3">
@@ -713,8 +721,9 @@ const CRMSettings = ({ standalone = false }) => {
                       }
                     }}
                     placeholder={t('crm.settings.addConditionPlaceholder', 'Durum yazıp Enter’a basın')}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400"
+                    className={`w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 ${conditionsError ? 'border-red-400' : 'border-gray-200'}`}
                   />
+                  {conditionsError && <p className="text-xs text-red-500 mt-1.5">{conditionsError}</p>}
                 </div>
               </div>
 
