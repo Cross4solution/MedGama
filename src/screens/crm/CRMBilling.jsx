@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { billingAPI, patientAPI } from '../../lib/api';
 import ProTeaser from '../../components/crm/ProTeaser';
 import { blockNonNumeric } from '../../utils/numericInput';
@@ -105,7 +106,7 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
       onClose();
     } catch (err) {
       console.error('Create invoice error:', err);
-      alert('Failed to create invoice');
+      notify({ type: 'error', message: t('crm.billing.createInvoiceError', 'Fatura oluşturulamadı.') });
     } finally {
       setLoading(false);
     }
@@ -281,7 +282,7 @@ const PaymentModal = ({ invoice, onClose, onUpdated, t }) => {
       onUpdated();
       onClose();
     } catch {
-      alert('Failed to record payment');
+      notify({ type: 'error', message: t('crm.billing.recordPaymentError', 'Ödeme kaydedilemedi.') });
     } finally {
       setLoading(false);
     }
@@ -347,6 +348,7 @@ const PaymentModal = ({ invoice, onClose, onUpdated, t }) => {
 const CRMBilling = () => {
   const { t } = useTranslation();
   const { user, isPro } = useAuth();
+  const { notify } = useToast();
 
   const navigate = useNavigate();
 
@@ -431,7 +433,7 @@ const CRMBilling = () => {
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error('PDF download error:', err);
-      alert('Failed to download PDF');
+      notify({ type: 'error', message: t('crm.billing.pdfError', 'PDF indirilemedi.') });
     }
   };
 
