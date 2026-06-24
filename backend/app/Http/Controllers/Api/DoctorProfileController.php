@@ -304,8 +304,16 @@ class DoctorProfileController extends Controller
 
         $profile->update(['operating_hours' => $request->input('operating_hours')]);
 
+        // Generate bookable slots from the hours so patients can book right away.
+        $generated = app(\App\Services\SlotGenerationService::class)->generate(
+            $user->id,
+            $profile->clinic_id ?? $user->clinic_id,
+            $request->input('operating_hours'),
+        );
+
         return response()->json([
             'operating_hours' => $profile->operating_hours,
+            'slots_generated' => $generated,
             'message' => 'Operating hours updated',
         ]);
     }
