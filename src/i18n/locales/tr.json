@@ -1329,6 +1329,25 @@
     "privacyMatters": "Gizliliğiniz Önemlidir",
     "bannerText": "Temel işlevsellik, analitik ve kişisel içerik için çerezler kullanıyoruz. GDPR kapsamında verilerinizi siz kontrol edersiniz."
   },
+  "myAppointments": {
+    "title": "Randevularım",
+    "subtitle": "Gelen randevularınızı yönetin",
+    "empty": "Randevu bulunmuyor."
+  },
+  "calendar": {
+    "addToCalendar": "Takvime Ekle",
+    "appleOther": "Apple / .ics",
+    "syncTitle": "Takvim Senkronizasyonu",
+    "syncSubtitle": "Randevularınız Google / Apple / Outlook takviminize otomatik düşsün — bir kez ekleyin.",
+    "syncError": "Bağlantı yüklenemedi.",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı",
+    "addGoogle": "Google Takvime Ekle",
+    "addApple": "Apple / Outlook (webcal)",
+    "regen": "Bağlantıyı Yenile",
+    "regenConfirm": "Mevcut abonelik bağlantısı geçersiz olacak. Devam edilsin mi?",
+    "syncNote": "Bu özel bir bağlantıdır, paylaşmayın. Takvim uygulamaları birkaç dakikada bir günceller."
+  },
   "browse": {
     "treatmentsSubtitle": "Tedavi türüne ve uzmanlığa göre klinik ve hastane bulun.",
     "searchTreatments": "Tedavi ara (ör. implant, katarakt, tüp bebek)...",

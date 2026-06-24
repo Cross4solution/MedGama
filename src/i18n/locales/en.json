@@ -1,4 +1,9 @@
 {
+  "myAppointments": {
+    "title": "My Appointments",
+    "subtitle": "Manage your incoming appointments",
+    "empty": "No appointments."
+  },
   "calendar": {
     "addToCalendar": "Add to calendar",
     "appleOther": "Apple / .ics",
