@@ -104,6 +104,8 @@ const CRMSettings = ({ standalone = false }) => {
   const [doctorPrices, setDoctorPrices] = useState([]);
   const [doctorEducation, setDoctorEducation] = useState([]);
   const [doctorCertifications, setDoctorCertifications] = useState([]);
+  const [doctorTreatedConditions, setDoctorTreatedConditions] = useState([]);
+  const [conditionInput, setConditionInput] = useState('');
   const [doctorLanguages, setDoctorLanguages] = useState([]);
   const [onlineConsultation, setOnlineConsultation] = useState(false);
   const [doctorAddress, setDoctorAddress] = useState('');
@@ -167,6 +169,7 @@ const CRMSettings = ({ standalone = false }) => {
           setDoctorPrices(dp.prices || []);
           setDoctorEducation(dp.education || []);
           setDoctorCertifications(dp.certifications || []);
+          setDoctorTreatedConditions(dp.treated_conditions || []);
           setDoctorLanguages(dp.languages || []);
           setOnlineConsultation(!!dp.online_consultation);
           setDoctorAddress(dp.address || '');
@@ -261,6 +264,7 @@ const CRMSettings = ({ standalone = false }) => {
         prices: doctorPrices.filter(p => p.label),
         education: doctorEducation.filter(e => e.degree || e.school),
         certifications: doctorCertifications.filter(c => c.name),
+        treated_conditions: doctorTreatedConditions,
         languages: doctorLanguages,
         online_consultation: onlineConsultation,
         address: doctorAddress,
@@ -676,6 +680,41 @@ const CRMSettings = ({ standalone = false }) => {
                 </div>
                 <div className="px-6 py-4">
                   <CertificationsEditor value={doctorCertifications} onChange={setDoctorCertifications} />
+                </div>
+              </div>
+
+              {/* Treated conditions / symptoms — powers Vasco symptom→doctor matching */}
+              <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.treatedConditionsHeading', 'Baktığım Durumlar / Şikâyetler')}</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.treatedConditionsSubtitle', 'Hastaların sizi semptomlarına göre bulabilmesi için baktığınız durumları ekleyin (ör. baş ağrısı, bel fıtığı).')}</p>
+                </div>
+                <div className="px-6 py-4">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {doctorTreatedConditions.map((c, i) => (
+                      <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-teal-50 text-teal-700 text-xs font-medium border border-teal-100">
+                        {c}
+                        <button type="button" onClick={() => setDoctorTreatedConditions(prev => prev.filter((_, idx) => idx !== i))} className="text-teal-400 hover:text-teal-700">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                    {doctorTreatedConditions.length === 0 && <p className="text-xs text-gray-400 italic">{t('crm.settings.noConditionsYet', 'Henüz eklenmedi')}</p>}
+                  </div>
+                  <input
+                    value={conditionInput}
+                    onChange={e => setConditionInput(e.target.value)}
+                    onKeyDown={e => {
+                      if ((e.key === 'Enter' || e.key === ',') && conditionInput.trim()) {
+                        e.preventDefault();
+                        const v = conditionInput.trim().replace(/,$/, '');
+                        if (v && !doctorTreatedConditions.includes(v)) setDoctorTreatedConditions(prev => [...prev, v]);
+                        setConditionInput('');
+                      }
+                    }}
+                    placeholder={t('crm.settings.addConditionPlaceholder', 'Durum yazıp Enter’a basın')}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400"
+                  />
                 </div>
               </div>
 

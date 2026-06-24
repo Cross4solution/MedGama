@@ -47,6 +47,7 @@ class DoctorProfile extends Model
         'specialty',
         'specialty_id',
         'sub_specialties',
+        'treated_conditions',
         'bio',
         'experience_years',
         'license_number',
@@ -80,6 +81,7 @@ class DoctorProfile extends Model
     {
         return [
             'sub_specialties'    => 'array',
+            'treated_conditions' => 'array',
             'education'          => 'array',
             'certifications'     => 'array',
             'services'           => 'array',

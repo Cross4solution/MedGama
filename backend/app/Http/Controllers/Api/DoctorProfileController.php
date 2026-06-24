@@ -62,6 +62,8 @@ class DoctorProfileController extends Controller
             'specialty_id'       => 'nullable|uuid|exists:specialties,id',
             'clinic_id'          => 'nullable|uuid|exists:clinics,id',
             'sub_specialties'    => 'nullable|array',
+            'treated_conditions'   => 'nullable|array',
+            'treated_conditions.*' => 'string|max:120',
             'bio'                => 'nullable|string|max:5000',
             'experience_years'   => 'nullable|string|max:50',
             'license_number'     => 'nullable|string|max:100',
