@@ -175,13 +175,15 @@ const LoginPage = ({ role = 'patient' }) => {
   const config = ROLE_CONFIG[role] || ROLE_CONFIG.patient;
   const IconComponent = config.icon;
 
+  // endsWith — pathname carries the locale prefix in Next (e.g. /tr/register).
   const [currentPage, setCurrentPage] = useState(
-    location.pathname === '/register' ? 'register' : 'login'
+    (location.pathname || '').endsWith('/register') ? 'register' : 'login'
   );
 
   useEffect(() => {
-    if (location.pathname === '/register') setCurrentPage('register');
-    else if (location.pathname === '/login' || location.pathname === '/auth') setCurrentPage('login');
+    const p = location.pathname || '';
+    if (p.endsWith('/register')) setCurrentPage('register');
+    else if (p.endsWith('/login') || p.endsWith('/auth')) setCurrentPage('login');
   }, [location.pathname]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
