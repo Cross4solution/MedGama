@@ -310,7 +310,8 @@ const LoginPage = ({ role = 'patient' }) => {
     try {
       setSubmitting(true);
       if (currentPage === 'login') {
-        const res = await login(formData.email, formData.password);
+        // Enforce portal/role match — this login page only accepts its own role.
+        const res = await login(formData.email, formData.password, !!formData.rememberMe, role);
         // Login never requires email verification — verification is register-only for patients/doctors
         notify({ type: 'success', message: 'Login successful' });
         // Redirect based on ACTUAL role from API — not the login page's assumed role

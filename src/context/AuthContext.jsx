@@ -129,14 +129,14 @@ export function AuthProvider({ children }) {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const login = useCallback(async (emailOrUser, password, rememberMe = false) => {
+  const login = useCallback(async (emailOrUser, password, rememberMe = false, expectedRole = null) => {
     // Backward-compatible demo login: if first arg is an object, treat it as user
     if (emailOrUser && typeof emailOrUser === 'object') {
       setUser(emailOrUser);
       setToken(null);
       return { success: true, message: 'Demo login', data: { user: emailOrUser } };
     }
-    const res = await endpoints.login({ email: emailOrUser, password, remember: rememberMe });
+    const res = await endpoints.login({ email: emailOrUser, password, remember: rememberMe, ...(expectedRole ? { expected_role: expectedRole } : {}) });
     // Laravel UserResource returns { data: { ...user }, token, requires_email_verification }
     const apiUser = res?.data ?? res?.user ?? null;
     const access = res?.token ?? res?.access_token ?? null;

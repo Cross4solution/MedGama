@@ -14,9 +14,10 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email'     => 'required|email',
-            'password'  => 'required|string',
-            'clinic_id' => 'sometimes|uuid',
+            'email'         => 'required|email',
+            'password'      => 'required|string',
+            'clinic_id'     => 'sometimes|uuid',
+            'expected_role' => 'sometimes|string|in:patient,doctor,clinic,hospital',
         ];
     }
 }

@@ -190,6 +190,25 @@ class AuthService
             ]);
         }
 
+        // Portal/role guard — a portal login only accepts its own role(s).
+        // (superAdmin/saasAdmin may enter through any portal.)
+        $expected = $data['expected_role'] ?? null;
+        if ($expected) {
+            $portalRoles = [
+                'patient'  => ['patient'],
+                'doctor'   => ['doctor'],
+                'clinic'   => ['clinicOwner', 'clinic'],
+                'hospital' => ['hospital'],
+            ];
+            $allowed = $portalRoles[$expected] ?? [];
+            $isAdmin = in_array($user->role_id, ['superAdmin', 'saasAdmin'], true);
+            if ($allowed && !$isAdmin && !in_array($user->role_id, $allowed, true)) {
+                throw ValidationException::withMessages([
+                    'email' => ['Bu hesap bu giriş ekranı için uygun değil. Lütfen rolünüze uygun giriş ekranını kullanın.'],
+                ]);
+            }
+        }
+
         $user->update(['last_login' => now()]);
 
         // Auto-verify non-patient/non-doctor roles on first login (admin-provisioned or no verification required)

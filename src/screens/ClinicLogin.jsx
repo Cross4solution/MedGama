@@ -44,7 +44,7 @@ const ClinicLogin = () => {
       return;
     }
     try {
-      const res = await login(formData.email, formData.password);
+      const res = await login(formData.email, formData.password, false, 'clinic');
       // Login never requires email verification — verification is register-only for patients/doctors
       navigate(getRedirectFromLoginResult(res, '/crm'), { replace: true });
     } catch (err) {
