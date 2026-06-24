@@ -9,6 +9,11 @@ const TelehealthPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isPatient = (user?.role || 'patient') === 'patient';
+  // Show the OTHER party: patient sees the doctor, provider sees the patient.
+  const counterpartyName = (a) => (isPatient
+    ? (a.doctor?.fullname || t('common.doctor', 'Doktor'))
+    : (a.patient?.fullname || a.patient_name || t('common.patient')));
 
   // ── API State ──
   const [appointments, setAppointments] = useState([]);
@@ -60,7 +65,7 @@ const TelehealthPage = () => {
       .filter(a => ['pending', 'confirmed'].includes(a.status))
       .map(a => ({
         id: a.id,
-        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || t('common.patient'),
+        patient: counterpartyName(a),
         start: getStartDate(a),
         specialty: a.appointment_type === 'online' ? t('telehealthPage.onlineTelehealth') : (a.appointment_type || t('crm.appointments.consultation')),
         raw: a,
@@ -74,7 +79,7 @@ const TelehealthPage = () => {
       .filter(a => a.status === 'completed')
       .map(a => ({
         id: a.id,
-        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || t('common.patient'),
+        patient: counterpartyName(a),
         start: getStartDate(a),
         durationMin: 30,
         status: t('common.completed'),
@@ -89,7 +94,7 @@ const TelehealthPage = () => {
       .filter(a => ['cancelled', 'canceled', 'no_show'].includes(a.status))
       .map(a => ({
         id: a.id,
-        patient: a.patient?.fullname || a.patient_name || a.doctor?.fullname || t('common.patient'),
+        patient: counterpartyName(a),
         start: getStartDate(a),
         reason: a.status === 'no_show' ? t('telehealthPage.noShow') : t('crm.appointments.cancelled'),
         raw: a,
@@ -210,13 +215,15 @@ const TelehealthPage = () => {
                 <p className="text-[11px] text-gray-400 font-medium">{t('telehealthPage.subtitle')}</p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => navigate('/telehealth-appointment')}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-sm font-semibold shadow-sm hover:shadow-md hover:from-teal-700 hover:to-emerald-700 transition-all"
-            >
-              <Calendar className="w-4 h-4" /> {t('booking.title', 'Book Appointment')}
-            </button>
+            {isPatient && (
+              <button
+                type="button"
+                onClick={() => navigate('/telehealth-appointment')}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white text-sm font-semibold shadow-sm hover:shadow-md hover:from-teal-700 hover:to-emerald-700 transition-all"
+              >
+                <Calendar className="w-4 h-4" /> {t('booking.title', 'Book Appointment')}
+              </button>
+            )}
           </div>
 
           {/* Stats Cards */}
