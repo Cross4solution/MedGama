@@ -41,7 +41,7 @@ class VascoService
             $specialty = collect($specialties)->firstWhere('code', $picked['code']);
         }
 
-        $doctors = $specialty ? $this->retrieveDoctors($specialty['id'], $location, $limit) : [];
+        $doctors = $this->retrieveDoctors($specialty['id'] ?? null, $text, $location, $limit);
 
         return [
             'specialty'  => $specialty,
@@ -152,31 +152,55 @@ class VascoService
         return ['code' => null, 'follow_up' => 'Şikayetinizi biraz daha açıklar mısınız? (nerede, ne zamandır, nasıl)', 'rationale' => ''];
     }
 
-    private function retrieveDoctors(string $specialtyId, ?string $location, int $limit): array
+    private function retrieveDoctors(?string $specialtyId, string $text, ?string $location, int $limit): array
     {
-        $query = User::where('role_id', 'doctor')
-            ->where('is_active', true)
-            ->whereHas('doctorProfile', fn ($q) => $q->where('specialty_id', $specialtyId))
-            ->with(['doctorProfile:id,user_id,specialty,specialty_id,title,experience_years,online_consultation', 'clinic:id,fullname,codename,address'])
-            ->select('id', 'fullname', 'avatar', 'clinic_id', 'is_verified', 'city_id');
+        // Symptom keywords from the complaint → match doctors' treated_conditions
+        // (interim before vector RAG; doctor declares conditions they handle).
+        $keywords = collect(preg_split('/[\s,.;]+/u', mb_strtolower($text)))
+            ->filter(fn ($w) => mb_strlen($w) >= 4)->unique()->take(8)->values()->all();
 
-        if ($location) {
-            $query->where(function ($q) use ($location) {
-                $q->whereHas('clinic', fn ($cq) => $cq->where('address', 'like', "%{$location}%"));
-            });
+        if (!$specialtyId && empty($keywords)) {
+            return [];
         }
 
-        $doctors = $query->limit($limit * 2)->get();
+        $query = User::where('role_id', 'doctor')
+            ->where('is_active', true)
+            ->with(['doctorProfile:id,user_id,specialty,specialty_id,title,experience_years,online_consultation,treated_conditions', 'clinic:id,fullname,codename,address'])
+            ->select('id', 'fullname', 'avatar', 'clinic_id', 'is_verified', 'city_id');
 
-        // Rank: verified first, then by review average.
+        // Match: the chosen specialty OR a doctor whose treated_conditions mention a symptom keyword.
+        $query->where(function ($q) use ($specialtyId, $keywords) {
+            if ($specialtyId) {
+                $q->whereHas('doctorProfile', fn ($pq) => $pq->where('specialty_id', $specialtyId));
+            }
+            if (!empty($keywords)) {
+                $q->orWhereHas('doctorProfile', function ($pq) use ($keywords) {
+                    $pq->where(function ($w) use ($keywords) {
+                        foreach ($keywords as $kw) {
+                            $w->orWhereRaw('LOWER(treated_conditions) LIKE ?', ['%' . $kw . '%']);
+                        }
+                    });
+                });
+            }
+        });
+
+        if ($location) {
+            $query->whereHas('clinic', fn ($cq) => $cq->where('address', 'like', "%{$location}%"));
+        }
+
+        $doctors = $query->limit($limit * 3)->get();
+
         $ids = $doctors->pluck('id');
         $ratings = DoctorReview::whereIn('doctor_id', $ids)->visible()
             ->selectRaw('doctor_id, AVG(rating) as avg_rating, COUNT(*) as cnt')
             ->groupBy('doctor_id')->get()->keyBy('doctor_id');
 
         return $doctors
-            ->map(function ($d) use ($ratings) {
+            ->map(function ($d) use ($ratings, $keywords) {
                 $r = $ratings->get($d->id);
+                $conds = $d->doctorProfile->treated_conditions ?? [];
+                $condText = mb_strtolower(is_array($conds) ? implode(' ', $conds) : (string) $conds);
+                $condBoost = collect($keywords)->filter(fn ($kw) => $kw && mb_strpos($condText, $kw) !== false)->count();
                 return [
                     'id'         => $d->id,
                     'fullname'   => $d->fullname,
@@ -189,10 +213,12 @@ class VascoService
                     'clinic'     => $d->clinic ? ['fullname' => $d->clinic->fullname, 'codename' => $d->clinic->codename, 'address' => $d->clinic->address] : null,
                     'rating'     => $r ? round((float) $r->avg_rating, 1) : null,
                     'review_count' => $r ? (int) $r->cnt : 0,
+                    '_score'     => ($condBoost * 20) + ((bool) $d->is_verified ? 50 : 0) + ($r ? (float) $r->avg_rating : 0),
                 ];
             })
-            ->sortByDesc(fn ($d) => ($d['is_verified'] ? 100 : 0) + ($d['rating'] ?? 0))
+            ->sortByDesc(fn ($d) => $d['_score'])
             ->take($limit)
+            ->map(function ($d) { unset($d['_score']); return $d; })
             ->values()
             ->all();
     }
