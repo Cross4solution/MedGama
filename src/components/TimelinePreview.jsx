@@ -148,7 +148,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
               </div>
             ) : (
             <div className="space-y-3">
-              {data.slice(0, 8).map((item) => (
+              {data.slice(0, limit).map((item) => (
                 <div
                   key={item.id}
                   id={`post-${item.id}`}
