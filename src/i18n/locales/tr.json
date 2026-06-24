@@ -69,7 +69,16 @@
     "saving": "Kaydediliyor...",
     "country": "Ülke",
     "clear": "Temizle",
-    "of": "/"
+    "of": "/",
+    "cancelled": "İptal edildi",
+    "clearAll": "Tümünü temizle",
+    "creating": "Oluşturuluyor...",
+    "filters": "Filtreler",
+    "noData": "Veri yok",
+    "optional": "opsiyonel",
+    "ready": "Hazır",
+    "saveChanges": "Değişiklikleri kaydet",
+    "showing": "Gösteriliyor"
   },
   "nav": {
     "home": "Ana Sayfa",
@@ -250,7 +259,8 @@
       "feat1": "Akıllı Takvim",
       "feat2": "Telehealth",
       "feat3": "Tıbbi Arşiv",
-      "feat4": "Muayene"
+      "feat4": "Muayene",
+      "upgradeCta": "Profesyonel'e yükselt"
     },
     "sidebar": {
       "main": "Ana Menü",
@@ -278,7 +288,10 @@
       "staff": "Ekip",
       "clinicManager": "Klinik Yönetimi",
       "contactInbox": "İletişim Mesajları",
-      "branches": "Şubeler"
+      "branches": "Şubeler",
+      "gallery": "Galeri",
+      "leads": "Lead'ler",
+      "medstream": "MedStream"
     },
     "premiumGate": {
       "title": "Premium Özellik",
@@ -376,7 +389,14 @@
       "description": "Hesabınız admin ekibimiz tarafından incelenmektedir. Randevu oluşturma ve MedStream etkileşim özellikleri (beğeni, yorum, paylaşım) onay alınana kadar kısıtlanmıştır.",
       "action": "Belge Gönder",
       "restrictedFeature": "Bu özelliği kullanmak için hesap onayı gereklidir",
-      "interactionLocked": "Etkileşim için hesabınızın onaylanması gerekir"
+      "interactionLocked": "Etkileşim için hesabınızın onaylanması gerekir",
+      "infoTitle": "İşlem Gerekli: Ek Belge Gerekiyor",
+      "pendingTitle": "Belgeler İncelemede",
+      "rejectedTitle": "Doğrulama Reddedildi",
+      "resubmitAction": "Belgeleri Yeniden Gönder",
+      "unverifiedTitle": "Doğrulama Bekliyor",
+      "updateAction": "Belgeleri Güncelle",
+      "uploadAction": "Belge Yükle"
     },
     "clinicVerification": {
       "title": "Klinik Doğrulama",
@@ -438,7 +458,10 @@
       "by": "tarafından",
       "assignedTo": "Atanan",
       "replyPlaceholder": "Yanıtınızı yazın...",
-      "notFound": "Talep bulunamadı"
+      "notFound": "Talep bulunamadı",
+      "createError": "Talep oluşturulamadı. Lütfen tekrar deneyin.",
+      "createTicketDesc": "Sorununuzu anlatın, ekibimiz yardımcı olsun",
+      "dragDrop": "Dosyaları buraya sürükleyin veya tıklayın"
     },
     "dashboard": {
       "title": "Kontrol Paneli",
@@ -466,7 +489,13 @@
       "aiTagRevenue": "gelir",
       "aiTagOverview": "özet",
       "nextInsight": "Sonraki içgörü",
-      "insightN": "İçgörü {{n}}"
+      "insightN": "İçgörü {{n}}",
+      "unlockInsights": "Gerçek zamanlı içgörüleri aç",
+      "upgradeAlerts": "Gerçek zamanlı uyarılar için yükseltin",
+      "upgradeAppointments": "Canlı randevu programınızı görmek için yükseltin",
+      "upgradeHint": "Canlı veriyi açmak için Profesyonel'e yükseltin",
+      "upgradePatients": "Son hastalarınızı görmek için yükseltin",
+      "upgradeRevenue": "Haftalık gelirinizi takip etmek için yükseltin"
     },
     "appointments": {
       "title": "Randevular",
@@ -570,7 +599,23 @@
       "dragHint": "Randevuları yeniden planlamak için sürükleyip bırakın",
       "goToPatient": "Hastaya Git",
       "confirmed": "Onaylandı",
-      "yearsOld": "yaşında"
+      "yearsOld": "yaşında",
+      "availability": "Müsaitlik",
+      "breakTime": "Mola",
+      "callPatient": "Hastayı ara",
+      "cancelAppt": "İptal",
+      "closedHours": "Kapalı / Mesai dışı",
+      "confirmAppt": "Onayla",
+      "filterByStatus": "Durum",
+      "joinTelehealth": "Görüşmeye katıl",
+      "lastSync": "Senkronlandı",
+      "openHours": "Açık saatler",
+      "quickActions": "Hızlı işlemler",
+      "startExam": "Muayeneye başla",
+      "status_confirmed": "Onaylandı",
+      "status_pending": "Beklemede",
+      "today": "Bugün",
+      "totalVisible": "Toplam görünen"
     },
     "patient360": {
       "title": "Hasta 360",
@@ -610,7 +655,12 @@
       "consentSigned": "Onam Formu İmzalandı",
       "consentSignedDesc": "Hasta onam formunu dijital olarak imzaladı.",
       "procedure": "İşlem",
-      "newConsent": "Yeni Onam Formu"
+      "newConsent": "Yeni Onam Formu",
+      "activePrescriptions": "Aktif Reçeteler",
+      "latestVitals": "Son Vital Bulgular",
+      "medicalSummary": "Tıbbi Özet",
+      "recentDiagnoses": "Son Tanılar",
+      "startExamination": "Muayeneye Başla"
     },
     "patients": {
       "title": "Hastalar",
@@ -666,7 +716,15 @@
       "stagePostSurgery": "Ameliyat Sonrası",
       "stageRehabilitation": "Rehabilitasyon",
       "stageMonitoring": "İzleme",
-      "stageDischarged": "Taburcu"
+      "stageDischarged": "Taburcu",
+      "activeThisMonth": "Bu Ay Aktif",
+      "addTag": "Etiket ekle",
+      "allGenders": "Tüm Cinsiyetler",
+      "allStages": "Tüm Aşamalar",
+      "allTags": "Tüm Etiketler",
+      "setStage": "Aşama Belirle",
+      "stage": "Aşama",
+      "tags": "Etiketler"
     },
     "messages": {
       "title": "Mesajlar",
@@ -680,7 +738,8 @@
       "online": "Çevrimiçi",
       "offline": "Çevrimdışı",
       "typeMessage": "Bir mesaj yazın...",
-      "noConversations": "Konuşma bulunamadı"
+      "noConversations": "Konuşma bulunamadı",
+      "unknownUser": "Bilinmeyen"
     },
     "revenue": {
       "title": "Gelir & Finans",
@@ -698,7 +757,29 @@
       "allStatus": "Tüm Durumlar",
       "week": "Hafta",
       "month": "Ay",
-      "year": "Yıl"
+      "year": "Yıl",
+      "comm": "Kom",
+      "commission": "Komisyon",
+      "daily": "Günlük",
+      "gross": "Brüt",
+      "grossRevenue": "Brüt Gelir",
+      "invoiceCount": "Faturalar",
+      "invoices": "fatura",
+      "monthlyBreakdown": "Dönemler",
+      "monthlyRev": "Bu Ay",
+      "net": "Net",
+      "netPayout": "Net Ödeme",
+      "paidAmt": "Ödenen",
+      "partial": "Kısmi",
+      "pendingPayments": "Bekleyen Ödemeler",
+      "period": "Dönem",
+      "platformOverview": "Platform Finans Özeti",
+      "receivable": "Alacak",
+      "topDoctors": "En Çok Gelir Getiren Doktorlar",
+      "topServices": "En Çok Hizmetler",
+      "totalCommission": "Platform Komisyonu",
+      "totalInvoices": "Toplam Fatura",
+      "totalPlatformRevenue": "Toplam Platform Geliri"
     },
     "billing": {
       "title": "Tahsilat & Finans",
@@ -758,7 +839,22 @@
       "totalLabel": "Toplam",
       "paid": "Ödenen",
       "overdue": "GECİKMİŞ",
-      "invoiceCount": "{{count}} fatura"
+      "invoiceCount": "{{count}} fatura",
+      "addItem": "Kalem ekle",
+      "createInvoice": "Fatura",
+      "createInvoiceDesc": "Kalem ekleyin, fiyat belirleyin ve fatura oluşturun",
+      "date": "Tarih",
+      "dueDate": "Vade tarihi",
+      "invoice": "Fatura",
+      "invoices": "Faturalar",
+      "issueDate": "Düzenleme tarihi",
+      "monthlyRevenue": "Aylık gelir",
+      "overdueInvoices": "Gecikmiş",
+      "pdfError": "PDF indirilemedi.",
+      "receivable": "Alacak",
+      "searchInvoices": "Fatura ara...",
+      "serviceItems": "Hizmet kalemleri",
+      "taxRate": "Vergi oranı"
     },
     "prescriptions": {
       "title": "Reçeteler",
@@ -777,7 +873,8 @@
       "duplicate": "Kopyala",
       "addMedication": "Başka İlaç Ekle",
       "createPrescription": "Reçete Oluştur",
-      "additionalInstructions": "Ek talimatlar..."
+      "additionalInstructions": "Ek talimatlar...",
+      "goToExamination": "Muayeneye git"
     },
     "reports": {
       "title": "Raporlar & Analitik",
@@ -945,7 +1042,8 @@
       "examinationNotePlaceholder": "Fizik muayene bulguları, şikayet, plan...",
       "treatmentPlanPlaceholder": "Önerilen tedavi yaklaşımı, kontrol tarihi, yaşam tarzı önerileri...",
       "refresh": "Yenile",
-      "alert": "UYARI"
+      "alert": "UYARI",
+      "searchTreatmentTag": "Semptom veya tedavi ara..."
     },
     "settings": {
       "title": "Ayarlar",
@@ -1084,7 +1182,50 @@
       "perMonth": "/ay",
       "nextBilling": "Sonraki ödeme",
       "expires": "Son kullanma",
-      "paid": "Ödendi"
+      "paid": "Ödendi",
+      "addBreak": "+ Mola",
+      "addService": "Hizmet ekle",
+      "breakLabel": "Mola",
+      "certificationsHeading": "Sertifikalar",
+      "certificationsSubtitle": "Ad, yıl ve isteğe bağlı sertifika görseli",
+      "closed": "Kapalı",
+      "contactDesc": "Hastalara görünen telefon, WhatsApp ve adres bilgileri",
+      "contactTitle": "İletişim Bilgileri",
+      "currency": "Para birimi",
+      "dropPhotos": "Fotoğrafları buraya bırakın veya yüklemek için tıklayın",
+      "duration": "Tahmini Süre (dk)",
+      "fullAddressHelper": "Mahalle, sokak, cadde ve kapı numarası dahil tam adresinizi girin.",
+      "fullAddressLabel": "Detaylı Adres",
+      "fullAddressPlaceholder": "Mahalle, sokak, cadde ve kapı numarası...",
+      "galleryDesc": "Profil ve klinik fotoğraflarınızı yükleyin ve yönetin. Sıralamak için sürükleyin.",
+      "galleryTitle": "Galeri Yöneticisi",
+      "hoursDesc": "Haftalık programınızı ayarlayın. Bu saatler randevu aracıyla senkronize olur.",
+      "hoursTitle": "Çalışma Saatleri",
+      "infoRequestedTitle": "Ek Belge Gerekli",
+      "latitude": "Enlem",
+      "locationTitle": "Konum (OpenStreetMap)",
+      "longitude": "Boylam",
+      "noFileSelected": "Lütfen yüklenecek bir dosya seçin.",
+      "noPhotos": "Henüz fotoğraf yüklenmedi",
+      "noServices": "Henüz hizmet eklenmedi. Başlamak için \"Hizmet ekle\"ye tıklayın.",
+      "open": "Açık",
+      "pendingReviewDesc": "Belgeleriniz yönetici ekibimizce inceleniyor (2-5 iş günü).",
+      "pendingReviewTitle": "Belgeler İncelemede",
+      "phoneLabel": "Telefon",
+      "price": "Fiyat",
+      "rejectedDesc": "Doğrulamanız onaylanmadı. Lütfen doğru belgeleri aşağıdan tekrar yükleyin.",
+      "rejectedTitle": "Doğrulama Reddedildi",
+      "saveHours": "Saatleri Kaydet",
+      "saveServices": "Hizmetleri Kaydet",
+      "saveSocial": "İletişim Bilgilerini Kaydet",
+      "serviceName": "Hizmet Adı",
+      "servicesDesc": "Hizmetlerinizi tahmini süre ve fiyatla yönetin",
+      "servicesTitle": "Hizmetler ve Fiyatlandırma",
+      "socialDesc": "Sosyal medya profillerinizi bağlayın",
+      "socialTitle": "Sosyal Medya",
+      "uploadFailed": "Yükleme başarısız. Lütfen tekrar deneyin.",
+      "uploadSuccess": "Belge başarıyla gönderildi! Kısa sürede incelenecek.",
+      "websiteLabel": "Web sitesi"
     },
     "leads": {
       "title": "Potansiyel Müşteriler",
@@ -1168,6 +1309,84 @@
       "copied": "Kopyalandı!",
       "loadFailed": "Satışçılar yüklenemedi.",
       "updateFailed": "Güncellenemedi."
+    },
+    "faq": {
+      "add": "SSS ekle",
+      "addFirst": "İlk SSS'nizi ekleyin",
+      "answer": "Cevap",
+      "answerPlaceholder": "Hastalarınız için detaylı bir cevap yazın...",
+      "confirmDelete": "Bu SSS silinsin mi?",
+      "edit": "SSS düzenle",
+      "emptyTitle": "Henüz SSS yok",
+      "hidden": "Gizli",
+      "hide": "Gizle",
+      "noMatch": "Aramanıza uygun SSS yok",
+      "question": "Soru",
+      "questionPlaceholder": "ör. Muayene sırasında ne beklemeliyim?",
+      "search": "SSS ara...",
+      "show": "Göster",
+      "subtitle": "Hastalarınızın sık sorulan sorulara hızlı yanıt bulmasına yardımcı olun",
+      "title": "Sık Sorulan Sorular",
+      "visible": "Herkese açık profilde görünür"
+    },
+    "manager": {
+      "actions": "İşlemler",
+      "appointments": "randevu",
+      "apptBreakdown": "Randevu Durumu (Bu Ay)",
+      "appts": "Randevu",
+      "cancelled": "İptal",
+      "commShort": "Kom.",
+      "commission": "Komisyon (${commPct}%)",
+      "completed": "Tamamlandı",
+      "confirmed": "Onaylandı",
+      "doctor": "Doktor",
+      "doctorPerformance": "Doktor Performansı",
+      "doctors": "Doktorlar",
+      "gross": "Brüt",
+      "grossRevenue": "Brüt Gelir",
+      "invoiceCount": "Faturalar",
+      "invoices": "fatura",
+      "managedBy": "Yöneten",
+      "monthAppts": "Bu Ay",
+      "monthRevenue": "Aylık Gelir",
+      "monthlyBreakdown": "Aylık Döküm",
+      "net": "Net",
+      "netPayout": "Net Ödeme",
+      "noData": "Veri yok",
+      "noDoctors": "Doktor bulunamadı",
+      "noShow": "Gelmedi",
+      "occupancy": "Doluluk Oranı",
+      "operatingHours": "Çalışma Saatleri",
+      "patients": "Hastalar",
+      "pending": "Beklemede",
+      "pendingPayments": "Bekleyen",
+      "pendingStatus": "Beklemede",
+      "period": "Dönem",
+      "rating": "Puan",
+      "recentReviews": "Son Yorumlar",
+      "revenue": "Gelir",
+      "revenueByDoctor": "Doktora Göre Gelir",
+      "revenueTrend": "Gelir Trendi (6 ay)",
+      "searchDoctors": "Doktor ara...",
+      "specialty": "Uzmanlık",
+      "subtitle": "Kliniğinizi, doktorları ve finansları yönetin",
+      "tabDoctors": "Doktorlar",
+      "tabFinancials": "Finans",
+      "tabOverview": "Genel Bakış",
+      "thisMonth": "bu ay",
+      "title": "Klinik Yönetimi",
+      "todayAppts": "Bugün",
+      "totalAppts": "Toplam Randevu",
+      "totalRevenue": "Toplam Gelir",
+      "viewDetail": "Detay",
+      "weeklyTrend": "Haftalık Randevu Trendi",
+      "yearsExp": "yıl deneyim"
+    },
+    "medstream": {
+      "sortRecent": "En Yeniler"
+    },
+    "verification": {
+      "docUploaded": "Belge başarıyla yüklendi. İnceleniyor."
     }
   },
   "home": {
@@ -1272,12 +1491,11 @@
     "q3": "Farklı dillerde kullanabilir miyim?",
     "a3": "Evet, Vasco AI çok dilli olarak tasarlanmıştır.",
     "importantLabel": "Önemli:",
-    "disclaimer": "Vasco AI tıbbi tavsiye, tanı veya tedavi sunmaz. Verdiği yanıtlar yalnızca yönlendirme amaçlıdır. Sağlığınızla ilgili tüm kararlar mutlaka bir hekimle birlikte alınmalıdır. Acil durumlarda en yakın sağlık kuruluşuna başvurun.",
+    "disclaimer": "Vasco AI yalnızca genel sağlık bilgisi sağlar. Tıbbi tavsiye için her zaman nitelikli bir sağlık uzmanına danışın.",
     "subtitle": "Yapay zeka destekli sağlık asistanınız",
     "startChat": "Sohbet Başlat",
     "askVasco": "Vasco AI'a sorun...",
-    "analyzing": "Analiz ediliyor...",
-    "disclaimer": "Vasco AI yalnızca genel sağlık bilgisi sağlar. Tıbbi tavsiye için her zaman nitelikli bir sağlık uzmanına danışın."
+    "analyzing": "Analiz ediliyor..."
   },
   "telehealthPage": {
     "title": "Telesağlık",
@@ -1719,7 +1937,10 @@
     "catSocial": "Sosyal",
     "catMessages": "Mesajlar",
     "catSystem": "Sistem",
-    "unreadLabel": "Okunmadı"
+    "unreadLabel": "Okunmadı",
+    "allClearDesc": "Tüm görevler güncel. Harika gidiyorsunuz!",
+    "taskTracker": "Akıllı görev takibi",
+    "urgentAlerts": "Acil Uyarılar"
   },
   "telehealth": {
     "title": "Telehealth Oturumu",
@@ -1816,7 +2037,8 @@
     "welcomeSubtitle": "Profiliniz artık tamamlandı",
     "welcomeMessage": "Tebrikler, {{name}}! Profesyonel profiliniz başarıyla oluşturuldu.",
     "welcomeHint": "Hastalar artık sizi bulabilir ve randevu alabilir. Profilinizi istediğiniz zaman panelden güncelleyebilirsiniz.",
-    "goToDashboard": "Panele Git"
+    "goToDashboard": "Panele Git",
+    "fileTooLarge": "Dosya 10 MB'tan küçük olmalı."
   },
   "clinicOnboarding": {
     "profileTitle": "Klinik Profili",
