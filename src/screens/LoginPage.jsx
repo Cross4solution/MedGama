@@ -86,7 +86,7 @@ const ROLE_CONFIG = {
   },
   clinic: {
     icon: Building2,
-    gradient: 'from-violet-700 to-violet-900',
+    gradient: 'from-violet-800 to-slate-900',
     accentColor: 'purple',
     ringColor: 'focus:ring-purple-200',
     btnBg: 'bg-purple-600 hover:bg-purple-700',
