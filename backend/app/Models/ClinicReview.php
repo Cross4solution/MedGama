@@ -92,10 +92,14 @@ class ClinicReview extends Model
      */
     public static function recalculateAggregatedRating(string $clinicId): void
     {
+        // ::numeric cast is Postgres-only; MySQL/TiDB/SQLite round AVG directly.
+        $avgExpr = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql'
+            ? 'ROUND(AVG(rating)::numeric, 1)'
+            : 'ROUND(AVG(rating), 1)';
         $stats = static::where('clinic_id', $clinicId)
             ->where('is_visible', true)
             ->where('moderation_status', 'approved')
-            ->selectRaw('COUNT(*) as cnt, ROUND(AVG(rating)::numeric, 1) as avg')
+            ->selectRaw("COUNT(*) as cnt, {$avgExpr} as avg")
             ->first();
 
         Clinic::where('id', $clinicId)->update([

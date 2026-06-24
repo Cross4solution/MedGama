@@ -237,6 +237,21 @@
     "popularTreatments": "Popüler Tedaviler"
   },
   "crm": {
+    "gatekeeper": {
+      "title": "Neredeyse Tamam!",
+      "subtitleMulti": "Hastalarınıza hizmet vermek için 2 adım kaldı",
+      "subtitleSingle": "Hastalarınıza hizmet vermek için son bir adım",
+      "verifyTitle": "Hesabınızı Doğrulayın",
+      "verifyDesc": "Mesleki belgelerinizi inceleme için yükleyin",
+      "underReview": "İncelemede",
+      "docsSubmitted": "Belgeleriniz inceleniyor. Onaylandığında bilgilendirileceksiniz.",
+      "upgradeTitle": "Profesyonel'e Yükseltin",
+      "upgradeDesc": "Randevu, telehealth ve gelişmiş CRM özelliklerini açın",
+      "feat1": "Akıllı Takvim",
+      "feat2": "Telehealth",
+      "feat3": "Tıbbi Arşiv",
+      "feat4": "Muayene"
+    },
     "sidebar": {
       "main": "Ana Menü",
       "management": "Yönetim",

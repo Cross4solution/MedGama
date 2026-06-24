@@ -268,6 +268,10 @@ Route::prefix('social')->middleware('auth:sanctum')->group(function () {
 Route::get('/clinics', [ClinicController::class, 'index'])->middleware('cache.headers:public;max_age=60');
 Route::get('/clinics/{codename}', [ClinicController::class, 'show'])->middleware('cache.headers:public;max_age=60');
 
+// Hospital (L4): CRM stats (auth) + public profile. stats BEFORE {codename} so it isn't captured as a codename.
+Route::get('/hospitals/stats', [\App\Http\Controllers\Api\HospitalController::class, 'stats'])->middleware('auth:sanctum');
+Route::get('/hospitals/{codename}', [\App\Http\Controllers\Api\HospitalController::class, 'show'])->middleware('cache.headers:public;max_age=60');
+
 // Clinic reviews & staff — public read
 Route::get('/clinics/{id}/reviews', [ClinicController::class, 'reviews']);
 Route::get('/clinics/{id}/staff', [ClinicController::class, 'staff']);

@@ -256,6 +256,21 @@
     "popularTreatments": "Popular Treatments"
   },
   "crm": {
+    "gatekeeper": {
+      "title": "Almost There!",
+      "subtitleMulti": "Just 2 steps to start serving your patients",
+      "subtitleSingle": "One last step to start serving your patients",
+      "verifyTitle": "Verify Your Account",
+      "verifyDesc": "Upload your professional documents for review",
+      "underReview": "Under Review",
+      "docsSubmitted": "Your documents are being reviewed. We'll notify you once approved.",
+      "upgradeTitle": "Upgrade to Professional",
+      "upgradeDesc": "Unlock appointments, telehealth, and advanced CRM features",
+      "feat1": "Smart Calendar",
+      "feat2": "Telehealth",
+      "feat3": "Medical Archive",
+      "feat4": "Examination"
+    },
     "sidebar": {
       "main": "Main",
       "management": "Management",
