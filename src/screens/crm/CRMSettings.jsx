@@ -11,7 +11,11 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../../i18n';
+import { LOCALES } from '../../lib/locales';
 import LangFlag from '../../components/ui/LangFlag';
+
+// Sync with the site: only languages the site actually routes/supports (same as the header LanguageSwitcher).
+const ROUTED_LANGS = LANGUAGES.filter((l) => LOCALES.includes(l.code));
 import { useAuth } from '../../context/AuthContext';
 import { doctorProfileAPI, authAPI } from '../../lib/api';
 import CertificationsEditor from '../../components/forms/CertificationsEditor';
@@ -546,7 +550,7 @@ const CRMSettings = ({ standalone = false }) => {
                       </label>
                       <p className="text-[11px] text-gray-400 mb-3">{t('crm.settings.languageHint', 'This setting syncs across all your devices.')}</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                        {LANGUAGES.slice(0, 10).map((lang, idx) => {
+                        {ROUTED_LANGS.map((lang, idx) => {
                           const isActive = profile.language === lang.code;
                           return (
                             <button
@@ -573,36 +577,6 @@ const CRMSettings = ({ standalone = false }) => {
                           );
                         })}
                       </div>
-                      {/* Remaining languages in a smaller row */}
-                      {LANGUAGES.length > 10 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {LANGUAGES.slice(10).map(lang => {
-                            const isActive = profile.language === lang.code;
-                            return (
-                              <button
-                                key={lang.code}
-                                type="button"
-                                onClick={async () => {
-                                  setProfile(p => ({...p, language: lang.code}));
-                                  i18n.changeLanguage(lang.code);
-                                  document.documentElement.dir = lang.dir === 'rtl' ? 'rtl' : 'ltr';
-                                  try { localStorage.setItem('preferred_language', lang.code); } catch {}
-                                  try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
-                                  try { await authAPI.updateProfile({ preferred_language: lang.code }); } catch {}
-                                }}
-                                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
-                                  isActive
-                                    ? 'bg-teal-50 border-teal-300 text-teal-700'
-                                    : 'border-gray-200 text-gray-500 hover:bg-gray-50'
-                                }`}
-                              >
-                                <LangFlag lang={lang} size={16} />
-                                <span>{lang.label}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
                     </div>
                   </div>
                 )}
