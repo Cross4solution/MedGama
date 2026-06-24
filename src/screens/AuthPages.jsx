@@ -130,7 +130,7 @@ const AuthPages = () => {
     try {
       setSubmitting(true);
       if (currentPage === 'login') {
-        const res = await login(formData.email, formData.password, !!formData.rememberMe);
+        const res = await login(formData.email, formData.password, !!formData.rememberMe, (formData.role || 'patient'));
         // Login never requires email verification — verification is register-only for patients/doctors
         notify({ type: 'success', message: 'Giriş başarılı!' });
         navigate(getRedirectFromLoginResult(res, '/medstream'));
