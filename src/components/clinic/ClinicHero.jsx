@@ -33,9 +33,15 @@ export default function ClinicHero({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
         <div className="absolute top-4 right-4 flex items-center bg-white/95 backdrop-blur-sm rounded-xl px-3 py-1.5 shadow-sm border border-white/20">
-          <Star className="w-4 h-4 fill-amber-400 text-amber-400 mr-1" />
-          <span className="font-bold text-sm text-gray-900">{rating}</span>
-          <span className="text-gray-500 text-xs ml-1">({reviews})</span>
+          {rating ? (
+            <>
+              <Star className="w-4 h-4 fill-amber-400 text-amber-400 mr-1" />
+              <span className="font-bold text-sm text-gray-900">{rating}</span>
+              <span className="text-gray-500 text-xs ml-1">({reviews})</span>
+            </>
+          ) : (
+            <span className="font-semibold text-sm text-teal-600">{t('common.new', 'Yeni')}</span>
+          )}
         </div>
       </div>
 

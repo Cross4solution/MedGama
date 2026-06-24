@@ -811,6 +811,7 @@ class DatabaseSeeder extends Seeder
         // ══════════════════════════════════════════════════════════════════
 
         $this->call(ClinicTreatmentTagSeeder::class);
+        $this->call(ReviewSeeder::class);
 
         // ══════════════════════════════════════════════════════════════════
         //  CATALOG DATA

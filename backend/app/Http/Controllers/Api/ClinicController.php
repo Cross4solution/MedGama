@@ -71,7 +71,7 @@ class ClinicController extends Controller
                 $q->whereHas('treatmentTags', fn ($tq) => $tq->where('treatment_tags.id', $v));
             })
             // brief response: specialties eklendi (frontend join'e gerek kalmaz)
-            ->select('id', 'name', 'codename', 'fullname', 'avatar', 'address', 'specialties', 'is_verified')
+            ->select('id', 'name', 'codename', 'fullname', 'avatar', 'address', 'specialties', 'is_verified', 'avg_rating', 'review_count')
             ->paginate($request->per_page ?? 20);
 
         return response()->json($clinics);

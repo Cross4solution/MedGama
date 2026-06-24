@@ -24,8 +24,14 @@ function ClinicCard({ clinic, onClick, onView }) {
         <Image src={clinic.image || '/images/default/placeholder.svg'} alt={clinic.name} fill sizes="(max-width: 768px) 100vw, 320px" className="object-cover group-hover:scale-[1.03] transition-transform duration-300" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
         <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-white/95 backdrop-blur-sm rounded-[4px] px-2 py-1 shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px]">
-          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-          <span className="text-xs font-semibold text-[#061b31]">{formatRating(clinic.rating)}</span>
+          {clinic.rating ? (
+            <>
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span className="text-xs font-semibold text-[#061b31]">{formatRating(clinic.rating)}</span>
+            </>
+          ) : (
+            <span className="text-xs font-semibold text-teal-600">{t('common.new', 'Yeni')}</span>
+          )}
         </div>
       </div>
       <div className="flex-1 flex flex-col p-3.5">
@@ -35,7 +41,7 @@ function ClinicCard({ clinic, onClick, onView }) {
           <span className="truncate">{clinic.city} · {clinic.dept}</span>
         </div>
         <div className="mt-auto pt-3 flex items-center justify-between">
-          <span className="text-[11px] text-[#64748d] font-normal">{clinic.reviews} {t('home.reviews')}</span>
+          <span className="text-[11px] text-[#64748d] font-normal">{clinic.reviews > 0 ? `${clinic.reviews} ${t('home.reviews')}` : t('common.noReviewsYet', 'Henüz yorum yok')}</span>
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onView(clinic); }}

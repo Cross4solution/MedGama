@@ -19,6 +19,8 @@
     "syncNote": "This is a private link — don't share it. Calendar apps refresh every few minutes."
   },
   "common": {
+    "new": "New",
+    "noReviewsYet": "No reviews yet",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",

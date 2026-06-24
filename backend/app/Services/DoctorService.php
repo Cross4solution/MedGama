@@ -35,7 +35,7 @@ class DoctorService
             ->where('role_id', 'doctor')
             ->where('is_active', true)
             ->with([
-                'doctorProfile:id,user_id,clinic_id,title,specialty,specialty_id,sub_specialties,experience_years,address,online_consultation,bio,languages,prices',
+                'doctorProfile:id,user_id,clinic_id,title,specialty,specialty_id,sub_specialties,experience_years,address,online_consultation,bio,languages,prices,avg_rating,review_count',
                 'doctorProfile.specialtyRelation:id,name',
                 // address brief listede şehir join'ine gerek bırakmaz (Round 4 landing)
                 'clinic:id,name,codename,avatar,address',

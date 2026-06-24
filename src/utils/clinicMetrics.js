@@ -15,38 +15,27 @@ function firstFiniteNumber(values) {
   return null;
 }
 
-export function resolveClinicRating(clinic, fallback = 4.8) {
+// Real rating only — returns null when there are no reviews (UI shows "Yeni").
+// NO synthetic/fake values (this is a healthcare platform).
+export function resolveClinicRating(clinic) {
   const explicit = firstFiniteNumber([
+    clinic?.avg_rating,
     clinic?.rating,
     clinic?.average_rating,
     clinic?.averageRating,
     clinic?.review_score,
     clinic?.reviewScore,
   ]);
-
-  if (explicit !== null) return Number(explicit.toFixed(1));
-
-  const seed = clinic?.codename || clinic?.id || clinic?.name || 'clinic';
-  const hash = stableHash(seed);
-  const synthetic = 4.5 + ((hash % 5) / 10); // 4.5 .. 4.9 (stable per clinic)
-  const base = Number.isFinite(Number(fallback)) ? Number(fallback) : synthetic;
-  return Number(base.toFixed(1));
+  return explicit !== null && explicit > 0 ? Number(explicit.toFixed(1)) : null;
 }
 
-export function resolveClinicReviewCount(clinic, fallback = 120) {
+export function resolveClinicReviewCount(clinic) {
   const explicit = firstFiniteNumber([
-    clinic?.reviews,
     clinic?.review_count,
+    clinic?.reviews,
     clinic?.reviewCount,
     clinic?.total_reviews,
     clinic?.totalReviews,
   ]);
-
-  if (explicit !== null) return Math.max(0, Math.round(explicit));
-
-  const seed = clinic?.codename || clinic?.id || clinic?.name || 'clinic';
-  const hash = stableHash(seed);
-  const synthetic = 80 + (hash % 400); // 80 .. 479 (stable per clinic)
-  const base = Number.isFinite(Number(fallback)) ? Number(fallback) : synthetic;
-  return Math.max(0, Math.round(base));
+  return explicit !== null ? Math.max(0, Math.round(explicit)) : 0;
 }

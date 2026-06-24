@@ -1,5 +1,7 @@
 {
   "common": {
+    "new": "Yeni",
+    "noReviewsYet": "Henüz yorum yok",
     "save": "Kaydet",
     "cancel": "İptal",
     "delete": "Sil",

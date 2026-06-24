@@ -14,6 +14,7 @@ const FALLBACK_IMAGES = [
 ];
 
 function ClinicCard({ clinic, onClick }) {
+  const { t } = useTranslation();
   const img = clinic.avatar ? resolveStorageUrl(clinic.avatar) : FALLBACK_IMAGES[Math.floor(Math.random() * FALLBACK_IMAGES.length)];
   const rating = resolveClinicRating(clinic);
   const reviews = resolveClinicReviewCount(clinic);
@@ -35,12 +36,16 @@ function ClinicCard({ clinic, onClick }) {
           onError={(e) => { e.target.src = FALLBACK_IMAGES[0]; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-        {rating > 0 && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/95 backdrop-blur-sm rounded-lg px-2 py-1 shadow-sm">
-            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-            <span className="text-xs font-bold text-gray-900">{rating.toFixed(1)}</span>
-          </div>
-        )}
+        <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/95 backdrop-blur-sm rounded-lg px-2 py-1 shadow-sm">
+          {rating ? (
+            <>
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span className="text-xs font-bold text-gray-900">{rating.toFixed(1)}</span>
+            </>
+          ) : (
+            <span className="text-xs font-semibold text-teal-600">{t('common.new', 'Yeni')}</span>
+          )}
+        </div>
       </div>
       <div className="p-4">
         <h3 className="text-sm font-bold text-gray-900 line-clamp-1">{clinic.fullname || clinic.name}</h3>
@@ -58,7 +63,7 @@ function ClinicCard({ clinic, onClick }) {
           </div>
         )}
         <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
-          <span className="text-[11px] text-gray-400">{reviews} Reviews</span>
+          <span className="text-[11px] text-gray-400">{reviews > 0 ? `${reviews} ${t('home.reviews', 'Yorum')}` : t('common.noReviewsYet', 'Henüz yorum yok')}</span>
           <span className="text-xs font-semibold text-teal-600 group-hover:text-teal-700">View →</span>
         </div>
       </div>
