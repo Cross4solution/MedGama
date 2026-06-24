@@ -116,6 +116,7 @@
     "emailAddress": "Email Address",
     "password": "Password",
     "rememberMe": "Remember me",
+    "signInAsDifferentRole": "Sign in as a different role",
     "forgotPassword": "Forgot password?",
     "signingIn": "Signing in...",
     "signIn": "Sign In",

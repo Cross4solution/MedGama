@@ -18,7 +18,7 @@ import PrivacyPopup from '../components/auth/PrivacyPopup';
 const ROLE_CONFIG = {
   patient: {
     icon: Heart,
-    gradient: 'from-teal-600 via-teal-700 to-cyan-800',
+    gradient: 'from-teal-700 to-teal-900',
     accentColor: 'teal',
     ringColor: 'focus:ring-teal-200',
     btnBg: 'bg-teal-600 hover:bg-teal-700',
@@ -52,7 +52,7 @@ const ROLE_CONFIG = {
   },
   doctor: {
     icon: Stethoscope,
-    gradient: 'from-blue-600 via-blue-700 to-indigo-800',
+    gradient: 'from-blue-800 to-slate-900',
     accentColor: 'blue',
     ringColor: 'focus:ring-blue-200',
     btnBg: 'bg-blue-600 hover:bg-blue-700',
@@ -86,7 +86,7 @@ const ROLE_CONFIG = {
   },
   clinic: {
     icon: Building2,
-    gradient: 'from-purple-600 via-purple-700 to-violet-800',
+    gradient: 'from-violet-700 to-violet-900',
     accentColor: 'purple',
     ringColor: 'focus:ring-purple-200',
     btnBg: 'bg-purple-600 hover:bg-purple-700',
@@ -119,7 +119,7 @@ const ROLE_CONFIG = {
   },
   hospital: {
     icon: Building2,
-    gradient: 'from-teal-700 via-teal-800 to-emerald-900',
+    gradient: 'from-teal-800 to-emerald-950',
     accentColor: 'teal',
     ringColor: 'focus:ring-teal-200',
     btnBg: 'bg-teal-700 hover:bg-teal-800',
@@ -457,30 +457,18 @@ const LoginPage = ({ role = 'patient' }) => {
           {t('auth.hospitalAccountInfo', 'Hospital accounts are created by MedaGama administrators.')}
         </div>
       )}
-      <div className="mt-4 pt-3 border-t border-gray-100">
-        <p className="text-xs text-gray-500 text-center mb-2.5 font-medium">{t('auth.signInAsDifferentRole', 'Sign in as a different role')}</p>
-        <div className="flex gap-2">
-          {config.otherLogins.map((link) => {
-            const isDoctor = link.href === '/doctor-login';
-            const isClinic = link.href === '/clinic-login';
-            const isHospital = link.href === '/hospital-login';
-            const Icon = isDoctor ? Stethoscope : isClinic ? Building2 : isHospital ? Building2 : Heart;
-            const colors = isDoctor
-              ? 'border-blue-200 bg-blue-50/60 hover:bg-blue-100 hover:border-blue-400 text-blue-700'
-              : isClinic
-              ? 'border-purple-200 bg-purple-50/60 hover:bg-purple-100 hover:border-purple-400 text-purple-700'
-              : isHospital
-              ? 'border-teal-200 bg-teal-50/60 hover:bg-teal-100 hover:border-teal-400 text-teal-700'
-              : 'border-rose-200 bg-rose-50/60 hover:bg-rose-100 hover:border-rose-400 text-rose-700';
-            return (
-              <a key={link.href} href={link.href}
-                className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border-2 ${colors} text-sm font-semibold transition-all`}>
-                <Icon className="w-5 h-5" />
+      <div className="mt-5 pt-4 border-t border-gray-100 text-center">
+        <p className="text-xs text-gray-400">
+          {t('auth.signInAsDifferentRole', 'Sign in as a different role')}:{' '}
+          {config.otherLogins.map((link, i) => (
+            <React.Fragment key={link.href}>
+              {i > 0 && <span className="text-gray-300"> · </span>}
+              <a href={link.href} className="text-gray-600 hover:text-gray-900 font-medium underline-offset-2 hover:underline">
                 {t(link.labelKey)}
               </a>
-            );
-          })}
-        </div>
+            </React.Fragment>
+          ))}
+        </p>
       </div>
     </div>
   );

@@ -97,6 +97,7 @@
     "emailAddress": "E-posta Adresi",
     "password": "Şifre",
     "rememberMe": "Beni hatırla",
+    "signInAsDifferentRole": "Farklı bir rolle giriş",
     "forgotPassword": "Şifremi unuttum?",
     "signingIn": "Giriş yapılıyor...",
     "signIn": "Giriş Yap",
