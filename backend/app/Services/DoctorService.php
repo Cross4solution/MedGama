@@ -55,7 +55,9 @@ class DoctorService
             $query->where(function ($q) use ($search) {
                 TurkishStr::addNormalizedSearch($q, 'fullname', $search, 'or');
                 $q->orWhereHas('doctorProfile', function ($pq) use ($search) {
-                    TurkishStr::addNormalizedSearch($pq, 'specialty', $search, 'or');
+                    // 'and' — inside whereHas this must AND with the correlation, not OR
+                    // (an 'or' here would match every profile).
+                    TurkishStr::addNormalizedSearch($pq, 'specialty', $search, 'and');
                 });
 
                 // Also search by specialty_id FK (Single Source of Truth)

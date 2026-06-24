@@ -41,16 +41,26 @@ class TurkishStr
     {
         $lowerTerm      = mb_strtolower($term);
         $normalizedTerm = mb_strtolower(self::normalize($term));
+        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
 
-        $query->where(function ($q) use ($column, $lowerTerm, $normalizedTerm) {
+        $query->where(function ($q) use ($column, $lowerTerm, $normalizedTerm, $driver) {
             // 1) Original term against original column (case-insensitive)
             $q->whereRaw("LOWER({$column}) LIKE ?", ["%{$lowerTerm}%"]);
 
-            // 2) Normalized term against normalized column
-            $q->orWhereRaw(
-                "LOWER(TRANSLATE({$column}, ?, ?)) LIKE ?",
-                [self::$trFrom, self::$trTo, "%{$normalizedTerm}%"]
-            );
+            // 2) Normalized column LIKE normalized term. TRANSLATE() is Postgres-only;
+            //    MySQL/TiDB/SQLite have no TRANSLATE → use a chained REPLACE() instead.
+            if ($driver === 'pgsql') {
+                $q->orWhereRaw(
+                    "LOWER(TRANSLATE({$column}, ?, ?)) LIKE ?",
+                    [self::$trFrom, self::$trTo, "%{$normalizedTerm}%"]
+                );
+            } else {
+                $expr = "LOWER({$column})";
+                foreach (self::$map as $tr => $ascii) {
+                    $expr = "REPLACE({$expr}, '" . mb_strtolower($tr) . "', '" . mb_strtolower($ascii) . "')";
+                }
+                $q->orWhereRaw("{$expr} LIKE ?", ["%{$normalizedTerm}%"]);
+            }
         }, boolean: $boolean);
     }
 }
