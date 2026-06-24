@@ -89,7 +89,7 @@ const PrivacyPopup = ({ setShowPrivacyPopup }) => {
         </a>
         <button
           onClick={() => setShowPrivacyPopup(false)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
+          className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
         >
           Got it
         </button>

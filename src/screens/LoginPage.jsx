@@ -420,7 +420,7 @@ const LoginPage = ({ role = 'patient' }) => {
         </div>
         <div className="flex items-center justify-between text-xs">
           <label className="inline-flex items-center gap-1.5 text-gray-500">
-            <input type="checkbox" className={`rounded border-gray-300 ${config.checkboxColor} w-3.5 h-3.5`} />
+            <input type="checkbox" name="rememberMe" checked={!!formData.rememberMe} onChange={handleInputChange} className={`rounded border-gray-300 ${config.checkboxColor} w-3.5 h-3.5`} />
             {t('auth.rememberMe')}
           </label>
           <a href="/forgot-password" className={`${config.linkColor} font-medium`}>{t('auth.forgotPassword')}</a>

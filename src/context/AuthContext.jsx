@@ -67,6 +67,14 @@ export function AuthProvider({ children }) {
         setHydrated(true);
         return;
       }
+      // Remember me: if it was OFF and this is a fresh browser session
+      // (no per-session marker), drop the persisted login → force re-login.
+      const hadSession = sessionStorage.getItem('auth_session');
+      sessionStorage.setItem('auth_session', '1');
+      if (!hadSession && localStorage.getItem('auth_remember') === '0') {
+        localStorage.removeItem('auth_state');
+        localStorage.removeItem('access_token');
+      }
       const saved = localStorage.getItem('auth_state');
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -158,6 +166,8 @@ export function AuthProvider({ children }) {
     meUnavailableRef.current = false; // Reset so fetchCurrentUser can refresh avatar
     try {
       localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country }));
+      localStorage.setItem('auth_remember', rememberMe ? '1' : '0');
+      sessionStorage.setItem('auth_session', '1');
     } catch {}
     // Fetch fresh user data from /auth/me to get latest avatar
     try { fetchCurrentUser(access); } catch {}
