@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from '@/compat/router';
 import { Bot, ListChecks, Compass, Languages, Info, Send, Loader2, Stethoscope, Star, Video, BadgeCheck, ShieldCheck, Sparkles } from 'lucide-react';
@@ -26,6 +26,25 @@ function VascoAssistant() {
 
   const loc = (n) => (typeof n === 'string' ? n : (n?.[lang] || n?.en || n?.tr || (n ? Object.values(n)[0] : '')));
 
+  // One-time typewriter placeholder on first open (after the header shimmer).
+  const [animPh, setAnimPh] = useState('');
+  const typedRef = useRef(false);
+  useEffect(() => {
+    if (typedRef.current) return;
+    typedRef.current = true;
+    const word = t('vascoAI.typeExample', 'Dişimde iki gündür şiddetli ağrı var');
+    let i = 0;
+    let clearId;
+    const start = setTimeout(() => {
+      const id = setInterval(() => {
+        i += 1;
+        setAnimPh(word.slice(0, i));
+        if (i >= word.length) { clearInterval(id); clearId = setTimeout(() => setAnimPh(''), 1800); }
+      }, 55);
+    }, 1100); // let the shimmer pass first
+    return () => { clearTimeout(start); clearTimeout(clearId); };
+  }, [t]);
+
   const ask = async (q) => {
     const query = (q ?? text).trim();
     if (query.length < 3 || loading) return;
@@ -43,11 +62,23 @@ function VascoAssistant() {
 
   return (
     <div className="rounded-3xl border border-gray-200 shadow-xl shadow-teal-900/5 overflow-hidden bg-white">
-      <div className="bg-gradient-to-r from-teal-600 to-emerald-600 px-5 sm:px-7 py-4 flex items-center gap-2.5 text-white">
-        <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
+      <style>{`
+        @keyframes vascoShimmer{0%{transform:translateX(-120%)}100%{transform:translateX(900%)}}
+        @keyframes vascoDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+        .vasco-shimmer{animation:vascoShimmer 1.6s ease-out 1 both}
+        .vasco-dots i{display:inline-block;width:4px;height:4px;border-radius:50%;background:currentColor;margin:0 1px;animation:vascoDot 1.4s infinite}
+        .vasco-dots i:nth-child(2){animation-delay:.2s}.vasco-dots i:nth-child(3){animation-delay:.4s}
+      `}</style>
+      <div className="relative overflow-hidden bg-gradient-to-r from-teal-600 to-emerald-600 px-5 sm:px-7 py-4 flex items-center gap-2.5 text-white">
+        <span aria-hidden="true" className="vasco-shimmer pointer-events-none absolute inset-y-0 left-0 w-16 bg-white/25 blur-md" />
+        <div className="relative w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
           <Bot className="w-4 h-4" />
         </div>
-        <span className="font-semibold text-[15px]">{t('vascoAI.assistantTitle', 'Şikâyetinizi yazın, doğru uzmanı bulalım')}</span>
+        <span className="relative font-semibold text-[15px] flex items-center gap-1.5">
+          {loading ? (
+            <>{t('vascoAI.thinking', 'Vasco düşünüyor')}<span className="vasco-dots" aria-hidden="true"><i /><i /><i /></span></>
+          ) : t('vascoAI.assistantTitle', 'Şikâyetinizi yazın, doğru uzmanı bulalım')}
+        </span>
       </div>
       <div className="p-5 sm:p-7">
         <div className="flex items-end gap-2">
@@ -56,7 +87,7 @@ function VascoAssistant() {
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) ask(); }}
             rows={2}
-            placeholder={t('vascoAI.placeholder', 'ör. İki gündür göğsümde ağrı ve çarpıntı var...')}
+            placeholder={animPh || t('vascoAI.placeholder', 'ör. İki gündür göğsümde ağrı ve çarpıntı var...')}
             className="flex-1 resize-none border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
           />
           <button onClick={() => ask()} disabled={loading || text.trim().length < 3}

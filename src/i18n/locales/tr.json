@@ -1219,6 +1219,8 @@
   "vascoAI": {
     "title": "Vasco AI",
     "assistantTitle": "Şikâyetinizi yazın, doğru uzmanı bulalım",
+    "thinking": "Vasco düşünüyor",
+    "typeExample": "Dişimde iki gündür şiddetli ağrı var",
     "placeholder": "ör. İki gündür göğsümde ağrı ve çarpıntı var...",
     "ask": "Öner",
     "error": "Bir sorun oluştu, tekrar deneyin.",
