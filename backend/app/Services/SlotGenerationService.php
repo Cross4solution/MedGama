@@ -38,6 +38,7 @@ class SlotGenerationService
             ->flip();
 
         $toInsert = [];
+        $desired = [];
         for ($d = clone $start; $d->lte($end); $d->addDay()) {
             $entry = $byDay[strtolower($d->englishDayOfWeek)] ?? null;
             if (!$entry || !empty($entry['is_closed']) || empty($entry['open']) || empty($entry['close'])) {
@@ -60,6 +61,7 @@ class SlotGenerationService
                 }
                 $hhmm = sprintf('%02d:%02d', intdiv($m, 60), $m % 60);
                 $key = $d->format('Y-m-d') . '|' . $hhmm;
+                $desired[$key] = true;
                 if ($existing->has($key)) {
                     continue;
                 }
@@ -80,6 +82,22 @@ class SlotGenerationService
         foreach (array_chunk($toInsert, 500) as $chunk) {
             CalendarSlot::insert($chunk);
         }
+
+        // Prune future UNBOOKED slots that fall outside the new hours (e.g. doctor
+        // narrowed/removed a day). Booked slots (is_available=false) are kept.
+        $pruned = 0;
+        $stale = CalendarSlot::where('doctor_id', $doctorId)
+            ->where('is_available', true)
+            ->where('slot_date', '>=', $start->toDateString())
+            ->where('slot_date', '<=', $end->toDateString())
+            ->get(['id', 'slot_date', 'start_time']);
+        $deleteIds = $stale
+            ->filter(fn ($s) => !isset($desired[$s->slot_date->format('Y-m-d') . '|' . substr((string) $s->start_time, 0, 5)]))
+            ->pluck('id')->all();
+        if ($deleteIds) {
+            $pruned = CalendarSlot::whereIn('id', $deleteIds)->delete();
+        }
+
         return count($toInsert);
     }
 
