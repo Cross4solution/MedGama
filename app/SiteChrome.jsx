@@ -5,7 +5,7 @@
 // görünürlük mantığı + scroll override + toast navigate bridge + OnboardingGate yaşar.
 // document.title YÖNETİLMEZ — Next Metadata API hallediyor (App.js'teki titleMap effect'i ATLANDI).
 import React, { useEffect, Suspense } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { stripLocale } from '@/lib/locales';
 import { Link, useNavigate, useNavigationType } from '@/compat/router';
 import { BrandProvider } from '@/context/BrandContext';
@@ -59,8 +59,10 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
   const isMedstream = brand === 'medstream';
   // Focused, Twitter-like MedStream: the medstream.co host (brand) OR an explicit
   // ?standalone=1 deep-link (header "MedStream ↗"). No sidebar, slim shell.
-  const isStandaloneParam = typeof window !== 'undefined'
-    && new URLSearchParams(window.location.search).get('standalone') === '1';
+  // useSearchParams works on SSR + client (unlike window) so the focused shell is
+  // chosen on the server too — no generic→focused flash / pt-14 gap on hydration.
+  const searchParams = useSearchParams();
+  const isStandaloneParam = searchParams?.get('standalone') === '1';
   const isFocused = isMedstream || (isStandaloneParam && pathname.startsWith('/medstream'));
 
   // Bridge for toast SPA navigation (ToastContext uses this)

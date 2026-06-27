@@ -499,7 +499,7 @@ export default function ExploreTimeline() {
   }, [hasMore, items.length]);
 
   return (
-    <div className="min-h-screen pt-2 sm:pt-8">
+    <div className={`min-h-screen ${focused ? 'pt-0' : 'pt-2 sm:pt-8'}`}>
       <SEOHead
         title="MedStream — Sağlık Akışı"
         description="Doktorlar, klinikler ve hastaneler tarafından paylaşılan güncel sağlık içerikleri. MedaGama MedStream akışını keşfedin."
@@ -507,7 +507,7 @@ export default function ExploreTimeline() {
         alternates
       />
       <div className="min-h-screen w-full fixed top-0 left-0 -z-10"></div>
-      <div className={`${focused ? 'max-w-[680px]' : 'max-w-7xl'} mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-6 pb-12 relative`}>
+      <div className={`${focused ? 'max-w-[680px] pt-3' : 'max-w-7xl pt-2 sm:pt-6'} mx-auto px-4 sm:px-6 lg:px-8 pb-12 relative`}>
         {/* Hidden pickers for composer */}
         <input ref={imageInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e)=>{
           const files = Array.from(e?.target?.files || []);
