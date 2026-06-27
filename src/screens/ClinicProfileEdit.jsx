@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Save, Building2, MapPin, Info, Image as ImageIcon, Upload, Plus, X, DollarSign, Images, Package, Star, Stethoscope, Activity, Brain, Scissors, Link as LinkIcon, Loader2, CheckCircle2 } from 'lucide-react';
 import { clinicAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import MapboxSearchInput from '../components/map/MapboxSearchInput';
 
 function TagEditor({ label, value = [], onChange, placeholder }) {
   const [text, setText] = useState('');
@@ -145,12 +146,12 @@ export default function ClinicProfileEdit() {
   const [address, setAddress] = useState('Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul');
   const [mapUrl, setMapUrl] = useState('https://maps.google.com/?q=Istanbul+Turkey');
   const [pricing, setPricing] = useState([
-    { id: 'pr1', service: 'Consultation', range: '₺200 - ₺500' },
-    { id: 'pr2', service: 'Cardiac Surgery', range: '₺50K - ₺150K' },
-    { id: 'pr3', service: 'Oncology Treatment', range: '₺30K - ₺200K' },
+    { id: 'pr1', service: 'Consultation', min: 200, max: 500, currency: '₺' },
+    { id: 'pr2', service: 'Cardiac Surgery', min: 50000, max: 150000, currency: '₺' },
+    { id: 'pr3', service: 'Oncology Treatment', min: 30000, max: 200000, currency: '₺' },
   ]);
   const [packages, setPackages] = useState([
-    { id: 'p1', name: 'Basic Package', treatment: 'Dental Implant', accommodation: '3 nights hotel', transfer: 'Airport pickup', price: 1500 },
+    { id: 'p1', name: 'Basic Package', treatment: 'Dental Implant', accommodation: '3 nights hotel', transfer: 'Airport pickup', price: 1500, currency: '₺' },
   ]);
   const [saving, setSaving] = useState(false);
   const [heroPreview, setHeroPreview] = useState('');
@@ -229,7 +230,7 @@ export default function ClinicProfileEdit() {
   const addPackage = () => {
     const name = window.prompt('Package Name');
     if (!name) return;
-    setPackages((prev) => ([...prev, { id: `p${Date.now()}`, name, treatment: '', accommodation: '', transfer: '', price: 0 }]));
+    setPackages((prev) => ([...prev, { id: `p${Date.now()}`, name, treatment: '', accommodation: '', transfer: '', price: 0, currency: '₺' }]));
   };
   const updatePackage = (id, patch) => setPackages((prev) => prev.map((p) => p.id === id ? { ...p, ...patch } : p));
   const removePackage = (id) => setPackages((prev) => prev.filter((p) => p.id !== id));
@@ -249,6 +250,28 @@ export default function ClinicProfileEdit() {
         }));
         if (c.address) setAddress(c.address);
         if (c.website) setMapUrl(c.website);
+        // Koordinatlar
+        const lat = c.latitude ?? c.map_coordinates?.lat;
+        const lng = c.longitude ?? c.map_coordinates?.lng;
+        if (lat != null && lng != null && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
+          setMapLat(parseFloat(lat)); setMapLng(parseFloat(lng));
+        }
+        // Fiyat aralıkları (varsa kayıtlıyı kullan)
+        if (Array.isArray(c.price_ranges) && c.price_ranges.length) {
+          setPricing(c.price_ranges.map((r, i) => ({
+            id: `pr${i}-${Date.now()}`,
+            service: r.service || '',
+            min: r.min ?? '', max: r.max ?? '', currency: r.currency || '₺',
+          })));
+        }
+        // Paketler
+        if (Array.isArray(c.packages) && c.packages.length) {
+          setPackages(c.packages.map((p, i) => ({
+            id: `pk${i}-${Date.now()}`,
+            name: p.name || '', treatment: p.treatment || '', accommodation: p.accommodation || '',
+            transfer: p.transfer || '', price: p.price ?? '', currency: p.currency || '₺',
+          })));
+        }
       }
     }).catch(() => {});
   }, [user?.clinic_id]);
@@ -266,6 +289,36 @@ export default function ClinicProfileEdit() {
         formData.append('address', address);
         formData.append('biography', form.aboutP1 + (form.aboutP2 ? '\n\n' + form.aboutP2 : ''));
         if (mapUrl) formData.append('website', mapUrl);
+
+        // Konum koordinatları (yakındaki-update + harita için kalıcı)
+        formData.append('latitude', String(mapLat));
+        formData.append('longitude', String(mapLng));
+
+        // Fiyat aralıkları + paketler (JSON string — backend multipart'tan decode eder)
+        formData.append('price_ranges', JSON.stringify(
+          pricing
+            .filter((it) => (it.service || '').trim())
+            .map((it) => {
+              const cur = it.currency || '₺';
+              const f = (n) => (n === '' || n == null) ? '' : `${cur}${Number(n).toLocaleString('tr-TR')}`;
+              return {
+                service: it.service,
+                min: it.min === '' ? null : Number(it.min),
+                max: it.max === '' ? null : Number(it.max),
+                currency: cur,
+                // public klinik sayfasındaki PriceRangeList `range` string'i okuyor
+                range: [f(it.min), f(it.max)].filter(Boolean).join(' – '),
+              };
+            })
+        ));
+        formData.append('packages', JSON.stringify(
+          packages
+            .filter((p) => (p.name || '').trim())
+            .map((p) => ({
+              name: p.name, treatment: p.treatment, accommodation: p.accommodation,
+              transfer: p.transfer, price: p.price === '' ? null : Number(p.price), currency: p.currency || '₺',
+            }))
+        ));
 
         // ── Append image files if selected ──
         if (logoFile) {
@@ -490,7 +543,20 @@ export default function ClinicProfileEdit() {
 
             {/* Location Tab — Mapbox GL JS */}
             {tab === 'location' && (
-              <div>
+              <div className="space-y-3">
+                {/* Adres arama — haritadan pinlemek zor; yazıp seçince işaret oraya gider */}
+                <MapboxSearchInput
+                  value={address}
+                  label="Find your address"
+                  placeholder="Type clinic address, district or city…"
+                  hint="Pick a suggestion to drop the pin automatically — then fine-tune on the map."
+                  onChange={(addr, coords) => {
+                    setAddress(addr);
+                    if (coords && typeof coords.lat === 'number' && typeof coords.lng === 'number') {
+                      setMapLat(coords.lat); setMapLng(coords.lng);
+                    }
+                  }}
+                />
                 {(() => {
                   const lat = mapLat;
                   const lng = mapLng;
@@ -568,23 +634,51 @@ export default function ClinicProfileEdit() {
             {/* Pricing Tab */}
             {tab === 'pricing' && (
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-base font-semibold text-gray-900">Price Ranges</h2>
-                  <button type="button" onClick={()=> setPricing((p)=> [...p, { id: `pr${Date.now()}`, service: '', range: '' }]) } className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Plus className="w-4 h-4"/> Add Item</button>
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h2 className="text-base font-semibold text-gray-900">Price Ranges</h2>
+                    <p className="text-xs text-gray-500 mt-0.5">Give patients a clear cost expectation per service.</p>
+                  </div>
+                  <button type="button" onClick={()=> setPricing((p)=> [...p, { id: `pr${Date.now()}`, service: '', min: '', max: '', currency: '₺' }]) } className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm font-semibold shadow-sm transition-colors flex-shrink-0"><Plus className="w-4 h-4"/> Add Item</button>
                 </div>
                 <div className="space-y-3">
-                  {pricing.map((it, idx) => (
-                    <div key={it.id} className="p-3 rounded-xl border bg-gray-50">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                        <input value={it.service} onChange={(e)=> setPricing((arr)=> arr.map((x,i)=> i===idx ? { ...x, service: e.target.value } : x))} className="h-10 px-3 border rounded-lg text-sm" placeholder="Service" />
-                        <input value={it.range} onChange={(e)=> setPricing((arr)=> arr.map((x,i)=> i===idx ? { ...x, range: e.target.value } : x))} className="md:col-span-2 h-10 px-3 border rounded-lg text-sm" placeholder="₺min - ₺max" />
+                  {pricing.map((it, idx) => {
+                    const upd = (patch)=> setPricing((arr)=> arr.map((x,i)=> i===idx ? { ...x, ...patch } : x));
+                    const fmt = (n)=> n==='' || n==null ? '—' : Number(n).toLocaleString('tr-TR');
+                    return (
+                    <div key={it.id} className="p-4 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition-colors">
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                        <div className="md:col-span-5">
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Service</label>
+                          <input value={it.service} onChange={(e)=> upd({ service: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="e.g. Consultation" />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Currency</label>
+                          <select value={it.currency} onChange={(e)=> upd({ currency: e.target.value })} className="w-full h-10 px-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400">
+                            <option value="₺">₺ TRY</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option>
+                          </select>
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Min price</label>
+                          <input value={it.min} onChange={(e)=> upd({ min: e.target.value.replace(/[^0-9]/g,'') })} inputMode="numeric" className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="200" />
+                        </div>
+                        <div className="md:col-span-3">
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Max price</label>
+                          <input value={it.max} onChange={(e)=> upd({ max: e.target.value.replace(/[^0-9]/g,'') })} inputMode="numeric" className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="500" />
+                        </div>
                       </div>
-                      <div className="mt-2 flex items-center justify-end">
-                        <button type="button" onClick={()=> setPricing((arr)=> arr.filter((_,i)=> i!==idx))} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Remove</button>
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className="text-xs text-gray-500">Preview: <span className="font-semibold text-gray-800">{it.currency}{fmt(it.min)} – {it.currency}{fmt(it.max)}</span></span>
+                        <button type="button" onClick={()=> setPricing((arr)=> arr.filter((_,i)=> i!==idx))} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 hover:bg-red-50 transition-colors"><X className="w-3.5 h-3.5"/> Remove</button>
                       </div>
                     </div>
-                  ))}
-                  {pricing.length === 0 && <div className="text-sm text-gray-500">No price items yet.</div>}
+                    );
+                  })}
+                  {pricing.length === 0 && (
+                    <div className="text-center py-10 border border-dashed border-gray-200 rounded-xl text-sm text-gray-500">
+                      No price items yet. Click <span className="font-semibold">Add Item</span> to start.
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -592,26 +686,54 @@ export default function ClinicProfileEdit() {
             {/* Packages Tab */}
             {tab === 'packages' && (
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-base font-semibold text-gray-900">Health Tourism Packages</h2>
-                  <button type="button" onClick={addPackage} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><img src="/images/icon/archive-up-minimlistic-svgrepo-com.svg" alt="Archive" className="w-4 h-4"/> Create Package</button>
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h2 className="text-base font-semibold text-gray-900">Health Tourism Packages</h2>
+                    <p className="text-xs text-gray-500 mt-0.5">All-inclusive bundles (treatment + stay + transfer) for international patients.</p>
+                  </div>
+                  <button type="button" onClick={addPackage} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm font-semibold shadow-sm transition-colors flex-shrink-0"><Plus className="w-4 h-4"/> Create Package</button>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {packages.map((p) => (
-                    <div key={p.id} className="p-3 rounded-xl border bg-gray-50">
-                      <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
-                        <input value={p.name} onChange={(e)=>updatePackage(p.id,{ name: e.target.value })} className="md:col-span-2 h-10 px-3 border rounded-lg text-sm" placeholder="Package Name" />
-                        <input value={p.treatment} onChange={(e)=>updatePackage(p.id,{ treatment: e.target.value })} className="h-10 px-3 border rounded-lg text-sm" placeholder="Treatment" />
-                        <input value={p.accommodation} onChange={(e)=>updatePackage(p.id,{ accommodation: e.target.value })} className="h-10 px-3 border rounded-lg text-sm" placeholder="Accommodation" />
-                        <input value={p.transfer} onChange={(e)=>updatePackage(p.id,{ transfer: e.target.value })} className="h-10 px-3 border rounded-lg text-sm" placeholder="Transfer" />
-                        <input value={p.price} onChange={(e)=>updatePackage(p.id,{ price: e.target.value.replace(/[^0-9]/g,'') })} className="h-10 px-3 border rounded-lg text-sm" placeholder="Price" />
+                    <div key={p.id} className="p-4 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition-colors">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0"><Package className="w-4 h-4 text-teal-600" /></div>
+                        <input value={p.name} onChange={(e)=>updatePackage(p.id,{ name: e.target.value })} className="flex-1 h-10 px-3 border border-gray-200 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="Package name (e.g. Basic Package)" />
                       </div>
-                      <div className="mt-2 flex items-center justify-end gap-2">
-                        <button type="button" onClick={()=>removePackage(p.id)} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Remove</button>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Treatment</label>
+                          <input value={p.treatment} onChange={(e)=>updatePackage(p.id,{ treatment: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="e.g. Dental Implant" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Accommodation</label>
+                          <input value={p.accommodation} onChange={(e)=>updatePackage(p.id,{ accommodation: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="e.g. 3 nights hotel" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Transfer</label>
+                          <input value={p.transfer} onChange={(e)=>updatePackage(p.id,{ transfer: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="e.g. Airport pickup" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Total price</label>
+                          <div className="flex gap-2">
+                            <select value={p.currency || '₺'} onChange={(e)=>updatePackage(p.id,{ currency: e.target.value })} className="h-10 px-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400">
+                              <option value="₺">₺</option><option value="$">$</option><option value="€">€</option><option value="£">£</option>
+                            </select>
+                            <input value={p.price} onChange={(e)=>updatePackage(p.id,{ price: e.target.value.replace(/[^0-9]/g,'') })} inputMode="numeric" className="flex-1 h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="1500" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className="text-xs text-gray-500">{p.price ? <>Total: <span className="font-semibold text-gray-800">{p.currency || '₺'}{Number(p.price).toLocaleString('tr-TR')}</span></> : 'Set a total price'}</span>
+                        <button type="button" onClick={()=>removePackage(p.id)} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 hover:bg-red-50 transition-colors"><X className="w-3.5 h-3.5"/> Remove</button>
                       </div>
                     </div>
                   ))}
-                  {packages.length === 0 && <div className="text-sm text-gray-500">No packages yet.</div>}
+                  {packages.length === 0 && (
+                    <div className="text-center py-10 border border-dashed border-gray-200 rounded-xl text-sm text-gray-500">
+                      No packages yet. Click <span className="font-semibold">Create Package</span> to add one.
+                    </div>
+                  )}
                 </div>
               </div>
             )}

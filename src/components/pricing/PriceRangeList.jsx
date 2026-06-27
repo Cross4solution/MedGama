@@ -9,12 +9,17 @@ export default function PriceRangeList({ items = [] }) {
         <h3 className="text-sm font-semibold text-gray-900">{t('clinicDetail.priceRange', 'Price Range')}</h3>
       </div>
       <div className="p-4 space-y-0">
-        {items.map((item, index) => (
+        {items.map((item, index) => {
+          const cur = item.currency || '₺';
+          const f = (n) => (n === '' || n == null) ? '' : `${cur}${Number(n).toLocaleString('tr-TR')}`;
+          const range = item.range || [f(item.min), f(item.max)].filter(Boolean).join(' – ');
+          return (
           <div key={index} className={`flex justify-between items-center py-2.5 ${index < items.length - 1 ? 'border-b border-gray-100' : ''}`}>
             <span className="text-sm text-gray-600">{item.service}</span>
-            <span className="text-sm font-semibold text-gray-900">{item.range}</span>
+            <span className="text-sm font-semibold text-gray-900">{range}</span>
           </div>
-        ))}
+          );
+        })}
       </div>
       <div className="px-4 pb-4">
         <p className="text-xs text-gray-400">

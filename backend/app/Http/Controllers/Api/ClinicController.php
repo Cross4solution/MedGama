@@ -181,6 +181,11 @@ class ClinicController extends Controller
             'map_coordinates' => 'sometimes|array',
             'website' => 'sometimes|url',
             'background_image' => 'sometimes|image|max:10240', // 10MB file upload
+            'latitude' => 'sometimes|nullable|numeric|between:-90,90',
+            'longitude' => 'sometimes|nullable|numeric|between:-180,180',
+            // multipart/form-data ile JSON string olarak gelir → aşağıda decode edilir
+            'price_ranges' => 'sometimes|nullable|string',
+            'packages' => 'sometimes|nullable|string',
         ]);
 
         // ── Handle Avatar Upload ──
@@ -201,6 +206,27 @@ class ClinicController extends Controller
         if (isset($validated['biography'])) $clinic->biography = $validated['biography'];
         if (isset($validated['website'])) $clinic->website = $validated['website'];
         if (isset($validated['map_coordinates'])) $clinic->map_coordinates = $validated['map_coordinates'];
+
+        // Konum koordinatları (yakındaki-update / harita için) — map_coordinates ile senkron
+        if (array_key_exists('latitude', $validated) && $validated['latitude'] !== null) {
+            $clinic->latitude = $validated['latitude'];
+        }
+        if (array_key_exists('longitude', $validated) && $validated['longitude'] !== null) {
+            $clinic->longitude = $validated['longitude'];
+        }
+        if (isset($clinic->latitude) && isset($clinic->longitude)) {
+            $clinic->map_coordinates = ['lat' => (float) $clinic->latitude, 'lng' => (float) $clinic->longitude];
+        }
+
+        // Fiyat aralıkları + paketler (multipart → JSON string → array)
+        if (array_key_exists('price_ranges', $validated)) {
+            $decoded = json_decode($validated['price_ranges'] ?? '[]', true);
+            $clinic->price_ranges = is_array($decoded) ? array_values($decoded) : [];
+        }
+        if (array_key_exists('packages', $validated)) {
+            $decoded = json_decode($validated['packages'] ?? '[]', true);
+            $clinic->packages = is_array($decoded) ? array_values($decoded) : [];
+        }
 
         $clinic->save();
 

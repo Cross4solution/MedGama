@@ -24,7 +24,7 @@ class Clinic extends Model
         'address', 'phone', 'biography', 'map_coordinates', 'latitude', 'longitude', 'website', 'is_verified',
         'is_crm_active', 'crm_expires_at', 'specialties', 'certifications',
         'onboarding_completed', 'onboarding_step',
-        'verification_status',
+        'verification_status', 'price_ranges', 'packages',
     ];
 
     protected function casts(): array
@@ -37,6 +37,8 @@ class Clinic extends Model
             'crm_expires_at' => 'datetime',
             'specialties'    => 'array',
             'certifications' => 'array',
+            'price_ranges'   => 'array',
+            'packages'       => 'array',
             'onboarding_completed' => 'boolean',
             'verification_status' => 'string',
         ];
