@@ -37,13 +37,9 @@ function AvatarImg({ src, alt, className, fallback = DEFAULT_AVATAR }) {
 function MediaImg({ src, alt, className, onClick = undefined }) {
   const [failed, setFailed] = React.useState(false);
   const resolved = resolveStorageUrl(src, '');
-  if (failed || !resolved) {
-    return (
-      <div className={`${className} bg-gray-100 flex items-center justify-center`}>
-        <ImageOff className="w-8 h-8 text-gray-300" />
-      </div>
-    );
-  }
+  // Görsel yoksa/yüklenemezse gri placeholder yerine hiç render etme —
+  // medya alanı tamamen çöker (kötü görünen boş gri kutu olmaz).
+  if (failed || !resolved) return null;
   return (
     <img
       src={resolved}
@@ -279,11 +275,12 @@ function VideoPreview({ m, className }) {
   const [duration, setDuration] = useState(null);
   const [error, setError] = useState(false);
   const [inView, setInView] = useState(false);
+  const [thumbBad, setThumbBad] = useState(false);
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const rawSrc = resolveStorageUrl(m.original || m.url, '');
   const videoSrc = toStreamUrl(rawSrc);
-  const resolvedThumb = resolveStorageUrl(m.thumb, '');
+  const resolvedThumb = resolveStorageUrl(m.thumb || m.thumbnail, '');
   const isProcessing = m.status === 'processing';
   const ytId = getYouTubeId(rawSrc);
 
@@ -366,16 +363,31 @@ function VideoPreview({ m, className }) {
   const durationLabel = formatDuration(duration || m.duration);
 
   return (
-    <div ref={containerRef} className="relative bg-black flex items-center justify-center cursor-pointer group aspect-video w-full overflow-hidden rounded-lg" onClick={handlePlay}>
-      {/* Thumbnail or video metadata preview */}
-      {hasThumb ? (
-        <Image src={effectiveThumb} alt="Video thumbnail" fill sizes="(max-width: 768px) 100vw, 600px" className="object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
+    <div ref={containerRef} className="relative bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center cursor-pointer group aspect-video w-full overflow-hidden rounded-lg" onClick={handlePlay}>
+      {/* Thumbnail or video metadata preview — gerçek bir kare göster, asla siyah kapak.
+          Next Image optimizer harici (özellikle YouTube) URL'lerde patlayabildiği için
+          düz <img> kullanıyoruz; YouTube'un 120px "video yok" placeholder'ı veya yükleme
+          hatası olursa native video karesine / zarif gradient'e düşeriz. */}
+      {hasThumb && !thumbBad ? (
+        <img
+          src={effectiveThumb}
+          alt="Video"
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          onLoad={(e) => { if ((e.target.naturalWidth || 0) <= 120) setThumbBad(true); }}
+          onError={() => setThumbBad(true)}
+        />
       ) : inView && !ytId ? (
         <video
-          src={rawSrc ? `${rawSrc}#t=0.5` : videoSrc}
+          src={videoSrc || rawSrc}
           muted preload="metadata" playsInline
           className="w-full h-full object-cover pointer-events-none"
-          onLoadedMetadata={(e) => { if (e.target.duration) setDuration(e.target.duration); }}
+          onLoadedMetadata={(e) => {
+            const v = e.target;
+            if (v.duration) setDuration(v.duration);
+            // Siyah açılış karesinden kaç — videonun ortasından bir an göster.
+            try { v.currentTime = Math.min(3, (v.duration || 6) * 0.25); } catch {}
+          }}
           onError={() => setError(true)}
         />
       ) : (

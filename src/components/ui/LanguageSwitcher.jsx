@@ -33,9 +33,11 @@ export default function LanguageSwitcher({ compact = false }) {
     try { document.cookie = `i18next=${code}; path=/; max-age=31536000; samesite=lax`; } catch {}
     // 2) UI dilini değiştir
     try { i18n.changeLanguage(code); } catch {}
-    // 3) Aynı sayfada kal, sadece locale prefix'ini değiştir
+    // 3) Aynı sayfada kal, sadece locale prefix'ini değiştir — query string'i
+    //    (ör. ?standalone=1) koru, yoksa standalone medstream ana siteye düşer.
     const rest = stripLocale(pathname);
-    router.push(withLocale(code, rest));
+    const search = typeof window !== 'undefined' ? window.location.search : '';
+    router.push(withLocale(code, rest) + search);
   };
 
   return (

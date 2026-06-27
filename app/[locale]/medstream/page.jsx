@@ -1,6 +1,11 @@
 import ExploreTimeline from '@/screens/ExploreTimeline';
 import { buildMetadata } from '@/lib/seo-server';
 
+// ?standalone=1 deep-link'in odaklı (focused) kabuğu SSR'da seçilebilmesi için route'u
+// dinamik render et — aksi halde useSearchParams sunucuda boş döner, SSR generic kabuk
+// üretir, client focused'a geçince hydration mismatch + flaş olur.
+export const dynamic = 'force-dynamic';
+
 // MedStream public akış — misafirler göz atabilir (paylaşım kutusu içeride yetkiye bağlı).
 // Herkese açık olduğu için arama motorlarına açık (indexable).
 export async function generateMetadata({ params }) {

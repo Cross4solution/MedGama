@@ -74,7 +74,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
             media: (() => {
               // If backend returned uploaded media array, use it
               if (Array.isArray(p.media) && p.media.length > 0) {
-                return p.media.map(m => ({ url: m.medium || m.original || m.url, thumb: m.thumb, name: m.name, type: m.type || p.post_type || 'image' }));
+                return p.media.map(m => ({ url: m.medium || m.original || m.url, thumb: m.thumb || m.thumbnail, name: m.name, type: m.type || p.post_type || 'image' }));
               }
               if (!p.media_url) return [];
               // Infer type from post_type

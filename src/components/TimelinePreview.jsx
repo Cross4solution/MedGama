@@ -48,7 +48,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
             is_bookmarked: !!p.is_bookmarked,
             media: (() => {
               if (Array.isArray(p.media) && p.media.length > 0) {
-                return p.media.map(m => ({ url: m.medium || m.original || m.url, thumb: m.thumb, name: m.name, type: m.type || p.post_type || 'image' }));
+                return p.media.map(m => ({ url: m.medium || m.original || m.url, thumb: m.thumb || m.thumbnail, name: m.name, type: m.type || p.post_type || 'image' }));
               }
               if (!p.media_url) return [];
               const mType = (p.post_type === 'video') ? 'video' : (p.post_type === 'document') ? 'document' : 'image';
