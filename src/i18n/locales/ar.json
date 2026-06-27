@@ -2132,6 +2132,8 @@
     "mostRecent": "الأحدث",
     "topPosts": "الأكثر تميزاً",
     "useMyLocation": "استخدام موقعي",
+    "locating": "جارٍ تحديد الموقع…",
+    "locationDenied": "تعذّر تحديد الموقع",
     "recentShort": "الأحدث",
     "topShort": "الأبرز",
     "locationShort": "الموقع",

@@ -2132,6 +2132,8 @@
     "mostRecent": "Neueste",
     "topPosts": "Top-Beiträge",
     "useMyLocation": "Meinen Standort verwenden",
+    "locating": "Wird ermittelt…",
+    "locationDenied": "Standort nicht verfügbar",
     "recentShort": "Neueste",
     "topShort": "Top",
     "locationShort": "Standort",

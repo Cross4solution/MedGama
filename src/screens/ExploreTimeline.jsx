@@ -417,15 +417,30 @@ export default function ExploreTimeline() {
 
   // Konum izni (opsiyonel) - tek seferlik izin akışı ve localStorage ile kalıcılık
   const [geo, setGeo] = useState(null);
+  const [geoLoading, setGeoLoading] = useState(false);
   const GEO_KEY = 'explore_geo_consent'; // 'granted' | 'denied'
-  const GEO_POS_KEY = 'explore_geo_pos'; // JSON: { lat, lon }
+  const GEO_POS_KEY = 'explore_geo_pos'; // JSON: { lat, lon, country, city }
+
+  // Koordinatı şehir/ülke adına çevir (ücretsiz, anahtarsız, CORS açık) — butonda
+  // "Şehir, Ülke" olarak gösterip konumun alındığını net biçimde geri bildiririz.
+  const reverseGeocode = useCallback(async (lat, lon) => {
+    try {
+      const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+      const j = await r.json();
+      return { country: j.countryName || '', city: j.city || j.locality || '' };
+    } catch { return { country: '', city: '' }; }
+  }, []);
 
   const askGeo = useCallback(() => {
-    if (!navigator?.geolocation) return;
+    if (!navigator?.geolocation) { setGeo({ error: true }); return; }
+    setGeoLoading(true);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const g = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+        const { country, city } = await reverseGeocode(g.lat, g.lon);
+        g.country = country; g.city = city;
         setGeo(g);
+        setGeoLoading(false);
         try {
           localStorage.setItem(GEO_KEY, 'granted');
           localStorage.setItem(GEO_POS_KEY, JSON.stringify(g));
@@ -433,10 +448,23 @@ export default function ExploreTimeline() {
       },
       () => {
         setGeo({ error: true });
+        setGeoLoading(false);
         try { localStorage.setItem(GEO_KEY, 'denied'); } catch {}
-      }
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
     );
-  }, []);
+  }, [reverseGeocode]);
+
+  // Buton: konum yoksa al, varsa temizle (toggle) — standalone'da ayrı temizleme UI'ı yok.
+  const onLocationClick = useCallback(() => {
+    if (geoLoading) return;
+    if (geo && (geo.country || geo.error)) {
+      setGeo(null);
+      try { localStorage.removeItem(GEO_KEY); localStorage.removeItem(GEO_POS_KEY); } catch {}
+      return;
+    }
+    askGeo();
+  }, [geo, geoLoading, askGeo]);
 
   const handleCountryChange = useCallback((val) => {
     if (val === 'Andorra') {
@@ -553,8 +581,9 @@ export default function ExploreTimeline() {
             user={user}
             sort={sort}
             onSortChange={(s) => { setSort(s); setPage(1); }}
-            onUseLocation={askGeo}
+            onUseLocation={onLocationClick}
             geo={geo}
+            geoLoading={geoLoading}
             showSort={true}
           />
         </div>

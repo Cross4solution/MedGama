@@ -2132,6 +2132,8 @@
     "mostRecent": "Самые новые",
     "topPosts": "Популярные",
     "useMyLocation": "Моё местоположение",
+    "locating": "Определение…",
+    "locationDenied": "Не удалось определить",
     "recentShort": "Новые",
     "topShort": "Топ",
     "locationShort": "Местоположение",

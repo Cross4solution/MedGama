@@ -2930,6 +2930,8 @@
     "mostRecent": "En Yeni",
     "topPosts": "Öne Çıkanlar",
     "useMyLocation": "Konumumu kullan",
+    "locating": "Konum alınıyor…",
+    "locationDenied": "Konum alınamadı",
     "recentShort": "Yeni",
     "topShort": "Öne Çıkan",
     "locationShort": "Konum",
