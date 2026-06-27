@@ -100,20 +100,20 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
         type="button"
         className={
           triggerClassName && triggerClassName.length > 0
-            ? triggerClassName
+            ? `${triggerClassName} flex items-center overflow-hidden`
             : 'w-full border border-gray-300 rounded-lg px-3 py-2 text-base md:text-sm bg-white text-left flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow'
         }
         onClick={() => setOpen((o) => !o)}
       >
         {selectedLabel ? (
-          <span className="inline-flex items-center gap-2">
+          <span className="flex items-center gap-2 min-w-0 w-full">
             {resolveFlagUrl(selectedLabel) && (
-              <img src={resolveFlagUrl(selectedLabel)} alt="" width={18} height={14} className="inline-block rounded-sm" loading="lazy" />
+              <img src={resolveFlagUrl(selectedLabel)} alt="" width={18} height={14} className="inline-block rounded-sm flex-shrink-0" loading="lazy" />
             )}
-            <span>{selectedLabel}</span>
+            <span className="truncate min-w-0">{selectedLabel}</span>
           </span>
         ) : (
-          placeholder
+          <span className="block truncate text-gray-400">{placeholder}</span>
         )}
       </button>
       {open && createPortal(
