@@ -324,7 +324,10 @@ class ClinicController extends Controller
                 'onboarding_completed' => $clinic->onboarding_completed ?? false,
                 'is_verified'          => $clinic->is_verified,
             ],
-            'doctors' => $clinic->doctors()->select('id', 'fullname', 'email', 'is_active')->get(),
+            'doctors' => $clinic->doctors()
+                ->select('users.id', 'users.fullname', 'users.email', 'users.is_active', 'users.avatar', 'users.mobile', 'users.country')
+                ->with(['doctorProfile' => fn($q) => $q->select('user_id', 'specialty', 'title')])
+                ->get(),
         ]);
     }
 

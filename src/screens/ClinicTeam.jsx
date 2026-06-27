@@ -3,7 +3,7 @@ import { Link, useNavigate } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI } from '../lib/api';
-import { resolveStorageUrl } from '../utils/resolveStorageUrl';
+import resolveStorageUrl from '../utils/resolveStorageUrl';
 import {
   Users, UserPlus, Stethoscope, Loader2, Search, Mail, Phone,
   MoreVertical, Edit3, UserX, CheckCircle2, XCircle, X,
@@ -110,9 +110,6 @@ export default function ClinicTeam() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
-            <Link to="/clinic/dashboard" className="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
-              <ChevronLeft className="w-4 h-4 text-gray-500" />
-            </Link>
             <div>
               <h1 className="text-xl font-bold text-gray-900">{t('clinicTeam.title', 'My Team')}</h1>
               <p className="text-xs text-gray-500">{t('clinicTeam.subtitle', 'Manage your clinic\'s doctors and staff')}</p>
@@ -268,6 +265,24 @@ export default function ClinicTeam() {
 
 /* ── Helper Components ── */
 
+function TeamAvatar({ src, name, size = 'w-12 h-12' }) {
+  const [failed, setFailed] = useState(false);
+  const resolved = src ? resolveStorageUrl(src, '') : '';
+  const initials = (name || '').replace(/^(Dr\.?|Prof\.?|Doç\.?)\s*/i, '')
+    .split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
+  if (resolved && !failed) {
+    return (
+      <img src={resolved} alt={name} onError={() => setFailed(true)}
+        className={`${size} rounded-xl object-cover flex-shrink-0 border border-gray-100`} />
+    );
+  }
+  return (
+    <div className={`${size} rounded-xl bg-gradient-to-br from-teal-100 to-emerald-100 flex items-center justify-center flex-shrink-0 text-teal-700 font-bold text-sm`}>
+      {initials}
+    </div>
+  );
+}
+
 function ModalOverlay({ children, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
@@ -304,16 +319,32 @@ function DoctorCard({ doc, t, onDeactivate, onReactivate, onEdit }) {
         )}
       </div>
 
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-11 h-11 bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
-          <Stethoscope className="w-5 h-5 text-teal-600" />
-        </div>
-        <div className="min-w-0">
+      <div className="flex items-start gap-3 mb-3">
+        <TeamAvatar src={doc.avatar} name={doc.fullname} />
+        <div className="min-w-0 flex-1 pr-6">
           <p className="text-sm font-bold text-gray-900 truncate">{doc.fullname}</p>
-          <p className="text-[11px] text-gray-400 truncate">{doc.email}</p>
+          {(doc.doctor_profile?.title || doc.doctor_profile?.specialty) && (
+            <p className="text-[11px] font-semibold text-teal-600 truncate flex items-center gap-1">
+              <Stethoscope className="w-3 h-3 flex-shrink-0" />
+              {doc.doctor_profile?.title || doc.doctor_profile?.specialty}
+            </p>
+          )}
         </div>
       </div>
-      <div className="flex items-center justify-between">
+
+      {/* Contact info */}
+      <div className="space-y-1.5 mb-3 pl-0.5">
+        <p className="text-[11px] text-gray-500 truncate flex items-center gap-1.5">
+          <Mail className="w-3 h-3 text-gray-400 flex-shrink-0" /> {doc.email}
+        </p>
+        {doc.mobile && (
+          <p className="text-[11px] text-gray-500 truncate flex items-center gap-1.5">
+            <Phone className="w-3 h-3 text-gray-400 flex-shrink-0" /> {doc.mobile}
+          </p>
+        )}
+      </div>
+
+      <div className="flex items-center justify-between pt-2 border-t border-gray-100/80">
         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
           !inactive ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/60' : 'bg-gray-100 text-gray-500 border border-gray-200/60'
         }`}>
@@ -329,12 +360,14 @@ function DoctorRow({ doc, t, onDeactivate, onReactivate, onEdit }) {
 
   return (
     <div className={`px-5 py-3.5 flex items-center gap-3 ${inactive ? 'opacity-50' : ''}`}>
-      <div className="w-9 h-9 bg-teal-50 rounded-lg flex items-center justify-center flex-shrink-0">
-        <Stethoscope className="w-4 h-4 text-teal-600" />
-      </div>
+      <TeamAvatar src={doc.avatar} name={doc.fullname} size="w-9 h-9" />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-800 truncate">{doc.fullname}</p>
-        <p className="text-[11px] text-gray-400 truncate">{doc.email}</p>
+        <p className="text-[11px] text-gray-400 truncate">
+          {doc.doctor_profile?.title || doc.doctor_profile?.specialty
+            ? `${doc.doctor_profile?.title || doc.doctor_profile?.specialty} · ${doc.email}`
+            : doc.email}
+        </p>
       </div>
       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
         !inactive ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-500'
