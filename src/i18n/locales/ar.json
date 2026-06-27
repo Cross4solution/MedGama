@@ -1155,6 +1155,7 @@
     "anyRating": "أي تقييم",
     "starsAndAbove": "{{count}}+ نجوم",
     "priceRange": "نطاق السعر",
+    "priceRangeDisclaimer": "*قد تختلف الأسعار. للحصول على السعر الدقيق، يرجى حجز موعد.",
     "anyPrice": "أي سعر",
     "onlineOnly": "الرعاية عن بُعد",
     "verifiedOnly": "الأطباء الموثّقون فقط",

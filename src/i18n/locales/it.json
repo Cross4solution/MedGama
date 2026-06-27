@@ -1530,6 +1530,7 @@
     "anyRating": "Qualsiasi Valutazione",
     "starsAndAbove": "{{count}}+ Stelle",
     "priceRange": "Fascia di Prezzo",
+    "priceRangeDisclaimer": "*I prezzi possono variare. Per un prezzo esatto, prenota un appuntamento.",
     "anyPrice": "Qualsiasi Prezzo",
     "onlineOnly": "Telemedicina",
     "verifiedOnly": "Solo Medici Verificati",

@@ -1502,6 +1502,7 @@
     "anyRating": "Any Rating",
     "starsAndAbove": "{{count}}+ Stars",
     "priceRange": "Price Range",
+    "priceRangeDisclaimer": "*Prices may vary. For exact pricing, please book an appointment.",
     "anyPrice": "Any Price",
     "onlineOnly": "Telehealth",
     "verifiedOnly": "Verified Doctors Only",
