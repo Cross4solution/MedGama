@@ -1155,6 +1155,7 @@
     "anyRating": "Beliebige Bewertung",
     "starsAndAbove": "{{count}}+ Sterne",
     "priceRange": "Preisspanne",
+    "priceRangeDisclaimer": "*Preise können variieren. Für genaue Preise buchen Sie bitte einen Termin.",
     "anyPrice": "Beliebiger Preis",
     "onlineOnly": "Telemedizin",
     "verifiedOnly": "Nur verifizierte Ärzte",

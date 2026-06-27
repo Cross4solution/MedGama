@@ -1573,6 +1573,7 @@
     "anyRating": "İstənilən Reytinq",
     "starsAndAbove": "{{count}}+ Ulduz",
     "priceRange": "Qiymət Aralığı",
+    "priceRangeDisclaimer": "*Qiymətlər dəyişə bilər. Dəqiq qiymət üçün zəhmət olmasa randevu alın.",
     "anyPrice": "İstənilən Qiymət",
     "onlineOnly": "Teletibb",
     "verifiedOnly": "Yalnız Təsdiqlənmiş Həkimlər",

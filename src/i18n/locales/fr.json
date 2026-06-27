@@ -1530,6 +1530,7 @@
     "anyRating": "Toute note",
     "starsAndAbove": "{{count}}+ étoiles",
     "priceRange": "Fourchette de prix",
+    "priceRangeDisclaimer": "*Les prix peuvent varier. Pour un prix exact, veuillez prendre rendez-vous.",
     "anyPrice": "Tout prix",
     "onlineOnly": "Télémédecine",
     "verifiedOnly": "Médecins vérifiés uniquement",
