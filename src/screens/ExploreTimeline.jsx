@@ -19,7 +19,7 @@ import { useIsMedstream } from '../context/BrandContext';
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
-function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you', refreshKey = 0, injectedPosts = [], onApiRefresh }) {
+function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you', refreshKey = 0, injectedPosts = [], onApiRefresh, geo = null, radius = 25 }) {
   // API'den gelen postlar
   const [apiPosts, setApiPosts] = useState([]);
   const [apiLoaded, setApiLoaded] = useState(false);
@@ -33,6 +33,9 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     if (specialtyFilter) params.specialization = specialtyFilter;
     if (textQuery)       params.search = textQuery;
     if (countryName)     params.country = countryName;
+    // "Use my location": yakındaki update'ler için koordinat + yarıçap
+    const geoActive = geo && typeof geo.lat === 'number' && typeof geo.lon === 'number';
+    if (geoActive) { params.lat = geo.lat; params.lon = geo.lon; params.radius = radius; }
     medStreamAPI.posts(params).then((res) => {
       if (controller.signal.aborted) return;
       console.log('[ExploreTimeline] API response:', res);
@@ -99,7 +102,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
       setIsRefreshing(false);
     });
     return () => controller.abort();
-  }, [refreshKey, sort, textQuery, specialtyFilter, countryName]);
+  }, [refreshKey, sort, textQuery, specialtyFilter, countryName, geo?.lat, geo?.lon, radius]);
 
   // Yalnızca API verileri kullanılır (mock feed üretici kaldırıldı).
   // API yüklenirken boş gösterilir (navigasyonda flash önlenir).
@@ -147,6 +150,10 @@ export default function ExploreTimeline() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState('top'); // top | recent
   const [tab, setTab] = useState('for-you'); // for-you | latest
+  // Konum (Use my location) — useExploreFeed'den önce tanımlı olmalı (TDZ).
+  const [geo, setGeo] = useState(null);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoRadius, setGeoRadius] = useState(25); // km — sonuç azsa kademeli büyür
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loadMoreRef = useRef(null);
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
@@ -405,19 +412,30 @@ export default function ExploreTimeline() {
     tab,
     refreshKey: feedRefreshKey,
     injectedPosts: localPosts,
+    geo: (geo && typeof geo.lat === 'number') ? geo : null,
+    radius: geoRadius,
     onApiRefresh: (apiIds) => {
       // Remove localPosts that are now in API results to prevent duplicates/jumps
       setLocalPosts(prev => prev.filter(p => !apiIds.includes(p.id)));
     },
   });
 
+  // Progressive yarıçap: konum aktif ve sonuç azsa perimetreyi kademeli büyüt
+  // (25 → 50 → 100 km). Yoğun/gelişmiş yerde dar kalır, seyrek yerde genişler.
+  useEffect(() => {
+    const geoActive = geo && typeof geo.lat === 'number';
+    if (!geoActive || !apiLoaded) return;
+    if (total < 8 && geoRadius < 100) {
+      setGeoRadius((r) => (r < 50 ? 50 : 100));
+    }
+  }, [geo, apiLoaded, total, geoRadius]);
+
   // seçenekler
   const countryOptions = getCountryNames();
   const specialtyOptions = SPECIALTIES;
 
   // Konum izni (opsiyonel) - tek seferlik izin akışı ve localStorage ile kalıcılık
-  const [geo, setGeo] = useState(null);
-  const [geoLoading, setGeoLoading] = useState(false);
+  // (geo / geoLoading state'leri yukarıda, useExploreFeed'den önce tanımlı)
   const GEO_KEY = 'explore_geo_consent'; // 'granted' | 'denied'
   const GEO_POS_KEY = 'explore_geo_pos'; // JSON: { lat, lon, country, city }
 
@@ -434,6 +452,7 @@ export default function ExploreTimeline() {
   const askGeo = useCallback(() => {
     if (!navigator?.geolocation) { setGeo({ error: true }); return; }
     setGeoLoading(true);
+    setGeoRadius(25); // her yeni konum isteğinde dar perimetreden başla
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const g = { lat: pos.coords.latitude, lon: pos.coords.longitude };

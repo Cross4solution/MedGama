@@ -885,5 +885,27 @@ class DatabaseSeeder extends Seeder
             }
         }
         $this->command->info("Seeded {$slotCount} calendar slots for {$slotDoctors->count()} doctors.");
+
+        // --- "Use my location" demo: koordinat backfill ---
+        // Migration latitude/longitude'u map_coordinates'ten yalnızca migrate anında
+        // doldurur; seed satırları sonradan eklendiği için bu kolonlar NULL kalır.
+        // Yakındaki-update demosunun çalışması için klinik + doktorları İstanbul
+        // çevresine dağıt (İstanbul yakını bir kullanıcı 25km içinde eşleşir).
+        $geoPoints = [
+            [41.0412, 28.8489], [41.0597, 28.9862], [41.0517, 28.9748],
+            [40.9903, 29.0290], [41.0082, 28.9784], [41.0151, 28.9795],
+            [41.0428, 29.0093], [40.9795, 29.0964], [41.0365, 28.9850], [41.0258, 28.9744],
+        ];
+        $clinicsAll = Clinic::all()->values();
+        foreach ($clinicsAll as $i => $c) {
+            $p = $geoPoints[$i % count($geoPoints)];
+            $c->latitude = $p[0]; $c->longitude = $p[1]; $c->save();
+        }
+        $docProfilesAll = DoctorProfile::all()->values();
+        foreach ($docProfilesAll as $i => $dp) {
+            $p = $geoPoints[($i + 3) % count($geoPoints)];
+            $dp->latitude = $p[0]; $dp->longitude = $p[1]; $dp->save();
+        }
+        $this->command->info("Backfilled coordinates (İstanbul cluster) for {$clinicsAll->count()} clinics + {$docProfilesAll->count()} doctor profiles.");
     }
 }

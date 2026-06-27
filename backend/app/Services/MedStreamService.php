@@ -79,6 +79,34 @@ class MedStreamService
                 $q->whereHas('author', fn($uq) =>
                     $uq->where('country', 'LIKE', '%' . $v . '%')
                 )
+            )
+            // "Use my location": yakındaki update'ler. Yazarın koordinatı (doktor
+            // profili / kliniği) kullanıcıyı çevreleyen bounding-box içindeyse getir.
+            // Bounding-box index-dostu ve DB-bağımsız (TiDB ST_Distance riskli).
+            ->when(
+                isset($filters['lat'], $filters['lon'])
+                    && is_numeric($filters['lat']) && is_numeric($filters['lon']),
+                function ($q) use ($filters) {
+                    $lat = (float) $filters['lat'];
+                    $lon = (float) $filters['lon'];
+                    $radius = isset($filters['radius']) && is_numeric($filters['radius'])
+                        ? max(1.0, min(500.0, (float) $filters['radius']))
+                        : 25.0; // km
+                    $dLat = $radius / 111.0;
+                    $dLon = $radius / (111.0 * max(0.01, cos(deg2rad($lat))));
+                    $latMin = $lat - $dLat; $latMax = $lat + $dLat;
+                    $lonMin = $lon - $dLon; $lonMax = $lon + $dLon;
+                    $inBox = function ($sub) use ($latMin, $latMax, $lonMin, $lonMax) {
+                        $sub->whereNotNull('latitude')->whereNotNull('longitude')
+                            ->whereBetween('latitude', [$latMin, $latMax])
+                            ->whereBetween('longitude', [$lonMin, $lonMax]);
+                    };
+                    $q->where(function ($outer) use ($inBox) {
+                        $outer->whereHas('author.doctorProfile', $inBox)
+                              ->orWhereHas('clinic', $inBox)
+                              ->orWhereHas('author.ownedClinic', $inBox);
+                    });
+                }
             );
 
         // Top Posts: restrict to last 30 days

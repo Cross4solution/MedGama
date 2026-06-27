@@ -49,7 +49,7 @@ class MedStreamController extends Controller
     {
         $posts = $this->medStreamService->listPosts(
             $request->user()?->id,
-            $request->only(['author_id', 'clinic_id', 'hospital_id', 'post_type', 'per_page', 'sort', 'specialty_id', 'search', 'specialization', 'country']),
+            $request->only(['author_id', 'clinic_id', 'hospital_id', 'post_type', 'per_page', 'sort', 'specialty_id', 'search', 'specialization', 'country', 'lat', 'lon', 'radius']),
         );
 
         return MedStreamPostResource::collection($posts);
