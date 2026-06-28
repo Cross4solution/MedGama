@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { examinationAPI, catalogAPI } from '../../lib/api';
 import GlobalSuggest from '../../components/forms/GlobalSuggest';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import ProTeaser from '../../components/crm/ProTeaser';
 
 // ─── Medication Templates ───
@@ -740,6 +741,7 @@ const PrintableReport = ({ exam, t }) => {
 // ═══════════════════════════════════════════════════
 const CRMExamination = () => {
   const { t } = useTranslation();
+  const { notify } = useToast();
   const { user, isPro } = useAuth();
   const location = useLocation();
 
@@ -886,7 +888,7 @@ const CRMExamination = () => {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch {
-      alert(t('crm.examination.pdfError', 'An error occurred while downloading the PDF.'));
+      notify({ type: 'error', message: t('crm.examination.pdfError', 'An error occurred while downloading the PDF.') });
     } finally {
       setPdfLoading(false);
     }

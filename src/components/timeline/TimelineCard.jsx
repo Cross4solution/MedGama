@@ -755,7 +755,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     }
     try {
       await navigator.clipboard.writeText(url);
-      alert('Link panoya kopyalandı');
+      showSuccessToast(t('medstream.linkCopied', 'Link panoya kopyalandı'));
     } catch {
       window.open(url, '_blank');
     }

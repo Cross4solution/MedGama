@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { patientAPI } from '../../lib/api';
 import ProTeaser from '../../components/crm/ProTeaser';
 
@@ -84,7 +85,7 @@ const AddTagModal = ({ patientId, patientName, onClose, onAdded, t }) => {
       onAdded();
       onClose();
     } catch {
-      alert(t('crm.patients.addTagError'));
+      notify({ type: 'error', message: t('crm.patients.addTagError') });
     } finally {
       setLoading(false);
     }
@@ -138,7 +139,7 @@ const SetStageModal = ({ patientId, patientName, currentStage, onClose, onUpdate
       onUpdated();
       onClose();
     } catch {
-      alert(t('crm.patients.setStageError'));
+      notify({ type: 'error', message: t('crm.patients.setStageError') });
     } finally {
       setLoading(false);
     }
@@ -180,6 +181,7 @@ const SetStageModal = ({ patientId, patientName, currentStage, onClose, onUpdate
 // ═════════════════════════════════════════════════════════════
 const CRMPatients = () => {
   const { t } = useTranslation();
+  const { notify } = useToast();
   const { user, isPro } = useAuth();
 
   const navigate = useNavigate();
