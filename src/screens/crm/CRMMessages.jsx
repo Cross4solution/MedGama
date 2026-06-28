@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import {
-  MessageSquare, Search, Plus, Send, Paperclip, Image, Smile, Phone, Video,
-  MoreVertical, X, Check, CheckCheck, Clock, Circle, ChevronLeft, Star,
+  MessageSquare, Search, Plus, Send, Paperclip, Image, Smile,
+  X, Check, CheckCheck, Clock, Circle, ChevronLeft, Star,
   Archive, Trash2, Filter, Users, Loader2, AlertCircle,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -324,11 +324,8 @@ const CRMMessages = () => {
                     <p className="text-[11px] text-gray-400">{activeChat.online ? t('crm.messages.online') : t('crm.messages.offline')} · {activeChat.uiType}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500"><Phone className="w-4 h-4" /></button>
-                  <button className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500"><Video className="w-4 h-4" /></button>
-                  <button className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500"><MoreVertical className="w-4 h-4" /></button>
-                </div>
+                {/* Phone/Video/More butonları kaldırıldı — bağlı değillerdi (sesli/görüntülü
+                    arama telehealth ile gelecek). Ölü buton bırakmamak için temizlendi. */}
               </div>
 
               {/* Messages */}

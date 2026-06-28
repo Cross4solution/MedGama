@@ -529,9 +529,6 @@ export default function ClinicProfileEdit() {
                           <div className="mt-1"><StarRow value={r.rating} /></div>
                           <p className="text-sm text-gray-700 mt-1">{r.text}</p>
                         </div>
-                        <div>
-                          <button type="button" onClick={()=> alert('Reported (demo)')} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Report</button>
-                        </div>
                       </div>
                     </div>
                   ))}
