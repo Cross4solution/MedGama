@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI, catalogAPI } from '../lib/api';
 import MapboxSearchInput from '../components/map/MapboxSearchInput';
@@ -20,6 +21,7 @@ const STEPS = [
 
 export default function ClinicOnboarding() {
   const { t, i18n } = useTranslation();
+  const { notify } = useToast();
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
 
@@ -114,7 +116,7 @@ export default function ClinicOnboarding() {
   const saveStep = useCallback(async (nextStep) => {
     // Validation
     if (step === 0 && !name.trim()) {
-      alert('Please enter clinic name');
+      notify({ type: 'warning', message: t('clinicOnboarding.nameRequired', 'Please enter the clinic name.') });
       return;
     }
 
@@ -156,7 +158,7 @@ export default function ClinicOnboarding() {
     } catch (err) {
       console.error('Save error:', err, JSON.stringify(err));
       const msg = err?.message || err?.data?.message || (typeof err === 'string' ? err : 'Unknown error');
-      alert('Error: ' + msg);
+      notify({ type: 'error', message: msg });
     } finally {
       setSaving(false);
     }

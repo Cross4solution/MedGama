@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { appointmentAPI } from '../lib/api';
 import useAppointmentSync from '../hooks/useAppointmentSync';
 import AddToCalendar from '../components/AddToCalendar';
@@ -12,6 +13,7 @@ import {
 
 export default function PatientAppointments() {
   const { t, i18n } = useTranslation();
+  const { notify } = useToast();
   const isTr = i18n.language?.startsWith('tr');
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -63,7 +65,7 @@ export default function PatientAppointments() {
       setShowCancelModal(false);
       setSelectedAppointment(null);
     } catch (err) {
-      alert(isTr ? 'Randevu iptal edilemedi.' : 'Failed to cancel appointment.');
+      notify({ type: 'error', message: isTr ? 'Randevu iptal edilemedi.' : 'Failed to cancel appointment.' });
     } finally {
       setCancellingId(null);
     }

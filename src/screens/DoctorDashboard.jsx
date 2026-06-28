@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { doctorProfileAPI, appointmentAPI, doctorBillingAPI } from '../lib/api';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import useVerificationListener from '../hooks/useVerificationListener';
@@ -15,6 +16,7 @@ import {
 
 const DoctorDashboard = () => {
   const { t } = useTranslation();
+  const { notify } = useToast();
   const navigate = useNavigate();
   const { user, isPro } = useAuth();
 
@@ -394,7 +396,7 @@ const DoctorDashboard = () => {
                   if (!window.confirm('Bu randevuyu "Gelmedi" olarak işaretlemek istediğinizden emin misiniz?')) return;
                   appointmentAPI.markNoShow(appt.id)
                     .then(() => window.location.reload())
-                    .catch(() => alert('İşaretleme başarısız oldu.'));
+                    .catch(() => notify({ type: 'error', message: t('doctorDashboard.bookmarkFailed', 'İşaretleme başarısız oldu.') }));
                 };
                 return (
                   <div key={appt.id} className="flex items-center justify-between px-5 py-4">
