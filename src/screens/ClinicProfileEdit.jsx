@@ -3,6 +3,7 @@ import { Save, Building2, MapPin, Info, Image as ImageIcon, Upload, Plus, X, Dol
 import { clinicAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import MapboxSearchInput from '../components/map/MapboxSearchInput';
+import resolveStorageUrl from '../utils/resolveStorageUrl';
 
 function TagEditor({ label, value = [], onChange, placeholder }) {
   const [text, setText] = useState('');
@@ -222,7 +223,8 @@ export default function ClinicProfileEdit() {
   const addGalleryImages = (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-    const items = files.map((f) => ({ url: URL.createObjectURL(f), name: f.name }));
+    // File objesini sakla → kaydederken yüklenir (blob sadece önizleme)
+    const items = files.map((f) => ({ url: URL.createObjectURL(f), name: f.name, file: f }));
     setGallery((prev) => [...prev, ...items]);
   };
   const removeGalleryImage = (idx) => setGallery((prev) => prev.filter((_, i) => i !== idx));
@@ -272,6 +274,14 @@ export default function ClinicProfileEdit() {
             transfer: p.transfer || '', price: p.price ?? '', currency: p.currency || '₺',
           })));
         }
+        // Servisler
+        if (Array.isArray(c.services) && c.services.length) {
+          setServices(c.services.map((s, i) => ({ id: s.id || `s${i}-${Date.now()}`, order: s.order ?? i + 1, ...s })));
+        }
+        // Galeri (yüklü görseller)
+        if (Array.isArray(c.gallery) && c.gallery.length) {
+          setGallery(c.gallery.filter((g) => g && g.url).map((g) => ({ url: g.url, name: g.name || '' })));
+        }
       }
     }).catch(() => {});
   }, [user?.clinic_id]);
@@ -319,6 +329,17 @@ export default function ClinicProfileEdit() {
               transfer: p.transfer, price: p.price === '' ? null : Number(p.price), currency: p.currency || '₺',
             }))
         ));
+
+        // Servisler (saf veri — dosya yok)
+        formData.append('services', JSON.stringify(
+          services.filter((s) => (s.name || '').trim())
+        ));
+
+        // Galeri: mevcut (yüklü, http URL'li) görseller + yeni dosyalar ayrı gider
+        formData.append('gallery', JSON.stringify(
+          gallery.filter((g) => g.url && !g.url.startsWith('blob:')).map((g) => ({ url: g.url, name: g.name }))
+        ));
+        gallery.filter((g) => g.file).forEach((g) => formData.append('gallery_images[]', g.file));
 
         // ── Append image files if selected ──
         if (logoFile) {
@@ -532,7 +553,7 @@ export default function ClinicProfileEdit() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {gallery.map((g, idx) => (
                     <div key={`${g.url}-${idx}`} className="relative group rounded-lg overflow-hidden border bg-gray-50">
-                      <img src={g.url} alt={g.name||'image'} className="w-full h-28 object-cover" />
+                      <img src={g.url?.startsWith('blob:') ? g.url : resolveStorageUrl(g.url, g.url)} alt={g.name||'image'} className="w-full h-28 object-cover" />
                       <button type="button" onClick={()=>removeGalleryImage(idx)} className="absolute top-2 right-2 bg-white/90 hover:bg-white border rounded-full p-1 shadow"><X className="w-4 h-4"/></button>
                     </div>
                   ))}

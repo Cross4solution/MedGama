@@ -35,6 +35,7 @@ import {
   priceRangesData,
   tabsConfig
 } from '../data/clinicMockData';
+import resolveStorageUrl from '../utils/resolveStorageUrl';
 
 const ClinicDetailPage = ({ initialClinic }) => {
   const { user } = useAuth();
@@ -151,7 +152,9 @@ const ClinicDetailPage = ({ initialClinic }) => {
       case 'galeri':
         return (
           <GalleryTab
-            gallery={galleryData}
+            gallery={(Array.isArray(apiClinic?.gallery) && apiClinic.gallery.length)
+              ? apiClinic.gallery.map((g) => (typeof g === 'string' ? resolveStorageUrl(g, g) : resolveStorageUrl(g.url, g.url)))
+              : galleryData}
             galleryIndex={galleryIndex}
             setGalleryIndex={setGalleryIndex}
             galleryOpen={galleryOpen}

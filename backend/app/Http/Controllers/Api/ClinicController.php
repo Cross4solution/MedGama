@@ -186,6 +186,10 @@ class ClinicController extends Controller
             // multipart/form-data ile JSON string olarak gelir → aşağıda decode edilir
             'price_ranges' => 'sometimes|nullable|string',
             'packages' => 'sometimes|nullable|string',
+            'services' => 'sometimes|nullable|string',
+            'gallery' => 'sometimes|nullable|string', // mevcut (yüklü) görsellerin JSON listesi
+            'gallery_images' => 'sometimes|array',
+            'gallery_images.*' => 'image|max:10240',
         ]);
 
         // ── Handle Avatar Upload ──
@@ -226,6 +230,21 @@ class ClinicController extends Controller
         if (array_key_exists('packages', $validated)) {
             $decoded = json_decode($validated['packages'] ?? '[]', true);
             $clinic->packages = is_array($decoded) ? array_values($decoded) : [];
+        }
+        if (array_key_exists('services', $validated)) {
+            $decoded = json_decode($validated['services'] ?? '[]', true);
+            $clinic->services = is_array($decoded) ? array_values($decoded) : [];
+        }
+
+        // Galeri: mevcut (yüklü) görseller JSON'dan + yeni yüklenen dosyalar
+        if (array_key_exists('gallery', $validated) || $request->hasFile('gallery_images')) {
+            $existing = json_decode($validated['gallery'] ?? '[]', true);
+            $gallery = is_array($existing) ? array_values($existing) : [];
+            foreach ((array) $request->file('gallery_images', []) as $file) {
+                $path = $file->store('clinics/gallery', 'public');
+                $gallery[] = ['url' => "/storage/$path", 'name' => $file->getClientOriginalName()];
+            }
+            $clinic->gallery = $gallery;
         }
 
         $clinic->save();
