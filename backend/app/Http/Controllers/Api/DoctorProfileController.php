@@ -87,6 +87,8 @@ class DoctorProfileController extends Controller
             'languages'          => 'nullable|array',
             'address'            => 'nullable|string|max:500',
             'map_coordinates'    => 'nullable|array',
+            'latitude'           => 'nullable|numeric|between:-90,90',
+            'longitude'          => 'nullable|numeric|between:-180,180',
             'maps_url'           => 'nullable|string|max:2000|url',
             'full_address_text'  => 'nullable|string|max:2000',
             'phone'              => 'nullable|string|max:50',
@@ -109,6 +111,16 @@ class DoctorProfileController extends Controller
 
         $oldValues = $profile->only(array_keys($validated));
         $profile->update($validated);
+
+        // Konum koordinatlarını map_coordinates ile senkron tut (yakındaki-update için)
+        if (!empty($validated['map_coordinates']['lat']) && !empty($validated['map_coordinates']['lng'])) {
+            $profile->latitude = (float) $validated['map_coordinates']['lat'];
+            $profile->longitude = (float) $validated['map_coordinates']['lng'];
+            $profile->save();
+        } elseif (isset($profile->latitude, $profile->longitude)) {
+            $profile->map_coordinates = ['lat' => (float) $profile->latitude, 'lng' => (float) $profile->longitude];
+            $profile->save();
+        }
 
         // Audit log
         AuditLog::log(

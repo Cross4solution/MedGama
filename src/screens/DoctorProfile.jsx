@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useParams, useNavigate, Link } from '@/compat/router';
 // SEO meta + Physician JSON-LD artık app/doctor/[id]/page.jsx generateMetadata + server script ile üretiliyor (Faz 3).
 import MapboxMap from '../components/map/MapboxMap';
+import DoctorLocationEditor from '../components/doctor/DoctorLocationEditor';
 import {
   Award, Stethoscope, Heart, CheckCircle, Shield, Users, MapPin, X,
   ChevronLeft, ChevronRight, Minus, Video, Loader2, GraduationCap, Globe,
@@ -738,7 +739,14 @@ const DoctorProfilePage = ({ initialDoctor }) => {
                 {activeTab === 'location' && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-bold text-gray-900">{t('doctorProfile.location')}</h3>
-                    {locationAddress || (profile?.latitude && profile?.longitude) ? (<>
+                    {isOwner ? (
+                      <DoctorLocationEditor
+                        address={locationAddress}
+                        lat={profile?.latitude}
+                        lng={profile?.longitude}
+                        onSaved={(d) => setProfile((p) => ({ ...(p || {}), address: d.address, full_address_text: d.address, latitude: d.latitude, longitude: d.longitude, map_coordinates: d.map_coordinates }))}
+                      />
+                    ) : locationAddress || (profile?.latitude && profile?.longitude) ? (<>
                       {locationAddress && <div className="flex items-start gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 mt-0.5 text-teal-600 flex-shrink-0" /><span>{locationAddress}</span></div>}
                       <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
                         <MapboxMap
