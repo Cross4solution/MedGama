@@ -790,12 +790,16 @@ const DoctorProfilePage = ({ initialDoctor }) => {
                   <h3 className="text-sm font-semibold text-gray-900">{t('doctorProfile.priceRange')}</h3>
                 </div>
                 <div className="p-4 space-y-3">
-                  {prices.map((item, i) => (
+                  {prices.map((item, i) => {
+                    const cur = item.currency || '₺';
+                    const fmt = (n) => (n === '' || n == null) ? '' : Number(n).toLocaleString('tr-TR');
+                    return (
                     <div key={i} className="flex justify-between items-center text-sm">
                       <span className="text-gray-500">{item.label}</span>
-                      <span className="font-semibold text-gray-900">{item.currency || '₺'}{item.min}{item.max ? ` – ${item.currency || '₺'}${item.max}` : ''}</span>
+                      <span className="font-semibold text-gray-900">{cur}{fmt(item.min)}{item.max ? ` – ${cur}${fmt(item.max)}` : ''}</span>
                     </div>
-                  ))}
+                    );
+                  })}
                   <p className="text-[11px] text-gray-400 pt-1">* {t('doctorProfile.priceDisclaimer')}</p>
                 </div>
               </div>
