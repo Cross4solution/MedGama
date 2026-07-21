@@ -245,7 +245,11 @@
     "contactUs": "Bize Ulaşın",
     "privacyShort": "Gizlilik",
     "termsShort": "Koşullar",
-    "popularTreatments": "Popüler Tedaviler"
+    "popularTreatments": "Popüler Tedaviler",
+    "popCardiologyIstanbul": "İstanbul Kardiyoloji",
+    "popOrthopedicsAnkara": "Ankara Ortopedi",
+    "popDermatologyIstanbul": "İstanbul Dermatoloji",
+    "allTreatments": "Tüm Tedaviler"
   },
   "crm": {
     "gatekeeper": {
@@ -1542,7 +1546,7 @@
     "medicalRecords": "Tıbbi Kayıtlar",
     "prescriptions": "Reçeteler",
     "savedPosts": "Kaydedilen Gönderiler",
-    "favoriteClinics": "Favoriler",
+    "favoriteClinics": "Favori Klinikler",
     "medicalArchive": "Arşiv",
     "dashboard": "Panel"
   },
@@ -2932,6 +2936,7 @@
     "useMyLocation": "Konumumu kullan",
     "locating": "Konum alınıyor…",
     "locationDenied": "Konum alınamadı",
+    "locationHint": "Konum izni engellenmiş. Tarayıcı adres çubuğundaki kilit simgesinden izin verip tekrar deneyin.",
     "linkCopied": "Link panoya kopyalandı",
     "recentShort": "Yeni",
     "topShort": "Öne Çıkan",

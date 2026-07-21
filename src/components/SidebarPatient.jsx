@@ -36,7 +36,7 @@ export default function SidebarPatient() {
     { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
     { to: '/patient-dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: Activity },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
-    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorites'), icon: Heart },
+    { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/patient/appointments', label: t('sidebar.myAppointments', 'Appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
@@ -101,7 +101,7 @@ export default function SidebarPatient() {
             <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
               <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
             </span>
-            {label}
+            <span className="leading-tight text-[13px] min-w-0">{label}</span>
           </span>
           {badge ? (
             <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-teal-600 text-white shadow-sm">{badge}</span>

@@ -255,7 +255,11 @@
     "contactUs": "Contact Us",
     "privacyShort": "Privacy",
     "termsShort": "Terms",
-    "popularTreatments": "Popular Treatments"
+    "popularTreatments": "Popular Treatments",
+    "popCardiologyIstanbul": "Istanbul Cardiology",
+    "popOrthopedicsAnkara": "Ankara Orthopedics",
+    "popDermatologyIstanbul": "Istanbul Dermatology",
+    "allTreatments": "All Treatments"
   },
   "crm": {
     "gatekeeper": {
@@ -1344,7 +1348,7 @@
     "medicalRecords": "Medical Records",
     "prescriptions": "Prescriptions",
     "savedPosts": "Saved Posts",
-    "favoriteClinics": "Favorites",
+    "favoriteClinics": "Favorite Clinics",
     "medicalArchive": "Archive",
     "dashboard": "Dashboard"
   },
@@ -2684,6 +2688,7 @@
     "useMyLocation": "Use my location",
     "locating": "Locating…",
     "locationDenied": "Location unavailable",
+    "locationHint": "Location permission is blocked. Enable it from your browser’s site settings (address bar lock icon) and try again.",
     "linkCopied": "Link copied to clipboard",
     "recentShort": "Recent",
     "topShort": "Top",

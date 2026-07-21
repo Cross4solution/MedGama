@@ -70,6 +70,7 @@ function TimelineControls({
           <button
             onClick={onUseLocation}
             disabled={geoLoading}
+            title={geo?.error ? t('medstream.locationHint', 'Location permission is blocked. Enable it from your browser’s site settings (address bar lock icon) and try again.') : undefined}
             className={`text-[13px] px-3 py-1.5 rounded-full border transition-colors duration-200 inline-flex items-center gap-1.5 font-medium ${
               geo?.error
                 ? 'border-red-200 text-red-500 hover:bg-red-50'

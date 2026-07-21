@@ -14,12 +14,12 @@ export default function Footer() {
   ];
 
 
-  // Popüler programatik SEO landing linkleri (crawl giriş noktası).
+  // Popüler programatik SEO landing linkleri (crawl giriş noktası) — seçili dile göre.
   const popularTreatments = [
-    { label: 'İstanbul Kardiyoloji', href: '/tedaviler/kardiyoloji/istanbul' },
-    { label: 'Ankara Ortopedi', href: '/tedaviler/ortopedi/ankara' },
-    { label: 'İstanbul Dermatoloji', href: '/tedaviler/dermatoloji/istanbul' },
-    { label: 'Tüm Tedaviler', href: '/tedaviler' },
+    { label: t('footer.popCardiologyIstanbul', 'Istanbul Cardiology'), href: '/tedaviler/kardiyoloji/istanbul' },
+    { label: t('footer.popOrthopedicsAnkara', 'Ankara Orthopedics'), href: '/tedaviler/ortopedi/ankara' },
+    { label: t('footer.popDermatologyIstanbul', 'Istanbul Dermatology'), href: '/tedaviler/dermatoloji/istanbul' },
+    { label: t('footer.allTreatments', 'All Treatments'), href: '/tedaviler' },
   ];
 
   const legalLinks = [
@@ -38,7 +38,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="mb-3">
-              <Image src="/images/logo/logo.svg" alt="MedaGama Logo" width={176} height={40} className="h-9 w-auto object-contain" />
+              {/* Negatif (beyaz) logo — koyu teal footer üstünde temiz görünsün */}
+              <Image src="/images/logo/logo.svg" alt="Medagama Logo" width={176} height={40} className="h-9 w-auto object-contain brightness-0 invert opacity-90" />
             </div>
             <p className="text-sm leading-relaxed text-white/60">
               {t('footer.brandTagline')}
@@ -94,7 +95,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-5 pt-3 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span className="text-xs text-white/50">© {year} MedaGama. {t('footer.allRightsReserved')}</span>
+          <span className="text-xs text-white/50">© {year} Medagama. {t('footer.allRightsReserved')}</span>
           <div className="flex items-center gap-4 text-xs text-white/50">
             <a href="/privacy-policy" className="hover:text-white transition-colors">{t('footer.privacyShort')}</a>
             <span className="text-white/30">·</span>
