@@ -15,8 +15,8 @@ export async function generateMetadata({ params }) {
     path: '/tedaviler',
     title: { tr: 'Tedaviler ve Uzmanlık Alanları', en: 'Treatments & Specialties' },
     description: {
-      tr: 'MedaGama üzerindeki tüm uzmanlık alanlarını keşfedin. Şehrinizdeki uzman doktor ve klinikleri bulun, online randevu alın.',
-      en: 'Explore all specialties on MedaGama. Find expert doctors and clinics in your city and book online.',
+      tr: 'Medagama üzerindeki tüm uzmanlık alanlarını keşfedin. Şehrinizdeki uzman doktor ve klinikleri bulun, online randevu alın.',
+      en: 'Explore all specialties on Medagama. Find expert doctors and clinics in your city and book online.',
     },
   });
 }
@@ -40,7 +40,7 @@ export default async function Page() {
       </h1>
       <p className="text-gray-600 leading-relaxed mb-8 max-w-3xl">
         Aşağıdaki uzmanlık alanlarından birini seçerek şehrinizdeki uzman
-        doktorları ve klinikleri keşfedin, MedaGama üzerinden online randevu alın.
+        doktorları ve klinikleri keşfedin, Medagama üzerinden online randevu alın.
       </p>
 
       {specialties.length > 0 ? (

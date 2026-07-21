@@ -31,7 +31,7 @@ export async function generateMetadata({ params }) {
   const { id, locale } = await params; // Next 15: params async
   const res = await getDoctorData(id);
   if (!res)
-    return { title: 'Bulunamadı | MedaGama', robots: { index: false } };
+    return { title: 'Bulunamadı | Medagama', robots: { index: false } };
 
   const { doctor: d } = res;
   const name = d.fullname || d.name || 'Doktor';
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }) {
     profile.specialty || profile.specialtyRelation?.name || '';
   const title = `${name}${spec ? ' — ' + spec : ''}`;
   const description = clamp(
-    profile.bio || `${name} ile MedaGama üzerinden online randevu alın.`,
+    profile.bio || `${name} ile Medagama üzerinden online randevu alın.`,
   );
   const image = absoluteUrl(d.avatar);
 
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }) {
     description,
     alternates: altLanguages(`/doctor/${id}`, locale),
     openGraph: {
-      title: `${title} | MedaGama`,
+      title: `${title} | Medagama`,
       description,
       url: `/doctor/${id}`,
       type: 'profile',
@@ -59,7 +59,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: image ? 'summary_large_image' : 'summary',
-      title: `${title} | MedaGama`,
+      title: `${title} | Medagama`,
       description,
       ...(image && { images: [image] }),
     },

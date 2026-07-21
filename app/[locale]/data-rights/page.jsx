@@ -8,8 +8,8 @@ export async function generateMetadata({ params }) {
     path: '/data-rights',
     title: { tr: 'Veri Sahibi Hakları', en: 'Data Subject Rights' },
     description: {
-      tr: 'MedaGama üzerindeki kişisel verilerinize erişme, düzeltme, silme ve veri taşınabilirliği taleplerinizi nasıl iletebileceğinizi öğrenin.',
-      en: 'Learn how to exercise your rights to access, rectify, erase and port your personal data on MedaGama.',
+      tr: 'Medagama üzerindeki kişisel verilerinize erişme, düzeltme, silme ve veri taşınabilirliği taleplerinizi nasıl iletebileceğinizi öğrenin.',
+      en: 'Learn how to exercise your rights to access, rectify, erase and port your personal data on Medagama.',
     },
   });
 }

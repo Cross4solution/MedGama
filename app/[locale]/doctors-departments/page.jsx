@@ -8,8 +8,8 @@ export async function generateMetadata({ params }) {
     path: '/doctors-departments',
     title: { tr: 'Doktorlar ve Bölümler', en: 'Doctors & Departments' },
     description: {
-      tr: 'MedaGama’daki tüm tıbbi bölümleri ve uzman doktorları keşfedin. Kardiyoloji, göz, diş, ortopedi ve daha fazlası.',
-      en: 'Explore all medical departments and expert doctors on MedaGama — cardiology, ophthalmology, dentistry, orthopedics and more.',
+      tr: 'Medagama’daki tüm tıbbi bölümleri ve uzman doktorları keşfedin. Kardiyoloji, göz, diş, ortopedi ve daha fazlası.',
+      en: 'Explore all medical departments and expert doctors on Medagama — cardiology, ophthalmology, dentistry, orthopedics and more.',
     },
   });
 }

@@ -44,11 +44,11 @@ async function resolve(specialtySlug) {
 export async function generateMetadata({ params }) {
   const { specialty, locale } = await params;
   const { specialty: sp } = await resolve(specialty);
-  if (!sp) return { title: 'Bulunamadı | MedaGama', robots: { index: false } };
+  if (!sp) return { title: 'Bulunamadı | Medagama', robots: { index: false } };
   const name = trName(sp);
   const path = `/tedaviler/${specialty}`;
-  const title = `${name} Doktorları ve Klinikleri | MedaGama`;
-  const description = `${name} alanında uzman doktorları ve klinikleri şehrinize göre keşfedin. MedaGama üzerinden online randevu alın.`;
+  const title = `${name} Doktorları ve Klinikleri | Medagama`;
+  const description = `${name} alanında uzman doktorları ve klinikleri şehrinize göre keşfedin. Medagama üzerinden online randevu alın.`;
   return {
     title,
     description,

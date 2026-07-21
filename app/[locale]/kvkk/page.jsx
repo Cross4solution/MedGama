@@ -8,8 +8,8 @@ export async function generateMetadata({ params }) {
     path: '/kvkk',
     title: { tr: 'KVKK Aydınlatma Metni', en: 'KVKK Disclosure (PDPL)' },
     description: {
-      tr: 'MedaGama KVKK aydınlatma metni: 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında haklarınız ve veri işleme esasları.',
-      en: 'MedaGama disclosure under Türkiye’s Personal Data Protection Law (No. 6698): your rights and data processing principles.',
+      tr: 'Medagama KVKK aydınlatma metni: 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında haklarınız ve veri işleme esasları.',
+      en: 'Medagama disclosure under Türkiye’s Personal Data Protection Law (No. 6698): your rights and data processing principles.',
     },
   });
 }

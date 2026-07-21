@@ -8,8 +8,8 @@ export async function generateMetadata({ params }) {
     path: '/privacy-policy',
     title: { tr: 'Gizlilik Politikası', en: 'Privacy Policy' },
     description: {
-      tr: 'MedaGama gizlilik politikası: kişisel verilerinizi nasıl topladığımız, işlediğimiz ve koruduğumuz hakkında bilgi edinin.',
-      en: 'MedaGama privacy policy: learn how we collect, process and protect your personal data.',
+      tr: 'Medagama gizlilik politikası: kişisel verilerinizi nasıl topladığımız, işlediğimiz ve koruduğumuz hakkında bilgi edinin.',
+      en: 'Medagama privacy policy: learn how we collect, process and protect your personal data.',
     },
   });
 }

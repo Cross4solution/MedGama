@@ -8,8 +8,8 @@ export async function generateMetadata({ params }) {
     path: '/cookie-policy',
     title: { tr: 'Çerez Politikası', en: 'Cookie Policy' },
     description: {
-      tr: 'MedaGama çerez politikası: web sitemizde hangi çerezleri kullandığımız ve tercihlerinizi nasıl yönetebileceğiniz.',
-      en: 'MedaGama cookie policy: which cookies we use on our website and how you can manage your preferences.',
+      tr: 'Medagama çerez politikası: web sitemizde hangi çerezleri kullandığımız ve tercihlerinizi nasıl yönetebileceğiniz.',
+      en: 'Medagama cookie policy: which cookies we use on our website and how you can manage your preferences.',
     },
   });
 }

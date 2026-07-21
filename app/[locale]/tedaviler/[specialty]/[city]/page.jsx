@@ -42,12 +42,12 @@ export async function generateMetadata({ params }) {
   const { specialty, city, locale } = await params;
   const r = await resolve(specialty, city);
   if (!r.specialty || !r.city || !r.providers) {
-    return { title: 'Bulunamadı | MedaGama', robots: { index: false } };
+    return { title: 'Bulunamadı | Medagama', robots: { index: false } };
   }
   const specialtyName = trName(r.specialty);
   const cityName = trName(r.city);
   const path = `/tedaviler/${specialty}/${city}`;
-  const title = `${specialtyName} — ${cityName} | MedaGama`;
+  const title = `${specialtyName} — ${cityName} | Medagama`;
   const description = `${cityName} şehrinde ${specialtyName} alanında uzman doktor ve klinikler. Randevu al, yorumları oku.`;
   return {
     title,
@@ -109,11 +109,11 @@ export default async function Page({ params }) {
   const faqs = [
     {
       question: `${cityName} şehrinde ${specialtyName} randevusu nasıl alınır?`,
-      answer: `MedaGama üzerinden ${cityName} şehrindeki ${specialtyName} doktorlarını ve kliniklerini inceleyebilir, profillerinden uygun saati seçerek online randevu oluşturabilirsiniz.`,
+      answer: `Medagama üzerinden ${cityName} şehrindeki ${specialtyName} doktorlarını ve kliniklerini inceleyebilir, profillerinden uygun saati seçerek online randevu oluşturabilirsiniz.`,
     },
     {
       question: `${cityName}'de ${specialtyName} alanında kaç uzman var?`,
-      answer: `Şu anda MedaGama'da ${cityName} şehrinde ${specialtyName} alanında ${doctors.length} doktor ve ${clinics.length} klinik listelenmektedir.`,
+      answer: `Şu anda Medagama'da ${cityName} şehrinde ${specialtyName} alanında ${doctors.length} doktor ve ${clinics.length} klinik listelenmektedir.`,
     },
     {
       question: `${specialtyName} doktorlarının yorumlarını görebilir miyim?`,
@@ -183,7 +183,7 @@ export default async function Page({ params }) {
       <p className="text-gray-600 leading-relaxed mb-8 max-w-3xl">
         {cityName} şehrinde {specialtyName} alanında hizmet veren uzman doktorları
         ve klinikleri keşfedin. Profilleri inceleyin, hasta yorumlarını okuyun ve
-        MedaGama üzerinden kolayca online randevu alın.
+        Medagama üzerinden kolayca online randevu alın.
       </p>
 
       {doctors.length > 0 ? (

@@ -12,8 +12,8 @@ export async function generateMetadata({ params }) {
     locale,
     path: '/home-v2',
     title: {
-      tr: 'MedaGama — Dijital Sağlık ve Randevu Platformu',
-      en: 'MedaGama — Digital Health & Appointment Platform',
+      tr: 'Medagama — Dijital Sağlık ve Randevu Platformu',
+      en: 'Medagama — Digital Health & Appointment Platform',
     },
     description: {
       tr: 'Uzman doktorlar, güvenli telehealth ve modern tedavi yöntemleri tek bir platformda. Randevu al, doktor yorumlarını oku, sağlık turizmini planla.',

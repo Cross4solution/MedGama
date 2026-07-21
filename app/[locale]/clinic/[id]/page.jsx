@@ -23,11 +23,11 @@ async function getClinicData(codename) {
 export async function generateMetadata({ params }) {
   const { id, locale } = await params;
   const c = await getClinicData(id);
-  if (!c) return { title: 'Bulunamadı | MedaGama', robots: { index: false } };
+  if (!c) return { title: 'Bulunamadı | Medagama', robots: { index: false } };
 
   const name = c.fullname || c.name || 'Klinik';
   const description = clamp(
-    c.description || c.bio || `${name} — MedaGama üzerinden randevu alın ve uzman ekibi inceleyin.`,
+    c.description || c.bio || `${name} — Medagama üzerinden randevu alın ve uzman ekibi inceleyin.`,
   );
   const image = absoluteUrl(c.avatar);
 
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }) {
     description,
     alternates: altLanguages(`/clinic/${id}`, locale),
     openGraph: {
-      title: `${name} | MedaGama`,
+      title: `${name} | Medagama`,
       description,
       url: `/clinic/${id}`,
       type: 'website',
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: image ? 'summary_large_image' : 'summary',
-      title: `${name} | MedaGama`,
+      title: `${name} | Medagama`,
       description,
       ...(image && { images: [image] }),
     },

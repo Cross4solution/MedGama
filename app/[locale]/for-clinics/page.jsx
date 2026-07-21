@@ -8,8 +8,8 @@ export async function generateMetadata({ params }) {
     path: '/for-clinics',
     title: { tr: 'Klinikler İçin', en: 'For Clinics' },
     description: {
-      tr: 'Kliniğinizi MedaGama ile büyütün: hasta yönetimi, randevu takvimi, CRM ve dijital tanıtım araçları tek bir platformda.',
-      en: 'Grow your clinic with MedaGama: patient management, appointment calendar, CRM and digital marketing tools in one platform.',
+      tr: 'Kliniğinizi Medagama ile büyütün: hasta yönetimi, randevu takvimi, CRM ve dijital tanıtım araçları tek bir platformda.',
+      en: 'Grow your clinic with Medagama: patient management, appointment calendar, CRM and digital marketing tools in one platform.',
     },
   });
 }

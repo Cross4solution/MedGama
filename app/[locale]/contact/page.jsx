@@ -8,8 +8,8 @@ export async function generateMetadata({ params }) {
     path: '/contact',
     title: { tr: 'İletişim', en: 'Contact' },
     description: {
-      tr: 'MedaGama ekibiyle iletişime geçin. Sorularınız, iş birlikleri ve destek talepleriniz için bize ulaşın.',
-      en: 'Get in touch with the MedaGama team for questions, partnerships and support requests.',
+      tr: 'Medagama ekibiyle iletişime geçin. Sorularınız, iş birlikleri ve destek talepleriniz için bize ulaşın.',
+      en: 'Get in touch with the Medagama team for questions, partnerships and support requests.',
     },
   });
 }

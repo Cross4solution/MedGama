@@ -21,13 +21,13 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://medagama.com';
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'MedaGama — Dijital Sağlık ve Randevu Platformu',
-    template: '%s | MedaGama',
+    default: 'Medagama — Dijital Sağlık ve Randevu Platformu',
+    template: '%s | Medagama',
   },
   description:
     'Uzman doktorlar, güvenli telehealth ve modern tedavi yöntemleri tek bir platformda. Randevu al, yorumları oku, sağlık turizmi planla.',
-  applicationName: 'MedaGama',
-  authors: [{ name: 'MedaGama' }],
+  applicationName: 'Medagama',
+  authors: [{ name: 'Medagama' }],
   robots: { index: true, follow: true },
   // Search Console doğrulaması — env set edilince <meta name="google-site-verification">
   // otomatik eklenir; env yoksa hiçbir meta eklenmez.

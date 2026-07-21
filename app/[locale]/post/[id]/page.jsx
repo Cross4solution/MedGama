@@ -16,10 +16,10 @@ export async function generateMetadata({ params }) {
   if (!p) return { title: 'Gönderi', alternates: altLanguages(`/post/${id}`, locale) };
 
   const author =
-    p.author?.fullname || p.clinic?.fullname || p.hospital?.fullname || 'MedaGama';
+    p.author?.fullname || p.clinic?.fullname || p.hospital?.fullname || 'Medagama';
   const content = (p.content || '').replace(/\s+/g, ' ').trim();
   const title = content ? clamp(content, 70) : `${author} paylaşımı`;
-  const description = clamp(content || `${author} tarafından MedaGama MedStream paylaşımı.`);
+  const description = clamp(content || `${author} tarafından Medagama MedStream paylaşımı.`);
   const rawImage =
     p.media_url ||
     (Array.isArray(p.media) ? p.media[0]?.url || p.media[0] : undefined) ||
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }) {
     description,
     alternates: altLanguages(`/post/${id}`, locale),
     openGraph: {
-      title: `${title} | MedaGama`,
+      title: `${title} | Medagama`,
       description,
       url: `/post/${id}`,
       type: 'article',
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: image ? 'summary_large_image' : 'summary',
-      title: `${title} | MedaGama`,
+      title: `${title} | Medagama`,
       description,
       ...(image && { images: [image] }),
     },

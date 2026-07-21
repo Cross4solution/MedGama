@@ -8,8 +8,8 @@ export async function generateMetadata({ params }) {
     path: '/for-patients',
     title: { tr: 'Hastalar İçin', en: 'For Patients' },
     description: {
-      tr: 'MedaGama ile uzman doktor bulun, online randevu alın, telehealth görüşmesi yapın ve sağlık yolculuğunuzu tek bir yerden yönetin.',
-      en: 'Find expert doctors, book appointments online, have telehealth consultations and manage your health journey in one place with MedaGama.',
+      tr: 'Medagama ile uzman doktor bulun, online randevu alın, telehealth görüşmesi yapın ve sağlık yolculuğunuzu tek bir yerden yönetin.',
+      en: 'Find expert doctors, book appointments online, have telehealth consultations and manage your health journey in one place with Medagama.',
     },
   });
 }

@@ -8,8 +8,8 @@ export async function generateMetadata({ params }) {
     path: '/terms-of-service',
     title: { tr: 'Kullanım Koşulları', en: 'Terms of Service' },
     description: {
-      tr: 'MedaGama kullanım koşulları: platformu kullanırken geçerli olan hak ve yükümlülükleri inceleyin.',
-      en: 'MedaGama terms of service: review the rights and obligations that apply when using the platform.',
+      tr: 'Medagama kullanım koşulları: platformu kullanırken geçerli olan hak ve yükümlülükleri inceleyin.',
+      en: 'Medagama terms of service: review the rights and obligations that apply when using the platform.',
     },
   });
 }

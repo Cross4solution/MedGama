@@ -11,8 +11,8 @@ export async function generateMetadata({ params }) {
       path: '/medstream',
       title: { tr: 'MedStream', en: 'MedStream' },
       description: {
-        tr: 'MedaGama sağlık akışı — doktor ve klinik paylaşımları.',
-        en: 'MedaGama health feed — posts from doctors and clinics.',
+        tr: 'Medagama sağlık akışı — doktor ve klinik paylaşımları.',
+        en: 'Medagama health feed — posts from doctors and clinics.',
       },
     }),
     robots: { index: true, follow: true },

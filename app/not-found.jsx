@@ -4,7 +4,7 @@
 // response stays HTTP 200 (soft-404). Pure server component: no client deps,
 // no i18n/router, so it never breaks static prerender.
 export const metadata = {
-  title: 'Sayfa Bulunamadı | MedaGama',
+  title: 'Sayfa Bulunamadı | Medagama',
   robots: { index: false, follow: false },
 };
 

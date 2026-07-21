@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
 
   const u = d.user;
   const title = `${u.fullname} (@${u.username})`;
-  const description = clamp(u.bio || `${u.fullname} — MedaGama MedStream profili.`);
+  const description = clamp(u.bio || `${u.fullname} — Medagama MedStream profili.`);
   const rawImage = u.cover_image || u.avatar || undefined;
   const image = typeof rawImage === 'string' ? absoluteUrl(rawImage) : undefined;
 

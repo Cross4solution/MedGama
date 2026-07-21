@@ -9,7 +9,7 @@ export const API_ORIGIN =
   process.env.NEXT_PUBLIC_API_ORIGIN || 'https://medagama-backend.onrender.com';
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || 'https://medagama.com';
-export const SITE_NAME = 'MedaGama';
+export const SITE_NAME = 'Medagama';
 
 /**
  * Build an `alternates` block with real per-locale hreflang URLs.
