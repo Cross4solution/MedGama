@@ -286,7 +286,7 @@ export default function SearchResults() {
   return (
     <div className="min-h-screen bg-gray-50/60">
       {/* ═══ Hero Search Bar ═══ */}
-      <section className="bg-gradient-to-br from-teal-700 via-teal-600 to-teal-800 py-10 px-4">
+      <section className="bg-gradient-to-br from-teal-600 via-teal-500 to-teal-700 py-10 px-4">
         <div className="max-w-4xl mx-auto text-center mb-6">
           <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">{t('search.heroTitle')}</h1>
           <p className="text-teal-100 text-sm md:text-base mt-2">{t('search.heroSubtitle')}</p>

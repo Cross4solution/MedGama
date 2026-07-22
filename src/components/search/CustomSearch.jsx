@@ -22,6 +22,7 @@ export default function CustomSearch() {
 
   const getCountryVariants = React.useCallback((name) => {
     const aliases = {
+      'Turkey': ['Türkiye', 'Turkiye'],
       'Czechia': ['Czech Republic'],
       'United States': ['United States of America', 'USA', 'US', 'U.S.'],
       'United Kingdom': ['Great Britain', 'UK', 'GB', 'Britain'],
@@ -63,6 +64,41 @@ export default function CustomSearch() {
 
   const canSearch = useMemo(() => !!(country || city || specialty || symptom), [country, city, specialty, symptom]);
 
+  // "Use my location": konumdan ülke+şehri çöz, kutuları otomatik doldur.
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState(false);
+  // Ülke set edilince şehir-yükleme effect'i city'yi resetler; konumdan gelen şehir
+  // burada bekler, şehir listesi yüklenince listedeki yazımla eşlenip uygulanır.
+  const pendingCityRef = React.useRef('');
+  const useMyLocation = () => {
+    if (geoLoading) return;
+    if (!navigator?.geolocation) { setGeoError(true); return; }
+    setGeoLoading(true); setGeoError(false);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=en`);
+          const j = await r.json();
+          const countryName = j.countryName || '';
+          const cityName = j.city || j.locality || '';
+          if (countryName) {
+            // Ülke listesindeki tam adla eşle (alias'lar dahil: "Turkiye" → "Turkey")
+            const match = countries.find((c) => getCountryVariants(c).some((v) => v.toLowerCase() === countryName.toLowerCase()))
+              || countries.find((c) => c.toLowerCase() === countryName.toLowerCase());
+            const finalCountry = match || countryName;
+            pendingCityRef.current = cityName || '';
+            setCountry(finalCountry);
+          } else {
+            setGeoError(true);
+          }
+        } catch { setGeoError(true); }
+        setGeoLoading(false);
+      },
+      () => { setGeoError(true); setGeoLoading(false); },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+    );
+  };
+
   const onSubmit = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
@@ -78,9 +114,19 @@ export default function CustomSearch() {
 
   // worldCities dinamik importu utils/geo altında yapılıyor; burada gerek yok.
 
+  // Konumdan gelen bekleyen şehri, yüklenen listedeki yazımla eşleyip uygula
+  const applyPendingCity = React.useCallback((list) => {
+    const p = pendingCityRef.current;
+    if (!p) return;
+    pendingCityRef.current = '';
+    const norm = (s) => (s || '').toLocaleLowerCase('en').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i');
+    const m = (list || []).find((n) => norm(n) === norm(p));
+    setCity(m || p);
+  }, []);
+
   React.useEffect(() => {
     setCitiesOptions([]);
-    setCity('');
+    if (!pendingCityRef.current) setCity('');
     if (!country) return;
     setLoadingCities(true);
 
@@ -102,6 +148,7 @@ export default function CustomSearch() {
         setAdminType('city');
         const sorted = listTurkeyProvinces().slice().sort((a,b)=>a.localeCompare(b, 'tr', { sensitivity: 'base' }));
         setCitiesOptions(sorted);
+        applyPendingCity(sorted);
         setLoadingCities(false);
         return;
       }
@@ -120,7 +167,9 @@ export default function CustomSearch() {
     const applyIfFresh = (arr) => {
       if (loadRef.current !== runId) return false;
       if (Array.isArray(arr) && arr.length) {
-        setCitiesOptions(Array.from(new Set(arr.filter(Boolean))).sort());
+        const clean = Array.from(new Set(arr.filter(Boolean))).sort();
+        setCitiesOptions(clean);
+        applyPendingCity(clean);
         setLoadingCities(false);
         return true;
       }
@@ -151,7 +200,23 @@ export default function CustomSearch() {
         <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-[11rem,11rem,1.1fr,auto,1.1fr,auto] items-start">
         {/* 1. Country */}
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('search.country')}</label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-medium text-gray-500">{t('search.country')}</label>
+            <button
+              type="button"
+              onClick={useMyLocation}
+              disabled={geoLoading}
+              className={`inline-flex items-center gap-1 text-[11px] font-medium transition-colors ${geoError ? 'text-red-500 hover:text-red-600' : 'text-teal-600 hover:text-teal-700'} ${geoLoading ? 'opacity-60 cursor-wait' : ''}`}
+              title={t('medstream.useMyLocation', 'Use my location')}
+            >
+              {geoLoading ? (
+                <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              ) : (
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              )}
+              {geoLoading ? t('medstream.locating', 'Locating…') : t('medstream.useMyLocation', 'Use my location')}
+            </button>
+          </div>
           <CountryCombobox
             options={countries}
             value={country}
