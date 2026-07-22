@@ -1650,6 +1650,8 @@
     "privacyData": "Gizlilik & Veri",
     "privacyDataDesc": "GDPR hakları ve çerezler",
     "profileSection": "Profil",
+    "profileSectionDesc": "Fotoğraf, ad, ülke ve dil",
+    "securityDesc": "Şifre ve oturumlar",
     "profilePhoto": "Profil fotoğrafı",
     "chooseFile": "Dosya seç",
     "noFileSelected": "Dosya seçilmedi",

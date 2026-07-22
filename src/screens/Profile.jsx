@@ -5,7 +5,7 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
-import { Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink, Globe } from 'lucide-react';
+import { Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink, Globe, User as UserIcon, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../i18n';
 import { LOCALES } from '../lib/locales';
@@ -93,7 +93,7 @@ export default function Profile() {
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get('tab');
-  const [active, setActive] = useState(tabFromUrl || 'notifications');
+  const [active, setActive] = useState(tabFromUrl || 'account');
 
   useEffect(() => {
     if (tabFromUrl) setActive(tabFromUrl);
@@ -424,10 +424,16 @@ export default function Profile() {
               <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('profile.settings')}</div>
             </div>
             <div className="p-2 space-y-0.5">
+              {/* Sağ üst menüdeki bölümlerle birebir aynı liste — iki giriş noktası tutarlı */}
+              <NavItem id="account" icon={UserIcon} title={t('profile.profileSection', 'Profile')} desc={t('profile.profileSectionDesc', 'Photo, name, country & language')} />
               {user?.role === 'patient' && (
                 <NavItem id="medical" icon={HeartPulse} title={t('profile.medicalHistory')} desc={t('profile.medicalHistoryDesc')} />
               )}
               <NavItem id="notifications" icon={Bell} title={t('profile.notifications')} desc={t('profile.notificationsDesc')} />
+              <NavItem id="security" icon={Shield} title={t('profile.security', 'Security')} desc={t('profile.securityDesc', 'Password & sessions')} />
+              {user?.role !== 'patient' && (
+                <NavItem id="privacy" icon={Lock} title={t('profile.privacyData', 'Privacy & Data')} desc={t('profile.privacyDataDesc', 'Consent, export & deletion')} />
+              )}
             </div>
           </div>
         </aside>

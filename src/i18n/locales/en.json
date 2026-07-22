@@ -1405,6 +1405,8 @@
     "privacyData": "Privacy & Data",
     "privacyDataDesc": "GDPR rights & cookies",
     "profileSection": "Profile",
+    "profileSectionDesc": "Photo, name, country & language",
+    "securityDesc": "Password & sessions",
     "profilePhoto": "Profile photo",
     "chooseFile": "Choose file",
     "noFileSelected": "No file selected",
