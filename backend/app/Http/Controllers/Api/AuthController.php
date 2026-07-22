@@ -351,9 +351,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Medical history is only available for patients.'], 403);
         }
 
-        $conditions = $this->authService->getMedicalHistory($request->user());
+        $history = $this->authService->getMedicalHistory($request->user());
 
-        return response()->json(['conditions' => $conditions]);
+        // 'conditions' anahtarı eski istemciler için korunur; yeni alanlar eklendi.
+        return response()->json($history);
     }
 
     #[OA\Put(
@@ -374,11 +375,11 @@ class AuthController extends Controller
             return response()->json(['message' => 'Medical history is only available for patients.'], 403);
         }
 
-        $this->authService->updateMedicalHistory($request->user(), $request->validated('conditions'));
+        $this->authService->updateMedicalHistory($request->user(), $request->validated());
 
         return response()->json([
-            'message'    => 'Medical history updated.',
-            'conditions' => $request->validated('conditions'),
+            'message' => 'Medical history updated.',
+            ...$this->authService->getMedicalHistory($request->user()),
         ]);
     }
 

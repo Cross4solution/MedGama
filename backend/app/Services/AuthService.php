@@ -456,21 +456,37 @@ class AuthService
 
     public function getMedicalHistory(User $user): array
     {
-        return json_decode($user->medical_history ?? '[]', true);
+        $raw = json_decode($user->medical_history ?? '[]', true);
+        // Geriye uyumluluk: eski kayıtlar düz liste (sadece conditions) idi.
+        if (is_array($raw) && array_is_list($raw)) {
+            $raw = ['conditions' => $raw];
+        }
+        return [
+            'conditions'   => $raw['conditions'] ?? [],
+            'medications'  => $raw['medications'] ?? [],
+            'vaccinations' => $raw['vaccinations'] ?? [],
+            'notes'        => $raw['notes'] ?? '',
+        ];
     }
 
-    public function updateMedicalHistory(User $user, array $conditions): void
+    public function updateMedicalHistory(User $user, array $payload): void
     {
-        $oldConditions = json_decode($user->medical_history ?? '[]', true);
-        $user->update(['medical_history' => json_encode($conditions)]);
+        $old = $this->getMedicalHistory($user);
+        $new = [
+            'conditions'   => array_values($payload['conditions'] ?? []),
+            'medications'  => array_values($payload['medications'] ?? $old['medications']),
+            'vaccinations' => array_values($payload['vaccinations'] ?? $old['vaccinations']),
+            'notes'        => $payload['notes'] ?? $old['notes'],
+        ];
+        $user->update(['medical_history' => json_encode($new)]);
 
         \App\Models\AuditLog::log(
             user: $user,
             action: 'medical_history_updated',
             resourceType: 'user',
             resourceId: $user->id,
-            oldValues: ['medical_history' => $oldConditions],
-            newValues: ['medical_history' => $conditions],
+            oldValues: ['medical_history' => $old],
+            newValues: ['medical_history' => $new],
             description: 'Patient updated medical history',
         );
     }

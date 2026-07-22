@@ -153,6 +153,9 @@ export default function Profile() {
 
   // Patient medical history — synced with DB via GlobalSuggest (comma-separated string)
   const [medicalHistoryValue, setMedicalHistoryValue] = useState('');
+  const [medicationsValue, setMedicationsValue] = useState('');   // kullanılan ilaçlar
+  const [vaccinationsValue, setVaccinationsValue] = useState(''); // olunan aşılar
+  const [medicalNotes, setMedicalNotes] = useState('');           // serbest notlar
 
   useEffect(() => {
     let cancelled = false;
@@ -161,10 +164,14 @@ export default function Profile() {
       if (user?.role === 'patient') {
         try {
           const res = await authAPI.getMedicalHistory();
-          const conditions = res?.conditions || res?.data?.conditions;
-          if (!cancelled && Array.isArray(conditions) && conditions.length > 0) {
+          const data = res?.data && typeof res.data === 'object' ? res.data : res;
+          const conditions = data?.conditions;
+          if (!cancelled && Array.isArray(conditions)) {
             setMedicalHistoryValue(conditions.join(', '));
-            return;
+            if (Array.isArray(data?.medications)) setMedicationsValue(data.medications.join(', '));
+            if (Array.isArray(data?.vaccinations)) setVaccinationsValue(data.vaccinations.join(', '));
+            if (typeof data?.notes === 'string') setMedicalNotes(data.notes);
+            if (conditions.length > 0) return;
           }
         } catch {}
       }
@@ -188,19 +195,22 @@ export default function Profile() {
     return () => { cancelled = true; };
   }, [user?.email, user?.role]);
 
+  // GlobalSuggest değeri string ("a, b") veya array olabilir → temiz string listesi
+  const parseChips = (val) => {
+    if (Array.isArray(val)) return val.map(t => (typeof t === 'string' ? t : t?.name || '')).filter(Boolean);
+    if (typeof val === 'string' && val.trim()) return val.split(',').map(s => s.trim()).filter(Boolean);
+    return [];
+  };
+
   const saveMedical = async (e) => {
     e?.preventDefault?.();
     setSaving(true);
-    // Parse conditions — handle both string and array formats from GlobalSuggest
-    let conditions = [];
-    if (Array.isArray(medicalHistoryValue)) {
-      conditions = medicalHistoryValue.map(t => (typeof t === 'string' ? t : t?.name || '')).filter(Boolean);
-    } else if (typeof medicalHistoryValue === 'string' && medicalHistoryValue.trim()) {
-      conditions = medicalHistoryValue.split(',').map(s => s.trim()).filter(Boolean);
-    }
+    const conditions = parseChips(medicalHistoryValue);
+    const medications = parseChips(medicationsValue);
+    const vaccinations = parseChips(vaccinationsValue);
     let savedToServer = false;
     try {
-      await authAPI.updateMedicalHistory({ conditions });
+      await authAPI.updateMedicalHistory({ conditions, medications, vaccinations, notes: medicalNotes || '' });
       savedToServer = true;
       showToast(t('profile.medicalHistorySaved', 'Medical conditions saved'));
     } catch (err) {
@@ -639,7 +649,56 @@ export default function Profile() {
               />
 
               <p className="text-xs text-gray-500 mt-1.5">{t('profile.medicalHistoryHint', 'Search and select your conditions, or type custom entries.')}</p>
-              
+
+              {/* Kullanılan İlaçlar */}
+              <div className="mt-5 pt-4 border-t border-gray-100">
+                <h3 className="text-[13px] font-bold text-gray-900 mb-1 flex items-center gap-2">
+                  <span className="w-1.5 h-4 rounded-full bg-gradient-to-b from-teal-500 to-emerald-500" />
+                  {t('profile.medications', 'Medications')}
+                </h3>
+                <p className="text-xs text-gray-500 mb-2">{t('profile.medicationsDesc', 'Medicines you currently use.')}</p>
+                <GlobalSuggest
+                  type="medical_history"
+                  value={medicationsValue}
+                  onChange={(val) => setMedicationsValue(val)}
+                  placeholder={t('profile.medicationsPlaceholder', 'e.g. Aspirin 100mg, Metformin…')}
+                  allowCustom={true}
+                />
+              </div>
+
+              {/* Olunan Aşılar */}
+              <div className="mt-5 pt-4 border-t border-gray-100">
+                <h3 className="text-[13px] font-bold text-gray-900 mb-1 flex items-center gap-2">
+                  <span className="w-1.5 h-4 rounded-full bg-gradient-to-b from-sky-500 to-blue-500" />
+                  {t('profile.vaccinations', 'Vaccinations')}
+                </h3>
+                <p className="text-xs text-gray-500 mb-2">{t('profile.vaccinationsDesc', 'Vaccines you have received.')}</p>
+                <GlobalSuggest
+                  type="medical_history"
+                  value={vaccinationsValue}
+                  onChange={(val) => setVaccinationsValue(val)}
+                  placeholder={t('profile.vaccinationsPlaceholder', 'e.g. COVID-19, Tetanus, Hepatitis B…')}
+                  allowCustom={true}
+                />
+              </div>
+
+              {/* Notlar */}
+              <div className="mt-5 pt-4 border-t border-gray-100">
+                <h3 className="text-[13px] font-bold text-gray-900 mb-1 flex items-center gap-2">
+                  <span className="w-1.5 h-4 rounded-full bg-gradient-to-b from-amber-500 to-orange-500" />
+                  {t('profile.medicalNotes', 'Notes')}
+                </h3>
+                <p className="text-xs text-gray-500 mb-2">{t('profile.medicalNotesDesc', 'Anything else your doctor should know.')}</p>
+                <textarea
+                  value={medicalNotes}
+                  onChange={(e) => setMedicalNotes(e.target.value)}
+                  rows={4}
+                  maxLength={5000}
+                  placeholder={t('profile.medicalNotesPlaceholder', 'e.g. Past surgeries, family history, sensitivities…')}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 outline-none resize-y"
+                />
+              </div>
+
               <div className="flex justify-end mt-4">
                 <button onClick={saveMedical} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? t('common.saving') : t('common.save')}</button>
               </div>

@@ -14,8 +14,13 @@ class UpdateMedicalHistoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'conditions'   => 'required|array',
-            'conditions.*' => 'string|max:255',
+            'conditions'      => 'required|array',
+            'conditions.*'    => 'string|max:255',
+            'medications'     => 'sometimes|array',
+            'medications.*'   => 'string|max:255',
+            'vaccinations'    => 'sometimes|array',
+            'vaccinations.*'  => 'string|max:255',
+            'notes'           => 'sometimes|nullable|string|max:5000',
         ];
     }
 }
