@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from '@/compat/router';
 import { toEnglishTimestamp } from '../utils/i18n';
 import { Star, MessageCircle, Heart, Clock, Image as ImageIcon, Folder, Share2 } from 'lucide-react';
@@ -12,6 +13,7 @@ import { medStreamAPI } from '../lib/api';
 // - items: [{ id, title, subtitle, image }] şeklinde liste. Boşsa placeholder üretilir.
 // - columns: grid kolon sayısı (md breakpoint)
 export default function TimelinePreview({ items = [], columns = 3, limit = 6, onViewAll }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [apiPosts, setApiPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,10 +114,10 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
               onClick={onViewAll}
               className="text-sm text-[#0d9488] hover:text-[#0f766e] hover:underline"
             >
-              View All Updates
+              {t('medstream.viewAllUpdates', 'View All Updates')}
             </button>
           ) : (
-            <Link to="/explore" className="text-sm text-[#0d9488] hover:text-[#0f766e] hover:underline">View all updates items</Link>
+            <Link to="/explore" className="text-sm text-[#0d9488] hover:text-[#0f766e] hover:underline">{t('medstream.viewAllUpdates', 'View All Updates')}</Link>
           )}
         </div>
         <div className="rounded-md border border-[#e5edf5] bg-[#f8fafd] overflow-hidden shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px]">
@@ -143,8 +145,8 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
             ) : !data.length ? (
               <div className="flex flex-col items-center justify-center py-16 text-gray-400">
                 <MessageCircle className="w-10 h-10 mb-3 opacity-40" />
-                <p className="text-sm font-medium">No posts yet</p>
-                <p className="text-xs mt-1">Be the first to share on MedStream!</p>
+                <p className="text-sm font-medium">{t('medstream.noPostsYet', 'No posts yet')}</p>
+                <p className="text-xs mt-1">{t('medstream.beFirstToShare', 'Be the first to share on MedStream!')}</p>
               </div>
             ) : (
             <div className="space-y-3">

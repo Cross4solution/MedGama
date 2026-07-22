@@ -430,7 +430,7 @@ export default function Profile() {
                 <NavItem id="medical" icon={HeartPulse} title={t('profile.medicalHistory')} desc={t('profile.medicalHistoryDesc')} />
               )}
               <NavItem id="notifications" icon={Bell} title={t('profile.notifications')} desc={t('profile.notificationsDesc')} />
-              <NavItem id="security" icon={Shield} title={t('profile.security', 'Security')} desc={t('profile.securityDesc', 'Password & sessions')} />
+              <NavItem id="security" icon={Shield} title={t('profile.security', 'Security & Password')} desc={t('profile.securityDesc', 'Password & sessions')} />
               {user?.role !== 'patient' && (
                 <NavItem id="privacy" icon={Lock} title={t('profile.privacyData', 'Privacy & Data')} desc={t('profile.privacyDataDesc', 'Consent, export & deletion')} />
               )}
