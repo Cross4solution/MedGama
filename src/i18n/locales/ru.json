@@ -2192,6 +2192,7 @@
     "useMyLocation": "Моё местоположение",
     "locating": "Определение…",
     "locationDenied": "Не удалось определить",
+    "locationPermission": "Доступ к геолокации заблокирован — разрешите в браузере",
     "viewAllUpdates": "Все обновления",
     "noPostsYet": "Пока нет публикаций",
     "beFirstToShare": "Поделитесь первым в MedStream!",

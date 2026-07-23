@@ -3005,6 +3005,7 @@
     "useMyLocation": "Konumumu kullan",
     "locating": "Konum alınıyor…",
     "locationDenied": "Konum alınamadı",
+    "locationPermission": "Konum izni engellenmiş — tarayıcınızdan izin verin",
     "viewAllUpdates": "Tüm Güncellemeleri Gör",
     "noPostsYet": "Henüz gönderi yok",
     "beFirstToShare": "MedStream'de ilk paylaşımı sen yap!",

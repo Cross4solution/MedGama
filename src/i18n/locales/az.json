@@ -2235,6 +2235,7 @@
     "useMyLocation": "Məkanımı istifadə et",
     "locating": "Müəyyən edilir…",
     "locationDenied": "Məkan mövcud deyil",
+    "locationPermission": "Məkan icazəsi bloklanıb — brauzerdən icazə verin",
     "viewAllUpdates": "Bütün yenilikləri gör",
     "noPostsYet": "Hələ paylaşım yoxdur",
     "beFirstToShare": "MedStream-də ilk paylaşımı sən et!",

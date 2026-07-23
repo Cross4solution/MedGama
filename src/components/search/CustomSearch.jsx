@@ -89,12 +89,17 @@ export default function CustomSearch() {
             pendingCityRef.current = cityName || '';
             setCountry(finalCountry);
           } else {
-            setGeoError(true);
+            setGeoError('failed');
           }
-        } catch { setGeoError(true); }
+        } catch (e) { console.warn('[UseMyLocation] reverse-geocode failed:', e); setGeoError('failed'); }
         setGeoLoading(false);
       },
-      () => { setGeoError(true); setGeoLoading(false); },
+      (err) => {
+        // code 1 = kullanıcı/tarayıcı izni engelledi → farklı mesaj göster
+        console.warn('[UseMyLocation] geolocation error:', err?.code, err?.message);
+        setGeoError(err?.code === 1 ? 'permission' : 'failed');
+        setGeoLoading(false);
+      },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
     );
   };
@@ -226,9 +231,11 @@ export default function CustomSearch() {
             )}
             {geoLoading
               ? t('medstream.locating', 'Locating…')
-              : geoError
-                ? `${t('medstream.locationDenied', 'Location unavailable')} — ${t('common.retry', 'retry')}`
-                : t('medstream.useMyLocation', 'Use my location')}
+              : geoError === 'permission'
+                ? t('medstream.locationPermission', 'Location permission blocked — allow it in your browser')
+                : geoError
+                  ? `${t('medstream.locationDenied', 'Location unavailable')} — ${t('common.retry', 'retry')}`
+                  : t('medstream.useMyLocation', 'Use my location')}
           </button>
         </div>
 

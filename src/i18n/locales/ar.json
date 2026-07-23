@@ -2192,6 +2192,7 @@
     "useMyLocation": "استخدام موقعي",
     "locating": "جارٍ تحديد الموقع…",
     "locationDenied": "تعذّر تحديد الموقع",
+    "locationPermission": "تم حظر إذن الموقع — اسمح به من المتصفح",
     "viewAllUpdates": "عرض كل التحديثات",
     "noPostsYet": "لا توجد منشورات بعد",
     "beFirstToShare": "كن أول من ينشر على MedStream!",

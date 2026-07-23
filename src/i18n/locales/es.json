@@ -2192,6 +2192,7 @@
     "useMyLocation": "Usar mi ubicación",
     "locating": "Ubicando…",
     "locationDenied": "Ubicación no disponible",
+    "locationPermission": "Permiso de ubicación bloqueado — permítelo en tu navegador",
     "viewAllUpdates": "Ver todas las novedades",
     "noPostsYet": "Aún no hay publicaciones",
     "beFirstToShare": "¡Sé el primero en publicar en MedStream!",
