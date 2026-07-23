@@ -196,27 +196,11 @@ export default function CustomSearch() {
 
   return (
     <form onSubmit={onSubmit}>
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 pb-6 md:p-6 md:pb-7 shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-5 shadow-sm">
         <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-[11rem,11rem,1.1fr,auto,1.1fr,auto] items-start">
-        {/* 1. Country */}
+        {/* 1. Country — "Use my location" kutunun altında, hata durumunda metniyle belli */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-medium text-gray-500">{t('search.country')}</label>
-            <button
-              type="button"
-              onClick={useMyLocation}
-              disabled={geoLoading}
-              className={`inline-flex items-center gap-1 text-[11px] font-medium transition-colors ${geoError ? 'text-red-500 hover:text-red-600' : 'text-teal-600 hover:text-teal-700'} ${geoLoading ? 'opacity-60 cursor-wait' : ''}`}
-              title={t('medstream.useMyLocation', 'Use my location')}
-            >
-              {geoLoading ? (
-                <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-              ) : (
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-              )}
-              {geoLoading ? t('medstream.locating', 'Locating…') : t('medstream.useMyLocation', 'Use my location')}
-            </button>
-          </div>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('search.country')}</label>
           <CountryCombobox
             options={countries}
             value={country}
@@ -228,6 +212,24 @@ export default function CustomSearch() {
               return code ? `https://flagcdn.com/24x18/${code}.png` : null;
             }}
           />
+          <button
+            type="button"
+            onClick={useMyLocation}
+            disabled={geoLoading}
+            className={`mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium transition-colors ${geoError ? 'text-red-500 hover:text-red-600' : 'text-teal-600 hover:text-teal-700'} ${geoLoading ? 'opacity-60 cursor-wait' : ''}`}
+            title={geoError ? t('medstream.locationDenied', 'Location unavailable') : t('medstream.useMyLocation', 'Use my location')}
+          >
+            {geoLoading ? (
+              <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            ) : (
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            )}
+            {geoLoading
+              ? t('medstream.locating', 'Locating…')
+              : geoError
+                ? `${t('medstream.locationDenied', 'Location unavailable')} — ${t('common.retry', 'retry')}`
+                : t('medstream.useMyLocation', 'Use my location')}
+          </button>
         </div>
 
         {/* 2. City */}

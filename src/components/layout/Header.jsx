@@ -521,14 +521,6 @@ const Header = () => {
                             <Shield className="w-4 h-4 text-gray-400" />
                             {t('profile.security', 'Security & Password')}
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => { setProfileOpen(false); navigate('/profile?tab=privacy'); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                          >
-                            <Lock className="w-4 h-4 text-gray-400" />
-                            {t('profile.privacyData', 'Privacy & Data')}
-                          </button>
                         </div>
                         <div className="border-t border-gray-100 p-1.5">
                           <button
