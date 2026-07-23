@@ -30,6 +30,7 @@ export default function GlobalSuggest({
   inputClassName = '',
   allowCustom = true,
   maxTags = 20,
+  lowercase = false, // true → eklenen tag'ler hep küçük harf (tek standart görünüm)
   label,
 }) {
   const { t } = useTranslation();
@@ -81,8 +82,9 @@ export default function GlobalSuggest({
   // ── Add tag ──
   const addTag = useCallback((item) => {
     if (disabled) return;
-    const name = item?.name || item?.code || String(item).trim();
+    let name = item?.name || item?.code || String(item).trim();
     if (!name) return;
+    if (lowercase) name = name.toLocaleLowerCase();
     if (tags.length >= maxTags) return;
     // Avoid duplicates
     if (tags.some((t) => (t.name || '').toLowerCase() === name.toLowerCase())) {
@@ -99,7 +101,7 @@ export default function GlobalSuggest({
     setShowPopular(false);
     setActiveIndex(-1);
     justSelectedRef.current = true;
-  }, [tags, multi, maxTags, disabled, emit]);
+  }, [tags, multi, maxTags, disabled, emit, lowercase]);
 
   // ── Remove tag ──
   const removeTag = useCallback((idx) => {

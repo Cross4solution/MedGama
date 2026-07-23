@@ -196,7 +196,7 @@ export default function CustomSearch() {
 
   return (
     <form onSubmit={onSubmit}>
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-5 shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 pb-6 md:p-6 md:pb-7 shadow-sm">
         <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-[11rem,11rem,1.1fr,auto,1.1fr,auto] items-start">
         {/* 1. Country */}
         <div>
@@ -245,7 +245,7 @@ export default function CustomSearch() {
           />
         </div>
 
-        {/* 3. Symptom */}
+        {/* 3. Symptom — çoklu girilebilir (etikette "(s)"), örnek metin kutunun altında */}
         <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
           <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('search.symptomProcedure')}</label>
           <GlobalSuggest
@@ -255,7 +255,9 @@ export default function CustomSearch() {
             disabled={disableSymptom}
             placeholder={t('search.symptomPlaceholder')}
             allowCustom={true}
+            lowercase={true}
           />
+          <p className="mt-1.5 text-[11px] text-gray-400 leading-snug">{t('search.symptomHint', 'e.g., nasal congestion, headache')}</p>
         </div>
 
         <div className="flex items-center justify-center col-span-1 sm:col-span-2 md:col-span-1 md:pt-[44px] py-1 md:py-0">
@@ -266,7 +268,7 @@ export default function CustomSearch() {
           </div>
         </div>
 
-        {/* 4. Specialty */}
+        {/* 4. Specialty — TEK seçim (kişi iki uzmanlık aynı anda aramaz), örnek metin altta */}
         <div className="relative col-span-1 sm:col-span-2 md:col-span-1">
           <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('search.specialtyDisease')}</label>
           <GlobalSuggest
@@ -276,7 +278,9 @@ export default function CustomSearch() {
             disabled={disableSpecialty}
             placeholder={t('search.specialtyPlaceholder')}
             allowCustom={true}
+            multi={false}
           />
+          <p className="mt-1.5 text-[11px] text-gray-400 leading-snug">{t('search.specialtyHint', "e.g., ENT or Crohn's")}</p>
         </div>
 
         {/* 5. Search button */}

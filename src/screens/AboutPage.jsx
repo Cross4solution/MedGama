@@ -89,7 +89,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#0e7c7b] via-[#0d9488] to-[#0f766e]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#12a3a1] via-[#14b8a6] to-[#0d9488]">
         <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '22px 22px' }} />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-12 pb-8 text-center">
           {/* Negatif (beyaz) logo — koyu teal hero üstünde temiz görünsün */}
