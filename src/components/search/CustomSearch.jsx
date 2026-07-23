@@ -70,37 +70,59 @@ export default function CustomSearch() {
   // Ülke set edilince şehir-yükleme effect'i city'yi resetler; konumdan gelen şehir
   // burada bekler, şehir listesi yüklenince listedeki yazımla eşlenip uygulanır.
   const pendingCityRef = React.useRef('');
+  // Koordinat → ülke/şehir: önce BigDataCloud, olmazsa Nominatim (OSM) yedeği.
+  const reverseGeo = async (lat, lon) => {
+    try {
+      const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+      const j = await r.json();
+      if (j?.countryName) return { country: j.countryName, city: j.city || j.locality || '' };
+    } catch (e) { console.warn('[UseMyLocation] BigDataCloud failed, trying Nominatim:', e); }
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&accept-language=en`);
+      const j = await r.json();
+      const a = j?.address || {};
+      if (a.country) return { country: a.country, city: a.city || a.town || a.province || a.state || '' };
+    } catch (e) { console.warn('[UseMyLocation] Nominatim failed:', e); }
+    return null;
+  };
+
   const useMyLocation = () => {
     if (geoLoading) return;
-    if (!navigator?.geolocation) { setGeoError(true); return; }
+    if (!navigator?.geolocation) { setGeoError('failed'); return; }
     setGeoLoading(true); setGeoError(false);
+
+    const onPosition = async (pos) => {
+      const geo = await reverseGeo(pos.coords.latitude, pos.coords.longitude);
+      if (geo?.country) {
+        // Ülke listesindeki tam adla eşle (alias'lar dahil: "Turkiye" → "Turkey")
+        const match = countries.find((c) => getCountryVariants(c).some((v) => v.toLowerCase() === geo.country.toLowerCase()))
+          || countries.find((c) => c.toLowerCase() === geo.country.toLowerCase());
+        pendingCityRef.current = geo.city || '';
+        setCountry(match || geo.country);
+      } else {
+        setGeoError('failed');
+      }
+      setGeoLoading(false);
+    };
+
+    // İlk deneme başarısızsa (izin hariç) bir kez yüksek hassasiyetle otomatik yeniden dene —
+    // masaüstü Chrome'da Wi-Fi tabanlı konum ilk seferde sık başarısız olur (code 2/3).
     navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=en`);
-          const j = await r.json();
-          const countryName = j.countryName || '';
-          const cityName = j.city || j.locality || '';
-          if (countryName) {
-            // Ülke listesindeki tam adla eşle (alias'lar dahil: "Turkiye" → "Turkey")
-            const match = countries.find((c) => getCountryVariants(c).some((v) => v.toLowerCase() === countryName.toLowerCase()))
-              || countries.find((c) => c.toLowerCase() === countryName.toLowerCase());
-            const finalCountry = match || countryName;
-            pendingCityRef.current = cityName || '';
-            setCountry(finalCountry);
-          } else {
-            setGeoError('failed');
-          }
-        } catch (e) { console.warn('[UseMyLocation] reverse-geocode failed:', e); setGeoError('failed'); }
-        setGeoLoading(false);
-      },
+      onPosition,
       (err) => {
-        // code 1 = kullanıcı/tarayıcı izni engelledi → farklı mesaj göster
-        console.warn('[UseMyLocation] geolocation error:', err?.code, err?.message);
-        setGeoError(err?.code === 1 ? 'permission' : 'failed');
-        setGeoLoading(false);
+        console.warn('[UseMyLocation] geolocation error (1st try):', err?.code, err?.message);
+        if (err?.code === 1) { setGeoError('permission'); setGeoLoading(false); return; }
+        navigator.geolocation.getCurrentPosition(
+          onPosition,
+          (err2) => {
+            console.warn('[UseMyLocation] geolocation error (2nd try):', err2?.code, err2?.message);
+            setGeoError(err2?.code === 1 ? 'permission' : 'failed');
+            setGeoLoading(false);
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
       },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 300000 }
     );
   };
 
