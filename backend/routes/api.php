@@ -167,6 +167,7 @@ Route::get('/system/init-db-status', function (\Illuminate\Http\Request $request
 */
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth-register');
+    Route::get('/username-available', [AuthController::class, 'usernameAvailable'])->middleware('throttle:60,1');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth-login');
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:auth-password');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:auth-password');

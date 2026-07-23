@@ -197,6 +197,7 @@ const LoginPage = ({ role = 'patient' }) => {
     confirmPassword: '',
     firstName: '',
     lastName: '',
+    username: '',
     phoneCode: '+90',
     phone: '',
     birthDate: '',
@@ -319,11 +320,19 @@ const LoginPage = ({ role = 'patient' }) => {
         // Redirect based on ACTUAL role from API — not the login page's assumed role
         navigate(getRedirectFromLoginResult(res, config.redirectAfterLogin));
       } else if (currentPage === 'register') {
+        // Müşteri kararı: kullanıcı @handle'ını kayıtta kendi seçer (zorunlu).
+        if (!String(formData.username || '').trim()) {
+          setErrors((prev) => ({ ...prev, username: t('auth.usernameRequired', 'Kullanıcı adı zorunludur.') }));
+          notify({ type: 'error', message: t('auth.usernameRequired', 'Kullanıcı adı zorunludur.') });
+          setSubmitting(false);
+          return;
+        }
         const isClinicRole = formData.role === 'clinic';
         const doRegister = formData.role === 'doctor' ? registerDoctor : register;
         const payload = {
           email: formData.email,
           password: formData.password,
+          username: String(formData.username).trim().toLowerCase(),
           fullname: `${formData.firstName} ${formData.lastName}`.trim() || formData.email,
           mobile: formData.phone ? `${formData.phoneCode}${formData.phone}`.replace(/\s/g, '') : undefined,
           city_id: formData.city ? parseInt(formData.city) : undefined,

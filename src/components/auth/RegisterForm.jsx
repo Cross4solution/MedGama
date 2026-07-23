@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { authAPI } from '../../lib/api';
 import {
   Heart,
   Eye,
@@ -70,6 +71,28 @@ const RegisterForm = ({
   // Multi-step state
   const [step, setStep] = useState(1); // 1 -> basic, 2 -> details
   const [localErrors, setLocalErrors] = useState({});
+
+  // @handle canlı müsaitlik kontrolü (müşteri kararı: kullanıcı kendi seçer)
+  const [unameStatus, setUnameStatus] = useState(null); // checking|ok|taken|invalid|reserved
+  const unameTimer = useRef(null);
+  useEffect(() => {
+    const u = (formData?.username || '').trim().toLowerCase();
+    if (unameTimer.current) clearTimeout(unameTimer.current);
+    if (!u) { setUnameStatus(null); return; }
+    if (!/^[a-z0-9](?:[a-z0-9._]{1,28})[a-z0-9]$/.test(u) || u.includes('..') || u.includes('__')) {
+      setUnameStatus('invalid'); return;
+    }
+    setUnameStatus('checking');
+    unameTimer.current = setTimeout(() => {
+      authAPI.usernameAvailable(u)
+        .then((r) => {
+          const d = r?.data && typeof r.data === 'object' ? r.data : r;
+          setUnameStatus(d?.available ? 'ok' : (d?.reason === 'reserved' ? 'reserved' : 'taken'));
+        })
+        .catch(() => setUnameStatus(null)); // sunucuya ulaşılamazsa engelleme — backend zaten doğrular
+    }, 450);
+    return () => { if (unameTimer.current) clearTimeout(unameTimer.current); };
+  }, [formData?.username]);
   const dobRef = useRef(null);
   /** @type {any} */
   const fd = (formData || {});
@@ -172,6 +195,39 @@ const RegisterForm = ({
             />
           </div>
           {(errors.lastName || localErrors.lastName) && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.lastName || localErrors.lastName}</p>}
+        </div>
+
+        {/* @handle — kullanıcı kendi seçer; canlı müsaitlik göstergeli */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1.5 text-left">
+            {t('auth.username', 'Kullanıcı adı')}
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">@</span>
+            <input
+              type="text"
+              name="username"
+              value={fd.username ?? ''}
+              onChange={(e) => handleInputChange({ target: { name: 'username', value: e.target.value.toLowerCase().replace(/[^a-z0-9._]/g, '') } })}
+              maxLength={30}
+              autoComplete="off"
+              className={`w-full h-11 pl-8 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-left text-sm ${
+                (errors.username || localErrors.username || ['taken', 'invalid', 'reserved'].includes(unameStatus)) ? 'border-red-400' : unameStatus === 'ok' ? 'border-emerald-400' : 'border-gray-300'
+              }`}
+              placeholder={t('auth.usernamePlaceholder', 'kullanici.adi')}
+            />
+          </div>
+          <p className={`text-xs mt-1 text-left ${
+            unameStatus === 'ok' ? 'text-emerald-600' : unameStatus && unameStatus !== 'checking' ? 'text-red-500' : 'text-gray-400'
+          }`}>
+            {unameStatus === 'checking' && t('auth.usernameChecking', 'Kontrol ediliyor…')}
+            {unameStatus === 'ok' && t('auth.usernameAvailable', 'Bu kullanıcı adı müsait ✓')}
+            {unameStatus === 'taken' && t('auth.usernameTaken', 'Bu kullanıcı adı alınmış')}
+            {unameStatus === 'reserved' && t('auth.usernameReserved', 'Bu kullanıcı adı rezerve')}
+            {unameStatus === 'invalid' && t('auth.usernameInvalid', '3-30 karakter; küçük harf, rakam, nokta ve alt çizgi')}
+            {!unameStatus && t('auth.usernameHint', 'Medstream profil adresiniz: medagama.com/@kullaniciadi')}
+          </p>
+          {(errors.username || localErrors.username) && <p className="text-red-500 text-xs mt-1 text-left">{errors.username || localErrors.username}</p>}
         </div>
         {(fd.role === 'clinic') && (
         <div>

@@ -68,6 +68,24 @@ class AuthController extends Controller
             ->setStatusCode(201);
     }
 
+    #[OA\Get(
+        path: '/auth/username-available',
+        summary: 'Check if a handle (username) is available for registration',
+        tags: ['Auth'],
+        parameters: [new OA\Parameter(name: 'username', in: 'query', required: true, schema: new OA\Schema(type: 'string'))],
+        responses: [new OA\Response(response: 200, description: '{available, reason}')]
+    )]
+    public function usernameAvailable(Request $request): JsonResponse
+    {
+        $username = (string) $request->query('username', '');
+        $reason = \App\Support\Username::availability($username);
+
+        return response()->json([
+            'available' => $reason === null,
+            'reason'    => $reason, // invalid | reserved | taken | null
+        ]);
+    }
+
     #[OA\Post(
         path: '/auth/login',
         summary: 'Login and receive Bearer token',

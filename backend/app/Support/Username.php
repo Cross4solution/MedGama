@@ -73,4 +73,35 @@ class Username
 
         return $candidate;
     }
+
+    /** Platform/impersonation açısından alınamayacak handle'lar. */
+    public const RESERVED = [
+        'admin', 'administrator', 'root', 'support', 'help', 'info', 'contact',
+        'medagama', 'medgama', 'medstream', 'vasco', 'vascoai', 'api', 'www',
+        'doctor', 'doktor', 'clinic', 'klinik', 'hospital', 'hastane',
+        'patient', 'hasta', 'moderator', 'official', 'security', 'system',
+        'login', 'register', 'settings', 'profile', 'about', 'search', 'crm',
+    ];
+
+    /** Kullanıcının kendi seçtiği handle biçim olarak geçerli mi? */
+    public static function isValidFormat(string $username): bool
+    {
+        $u = strtolower(trim($username));
+        return (bool) preg_match('/^[a-z0-9](?:[a-z0-9._]{1,28})[a-z0-9]$/', $u)
+            && !str_contains($u, '..') && !str_contains($u, '__');
+    }
+
+    /**
+     * Handle müsait mi? Dönen reason: 'invalid' | 'reserved' | 'taken' | null (müsait).
+     */
+    public static function availability(string $username, ?string $ignoreId = null): ?string
+    {
+        $u = strtolower(trim($username));
+        if (!self::isValidFormat($u)) return 'invalid';
+        if (in_array($u, self::RESERVED, true)) return 'reserved';
+        $taken = User::where('username', $u)
+            ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+            ->exists();
+        return $taken ? 'taken' : null;
+    }
 }

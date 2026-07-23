@@ -37,6 +37,20 @@ class RegisterRequest extends FormRequest
             'email'         => 'required|email',
             'password'      => ['required', 'string', Password::min(8)->letters()->numbers()],
             'fullname'      => 'required|string|max:255',
+            // Kullanıcı kendi handle'ını seçer (müşteri kararı). Gönderilmezse
+            // geriye uyumluluk için sistem otomatik üretir (Username::generate).
+            'username'      => [
+                'sometimes', 'string', 'min:3', 'max:30',
+                function ($attribute, $value, $fail) {
+                    if ($reason = \App\Support\Username::availability((string) $value)) {
+                        $fail(match ($reason) {
+                            'invalid'  => 'Kullanıcı adı 3-30 karakter olmalı; küçük harf, rakam, nokta ve alt çizgi kullanılabilir.',
+                            'reserved' => 'Bu kullanıcı adı rezervedir, başka bir tane seçin.',
+                            default    => 'Bu kullanıcı adı alınmış, başka bir tane seçin.',
+                        });
+                    }
+                },
+            ],
             'mobile'        => 'nullable|string|max:20',
             'role_id'       => 'sometimes|in:patient,doctor,clinicOwner',
             'city_id'       => 'sometimes|integer',

@@ -136,6 +136,7 @@ api.interceptors.response.use(
 // ── Auth Service ──
 export const authAPI = {
   register: (payload) => api.post('/auth/register', payload),
+  usernameAvailable: (username) => api.get('/auth/username-available', { params: { username } }),
   login: (payload) => api.post('/auth/login', payload),
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
