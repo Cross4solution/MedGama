@@ -4,6 +4,7 @@ import { ArrowLeft, BadgeCheck, MapPin, CalendarDays, Loader2 } from 'lucide-rea
 import { useParams, useNavigate, Link } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { medStreamAPI } from '../lib/api';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import TimelineCard from '../components/timeline/TimelineCard';
@@ -64,6 +65,7 @@ export default function MedStreamProfile() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user: authUser } = useAuth();
+  const { notify } = useToast();
 
   const [state, setState] = useState({ loading: true, error: null, data: null });
   const [posts, setPosts] = useState([]);
@@ -110,7 +112,7 @@ export default function MedStreamProfile() {
   }, [authorId]);
 
   const onToggleFollow = useCallback(async () => {
-    if (!authUser) { navigate('/login'); return; }
+    if (!authUser) { notify({ type: 'warning', message: t('auth.loginRequiredMessage', 'Please sign in to continue.') }); return; }
     if (!authorId || followBusy) return;
     setFollowBusy(true);
     const next = !following;
