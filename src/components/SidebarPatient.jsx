@@ -349,7 +349,7 @@ export default function SidebarPatient() {
                 <nav className="space-y-0.5">
                   <Link to="/about" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">{t('about.title')}</Link>
                   <Link to="/for-patients" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">{t('forPatients.title')}</Link>
-                  <Link to="/clinics" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">{t('forClinics.title')}</Link>
+                  <Link to="/for-clinics" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">{t('forClinics.title')}</Link>
                   <Link to="/vasco-ai" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">Vasco AI</Link>
                   <Link to="/contact" onClick={() => setSidebarMobileOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium text-gray-500 hover:bg-gray-50/80 hover:text-gray-700 transition-all">{t('nav.contact')}</Link>
                 </nav>

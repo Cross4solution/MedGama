@@ -9,8 +9,25 @@ use Illuminate\Http\Request;
 
 class DigitalAnamnesisController extends Controller
 {
+    /**
+     * Anamnez erişimi: ya kaydın sahibi hasta ya da klinik rol (doktor/klinik/
+     * hastane/admin). Aksi halde hasta-hasta arası PHI sızıntısı (IDOR) olurdu.
+     */
+    private function authorizeAnamnesisAccess(Request $request, string $patientId): void
+    {
+        $user = $request->user();
+        $clinicalRoles = ['doctor', 'clinicOwner', 'clinic', 'hospital', 'superAdmin', 'saasAdmin'];
+        $isOwner = $user->id === $patientId;
+        $isClinical = in_array($user->role_id, $clinicalRoles, true);
+        if (!$isOwner && !$isClinical) {
+            abort(403, 'You are not authorized to access this medical record.');
+        }
+    }
+
     public function show(Request $request, string $patientId)
     {
+        $this->authorizeAnamnesisAccess($request, $patientId);
+
         $anamnesis = DigitalAnamnesis::active()->where('patient_id', $patientId)->first();
 
         if (!$anamnesis) {
@@ -34,6 +51,9 @@ class DigitalAnamnesisController extends Controller
             'patient_id' => 'required|uuid|exists:users,id',
             'answers' => 'required|array',
         ]);
+
+        // Yazma yetkisi: kaydın sahibi hasta ya da klinik rol.
+        $this->authorizeAnamnesisAccess($request, $validated['patient_id']);
 
         $anamnesis = DigitalAnamnesis::updateOrCreate(
             ['patient_id' => $validated['patient_id']],

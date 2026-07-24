@@ -78,7 +78,9 @@ class AuthService
                 'gender'                  => $data['gender'] ?? null,
                 'clinic_id'               => $clinicId,
                 'clinic_name'             => $data['clinic_name'] ?? null,
-                'medical_history'         => $data['medical_history'] ?? null,
+                // Kayıtta gelen serbest metin geçmiş, okuma tarafının beklediği
+                // {conditions:[...]} objesine sarmalanır (aksi halde json_decode null döner).
+                'medical_history'         => self::wrapInitialMedicalHistory($data['medical_history'] ?? null),
                 'guardian_email'          => $data['guardian_email'] ?? null,
                 'guardian_consent_at'     => !empty($data['guardian_email']) ? now() : null,
                 // KVKK Md. 6 / GDPR Art. 9 — sağlık verisi açık rızası (kim/ne zaman + IP)
@@ -457,6 +459,14 @@ class AuthService
     }
 
     // ── Medical History ──
+
+    /** Kayıt anındaki serbest-metin geçmişi {conditions:[...]} JSON'una çevir. */
+    private static function wrapInitialMedicalHistory(?string $raw): ?string
+    {
+        if ($raw === null || trim($raw) === '') return null;
+        $conditions = array_values(array_filter(array_map('trim', explode(',', $raw))));
+        return json_encode(['conditions' => $conditions, 'medications' => [], 'vaccinations' => [], 'notes' => '']);
+    }
 
     public function getMedicalHistory(User $user): array
     {

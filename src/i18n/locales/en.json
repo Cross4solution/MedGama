@@ -1358,8 +1358,7 @@
     "subtitle": "Your AI-powered health assistant",
     "startChat": "Start Chat",
     "askVasco": "Ask Vasco AI...",
-    "analyzing": "Analyzing...",
-    "disclaimer": "Vasco AI provides general health information only. Always consult a qualified healthcare professional for medical advice."
+    "analyzing": "Analyzing..."
   },
   "telehealthPage": {
     "title": "Telehealth",
@@ -1452,7 +1451,6 @@
     "account": "Account",
     "accountDesc": "Profile, country and appearance",
     "security": "Security & Password",
-    "securityDesc": "Password",
     "notifications": "Notifications",
     "notificationsDesc": "Patient notifications",
     "patientNotifications": "Patient Notifications",
