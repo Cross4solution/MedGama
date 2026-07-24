@@ -19,6 +19,9 @@ export default function DoctorLocationEditor({ address = '', lat, lng, onSaved }
   // Haritadan tıklama/sürükleme ile koordinat güncelle
   useEffect(() => {
     const onMsg = (e) => {
+      // Sadece kendi origin'imizden gelen mesajları kabul et (ClinicProfileEdit ile aynı guard).
+      // Not: srcDoc iframe'i origin "null" gönderebilir; bu durumda da geçerli.
+      if (e.origin !== window.location.origin && e.origin !== 'null') return;
       const d = e?.data;
       if (d && d.type === 'doctor-map-select' && typeof d.lat === 'number' && typeof d.lng === 'number') {
         setMLat(d.lat); setMLng(d.lng);

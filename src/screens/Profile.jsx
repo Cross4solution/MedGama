@@ -175,20 +175,10 @@ export default function Profile() {
           }
         } catch {}
       }
-      // Fallback to localStorage
+      // Güvenlik: tıbbi geçmiş (PHI) artık localStorage'da tutulmuyor — yalnız sunucu.
+      // Varsa eski cihazlarda kalmış şifresiz PHI kaydını temizle.
       try {
-        if (user?.email) {
-          const key = `patient_profile_extra_${user.email}`;
-          const raw = localStorage.getItem(key);
-          if (raw) {
-            const obj = JSON.parse(raw);
-            if (obj && typeof obj.medicalHistory === 'string' && obj.medicalHistory) {
-              if (!cancelled) setMedicalHistoryValue(obj.medicalHistory);
-            } else if (obj && Array.isArray(obj.medicalConditions)) {
-              if (!cancelled) setMedicalHistoryValue(obj.medicalConditions.join(', '));
-            }
-          }
-        }
+        if (user?.email) localStorage.removeItem(`patient_profile_extra_${user.email}`);
       } catch {}
     };
     loadMedical();
@@ -225,17 +215,7 @@ export default function Profile() {
         showToast(t('profile.savedLocally', 'Saved locally (server unavailable)'), 'error');
       }
     }
-    // Always persist locally as fallback
-    try {
-      if (user?.email) {
-        const key = `patient_profile_extra_${user.email}`;
-        const raw = localStorage.getItem(key);
-        const prev = raw ? JSON.parse(raw) : {};
-        const valStr = Array.isArray(medicalHistoryValue) ? medicalHistoryValue.map(t => typeof t === 'string' ? t : t?.name || '').join(', ') : medicalHistoryValue;
-        const next = { ...prev, medicalHistory: valStr, medicalConditions: conditions };
-        localStorage.setItem(key, JSON.stringify(next));
-      }
-    } catch {}
+    // Güvenlik: PHI'yi (tıbbi geçmiş) localStorage'a yazmıyoruz — yalnız sunucuda saklanır.
     setSaving(false);
   };
 
@@ -277,11 +257,10 @@ export default function Profile() {
       consentTimestamp,
       posts: [], comments: [], likes: [], bookmarks: [], medical_history: [],
     };
+    // PHI artık localStorage'da tutulmuyor; ekrandaki (sunucudan yüklenmiş) değeri kullan.
     try {
-      if (user?.email) {
-        const med = localStorage.getItem(`patient_profile_extra_${user.email}`);
-        if (med) { const parsed = JSON.parse(med); if (Array.isArray(parsed?.medicalConditions)) exportData.medical_history = parsed.medicalConditions; }
-      }
+      const conds = parseChips(medicalHistoryValue);
+      if (conds.length) exportData.medical_history = conds;
     } catch {}
     return exportData;
   };

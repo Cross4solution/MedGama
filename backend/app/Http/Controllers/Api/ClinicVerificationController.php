@@ -75,7 +75,8 @@ class ClinicVerificationController extends Controller
             $paths = [];
             foreach (['business_registration', 'operating_license', 'tax_plate', 'representative_id'] as $field) {
                 if ($request->hasFile($field)) {
-                    $paths[$field] = $request->file($field)->store("{$basePath}/{$field}", 'public');
+                    // Resmi belgeler (kimlik/lisans) PRIVATE diskte — sadece yetkili indirme endpoint'inden erişilir.
+                    $paths[$field] = $request->file($field)->store("{$basePath}/{$field}", 'local');
                 }
             }
 
@@ -100,6 +101,35 @@ class ClinicVerificationController extends Controller
                 'verification_id' => $verification->id,
             ], 201);
         });
+    }
+
+    /**
+     * Yetkili belge indirme — private diskteki doğrulama belgesini stream eder.
+     * Erişim: superAdmin/saasAdmin VEYA belgeyi gönderen kliniğin sahibi.
+     */
+    public function downloadDocument(Request $request, string $id, string $field): mixed
+    {
+        $allowed = ['business_registration', 'operating_license', 'tax_plate', 'representative_id'];
+        abort_unless(in_array($field, $allowed, true), 404);
+
+        $verification = ClinicVerification::findOrFail($id);
+        $user = $request->user();
+        $isAdmin = in_array($user->role_id, ['superAdmin', 'saasAdmin'], true);
+        $isOwner = optional(Clinic::find($verification->clinic_id))->owner_id === $user->id;
+        abort_unless($isAdmin || $isOwner, 403, 'Not authorized to access this document.');
+
+        $path = $verification->{$field};
+        abort_unless($path && Storage::disk('local')->exists($path), 404);
+
+        AuditLog::log(
+            user: $user,
+            action: 'verification_document_viewed',
+            resourceType: 'clinic_verification',
+            resourceId: $verification->id,
+            description: "Viewed {$field}",
+        );
+
+        return Storage::disk('local')->download($path);
     }
 
     // ════════════════════════════════════════════════

@@ -294,6 +294,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Clinic Verification
     Route::get('/clinic-verification/status', [ClinicVerificationController::class, 'status']);
     Route::post('/clinic-verification/submit', [ClinicVerificationController::class, 'submit']);
+    // Yetkili belge indirme (admin veya klinik sahibi) — private diskten stream
+    Route::get('/clinic-verifications/{id}/document/{field}', [ClinicVerificationController::class, 'downloadDocument']);
 
     // Clinic Accreditations
     Route::get('/clinics/{clinicId}/accreditations', [AccreditationController::class, 'clinicAccreditations']);
