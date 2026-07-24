@@ -240,7 +240,9 @@ class AppointmentService
               ->when($filters['end'] ?? null, fn($q, $v) => $q->whereDate('appointment_date', '<=', $v))
               ->when($filters['status'] ?? null, fn($q, $v) => $q->where('status', $v));
 
-        $appointments = $query->orderBy('appointment_date')->orderBy('appointment_time')->get();
+        // Savunma: start/end verilmezse tüm geçmişi çekmesin — büyüyen tabloda üst sınır.
+        // Normal takvim penceresi bu sınıra asla yaklaşmaz.
+        $appointments = $query->orderBy('appointment_date')->orderBy('appointment_time')->limit(2000)->get();
 
         return $appointments->map(function ($apt) {
             $date = $apt->appointment_date->format('Y-m-d');
