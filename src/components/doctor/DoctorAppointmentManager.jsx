@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { CalendarClock, CheckCircle2, XCircle, Clock, Video, MapPin, Phone, Loader2, Inbox, CheckCheck, Plus } from 'lucide-react';
 import { appointmentAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
+import MedicalArchivePanel from '../medical/MedicalArchivePanel';
 
 const StatusBadge = ({ status }) => {
   const map = {
@@ -163,6 +164,8 @@ export default function DoctorAppointmentManager() {
                 {apt.confirmation_note && (
                   <p className="mt-2 text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2">{apt.confirmation_note}</p>
                 )}
+
+                <MedicalArchivePanel appointmentId={apt.id} mode="provider" />
 
                 {/* Action Buttons */}
                 {activeTab === 'incoming' && apt.status === 'pending' && (
