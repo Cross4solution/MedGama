@@ -8,7 +8,7 @@ import { SearchSections } from '../components/search';
 import CoreBoxes from '../components/CoreBoxes';
 import PopularClinicsShowcase from '../components/PopularClinicsShowcase';
 import TimelinePreview from '../components/TimelinePreview';
-import { clinicAPI } from '../lib/api';
+import { clinicAPI, geoAPI } from '../lib/api';
 import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
 // SEO meta + WebSite/Organization JSON-LD artık app/page.jsx (ve app/home-v2) generateMetadata + server script ile üretiliyor (Faz 3).
 
@@ -30,9 +30,23 @@ export default function HomeV2() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [clinics, setClinics] = useState(FALLBACK_20);
+  // Konum akışı: ana sayfa önizleme + popüler klinikler ülkeye göre.
+  // Giriş varsa kullanıcının ülkesi; yoksa (misafir) IP'den ülke.
+  const [geoCountry, setGeoCountry] = useState(user?.country || null);
 
   useEffect(() => {
-    clinicAPI.list({ per_page: 20 }).then((res) => {
+    if (user?.country) { setGeoCountry(user.country); return; }
+    let alive = true;
+    geoAPI.ipCountry()
+      .then((res) => { if (alive && res?.data?.country) setGeoCountry(res.data.country); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [user?.country]);
+
+  useEffect(() => {
+    const params = { per_page: 20 };
+    if (geoCountry) params.country = geoCountry;
+    clinicAPI.list(params).then((res) => {
       const list = res?.data || [];
       if (list.length) {
         setClinics(list.map((c, i) => ({
@@ -47,7 +61,7 @@ export default function HomeV2() {
         })));
       }
     }).catch(() => {});
-  }, []);
+  }, [geoCountry]);
 
   // Popular vitrini artık reusable component ile render ediliyor
 
@@ -112,7 +126,7 @@ export default function HomeV2() {
       <CoreBoxes />
 
       {/* Medstream timeline preview between CoreBoxes and Popular Treatments */}
-      <TimelinePreview limit={10} onViewAll={() => navigate('/medstream')} />
+      <TimelinePreview limit={10} country={geoCountry} onViewAll={() => navigate('/medstream')} />
 
 
       {/* Popular Clinics reusable showcase */}

@@ -10,7 +10,7 @@ import TimelineCard from 'components/timeline/TimelineCard';
 import SkeletonCard from 'components/timeline/SkeletonCard';
 import VirtualizedFeed from 'components/timeline/VirtualizedFeed';
 import SPECIALTIES from '../data/specialties';
-import { medStreamAPI } from '../lib/api';
+import { medStreamAPI, geoAPI } from '../lib/api';
 import { resizeImages } from '../utils/imageResize';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import SEOHead from '../components/seo/SEOHead';
@@ -464,6 +464,10 @@ export default function ExploreTimeline() {
           localStorage.setItem(GEO_KEY, 'granted');
           localStorage.setItem(GEO_POS_KEY, JSON.stringify(g));
         } catch {}
+        // Giriş yapılmışsa hassas konumu hesaba kaydet (yakındaki-klinik bbox için)
+        if (user?.id) {
+          geoAPI.saveLocation({ latitude: g.lat, longitude: g.lon }).catch(() => {});
+        }
       },
       () => {
         setGeo({ error: true });
@@ -472,18 +476,13 @@ export default function ExploreTimeline() {
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
     );
-  }, [reverseGeocode]);
+  }, [reverseGeocode, user?.id]);
 
-  // Buton: konum yoksa al, varsa temizle (toggle) — standalone'da ayrı temizleme UI'ı yok.
+  // Buton: her zaman güncel konumu iste (toggle YOK — müşteri kararı: konumu hep isteriz).
   const onLocationClick = useCallback(() => {
     if (geoLoading) return;
-    if (geo && (geo.country || geo.error)) {
-      setGeo(null);
-      try { localStorage.removeItem(GEO_KEY); localStorage.removeItem(GEO_POS_KEY); } catch {}
-      return;
-    }
     askGeo();
-  }, [geo, geoLoading, askGeo]);
+  }, [geoLoading, askGeo]);
 
   const handleCountryChange = useCallback((val) => {
     if (val === 'Andorra') {

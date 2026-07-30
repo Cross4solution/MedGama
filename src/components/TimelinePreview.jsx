@@ -12,7 +12,7 @@ import { medStreamAPI } from '../lib/api';
 // props:
 // - items: [{ id, title, subtitle, image }] şeklinde liste. Boşsa placeholder üretilir.
 // - columns: grid kolon sayısı (md breakpoint)
-export default function TimelinePreview({ items = [], columns = 3, limit = 6, onViewAll }) {
+export default function TimelinePreview({ items = [], columns = 3, limit = 6, onViewAll, country = null }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [apiPosts, setApiPosts] = useState([]);
@@ -20,7 +20,9 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
 
   useEffect(() => {
     setLoading(true);
-    medStreamAPI.posts({ per_page: limit || 8 }).then((res) => {
+    const params = { per_page: limit || 8 };
+    if (country) params.country = country; // misafir/kullanıcı ülkesine göre önizleme
+    medStreamAPI.posts(params).then((res) => {
       const list = res?.data || [];
       if (list.length) {
         setApiPosts(list.map((p) => {
@@ -60,7 +62,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
         }));
       }
     }).catch(() => {}).finally(() => setLoading(false));
-  }, [limit]);
+  }, [limit, country]);
 
   // Only show real API posts — no mock fallback (mock IDs cause 404 on like/comment/bookmark)
   const data = apiPosts.length ? apiPosts : items;

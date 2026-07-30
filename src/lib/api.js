@@ -466,6 +466,16 @@ export const leadAPI = {
 };
 
 // ── MedStream Service ──
+// MedStream konum akışı
+export const geoAPI = {
+  // Misafir: IP'den ülke (+varsa eyalet). GPS yok.
+  ipCountry: () => api.get('/geo/ip-country'),
+  // Cookie/otomatik girişte: IP ülkesi/eyaleti kayıtlı konumdan farklı mı?
+  check: () => api.get('/geo/check'),
+  // Hassas konum izni veya manuel seçim → kaydet.
+  saveLocation: (payload) => api.post('/geo/location', payload),
+};
+
 export const medStreamAPI = {
   posts: (params) => api.get('/medstream/posts', { params }),
   getPost: (id) => api.get(`/medstream/posts/${id}`),
