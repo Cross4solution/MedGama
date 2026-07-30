@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ExaminationController;
 use App\Http\Controllers\Api\BillingController;
+use App\Http\Controllers\Api\GeoController;
 use App\Http\Controllers\Api\MedStreamController;
 use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\DoctorController;
@@ -278,6 +279,13 @@ Route::get('/clinics/{id}/reviews', [ClinicController::class, 'reviews']);
 Route::get('/clinics/{id}/staff', [ClinicController::class, 'staff']);
 Route::middleware('optional.auth')->group(function () {
     Route::get('/clinics/{id}/review-stats', [ClinicController::class, 'reviewStats']);
+});
+
+// MedStream konum akışı — misafir IP→ülke (public), giriş sonrası kontrol + kaydet (auth)
+Route::get('/geo/ip-country', [GeoController::class, 'ipCountry']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/geo/check', [GeoController::class, 'check']);
+    Route::post('/geo/location', [GeoController::class, 'saveLocation']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {

@@ -80,9 +80,17 @@ class MedStreamService
                     $uq->where('country', 'LIKE', '%' . $v . '%')
                 )
             )
+            // State/eyalet filtresi (eyaleti olan ülkeler — ör. ABD)
+            ->when($filters['state'] ?? null, fn($q, $v) =>
+                $q->whereHas('author', fn($uq) =>
+                    $uq->where('state', 'LIKE', '%' . $v . '%')
+                )
+            )
             // "Use my location": yakındaki update'ler. Yazarın koordinatı (doktor
             // profili / kliniği) kullanıcıyı çevreleyen bounding-box içindeyse getir.
             // Bounding-box index-dostu ve DB-bağımsız (TiDB ST_Distance riskli).
+            // RATING FALLBACK: yakında yeterli yoksa aynı ÜLKEdeki update'lerle doldur
+            // (bbox VEYA author.country == geo_country). Yakınlar 'is_nearby' ile öne alınır.
             ->when(
                 isset($filters['lat'], $filters['lon'])
                     && is_numeric($filters['lat']) && is_numeric($filters['lon']),
@@ -101,13 +109,33 @@ class MedStreamService
                             ->whereBetween('latitude', [$latMin, $latMax])
                             ->whereBetween('longitude', [$lonMin, $lonMax]);
                     };
-                    $q->where(function ($outer) use ($inBox) {
+                    $geoCountry = $filters['geo_country'] ?? null;
+                    $q->where(function ($outer) use ($inBox, $geoCountry) {
                         $outer->whereHas('author.doctorProfile', $inBox)
                               ->orWhereHas('clinic', $inBox)
                               ->orWhereHas('author.ownedClinic', $inBox);
+                        // Fallback: aynı ülkedeki diğer update'ler de sonuç kümesine girsin
+                        if ($geoCountry) {
+                            $outer->orWhereHas('author', fn($uq) =>
+                                $uq->where('country', 'LIKE', '%' . $geoCountry . '%')
+                            );
+                        }
                     });
+                    // Yakındakileri öne al: klinik/ownedClinic koordinatı kutuda mı?
+                    $q->selectRaw(
+                        '(EXISTS(SELECT 1 FROM clinics c WHERE (c.id = med_stream_posts.clinic_id OR c.owner_id = med_stream_posts.author_id) '
+                        . 'AND c.latitude IS NOT NULL AND c.latitude BETWEEN ? AND ? AND c.longitude BETWEEN ? AND ?)) AS is_nearby',
+                        [$latMin, $latMax, $lonMin, $lonMax]
+                    );
                 }
             );
+
+        // Geo aktifse: yakındakiler (is_nearby) en üstte — sonra takip/sort sıralaması gelir
+        $geoActive = isset($filters['lat'], $filters['lon'])
+            && is_numeric($filters['lat']) && is_numeric($filters['lon']);
+        if ($geoActive) {
+            $query->orderByRaw('is_nearby DESC');
+        }
 
         // Top Posts: restrict to last 30 days
         if ($sort === 'top') {
