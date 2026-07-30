@@ -291,10 +291,8 @@ export const appointmentAPI = {
   delete: (id) => api.delete(`/appointments/${id}`),
   calendarEvents: (params) => api.get('/appointments/calendar-events', { params }),
   reschedule: (id, payload) => api.patch(`/appointments/${id}/reschedule`, payload),
-  // Hibrit Medical Archive paylaşımı (C)
+  // Medical Archive (B): randevu aldığı doktor/klinik hastanın komple anamnezini otomatik görür
   medicalContext: (id) => api.get(`/appointments/${id}/medical-context`),
-  shareMedical: (id) => api.post(`/appointments/${id}/medical-share`),
-  revokeMedical: (id) => api.delete(`/appointments/${id}/medical-share`),
   downloadSharedDoc: (id, docId) => api.get(`/appointments/${id}/documents/${docId}/download`, { responseType: 'blob' }),
   markNoShow: (id) => api.put(`/appointments/${id}/no-show`),
 };

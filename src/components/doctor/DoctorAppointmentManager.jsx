@@ -165,7 +165,7 @@ export default function DoctorAppointmentManager() {
                   <p className="mt-2 text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2">{apt.confirmation_note}</p>
                 )}
 
-                <MedicalArchivePanel appointmentId={apt.id} mode="provider" />
+                <MedicalArchivePanel appointmentId={apt.id} />
 
                 {/* Action Buttons */}
                 {activeTab === 'incoming' && apt.status === 'pending' && (

@@ -5,7 +5,7 @@ import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
 import { getFlagCode } from '../utils/geo';
 import countryCodes from '../data/countryCodes';
-import { Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink, Globe, User as UserIcon, Lock } from 'lucide-react';
+import { Shield, Bell, ChevronRight, Eye, EyeOff, HeartPulse, Settings, Camera, Upload, Download, Trash2, Cookie, ExternalLink, Globe, User as UserIcon, Lock, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../i18n';
 import { LOCALES } from '../lib/locales';
@@ -643,7 +643,7 @@ export default function Profile() {
                 </h3>
                 <p className="text-xs text-gray-500 mb-2">{t('profile.medicationsDesc', 'Medicines you currently use.')}</p>
                 <GlobalSuggest
-                  type="medical_history"
+                  type="medication"
                   value={medicationsValue}
                   onChange={(val) => setMedicationsValue(val)}
                   placeholder={t('profile.medicationsPlaceholder', 'e.g. Aspirin 100mg, Metformin…')}
@@ -686,6 +686,14 @@ export default function Profile() {
 
               <div className="flex justify-end mt-4">
                 <button onClick={saveMedical} disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? t('common.saving') : t('common.save')}</button>
+              </div>
+
+              {/* Bilgilendirme: bu bilgiler randevu aldığı doktorla paylaşılır (B modeli) */}
+              <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-teal-100 bg-teal-50/50 px-4 py-3">
+                <Info className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-teal-800 leading-relaxed">
+                  {t('profile.medicalShareNotice', 'Bu bilgiler, randevu aldığınız doktorla paylaşılacaktır. Doğru ve güvenli tedavi için ilaç, alerji ve tıbbi geçmişinizin eksiksiz olması önemlidir.')}
+                </p>
               </div>
             </div>
           )}

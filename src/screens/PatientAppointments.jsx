@@ -6,7 +6,6 @@ import { useToast } from '../context/ToastContext';
 import { appointmentAPI } from '../lib/api';
 import useAppointmentSync from '../hooks/useAppointmentSync';
 import AddToCalendar from '../components/AddToCalendar';
-import MedicalArchivePanel from '../components/medical/MedicalArchivePanel';
 import { 
   Calendar, Clock, MapPin, Video, Phone, Building2, User, 
   Loader2, AlertCircle, CheckCircle2, XCircle, X, ChevronRight 
@@ -284,10 +283,6 @@ export default function PatientAppointments() {
                       )}
                     </div>
                   </div>
-
-                  {(appointment.status === 'pending' || appointment.status === 'confirmed') && (
-                    <MedicalArchivePanel appointmentId={appointment.id} mode="patient" />
-                  )}
                 </div>
               ))
             )}

@@ -341,10 +341,12 @@ class AppointmentService
      * symptoms) attached to the appointment for the treating doctor.
      */
     /**
-     * Hibrit paylaşım (C): randevuya YALNIZ güvenlik ÖZETİ (bilinen durumlar +
-     * kullanılan ilaçlar) otomatik gömülür. Aşılar, notlar ve belge arşivi
-     * otomatik gitmez — onlar yalnız hasta bu randevu için rıza verirse
-     * (MedicalShareConsent) doktora açılır.
+     * Otomatik paylaşım (B): hasta bir doktora randevu aldığında, tedaviyi
+     * yürütecek doktorun KOMPLE anamnezi görmesi gerekir (ilaç etkileşimi,
+     * alerji vb. güvenlik riskleri hastanın "kritik değil" sandığı bilgilerde
+     * saklı olabilir). Bu yüzden bilinen durumlar/alerjiler, kullanılan ilaçlar,
+     * aşılar ve notların tamamı randevuya gömülür. Hasta bunun paylaşılacağını
+     * profil/tıbbi arşiv sayfasındaki bilgilendirme ile önceden bilir.
      */
     private function buildMedicalSnapshot(?string $patientId, array $data): ?string
     {
@@ -356,11 +358,19 @@ class AppointmentService
             $mh = app(\App\Services\AuthService::class)->getMedicalHistory($patient);
             $conditions = array_filter((array) ($mh['conditions'] ?? []));
             $medications = array_filter((array) ($mh['medications'] ?? []));
+            $vaccinations = array_filter((array) ($mh['vaccinations'] ?? []));
+            $notes = trim((string) ($mh['notes'] ?? ''));
             if ($conditions) {
                 $parts[] = 'Bilinen Durumlar / Alerjiler: ' . implode(', ', $conditions);
             }
             if ($medications) {
                 $parts[] = 'Kullanılan İlaçlar: ' . implode(', ', $medications);
+            }
+            if ($vaccinations) {
+                $parts[] = 'Aşılar: ' . implode(', ', $vaccinations);
+            }
+            if ($notes !== '') {
+                $parts[] = 'Hasta Notları: ' . $notes;
             }
         }
 
