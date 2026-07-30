@@ -340,21 +340,27 @@ class AppointmentService
      * Build the medical snapshot (patient's stored medical history + booking
      * symptoms) attached to the appointment for the treating doctor.
      */
+    /**
+     * Hibrit paylaşım (C): randevuya YALNIZ güvenlik ÖZETİ (bilinen durumlar +
+     * kullanılan ilaçlar) otomatik gömülür. Aşılar, notlar ve belge arşivi
+     * otomatik gitmez — onlar yalnız hasta bu randevu için rıza verirse
+     * (MedicalShareConsent) doktora açılır.
+     */
     private function buildMedicalSnapshot(?string $patientId, array $data): ?string
     {
         $parts = [];
 
         if ($patientId) {
             $patient = \App\Models\User::find($patientId);
-            $mh = $patient?->medical_history;
-            if (!empty($mh)) {
-                $text = is_array($mh)
-                    ? implode(', ', array_map(fn ($x) => is_array($x) ? ($x['name'] ?? $x['label'] ?? json_encode($x, JSON_UNESCAPED_UNICODE)) : (string) $x, $mh))
-                    : (string) $mh;
-                $text = trim($text);
-                if ($text !== '') {
-                    $parts[] = 'Tıbbi Geçmiş: ' . $text;
-                }
+            // Yapılandırılmış {conditions,medications,vaccinations,notes} + eski düz liste uyumlu
+            $mh = app(\App\Services\AuthService::class)->getMedicalHistory($patient);
+            $conditions = array_filter((array) ($mh['conditions'] ?? []));
+            $medications = array_filter((array) ($mh['medications'] ?? []));
+            if ($conditions) {
+                $parts[] = 'Bilinen Durumlar / Alerjiler: ' . implode(', ', $conditions);
+            }
+            if ($medications) {
+                $parts[] = 'Kullanılan İlaçlar: ' . implode(', ', $medications);
             }
         }
 

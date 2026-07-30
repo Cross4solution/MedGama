@@ -367,6 +367,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel']);
     Route::get('/appointments', [AppointmentController::class, 'index']);
     Route::get('/appointments/{appointment}', [AppointmentController::class, 'show']);
+    // Hibrit Medical Archive paylaşımı (C): özet daima, tam detay hasta rızasıyla
+    Route::get('/appointments/{appointment}/medical-context', [AppointmentController::class, 'medicalContext']);
+    Route::post('/appointments/{appointment}/medical-share', [AppointmentController::class, 'shareMedical']);
+    Route::delete('/appointments/{appointment}/medical-share', [AppointmentController::class, 'revokeMedical']);
+    Route::get('/appointments/{appointment}/documents/{documentId}/download', [AppointmentController::class, 'downloadSharedDocument']);
     Route::post('/appointments', [AppointmentController::class, 'store'])->middleware('verified.doctor');
     Route::put('/appointments/{appointment}', [AppointmentController::class, 'update'])->middleware('verified.doctor');
     Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->middleware('verified.doctor');

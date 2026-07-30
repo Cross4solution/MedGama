@@ -274,4 +274,144 @@ class AppointmentController extends Controller
 
         return (new AppointmentResource($appointment))->response();
     }
+
+    // ════════════════════════════════════════════════
+    // Hibrit Medical Archive paylaşımı (C)
+    // ════════════════════════════════════════════════
+
+    /** Randevunun hasta/doktor/kliniği mi? */
+    private function isAppointmentParty(Appointment $appointment, $user): bool
+    {
+        return in_array($user->id, array_filter([
+            $appointment->patient_id, $appointment->doctor_id, $appointment->clinic_id,
+        ]), true) || in_array($user->role_id, ['superAdmin', 'saasAdmin'], true);
+    }
+
+    /**
+     * GET /appointments/{appointment}/medical-context
+     * Özet (bilinen durumlar + ilaçlar) HER ZAMAN; tam detay (aşılar, notlar,
+     * belge listesi) yalnız hasta bu randevu için rıza verdiyse döner.
+     */
+    public function medicalContext(Appointment $appointment, Request $request): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($this->isAppointmentParty($appointment, $user), 403);
+
+        $patient = \App\Models\User::find($appointment->patient_id);
+        $mh = app(\App\Services\AuthService::class)->getMedicalHistory($patient);
+        $consent = \App\Models\MedicalShareConsent::activeFor($appointment->id);
+        $hasFull = $consent !== null;
+
+        $out = [
+            'summary' => [
+                'conditions'  => array_values(array_filter((array) ($mh['conditions'] ?? []))),
+                'medications' => array_values(array_filter((array) ($mh['medications'] ?? []))),
+            ],
+            'has_full_consent' => $hasFull,
+            'full' => null,
+        ];
+
+        if ($hasFull) {
+            $docs = \App\Models\PatientDocument::where('patient_id', $appointment->patient_id)
+                ->get(['id', 'category', 'file_name', 'file_size']);
+            $out['full'] = [
+                'vaccinations' => array_values(array_filter((array) ($mh['vaccinations'] ?? []))),
+                'notes'        => $mh['notes'] ?? '',
+                'documents'    => $docs->map(fn ($d) => [
+                    'id' => $d->id, 'category' => $d->category,
+                    'name' => $d->file_name, 'size' => $d->file_size,
+                ]),
+            ];
+            // Doktor/klinik gerçekten tam arşive baktıysa denetim kaydı
+            if ($user->id !== $appointment->patient_id) {
+                HealthDataAuditLog::log(
+                    accessorId: $user->id,
+                    patientId: $appointment->patient_id,
+                    resourceType: 'medical_archive',
+                    resourceId: $appointment->id,
+                );
+            }
+        }
+
+        return response()->json($out);
+    }
+
+    /**
+     * POST /appointments/{appointment}/medical-share
+     * Hasta bu randevu için tam arşiv paylaşım rızası verir (süreli, geri alınabilir).
+     */
+    public function shareMedical(Appointment $appointment, Request $request): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($user->id === $appointment->patient_id, 403, 'Only the patient can share their archive.');
+
+        $consent = \App\Models\MedicalShareConsent::updateOrCreate(
+            ['appointment_id' => $appointment->id, 'scope' => 'full'],
+            [
+                'patient_id'  => $appointment->patient_id,
+                'provider_id' => $appointment->doctor_id ?: $appointment->clinic_id,
+                'granted_at'  => now(),
+                'revoked_at'  => null,
+                // Randevu tarih+saatinden 24 saat sonra otomatik sona erer
+                'expires_at'  => optional($appointment->appointment_date)->copy()?->addDay() ?? now()->addDays(2),
+            ]
+        );
+
+        HealthDataAuditLog::log(
+            accessorId: $user->id,
+            patientId: $appointment->patient_id,
+            resourceType: 'medical_share_consent_granted',
+            resourceId: $appointment->id,
+        );
+
+        return response()->json(['message' => 'Archive shared for this appointment.', 'consent_id' => $consent->id]);
+    }
+
+    /** DELETE /appointments/{appointment}/medical-share — hasta rızayı geri alır. */
+    public function revokeMedical(Appointment $appointment, Request $request): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($user->id === $appointment->patient_id, 403);
+
+        \App\Models\MedicalShareConsent::where('appointment_id', $appointment->id)
+            ->where('scope', 'full')->whereNull('revoked_at')
+            ->update(['revoked_at' => now()]);
+
+        HealthDataAuditLog::log(
+            accessorId: $user->id,
+            patientId: $appointment->patient_id,
+            resourceType: 'medical_share_consent_revoked',
+            resourceId: $appointment->id,
+        );
+
+        return response()->json(['message' => 'Sharing revoked.']);
+    }
+
+    /**
+     * GET /appointments/{appointment}/documents/{documentId}/download
+     * Rıza aktifse ve belge hastaya aitse, sağlayıcıya private dosyayı stream eder.
+     */
+    public function downloadSharedDocument(Appointment $appointment, string $documentId, Request $request): mixed
+    {
+        $user = $request->user();
+        abort_unless($this->isAppointmentParty($appointment, $user), 403);
+        // Hasta kendi belgesine zaten erişir; sağlayıcı için aktif rıza şart
+        if ($user->id !== $appointment->patient_id) {
+            abort_unless(\App\Models\MedicalShareConsent::activeFor($appointment->id), 403, 'No active consent for this appointment.');
+        }
+
+        $doc = \App\Models\PatientDocument::where('patient_id', $appointment->patient_id)
+            ->where('id', $documentId)->firstOrFail();
+
+        abort_unless($doc->file_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($doc->file_path), 404);
+
+        HealthDataAuditLog::log(
+            accessorId: $user->id,
+            patientId: $appointment->patient_id,
+            resourceType: 'medical_document_downloaded',
+            resourceId: $doc->id,
+        );
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->download($doc->file_path, $doc->file_name);
+    }
 }
