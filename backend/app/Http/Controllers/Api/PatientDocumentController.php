@@ -7,8 +7,6 @@ use App\Models\HealthDataAuditLog;
 use App\Models\PatientDocument;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class PatientDocumentController extends Controller
 {
@@ -117,10 +115,9 @@ class PatientDocumentController extends Controller
             ], 422);
         }
 
-        // Store file in private disk (not publicly accessible)
-        $ext = $file->getClientOriginalExtension() ?: 'pdf';
-        $filename = Str::uuid() . '.' . $ext;
-        $path = $file->storeAs('patient-documents/' . $user->id, $filename, 'local');
+        // Private diske ŞİFRELİ yaz — diske/yedeğe erişen biri anahtarsız okuyamaz.
+        $path = app(\App\Services\EncryptedFileStorage::class)
+            ->storeUploaded($file, 'patient-documents/' . $user->id);
 
         $doc = PatientDocument::create([
             'patient_id'    => $user->id,
@@ -228,14 +225,13 @@ class PatientDocumentController extends Controller
             action: 'download',
         );
 
-        $disk = Storage::disk('local');
-        if (!$disk->exists($doc->file_path)) {
+        $files = app(\App\Services\EncryptedFileStorage::class);
+        if (!$files->exists($doc->file_path)) {
             return response()->json(['message' => 'File not found.'], 404);
         }
 
-        return $disk->download($doc->file_path, $doc->file_name, [
-            'Content-Type' => $doc->mime_type,
-        ]);
+        // Şifresi çözülerek indirilir (dosya diskte şifreli durur).
+        return $files->downloadResponse($doc->file_path, $doc->file_name, $doc->mime_type);
     }
 
     // ══════════════════════════════════════════════

@@ -342,7 +342,8 @@ class AppointmentController extends Controller
         $doc = \App\Models\PatientDocument::where('patient_id', $appointment->patient_id)
             ->where('id', $documentId)->firstOrFail();
 
-        abort_unless($doc->file_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($doc->file_path), 404);
+        $files = app(\App\Services\EncryptedFileStorage::class);
+        abort_unless($doc->file_path && $files->exists($doc->file_path), 404);
 
         HealthDataAuditLog::log(
             accessorId: $user->id,
@@ -351,6 +352,7 @@ class AppointmentController extends Controller
             resourceId: $doc->id,
         );
 
-        return \Illuminate\Support\Facades\Storage::disk('local')->download($doc->file_path, $doc->file_name);
+        // Diskte şifreli durur; yalnız yetkili indirmede çözülür.
+        return $files->downloadResponse($doc->file_path, $doc->file_name, $doc->mime_type);
     }
 }
