@@ -631,6 +631,14 @@ Route::prefix('medstream')->group(function () {
 | Messaging — Conversations, Messages, Attachments, Read Receipts
 |--------------------------------------------------------------------------
 */
+// Sohbet ekleri: private+şifreli diskten, KISA SÜRELİ İMZALI bağlantıyla servis edilir.
+// İmzalı olmaları şart — <img src> Authorization başlığı gönderemez; bağlantı yalnız
+// yetkili katılımcıya dönen authenticated API yanıtında üretilir ve 30 dk'da ölür.
+Route::get('/messages/attachments/{attachment}/file', [MessageController::class, 'attachmentFile'])
+    ->name('messages.attachment.file')->middleware('signed');
+Route::get('/messages/attachments/{attachment}/thumb', [MessageController::class, 'attachmentThumb'])
+    ->name('messages.attachment.thumb')->middleware('signed');
+
 Route::prefix('messages')->middleware('auth:sanctum')->group(function () {
     // Conversations
     Route::get('/conversations', [MessageController::class, 'conversations']);

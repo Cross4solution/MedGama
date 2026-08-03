@@ -39,6 +39,14 @@ class EncryptedFileStorage
         return $path;
     }
 
+    /** Ham içeriği (ör. GD ile üretilmiş görsel) şifreleyip verilen yola yazar. */
+    public function putContents(string $path, string $contents): string
+    {
+        Storage::disk(self::DISK)->put($path, self::MARKER . Crypt::encryptString($contents));
+
+        return $path;
+    }
+
     /**
      * Dosyayı çözülmüş halde döner.
      * Şifresiz (eski/demo) dosyalar olduğu gibi döner — okuma bozulmaz.
@@ -46,11 +54,15 @@ class EncryptedFileStorage
     public function read(string $path): ?string
     {
         $disk = Storage::disk(self::DISK);
-        if (!$disk->exists($path)) {
-            return null;
+        $raw = null;
+
+        if ($disk->exists($path)) {
+            $raw = $disk->get($path);
+        } elseif (Storage::disk('public')->exists($path)) {
+            // Eski mesaj ekleri public diskteydi; okuma bozulmasın (demo verisi).
+            $raw = Storage::disk('public')->get($path);
         }
 
-        $raw = $disk->get($path);
         if ($raw === null || $raw === '') {
             return null;
         }
@@ -68,7 +80,8 @@ class EncryptedFileStorage
 
     public function exists(string $path): bool
     {
-        return Storage::disk(self::DISK)->exists($path);
+        return Storage::disk(self::DISK)->exists($path)
+            || Storage::disk('public')->exists($path);
     }
 
     public function delete(string $path): void

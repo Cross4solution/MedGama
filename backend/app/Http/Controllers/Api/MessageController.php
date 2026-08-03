@@ -322,7 +322,8 @@ class MessageController extends Controller
                     $path = $this->optimizeAndStoreImage($file, $dir);
                     $thumbPath = $this->createThumbnail($file, $dir);
                 } else {
-                    $path = $file->store($dir, 'public');
+                    // Private + şifreli disk (sohbete sağlık belgesi de gelebilir)
+                    $path = app(\App\Services\EncryptedFileStorage::class)->storeUploaded($file, $dir);
                 }
 
                 MessageAttachment::create([
@@ -330,7 +331,7 @@ class MessageController extends Controller
                     'file_name' => $originalName,
                     'file_path' => $path,
                     'file_type' => $mime,
-                    'file_size' => Storage::disk('public')->size($path),
+                    'file_size' => $file->getSize(),
                     'thumb_path' => $thumbPath,
                 ]);
             }
@@ -542,6 +543,42 @@ class MessageController extends Controller
     /**
      * Optimize and store an uploaded image: resize if too large, convert to WebP, compress.
      */
+    /**
+     * GET /messages/attachments/{attachment}/file  (imzalı, süreli)
+     * Sohbet ekini çözerek servis eder. İmza, bağlantının yetkili bir katılımcıya
+     * verildiğini kanıtlar; süresi dolunca bağlantı ölür. Eskiden bu dosyalar
+     * kalıcı ve herkese açık storage URL'inden servis ediliyordu.
+     */
+    public function attachmentFile(MessageAttachment $attachment)
+    {
+        return $this->serveAttachment($attachment, $attachment->file_path, $attachment->file_name);
+    }
+
+    /** GET /messages/attachments/{attachment}/thumb  (imzalı, süreli) */
+    public function attachmentThumb(MessageAttachment $attachment)
+    {
+        abort_unless($attachment->thumb_path, 404);
+
+        return $this->serveAttachment($attachment, $attachment->thumb_path, 'thumb.webp', 'image/webp');
+    }
+
+    private function serveAttachment(MessageAttachment $attachment, string $path, string $name, ?string $mime = null)
+    {
+        abort_unless($attachment->is_active, 404);
+
+        $files = app(\App\Services\EncryptedFileStorage::class);
+        $content = $files->read($path);
+        abort_if($content === null, 404, 'File not found.');
+
+        return response($content, 200, [
+            'Content-Type'        => $mime ?: ($attachment->file_type ?: 'application/octet-stream'),
+            // Görseller sohbette gömülü gösterilir; indirme zorlanmaz
+            'Content-Disposition' => 'inline; filename="' . addslashes($name) . '"',
+            'Content-Length'      => (string) strlen($content),
+            'Cache-Control'       => 'no-store, private',
+        ]);
+    }
+
     private function optimizeAndStoreImage($file, string $dir): string
     {
         $maxWidth = 1920;
@@ -550,8 +587,8 @@ class MessageController extends Controller
 
         $image = @imagecreatefromstring(file_get_contents($file->getRealPath()));
         if (!$image) {
-            // GD can't process — store as-is
-            return $file->store($dir, 'public');
+            // GD işleyemedi — olduğu gibi, şifreli sakla
+            return app(\App\Services\EncryptedFileStorage::class)->storeUploaded($file, $dir);
         }
 
         $origW = imagesx($image);
@@ -571,19 +608,15 @@ class MessageController extends Controller
             $image = $resized;
         }
 
-        // Save as WebP
-        $filename = Str::uuid() . '.webp';
-        $storagePath = $dir . '/' . $filename;
-        $fullPath = Storage::disk('public')->path($storagePath);
-
-        // Ensure directory exists
-        $dirPath = dirname($fullPath);
-        if (!is_dir($dirPath)) {
-            mkdir($dirPath, 0755, true);
-        }
-
-        imagewebp($image, $fullPath, $quality);
+        // WebP olarak üret, sonra ŞİFRELİ private diske yaz (geçici dosya üzerinden)
+        $storagePath = $dir . '/' . Str::uuid() . '.webp';
+        $tmp = tempnam(sys_get_temp_dir(), 'mg_img_');
+        imagewebp($image, $tmp, $quality);
         imagedestroy($image);
+
+        app(\App\Services\EncryptedFileStorage::class)
+            ->putContents($storagePath, (string) file_get_contents($tmp));
+        @unlink($tmp);
 
         return $storagePath;
     }
@@ -610,17 +643,14 @@ class MessageController extends Controller
         imagecopyresampled($thumb, $image, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
         imagedestroy($image);
 
-        $filename = Str::uuid() . '_thumb.webp';
-        $storagePath = $dir . '/' . $filename;
-        $fullPath = Storage::disk('public')->path($storagePath);
-
-        $dirPath = dirname($fullPath);
-        if (!is_dir($dirPath)) {
-            mkdir($dirPath, 0755, true);
-        }
-
-        imagewebp($thumb, $fullPath, 60);
+        $storagePath = $dir . '/' . Str::uuid() . '_thumb.webp';
+        $tmp = tempnam(sys_get_temp_dir(), 'mg_thumb_');
+        imagewebp($thumb, $tmp, 60);
         imagedestroy($thumb);
+
+        app(\App\Services\EncryptedFileStorage::class)
+            ->putContents($storagePath, (string) file_get_contents($tmp));
+        @unlink($tmp);
 
         return $storagePath;
     }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\URL;
 
 class MessageAttachment extends Model
 {
@@ -42,13 +43,32 @@ class MessageAttachment extends Model
 
     // ── Helpers ──
 
+    /**
+     * Ek dosyası artık herkese açık storage URL'inden servis EDİLMEZ.
+     * Sohbete sağlık belgesi gelebildiği için dosyalar private+şifreli diskte durur;
+     * burada yalnız kısa süreli İMZALI bağlantı üretilir. Bu bağlantı, isteği yapan
+     * kullanıcının sohbetin katılımcısı olduğu doğrulandıktan sonra (authenticated
+     * API yanıtında) üretilir ve süresi dolunca geçersizleşir.
+     */
     public function getUrlAttribute(): string
     {
-        return url('storage/' . $this->file_path);
+        return URL::temporarySignedRoute(
+            'messages.attachment.file',
+            now()->addMinutes(30),
+            ['attachment' => $this->id]
+        );
     }
 
     public function getThumbUrlAttribute(): ?string
     {
-        return $this->thumb_path ? url('storage/' . $this->thumb_path) : null;
+        if (!$this->thumb_path) {
+            return null;
+        }
+
+        return URL::temporarySignedRoute(
+            'messages.attachment.thumb',
+            now()->addMinutes(30),
+            ['attachment' => $this->id]
+        );
     }
 }
