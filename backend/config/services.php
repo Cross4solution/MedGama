@@ -98,4 +98,14 @@ return [
         ],
     ],
 
+    /*
+     * Ters-geocode (koordinat → şehir/ülke). Sunucu tarafında çağrılır ki hastanın
+     * tarayıcısı 3. taraf servise bağlanmasın. Kendi sunucumuzda Nominatim ayağa
+     * kalkınca bu değeri o adrese çevirmek yeterli — 3. taraf tamamen biter.
+     */
+    'geo' => [
+        'reverse_url' => env('GEO_REVERSE_URL', 'https://nominatim.openstreetmap.org/reverse'),
+        'forward_url' => env('GEO_FORWARD_URL', 'https://geocoding-api.open-meteo.com/v1/search'),
+    ],
+
 ];

@@ -61,20 +61,17 @@ export default function LocationPicker({ onLocated }) {
     setBusy(true);
     const label = nameOf(city);
     try {
-      const r = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(label)}&count=1&language=${isTr ? 'tr' : 'en'}`
-      );
-      const j = await r.json();
-      const hit = j?.results?.[0];
-      if (!hit) {
+      const res = await geoAPI.forward(label);
+      const hit = res?.data || res || {};
+      if (hit.latitude == null || hit.longitude == null) {
         setError(isTr ? 'Şehir konumu bulunamadı.' : 'Could not locate that city.');
         return;
       }
       await geoAPI.saveLocation({
         latitude: hit.latitude,
         longitude: hit.longitude,
-        ...(hit.country_code ? { country: hit.country_code } : {}),
-        ...(hit.admin1 ? { state: hit.admin1 } : {}),
+        ...(hit.country ? { country: hit.country } : {}),
+        ...(hit.state ? { state: hit.state } : {}),
       });
       setDone(label);
       onLocated?.({ lat: hit.latitude, lon: hit.longitude, city: label });

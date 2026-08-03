@@ -438,27 +438,19 @@ export default function ExploreTimeline() {
   // Konum izni (opsiyonel) - tek seferlik izin akışı ve localStorage ile kalıcılık
   // (geo / geoLoading state'leri yukarıda, useExploreFeed'den önce tanımlı)
   const GEO_KEY = 'explore_geo_consent'; // 'granted' | 'denied'
-  const GEO_POS_KEY = 'explore_geo_pos'; // JSON: { lat, lon, country, city }
+  const GEO_POS_KEY = 'explore_geo_pos'; // JSON: { lat, lon, active }
 
-  // Koordinatı şehir/ülke adına çevir (ücretsiz, anahtarsız, CORS açık) — butonda
-  // "Şehir, Ülke" olarak gösterip konumun alındığını net biçimde geri bildiririz.
-  const reverseGeocode = useCallback(async (lat, lon) => {
-    try {
-      const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
-      const j = await r.json();
-      return { country: j.countryName || '', city: j.city || j.locality || '' };
-    } catch { return { country: '', city: '' }; }
-  }, []);
+  // UYUM: Hastanın koordinatı HİÇBİR 3. tarafa gönderilmez. Eskiden buton etiketinde
+  // "Şehir, Ülke" göstermek için dış ters-geocode servisi çağrılıyordu; kaldırıldı.
+  // Konum yalnız (a) tarayıcıda ve (b) kendi backend'imizde tutulur.
 
   const askGeo = useCallback(() => {
     if (!navigator?.geolocation) { setGeo({ error: true }); return; }
     setGeoLoading(true);
     setGeoRadius(25); // her yeni konum isteğinde dar perimetreden başla
     navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const g = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-        const { country, city } = await reverseGeocode(g.lat, g.lon);
-        g.country = country; g.city = city;
+      (pos) => {
+        const g = { lat: pos.coords.latitude, lon: pos.coords.longitude, active: true };
         setGeo(g);
         setGeoLoading(false);
         try {
@@ -477,7 +469,7 @@ export default function ExploreTimeline() {
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
     );
-  }, [reverseGeocode, user?.id]);
+  }, [user?.id]);
 
   // Buton: her zaman güncel konumu iste (toggle YOK — müşteri kararı: konumu hep isteriz).
   const onLocationClick = useCallback(() => {

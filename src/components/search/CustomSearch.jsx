@@ -3,7 +3,7 @@ import { useNavigate } from '@/compat/router';
 import { listCountriesAll, loadPreferredAdminOrCities, getFlagCode, listTurkeyProvinces } from '../../utils/geo';
 import CountryCombobox from '../forms/CountryCombobox.jsx';
 import CityCombobox from '../forms/CityCombobox.jsx';
-import { catalogAPI } from '../../lib/api';
+import { catalogAPI, geoAPI } from '../../lib/api';
 import GlobalSuggest from '../forms/GlobalSuggest';
 import { useTranslation } from 'react-i18next';
 
@@ -70,19 +70,14 @@ export default function CustomSearch() {
   // Ülke set edilince şehir-yükleme effect'i city'yi resetler; konumdan gelen şehir
   // burada bekler, şehir listesi yüklenince listedeki yazımla eşlenip uygulanır.
   const pendingCityRef = React.useRef('');
-  // Koordinat → ülke/şehir: önce BigDataCloud, olmazsa Nominatim (OSM) yedeği.
+  // Koordinat → ülke/şehir. UYUM: çeviri KENDİ backend'imizde yapılır; hastanın
+  // tarayıcısı hiçbir 3. taraf geocode servisine doğrudan bağlanmaz.
   const reverseGeo = async (lat, lon) => {
     try {
-      const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
-      const j = await r.json();
-      if (j?.countryName) return { country: j.countryName, city: j.city || j.locality || '' };
-    } catch (e) { console.warn('[UseMyLocation] BigDataCloud failed, trying Nominatim:', e); }
-    try {
-      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&accept-language=en`);
-      const j = await r.json();
-      const a = j?.address || {};
-      if (a.country) return { country: a.country, city: a.city || a.town || a.province || a.state || '' };
-    } catch (e) { console.warn('[UseMyLocation] Nominatim failed:', e); }
+      const res = await geoAPI.reverse(lat, lon);
+      const d = res?.data || res || {};
+      if (d.country) return { country: d.country, city: d.city || '' };
+    } catch (e) { console.warn('[UseMyLocation] reverse geocode failed:', e); }
     return null;
   };
 

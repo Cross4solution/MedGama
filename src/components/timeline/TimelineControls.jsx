@@ -14,13 +14,18 @@ function TimelineControls({
   showSort = false,
 }) {
   const { t } = useTranslation();
-  // Konum butonu durum metni: yükleniyor / tespit edilen yer / hata.
+  // Konum aktif mi? (geo.country eski kayıtlarla geriye dönük uyum için korunur —
+  // yeni akışta koordinat 3. tarafa gönderilmediği için yer adı yok, sadece 'active'.)
+  const geoActive = !!(geo?.active || geo?.country);
+  // Konum butonu durum metni: yükleniyor / aktif / hata.
   const geoLabel = geoLoading
     ? t('medstream.locating', 'Locating…')
     : geo?.error
       ? t('medstream.locationDenied', 'Location unavailable')
-      : (geo?.country
-          ? [geo.city, geo.country].filter(Boolean).join(', ')
+      : (geoActive
+          ? (geo?.country
+              ? [geo.city, geo.country].filter(Boolean).join(', ')
+              : t('medstream.nearbyActive', 'Showing nearby'))
           : t('medstream.useMyLocation', 'Use my location'));
   return (
     <div className="mb-6">
@@ -74,7 +79,7 @@ function TimelineControls({
             className={`text-[13px] px-3 py-1.5 rounded-full border transition-colors duration-200 inline-flex items-center gap-1.5 font-medium ${
               geo?.error
                 ? 'border-red-200 text-red-500 hover:bg-red-50'
-                : geo?.country
+                : geoActive
                   ? 'border-teal-300 text-teal-700 bg-teal-50/60 hover:bg-teal-50'
                   : 'border-gray-200/70 text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800'
             } ${geoLoading ? 'opacity-70 cursor-wait' : ''}`}
@@ -125,13 +130,19 @@ function TimelineControls({
           onClick={onUseLocation}
           disabled={geoLoading}
           className={`text-sm px-3 py-2 rounded-xl border transition-all duration-200 inline-flex items-center gap-1.5 font-medium ${
-            geo?.error ? 'border-red-200 text-red-500' : geo?.country ? 'border-teal-300 text-teal-700 bg-teal-50/60' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+            geo?.error ? 'border-red-200 text-red-500' : geoActive ? 'border-teal-300 text-teal-700 bg-teal-50/60' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
           } ${geoLoading ? 'opacity-70 cursor-wait' : ''}`}
         >
           {geoLoading
             ? <Loader2 className="w-4 h-4 animate-spin text-teal-500" />
             : <MapPin className={`w-4 h-4 ${geo?.error ? 'text-red-400' : 'text-teal-500'}`} />}
-          <span className="hidden sm:inline max-w-[140px] truncate">{geo?.country ? [geo.city, geo.country].filter(Boolean).join(', ') : t('medstream.locationShort', 'Location')}</span>
+          <span className="hidden sm:inline max-w-[140px] truncate">
+            {geo?.country
+              ? [geo.city, geo.country].filter(Boolean).join(', ')
+              : geoActive
+                ? t('medstream.nearbyActive', 'Showing nearby')
+                : t('medstream.locationShort', 'Location')}
+          </span>
         </button>
       </div>
       {/* Tabs kaldırıldı */}

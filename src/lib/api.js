@@ -474,6 +474,10 @@ export const geoAPI = {
   check: () => api.get('/geo/check'),
   // Hassas konum izni veya manuel seçim → kaydet.
   saveLocation: (payload) => api.post('/geo/location', payload),
+  // Koordinat → şehir/ülke. Sunucu tarafında çözülür; tarayıcı 3. tarafa bağlanmaz.
+  reverse: (lat, lon) => api.get('/geo/reverse', { params: { lat, lon } }),
+  // Şehir adı → koordinat. Yine sunucu tarafında.
+  forward: (q) => api.get('/geo/forward', { params: { q } }),
 };
 
 export const medStreamAPI = {
