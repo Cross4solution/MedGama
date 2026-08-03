@@ -16,6 +16,7 @@ const SUPPORTED_LANGUAGES = LANGUAGES.filter((l) => LOCALES.includes(l.code));
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { Link, useSearchParams } from '@/compat/router';
 import GlobalSuggest from '../components/forms/GlobalSuggest';
+import LocationPicker from '../components/location/LocationPicker';
 import { jsPDF } from 'jspdf';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import autoTable from 'jspdf-autotable';
@@ -503,6 +504,10 @@ export default function Profile() {
                       } catch { return null; }
                     }}
                   />
+                </div>
+                {/* Konum akışı: şehir seçimi + "Konumumu kullan" */}
+                <div className="md:col-span-2">
+                  <LocationPicker />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">

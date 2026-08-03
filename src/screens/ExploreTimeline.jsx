@@ -11,6 +11,7 @@ import SkeletonCard from 'components/timeline/SkeletonCard';
 import VirtualizedFeed from 'components/timeline/VirtualizedFeed';
 import SPECIALTIES from '../data/specialties';
 import { medStreamAPI, geoAPI } from '../lib/api';
+import useLocationPrompt from '../hooks/useLocationPrompt';
 import { resizeImages } from '../utils/imageResize';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import SEOHead from '../components/seo/SEOHead';
@@ -501,29 +502,27 @@ export default function ExploreTimeline() {
 
   // Görünüm sabit: LinkedIn benzeri tek sütun liste
 
-  // Sayfa yüklenince: daha önceki kararı oku; yalnızca kararsızsa sor
+  // Sayfa yüklenince: son bilinen konumu hemen göster (bekletmeden akış çalışsın).
   useEffect(() => {
     try {
-      const consent = localStorage.getItem(GEO_KEY);
-      if (consent === 'granted') {
-        const raw = localStorage.getItem(GEO_POS_KEY);
-        if (raw) {
-          try { setGeo(JSON.parse(raw)); } catch { askGeo(); }
-        } else {
-          // izin verilmiş ama konum yoksa sessizce yeniden almayı dene (tarayıcı tekrar sormaz)
-          askGeo();
-        }
-      } else if (consent === 'denied') {
-        // kullanıcı reddetmiş, otomatik tekrar sorma
-      } else {
-        // hiç karar yoksa bir kez sor
-        askGeo();
-      }
-    } catch {
-      // storage erişimi yoksa varsayılan davranış: bir kez sor
-      askGeo();
-    }
+      const raw = localStorage.getItem(GEO_POS_KEY);
+      if (raw) setGeo(JSON.parse(raw));
+    } catch {}
   }, []);
+
+  // Hassas konum ne zaman istenecek? (elle giriş → hep; cookie giriş → ülke/eyalet
+  // değişince; misafir → sorma). Karar hook'ta, MedStream'e her girişte çalışır.
+  useLocationPrompt(user, askGeo);
+
+  // Misafir: giriş yoksa konum sorulmaz, en azından bir kez GPS teklif edilir
+  // ancak kullanıcı reddettiyse tekrar rahatsız edilmez.
+  useEffect(() => {
+    if (user?.id) return;
+    try {
+      if (localStorage.getItem(GEO_KEY)) return; // daha önce karar verilmiş
+    } catch {}
+    askGeo();
+  }, [user?.id, askGeo]);
 
   // Sonsuz kaydırma: IntersectionObserver
   useEffect(() => {

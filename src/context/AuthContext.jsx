@@ -168,6 +168,9 @@ export function AuthProvider({ children }) {
       localStorage.setItem('auth_state', JSON.stringify({ user: userWithRole, token: access, country }));
       localStorage.setItem('auth_remember', rememberMe ? '1' : '0');
       sessionStorage.setItem('auth_session', '1');
+      // Konum akışı: elle giriş = muhtemelen yeni yer/cihaz → hassas konum HER ZAMAN sorulur.
+      // (Cookie/otomatik girişte bu bayrak olmaz; orada yalnız ülke/eyalet değişince sorulur.)
+      sessionStorage.setItem('auth_manual_login', '1');
     } catch {}
     // Fetch fresh user data from /auth/me to get latest avatar
     try { fetchCurrentUser(access); } catch {}
