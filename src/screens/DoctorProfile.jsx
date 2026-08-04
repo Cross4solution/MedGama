@@ -767,16 +767,29 @@ const DoctorProfilePage = ({ initialDoctor }) => {
           {/* ═══ Sticky Sidebar ═══ */}
           <div className="lg:w-80 space-y-4 lg:sticky lg:top-20 h-max">
             {/* Booking CTA */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-t-2xl">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2"><Calendar className="w-4 h-4" /> {t('doctorProfile.appointment', 'Appointment')}</h3>
+            {/* Tek güçlü CTA + yumuşak ikincil aksiyonlar: üç doygun rengin
+                birbiriyle yarışması yerine net bir görsel hiyerarşi. */}
+            <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200/70 overflow-hidden">
+              <div className="px-4 py-3 border-b border-teal-100/70 bg-gradient-to-r from-teal-50 to-emerald-50">
+                <h3 className="text-sm font-semibold text-teal-900 flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white/80 text-teal-600 shadow-sm">
+                    <Calendar className="w-4 h-4" />
+                  </span>
+                  {t('doctorProfile.appointment', 'Appointment')}
+                </h3>
               </div>
               <div className="p-4 space-y-2.5">
-                <button onClick={guardAction(() => setBookModal(true))} className="w-full py-3 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+                <button
+                  onClick={guardAction(() => setBookModal(true))}
+                  className="group w-full py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm shadow-teal-600/20 hover:shadow-md hover:shadow-teal-600/25 flex items-center justify-center gap-2"
+                >
                   <Calendar className="w-4 h-4" /> {t('doctorProfile.bookAppointment')}
                 </button>
                 {onlineConsultation && (
-                  <button onClick={guardAction(() => setOnlineBookModal(true))} className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+                  <button
+                    onClick={guardAction(() => setOnlineBookModal(true))}
+                    className="w-full py-3 bg-indigo-50 hover:bg-indigo-100/80 text-indigo-700 ring-1 ring-indigo-100 hover:ring-indigo-200 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+                  >
                     <Video className="w-4 h-4" /> {t('doctorProfile.onlineConsultation')}
                   </button>
                 )}
@@ -806,8 +819,11 @@ const DoctorProfilePage = ({ initialDoctor }) => {
             )}
 
             {/* Quick Contact */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 space-y-2.5">
-              <button onClick={guardAction(() => navigate(`/doctor-chat?startWith=${doctorId}`))} className="w-full py-2.5 bg-violet-600 text-white rounded-xl font-semibold text-sm hover:bg-violet-700 transition-colors flex items-center justify-center gap-2 shadow-sm">
+            <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200/70 p-4">
+              <button
+                onClick={guardAction(() => navigate(`/doctor-chat?startWith=${doctorId}`))}
+                className="w-full py-2.5 bg-violet-50 hover:bg-violet-100/80 text-violet-700 ring-1 ring-violet-100 hover:ring-violet-200 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+              >
                 <MessageSquare className="w-4 h-4" /> {t('doctorProfile.sendMessage')}
               </button>
             </div>
