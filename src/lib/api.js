@@ -552,7 +552,9 @@ export const medStreamAPI = {
   createComment: (postId, payload) => api.post(`/medstream/posts/${postId}/comments`, payload),
   deleteComment: (commentId) => api.delete(`/medstream/comments/${commentId}`),
   toggleLike: (postId) => api.post(`/medstream/posts/${postId}/like`),
-  reportPost: (postId, reason) => api.post(`/medstream/posts/${postId}/report`, { reason }),
+  // Açıklama zorunlu (min 15 karakter) — sunucuda da doğrulanır.
+  reportPost: (postId, reason, description) =>
+    api.post(`/medstream/posts/${postId}/report`, { reason, description }),
   bookmarks: (params) => api.get('/medstream/bookmarks', { params }),
   toggleBookmark: (payload) => api.post('/medstream/bookmarks', payload),
   reports: (params) => api.get('/medstream/reports', { params }),

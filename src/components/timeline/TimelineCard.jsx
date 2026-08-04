@@ -11,6 +11,9 @@ import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 
+// Rapor açıklaması için en az karakter — backend'deki kuralla aynı (StoreReportRequest).
+const REPORT_DESC_MIN = 15;
+
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 const DEFAULT_CLINIC = '/images/default/default-clinic.svg';
 // Clinics / hospital groups are organizations → institution glyph, not a person.
@@ -452,6 +455,8 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportDesc, setReportDesc] = useState('');
+  const [reportSending, setReportSending] = useState(false);
+  const [reportError, setReportError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleted, setDeleted] = useState(false);
@@ -1282,18 +1287,29 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 <button
                   type="button"
                   className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                  disabled={!reportReason}
-                  onClick={() => {
-                    if (item?.id) {
-                      medStreamAPI.reportPost(item.id, `${reportReason}${reportDesc ? ': ' + reportDesc : ''}`).catch(() => {});
+                  disabled={!reportReason || reportDesc.trim().length < REPORT_DESC_MIN || reportSending}
+                  onClick={async () => {
+                    if (!item?.id) return;
+                    setReportSending(true);
+                    try {
+                      await medStreamAPI.reportPost(item.id, reportReason, reportDesc.trim());
+                      showSuccessToast(t('medstream.reportSubmitted'));
+                      setShowReportModal(false);
+                      setReportReason('');
+                      setReportDesc('');
+                    } catch (err) {
+                      // Önceden hata yutuluyor, yine de "gönderildi" deniyordu
+                      setReportError(
+                        err?.data?.errors?.description?.[0] ||
+                        err?.data?.message ||
+                        t('medstream.reportFailed', 'Report could not be sent. Please try again.')
+                      );
+                    } finally {
+                      setReportSending(false);
                     }
-                    showSuccessToast(t('medstream.reportSubmitted'));
-                    setShowReportModal(false);
-                    setReportReason('');
-                    setReportDesc('');
                   }}
                 >
-                  {t('medstream.submit')}
+                  {reportSending ? t('common.saving', 'Sending…') : t('medstream.submit')}
                 </button>
               </div>
             }
@@ -1314,15 +1330,31 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('medstream.descriptionOptional')}</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                  {t('medstream.description', 'Description')}
+                  <span className="text-red-500 ml-0.5">*</span>
+                </label>
                 <textarea
                   rows={3}
                   value={reportDesc}
-                  onChange={(e)=>setReportDesc(e.target.value)}
+                  onChange={(e) => { setReportDesc(e.target.value); if (reportError) setReportError(''); }}
                   placeholder={t('medstream.describeIssue')}
+                  maxLength={200}
                   className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none resize-none"
                 />
+                <div className="mt-1 flex items-center justify-between gap-2">
+                  <span className={`text-[11px] ${reportDesc.trim().length >= REPORT_DESC_MIN ? 'text-emerald-600' : 'text-gray-400'}`}>
+                    {reportDesc.trim().length >= REPORT_DESC_MIN
+                      ? t('medstream.reportDescOk', 'Looks good')
+                      : t('medstream.reportDescMin', 'Please write at least {{min}} characters', { min: REPORT_DESC_MIN })}
+                  </span>
+                  <span className="text-[11px] text-gray-400 tabular-nums">{reportDesc.trim().length}/200</span>
+                </div>
               </div>
+
+              {reportError && (
+                <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{reportError}</p>
+              )}
             </div>
           </Modal>
           {/* Delete Confirmation Modal */}

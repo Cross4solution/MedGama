@@ -205,6 +205,9 @@ const CreatePostModal = ({ open, onClose, onCreated, t }) => {
 // ═══════════════════════════════════════════════════
 // ReportModal
 // ═══════════════════════════════════════════════════
+// Rapor açıklaması için en az karakter — backend'deki kuralla aynı (StoreReportRequest).
+const REPORT_DESC_MIN = 15;
+
 const REPORT_REASONS = [
   'Hasta bilgisi içeriyor',
   'Yanıltıcı tıbbi bilgi',
@@ -215,17 +218,28 @@ const REPORT_REASONS = [
 
 const ReportModal = ({ open, onClose, postId, t }) => {
   const [reason, setReason] = useState('');
+  const [description, setDescription] = useState('');
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+
+  const descOk = description.trim().length >= REPORT_DESC_MIN;
 
   const handleReport = async () => {
-    if (!reason) return;
+    if (!reason || !descOk) return;
     setSending(true);
+    setError('');
     try {
-      await medStreamAPI.reportPost(postId, reason);
+      await medStreamAPI.reportPost(postId, reason, description.trim());
       setDone(true);
-      setTimeout(() => { onClose(); setDone(false); setReason(''); }, 1500);
-    } catch { /* ignore */ }
+      setTimeout(() => { onClose(); setDone(false); setReason(''); setDescription(''); }, 1500);
+    } catch (err) {
+      setError(
+        err?.data?.errors?.description?.[0] ||
+        err?.data?.message ||
+        'Rapor gönderilemedi. Lütfen tekrar deneyin.'
+      );
+    }
     setSending(false);
   };
 
@@ -242,18 +256,45 @@ const ReportModal = ({ open, onClose, postId, t }) => {
           {done ? (
             <p className="text-sm text-emerald-600 font-medium text-center py-4">Raporunuz alındı. Teşekkürler.</p>
           ) : (
-            REPORT_REASONS.map((r) => (
-              <label key={r} className="flex items-center gap-3 cursor-pointer">
-                <input type="radio" name="report" value={r} checked={reason === r} onChange={() => setReason(r)} className="text-red-500 focus:ring-red-400" />
-                <span className="text-sm text-gray-700">{r}</span>
-              </label>
-            ))
+            <>
+              {REPORT_REASONS.map((r) => (
+                <label key={r} className="flex items-center gap-3 cursor-pointer">
+                  <input type="radio" name="report" value={r} checked={reason === r} onChange={() => setReason(r)} className="text-red-500 focus:ring-red-400" />
+                  <span className="text-sm text-gray-700">{r}</span>
+                </label>
+              ))}
+
+              {/* Açıklama zorunlu — boş rapor moderasyon kuyruğunu şişiriyordu */}
+              <div className="pt-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                  Açıklama<span className="text-red-500 ml-0.5">*</span>
+                </label>
+                <textarea
+                  rows={3}
+                  value={description}
+                  onChange={(e) => { setDescription(e.target.value); if (error) setError(''); }}
+                  maxLength={200}
+                  placeholder="Sorunu kısaca anlatın…"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-red-500/20 focus:border-red-300 transition-all outline-none resize-none"
+                />
+                <div className="mt-1 flex items-center justify-between gap-2">
+                  <span className={`text-[11px] ${descOk ? 'text-emerald-600' : 'text-gray-400'}`}>
+                    {descOk ? 'Yeterli' : `En az ${REPORT_DESC_MIN} karakter yazın`}
+                  </span>
+                  <span className="text-[11px] text-gray-400 tabular-nums">{description.trim().length}/200</span>
+                </div>
+              </div>
+
+              {error && (
+                <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+              )}
+            </>
           )}
         </div>
         {!done && (
           <div className="flex justify-end gap-2 px-5 py-3 border-t border-gray-100">
             <button onClick={onClose} className="px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 rounded-lg">İptal</button>
-            <button onClick={handleReport} disabled={!reason || sending} className="px-4 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-lg disabled:opacity-50 flex items-center gap-1.5">
+            <button onClick={handleReport} disabled={!reason || !descOk || sending} className="px-4 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-lg disabled:opacity-50 flex items-center gap-1.5">
               {sending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Flag className="w-3 h-3" />} Raporla
             </button>
           </div>

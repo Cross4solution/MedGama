@@ -37,19 +37,32 @@ export default function ShareMenu({ url, title, className = '', showNative = fal
       if (!btn) return;
       const rect = btn.getBoundingClientRect();
       const w = 256;
-      const menuH = 320;
       const gutter = 8;
-      // If menu would go below viewport, open above the button
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const top = spaceBelow < menuH + gutter
+
+      // Menünün GERÇEK yüksekliğini ölç. Önceden sabit 320px varsayılıyordu; menü
+      // aslında ~200px olduğu için altta yer varken bile "sığmıyor" sanılıp yukarı,
+      // gönderinin üstüne açılıyordu.
+      const menuH = panelRef.current?.offsetHeight || 200;
+
+      const spaceBelow = window.innerHeight - rect.bottom - gutter;
+      const spaceAbove = rect.top - gutter;
+      // Yalnızca altta gerçekten yer yoksa VE üstte daha çok yer varsa yukarı aç
+      const openUp = spaceBelow < menuH && spaceAbove > spaceBelow;
+      const top = openUp
         ? Math.max(gutter, rect.top - menuH - gutter)
-        : rect.bottom + gutter;
-      const left = Math.max(gutter, Math.min(window.innerWidth - w - gutter, rect.left));
-      setPos({ top, left, width: w });
+        : Math.min(rect.bottom + gutter, window.innerHeight - menuH - gutter);
+
+      // Buton sağ taraftaysa menüyü sağ kenarına hizala (taşmayı da önler)
+      const preferRight = rect.left + rect.width / 2 > window.innerWidth / 2;
+      const rawLeft = preferRight ? rect.right - w : rect.left;
+      const left = Math.max(gutter, Math.min(window.innerWidth - w - gutter, rawLeft));
+
+      setPos({ top: Math.max(gutter, top), left, width: w });
     } catch {}
   }, []);
 
-  React.useEffect(() => {
+  // Panel DOM'a girdikten SONRA ölçüp konumlandır (boyanmadan önce → titreme yok)
+  React.useLayoutEffect(() => {
     if (!open) return;
     updatePos();
     const onScroll = () => updatePos();

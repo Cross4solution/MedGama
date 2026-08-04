@@ -546,9 +546,14 @@ class MedStreamService
      */
     public function createReport(string $reporterId, string $postId, array $data): MedStreamReport
     {
+        // Kategori + açıklama tek alanda saklanır (mevcut moderasyon ekranı tek metin bekliyor)
+        $reason = trim((string) $data['reason']);
+        $description = trim((string) ($data['description'] ?? ''));
+        $combined = $description !== '' ? $reason . ': ' . $description : $reason;
+
         $report = MedStreamReport::updateOrCreate(
             ['post_id' => $postId, 'reporter_id' => $reporterId],
-            ['reason' => $data['reason'], 'admin_status' => 'pending'],
+            ['reason' => mb_substr($combined, 0, 255), 'admin_status' => 'pending'],
         );
 
         // Auto-hide if threshold reached
