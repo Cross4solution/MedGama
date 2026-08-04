@@ -135,6 +135,13 @@ class AuthService
             }
         }
 
+        // Sürümlü rıza kayıtları — hangi metin sürümünün onaylandığı denetimde ispatlanabilsin.
+        try {
+            app(\App\Services\ConsentService::class)->recordRegistrationConsents($user, $data);
+        } catch (\Throwable $e) {
+            \Log::warning('Consent records failed: ' . $e->getMessage());
+        }
+
         // Roles that NEVER need email verification during register:
         //   • hospital    → admin-provisioned accounts
         //   • clinic / clinicOwner → business accounts, verified by admin

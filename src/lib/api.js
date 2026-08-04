@@ -466,6 +466,14 @@ export const leadAPI = {
 };
 
 // ── MedStream Service ──
+// Açık rıza kayıtları (KVKK/GDPR Art.7)
+export const consentAPI = {
+  list: () => api.get('/consents'),
+  history: () => api.get('/consents/history'),
+  grant: (type) => api.post(`/consents/${type}`),
+  revoke: (type) => api.delete(`/consents/${type}`),
+};
+
 // "Sağlık verime kim, ne zaman, neye baktı?" şeffaflık raporu
 export const healthAccessLogAPI = {
   list: (params) => api.get('/health-access-logs', { params }),

@@ -17,6 +17,7 @@ import { useCookieConsent } from '../context/CookieConsentContext';
 import { Link, useSearchParams } from '@/compat/router';
 import GlobalSuggest from '../components/forms/GlobalSuggest';
 import LocationPicker from '../components/location/LocationPicker';
+import ConsentManager from '../components/privacy/ConsentManager';
 import { jsPDF } from 'jspdf';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import autoTable from 'jspdf-autotable';
@@ -411,9 +412,9 @@ export default function Profile() {
               )}
               <NavItem id="notifications" icon={Bell} title={t('profile.notifications')} desc={t('profile.notificationsDesc')} />
               <NavItem id="security" icon={Shield} title={t('profile.security', 'Security & Password')} desc={t('profile.securityDesc', 'Password & sessions')} />
-              {user?.role !== 'patient' && (
-                <NavItem id="privacy" icon={Lock} title={t('profile.privacyData', 'Privacy & Data')} desc={t('profile.privacyDataDesc', 'Consent, export & deletion')} />
-              )}
+              {/* Gizlilik/veri sekmesi HERKESE açık — veri sahibi olan hastanın
+                  onaylarını görmesi ve geri alması KVKK/GDPR gereği. */}
+              <NavItem id="privacy" icon={Lock} title={t('profile.privacyData', 'Privacy & Data')} desc={t('profile.privacyDataDesc', 'Consent, export & deletion')} />
             </div>
           </div>
         </aside>
@@ -703,8 +704,11 @@ export default function Profile() {
             </div>
           )}
 
-          {active === 'privacy' && user?.role !== 'patient' && (
+          {active === 'privacy' && (
             <div className="space-y-5">
+              {/* Verdiğim onaylar — sürümlü rıza kayıtları (KVKK/GDPR Art.7) */}
+              <ConsentManager showToast={showToast} />
+
               {/* Cookie Consent Management */}
               <div className="rounded-2xl border border-gray-200/60 bg-white p-5 shadow-sm">
                 <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">

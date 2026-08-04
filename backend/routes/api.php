@@ -281,6 +281,14 @@ Route::middleware('optional.auth')->group(function () {
     Route::get('/clinics/{id}/review-stats', [ClinicController::class, 'reviewStats']);
 });
 
+// Açık rıza kayıtları (KVKK/GDPR Art.7): durum, tam geçmiş, ver/geri al
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/consents', [\App\Http\Controllers\Api\ConsentController::class, 'index']);
+    Route::get('/consents/history', [\App\Http\Controllers\Api\ConsentController::class, 'history']);
+    Route::post('/consents/{type}', [\App\Http\Controllers\Api\ConsentController::class, 'grant']);
+    Route::delete('/consents/{type}', [\App\Http\Controllers\Api\ConsentController::class, 'revoke']);
+});
+
 // "Sağlık verime kim baktı?" şeffaflık raporu — hasta kendi kaydını, admin tümünü görür
 Route::get('/health-access-logs', [\App\Http\Controllers\Api\HealthAccessLogController::class, 'index'])
     ->middleware('auth:sanctum');
