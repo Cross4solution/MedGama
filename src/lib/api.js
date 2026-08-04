@@ -466,6 +466,11 @@ export const leadAPI = {
 };
 
 // ── MedStream Service ──
+// "Sağlık verime kim, ne zaman, neye baktı?" şeffaflık raporu
+export const healthAccessLogAPI = {
+  list: (params) => api.get('/health-access-logs', { params }),
+};
+
 // MedStream konum akışı
 export const geoAPI = {
   // Misafir: IP'den ülke (+varsa eyalet). GPS yok.

@@ -281,6 +281,10 @@ Route::middleware('optional.auth')->group(function () {
     Route::get('/clinics/{id}/review-stats', [ClinicController::class, 'reviewStats']);
 });
 
+// "Sağlık verime kim baktı?" şeffaflık raporu — hasta kendi kaydını, admin tümünü görür
+Route::get('/health-access-logs', [\App\Http\Controllers\Api\HealthAccessLogController::class, 'index'])
+    ->middleware('auth:sanctum');
+
 // MedStream konum akışı — misafir IP→ülke (public), giriş sonrası kontrol + kaydet (auth)
 Route::get('/geo/ip-country', [GeoController::class, 'ipCountry']);
 // Ters-geocode sunucu tarafında: hasta tarayıcısı 3. taraf servise bağlanmaz

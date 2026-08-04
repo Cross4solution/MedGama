@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { patientDocumentAPI } from '../lib/api';
 import EmptyState from '../components/common/EmptyState';
+import AccessHistory from '../components/medical/AccessHistory';
 import {
   FolderHeart, Upload, FileText, Image, File, Trash2, Download,
   Search, Filter, X, ChevronLeft, ChevronRight, Eye, Share2,
@@ -365,6 +366,11 @@ const MedicalArchive = () => {
             </button>
           </div>
         )}
+
+        {/* ── Erişim Geçmişi: verilerine kimin baktığını hasta görür (KVKK/GDPR şeffaflık) ── */}
+        <div className="mt-6">
+          <AccessHistory />
+        </div>
       </div>
 
       {/* ══════════ Upload Modal ══════════ */}
