@@ -28,6 +28,8 @@ class Hospital extends Model
         'email',
         'website',
         'map_coordinates',
+        'latitude',
+        'longitude',
         'city',
         'country',
         'tax_number',
@@ -52,6 +54,8 @@ class Hospital extends Model
     {
         return [
             'map_coordinates' => 'array',
+            'latitude'        => 'decimal:7',
+            'longitude'       => 'decimal:7',
             'is_verified'     => 'boolean',
             'is_active'       => 'boolean',
             'biography'       => 'encrypted',

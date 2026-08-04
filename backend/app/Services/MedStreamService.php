@@ -113,7 +113,9 @@ class MedStreamService
                     $q->where(function ($outer) use ($inBox, $geoCountry) {
                         $outer->whereHas('author.doctorProfile', $inBox)
                               ->orWhereHas('clinic', $inBox)
-                              ->orWhereHas('author.ownedClinic', $inBox);
+                              ->orWhereHas('author.ownedClinic', $inBox)
+                              // Hastane paylaşımları da yakınlıkta eşleşsin
+                              ->orWhereHas('hospital', $inBox);
                         // Fallback: aynı ülkedeki diğer update'ler de sonuç kümesine girsin
                         if ($geoCountry) {
                             $outer->orWhereHas('author', fn($uq) =>
@@ -121,11 +123,13 @@ class MedStreamService
                             );
                         }
                     });
-                    // Yakındakileri öne al: klinik/ownedClinic koordinatı kutuda mı?
+                    // Yakındakileri öne al: klinik/ownedClinic VEYA hastane koordinatı kutuda mı?
                     $q->selectRaw(
                         '(EXISTS(SELECT 1 FROM clinics c WHERE (c.id = med_stream_posts.clinic_id OR c.owner_id = med_stream_posts.author_id) '
-                        . 'AND c.latitude IS NOT NULL AND c.latitude BETWEEN ? AND ? AND c.longitude BETWEEN ? AND ?)) AS is_nearby',
-                        [$latMin, $latMax, $lonMin, $lonMax]
+                        . 'AND c.latitude IS NOT NULL AND c.latitude BETWEEN ? AND ? AND c.longitude BETWEEN ? AND ?) '
+                        . 'OR EXISTS(SELECT 1 FROM hospitals h WHERE h.id = med_stream_posts.hospital_id '
+                        . 'AND h.latitude IS NOT NULL AND h.latitude BETWEEN ? AND ? AND h.longitude BETWEEN ? AND ?)) AS is_nearby',
+                        [$latMin, $latMax, $lonMin, $lonMax, $latMin, $latMax, $lonMin, $lonMax]
                     );
                 }
             );

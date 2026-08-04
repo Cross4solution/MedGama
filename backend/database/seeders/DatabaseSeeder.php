@@ -906,6 +906,11 @@ class DatabaseSeeder extends Seeder
             $p = $geoPoints[($i + 3) % count($geoPoints)];
             $dp->latitude = $p[0]; $dp->longitude = $p[1]; $dp->save();
         }
-        $this->command->info("Backfilled coordinates (İstanbul cluster) for {$clinicsAll->count()} clinics + {$docProfilesAll->count()} doctor profiles.");
+        $hospitalsAll = \App\Models\Hospital::all()->values();
+        foreach ($hospitalsAll as $i => $h) {
+            $p = $geoPoints[($i + 6) % count($geoPoints)];
+            $h->latitude = $p[0]; $h->longitude = $p[1]; $h->save();
+        }
+        $this->command->info("Backfilled coordinates (İstanbul cluster) for {$clinicsAll->count()} clinics + {$docProfilesAll->count()} doctor profiles + {$hospitalsAll->count()} hospitals.");
     }
 }

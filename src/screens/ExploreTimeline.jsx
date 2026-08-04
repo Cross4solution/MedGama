@@ -421,8 +421,22 @@ export default function ExploreTimeline() {
     },
   });
 
-  // Progressive yarıçap: konum aktif ve sonuç azsa perimetreyi kademeli büyüt
-  // (25 → 50 → 100 km). Yoğun/gelişmiş yerde dar kalır, seyrek yerde genişler.
+  // Adaptif yarıçap: konum alınır alınmaz çevredeki sağlayıcı YOĞUNLUĞUNU sor ve
+  // uygun perimetreyi tek seferde ayarla (yoğun bölge dar ~20km, seyrek geniş ~100km).
+  // Böylece kırsaldaki kullanıcı kademe kademe büyümeyi beklemez.
+  useEffect(() => {
+    if (!geo || typeof geo.lat !== 'number') return;
+    let alive = true;
+    geoAPI.suggestRadius(geo.lat, geo.lon)
+      .then((res) => {
+        const r = res?.data?.radius;
+        if (alive && typeof r === 'number') setGeoRadius(r);
+      })
+      .catch(() => { /* öneri alınamazsa varsayılan + kademeli büyüme devrede */ });
+    return () => { alive = false; };
+  }, [geo?.lat, geo?.lon]);
+
+  // Emniyet ağı: öneriye rağmen sonuç azsa perimetreyi yine de büyüt.
   useEffect(() => {
     const geoActive = geo && typeof geo.lat === 'number';
     if (!geoActive || !apiLoaded) return;

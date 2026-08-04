@@ -298,6 +298,8 @@ Route::get('/geo/ip-country', [GeoController::class, 'ipCountry']);
 // Ters-geocode sunucu tarafında: hasta tarayıcısı 3. taraf servise bağlanmaz
 Route::get('/geo/reverse', [GeoController::class, 'reverse'])->middleware('throttle:30,1');
 Route::get('/geo/forward', [GeoController::class, 'forward'])->middleware('throttle:30,1');
+// Yoğunluğa göre arama yarıçapı: yoğun bölgede dar, seyrekte geniş
+Route::get('/geo/suggest-radius', [GeoController::class, 'suggestRadius'])->middleware('throttle:60,1');
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/geo/check', [GeoController::class, 'check']);
     Route::post('/geo/location', [GeoController::class, 'saveLocation']);

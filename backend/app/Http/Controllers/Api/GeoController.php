@@ -148,6 +148,60 @@ class GeoController extends Controller
     }
 
     /**
+     * GET /geo/suggest-radius?lat=&lon=  (public, cache'li)
+     * Konumun YOĞUNLUĞUNA göre uygun arama yarıçapı (km).
+     *
+     * Müşteri isteği: "yoğun/gelişmiş yerde dar, seyrek yerde geniş perimetre".
+     * Dış nüfus verisi yerine KENDİ verimizi sayarız — çevrede kaç sağlayıcı
+     * (klinik / doktor / hastane) var. Bu hem 3. taraf bağımlılığı getirmez hem de
+     * asıl önemli olanı ölçer: kullanıcının çevresinde gösterilecek içerik var mı.
+     */
+    public function suggestRadius(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'lat' => 'required|numeric|between:-90,90',
+            'lon' => 'required|numeric|between:-180,180',
+        ]);
+
+        $lat = round((float) $data['lat'], 2);   // ~1km — yoğunluk için yeterli, veri minimizasyonu
+        $lon = round((float) $data['lon'], 2);
+
+        $radius = cache()->remember("geo:radius:{$lat}:{$lon}", 3600, function () use ($lat, $lon) {
+            $probe = 25.0; // km — yoğunluğu bu referans çemberde ölçeriz
+            $dLat = $probe / 111.0;
+            $dLon = $probe / (111.0 * max(0.01, cos(deg2rad($lat))));
+            $bounds = [$lat - $dLat, $lat + $dLat, $lon - $dLon, $lon + $dLon];
+
+            $count = $this->countProviders('clinics', $bounds)
+                + $this->countProviders('doctor_profiles', $bounds)
+                + $this->countProviders('hospitals', $bounds);
+
+            // Yoğun bölgede dar tut, seyrekte tek seferde genişlet
+            return match (true) {
+                $count >= 20 => 20,
+                $count >= 8  => 35,
+                $count >= 3  => 60,
+                default      => 100,
+            };
+        });
+
+        return response()->json(['radius' => $radius]);
+    }
+
+    private function countProviders(string $table, array $b): int
+    {
+        try {
+            return (int) \Illuminate\Support\Facades\DB::table($table)
+                ->whereNotNull('latitude')
+                ->whereBetween('latitude', [$b[0], $b[1]])
+                ->whereBetween('longitude', [$b[2], $b[3]])
+                ->count();
+        } catch (\Throwable) {
+            return 0; // tablo/kolon yoksa yoğunluk hesabını bozma
+        }
+    }
+
+    /**
      * POST /geo/location  (auth)
      * Hassas konum izni verildiğinde veya profil/manuel seçimde kaydet.
      */

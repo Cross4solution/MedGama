@@ -491,6 +491,8 @@ export const geoAPI = {
   reverse: (lat, lon) => api.get('/geo/reverse', { params: { lat, lon } }),
   // Şehir adı → koordinat. Yine sunucu tarafında.
   forward: (q) => api.get('/geo/forward', { params: { q } }),
+  // Çevredeki sağlayıcı yoğunluğuna göre uygun arama yarıçapı (km).
+  suggestRadius: (lat, lon) => api.get('/geo/suggest-radius', { params: { lat, lon } }),
 };
 
 export const medStreamAPI = {
