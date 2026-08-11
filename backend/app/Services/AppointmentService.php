@@ -83,6 +83,15 @@ class AppointmentService
             // Doktor/klinik profilinde henüz kapora alanı yok; istek payload'ında gelebilir.
             [$depositStatus, $depositAmount] = $this->resolveDeposit($data);
 
+            // 2b. Başlangıç durumu.
+            // Hasta doktorun KENDİ AÇTIĞI takvim saatinden seçtiyse doktor zaten
+            // "o saat müsaitim" demiştir; ikinci kez onay istemek gereksiz bir adım
+            // ve hastayı belirsizlikte bekletiyor. Bu yüzden slot üzerinden alınan
+            // (veya doktorun kendi oluşturduğu) randevu doğrudan onaylı başlar;
+            // doktor uygun değilse reddeder. Slotsuz gelen serbest talep, doktor
+            // o saat için müsaitlik beyan etmediğinden onay bekler.
+            $status = (!empty($data['slot_id']) || $isCreatedByDoctor) ? 'confirmed' : 'pending';
+
             // 3. Build appointment payload
             $appointmentData = [
                 'patient_id'        => $patientId,
@@ -94,7 +103,7 @@ class AppointmentService
                 'appointment_time'  => $data['appointment_time'],
                 'confirmation_note' => $data['confirmation_note'] ?? null,
                 'patient_medical_snapshot' => $snapshot,
-                'status'            => 'pending',
+                'status'            => $status,
                 'deposit_status'    => $depositStatus,
                 'deposit_amount'    => $depositAmount,
                 'created_by'        => $createdBy->id,

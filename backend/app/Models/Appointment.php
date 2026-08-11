@@ -43,6 +43,45 @@ class Appointment extends Model
         ];
     }
 
+    /**
+     * Randevunun başlangıç anı (tarih + saat), sunucu saat diliminde.
+     */
+    public function startsAt(): ?\Illuminate\Support\Carbon
+    {
+        if (!$this->appointment_date || !$this->appointment_time) {
+            return null;
+        }
+
+        try {
+            return \Illuminate\Support\Carbon::parse(
+                $this->appointment_date->toDateString() . ' ' . substr((string) $this->appointment_time, 0, 5)
+            );
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Doktor bu randevuyu hâlâ reddedebilir mi?
+     *
+     * Randevu doktorun kendi açtığı saatten alındığı için onay adımı yok; doktorun
+     * tek aracı reddetmek. Son ana kadar açık bırakılırsa hasta görüşmeye dakikalar
+     * kala boşa düşer — bu yüzden başlangıçtan 2 saat öncesinde kapanır.
+     */
+    public const REJECT_CUTOFF_HOURS = 2;
+
+    public function doctorCanReject(): bool
+    {
+        if (!in_array($this->status, ['pending', 'confirmed'], true)) {
+            return false;
+        }
+
+        $start = $this->startsAt();
+
+        // Saat okunamıyorsa engelleme — doktoru kilitlemek, geç reddedilmesinden kötü.
+        return $start === null || now()->lte($start->copy()->subHours(self::REJECT_CUTOFF_HOURS));
+    }
+
     // ── Prunable (GDPR Art. 5(1)(e) — 10 year retention) ──
 
     public function prunable()

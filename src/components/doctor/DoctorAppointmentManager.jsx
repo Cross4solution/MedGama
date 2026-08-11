@@ -24,7 +24,9 @@ export default function DoctorAppointmentManager() {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('incoming'); // incoming | confirmed
+  // Randevular artık doğrudan onaylı geldiği için "gelen istek" sekmesi çoğu zaman
+  // boş olur; doktor açılışta işine yarayan listeyi görsün.
+  const [activeTab, setActiveTab] = useState('confirmed'); // incoming | confirmed
   const [updating, setUpdating] = useState(null);
   const [actionError, setActionError] = useState('');
 
@@ -220,14 +222,23 @@ export default function DoctorAppointmentManager() {
                       {updating === apt.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
                       Mark Complete
                     </button>
-                    <button
-                      onClick={() => handleAction(apt.id, 'cancelled')}
-                      disabled={updating === apt.id}
-                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-200 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-50 transition-all disabled:opacity-50"
-                    >
-                      <XCircle className="w-3 h-3" />
-                      Cancel
-                    </button>
+                    {/* Randevu doktorun açtığı saatten alındığı için onay adımı yok.
+                        Doktorun tek aracı reddetmek ve bunun son tarihi var: başlangıçtan
+                        2 saat önce (doctor_can_reject sunucudan gelir, kural da orada). */}
+                    {apt.doctor_can_reject ? (
+                      <button
+                        onClick={() => handleAction(apt.id, 'cancelled')}
+                        disabled={updating === apt.id}
+                        className="inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-red-200 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-50 transition-all disabled:opacity-50"
+                      >
+                        {updating === apt.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <XCircle className="w-3 h-3" />}
+                        Reject
+                      </button>
+                    ) : (
+                      <span className="inline-flex items-center px-3 py-2 text-[11px] text-gray-400">
+                        Too late to reject
+                      </span>
+                    )}
                   </div>
                 )}
               </div>

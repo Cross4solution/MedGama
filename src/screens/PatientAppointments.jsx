@@ -251,8 +251,10 @@ export default function PatientAppointments() {
                     <div className="flex flex-col gap-2">
                       {/* Görüntülü randevularda hastanın da görüşmeye girebilmesi gerekiyor —
                           doktor tarafında "Katıl" vardı, hastada hiç yoktu. */}
+                      {/* Sadece onaylı randevuda katılınır: doktorun henüz kabul etmediği
+                          (veya reddettiği) bir randevuda görüşme odası açılmaz. */}
                       {isOnline(appointment.appointment_type)
-                        && (appointment.status === 'pending' || appointment.status === 'confirmed') && (
+                        && appointment.status === 'confirmed' && (
                         <button
                           onClick={() => navigate(`/telehealth/call/${appointment.id}`)}
                           className="px-4 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors flex items-center gap-2 shadow-sm"

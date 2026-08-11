@@ -200,6 +200,18 @@ class AppointmentController extends Controller
             ], 422);
         }
 
+        // Randevu doktorun açtığı saatten alındığı için onay istenmiyor; doktorun
+        // elindeki tek araç reddetmek. Bunun bir son tarihi olmalı, yoksa hasta
+        // görüşmeye dakikalar kala boşa düşebilir. Doktor için sınır: başlangıçtan
+        // 2 saat önce. Hastanın iptal hakkı bu kuraldan etkilenmez.
+        if ($appointment->doctor_id === $request->user()->id
+            && !$appointment->doctorCanReject()) {
+            return response()->json([
+                'message' => 'Randevuya 2 saatten az kaldığı için reddedilemez. Hastayla iletişime geçin.',
+                'code'    => 'REJECT_WINDOW_CLOSED',
+            ], 422);
+        }
+
         $appointment = $this->appointmentService->cancel($request->user(), $appointment);
 
         return (new AppointmentResource($appointment))->response();

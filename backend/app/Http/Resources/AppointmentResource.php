@@ -33,6 +33,9 @@ class AppointmentResource extends JsonResource
             'patient_medical_snapshot' => $this->patient_medical_snapshot,
             'video_conference_link' => $this->video_conference_link,
             'created_by'            => $this->created_by,
+            // Doktorun "Reddet" düğmesi bu bilgiye göre gösterilir; kural sunucuda
+            // da uygulanır (arayüzde gizlemek tek başına yeterli değil).
+            'doctor_can_reject'     => $this->doctorCanReject(),
             'created_at'            => $this->created_at?->toISOString(),
             'updated_at'            => $this->updated_at?->toISOString(),
 

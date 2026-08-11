@@ -154,6 +154,13 @@ class TelehealthController extends Controller
 
         $this->authorizeParticipant($request->user(), $appointment);
 
+        // Yalnızca geçerli (onaylı) randevunun odası açılır. Reddedilmiş/iptal
+        // edilmiş ya da henüz doktorun kabul etmediği bir randevuda görüşme
+        // başlatılmamalı — bağlantı bilgisi de üretilmemeli.
+        if ($appointment->status !== 'confirmed') {
+            abort(403, 'This appointment is not active, so the call cannot be started.');
+        }
+
         $isDoctor = $request->user()->id === $appointment->doctor_id;
 
         return response()->json([
