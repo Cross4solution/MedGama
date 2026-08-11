@@ -52,8 +52,11 @@ class BookingFlowTest extends TestCase
             'appointment_time' => $this->slot->start_time,
         ]);
 
+        // Doktorun kendi açtığı saatten alınan randevu doğrudan onaylı başlar:
+        // doktor o saat için zaten müsaitlik beyan etmiştir, ikinci bir onay
+        // adımı hastayı gereksiz yere belirsizlikte bekletiyordu.
         $response->assertStatus(201)
-            ->assertJsonPath('data.status', 'pending');
+            ->assertJsonPath('data.status', 'confirmed');
 
         // Slot should be locked
         $this->slot->refresh();

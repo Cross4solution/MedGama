@@ -55,10 +55,10 @@ class SecurityTest extends TestCase
         Sanctum::actingAs($other);
         $response = $this->getJson("/api/patient-records/{$record->id}");
 
-        // The controller doesn't have policy-based auth, but the patient should only see their own records
-        // This tests that the record is returned (no ownership check on show currently)
-        // If a policy is added later, this should return 403
-        $response->assertOk();
+        // Sahiplik kontrolü artık var: başka bir hastanın kaydı görülemez.
+        // Test, kontrol eklenmeden önce yazılmıştı ve 200 bekliyordu — yani
+        // açığı doğruluyordu. Beklenti gerçek kurala çekildi.
+        $response->assertForbidden();
     }
 
     public function test_unauthenticated_user_cannot_access_appointments(): void

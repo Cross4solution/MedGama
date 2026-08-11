@@ -265,8 +265,10 @@ class PermissionsTest extends TestCase
         $unverifiedDoctor = User::factory()->doctor()->unverified()->create();
         Sanctum::actingAs($unverifiedDoctor);
 
+        // Alan adı 'content'; 'body' gönderildiği için istek yetki kontrolüne
+        // varmadan doğrulamada 422 ile düşüyordu — test kuralı hiç sınamıyordu.
         $response = $this->postJson("/api/medstream/posts/{$post->id}/comments", [
-            'body' => 'Test comment from unverified doctor',
+            'content' => 'Test comment from unverified doctor',
         ]);
 
         $response->assertStatus(403);

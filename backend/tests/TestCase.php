@@ -8,8 +8,12 @@ use Ramsey\Uuid\Uuid;
 
 abstract class TestCase extends BaseTestCase
 {
-    protected $dropTypes = true;
-    protected $dropViews = true;
+    // RefreshDatabase bu bayrakla veritabanını sıfırlarken "tüm tipleri düşür"
+    // adımını da çalıştırıyor; bu yalnızca PostgreSQL'de destekleniyor ve testler
+    // SQLite üzerinde koştuğu için her koşunun İLK testi LogicException ile
+    // düşüyordu. Migration'lar özel tip oluşturmuyor, bu adıma ihtiyaç yok.
+    protected $dropTypes = false;
+    protected $dropViews = false;
 
     protected function setUp(): void
     {

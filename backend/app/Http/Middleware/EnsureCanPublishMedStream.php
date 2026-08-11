@@ -26,8 +26,11 @@ class EnsureCanPublishMedStream
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        // Admins
-        if ((int) $user->user_level >= 5) {
+        // Admins.
+        // Yalnızca user_level'a bakmak kırılgan: bu sütun rolden türetiliyor ve
+        // seeder/elle oluşturulan bir yönetici kaydında boş kalabiliyor. O durumda
+        // yönetici sessizce moderasyon yetkisini kaybediyordu. Rol de kabul edilir.
+        if ($user->isAdmin() || (int) $user->user_level >= 5) {
             return $next($request);
         }
 

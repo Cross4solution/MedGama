@@ -21,6 +21,10 @@ class AuthTest extends TestCase
             'password'              => 'Password123!',
             'password_confirmation' => 'Password123!',
             'role_id'               => 'patient',
+            // Kayıt artık doğum tarihi ve sağlık verisi açık rızası istiyor
+            // (KVKK/GDPR); test bu alanlar eklenmeden önce yazılmıştı.
+            'date_of_birth'         => '1990-05-17',
+            'health_data_consent'   => true,
         ]);
 
         $response->assertStatus(201)

@@ -149,11 +149,17 @@ class SuperAdminService
             description: ($verified ? 'Verified' : 'Unverified') . " doctor: {$doctor->fullname}",
         );
 
-        // Send notification to doctor
+        // Send notification to doctor.
+        // Bildirim bir doğrulama BAŞVURUSU gerektiriyor; yönetici başvuru
+        // göndermemiş bir doktoru doğrudan onayladığında burası null geçiyor ve
+        // istek 500 ile düşüyordu (doktor kaydı zaten güncellenmiş oluyor, bu
+        // yüzden yönetici işlemin başarısız olduğunu sanıyordu). Başvuru yoksa
+        // yalnızca bildirimi atlıyoruz.
         if ($verified && !$oldValue) {
-            $doctor->notify(new \App\Notifications\VerificationApprovedNotification(
-                $doctor->verificationRequests()->latest()->first()
-            ));
+            $basvuru = $doctor->verificationRequests()->latest()->first();
+            if ($basvuru) {
+                $doctor->notify(new \App\Notifications\VerificationApprovedNotification($basvuru));
+            }
         }
 
         // Clear dashboard cache

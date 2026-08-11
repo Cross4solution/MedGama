@@ -23,6 +23,7 @@ class UserFactory extends Factory
             'email'          => strtolower((string) Str::ulid()) . '@example.test',
             'password'       => static::$password ??= Hash::make('password'),
             'role_id'        => 'patient',
+            'user_level'     => self::SEVIYE['patient'],
             'mobile'         => fake()->phoneNumber(),
             'email_verified' => true,
             'is_verified'    => true,
@@ -30,19 +31,34 @@ class UserFactory extends Factory
         ];
     }
 
+    /**
+     * Rol → seviye eşlemesi (AuthService::register ile aynı).
+     * Fabrika bu sütunu doldurmuyordu; seviyeye bakan yetki kontrolleri testte
+     * gerçek davranıştan farklı sonuç veriyor, testler yanlış güven veriyordu.
+     */
+    private const SEVIYE = [
+        'patient' => 1, 'doctor' => 2, 'clinicOwner' => 3, 'clinic' => 3,
+        'hospital' => 4, 'superAdmin' => 5, 'saasAdmin' => 5,
+    ];
+
+    private function rol(string $rol): static
+    {
+        return $this->state(['role_id' => $rol, 'user_level' => self::SEVIYE[$rol] ?? 1]);
+    }
+
     public function patient(): static
     {
-        return $this->state(['role_id' => 'patient']);
+        return $this->rol('patient');
     }
 
     public function doctor(): static
     {
-        return $this->state(['role_id' => 'doctor']);
+        return $this->rol('doctor');
     }
 
     public function clinicOwner(): static
     {
-        return $this->state(['role_id' => 'clinicOwner']);
+        return $this->rol('clinicOwner');
     }
 
     public function unverified(): static
@@ -52,6 +68,6 @@ class UserFactory extends Factory
 
     public function admin(): static
     {
-        return $this->state(['role_id' => 'superAdmin']);
+        return $this->rol('superAdmin');
     }
 }
