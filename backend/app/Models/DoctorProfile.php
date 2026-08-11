@@ -45,6 +45,8 @@ class DoctorProfile extends Model
     protected $fillable = [
         'user_id',
         'clinic_id',
+        // Randevu saatlerinin ait olduğu IANA saat dilimi adı (ör. Europe/Istanbul).
+        'timezone',
         'title',
         'slug',
         'specialty',

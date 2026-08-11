@@ -20,7 +20,8 @@ class Appointment extends Model
 
     protected $fillable = [
         'patient_id', 'doctor_id', 'clinic_id', 'appointment_type', 'slot_id',
-        'appointment_date', 'appointment_time', 'status', 'confirmation_note',
+        'appointment_date', 'appointment_time', 'starts_at', 'timezone',
+        'status', 'confirmation_note',
         'video_conference_link', 'meeting_id', 'meeting_url', 'meeting_status',
         'doctor_note', 'patient_medical_snapshot', 'created_by', 'is_active',
         // Onaylı Review Sistemi alanları
@@ -33,6 +34,7 @@ class Appointment extends Model
     {
         return [
             'appointment_date'  => 'date',
+            'starts_at'         => 'datetime',
             'is_active'         => 'boolean',
             'doctor_note'       => 'encrypted',
             'confirmation_note' => 'encrypted',
@@ -43,19 +45,60 @@ class Appointment extends Model
         ];
     }
 
+    /** Duvar saati hangi saat diliminde yazıldıysa o; bilinmiyorsa uygulama varsayılanı. */
+    public const VARSAYILAN_TZ = 'Europe/Istanbul';
+
+    public function timezoneName(): string
+    {
+        return $this->timezone ?: self::VARSAYILAN_TZ;
+    }
+
     /**
-     * Randevunun başlangıç anı (tarih + saat), sunucu saat diliminde.
+     * Randevunun başlangıç anı — dünyada tek bir ana karşılık gelen mutlak değer.
+     *
+     * `starts_at` UTC olarak saklanır ve TÜM zaman karşılaştırmaları bunun
+     * üzerinden yapılır. Daha önce duvar saati ("14:00") doğrudan sunucu saatiyle
+     * karşılaştırılıyordu; sunucu UTC olduğu için Türkiye randevuları 3 saat
+     * ileride sanılıyordu. `starts_at` boşsa (eski kayıt) duvar saati, randevunun
+     * kendi saat diliminde yorumlanarak çözülür — sunucununkinde değil.
      */
     public function startsAt(): ?\Illuminate\Support\Carbon
     {
+        if ($this->starts_at) {
+            return $this->starts_at->copy();
+        }
+
         if (!$this->appointment_date || !$this->appointment_time) {
             return null;
         }
 
         try {
-            return \Illuminate\Support\Carbon::parse(
-                $this->appointment_date->toDateString() . ' ' . substr((string) $this->appointment_time, 0, 5)
-            );
+            return \Illuminate\Support\Carbon::createFromFormat(
+                'Y-m-d H:i',
+                $this->appointment_date->toDateString() . ' ' . substr((string) $this->appointment_time, 0, 5),
+                $this->timezoneName()
+            )->utc();
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Duvar saati + tarih ile saat diliminden mutlak anı hesaplar.
+     * Randevu oluşturma/erteleme tek noktadan bunu kullanır.
+     */
+    public static function anHesapla(?string $tarih, ?string $saat, ?string $tz): ?\Illuminate\Support\Carbon
+    {
+        if (!$tarih || !$saat) {
+            return null;
+        }
+
+        try {
+            return \Illuminate\Support\Carbon::createFromFormat(
+                'Y-m-d H:i',
+                substr($tarih, 0, 10) . ' ' . substr($saat, 0, 5),
+                $tz ?: self::VARSAYILAN_TZ
+            )->utc();
         } catch (\Throwable) {
             return null;
         }

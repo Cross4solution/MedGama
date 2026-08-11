@@ -92,6 +92,18 @@ class AppointmentService
             // o saat için müsaitlik beyan etmediğinden onay bekler.
             $status = (!empty($data['slot_id']) || $isCreatedByDoctor) ? 'confirmed' : 'pending';
 
+            // 2c. Saat dilimi + mutlak an.
+            // Duvar saati ("14:00") tek başına anlamsız: kimin 14:00'ü olduğu
+            // yazmazsa yurt dışındaki hasta ile klinik farklı anları anlar.
+            // Saat, randevuyu veren sağlayıcının (klinik, yoksa doktor) saat
+            // diliminde yorumlanır ve mutlak an olarak da saklanır.
+            $tz = $this->saglayiciTimezone($data['clinic_id'] ?? null, $data['doctor_id'] ?? null);
+            $baslangic = Appointment::anHesapla(
+                $data['appointment_date'] ?? null,
+                $data['appointment_time'] ?? null,
+                $tz
+            );
+
             // 3. Build appointment payload
             $appointmentData = [
                 'patient_id'        => $patientId,
@@ -101,6 +113,8 @@ class AppointmentService
                 'slot_id'           => $data['slot_id'] ?? null,
                 'appointment_date'  => $data['appointment_date'],
                 'appointment_time'  => $data['appointment_time'],
+                'starts_at'         => $baslangic,
+                'timezone'          => $tz,
                 'confirmation_note' => $data['confirmation_note'] ?? null,
                 'patient_medical_snapshot' => $snapshot,
                 'status'            => $status,
@@ -324,9 +338,20 @@ class AppointmentService
                     ->update(['is_available' => true]);
             }
 
+            // Erteleme de mutlak anı tazelemeli; yoksa hatırlatmalar ve red
+            // penceresi eski saate göre çalışmaya devam eder.
+            $tz = $appointment->timezone
+                ?: $this->saglayiciTimezone($appointment->clinic_id, $appointment->doctor_id);
+
             $appointment->update([
                 'appointment_date' => $data['appointment_date'],
                 'appointment_time' => $data['appointment_time'],
+                'starts_at'        => Appointment::anHesapla(
+                    $data['appointment_date'] ?? null,
+                    $data['appointment_time'] ?? null,
+                    $tz
+                ),
+                'timezone'         => $tz,
                 'slot_id'          => $data['slot_id'] ?? null,
             ]);
 
@@ -344,6 +369,33 @@ class AppointmentService
     }
 
     // ── Private Helpers ──
+
+    /**
+     * Randevu saatinin ait olduğu saat dilimi: önce klinik, sonra doktor profili,
+     * ikisi de boşsa uygulama varsayılanı.
+     *
+     * Ofset değil, IANA adı ("Europe/Istanbul") saklanır — ofset yaz saatiyle
+     * değişir; Almanya kışın +1, yazın +2. Adı saklayınca doğru farkı sistem
+     * kendisi hesaplar.
+     */
+    private function saglayiciTimezone(?string $clinicId, ?string $doctorId): string
+    {
+        if ($clinicId) {
+            $tz = \App\Models\Clinic::where('id', $clinicId)->value('timezone');
+            if ($tz) {
+                return $tz;
+            }
+        }
+
+        if ($doctorId) {
+            $tz = \App\Models\DoctorProfile::where('user_id', $doctorId)->value('timezone');
+            if ($tz) {
+                return $tz;
+            }
+        }
+
+        return Appointment::VARSAYILAN_TZ;
+    }
 
     /**
      * Build the medical snapshot (patient's stored medical history + booking

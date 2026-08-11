@@ -6,7 +6,27 @@ import { useToast } from '../context/ToastContext';
 import { appointmentAPI } from '../lib/api';
 import useAppointmentSync from '../hooks/useAppointmentSync';
 import AddToCalendar from '../components/AddToCalendar';
-import { formatLocalDate } from '../utils/dates';
+import { formatLocalDate, appointmentTimeDisplay } from '../utils/dates';
+
+/**
+ * Randevu saati, hastanın KENDİ saat diliminde. Klinik başka bir saat
+ * dilimindeyse kliniğin yerel saati de yazılır — tek bir "14:00" yurt
+ * dışındaki hasta için hangi ülkenin saati olduğunu belirsiz bırakıyordu.
+ */
+const AppointmentTime = ({ appointment, isTr }) => {
+  const g = appointmentTimeDisplay(appointment, isTr ? 'tr-TR' : 'en-US');
+  return (
+    <div className="flex items-center gap-2 text-gray-700">
+      <Clock className="w-4 h-4 text-gray-400" />
+      <span className="font-medium">{g.time || '--:--'}</span>
+      {g.showProvider && (
+        <span className="text-xs text-gray-500">
+          ({isTr ? 'klinikte' : 'clinic'} {g.providerTime})
+        </span>
+      )}
+    </div>
+  );
+};
 import { 
   Calendar, Clock, MapPin, Video, Phone, Building2, User, 
   Loader2, AlertCircle, CheckCircle2, XCircle, X, ChevronRight 
@@ -231,10 +251,7 @@ export default function PatientAppointments() {
                           <Calendar className="w-4 h-4 text-gray-400" />
                           <span className="font-medium">{formatDate(appointment.appointment_date)}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-700">
-                          <Clock className="w-4 h-4 text-gray-400" />
-                          <span className="font-medium">{appointment.appointment_time?.slice(0, 5) || '--:--'}</span>
-                        </div>
+                        <AppointmentTime appointment={appointment} isTr={isTr} />
                         <div className="flex items-center gap-2 text-gray-700">
                           {getTypeIcon(appointment.appointment_type)}
                           <span className="font-medium">{getTypeLabel(appointment.appointment_type)}</span>
@@ -284,6 +301,8 @@ export default function PatientAppointments() {
                             title: `${appointment.doctor?.fullname || appointment.doctor_name || (isTr ? 'Doktor' : 'Doctor')} — Medagama`,
                             date: appointment.appointment_date,
                             time: appointment.appointment_time,
+                            // Mutlak an: takvime her ülkede aynı ana düşsün.
+                            startsAt: appointment.starts_at,
                             durationMin: 30,
                             description: getTypeLabel(appointment.appointment_type),
                             location: appointment.appointment_type === 'online'
@@ -349,7 +368,14 @@ export default function PatientAppointments() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">{isTr ? 'Saat' : 'Time'}</span>
-                  <span className="font-medium text-gray-900">{selectedAppointment.appointment_time?.slice(0, 5)}</span>
+                  <span className="font-medium text-gray-900">
+                    {(() => {
+                      const g = appointmentTimeDisplay(selectedAppointment, isTr ? 'tr-TR' : 'en-US');
+                      return g.showProvider
+                        ? `${g.time} (${isTr ? 'klinikte' : 'clinic'} ${g.providerTime})`
+                        : g.time;
+                    })()}
+                  </span>
                 </div>
               </div>
 

@@ -23,6 +23,12 @@ class AppointmentResource extends JsonResource
             // bir gün ÖNCE görüyordu — "2026-08-11T00:00:00Z" yerelde 10 Ağustos oluyor.
             'appointment_date'      => $this->appointment_date?->toDateString(),
             'appointment_time'      => $this->appointment_time,
+            // Mutlak an (UTC, ISO-8601) + duvar saatinin ait olduğu saat dilimi.
+            // Arayüz saati izleyenin kendi saat diliminde gösterir; taraflar
+            // farklıysa kliniğin saatini de yazar. Yalnız "14:00" göndermek,
+            // yurt dışındaki hasta için hangi 14:00 olduğunu belirsiz bırakıyordu.
+            'starts_at'             => $this->startsAt()?->toISOString(),
+            'timezone'              => $this->timezoneName(),
             'status'                => $this->status,
             // Onaylı Review Sistemi alanları
             'deposit_status'        => $this->deposit_status,

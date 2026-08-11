@@ -52,6 +52,13 @@ const TelehealthPage = () => {
 
   const getStartDate = useCallback((appt) => {
     if (!appt) return new Date();
+    // Mutlak an varsa onu kullan. Duvar saatinden ("2026-08-11T14:00") üretmek,
+    // saati İZLEYENİN yerel saati sayıyor: kliniğin 14:00'ünü Almanya'daki hasta
+    // 14:00 Berlin sanıyor, "görüşmeye kaç dakika kaldı" bir saat yanlış çıkıyordu.
+    if (appt.starts_at) {
+      const abs = new Date(appt.starts_at);
+      if (!isNaN(abs.getTime())) return abs;
+    }
     const d = appt.appointment_date || '';
     const t = appt.appointment_time || '00:00';
     return new Date(`${d}T${t}`);

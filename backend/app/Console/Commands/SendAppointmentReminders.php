@@ -38,13 +38,13 @@ class SendAppointmentReminders extends Command
     {
         $appointments = Appointment::active()
             ->whereIn('status', ['pending', 'confirmed'])
-            ->where(function ($q) use ($from, $to) {
-                // Combine date + time into a comparable datetime
-                $q->whereRaw(
-                    "CONCAT(appointment_date, ' ', appointment_time, ':00') BETWEEN ? AND ?",
-                    [$from->toDateTimeString(), $to->toDateTimeString()]
-                );
-            })
+            // Duvar saatini (appointment_date + appointment_time) doğrudan sunucu
+            // saatiyle karşılaştırmak yanlıştı: sunucu UTC, saatler ise kliniğin
+            // yerel saati. Türkiye randevuları 3 saat kaymış hesaplanıyor, hasta
+            // hatırlatmayı yanlış zamanda alıyordu. Karşılaştırma artık mutlak an
+            // (starts_at, UTC) üzerinden.
+            ->whereNotNull('starts_at')
+            ->whereBetween('starts_at', [$from->utc(), $to->utc()])
             ->with(['patient', 'doctor'])
             ->get();
 

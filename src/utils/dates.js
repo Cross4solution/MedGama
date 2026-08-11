@@ -40,6 +40,90 @@ export function parseLocalDateTime(dateValue, timeValue) {
   return d;
 }
 
+// ── Randevu saati: saat dilimi farkındalıklı gösterim ──────────────────────
+//
+// Randevu artık mutlak bir an olarak da geliyor (`starts_at`, UTC) ve duvar
+// saatinin ait olduğu saat dilimi adıyla birlikte (`timezone`, ör.
+// "Europe/Istanbul"). Sadece "14:00" göstermek yurt dışındaki hasta için
+// belirsiz: kimin 14:00'ü? Bu yüzden saati izleyenin KENDİ saat diliminde
+// gösteriyoruz, taraflar farklıysa kliniğin saatini de yazıyoruz.
+
+/** Tarayıcının saat dilimi ("Europe/Berlin"). */
+export function viewerTimezone() {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    return 'UTC';
+  }
+}
+
+/** Bir anı istenen saat diliminde "HH:MM" olarak yazar. */
+export function formatTimeInZone(instant, timeZone, locale = 'tr-TR') {
+  if (!instant) return '';
+  const d = instant instanceof Date ? instant : new Date(instant);
+  if (isNaN(d.getTime())) return '';
+  try {
+    return new Intl.DateTimeFormat(locale, {
+      hour: '2-digit', minute: '2-digit', hour12: false, timeZone,
+    }).format(d);
+  } catch {
+    return '';
+  }
+}
+
+/** Bir anı istenen saat diliminde tarih olarak yazar. */
+export function formatDateInZone(instant, timeZone, locale = 'tr-TR', options) {
+  if (!instant) return '';
+  const d = instant instanceof Date ? instant : new Date(instant);
+  if (isNaN(d.getTime())) return '';
+  try {
+    return new Intl.DateTimeFormat(locale, {
+      day: 'numeric', month: 'long', year: 'numeric', timeZone, ...(options || {}),
+    }).format(d);
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Randevunun gösterilecek saat bilgisi.
+ *
+ * Dönen: { time, date, zoneLabel, providerTime, showProvider }
+ * - time/date : izleyenin kendi saat diliminde
+ * - providerTime + showProvider : izleyen sağlayıcıdan farklı bir saat
+ *   dilimindeyse kliniğin yerel saati (ör. "13:00 · klinikte 14:00")
+ *
+ * `starts_at` yoksa (çok eski kayıt) duvar saatine düşer — o durumda karşılaştırma
+ * yapılamayacağı için sağlayıcı saati gösterilmez.
+ */
+export function appointmentTimeDisplay(appointment, locale = 'tr-TR') {
+  const izleyenTz = viewerTimezone();
+  const saglayiciTz = appointment?.timezone || null;
+  const an = appointment?.starts_at || null;
+
+  if (!an) {
+    return {
+      time: String(appointment?.appointment_time || '').slice(0, 5),
+      date: formatLocalDate(appointment?.appointment_date, locale),
+      zoneLabel: '',
+      providerTime: '',
+      showProvider: false,
+    };
+  }
+
+  const providerTime = saglayiciTz ? formatTimeInZone(an, saglayiciTz, locale) : '';
+  const time = formatTimeInZone(an, izleyenTz, locale);
+
+  return {
+    time,
+    date: formatDateInZone(an, izleyenTz, locale),
+    zoneLabel: izleyenTz,
+    providerTime,
+    // Aynı saat diliminde olan kullanıcıyı ikinci bir saatle meşgul etme.
+    showProvider: Boolean(saglayiciTz && saglayiciTz !== izleyenTz && providerTime && providerTime !== time),
+  };
+}
+
 /** Verilen takvim günü bugün mü? */
 export function isSameLocalDay(value, other = new Date()) {
   const a = parseLocalDate(value);

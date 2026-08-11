@@ -25,10 +25,11 @@ class AutoCompleteAppointments extends Command
         $query = Appointment::query()
             ->where('status', 'confirmed')
             ->whereNull('auto_completed_at')
-            ->whereRaw(
-                "CONCAT(appointment_date, ' ', appointment_time, ':00') <= ?",
-                [$now->toDateTimeString()]
-            );
+            // Duvar saatini sunucu saatiyle karşılaştırmak yanlıştı (sunucu UTC,
+            // saatler kliniğin yereli): Türkiye randevuları 3 saat erken
+            // "tamamlandı" sayılabiliyordu. Mutlak an üzerinden karşılaştırıyoruz.
+            ->whereNotNull('starts_at')
+            ->where('starts_at', '<=', $now->utc());
 
         $count = (clone $query)->count();
 

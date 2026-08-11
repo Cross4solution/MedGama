@@ -25,12 +25,36 @@ function addMinutes(stamp, minutes) {
 /**
  * @param {object} appt { title, date, time, durationMin, description, location }
  */
+// Mutlak anı takvim biçimine çevirir: "20260625T113000Z" (sonundaki Z = UTC).
+// Kayan saat (Z'siz) her takvimde AÇAN KİŞİNİN yerel saati sayılır; Almanya'daki
+// hasta İstanbul randevusunu telefonuna eklediğinde bir saat kaymış görünüyordu.
+// UTC damgası her ülkede aynı ana denk gelir.
+function fmtUtc(isoInstant) {
+  const d = new Date(isoInstant);
+  if (isNaN(d.getTime())) return '';
+  return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+}
+
+function addMinutesUtc(isoInstant, minutes) {
+  const d = new Date(isoInstant);
+  if (isNaN(d.getTime())) return '';
+  return fmtUtc(new Date(d.getTime() + minutes * 60000).toISOString());
+}
+
+/**
+ * @param {object} appt { title, date, time, startsAt, durationMin, description, location }
+ * `startsAt` (ISO, UTC) varsa mutlak zaman kullanılır; yoksa eski kayan saate düşer.
+ */
 export function calendarParts(appt) {
-  const start = fmt(appt.date, appt.time);
-  const end = start ? addMinutes(start, appt.durationMin || 30) : '';
+  const mutlak = appt.startsAt ? fmtUtc(appt.startsAt) : '';
+  const start = mutlak || fmt(appt.date, appt.time);
+  const end = mutlak
+    ? addMinutesUtc(appt.startsAt, appt.durationMin || 30)
+    : (start ? addMinutes(start, appt.durationMin || 30) : '');
   return {
     start,
     end,
+    isUtc: Boolean(mutlak),
     title: appt.title || 'Medagama Randevu',
     description: appt.description || '',
     location: appt.location || '',
@@ -47,7 +71,8 @@ export function googleCalendarUrl(appt) {
     dates: `${p.start}/${p.end}`,
     details: p.description,
     location: p.location,
-    ctz: TZ,
+    // UTC damgalı saatte ctz göndermek yanlış olur; saat zaten mutlak.
+    ...(p.isUtc ? {} : { ctz: TZ }),
   });
   return `https://calendar.google.com/calendar/render?${q.toString()}`;
 }
@@ -55,8 +80,9 @@ export function googleCalendarUrl(appt) {
 export function outlookCalendarUrl(appt) {
   const p = calendarParts(appt);
   if (!p.valid) return '';
-  // Outlook wants ISO local; convert YYYYMMDDTHHMMSS → YYYY-MM-DDTHH:MM:SS
-  const iso = (s) => `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}T${s.slice(9, 11)}:${s.slice(11, 13)}:00`;
+  // Outlook ISO bekler. UTC damgalıysa sondaki "Z" korunmalı, yoksa Outlook
+  // saati açan kişinin yereli sanar ve randevu kayar.
+  const iso = (s) => `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}T${s.slice(9, 11)}:${s.slice(11, 13)}:00${p.isUtc ? 'Z' : ''}`;
   const q = new URLSearchParams({
     path: '/calendar/action/compose',
     rru: 'addevent',

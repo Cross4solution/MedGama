@@ -25,6 +25,8 @@ class Clinic extends Model
         'is_crm_active', 'crm_expires_at', 'specialties', 'certifications',
         'onboarding_completed', 'onboarding_step',
         'verification_status', 'price_ranges', 'packages', 'services', 'gallery',
+        // Randevu saatlerinin ait olduğu IANA saat dilimi adı (ör. Europe/Istanbul).
+        'timezone',
     ];
 
     protected function casts(): array

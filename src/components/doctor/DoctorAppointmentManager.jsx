@@ -3,6 +3,7 @@ import { CalendarClock, CheckCircle2, XCircle, Clock, Video, MapPin, Phone, Load
 import { appointmentAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import MedicalArchivePanel from '../medical/MedicalArchivePanel';
+import { appointmentTimeDisplay } from '../../utils/dates';
 
 const StatusBadge = ({ status }) => {
   const map = {
@@ -178,9 +179,11 @@ export default function DoctorAppointmentManager() {
                     <CalendarClock className="w-3 h-3" />
                     {apt.appointment_date}
                   </span>
+                  {/* Doktorun kendi saat diliminde; hasta başka bir ülkedeyse
+                      onun saatini de göster ki telefonda karışıklık olmasın. */}
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
-                    {apt.appointment_time}
+                    {appointmentTimeDisplay(apt, 'tr-TR').time || apt.appointment_time}
                   </span>
                 </div>
 

@@ -83,10 +83,19 @@ class CalendarFeedController extends Controller
         ];
 
         foreach ($appointments as $a) {
-            $date = optional($a->appointment_date)->format('Ymd') ?: \Illuminate\Support\Carbon::parse($a->appointment_date)->format('Ymd');
-            $time = str_replace(':', '', substr((string) ($a->appointment_time ?: '00:00'), 0, 5)) . '00';
-            $start = $date . 'T' . $time;
-            $end = \Illuminate\Support\Carbon::createFromFormat('Ymd\THis', $start)->addMinutes(30)->format('Ymd\THis');
+            // Mutlak an varsa UTC damgalı yaz ("...Z"). Damgasız saat, takvimi
+            // açan kişinin yerel saati sayılıyor: yurt dışındaki hastanın
+            // telefonuna randevu kaymış düşüyordu.
+            $an = $a->startsAt();
+            if ($an) {
+                $start = $an->utc()->format('Ymd\THis\Z');
+                $end   = $an->utc()->copy()->addMinutes(30)->format('Ymd\THis\Z');
+            } else {
+                $date = optional($a->appointment_date)->format('Ymd') ?: \Illuminate\Support\Carbon::parse($a->appointment_date)->format('Ymd');
+                $time = str_replace(':', '', substr((string) ($a->appointment_time ?: '00:00'), 0, 5)) . '00';
+                $start = $date . 'T' . $time;
+                $end = \Illuminate\Support\Carbon::createFromFormat('Ymd\THis', $start)->addMinutes(30)->format('Ymd\THis');
+            }
 
             $isDoctor = $a->doctor_id === $user->id;
             $other = $isDoctor ? ($a->patient->fullname ?? 'Hasta') : ($a->doctor->fullname ?? 'Doktor');
