@@ -173,6 +173,9 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
   const showFooter = footerOnlyOn.includes(pathname);
 
   const isDoctorChat = String(pathname || '').startsWith('/doctor-chat');
+  // Görüşme odası: ekrana tam otursun, sayfa kaymasın. min-h-screen kullanınca
+  // header boşluğu (pt-12) üstüne binip sayfayı aşağı taşırıyordu.
+  const isCallRoom = String(pathname || '').startsWith('/telehealth/call');
 
   // Header/Sidebar/Footer/CookieBanner compat-shim üzerinden useSearchParams çağırabilir →
   // bunlar CSR bailout'a yol açar. Bu yüzden YALNIZCA kabuk parçaları Suspense altında.
@@ -210,7 +213,9 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
         {showHeader && <Header />}
         {hasSidebar && <SidebarPatient />}
       </Suspense>
-      <div className={`${showHeader ? (hasOwnContainer || isDoctorChat ? 'pt-14' : 'pt-12') : ''} min-h-[70vh]`}>
+      <div className={`${showHeader ? (hasOwnContainer || isDoctorChat ? 'pt-14' : 'pt-12') : ''} ${
+        isCallRoom ? 'h-[calc(100dvh-3rem)] overflow-hidden' : 'min-h-[70vh]'
+      }`}>
         {/* min-h: içerik async yüklenirken (Suspense/CSR bailout/veri) footer'ın
             yukarı zıplamasını ve layout shift'i önler — içerik alanı yer ayırır.
             İçerik kendi Suspense sınırında: useSearchParams kullanan sayfalar burada

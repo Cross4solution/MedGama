@@ -173,7 +173,7 @@ export default function TelehealthCallRoom() {
   // ── Consent gate ──
   if (phase === 'consent') {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="h-full bg-gray-900 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl max-w-md w-full p-6 text-center">
           <div className="w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center mx-auto mb-4">
             <ShieldCheck className="w-6 h-6 text-teal-600" />
@@ -197,7 +197,7 @@ export default function TelehealthCallRoom() {
 
   if (phase === 'error') {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="h-full bg-gray-900 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl max-w-md w-full p-6 text-center">
           <AlertTriangle className="w-10 h-10 text-amber-500 mx-auto mb-3" />
           <p className="text-sm text-gray-700 mb-4">{errorMsg}</p>
@@ -211,7 +211,7 @@ export default function TelehealthCallRoom() {
 
   if (phase === 'ended') {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="h-full bg-gray-900 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl max-w-md w-full p-6 text-center">
           <PhoneOff className="w-10 h-10 text-gray-400 mx-auto mb-3" />
           <h1 className="text-lg font-bold text-gray-900 mb-1">{t('telehealth.ended', 'Görüşme sona erdi')}</h1>
@@ -225,7 +225,7 @@ export default function TelehealthCallRoom() {
 
   // connecting | live
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col">
+    <div className="h-full bg-gray-900 flex flex-col">
       <div className="relative flex-1">
         {/* Remote (main) */}
         <video ref={remoteVideoRef} autoPlay playsInline className="absolute inset-0 w-full h-full object-cover bg-gray-800" />
