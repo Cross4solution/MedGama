@@ -1814,7 +1814,22 @@
     "waiting": "Waiting",
     "transcriptHistory": "Transcript",
     "recording": "REC",
-    "noTranscripts": "Transcripts will appear here when the session starts."
+    "noTranscripts": "Transcripts will appear here when the session starts.",
+    "consentTitle": "Join Call",
+    "consentBody": "The call is end-to-end encrypted and is not recorded. By continuing you allow your camera and microphone to be used for this call.",
+    "consentAccept": "Accept and continue",
+    "prepareTitle": "Ready to join?",
+    "prepareBody": "Check your camera and microphone. The bar should move when you speak.",
+    "camera": "Camera",
+    "microphone": "Microphone",
+    "joinNow": "Join call",
+    "waitingPeer": "Waiting for the other person...",
+    "reconnecting": "Reconnecting...",
+    "ended": "Call ended",
+    "endedNetwork": "The connection could not be re-established.",
+    "errMedia": "Camera/microphone access was denied.",
+    "errAccess": "You do not have access to this call.",
+    "errSignaling": "Could not reach the call server."
   },
   "onboarding": {
     "title": "Complete Your Profile",

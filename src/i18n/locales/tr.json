@@ -2062,7 +2062,22 @@
     "waiting": "Bekliyor",
     "transcriptHistory": "Transkript",
     "recording": "KAY",
-    "noTranscripts": "Oturum başladığında transkriptler burada görünecektir."
+    "noTranscripts": "Oturum başladığında transkriptler burada görünecektir.",
+    "consentTitle": "Görüşmeye Katıl",
+    "consentBody": "Görüşme uçtan uca şifrelidir ve kaydedilmez. Devam ederek kamera ve mikrofonunuzun bu görüşme için kullanılmasına izin vermiş olursunuz.",
+    "consentAccept": "Kabul et ve devam et",
+    "prepareTitle": "Görüşmeye hazır mısınız?",
+    "prepareBody": "Kameranızı ve mikrofonunuzu kontrol edin. Konuştuğunuzda çubuk hareket etmeli.",
+    "camera": "Kamera",
+    "microphone": "Mikrofon",
+    "joinNow": "Görüşmeye katıl",
+    "waitingPeer": "Karşı taraf bekleniyor...",
+    "reconnecting": "Bağlantı yeniden kuruluyor...",
+    "ended": "Görüşme sona erdi",
+    "endedNetwork": "Bağlantı yeniden kurulamadı.",
+    "errMedia": "Kamera/mikrofon erişimi reddedildi.",
+    "errAccess": "Bu görüşmeye erişim yetkiniz yok.",
+    "errSignaling": "Görüşme sunucusuna bağlanılamadı."
   },
   "onboarding": {
     "title": "Profilinizi Tamamlayın",
