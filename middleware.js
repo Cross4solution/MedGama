@@ -87,6 +87,8 @@ export function middleware(req) {
 }
 
 export const config = {
-  // _next, api, ve uzantılı dosyaları (.ico/.png/.xml/.txt vb.) hariç tut
-  matcher: ['/((?!_next|api|.*\\..*).*)'],
+  // _next, api, broadcasting, storage ve uzantılı dosyaları (.ico/.png/.xml/.txt vb.) hariç tut.
+  // broadcasting: kanal yetkilendirmesi backend'e proxy'lenir; dil önekiyle
+  // /tr/broadcasting/auth'a yönlendirilirse istek 404 döner ve görüntülü görüşme kurulmaz.
+  matcher: ['/((?!_next|api|broadcasting|storage|.*\\..*).*)'],
 };
