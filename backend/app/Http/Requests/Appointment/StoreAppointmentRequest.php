@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Appointment;
 
+use App\Models\DoctorProfile;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAppointmentRequest extends FormRequest
@@ -9,6 +11,37 @@ class StoreAppointmentRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * Görüntülü görüşme doktorun kendi tercihidir: profilinde "Telehealth"
+     * kapalıysa o doktora online randevu alınamaz.
+     *
+     * Bu kontrol SUNUCUDA yapılmak zorunda — arayüzde seçeneği gizlemek yetmez,
+     * doğrudan istek atan biri yine online randevu oluşturabiliyordu.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $v) {
+            if ($this->input('appointment_type') !== 'online') {
+                return;
+            }
+
+            $doctorId = $this->input('doctor_id');
+            if (!$doctorId) {
+                return; // doktorsuz (klinik) randevuda bu kontrol uygulanmaz
+            }
+
+            $acik = DoctorProfile::where('user_id', $doctorId)
+                ->value('online_consultation');
+
+            if (!$acik) {
+                $v->errors()->add(
+                    'appointment_type',
+                    __('This doctor does not offer online consultations.')
+                );
+            }
+        });
     }
 
     public function rules(): array

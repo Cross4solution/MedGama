@@ -18,8 +18,15 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
-        channels: __DIR__.'/../routes/channels.php',
         health: '/up',
+    )
+    // Kanal yetkilendirme (görüntülü görüşme sinyali buna bağlı).
+    // withRouting(channels: ...) rotayı 'web' middleware'iyle kaydediyordu; uygulama
+    // ise Bearer token gönderiyor. Çerez oturumu olmadığı için kullanıcı tanınmıyor,
+    // imza üretilmiyor ve iki taraf da kanala giremiyordu → görüşme hiç kurulmuyordu.
+    ->withBroadcasting(
+        __DIR__.'/../routes/channels.php',
+        attributes: ['middleware' => ['api', 'auth:sanctum']],
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
