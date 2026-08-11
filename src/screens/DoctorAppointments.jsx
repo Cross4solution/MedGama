@@ -124,7 +124,7 @@ export default function DoctorAppointments() {
                     )}
                     <AddToCalendar appointment={{
                       id: a.id,
-                      title: `${a.patient?.fullname || (isTr ? 'Hasta' : 'Patient')} — MedaGama`,
+                      title: `${a.patient?.fullname || (isTr ? 'Hasta' : 'Patient')} — Medagama`,
                       date: a.appointment_date,
                       time: a.appointment_time,
                       durationMin: 30,

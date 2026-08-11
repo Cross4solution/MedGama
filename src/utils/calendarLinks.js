@@ -31,7 +31,7 @@ export function calendarParts(appt) {
   return {
     start,
     end,
-    title: appt.title || 'MedaGama Randevu',
+    title: appt.title || 'Medagama Randevu',
     description: appt.description || '',
     location: appt.location || '',
     valid: !!start,
@@ -76,7 +76,7 @@ export function icsDataUri(appt) {
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//MedaGama//Appointments//EN',
+    'PRODID:-//Medagama//Appointments//EN',
     'BEGIN:VEVENT',
     `UID:${(appt.id || p.start)}@medagama`,
     `DTSTART:${p.start}`,

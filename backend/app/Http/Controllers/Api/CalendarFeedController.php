@@ -76,10 +76,10 @@ class CalendarFeedController extends Controller
         $lines = [
             'BEGIN:VCALENDAR',
             'VERSION:2.0',
-            'PRODID:-//MedaGama//Calendar//EN',
+            'PRODID:-//Medagama//Calendar//EN',
             'CALSCALE:GREGORIAN',
             'METHOD:PUBLISH',
-            'X-WR-CALNAME:MedaGama',
+            'X-WR-CALNAME:Medagama',
         ];
 
         foreach ($appointments as $a) {
@@ -91,7 +91,7 @@ class CalendarFeedController extends Controller
             $isDoctor = $a->doctor_id === $user->id;
             $other = $isDoctor ? ($a->patient->fullname ?? 'Hasta') : ($a->doctor->fullname ?? 'Doktor');
             $type = $a->appointment_type === 'online' ? 'Online' : 'Klinik';
-            $summary = 'MedaGama: ' . $other . ' (' . $type . ')';
+            $summary = 'Medagama: ' . $other . ' (' . $type . ')';
             $location = $a->appointment_type === 'online'
                 ? 'Online'
                 : ($a->clinic->address ?? $a->clinic->fullname ?? '');
