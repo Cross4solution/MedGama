@@ -41,7 +41,43 @@ export default function DoctorAppointments() {
     } catch {} finally { setBusyId(null); }
   };
 
-  const isUpcoming = (a) => ['pending', 'confirmed'].includes(a.status);
+  // "Yaklaşan" yalnızca duruma bakıyordu: saati geçmiş bir randevu iptal
+  // edilmediği sürece sonsuza kadar yaklaşan sayılıyor, üstelik "Katıl" düğmesi
+  // de açık kalıyordu. Zaman da hesaba katılmalı.
+  const baslangic = (a) => {
+    if (a.starts_at) {
+      const d = new Date(a.starts_at);
+      if (!isNaN(d.getTime())) return d;
+    }
+    const d = new Date(`${a.appointment_date}T${(a.appointment_time || '00:00').slice(0, 5)}`);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
+  const dakikaKala = (a) => {
+    const b = baslangic(a);
+    return b ? Math.round((b.getTime() - Date.now()) / 60000) : null;
+  };
+
+  // Görüşme bittikten sonra kart "geçmiş"e düşer. 2 saatlik pay, uzayan
+  // görüşmenin kartı erkenden kaybolmasını engeller.
+  const GECMIS_PAYI_DK = 120;
+
+  const isUpcoming = (a) => {
+    if (!['pending', 'confirmed'].includes(a.status)) return false;
+    const k = dakikaKala(a);
+    return k === null || k > -GECMIS_PAYI_DK;
+  };
+
+  // Katılma yalnızca ONAYLI, görüntülü ve saati gelmiş randevuda.
+  // Onaysızda oda zaten açılmıyor; günler sonrası için düğme göstermek de
+  // hatalı beklenti yaratıyor.
+  const KATILIM_PENCERESI_DK = 15;
+  const canJoin = (a) => {
+    if (a.status !== 'confirmed' || a.appointment_type !== 'online') return false;
+    const k = dakikaKala(a);
+    return k !== null && k <= KATILIM_PENCERESI_DK && k > -GECMIS_PAYI_DK;
+  };
+
   const list = appointments.filter((a) => (filter === 'upcoming' ? isUpcoming(a) : !isUpcoming(a)));
 
   const statusBadge = (s) => {
@@ -104,33 +140,36 @@ export default function DoctorAppointments() {
                 <div className="flex flex-col items-end gap-2 flex-shrink-0">
                   {statusBadge(a.status)}
                   <div className="flex items-center gap-2">
-                    {isUpcoming(a) && a.appointment_type === 'online' && (
+                    {canJoin(a) && (
                       <button onClick={() => navigate(`/telehealth/call/${a.id}`)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700">
                         <Video className="w-3.5 h-3.5" />{isTr ? 'Katıl' : 'Join'}
                       </button>
                     )}
-                    {a.status === 'pending' && (
+                    {a.status === 'pending' && isUpcoming(a) && (
                       <button onClick={() => setStatus(a.id, 'confirmed')} disabled={busyId === a.id}
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-teal-200 text-teal-700 text-xs font-semibold hover:bg-teal-50 disabled:opacity-50">
                         {busyId === a.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}{isTr ? 'Onayla' : 'Confirm'}
                       </button>
                     )}
-                    {isUpcoming(a) && (
+                    {/* Reddetme hakkı sunucudan gelir: randevuya 2 saatten az
+                        kaldıysa kapanır. Geçmiş randevuda düğme hiç görünmez. */}
+                    {isUpcoming(a) && a.doctor_can_reject && (
                       <button onClick={() => setStatus(a.id, 'cancelled')} disabled={busyId === a.id}
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 text-xs font-medium">
-                        <XCircle className="w-3.5 h-3.5" />{isTr ? 'İptal' : 'Cancel'}
+                        <XCircle className="w-3.5 h-3.5" />{isTr ? 'Reddet' : 'Reject'}
                       </button>
                     )}
-                    <AddToCalendar appointment={{
+                    {isUpcoming(a) && <AddToCalendar appointment={{
                       id: a.id,
                       title: `${a.patient?.fullname || (isTr ? 'Hasta' : 'Patient')} — Medagama`,
                       date: a.appointment_date,
                       time: a.appointment_time,
+                      startsAt: a.starts_at,
                       durationMin: 30,
                       description: a.appointment_type === 'online' ? (isTr ? 'Online görüşme' : 'Online consultation') : '',
                       location: a.appointment_type === 'online' ? (isTr ? 'Online' : 'Online') : (a.clinic?.fullname || ''),
-                    }} />
+                    }} />}
                   </div>
                 </div>
               </div>

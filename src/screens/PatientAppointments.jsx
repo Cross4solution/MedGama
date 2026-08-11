@@ -92,11 +92,32 @@ export default function PatientAppointments() {
     }
   };
 
+  // Saati geçmiş randevu, durumu değişmediği sürece "yaklaşan"da kalıyordu.
+  // 2 saatlik pay: uzayan görüşme erkenden listeden düşmesin.
+  const GECMIS_PAYI_DK = 120;
+  const dakikaKala = (a) => {
+    const abs = a.starts_at ? new Date(a.starts_at) : new Date(`${a.appointment_date}T${(a.appointment_time || '00:00').slice(0, 5)}`);
+    return isNaN(abs.getTime()) ? null : Math.round((abs.getTime() - Date.now()) / 60000);
+  };
+  const gecmisMi = (a) => {
+    const k = dakikaKala(a);
+    return k !== null && k <= -GECMIS_PAYI_DK;
+  };
+
+  // Katılma: onaylı + görüntülü + saati gelmiş.
+  const KATILIM_PENCERESI_DK = 15;
+  const canJoin = (a) => {
+    if (a.status !== 'confirmed' || !isOnline(a.appointment_type)) return false;
+    const k = dakikaKala(a);
+    return k !== null && k <= KATILIM_PENCERESI_DK && k > -GECMIS_PAYI_DK;
+  };
+
   // Filter appointments
   const filteredAppointments = appointments.filter(a => {
     if (filter === 'all') return true;
-    if (filter === 'upcoming') return a.status === 'pending' || a.status === 'confirmed';
-    if (filter === 'completed') return a.status === 'completed';
+    if (filter === 'upcoming') return (a.status === 'pending' || a.status === 'confirmed') && !gecmisMi(a);
+    if (filter === 'completed') return a.status === 'completed'
+      || ((a.status === 'pending' || a.status === 'confirmed') && gecmisMi(a));
     if (filter === 'cancelled') return a.status === 'cancelled';
     return true;
   });
@@ -268,10 +289,10 @@ export default function PatientAppointments() {
                     <div className="flex flex-col gap-2">
                       {/* Görüntülü randevularda hastanın da görüşmeye girebilmesi gerekiyor —
                           doktor tarafında "Katıl" vardı, hastada hiç yoktu. */}
-                      {/* Sadece onaylı randevuda katılınır: doktorun henüz kabul etmediği
-                          (veya reddettiği) bir randevuda görüşme odası açılmaz. */}
-                      {isOnline(appointment.appointment_type)
-                        && appointment.status === 'confirmed' && (
+                      {/* Sadece onaylı, görüntülü ve saati gelmiş randevuda katılınır:
+                          doktorun kabul etmediği randevuda oda zaten açılmaz, günler
+                          öncesinden düğme göstermek de yanlış beklenti yaratır. */}
+                      {canJoin(appointment) && (
                         <button
                           onClick={() => navigate(`/telehealth/call/${appointment.id}`)}
                           className="px-4 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors flex items-center gap-2 shadow-sm"

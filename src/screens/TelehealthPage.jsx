@@ -67,9 +67,19 @@ const TelehealthPage = () => {
   const minutesUntil = (d) => Math.floor((new Date(d).getTime() - Date.now()) / 60000);
 
   // ── Categorize appointments ──
+  // Saati geçmiş bir randevu, durumu değişmediği sürece "yaklaşan" listesinde
+  // kalıyordu; hem liste şişiyor hem geçmiş bölümü boş görünüyordu. Otomatik
+  // "tamamlandı" işaretlemesi arka planda çalışsa da liste anında doğru olmalı.
+  // 2 saatlik pay: uzayan görüşme erkenden geçmişe düşmesin.
+  const GECMIS_PAYI_DK = 120;
+  const gecmisMi = useCallback(
+    (a) => minutesUntil(getStartDate(a)) <= -GECMIS_PAYI_DK,
+    [getStartDate]
+  );
+
   const scheduledSessions = useMemo(() =>
     appointments
-      .filter(a => ['pending', 'confirmed'].includes(a.status))
+      .filter(a => ['pending', 'confirmed'].includes(a.status) && !gecmisMi(a))
       .map(a => ({
         id: a.id,
         patient: counterpartyName(a),
@@ -78,22 +88,24 @@ const TelehealthPage = () => {
         raw: a,
       }))
       .sort((a, b) => a.start - b.start),
-    [appointments, getStartDate, t]
+    [appointments, getStartDate, gecmisMi, t]
   );
 
   const completedSessions = useMemo(() =>
     appointments
-      .filter(a => a.status === 'completed')
+      // Saati geçmiş ama durumu hâlâ pending/confirmed olanlar da geçmişe girer.
+      .filter(a => a.status === 'completed'
+        || (['pending', 'confirmed'].includes(a.status) && gecmisMi(a)))
       .map(a => ({
         id: a.id,
         patient: counterpartyName(a),
         start: getStartDate(a),
         durationMin: 30,
-        status: t('common.completed'),
+        status: a.status === 'completed' ? t('common.completed') : t('crm.appointments.statusCompleted', 'Completed'),
         raw: a,
       }))
       .sort((a, b) => b.start - a.start),
-    [appointments, getStartDate, t]
+    [appointments, getStartDate, gecmisMi, t]
   );
 
   const canceledSessions = useMemo(() =>
