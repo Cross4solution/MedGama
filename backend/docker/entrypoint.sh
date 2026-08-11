@@ -7,11 +7,14 @@ echo "  MedaGama Backend — Railway Entrypoint"
 echo "  PORT=$PORT  (Railway must route traffic here)"
 echo "════════════════════════════════════════════════"
 
-# ── 1. Force safe defaults FIRST — before any PHP command ──
-export CACHE_STORE=file
-export QUEUE_CONNECTION=sync
-export SESSION_DRIVER=file
-export BROADCAST_CONNECTION=log
+# ── 1. Safe defaults FIRST — before any PHP command ──
+# Bunlar yalnızca DEĞER GELMEDİYSE uygulanır. Önceden koşulsuz "export" ediliyordu;
+# platformda (Render) ayarlanan değerin üzerine yazdığı için BROADCAST_CONNECTION
+# her açılışta "log"a dönüyor, görüntülü görüşme sinyali hiç çalışmıyordu.
+export CACHE_STORE="${CACHE_STORE:-file}"
+export QUEUE_CONNECTION="${QUEUE_CONNECTION:-sync}"
+export SESSION_DRIVER="${SESSION_DRIVER:-file}"
+export BROADCAST_CONNECTION="${BROADCAST_CONNECTION:-log}"
 
 # ── 2. Inject PORT into nginx.conf (the MAIN config, not an include) ──
 sed -i "s/__PORT__/$PORT/g" /etc/nginx/nginx.conf
