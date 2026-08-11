@@ -30,28 +30,36 @@ export default function TelehealthCallRoom() {
   const echoRef = useRef(null);
   const makingOfferRef = useRef(false);
   const readyTimerRef = useRef(null);
-  const chimeDoneRef = useRef(false);
+  const rawStreamRef = useRef(null);   // donanımdan gelen ham akış (kapatırken durdurulur)
+  const micCtxRef = useRef(null);      // mikrofonu yumuşak kısmak için ses zinciri
+  const micGainRef = useRef(null);
+  const chimeDoneRef = useRef({ start: false, end: false });
 
-  // Görüşme kurulduğunda çalan kısa, yumuşak açılış sesi. Ses dosyası yerine
-  // tarayıcıda üretiliyor: ek istek yok, gecikme yok. Yükselen iki nota,
-  // alçak seviye ve uzun sönümle — bildirim değil, "bağlandı" hissi.
-  const playConnectChime = useCallback(() => {
-    if (chimeDoneRef.current) return;
-    chimeDoneRef.current = true;
+  // Görüşmenin başında ve sonunda çalan kısa, yumuşak ses. Ses dosyası yerine
+  // tarayıcıda üretiliyor: ek istek yok, gecikme yok. Alçak seviye, uzun sönüm —
+  // bildirim değil, durum bildiren bir işaret. Başlangıçta yükselen, sonunda
+  // inen iki nota. Her biri görüşme başına yalnızca bir kez çalar.
+  const playChime = useCallback((tur) => {
+    if (chimeDoneRef.current[tur]) return;
+    chimeDoneRef.current[tur] = true;
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       const ctx = new AC();
       const now = ctx.currentTime;
       const master = ctx.createGain();
-      master.gain.value = 0.07; // kısık: konuşmanın önüne geçmesin
+      master.gain.value = tur === 'end' ? 0.055 : 0.07; // kapanış biraz daha kısık
       const soft = ctx.createBiquadFilter();
       soft.type = 'lowpass';
       soft.frequency.value = 2000; // tiz köşeleri al, yumuşasın
       soft.connect(master);
       master.connect(ctx.destination);
 
-      [[587.33, 0], [880, 0.15]].forEach(([hz, offset]) => {
+      const notalar = tur === 'end'
+        ? [[587.33, 0], [392.00, 0.16]]   // inen: bitti
+        : [[587.33, 0], [880.00, 0.15]];  // yükselen: bağlandı
+
+      notalar.forEach(([hz, offset]) => {
         const osc = ctx.createOscillator();
         const g = ctx.createGain();
         osc.type = 'sine';
@@ -59,14 +67,14 @@ export default function TelehealthCallRoom() {
         const t0 = now + offset;
         g.gain.setValueAtTime(0.0001, t0);
         g.gain.exponentialRampToValueAtTime(0.5, t0 + 0.06); // yumuşak giriş, tık yok
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.8); // uzun sönüm
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.9); // uzun sönüm
         osc.connect(g);
         g.connect(soft);
         osc.start(t0);
-        osc.stop(t0 + 0.85);
+        osc.stop(t0 + 0.95);
       });
 
-      setTimeout(() => { try { ctx.close(); } catch {} }, 1600);
+      setTimeout(() => { try { ctx.close(); } catch {} }, 1800);
     } catch {}
   }, []);
 
@@ -76,6 +84,12 @@ export default function TelehealthCallRoom() {
     pcRef.current = null;
     try { localStreamRef.current?.getTracks().forEach((tr) => tr.stop()); } catch {}
     localStreamRef.current = null;
+    // Ham akış ayrıca durdurulmalı: kamera/mikrofon donanımını serbest bırakan o.
+    try { rawStreamRef.current?.getTracks().forEach((tr) => tr.stop()); } catch {}
+    rawStreamRef.current = null;
+    try { micCtxRef.current?.close(); } catch {}
+    micCtxRef.current = null;
+    micGainRef.current = null;
     try {
       if (channelRef.current) {
         channelRef.current.stopListeningForWhisper?.('signal');
@@ -123,6 +137,33 @@ export default function TelehealthCallRoom() {
       setPhase('error');
       return;
     }
+    rawStreamRef.current = stream;
+
+    // Mikrofonu doğrudan göndermek yerine bir ses zincirinden geçiriyoruz.
+    // Sebep: sessize alırken parçayı kapatmak (track.enabled = false) dalga formunu
+    // ortasından keser; bu kesinti karşı tarafta "tık" olarak duyulur. Zincirdeki
+    // gain'i ~25 ms'de indirmek aynı işi sessizce yapar.
+    let stream2 = stream;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC && stream.getAudioTracks().length) {
+        const ctx = new AC();
+        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+        const src = ctx.createMediaStreamSource(stream);
+        const gain = ctx.createGain();
+        gain.gain.value = 1;
+        const dest = ctx.createMediaStreamDestination();
+        src.connect(gain);
+        gain.connect(dest);
+        micCtxRef.current = ctx;
+        micGainRef.current = gain;
+        stream2 = new MediaStream([...stream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
+      }
+    } catch {
+      stream2 = stream; // ses zinciri kurulamazsa ham akışla devam et
+    }
+
+    stream = stream2;
     localStreamRef.current = stream;
     if (localVideoRef.current) localVideoRef.current.srcObject = stream;
 
@@ -213,15 +254,28 @@ export default function TelehealthCallRoom() {
 
   useEffect(() => () => cleanup(false), [cleanup]);
 
-  // Karşı taraf bağlandığında bir kez çal.
+  // Bağlanınca ve görüşme bitince birer kez çal. Kapanış sesi yalnızca görüşme
+  // gerçekten kurulduysa çalar — hiç başlamadan çıkılınca ses anlamsız olur.
   useEffect(() => {
-    if (phase === 'live') playConnectChime();
-  }, [phase, playConnectChime]);
+    if (phase === 'live') playChime('start');
+    if (phase === 'ended' && chimeDoneRef.current.start) playChime('end');
+  }, [phase, playChime]);
 
   const toggleMic = () => {
-    const tracks = localStreamRef.current?.getAudioTracks() || [];
     const next = !micOn;
-    tracks.forEach((tr) => { tr.enabled = next; });
+    const gain = micGainRef.current;
+    const ctx = micCtxRef.current;
+
+    if (gain && ctx) {
+      // Ani kesme "tık" sesi üretiyor; 25 ms'lik rampa duyulmuyor.
+      const t = ctx.currentTime;
+      gain.gain.cancelScheduledValues(t);
+      gain.gain.setValueAtTime(gain.gain.value, t);
+      gain.gain.linearRampToValueAtTime(next ? 1 : 0, t + 0.025);
+    } else {
+      // Ses zinciri kurulamadıysa eski yönteme düş.
+      (localStreamRef.current?.getAudioTracks() || []).forEach((tr) => { tr.enabled = next; });
+    }
     setMicOn(next);
   };
   const toggleCam = () => {
