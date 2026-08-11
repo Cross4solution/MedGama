@@ -32,6 +32,10 @@ const nextConfig = {
     return [
       { source: '/api/:path*', destination: `${BACKEND}/api/:path*` },
       { source: '/storage/:path*', destination: `${BACKEND}/storage/:path*` },
+      // Kanal yetkilendirmesi. API_BASE "/api" olduğu için Echo authEndpoint'i
+      // "/broadcasting/auth" olarak çözüyor; burada kural yoktu, istek Next'e düşüp
+      // 404 dönüyordu. Kanala girilemediği için görüntülü görüşme sinyali hiç akmıyordu.
+      { source: '/broadcasting/:path*', destination: `${BACKEND}/broadcasting/:path*` },
       // CRA'daki /500 rotası App Router'da rezerve isim (pages/500.html ile çakışıyor).
       // Aynı sayfayı /server-error altından servis et, /500 URL'i korunur.
       { source: '/500', destination: '/tr/server-error' },
