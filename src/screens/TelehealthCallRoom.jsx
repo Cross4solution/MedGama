@@ -30,6 +30,45 @@ export default function TelehealthCallRoom() {
   const echoRef = useRef(null);
   const makingOfferRef = useRef(false);
   const readyTimerRef = useRef(null);
+  const chimeDoneRef = useRef(false);
+
+  // Görüşme kurulduğunda çalan kısa, yumuşak açılış sesi. Ses dosyası yerine
+  // tarayıcıda üretiliyor: ek istek yok, gecikme yok. Yükselen iki nota,
+  // alçak seviye ve uzun sönümle — bildirim değil, "bağlandı" hissi.
+  const playConnectChime = useCallback(() => {
+    if (chimeDoneRef.current) return;
+    chimeDoneRef.current = true;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      const ctx = new AC();
+      const now = ctx.currentTime;
+      const master = ctx.createGain();
+      master.gain.value = 0.07; // kısık: konuşmanın önüne geçmesin
+      const soft = ctx.createBiquadFilter();
+      soft.type = 'lowpass';
+      soft.frequency.value = 2000; // tiz köşeleri al, yumuşasın
+      soft.connect(master);
+      master.connect(ctx.destination);
+
+      [[587.33, 0], [880, 0.15]].forEach(([hz, offset]) => {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = hz;
+        const t0 = now + offset;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.5, t0 + 0.06); // yumuşak giriş, tık yok
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.8); // uzun sönüm
+        osc.connect(g);
+        g.connect(soft);
+        osc.start(t0);
+        osc.stop(t0 + 0.85);
+      });
+
+      setTimeout(() => { try { ctx.close(); } catch {} }, 1600);
+    } catch {}
+  }, []);
 
   const cleanup = useCallback((updateStatus = false) => {
     if (readyTimerRef.current) { clearInterval(readyTimerRef.current); readyTimerRef.current = null; }
@@ -173,6 +212,11 @@ export default function TelehealthCallRoom() {
   }, [appointmentId, send, t, cleanup]);
 
   useEffect(() => () => cleanup(false), [cleanup]);
+
+  // Karşı taraf bağlandığında bir kez çal.
+  useEffect(() => {
+    if (phase === 'live') playConnectChime();
+  }, [phase, playConnectChime]);
 
   const toggleMic = () => {
     const tracks = localStreamRef.current?.getAudioTracks() || [];
