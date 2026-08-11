@@ -170,7 +170,14 @@ export default function OnboardingWizard() {
       if (nextStep !== undefined) setStep(nextStep);
       return true;
     } catch (err) {
+      // Önceden hata yalnız konsola yazılıyordu; kullanıcı "Next"e basınca
+      // hiçbir şey olmuyormuş gibi görünüyordu. Artık ekranda gösteriliyor.
       console.error('Save failed:', err);
+      setErrors((prev) => ({
+        ...prev,
+        general: err?.data?.message || err?.message
+          || t('onboarding.saveFailed', 'Kaydedilemedi. Lütfen tekrar deneyin.'),
+      }));
       return false;
     } finally {
       setSaving(false);
@@ -570,6 +577,13 @@ export default function OnboardingWizard() {
 
       {/* ── Footer ── */}
       <div className="sticky bottom-0 bg-white border-t border-gray-100 z-20">
+        {errors.general && (
+          <div className="max-w-4xl mx-auto px-4 sm:px-8 pt-3">
+            <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+              {errors.general}
+            </p>
+          </div>
+        )}
         <div className="max-w-4xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
           <button onClick={handleBack} disabled={step === 0}
             className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${

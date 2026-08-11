@@ -13,6 +13,7 @@ import {
 import { doctorAPI, appointmentAPI, calendarSlotAPI, catalogAPI, searchAPI } from '../lib/api';
 import { useTranslation } from 'react-i18next';
 import DoctorAppointmentManager from '../components/doctor/DoctorAppointmentManager';
+import { formatLocalDate } from '../utils/dates';
 
 // ─── Doctor Appointment Dashboard (metrics + big requests) ───
 function DoctorAppointmentDashboard() {
@@ -394,8 +395,9 @@ export default function TelehealthAppointmentPage() {
 
   const formatDateDisplay = (dateString) => {
     if (!dateString) return '—';
-    const d = new Date(dateString + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    // Yerel takvim günü olarak çözümlenir (hem "2026-08-11" hem tam ISO ile çalışır)
+    return formatLocalDate(dateString, 'en-US',
+      { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) || '—';
   };
 
   // ─── Success Screen ───

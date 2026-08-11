@@ -27,7 +27,10 @@ class DoctorProfile extends Model
             if ($model->isDirty(['title']) || !$model->slug) {
                 // Get user name from relationship if available
                 $userName = $model->user?->fullname ?? '';
-                $slug = SlugGenerator::generateDoctorSlug($model->title, $userName);
+                // Profil, ünvan girilmeden önce oluşabiliyor (onboarding'in ilk
+                // adımı boş bir kayıt açıyor). Slug üreteci string beklediği için
+                // null geçmek TypeError'a düşüp kaydı tamamen çökertiyordu.
+                $slug = SlugGenerator::generateDoctorSlug((string) ($model->title ?? ''), $userName);
 
                 // Ensure slug is unique
                 $model->slug = SlugGenerator::ensureUniqueSlug($slug, function ($checkSlug) use ($model) {

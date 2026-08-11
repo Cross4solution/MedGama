@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext';
 import { appointmentAPI } from '../lib/api';
 import useAppointmentSync from '../hooks/useAppointmentSync';
 import AddToCalendar from '../components/AddToCalendar';
+import { formatLocalDate } from '../utils/dates';
 import { 
   Calendar, Clock, MapPin, Video, Phone, Building2, User, 
   Loader2, AlertCircle, CheckCircle2, XCircle, X, ChevronRight 
@@ -110,15 +111,8 @@ export default function PatientAppointments() {
     return isTr ? 'Yüz Yüze' : 'In-Person';
   };
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString(isTr ? 'tr-TR' : 'en-US', { 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
-    });
-  };
+  // Takvim günü — saat dilimi kaydırmasın diye yerel olarak çözümlenir
+  const formatDate = (dateStr) => formatLocalDate(dateStr, isTr ? 'tr-TR' : 'en-US');
 
   if (!user) {
     return (

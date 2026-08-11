@@ -18,7 +18,10 @@ class AppointmentResource extends JsonResource
             'clinic_id'             => $this->clinic_id,
             'slot_id'               => $this->slot_id,
             'appointment_type'      => $this->appointment_type,
-            'appointment_date'      => $this->appointment_date,
+            // Takvim günü olarak gönderilir (Y-m-d). Tam ISO zaman damgası
+            // gönderilirse geri saat dilimlerindeki kullanıcı (ör. ABD) randevuyu
+            // bir gün ÖNCE görüyordu — "2026-08-11T00:00:00Z" yerelde 10 Ağustos oluyor.
+            'appointment_date'      => $this->appointment_date?->toDateString(),
             'appointment_time'      => $this->appointment_time,
             'status'                => $this->status,
             // Onaylı Review Sistemi alanları
