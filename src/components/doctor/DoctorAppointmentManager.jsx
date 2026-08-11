@@ -26,6 +26,7 @@ export default function DoctorAppointmentManager() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('incoming'); // incoming | confirmed
   const [updating, setUpdating] = useState(null);
+  const [actionError, setActionError] = useState('');
 
   const fetchAppointments = useCallback(async () => {
     try {
@@ -46,12 +47,27 @@ export default function DoctorAppointmentManager() {
 
   const handleAction = async (id, newStatus) => {
     setUpdating(id);
+    setActionError('');
     // Optimistic update
     setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
     try {
-      await appointmentAPI.update(id, { status: newStatus });
-    } catch {
-      // Rollback
+      // İptalin kendi uç noktası var ve doktor doğrulaması istemiyor.
+      // Genel update yolu 'verified.doctor' arkasında olduğu için doğrulanmamış
+      // doktorda 403 dönüyor, iptal hiç çalışmıyordu.
+      if (newStatus === 'cancelled') {
+        await appointmentAPI.cancel(id);
+      } else {
+        await appointmentAPI.update(id, { status: newStatus });
+      }
+    } catch (err) {
+      // Eskiden hata sessizce yutulup liste geri alınıyordu — kullanıcıya
+      // hiçbir şey olmamış gibi görünüyordu.
+      const status = err?.status;
+      setActionError(
+        status === 403
+          ? 'Bu işlem için hesabınızın doğrulanmış olması gerekiyor.'
+          : (err?.data?.message || 'İşlem tamamlanamadı. Lütfen tekrar deneyin.')
+      );
       fetchAppointments();
     } finally {
       setUpdating(null);
@@ -109,6 +125,11 @@ export default function DoctorAppointmentManager() {
 
       {/* Content */}
       <div className="p-4">
+        {actionError && (
+          <p className="mb-3 text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+            {actionError}
+          </p>
+        )}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12 text-gray-400">
             <Loader2 className="w-7 h-7 animate-spin mb-2 text-teal-500" />

@@ -80,7 +80,8 @@
     "optional": "opsiyonel",
     "ready": "Hazır",
     "saveChanges": "Değişiklikleri kaydet",
-    "showing": "Gösteriliyor"
+    "showing": "Gösteriliyor",
+    "upgrade": "Yükselt"
   },
   "nav": {
     "home": "Ana Sayfa",

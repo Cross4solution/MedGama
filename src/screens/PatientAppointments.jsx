@@ -99,6 +99,9 @@ export default function PatientAppointments() {
     );
   };
 
+  // Görüntülü randevu mu? (backend 'online', bazı kayıtlarda 'video' geçiyor)
+  const isOnline = (type) => type === 'online' || type === 'video';
+
   const getTypeIcon = (type) => {
     if (type === 'online' || type === 'video') return <Video className="w-4 h-4 text-teal-600" />;
     if (type === 'phone') return <Phone className="w-4 h-4 text-violet-600" />;
@@ -246,6 +249,18 @@ export default function PatientAppointments() {
 
                     {/* Right: Actions */}
                     <div className="flex flex-col gap-2">
+                      {/* Görüntülü randevularda hastanın da görüşmeye girebilmesi gerekiyor —
+                          doktor tarafında "Katıl" vardı, hastada hiç yoktu. */}
+                      {isOnline(appointment.appointment_type)
+                        && (appointment.status === 'pending' || appointment.status === 'confirmed') && (
+                        <button
+                          onClick={() => navigate(`/telehealth/call/${appointment.id}`)}
+                          className="px-4 py-2 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors flex items-center gap-2 shadow-sm"
+                        >
+                          <Video className="w-4 h-4" />
+                          {isTr ? 'Görüşmeye Katıl' : 'Join Call'}
+                        </button>
+                      )}
                       {(appointment.status === 'pending' || appointment.status === 'confirmed') && (
                         <button
                           onClick={() => handleCancelClick(appointment)}
