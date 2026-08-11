@@ -29,8 +29,10 @@ export default function TelehealthCallRoom() {
   const channelRef = useRef(null);
   const echoRef = useRef(null);
   const makingOfferRef = useRef(false);
+  const readyTimerRef = useRef(null);
 
   const cleanup = useCallback((updateStatus = false) => {
+    if (readyTimerRef.current) { clearInterval(readyTimerRef.current); readyTimerRef.current = null; }
     try { pcRef.current?.close(); } catch {}
     pcRef.current = null;
     try { localStreamRef.current?.getTracks().forEach((tr) => tr.stop()); } catch {}
@@ -137,19 +139,38 @@ export default function TelehealthCallRoom() {
           await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
         } else if (msg.kind === 'candidate') {
           await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+        } else if (msg.kind === 'bye') {
+          // Karşı taraf görüşmeyi sonlandırdı. Önceden hiç bildirilmiyordu;
+          // bir taraf kapatınca diğerinin ekranı görüşme sürüyormuş gibi kalıyordu.
+          cleanup(false);
+          setPhase('ended');
         }
       } catch (e) { /* ignore malformed/late signals */ }
     });
 
-    // Announce readiness once subscribed; both sides ping, caller offers on ready.
+    // Hazır olduğumuzu duyur. Tek seferlik duyuru güvenilir değildi: kanala
+    // katılım (yetkilendirme isteği dahil) birkaç saniye sürebiliyor ve bu süre
+    // dolmadan gönderilen whisper sessizce kayboluyor. Karşı taraf 'ready'
+    // mesajını hiç almadığı için arayan hiç teklif göndermiyor, iki taraf da
+    // sonsuza kadar bekliyordu. Bağlantı kurulana kadar periyodik duyuru yapıyoruz.
     const announce = () => send({ kind: 'ready' });
-    if (channel.subscribed) announce();
-    channel.subscribed ? announce() : channel.on?.('pusher:subscription_succeeded', announce);
-    // Fallback: also announce after a short delay in case the event was missed.
-    setTimeout(announce, 800);
+    announce();
+    readyTimerRef.current = setInterval(() => {
+      const durum = pcRef.current?.connectionState;
+      if (durum === 'connected' || durum === 'closed' || !pcRef.current) {
+        clearInterval(readyTimerRef.current);
+        readyTimerRef.current = null;
+        return;
+      }
+      announce();
+    }, 1500);
+    // Emniyet: 45 sn sonra duyuruyu kes (bağlanamadıysa boşuna trafik üretme)
+    setTimeout(() => {
+      if (readyTimerRef.current) { clearInterval(readyTimerRef.current); readyTimerRef.current = null; }
+    }, 45000);
 
     telehealthAPI.updateStatus(appointmentId, 'in_progress').catch(() => {});
-  }, [appointmentId, send, t]);
+  }, [appointmentId, send, t, cleanup]);
 
   useEffect(() => () => cleanup(false), [cleanup]);
 
@@ -166,6 +187,9 @@ export default function TelehealthCallRoom() {
     setCamOn(next);
   };
   const hangUp = () => {
+    // Kapatmadan ÖNCE karşı tarafa haber ver — kanaldan ayrıldıktan sonra
+    // gönderilen mesaj iletilmez.
+    send({ kind: 'bye' });
     cleanup(true);
     setPhase('ended');
   };
@@ -224,8 +248,10 @@ export default function TelehealthCallRoom() {
   }
 
   // connecting | live
+  // Görüşme ekranı, üst menünün altından sayfanın en altına kadar TAM oturur.
+  // Önceden yükseklik tam denk gelmediği için altta beyaz bir şerit kalıyordu.
   return (
-    <div className="h-full bg-gray-900 flex flex-col">
+    <div className="fixed inset-x-0 bottom-0 top-14 sm:top-16 z-30 bg-gray-900 flex flex-col">
       <div className="relative flex-1">
         {/* Remote (main) */}
         <video ref={remoteVideoRef} autoPlay playsInline className="absolute inset-0 w-full h-full object-cover bg-gray-800" />
