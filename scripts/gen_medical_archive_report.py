@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MedaGama — Tıbbi Arşiv Paylaşımı müşteri raporu (tek sayfa PDF)."""
+"""Medagama — Tıbbi Arşiv Paylaşımı müşteri raporu (tek sayfa, Model B)."""
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors
@@ -33,6 +33,7 @@ body = st("b", fontSize=9.5, textColor=DARK, leading=14, spaceAfter=3)
 small = st("sm", fontSize=8.5, textColor=GRAY, leading=12)
 cellh = st("ch", fontSize=9, textColor=colors.white, leading=12)
 cell = st("c", fontSize=9, textColor=DARK, leading=12.5)
+step = st("stp", fontSize=9.5, textColor=DARK, leading=14, spaceAfter=4, leftIndent=2)
 
 
 def bullets(items):
@@ -40,36 +41,50 @@ def bullets(items):
 
 
 doc = SimpleDocTemplate(
-    "docs/MedaGama_Tibbi_Arsiv_Paylasimi.pdf", pagesize=A4,
+    "docs/Medagama_Tibbi_Arsiv_Paylasimi.pdf", pagesize=A4,
     leftMargin=18 * mm, rightMargin=18 * mm, topMargin=15 * mm, bottomMargin=14 * mm,
 )
 E = []
 
 E.append(Paragraph("Tıbbi Arşiv Paylaşımı", title))
-E.append(Paragraph("MedaGama — Yapılan Çalışma Özeti", sub))
+E.append(Paragraph("Medagama — Nasıl Çalışıyor?", sub))
 E.append(Spacer(1, 4))
 E.append(HRFlowable(width="100%", thickness=1.2, color=TEAL))
 E.append(Spacer(1, 6))
 
 E.append(Paragraph(
-    "<b>Amaç:</b> Hasta bir kliniğe/doktora randevu aldığında, tıbbi bilgilerinin "
-    "karşı tarafa <b>güvenli ve kontrollü</b> şekilde ulaşması.", body))
+    "<b>Kural:</b> Hasta bir doktora/kliniğe randevu aldığında, o doktor hastanın "
+    "<b>tüm tıbbi geçmişini (anamnez) otomatik</b> görür. Ayrı bir onay adımı yoktur.", body))
 E.append(Paragraph(
-    "<b>Seçilen model — Hibrit:</b> Hem hasta güvenliği hem hasta mahremiyeti aynı anda korunur.", body))
+    "<b>Neden?</b> Hasta neyin kritik olduğunu bilemez. Örnek: hasta C vitamini kullanır, "
+    "“gerek yok” deyip gizler; doktor bunu görmeden etkileşen bir ilaç yazarsa risk doğar. "
+    "Bu yüzden tedaviyi yapacak doktorun bilgiyi eksiksiz görmesi gerekir.", body))
 
-E.append(Paragraph("Nasıl Çalışıyor?", h2))
+E.append(Paragraph("Adım Adım Akış", h2))
+E.append(Paragraph("<b>1.</b> Hasta profilindeki <b>Tıbbi Arşiv</b> sayfasına bilgilerini girer: "
+                   "hastalıklar/alerjiler, ilaçlar, aşılar, notlar ve belgeler.", step))
+E.append(Paragraph("<b>2.</b> İlaç girişinde <b>otomatik tamamlama</b> vardır — yazmaya başlayınca "
+                   "ilaç listesinden seçer (yanlış/eksik yazımı önler).", step))
+E.append(Paragraph("<b>3.</b> Sayfanın altında bilgilendirme yer alır: "
+                   "<i>“Bu bilgiler, randevu aldığınız doktorla paylaşılacaktır.”</i>", step))
+E.append(Paragraph("<b>4.</b> Hasta bir doktora randevu alır. O <b>randevu anında</b> anamnez "
+                   "randevuya bağlanır.", step))
+E.append(Paragraph("<b>5.</b> Doktor kendi randevu ekranında <b>Hasta Tıbbi Bilgileri</b> panelini "
+                   "açar; tüm anamnezi görür ve belgeleri indirir.", step))
+E.append(Paragraph("<b>6.</b> Yalnızca <b>o randevunun doktoru/kliniği</b> erişir — başka kimse değil. "
+                   "Her erişim <b>kayıt altına</b> alınır.", step))
 
+E.append(Paragraph("Kim Neyi Görür?", h2))
 data = [
-    [Paragraph("<b>Katman</b>", cellh), Paragraph("<b>Görünürlük</b>", cellh), Paragraph("<b>İçerik</b>", cellh)],
-    [Paragraph("Otomatik Özet", cell), Paragraph("Her zaman açık", cell),
-     Paragraph("Bilinen hastalıklar / alerjiler + kullanılan ilaçlar", cell)],
-    [Paragraph("Tam Arşiv", cell), Paragraph("Hastanın onayıyla", cell),
-     Paragraph("Aşılar, doktor notları, yüklenen belgeler", cell)],
+    [Paragraph("<b>Kişi</b>", cellh), Paragraph("<b>Erişim</b>", cellh)],
+    [Paragraph("Hasta", cell), Paragraph("Kendi tüm arşivini görür ve düzenler.", cell)],
+    [Paragraph("Randevu alınan doktor / klinik", cell),
+     Paragraph("Hastanın komple anamnezini otomatik görür (durum, ilaç, aşı, not, belgeler).", cell)],
+    [Paragraph("Diğer doktorlar / kullanıcılar", cell), Paragraph("Erişemez.", cell)],
 ]
-tbl = Table(data, colWidths=[33 * mm, 34 * mm, 107 * mm])
+tbl = Table(data, colWidths=[62 * mm, 112 * mm])
 tbl.setStyle(TableStyle([
     ("BACKGROUND", (0, 0), (-1, 0), TEAL),
-    ("BACKGROUND", (0, 1), (-1, 1), LIGHT),
     ("ROWBACKGROUNDS", (0, 1), (-1, -1), [LIGHT, colors.white]),
     ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#d1d5db")),
     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
@@ -77,38 +92,13 @@ tbl.setStyle(TableStyle([
     ("LEFTPADDING", (0, 0), (-1, -1), 7), ("RIGHTPADDING", (0, 0), (-1, -1), 7),
 ]))
 E.append(tbl)
-E.append(Spacer(1, 5))
-E.append(Paragraph(
-    "Otomatik özet, ilaç etkileşimi veya alerji gibi <b>riskleri önlemek</b> için daima açıktır. "
-    "Tam arşiv ise <b>yalnızca hasta o randevu için “Paylaş” dediğinde</b> görünür.", body))
-
-E.append(Paragraph("Hasta Kontrolü", h2))
-E += bullets([
-    "Hasta istediği an paylaşımı <b>geri alabilir</b>.",
-    "İzin <b>sadece o randevuya bağlı</b> ve sürelidir; randevu bitince otomatik kapanır.",
-    "Onay yoksa doktor <b>yalnızca özeti</b> görür; detaya erişemez.",
-])
-
-E.append(Paragraph("Kullanıcı Deneyimi", h2))
-E += bullets([
-    "<b>Hasta ekranı:</b> Randevu kartında “Bu randevu için arşivimi paylaş” / “Geri Al” butonu.",
-    "<b>Doktor / klinik ekranı:</b> Özet her zaman; hasta onayladıysa tam arşiv + belge indirme.",
-])
 
 E.append(Paragraph("Güvenlik ve Uyumluluk (KVKK / GDPR / HIPAA)", h2))
 E += bullets([
-    "Tüm tıbbi veriler <b>şifreli</b> saklanır.",
-    "Belgeler özel/korumalı alanda; izinsiz erişim engellidir.",
-    "<b>Her erişim, her paylaşım ve her geri alma kayıt altına alınır</b> (denetim kaydı).",
-    "Erişim yalnızca hasta + açıkça izin verdiği sağlayıcı ile sınırlıdır.",
+    "Tüm tıbbi veriler <b>şifreli</b> saklanır; belgeler korumalı alandadır.",
+    "<b>Her erişim kayıt altına alınır</b> (denetim kaydı) — kim, ne zaman, neye baktı.",
+    "Erişim yalnızca hasta + randevu alınan doktor/klinik ile sınırlıdır.",
 ])
 
-E.append(Spacer(1, 8))
-E.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#d1d5db")))
-E.append(Spacer(1, 4))
-E.append(Paragraph(
-    "<b>Durum:</b> Backend ve arayüz tamamlandı, sisteme alındı. "
-    "Canlı test bir hasta hesabıyla örnek randevu üzerinde birlikte gösterilebilir.", small))
-
 doc.build(E)
-print("OK docs/MedaGama_Tibbi_Arsiv_Paylasimi.pdf")
+print("OK docs/Medagama_Tibbi_Arsiv_Paylasimi.pdf")
