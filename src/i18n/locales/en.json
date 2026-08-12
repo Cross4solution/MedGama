@@ -1829,7 +1829,14 @@
     "endedNetwork": "The connection could not be re-established.",
     "errMedia": "Camera/microphone access was denied.",
     "errAccess": "You do not have access to this call.",
-    "errSignaling": "Could not reach the call server."
+    "errSignaling": "Could not reach the call server.",
+    "captionToggle": "Captions",
+    "captionUnavailable": "Captions are not available yet",
+    "captionAskTitle": "Turn on captions?",
+    "captionAskBody": "The other person would like to use captions. If you accept, speech is transcribed on our server. The text is not stored and is deleted when the call ends.",
+    "captionAccept": "Accept",
+    "captionReject": "No",
+    "captionWaiting": "Waiting for captions..."
   },
   "onboarding": {
     "title": "Complete Your Profile",

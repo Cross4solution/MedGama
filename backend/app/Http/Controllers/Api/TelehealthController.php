@@ -163,11 +163,27 @@ class TelehealthController extends Controller
 
         $isDoctor = $request->user()->id === $appointment->doctor_id;
 
+        // Alt yazı: motor hazır mı ve kullanıcı hangi dilde görecek.
+        // Arayüz bu bilgiye göre düğmeyi aktif/pasif gösterir.
+        $motor = app(\App\Captions\TranscriptionEngine::class);
+        $kullaniciDili = $request->user()->preferred_language ?? 'tr';
+        $destekli = in_array($kullaniciDili, (array) config('captions.languages', []), true);
+
         return response()->json([
             'appointment' => [
                 'id'             => $appointment->id,
                 'status'         => $appointment->status,
                 'meeting_status' => $appointment->meeting_status,
+            ],
+            'captions' => [
+                'available'       => $motor->kullanilabilir(),
+                // Dil kullanıcının profilinden gelir; görüşmede ayrıca sorulmaz.
+                'language'        => $destekli ? $kullaniciDili : 'tr',
+                // Karşı tarafın onayı olmadan açılamaz: birinin sesinin
+                // sunucuda işlenmesine diğeri tek başına karar veremez.
+                'requires_consent' => (bool) config('captions.require_peer_consent', true),
+                // Metin hiçbir yere yazılmaz; arayüz bunu kullanıcıya söyler.
+                'stored'          => (bool) config('captions.store_transcripts', false),
             ],
             'channel'    => 'telehealth.' . $appointment->id, // private signaling channel
             'role'       => $isDoctor ? 'doctor' : 'patient',

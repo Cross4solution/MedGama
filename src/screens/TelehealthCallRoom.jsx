@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
-import { Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, Loader2, ShieldCheck, AlertTriangle, WifiOff } from 'lucide-react';
+import { Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, Loader2, ShieldCheck, AlertTriangle, WifiOff, Subtitles } from 'lucide-react';
 import { telehealthAPI } from '../lib/api';
 import { getEcho } from '../lib/echo';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
@@ -31,6 +31,17 @@ export default function TelehealthCallRoom() {
   const [camOn, setCamOn] = useState(true);
   const [remoteActive, setRemoteActive] = useState(false);
   const [netWarn, setNetWarn] = useState(false);
+
+  // ── Alt yazı ──
+  // Motor (konuşmayı yazıya çeviren program) GPU sunucu beklediği için henüz
+  // yok; burada onay akışı, şerit ve düğme kuruluyor. Motor gelince yalnızca
+  // metin kaynağı bağlanacak — akış ve ekran değişmeyecek.
+  //
+  // kapali → izin_bekleniyor → acik   (karşı taraf onaylamazsa: kapali)
+  const [captionCfg, setCaptionCfg] = useState(null);   // {available, language, requires_consent, stored}
+  const [captionState, setCaptionState] = useState('kapali');
+  const [captionAsk, setCaptionAsk] = useState(false);  // karşı taraf izin istedi
+  const [captionLines, setCaptionLines] = useState([]); // ekranda akan son satırlar
 
   // Hazırlık ekranı
   const [cams, setCams] = useState([]);
@@ -273,6 +284,7 @@ export default function TelehealthCallRoom() {
       return;
     }
     setPeer(cfg.peer || null);
+    setCaptionCfg(cfg.captions || null);
 
     const echo = getEcho();
     if (!echo) {
@@ -381,6 +393,24 @@ export default function TelehealthCallRoom() {
           await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
         } else if (msg.kind === 'candidate') {
           await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+        } else if (msg.kind === 'caption-request') {
+          // Karşı taraf alt yazı açmak istiyor. Kendi sesimiz sunucuda yazıya
+          // çevrileceği için kararı biz veriyoruz — bu yüzden soruluyor.
+          setCaptionAsk(true);
+        } else if (msg.kind === 'caption-accept') {
+          setCaptionState('acik');
+          setCaptionAsk(false);
+        } else if (msg.kind === 'caption-reject') {
+          setCaptionState('kapali');
+          setCaptionAsk(false);
+        } else if (msg.kind === 'caption-stop') {
+          setCaptionState('kapali');
+          setCaptionAsk(false);
+          setCaptionLines([]);
+        } else if (msg.kind === 'caption-line') {
+          // Motor bağlanınca metin buradan akacak. Saklanmıyor: yalnızca son
+          // birkaç satır ekranda tutuluyor, görüşme bitince kayboluyor.
+          setCaptionLines((onceki) => [...onceki, msg.text].slice(-3));
         } else if (msg.kind === 'bye') {
           // Karşı taraf görüşmeyi sonlandırdı. Önceden hiç bildirilmiyordu;
           // bir taraf kapatınca diğerinin ekranı görüşme sürüyormuş gibi kalıyordu.
@@ -442,6 +472,25 @@ export default function TelehealthCallRoom() {
     const next = !camOn;
     tracks.forEach((tr) => { tr.enabled = next; });
     setCamOn(next);
+  };
+
+  // Alt yazıyı açma isteği: karşı tarafa sorulur, o onaylayana kadar açılmaz.
+  const captionIste = () => {
+    if (!captionCfg?.available) return;
+    if (captionState === 'acik') {
+      send({ kind: 'caption-stop' });
+      setCaptionState('kapali');
+      setCaptionLines([]);
+      return;
+    }
+    setCaptionState('izin_bekleniyor');
+    send({ kind: 'caption-request' });
+  };
+
+  const captionYanit = (kabul) => {
+    setCaptionAsk(false);
+    send({ kind: kabul ? 'caption-accept' : 'caption-reject' });
+    setCaptionState(kabul ? 'acik' : 'kapali');
   };
 
   const hangUp = () => {
@@ -609,6 +658,46 @@ export default function TelehealthCallRoom() {
           </div>
         )}
 
+        {/* Karşı taraf alt yazı açmak istiyor — kendi sesimiz sunucuda yazıya
+            çevrileceği için kararı biz veriyoruz. */}
+        {captionAsk && (
+          <div className="absolute inset-x-4 top-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[26rem] bg-white rounded-2xl shadow-2xl p-4 z-10">
+            <p className="text-sm font-semibold text-gray-900 mb-1">
+              {t('telehealth.captionAskTitle', 'Alt yazı açılsın mı?')}
+            </p>
+            <p className="text-xs text-gray-600 leading-relaxed mb-3">
+              {t('telehealth.captionAskBody', 'Karşı taraf alt yazı kullanmak istiyor. Kabul ederseniz konuşmalar sunucumuzda yazıya çevrilir. Metin kaydedilmez, görüşme bitince silinir.')}
+            </p>
+            <div className="flex gap-2">
+              <button onClick={() => captionYanit(false)} className="flex-1 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50">
+                {t('telehealth.captionReject', 'Hayır')}
+              </button>
+              <button onClick={() => captionYanit(true)} className="flex-1 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700">
+                {t('telehealth.captionAccept', 'Kabul et')}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Alt yazı şeridi — motor bağlanınca metin buraya akacak. */}
+        {captionState === 'acik' && (
+          <div className="absolute inset-x-0 bottom-4 flex justify-center px-4 pointer-events-none">
+            <div className="max-w-2xl w-full rounded-xl bg-black/70 px-4 py-3 text-center">
+              {captionLines.length === 0 ? (
+                <p className="text-sm text-gray-300">
+                  {t('telehealth.captionWaiting', 'Alt yazı bekleniyor...')}
+                </p>
+              ) : (
+                captionLines.map((satir, i) => (
+                  <p key={i} className={`text-sm leading-snug ${i === captionLines.length - 1 ? 'text-white' : 'text-gray-400'}`}>
+                    {satir}
+                  </p>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Local (PiP) */}
         <video ref={localVideoRef} autoPlay playsInline muted className="absolute bottom-24 right-4 w-32 h-44 sm:w-40 sm:h-56 object-cover rounded-xl border-2 border-white/20 shadow-lg bg-gray-700" />
       </div>
@@ -620,6 +709,24 @@ export default function TelehealthCallRoom() {
         </button>
         <button onClick={toggleCam} className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${camOn ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-red-500 text-white'}`}>
           {camOn ? <VideoIcon className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
+        </button>
+        {/* Alt yazı. Motor hazır değilken pasif ve sebebi yazıyor — sessizce
+            çalışmayan bir düğme, kullanıcıya arıza gibi görünür. */}
+        <button
+          onClick={captionIste}
+          disabled={!captionCfg?.available || captionState === 'izin_bekleniyor'}
+          title={captionCfg?.available
+            ? t('telehealth.captionToggle', 'Alt yazı')
+            : t('telehealth.captionUnavailable', 'Alt yazı henüz kullanılamıyor')}
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
+            captionState === 'acik'
+              ? 'bg-teal-600 text-white hover:bg-teal-700'
+              : 'bg-gray-700 text-white hover:bg-gray-600'
+          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-700`}
+        >
+          {captionState === 'izin_bekleniyor'
+            ? <Loader2 className="w-5 h-5 animate-spin" />
+            : <Subtitles className="w-5 h-5" />}
         </button>
         <button onClick={hangUp} className="w-14 h-12 rounded-full bg-red-600 text-white flex items-center justify-center hover:bg-red-700">
           <PhoneOff className="w-5 h-5" />

@@ -2077,7 +2077,14 @@
     "endedNetwork": "Bağlantı yeniden kurulamadı.",
     "errMedia": "Kamera/mikrofon erişimi reddedildi.",
     "errAccess": "Bu görüşmeye erişim yetkiniz yok.",
-    "errSignaling": "Görüşme sunucusuna bağlanılamadı."
+    "errSignaling": "Görüşme sunucusuna bağlanılamadı.",
+    "captionToggle": "Alt yazı",
+    "captionUnavailable": "Alt yazı henüz kullanılamıyor",
+    "captionAskTitle": "Alt yazı açılsın mı?",
+    "captionAskBody": "Karşı taraf alt yazı kullanmak istiyor. Kabul ederseniz konuşmalar sunucumuzda yazıya çevrilir. Metin kaydedilmez, görüşme bitince silinir.",
+    "captionAccept": "Kabul et",
+    "captionReject": "Hayır",
+    "captionWaiting": "Alt yazı bekleniyor..."
   },
   "onboarding": {
     "title": "Profilinizi Tamamlayın",

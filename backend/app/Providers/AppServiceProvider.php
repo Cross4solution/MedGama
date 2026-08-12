@@ -19,6 +19,16 @@ class AppServiceProvider extends ServiceProvider
     {
         // Ödeme sağlayıcısı ayardan seçilir. Seçilmediğinde tahsilat KAPALIDIR:
         // UnconfiguredProvider açık hata verir, sessizce "ödendi" saymaz.
+        // Alt yazı motoru. Gerçek zamanlı çalışması GPU gerektiriyor; sunucu
+        // gelene kadar UnavailableEngine devrede ve arayüz düğmeyi pasif tutar.
+        $this->app->bind(\App\Captions\TranscriptionEngine::class, function () {
+            return match (config('captions.engine')) {
+                // GPU sunucu gelince buraya tek satır, örn:
+                // 'whisper' => new \App\Captions\WhisperEngine(),
+                default => new \App\Captions\UnavailableEngine(),
+            };
+        });
+
         $this->app->bind(\App\Payments\PaymentProvider::class, function () {
             return match (config('payments.provider')) {
                 // Sağlayıcı seçilince buraya tek satır eklenecek, örn:
