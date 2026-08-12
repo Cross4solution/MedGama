@@ -12,7 +12,7 @@ const KVKK_SECTIONS = [
     titleKey: 'kvkk.s1_title',
     titleFallback: '1. Veri Sorumlusu',
     contentKey: 'kvkk.s1_content',
-    contentFallback: 'MedGama Sağlık Teknolojileri A.Ş. ("MedGama"), 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında veri sorumlusu sıfatıyla kişisel verilerinizi işlemektedir. MedGama, kişisel verilerinizin güvenliğine büyük önem vermekte ve tüm teknik ve idari tedbirleri almaktadır.',
+    contentFallback: 'Medagama Sağlık Teknolojileri A.Ş. ("Medagama"), 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında veri sorumlusu sıfatıyla kişisel verilerinizi işlemektedir. Medagama, kişisel verilerinizin güvenliğine büyük önem vermekte ve tüm teknik ve idari tedbirleri almaktadır.',
   },
   {
     id: 'purposes',
@@ -97,7 +97,7 @@ export default function KVKKPage() {
                   {t('kvkk.summary_title', 'Kişisel Verileriniz Güvende')}
                 </h3>
                 <p className="text-sm text-teal-800 leading-relaxed">
-                  {t('kvkk.summary_text', 'MedGama olarak, 6698 sayılı KVKK ve ilgili mevzuat kapsamında kişisel verilerinizin korunması için gerekli tüm teknik ve idari tedbirleri almaktayız. Bu aydınlatma metni, verilerinizin nasıl işlendiğini şeffaf bir şekilde açıklamaktadır.')}
+                  {t('kvkk.summary_text', 'Medagama olarak, 6698 sayılı KVKK ve ilgili mevzuat kapsamında kişisel verilerinizin korunması için gerekli tüm teknik ve idari tedbirleri almaktayız. Bu aydınlatma metni, verilerinizin nasıl işlendiğini şeffaf bir şekilde açıklamaktadır.')}
                 </p>
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function KVKKPage() {
             {t('kvkk.contact_title', 'İletişim ve Başvuru')}
           </h3>
           <div className="space-y-2 text-sm text-gray-600">
-            <p><strong>Veri Sorumlusu:</strong> MedGama Sağlık Teknolojileri A.Ş.</p>
+            <p><strong>Veri Sorumlusu:</strong> Medagama Sağlık Teknolojileri A.Ş.</p>
             <p><strong>KVKK İletişim:</strong>{' '}
               <a href="mailto:kvkk@medgama.com" className="text-teal-600 underline underline-offset-2">kvkk@medgama.com</a>
             </p>

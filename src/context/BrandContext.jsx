@@ -1,7 +1,7 @@
 'use client';
 import React, { createContext, useContext } from 'react';
 
-// Brand context — distinguishes the main MedaGama site from the standalone
+// Brand context — distinguishes the main Medagama site from the standalone
 // MedStream experience (medstream.co). Set server-side from the x-brand header
 // (middleware) so it's consistent across SSR + client (no hydration flash).
 const BrandContext = createContext('medagama');

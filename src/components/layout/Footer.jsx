@@ -7,7 +7,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   const quickLinks = [
-    { label: t('footer.aboutMedaGama'), href: '/about' },
+    { label: t('footer.aboutMedagama'), href: '/about' },
     { label: t('footer.forPatients'), href: '/for-patients' },
     { label: t('footer.forClinics'), href: '/for-clinics' },
     { label: 'Vasco AI', href: '/vasco-ai' },

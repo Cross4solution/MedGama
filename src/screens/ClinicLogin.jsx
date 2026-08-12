@@ -105,7 +105,7 @@ const ClinicLogin = () => {
             <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-2xl">
               <div className="text-center mb-5">
                 <div className="flex items-center justify-center mb-2">
-                  <img src="/images/logo/logo.svg" alt="MedaGama" className="h-10 sm:h-12 w-auto object-contain" />
+                  <img src="/images/logo/logo.svg" alt="Medagama" className="h-10 sm:h-12 w-auto object-contain" />
                 </div>
                 <h1 className="text-lg font-bold text-gray-900 mb-0.5">{t('auth.clinicSignIn')}</h1>
                 <p className="text-xs text-gray-500">{t('auth.accessClinicPortal')}</p>

@@ -24,7 +24,7 @@ const DashboardRedirect = () => {
     } else if (role === 'doctor' && user?.onboarding_completed === false) {
       navigate('/onboarding', { replace: true });
     } else {
-      // Doctors and clinics land on MedaGama panel
+      // Doctors and clinics land on Medagama panel
       navigate('/doctor/dashboard', { replace: true });
     }
   }, [user, navigate]);

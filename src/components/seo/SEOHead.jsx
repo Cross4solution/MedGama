@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import i18n from '../../i18n';
 
-const SITE_NAME = 'MedaGama';
+const SITE_NAME = 'Medagama';
 // Single source of truth for the canonical domain. Override per-environment via
 // REACT_APP_SITE_URL (set in Vercel / hosting env). Update the fallback once the
 // production domain is finalized.
@@ -20,7 +20,7 @@ function ogLocale(lang) {
 /**
  * Reusable SEO head component for dynamic meta tags + canonical + Open Graph + JSON-LD.
  *
- * @param {string} title - Page title (will be appended with " | MedaGama")
+ * @param {string} title - Page title (will be appended with " | Medagama")
  * @param {string} description - Meta description (max ~160 chars)
  * @param {string} canonical - Canonical URL path (e.g. "/doctors/dr-ahmet")
  * @param {string} image - Open Graph image URL

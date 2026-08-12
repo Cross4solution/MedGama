@@ -8,7 +8,7 @@ import { useCookieConsent } from '../context/CookieConsentContext';
 const COOKIE_TABLE = [
   {
     name: 'cookie_consent',
-    provider: 'MedaGama',
+    provider: 'Medagama',
     purpose: 'Stores your cookie consent preferences',
     category: 'Necessary',
     duration: 'Persistent',
@@ -16,7 +16,7 @@ const COOKIE_TABLE = [
   },
   {
     name: 'auth_state',
-    provider: 'MedaGama',
+    provider: 'Medagama',
     purpose: 'Maintains your login session and authentication state',
     category: 'Necessary',
     duration: 'Session / Persistent',
@@ -24,7 +24,7 @@ const COOKIE_TABLE = [
   },
   {
     name: 'access_token',
-    provider: 'MedaGama',
+    provider: 'Medagama',
     purpose: 'Authentication token for secure API communication',
     category: 'Necessary',
     duration: 'Session',
@@ -32,7 +32,7 @@ const COOKIE_TABLE = [
   },
   {
     name: 'profile_prefs',
-    provider: 'MedaGama',
+    provider: 'Medagama',
     purpose: 'Stores your display preferences and settings',
     category: 'Functional',
     duration: 'Persistent',
@@ -40,7 +40,7 @@ const COOKIE_TABLE = [
   },
   {
     name: 'returnScroll',
-    provider: 'MedaGama',
+    provider: 'Medagama',
     purpose: 'Remembers scroll position for navigation',
     category: 'Functional',
     duration: 'Session',
@@ -74,7 +74,7 @@ export default function CookiePolicyPage() {
             </div>
           </div>
           <p className="text-gray-700 leading-relaxed">
-            This Cookie Policy explains how MedaGama Health Technologies ("we", "us", "our") uses cookies and similar 
+            This Cookie Policy explains how Medagama Health Technologies ("we", "us", "our") uses cookies and similar 
             technologies when you visit our website. This policy should be read alongside our{' '}
             <Link to="/privacy-policy" className="text-teal-600 hover:text-teal-700 font-medium underline underline-offset-2">
               Privacy Policy
@@ -296,7 +296,7 @@ export default function CookiePolicyPage() {
               If you have questions about this Cookie Policy, please contact our Data Protection Officer:
             </p>
             <div className="mt-3 bg-gray-100 rounded-xl p-4 text-sm text-gray-700 space-y-1">
-              <p><strong>MedaGama Health Technologies</strong></p>
+              <p><strong>Medagama Health Technologies</strong></p>
               <p>Data Protection Officer (DPO)</p>
               <p>Email: <a href="mailto:dpo@medagama.com" className="text-teal-600 underline underline-offset-2">dpo@medagama.com</a></p>
               <p>Privacy inquiries: <a href="mailto:privacy@medagama.com" className="text-teal-600 underline underline-offset-2">privacy@medagama.com</a></p>

@@ -262,7 +262,7 @@ const Header = () => {
               <Link to={logoTo} onClick={closeMenu} className="flex items-center cursor-pointer select-none ml-9 sm:ml-9">
                 <Image
                   src="/images/logo/logo.svg"
-                  alt="MedaGama Logo"
+                  alt="Medagama Logo"
                   width={176}
                   height={40}
                   priority

@@ -1,6 +1,6 @@
 /**
  * Mapbox Configuration
- * Global configuration for Mapbox integration across MedGama platform
+ * Global configuration for Mapbox integration across Medagama platform
  */
 
 const TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || '';

@@ -122,7 +122,7 @@ const RegisterForm = ({
   <div className="w-full max-w-md mx-auto">
          <div className="text-center mb-1">
            <div className="flex items-center justify-center mb-0.5">
-             <img src="/images/logo/logo.svg" alt="MedaGama" className="h-10 sm:h-12 w-auto object-contain" />
+             <img src="/images/logo/logo.svg" alt="Medagama" className="h-10 sm:h-12 w-auto object-contain" />
            </div>
            <h1 className="text-lg font-bold text-gray-900 mb-0.5">{t('auth.createAccount')}</h1>
            <p className="text-xs text-gray-500">{t('auth.signUpSubtitle')}</p>

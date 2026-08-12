@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ $subject ?? 'MedGama' }}</title>
+    <title>{{ $subject ?? 'Medagama' }}</title>
     <!--[if mso]>
     <noscript>
         <xml>
@@ -57,10 +57,10 @@
                 <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
                     <tr>
                         <td style="vertical-align:middle;padding-right:12px;">
-                            <img src="{{ config('app.frontend_url', 'https://medgama.com') }}/images/logo-white.png" alt="MedGama" width="40" height="40" style="display:block;border-radius:10px;" onerror="this.style.display='none'">
+                            <img src="{{ config('app.frontend_url', 'https://medgama.com') }}/images/logo-white.png" alt="Medagama" width="40" height="40" style="display:block;border-radius:10px;" onerror="this.style.display='none'">
                         </td>
                         <td style="vertical-align:middle;">
-                            <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;font-family:'Segoe UI',Roboto,sans-serif;">MedGama</span>
+                            <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;font-family:'Segoe UI',Roboto,sans-serif;">Medagama</span>
                         </td>
                     </tr>
                 </table>
@@ -135,7 +135,7 @@
                 </table>
 
                 <p style="margin:0 0 6px;font-size:12px;color:#6b7280;line-height:1.5;">
-                    MedGama Healthcare Platform
+                    Medagama Healthcare Platform
                 </p>
                 <p style="margin:0 0 6px;font-size:11px;color:#9ca3af;line-height:1.5;">
                     <a href="{{ config('app.frontend_url', 'https://medgama.com') }}" style="color:#0d9488;text-decoration:none;">medgama.com</a>
@@ -155,7 +155,7 @@
         <tr>
             <td style="padding:16px 0;text-align:center;">
                 <p style="margin:0;font-size:10px;color:#9ca3af;">
-                    © {{ date('Y') }} MedGama. {{ trans('email.all_rights', [], $locale ?? 'en') }}
+                    © {{ date('Y') }} Medagama. {{ trans('email.all_rights', [], $locale ?? 'en') }}
                 </p>
             </td>
         </tr>

@@ -28,7 +28,7 @@ const TermsPopup = ({ setShowTermsPopup }) => {
         </div>
 
         <p><strong>1. PARTIES AND SUBJECT</strong></p>
-        <p>These Terms of Use ("Terms") constitute a legal agreement between MedaGama Health Technologies ("Company") and individuals using the platform ("User"). The platform is provided to search for healthcare services, book appointments, and manage health information.</p>
+        <p>These Terms of Use ("Terms") constitute a legal agreement between Medagama Health Technologies ("Company") and individuals using the platform ("User"). The platform is provided to search for healthcare services, book appointments, and manage health information.</p>
         
         <p><strong>2. SCOPE OF SERVICE AND LIMITATIONS</strong></p>
         <p>2.1. Services provided through the platform do not constitute medical advice, diagnosis, or treatment. Information is for informational purposes only.</p>

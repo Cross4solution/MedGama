@@ -86,7 +86,7 @@ class GeoController extends Controller
             $base = rtrim((string) config('services.geo.reverse_url', 'https://nominatim.openstreetmap.org/reverse'), '/');
             try {
                 $res = \Illuminate\Support\Facades\Http::timeout(6)
-                    ->withHeaders(['User-Agent' => 'MedaGama/1.0'])
+                    ->withHeaders(['User-Agent' => 'Medagama/1.0'])
                     ->get($base, [
                         'format' => 'jsonv2',
                         'lat' => $lat,
@@ -124,7 +124,7 @@ class GeoController extends Controller
             $base = rtrim((string) config('services.geo.forward_url', 'https://geocoding-api.open-meteo.com/v1/search'), '/');
             try {
                 $res = \Illuminate\Support\Facades\Http::timeout(6)
-                    ->withHeaders(['User-Agent' => 'MedaGama/1.0'])
+                    ->withHeaders(['User-Agent' => 'Medagama/1.0'])
                     ->get($base, ['name' => $q, 'count' => 1, 'language' => $lang]);
                 if (!$res->ok()) {
                     return null;

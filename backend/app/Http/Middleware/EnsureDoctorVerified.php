@@ -11,7 +11,7 @@ class EnsureDoctorVerified
     /**
      * Platform access gate for appointments / telehealth endpoints.
      *
-     * Business rules (MedaGama Level System):
+     * Business rules (Medagama Level System):
      *   • Level 3 (Clinic/clinicOwner) → ALWAYS allowed (no verification needed for platform features).
      *   • Level 5 (Admin)              → ALWAYS allowed.
      *   • Level 2 (Doctor)             → Must be admin-verified (is_verified = true).

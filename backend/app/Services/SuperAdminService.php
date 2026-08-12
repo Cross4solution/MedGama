@@ -526,7 +526,7 @@ class SuperAdminService
             ['key' => 'platform.registration',     'value' => '1', 'type' => 'boolean', 'group' => 'platform', 'label' => 'User Registration',  'description' => 'Allow new user registrations'],
             ['key' => 'platform.max_upload_mb',    'value' => '20','type' => 'integer', 'group' => 'platform', 'label' => 'Max Upload Size (MB)','description' => 'Maximum file upload size in megabytes'],
             // Branding & Meta
-            ['key' => 'branding.site_title',       'value' => 'MedaGama',                                 'type' => 'string',  'group' => 'branding', 'label' => 'Site Title',        'description' => 'Main site title displayed in browser tab and header'],
+            ['key' => 'branding.site_title',       'value' => 'Medagama',                                 'type' => 'string',  'group' => 'branding', 'label' => 'Site Title',        'description' => 'Main site title displayed in browser tab and header'],
             ['key' => 'branding.site_description',  'value' => 'Modern healthcare platform for patients and doctors', 'type' => 'string',  'group' => 'branding', 'label' => 'Meta Description',  'description' => 'Default meta description for SEO'],
             ['key' => 'branding.site_logo_url',     'value' => '/images/logo.svg',                         'type' => 'string',  'group' => 'branding', 'label' => 'Logo URL',           'description' => 'Path or URL for the site logo'],
             ['key' => 'branding.primary_color',     'value' => '#0D9488',                                  'type' => 'string',  'group' => 'branding', 'label' => 'Primary Color',      'description' => 'Primary brand color (hex)'],

@@ -32,7 +32,7 @@ export const exportPDF = ({ title, subtitle, summary = [], tables = [], filename
   doc.setFont('helvetica', 'normal');
   doc.text(subtitle || new Date().toLocaleDateString(), 14, 19);
   doc.setFontSize(8);
-  doc.text(`MedGama CRM — Generated ${new Date().toLocaleString()}`, 14, 25);
+  doc.text(`Medagama CRM — Generated ${new Date().toLocaleString()}`, 14, 25);
   y = 35;
 
   // ── KPI Summary cards ──
@@ -95,7 +95,7 @@ export const exportPDF = ({ title, subtitle, summary = [], tables = [], filename
         const pageH = doc.internal.pageSize.getHeight();
         doc.setTextColor(180, 180, 180);
         doc.setFontSize(7);
-        doc.text(`MedGama CRM Report — Page ${doc.internal.getNumberOfPages()}`, 14, pageH - 8);
+        doc.text(`Medagama CRM Report — Page ${doc.internal.getNumberOfPages()}`, 14, pageH - 8);
       },
     });
 

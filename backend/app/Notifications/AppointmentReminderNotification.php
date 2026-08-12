@@ -41,7 +41,7 @@ class AppointmentReminderNotification extends Notification implements ShouldQueu
             : (($isOnline && $appt->video_conference_link) ? $appt->video_conference_link : $frontendUrl . '/telehealth');
 
         return (new MailMessage)
-            ->subject('MedGama — ' . trans('email.appt_reminder_subject', ['time' => $timeLabel], $locale))
+            ->subject('Medagama — ' . trans('email.appt_reminder_subject', ['time' => $timeLabel], $locale))
             ->view('emails.appointment-reminder-v2', [
                 'locale'          => $locale,
                 'isDoctor'        => $isDoctor,

@@ -12,7 +12,7 @@ export default function ForPatientsPage() {
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12 text-gray-700 leading-relaxed">
         <h1 className="text-3xl font-bold text-gray-900">{t('forPatients.title')}</h1>
         <p className="mt-4 text-lg text-gray-600">
-          MedaGama ile uzman doktor ve klinikleri tek platformda bulun, online doktor
+          Medagama ile uzman doktor ve klinikleri tek platformda bulun, online doktor
           randevusu alın, telehealth görüşmesi planlayın ve onaylı hasta yorumlarını
           okuyarak bilinçli bir karar verin. İster yerelde ister sağlık turizmi için
           olsun, doğru sağlık profesyoneline ulaşmanız kolaylaşır.
@@ -85,7 +85,7 @@ export default function ForPatientsPage() {
         <h2 className="mt-12 text-2xl font-semibold text-gray-900">Sık Sorulan Sorular</h2>
         <div className="mt-4 space-y-5">
           <div>
-            <h3 className="font-semibold text-gray-900">MedaGama'yı kullanmak ücretli mi?</h3>
+            <h3 className="font-semibold text-gray-900">Medagama'yı kullanmak ücretli mi?</h3>
             <p className="mt-1">
               Doktor ve klinik aramak, profilleri ve yorumları incelemek hastalar için
               ücretsizdir. Randevu ve hizmet ücretleri ilgili doktor veya klinik

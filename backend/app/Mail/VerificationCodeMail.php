@@ -24,7 +24,7 @@ class VerificationCodeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'MedaGama — Verify Your Email',
+            subject: 'Medagama — Verify Your Email',
         );
     }
 

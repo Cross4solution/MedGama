@@ -40,7 +40,7 @@ class WelcomeNotification extends Notification implements ShouldQueue
     {
         return [
             'type'    => 'welcome',
-            'title'   => 'Welcome to MedGama',
+            'title'   => 'Welcome to Medagama',
             'message' => 'Welcome aboard, ' . ($notifiable->fullname ?? 'User') . '! Your account has been created successfully.',
         ];
     }

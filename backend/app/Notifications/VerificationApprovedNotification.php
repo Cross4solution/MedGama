@@ -28,7 +28,7 @@ class VerificationApprovedNotification extends Notification implements ShouldQue
         $frontendUrl = config('app.frontend_url', 'https://medgama.com');
 
         return (new MailMessage)
-            ->subject('MedGama — ' . trans('email.verify_approved_subject', [], $locale))
+            ->subject('Medagama — ' . trans('email.verify_approved_subject', [], $locale))
             ->view('emails.verification-approved-v2', [
                 'locale'        => $locale,
                 'userName'      => $notifiable->fullname ?? $notifiable->email,

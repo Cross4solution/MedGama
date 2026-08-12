@@ -40,7 +40,7 @@ export function getStoredToken() {
 
 // Debug: verify which API URL was baked into this build (check browser console)
 if (typeof window !== 'undefined') {
-  console.info('[MedaGama] API_BASE =', BASE_URL);
+  console.info('[Medagama] API_BASE =', BASE_URL);
 }
 
 // ── Axios Instance ──

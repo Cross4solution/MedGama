@@ -382,7 +382,7 @@ const CRMSettings = ({ standalone = false }) => {
   };
 
   const [clinic, setClinic] = useState({
-    name: 'MedaGama Health Center', address: 'Levent Mah. Buyukdere Cad. No:185', city: 'Istanbul', country: 'Turkey',
+    name: 'Medagama Health Center', address: 'Levent Mah. Buyukdere Cad. No:185', city: 'Istanbul', country: 'Turkey',
     phone: '+90 212 300 4000', email: 'info@medagama-clinic.com', website: 'www.medagama.com',
     workingHours: 'Mon-Fri 08:00-18:00, Sat 09:00-14:00',
   });

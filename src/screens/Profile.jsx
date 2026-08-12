@@ -770,7 +770,7 @@ export default function Profile() {
                         const pageW = doc.internal.pageSize.getWidth();
                         let y = 18;
 
-                        doc.setFontSize(20); doc.setTextColor(13, 148, 136); doc.text('MedaGama', 14, y);
+                        doc.setFontSize(20); doc.setTextColor(13, 148, 136); doc.text('Medagama', 14, y);
                         doc.setFontSize(10); doc.setTextColor(100); doc.text('Personal Data Report - GDPR Art. 20', 14, y + 7);
                         doc.text('Generated: ' + dateStr, pageW - 14, y + 7, { align: 'right' });
                         y += 12; doc.setDrawColor(13, 148, 136); doc.setLineWidth(0.7); doc.line(14, y, pageW - 14, y); y += 10;
@@ -834,7 +834,7 @@ export default function Profile() {
                         y = doc.lastAutoTable.finalY + 14;
 
                         doc.setFontSize(8); doc.setTextColor(156, 163, 175);
-                        doc.text('This report was generated automatically by MedaGama in compliance with GDPR Article 20.', pageW / 2, y, { align: 'center' });
+                        doc.text('This report was generated automatically by Medagama in compliance with GDPR Article 20.', pageW / 2, y, { align: 'center' });
                         doc.text('For questions, contact dpo@medagama.com', pageW / 2, y + 5, { align: 'center' });
 
                         doc.save('medagama-data-' + new Date().toISOString().split('T')[0] + '.pdf');

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'MedaGama'),
+    'name' => env('APP_NAME', 'Medagama'),
 
     /*
     |--------------------------------------------------------------------------
@@ -30,7 +30,7 @@ return [
     | The hardcoded fallback below is legacy and MUST be rotated:
     | set INIT_DB_KEY in env and remove this fallback.
     */
-    'init_db_key' => env('INIT_DB_KEY', 'MedaGama2026SecretInit'),
+    'init_db_key' => env('INIT_DB_KEY', 'Medagama2026SecretInit'),
 
     /*
     |--------------------------------------------------------------------------

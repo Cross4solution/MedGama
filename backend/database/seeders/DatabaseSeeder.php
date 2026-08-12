@@ -212,9 +212,9 @@ class DatabaseSeeder extends Seeder
                 'password' => 'Password123!',
                 'fullname' => 'Dr. Mehmet Yılmaz',
                 'clinic'   => [
-                    'name'      => 'MedaGama Sağlık',
+                    'name'      => 'Medagama Sağlık',
                     'codename'  => 'medagama-clinic',
-                    'fullname'  => 'MedaGama Sağlık Merkezi',
+                    'fullname'  => 'Medagama Sağlık Merkezi',
                     'avatar'    => 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&q=80',
                     'address'   => 'Levent, İstanbul, Türkiye',
                     'phone'     => '+905001234568',
@@ -825,7 +825,7 @@ class DatabaseSeeder extends Seeder
 
         $this->command->info('');
         $this->command->info('╔═══════════════════════════════════════════════════════════════════╗');
-        $this->command->info('║  MedaGama Demo Database — Seeded!                                ║');
+        $this->command->info('║  Medagama Demo Database — Seeded!                                ║');
         $this->command->info('╠═══════════════════════════════════════════════════════════════════╣');
         $this->command->info('║  ADMIN:                                                          ║');
         $this->command->info('║    admin@medagama.com            / Password123!                     ║');
@@ -838,7 +838,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('║    bayindir@medagama.com         / Password123! (Bayındır)       ║');
         $this->command->info('╠═══════════════════════════════════════════════════════════════════╣');
         $this->command->info('║  CLINICS (L3):                                                   ║');
-        $this->command->info('║    clinic@medagama.com           / Password123! (MedaGama)        ║');
+        $this->command->info('║    clinic@medagama.com           / Password123! (Medagama)        ║');
         $this->command->info('║    elitedental@medagama.com      / Password123! (Elite Dental)    ║');
         $this->command->info('║    visioneye@medagama.com        / Password123! (Vision Eye)      ║');
         $this->command->info('║    lifeortho@medagama.com        / Password123! (Life Ortopedi)   ║');

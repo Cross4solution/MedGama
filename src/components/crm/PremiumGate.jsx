@@ -62,7 +62,7 @@ export default function PremiumGate({ children, featureName }) {
 
           {/* Description */}
           <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-            {t('crm.premiumGate.description', 'This feature is part of MedaGama CRM — our premium practice management suite. Upgrade to unlock advanced dashboards, AI assistant, detailed patient management, and more.')}
+            {t('crm.premiumGate.description', 'This feature is part of Medagama CRM — our premium practice management suite. Upgrade to unlock advanced dashboards, AI assistant, detailed patient management, and more.')}
           </p>
 
           {/* CTA Button */}

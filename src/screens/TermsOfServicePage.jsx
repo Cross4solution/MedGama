@@ -11,7 +11,7 @@ const TermsOfServicePage = () => {
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
-          <p className="text-lg text-gray-600">MedaGama Health Tourism Platform Terms of Use</p>
+          <p className="text-lg text-gray-600">Medagama Health Tourism Platform Terms of Use</p>
           <p className="text-sm text-gray-400 mt-1">Last updated: February 13, 2026</p>
         </div>
         {/* Summary Box */}
@@ -23,7 +23,7 @@ const TermsOfServicePage = () => {
             <div>
               <h3 className="text-lg font-semibold text-blue-900 mb-2">Agreement Summary</h3>
               <p className="text-blue-800">
-                This agreement defines the terms of use for health tourism, telehealth, and clinic services provided on the MedaGama platform.
+                This agreement defines the terms of use for health tourism, telehealth, and clinic services provided on the Medagama platform.
               </p>
             </div>
           </div>
@@ -277,7 +277,7 @@ const TermsOfServicePage = () => {
                 <h3 className="text-lg font-semibold text-blue-900">Limitation of Liability</h3>
               </div>
               <div className="text-blue-800 text-sm">
-                <p className="mb-2">MedaGama is a technology platform and not a medical service provider. The platform:</p>
+                <p className="mb-2">Medagama is a technology platform and not a medical service provider. The platform:</p>
                 <ul className="space-y-1 ml-4">
                   <li>• Acts as an intermediary between clinics</li>
                   <li>• Does not provide medical advice</li>
@@ -303,7 +303,7 @@ const TermsOfServicePage = () => {
         <div className="bg-gray-100 rounded-lg p-8 text-center">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Agreement</h3>
           <p className="text-gray-600 mb-4">
-            By using the MedaGama platform, you agree to all the terms and conditions above.
+            By using the Medagama platform, you agree to all the terms and conditions above.
           </p>
           <p className="text-sm text-gray-500 mb-6">
             Your personal data is processed in accordance with our <Link to="/privacy-policy" className="text-teal-600 font-medium underline underline-offset-2">Privacy Policy</Link> and the GDPR. You can exercise your data rights at any time via our <Link to="/data-rights" className="text-teal-600 font-medium underline underline-offset-2">Data Rights Center</Link>.

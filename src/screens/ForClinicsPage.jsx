@@ -12,7 +12,7 @@ export default function ForClinicsPage() {
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12 text-gray-700 leading-relaxed">
         <h1 className="text-3xl font-bold text-gray-900">{t('forClinics.title')}</h1>
         <p className="mt-4 text-lg text-gray-600">
-          Klinikler, hastaneler ve bağımsız doktorlar için MedaGama; daha geniş bir
+          Klinikler, hastaneler ve bağımsız doktorlar için Medagama; daha geniş bir
           hasta kitlesine ulaşmanın, randevuları tek yerden yönetmenin ve dijital
           görünürlüğü artırmanın yoludur. Profilinizi oluşturun, hizmetlerinizi tanıtın
           ve hasta erişiminizi büyütün.
@@ -50,7 +50,7 @@ export default function ForClinicsPage() {
         <p className="mt-3 flex items-start gap-2">
           <TrendingUp className="h-5 w-5 text-teal-600 shrink-0 mt-1" />
           <span>
-            MedaGama'nın çok dilli yapısı, yalnızca yerel hastalara değil sağlık
+            Medagama'nın çok dilli yapısı, yalnızca yerel hastalara değil sağlık
             turizmi için Türkiye'yi araştıran uluslararası ziyaretçilere de
             erişmenizi sağlar. Onaylı hasta yorumları güveninizi pekiştirir ve daha
             fazla randevu talebi almanıza yardımcı olur.
@@ -77,7 +77,7 @@ export default function ForClinicsPage() {
           <div>
             <h3 className="font-semibold text-gray-900">Platforma kimler katılabilir?</h3>
             <p className="mt-1">
-              Klinikler, hastaneler ve bağımsız doktorlar profil oluşturarak MedaGama'ya
+              Klinikler, hastaneler ve bağımsız doktorlar profil oluşturarak Medagama'ya
               katılabilir ve hasta erişimini artırabilir.
             </p>
           </div>

@@ -32,12 +32,12 @@ class ReviewResponseNotification extends Notification implements ShouldQueue
         $doctorName = $this->review->doctor?->fullname ?? 'Your doctor';
 
         return (new MailMessage)
-            ->subject('MedaGama — Doctor Responded to Your Review')
+            ->subject('Medagama — Doctor Responded to Your Review')
             ->greeting("Hello, {$notifiable->fullname}!")
             ->line("Dr. {$doctorName} has responded to your review.")
             ->line("**Doctor's Response:** \"{$this->review->doctor_response}\"")
             ->action('View Review', url('/doctors/' . $this->review->doctor_id))
-            ->line('Thank you for sharing your experience on MedaGama.');
+            ->line('Thank you for sharing your experience on Medagama.');
     }
 
     public function toArray(object $notifiable): array

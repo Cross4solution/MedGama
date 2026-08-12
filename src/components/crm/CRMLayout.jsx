@@ -434,7 +434,7 @@ const CRMLayout = ({ children }) => {
           <Stethoscope className="w-5 h-5 text-white" />
         </div>
         <div>
-          <span className="text-base font-bold text-white tracking-tight">MedaGama</span>
+          <span className="text-base font-bold text-white tracking-tight">Medagama</span>
           <span className="block text-[10px] text-gray-400 font-medium tracking-wider uppercase">CRM Platform</span>
         </div>
       </Link>
@@ -472,13 +472,13 @@ const CRMLayout = ({ children }) => {
           </div>
         ))}
 
-        {/* Go to MedaGama */}
+        {/* Go to Medagama */}
         <Link
           to="/"
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 group"
         >
           <Home className="w-[18px] h-[18px] flex-shrink-0 text-gray-500 group-hover:text-gray-300" />
-          <span className="flex-1">Go to MedaGama</span>
+          <span className="flex-1">Go to Medagama</span>
           <ExternalLink className="w-3.5 h-3.5 text-gray-600 group-hover:text-gray-400" />
         </Link>
       </nav>

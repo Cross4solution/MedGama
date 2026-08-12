@@ -394,7 +394,7 @@ const LoginPage = ({ role = 'patient' }) => {
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-4 sm:mb-6">
         <div className="flex items-center justify-center mb-1 sm:mb-2">
-          <img src="/images/logo/logo.svg" alt="MedaGama" className="h-10 sm:h-12 w-auto object-contain" />
+          <img src="/images/logo/logo.svg" alt="Medagama" className="h-10 sm:h-12 w-auto object-contain" />
         </div>
         <h1 className="text-lg font-bold text-gray-900 mb-0.5">{t(config.titleKey)}</h1>
         <p className="text-xs text-gray-500">{t(config.subtitleKey)}</p>
@@ -465,7 +465,7 @@ const LoginPage = ({ role = 'patient' }) => {
       )}
       {config.showRegister === false && (
         <div className="mt-4 text-center text-xs text-gray-400">
-          {t('auth.hospitalAccountInfo', 'Hospital accounts are created by MedaGama administrators.')}
+          {t('auth.hospitalAccountInfo', 'Hospital accounts are created by Medagama administrators.')}
         </div>
       )}
       <div className="mt-5 pt-4 border-t border-gray-100 text-center">
@@ -532,9 +532,9 @@ const LoginPage = ({ role = 'patient' }) => {
   return (
     <>
       <Helmet>
-        <title>{role === 'doctor' ? 'Doctor Sign In | MedaGama' : role === 'clinic' ? 'Clinic Sign In | MedaGama' : 'Sign In | MedaGama'}</title>
+        <title>{role === 'doctor' ? 'Doctor Sign In | Medagama' : role === 'clinic' ? 'Clinic Sign In | Medagama' : 'Sign In | Medagama'}</title>
         <meta name="description" content={t(config.metaDescKey)} />
-        <meta property="og:title" content={role === 'doctor' ? 'Doctor Sign In | MedaGama' : role === 'clinic' ? 'Clinic Sign In | MedaGama' : 'Sign In | MedaGama'} />
+        <meta property="og:title" content={role === 'doctor' ? 'Doctor Sign In | Medagama' : role === 'clinic' ? 'Clinic Sign In | Medagama' : 'Sign In | Medagama'} />
         <meta property="og:description" content={t(config.metaDescKey)} />
         <meta property="og:type" content="website" />
         {/* Auth pages are thin/duplicative — keep them out of the index. */}

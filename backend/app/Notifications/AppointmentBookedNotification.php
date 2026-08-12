@@ -38,7 +38,7 @@ class AppointmentBookedNotification extends Notification implements ShouldQueue
             : trans('email.appt_booked_subject', ['date' => $date], $locale);
 
         return (new MailMessage)
-            ->subject("MedGama — {$subject}")
+            ->subject("Medagama — {$subject}")
             ->view('emails.appointment-booked-v2', [
                 'locale'          => $locale,
                 'isDoctor'        => $isDoctor,

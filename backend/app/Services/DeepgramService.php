@@ -96,7 +96,7 @@ class DeepgramService
                 'Authorization' => "Token {$this->apiKey}",
                 'Content-Type'  => 'application/json',
             ])->post("{$this->baseUrl}/keys", [
-                'comment'    => 'MedGama telehealth session',
+                'comment'    => 'Medagama telehealth session',
                 'scopes'     => ['usage:write'],
                 'time_to_live_in_seconds' => $ttlSeconds,
             ]);

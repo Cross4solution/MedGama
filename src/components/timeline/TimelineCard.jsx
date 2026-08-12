@@ -633,7 +633,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
     } catch { /* ignore */ } finally { setTranslating(false); }
   };
   // Derive LinkedIn-like actor/meta fields
-  const actorName = item?.actor?.name || item?.title || 'MedaGama';
+  const actorName = item?.actor?.name || item?.title || 'Medagama';
   const actorTitle = item?.actor?.title || item?.subtitle || 'Healthcare';
   const actorAvatar = item?.actor?.avatarUrl || avatarUrl;
   const timeAgo = item?.timeAgo || '1 gün';

@@ -24,7 +24,7 @@ class PasswordResetMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'MedaGama — Password Reset Code',
+            subject: 'Medagama — Password Reset Code',
         );
     }
 

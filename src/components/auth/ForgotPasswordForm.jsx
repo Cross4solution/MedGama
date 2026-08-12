@@ -17,7 +17,7 @@ const ForgotPasswordForm = ({
   <div className="w-full max-w-lg mx-auto">
     <div className="text-center mb-2 sm:mb-3">
       <div className="flex items-center justify-center mb-1 sm:mb-2">
-        <img src="/images/logo/logo.svg" alt="MedaGama" className="h-10 sm:h-12 w-auto object-contain" />
+        <img src="/images/logo/logo.svg" alt="Medagama" className="h-10 sm:h-12 w-auto object-contain" />
       </div>
       <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{t('auth.passwordReset')}</h1>
       <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-5">{t('auth.passwordResetDesc')}</p>

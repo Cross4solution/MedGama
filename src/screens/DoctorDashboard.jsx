@@ -93,7 +93,7 @@ const DoctorDashboard = () => {
                 {t('doctorDashboard.welcome', 'Welcome')}, {user?.name || 'Doctor'}
               </h1>
               <p className="text-sm text-gray-500 mt-0.5">
-                {profile?.specialty || t('doctorDashboard.subtitle', 'Manage your MedaGama profile')}
+                {profile?.specialty || t('doctorDashboard.subtitle', 'Manage your Medagama profile')}
               </p>
             </div>
           </div>
@@ -234,7 +234,7 @@ const DoctorDashboard = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">
-                    {t('doctorDashboard.crmTitle', 'MedaGama CRM — Professional Suite')}
+                    {t('doctorDashboard.crmTitle', 'Medagama CRM — Professional Suite')}
                   </h2>
                   <p className="text-sm text-gray-400 mt-0.5">
                     {t('doctorDashboard.crmDesc', 'Smart calendar, revenue analytics, telehealth, patient management and more.')}

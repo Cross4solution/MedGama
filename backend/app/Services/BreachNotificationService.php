@@ -58,7 +58,7 @@ class BreachNotificationService
                 "A personal-data breach has been reported.\n\n" . json_encode($payload, JSON_PRETTY_PRINT),
                 function ($message) use ($adminEmail, $payload) {
                     $message->to($adminEmail)
-                            ->subject('[MedaGama][SECURITY] Breach reported — severity: ' . $payload['severity']);
+                            ->subject('[Medagama][SECURITY] Breach reported — severity: ' . $payload['severity']);
                 }
             );
         } catch (\Throwable $e) {

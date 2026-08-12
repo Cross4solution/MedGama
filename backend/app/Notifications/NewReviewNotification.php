@@ -34,7 +34,7 @@ class NewReviewNotification extends Notification implements ShouldQueue
         $rating = $this->review->rating;
 
         return (new MailMessage)
-            ->subject('MedaGama — New Patient Review')
+            ->subject('Medagama — New Patient Review')
             ->greeting("Hello, Dr. {$notifiable->fullname}!")
             ->line("{$patientName} has left a **{$rating}-star** review on your profile.")
             ->line($this->review->comment ? "**Comment:** \"{$this->review->comment}\"" : '')

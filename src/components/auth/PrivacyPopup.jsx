@@ -31,7 +31,7 @@ const PrivacyPopup = ({ setShowPrivacyPopup }) => {
         </div>
 
         <p><strong>1. DATA CONTROLLER (Art. 13(1)(a) GDPR)</strong></p>
-        <p>MedaGama Health Technologies ("Company") processes your personal data as a data controller under the General Data Protection Regulation (GDPR) and applicable data protection laws.</p>
+        <p>Medagama Health Technologies ("Company") processes your personal data as a data controller under the General Data Protection Regulation (GDPR) and applicable data protection laws.</p>
         
         <p><strong>2. DATA PROTECTION OFFICER (Art. 37-39 GDPR)</strong></p>
         <p>Contact our DPO at: <span className="text-teal-600">dpo@medagama.com</span></p>

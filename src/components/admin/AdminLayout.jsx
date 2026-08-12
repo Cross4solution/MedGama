@@ -81,7 +81,7 @@ function AdminLoginGate() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-400 to-purple-600 shadow-2xl shadow-purple-500/30 mb-4">
             <Shield className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">MedaGama</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Medagama</h1>
           <p className="text-purple-300/60 text-xs font-semibold tracking-widest uppercase mt-1">Admin Panel</p>
         </div>
 
@@ -375,7 +375,7 @@ const AdminLayout = ({ children }) => {
           <Shield className="w-5 h-5 text-white" />
         </div>
         <div>
-          <span className="text-base font-bold text-white tracking-tight">MedaGama</span>
+          <span className="text-base font-bold text-white tracking-tight">Medagama</span>
           <span className="block text-[10px] text-purple-300/60 font-semibold tracking-widest uppercase">Admin Panel</span>
         </div>
       </NavLink>

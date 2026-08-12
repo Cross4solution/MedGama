@@ -24,7 +24,7 @@ class TicketReceivedNotification extends Notification
         $frontendUrl = config('app.frontend_url', 'https://medgama.com');
 
         return (new MailMessage)
-            ->subject('MedGama — ' . trans('email.ticket_received_subject', ['number' => $this->ticket->ticket_number], $locale))
+            ->subject('Medagama — ' . trans('email.ticket_received_subject', ['number' => $this->ticket->ticket_number], $locale))
             ->view('emails.ticket-received-v2', [
                 'locale'         => $locale,
                 'userName'       => $notifiable->fullname ?? $notifiable->email,

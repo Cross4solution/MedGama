@@ -40,7 +40,7 @@ class TicketReplyNotification extends Notification implements ShouldQueue
         $frontendUrl = config('app.frontend_url', 'https://medgama.com');
 
         return (new MailMessage)
-            ->subject('MedGama — ' . trans('email.ticket_reply_subject', ['number' => $this->ticket->ticket_number], $locale))
+            ->subject('Medagama — ' . trans('email.ticket_reply_subject', ['number' => $this->ticket->ticket_number], $locale))
             ->view('emails.ticket-reply-v2', [
                 'locale'        => $locale,
                 'userName'      => $notifiable->fullname ?? $notifiable->email,

@@ -75,7 +75,7 @@ class VascoService
             ->map(fn ($s) => $s['code'] . ' = ' . ($s['name'][$lang] ?? $s['name']['en'] ?? reset($s['name'])))
             ->implode("\n");
 
-        $sys = "You are Vasco, a medical routing assistant for the MedaGama platform. "
+        $sys = "You are Vasco, a medical routing assistant for the Medagama platform. "
             . "You DO NOT diagnose. From the patient's complaint, choose the single best specialty CODE "
             . "from this list:\n{$list}\n"
             . "Reply ONLY as compact JSON: {\"code\":\"<CODE>\",\"follow_up\":\"<one short clarifying question or null>\",\"rationale\":\"<one short sentence in the patient's language, why this specialty — NO diagnosis>\"}. "

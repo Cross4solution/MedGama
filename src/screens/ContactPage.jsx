@@ -10,7 +10,7 @@ export default function ContactPage() {
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12 text-gray-700 leading-relaxed">
         <h1 className="text-3xl font-bold text-gray-900">İletişim</h1>
         <p className="mt-4 text-lg text-gray-600">
-          MedaGama ile ilgili sorularınız, önerileriniz veya iş birliği talepleriniz için
+          Medagama ile ilgili sorularınız, önerileriniz veya iş birliği talepleriniz için
           bize ulaşabilirsiniz. Hasta, doktor veya klinik olun; ekibimiz size yardımcı
           olmaktan memnuniyet duyar.
         </p>
@@ -52,9 +52,9 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <h2 className="mt-10 text-2xl font-semibold text-gray-900">MedaGama nasıl yardımcı olur?</h2>
+        <h2 className="mt-10 text-2xl font-semibold text-gray-900">Medagama nasıl yardımcı olur?</h2>
         <p className="mt-3">
-          MedaGama, uzman doktor ve klinikleri tek platformda bulmanızı, online doktor
+          Medagama, uzman doktor ve klinikleri tek platformda bulmanızı, online doktor
           randevusu almanızı ve telehealth görüşmesi planlamanızı sağlar. Çok dilli
           yapısıyla sağlık turizmi süreçlerini de destekler. Aradığınız hizmete hızlıca
           ulaşmak için{' '}
