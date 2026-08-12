@@ -95,19 +95,5 @@ E.append(Paragraph(
     "<b>Hasta iptal ederse:</b> randevuya belirlenen süreden fazla varsa tam iade, azsa iade yapılmaz. "
     "Bu süre şu an 24 saat olarak hazırlandı — <b>onayınıza göre değiştirilebilir.</b>", body))
 
-E.append(Paragraph("Güvenlik", h2))
-E.append(Paragraph(
-    "Kart bilgileri Medagama'ya hiç ulaşmaz; ödeme bankanın kendi ekranında yapılır ve bize yalnızca "
-    "sonuç bilgisi döner. Ödemenin gerçekleştiği, hastanın ekranından değil bankadan gelen doğrulamayla "
-    "kabul edilir. Para birimi ne ise o para biriminde tahsil edilir, çevrilmez.", body))
-
-E.append(Paragraph("Sizden beklenen", h2))
-E.append(Paragraph(
-    "1. Kapora tutarı ve komisyon oranı ne olsun?", body))
-E.append(Paragraph(
-    "2. Hasta iptalinde iade süresi 24 saat uygun mu?", body))
-E.append(Paragraph(
-    "3. Ödeme kuruluşu tercihiniz (iyzico, PayTR, Stripe) — sözleşme ve evrak süreci sizde yürütülür.", body))
-
 doc.build(E)
 print("docs/Medagama_Kapora_Akisi.pdf")
