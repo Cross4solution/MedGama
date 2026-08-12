@@ -1,6 +1,6 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Loader2, Lock } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { authAPI } from '../../lib/api';
 import { useTranslation } from 'react-i18next';
 
@@ -91,15 +91,6 @@ export default function NotificationPrefsCard() {
             })}
 
             {error && <p className="px-2.5 text-xs text-red-600">{error}</p>}
-
-            <div className="mt-2 flex items-start gap-2 px-2.5 py-2.5 rounded-xl bg-gray-50 text-[11px] text-gray-500 leading-relaxed">
-              <Lock className="w-3.5 h-3.5 mt-px flex-shrink-0 text-gray-400" />
-              <span>
-                {isTr
-                  ? 'Randevu onayı, iptali ve hatırlatmaları her zaman gönderilir — randevunuzu kaçırmamanız için kapatılamaz.'
-                  : 'Appointment confirmations, cancellations and reminders are always sent — they cannot be turned off so you do not miss your appointment.'}
-              </span>
-            </div>
           </>
         )}
       </div>
