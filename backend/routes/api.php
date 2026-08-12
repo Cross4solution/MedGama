@@ -49,10 +49,15 @@ Route::get('/health', function () {
 });
 
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  TEMPORARY: One-time DB init route — DELETE AFTER USE           ║
-// ║  Usage: GET /api/system/init-db?key=MedaGama2026SecretInit      ║
-// ║         GET /api/system/init-db?key=...&fresh=1  → migrate:fresh║
-// ║  Check: GET /api/system/init-db-status                          ║
+// ║  Şema onarımı: eksik migration'ları uygular (migrate + seed).     ║
+// ║  Usage: GET /api/system/init-db?key=<INIT_DB_KEY>                 ║
+// ║  Check: GET /api/system/init-db-status                            ║
+// ║                                                                   ║
+// ║  "fresh=1" (db:wipe) YETENEĞİ KALDIRILDI. Tek bir HTTP isteğiyle  ║
+// ║  tüm hasta verisini silebiliyordu ve anahtarın varsayılanı kodun   ║
+// ║  içinde yazılı, depo da uzakta. Veri silmek hiçbir arıza senaryosu ║
+// ║  için meşru bir kurtarma adımı değil; gerçekten gerekirse Render   ║
+// ║  konsolundan elle çalıştırılır.                                    ║
 // ╚══════════════════════════════════════════════════════════════════╝
 Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Request $request) {
     // Production guard — disabled unless explicitly opted-in via env
@@ -78,21 +83,11 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
         return response()->json(['error' => 'Operation failed'], 500);
     }
 
-    $isFresh = $request->query('fresh') === '1';
-    $result  = ['db_host' => $dbHost, 'mode' => $isFresh ? 'db:wipe+migrate+seed' : 'migrate+seed'];
+    $result = ['db_host' => $dbHost, 'mode' => 'migrate+seed'];
 
-    // ── Step 2: Wipe Database (if fresh) ──
-    if ($isFresh) {
-        try {
-            \Illuminate\Support\Facades\Artisan::call('db:wipe', ['--force' => true]);
-            $result['wipe_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('init-db db_wipe failed', ['exception' => $e]);
-            return response()->json(['error' => 'Operation failed'], 500);
-        }
-    }
+    // Veri silme adımı bilinçli olarak kaldırıldı — yukarıdaki nota bakınız.
 
-    // ── Step 3: Migrate ──
+    // ── Step 2: Migrate ──
     try {
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         $result['migrate_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
@@ -101,7 +96,7 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
         return response()->json(['error' => 'Operation failed'], 500);
     }
 
-    // ── Step 4: Seed ──
+    // ── Step 3: Seed ──
     try {
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         $result['seed_output'] = trim(\Illuminate\Support\Facades\Artisan::output());
@@ -110,7 +105,7 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
         $result['seed_error'] = 'Operation failed';
     }
 
-    // ── Step 5: Verify counts ──
+    // ── Step 4: Verify counts ──
     try {
         $result['counts'] = [
             'users'            => \Illuminate\Support\Facades\DB::table('users')->count(),

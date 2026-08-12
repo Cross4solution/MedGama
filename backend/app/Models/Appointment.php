@@ -45,6 +45,24 @@ class Appointment extends Model
         ];
     }
 
+    /**
+     * Aktif (iptal edilmemiş kayıt) randevular.
+     *
+     * SendAppointmentReminders bu kapsamı çağırıyordu ama modelde tanımlı
+     * değildi: komut her çalıştığında BadMethodCallException ile düşüyordu.
+     * Zamanlayıcı süreci de olmadığı için bu hata hiç görünmedi ve randevu
+     * hatırlatmaları bugüne kadar bir kez bile gönderilmedi.
+     *
+     * is_active eski kayıtlarda boş olabilir; NULL'ı "aktif" sayıyoruz, aksi
+     * hâlde geçmişte oluşturulmuş randevular hatırlatma almazdı.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('is_active')->orWhere('is_active', true);
+        });
+    }
+
     /** Duvar saati hangi saat diliminde yazıldıysa o; bilinmiyorsa uygulama varsayılanı. */
     public const VARSAYILAN_TZ = 'Europe/Istanbul';
 

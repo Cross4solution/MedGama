@@ -12,7 +12,10 @@ echo "════════════════════════�
 # platformda (Render) ayarlanan değerin üzerine yazdığı için BROADCAST_CONNECTION
 # her açılışta "log"a dönüyor, görüntülü görüşme sinyali hiç çalışmıyordu.
 export CACHE_STORE="${CACHE_STORE:-file}"
-export QUEUE_CONNECTION="${QUEUE_CONNECTION:-sync}"
+# Artık bir kuyruk işçisi çalışıyor (supervisord). Varsayılanı "database"
+# yapıyoruz: e-posta/bildirim gönderimi isteği bekletmez, SMTP yavaşsa hasta
+# ekranda beklemez. İşçi olmadığı dönemde bu değer "sync" olmak zorundaydı.
+export QUEUE_CONNECTION="${QUEUE_CONNECTION:-database}"
 export SESSION_DRIVER="${SESSION_DRIVER:-file}"
 export BROADCAST_CONNECTION="${BROADCAST_CONNECTION:-log}"
 
