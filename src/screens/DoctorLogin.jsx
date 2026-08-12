@@ -3,7 +3,6 @@ import { useNavigate } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { getRedirectFromLoginResult, getRedirectForRole } from '../utils/authRedirect';
 import { Users, Calendar, Video, Plane, Shield, Lock, Stethoscope, Eye, EyeOff, Phone, Loader2, Heart, Building2 } from 'lucide-react';
-import PhoneVerification from '../components/auth/PhoneVerification';
 import TermsPopup from '../components/auth/TermsPopup';
 import PrivacyPopup from '../components/auth/PrivacyPopup';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +23,6 @@ const DoctorLogin = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
   const [pendingLoginData, setPendingLoginData] = useState(null);
   const [showTermsPopup, setShowTermsPopup] = useState(false);
   const [showPrivacyPopup, setShowPrivacyPopup] = useState(false);
@@ -151,35 +149,6 @@ const DoctorLogin = () => {
     { value: '50K+', label: 'Patients' },
     { value: '98%', label: 'Satisfaction' },
   ];
-
-  const handlePhoneVerified = (verifiedPhone) => {
-    // Phone verified — proceed to Medstream
-    navigate('/medstream', { replace: true });
-  };
-
-  const handlePhoneSkip = () => {
-    navigate('/medstream', { replace: true });
-  };
-
-  // Phone verification screen
-  if (showPhoneVerification) {
-    return (
-      <div className="min-h-screen w-full flex relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800" />
-        <div className="relative z-10 flex w-full min-h-screen items-center justify-center p-4">
-          <div className="w-full max-w-md">
-            <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-2xl">
-              <PhoneVerification
-                onVerified={handlePhoneVerified}
-                onSkip={handlePhoneSkip}
-                title={t('auth.doctorPhoneVerification')}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>

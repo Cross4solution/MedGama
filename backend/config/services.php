@@ -76,28 +76,6 @@ return [
         'base_url' => env('DEEPGRAM_BASE_URL', 'https://api.deepgram.com/v1'),
     ],
 
-    'sms' => [
-        'provider' => env('SMS_PROVIDER', 'log'),
-
-        'twilio' => [
-            'sid'   => env('TWILIO_SID'),
-            'token' => env('TWILIO_AUTH_TOKEN'),
-            'from'  => env('TWILIO_FROM_NUMBER'),
-        ],
-
-        'infobip' => [
-            'api_key'  => env('INFOBIP_API_KEY'),
-            'base_url' => env('INFOBIP_BASE_URL'),
-            'from'     => env('INFOBIP_FROM', 'MedGama'),
-        ],
-
-        'vonage' => [
-            'api_key'    => env('VONAGE_API_KEY'),
-            'api_secret' => env('VONAGE_API_SECRET'),
-            'from'       => env('VONAGE_FROM', 'MedGama'),
-        ],
-    ],
-
     /*
      * Ters-geocode (koordinat → şehir/ülke). Sunucu tarafında çağrılır ki hastanın
      * tarayıcısı 3. taraf servise bağlanmasın. Kendi sunucumuzda Nominatim ayağa

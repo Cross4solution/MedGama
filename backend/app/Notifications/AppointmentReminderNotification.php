@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Channels\SmsChannel;
 use App\Models\Appointment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -23,34 +22,7 @@ class AppointmentReminderNotification extends Notification implements ShouldQueu
     {
         // Hatırlatma kapatılamaz: hastanın randevusunu kaçırmaması hizmetin
         // parçası.
-        $channels = ['database', 'mail'];
-
-        // Add SMS channel if provider is configured and user has a phone number
-        if (config('services.sms.provider', 'log') !== 'log' && $notifiable->phone) {
-            $channels[] = SmsChannel::class;
-        }
-
-        return $channels;
-    }
-
-    /**
-     * SMS representation (used by SmsChannel).
-     */
-    public function toSms(object $notifiable): array
-    {
-        $appt = $this->appointment;
-        $timeLabel = $this->reminderType === '1h' ? '1 hour' : '24 hours';
-        $date = $appt->appointment_date?->format('d M Y') ?? '';
-        $time = $appt->appointment_time ?? '';
-
-        $msg = $this->recipientRole === 'doctor'
-            ? "MedGama: Appointment with {$appt->patient?->fullname} in {$timeLabel} ({$date} {$time})"
-            : "MedGama: Your appointment with Dr. {$appt->doctor?->fullname} is in {$timeLabel} ({$date} {$time})";
-
-        return [
-            'to'      => $notifiable->phone,
-            'message' => $msg,
-        ];
+        return ['database', 'mail'];
     }
 
     public function toMail(object $notifiable): MailMessage

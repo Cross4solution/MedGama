@@ -613,9 +613,11 @@ Route::prefix('medstream')->group(function () {
         Route::put('/posts/{post}', [MedStreamController::class, 'updatePost'])->middleware('medstream.publish');
         Route::delete('/posts/{post}', [MedStreamController::class, 'destroyPost'])->middleware('medstream.publish');
 
-        // Engage (comment / like / bookmark) — any authenticated user, including patients
-        Route::post('/posts/{post}/comments', [MedStreamController::class, 'storeComment']);
-        Route::put('/comments/{comment}', [MedStreamController::class, 'updateComment']);
+        // Engage (comment / like / bookmark) — any authenticated user, including patients.
+        // Yorum yazmak doğrulanmamış doktora kapalı: yayınla aynı kural, çünkü
+        // yorum da hastaya "doktor" etiketiyle görünüyor.
+        Route::post('/posts/{post}/comments', [MedStreamController::class, 'storeComment'])->middleware('medstream.comment');
+        Route::put('/comments/{comment}', [MedStreamController::class, 'updateComment'])->middleware('medstream.comment');
         Route::delete('/comments/{comment}', [MedStreamController::class, 'destroyComment']);
 
         Route::post('/posts/{post}/like', [MedStreamController::class, 'toggleLike']);
