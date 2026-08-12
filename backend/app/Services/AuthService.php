@@ -349,14 +349,6 @@ class AuthService
         $this->sendVerificationEmail($user->email, $code, $user->fullname);
     }
 
-    /**
-     * Verify mobile (placeholder — actual SMS integration pending).
-     */
-    public function verifyMobile(User $user): void
-    {
-        $user->update(['mobile_verified' => true]);
-    }
-
     // ── Password Reset ──
 
     /**

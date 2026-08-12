@@ -161,7 +161,6 @@ export const authAPI = {
   deleteAccount: (payload) => api.delete('/auth/profile', { data: payload }),
   verifyEmail: (code) => api.post('/auth/verify-email', { code }),
   resendVerification: () => api.post('/auth/resend-verification'),
-  verifyMobile: (code) => api.post('/auth/verify-mobile', { code }),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
   resetPassword: (payload) => api.post('/auth/reset-password', payload),
 };

@@ -9,7 +9,6 @@ use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Http\Requests\Auth\UploadAvatarRequest;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\VerifyEmailRequest;
-use App\Http\Requests\Auth\VerifyMobileRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\UpdateMedicalHistoryRequest;
@@ -263,16 +262,6 @@ class AuthController extends Controller
         $this->authService->resendVerification($request->user());
 
         return response()->json(['message' => 'Verification code resent.']);
-    }
-
-    /**
-     * POST /api/auth/verify-mobile
-     */
-    public function verifyMobile(VerifyMobileRequest $request): JsonResponse
-    {
-        $this->authService->verifyMobile($request->user());
-
-        return response()->json(['message' => 'Mobile verified successfully.']);
     }
 
     #[OA\Post(

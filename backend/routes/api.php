@@ -188,7 +188,9 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
     Route::put('/profile/notification-preferences', [AuthController::class, 'updateNotificationPrefs']);
     Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
     Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
-    Route::post('/verify-mobile', [AuthController::class, 'verifyMobile']);
+    // /verify-mobile kaldırıldı: gönderilen kodu hiç doğrulamadan telefonu
+    // "onaylı" işaretliyordu. SMS gönderimi hiç kurulmadığı için doğrulanacak
+    // bir kod da yoktu. SMS'e karar verilirse gerçek doğrulama ile yeniden eklenir.
 });
 
 /*
