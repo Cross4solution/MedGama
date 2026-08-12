@@ -42,7 +42,7 @@ doc = SimpleDocTemplate(
 E = []
 
 E.append(Paragraph("Randevu Kaporası — Ödeme Akışı", title))
-E.append(Paragraph("Medagama · Onayınıza sunulur", sub))
+E.append(Paragraph("Medagama", sub))
 E.append(Spacer(1, 6))
 E.append(HRFlowable(width="100%", thickness=1, color=LINE, spaceAfter=10))
 
