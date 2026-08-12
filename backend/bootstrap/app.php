@@ -58,6 +58,12 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 
+        // Yakalanmayan hataları Sentry'ye bildir. Öncesinde canlıdaki hatalar
+        // yalnızca sunucu log dosyasında kalıyordu; kimse bakmadığı için bir
+        // şey bozulduğunda müşteri söyleyene kadar haberimiz olmuyordu.
+        // Hasta verisi göndermeme ayarları config/sentry.php içinde.
+        \Sentry\Laravel\Integration::handles($exceptions);
+
         // ── Authentication (401) ──
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {

@@ -65,6 +65,12 @@ services:
       #   sync: false          # Redis password (or leave null)
 
       # ── Mail ──
+      # Hata bildirimi. DSN gizli bir kimlik bilgisi değildir — yalnızca olay
+      # GÖNDERMEYE yarar, veri okumaya değil; bu yüzden burada açık durabilir.
+      - key: SENTRY_LARAVEL_DSN
+        value: https://3a7995b14f91ee94e6f79a6817043205@o4511896657592320.ingest.de.sentry.io/4511896694030416
+      - key: SENTRY_ENVIRONMENT
+        value: production
       - key: MAIL_MAILER
         value: smtp
       - key: MAIL_HOST
