@@ -24,6 +24,13 @@ Schedule::command('appointments:auto-complete')
     ->withoutOverlapping()
     ->runInBackground();
 
+// Yarım kalan kapora ödemeleri: tuttukları randevu saatini serbest bırak.
+// Sık çalışmalı, yoksa saat gereğinden uzun bloke kalır.
+Schedule::command('payments:expire-stale')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->runInBackground();
+
 // GDPR Art. 5(1)(e) — Prune expired soft-deleted records daily at 03:00
 // User: 3 years, Appointment/DigitalAnamnesis/PatientRecord: 10 years
 Schedule::command('model:prune', [

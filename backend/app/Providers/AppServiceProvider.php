@@ -17,7 +17,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Ödeme sağlayıcısı ayardan seçilir. Seçilmediğinde tahsilat KAPALIDIR:
+        // UnconfiguredProvider açık hata verir, sessizce "ödendi" saymaz.
+        $this->app->bind(\App\Payments\PaymentProvider::class, function () {
+            return match (config('payments.provider')) {
+                // Sağlayıcı seçilince buraya tek satır eklenecek, örn:
+                // 'iyzico' => new \App\Payments\IyzicoProvider(),
+                default => new \App\Payments\UnconfiguredProvider(),
+            };
+        });
     }
 
     /**
