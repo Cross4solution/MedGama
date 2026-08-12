@@ -33,3 +33,10 @@ yarn-error.log*
 .claude/settings.local.json
 .next/
 next-env.d.ts
+
+# Playwright uçtan uca testler
+/test-results/
+/playwright-report/
+/blob-report/
+# Test oturumları: içinde geçerli giriş anahtarı var, depoya girmemeli.
+/tests/e2e/.oturum/
