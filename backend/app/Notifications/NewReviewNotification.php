@@ -18,7 +18,14 @@ class NewReviewNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        // Uygulama içi her zaman düşer; e-posta kullanıcının tercihine bağlı.
+        $kanallar = ['database'];
+
+        if (\App\Support\NotificationPreferences::ister($notifiable, 'email_review_received')) {
+            $kanallar[] = 'mail';
+        }
+
+        return $kanallar;
     }
 
     public function toMail(object $notifiable): MailMessage

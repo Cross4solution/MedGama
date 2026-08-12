@@ -18,7 +18,13 @@ class ReviewResponseNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        $kanallar = ['database'];
+
+        if (\App\Support\NotificationPreferences::ister($notifiable, 'email_review_response')) {
+            $kanallar[] = 'mail';
+        }
+
+        return $kanallar;
     }
 
     public function toMail(object $notifiable): MailMessage

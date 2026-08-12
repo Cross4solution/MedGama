@@ -19,7 +19,7 @@ class VerificationRejectedNotification extends Notification implements ShouldQue
 
     public function via(object $notifiable): array
     {
-        return ['database', 'broadcast', 'mail'];
+        return ['database', 'mail'];
     }
 
     public function toMail(object $notifiable): MailMessage

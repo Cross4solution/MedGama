@@ -25,17 +25,11 @@ class NewChatMessageNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        $channels = ['database'];
-
-        // Send email if user has email_notifications preference enabled (default true)
-        $prefs = $notifiable->notification_preferences ?? [];
-        $emailEnabled = $prefs['email_notifications'] ?? true;
-
-        if ($emailEnabled && $notifiable->email) {
-            $channels[] = 'mail';
-        }
-
-        return $channels;
+        // Sohbet mesajı yalnızca uygulama içinde bildirilir — mesajlar
+        // ikisi arasında hızla gidip geldiği için her mesajda e-posta atmak
+        // kısa sürede onlarca posta üretiyor ve kullanıcı tüm bildirimleri
+        // kapatıyor. Zil ikonu anında yandığı için mesaj kaçmıyor.
+        return ['database'];
     }
 
     /**

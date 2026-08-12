@@ -514,16 +514,20 @@ class AuthService
 
     // ── Notification Preferences ──
 
+    /**
+     * Tercihler artık tek noktadan (NotificationPreferences) yönetiliyor.
+     * Önceki hâli çalışmıyordu: sütun `encrypted:array` cast'li olduğu için
+     * okuma bir diziyi json_decode etmeye çalışıyor, yazma ise ikinci kez
+     * json_encode ederek çift kodlanmış veri üretiyordu.
+     */
     public function getNotificationPrefs(User $user): array
     {
-        return json_decode($user->notification_preferences ?? '{}', true);
+        return \App\Support\NotificationPreferences::oku($user);
     }
 
-    public function updateNotificationPrefs(User $user, array $prefs): void
+    public function updateNotificationPrefs(User $user, array $prefs): array
     {
-        $user->update([
-            'notification_preferences' => json_encode($prefs),
-        ]);
+        return \App\Support\NotificationPreferences::yaz($user, $prefs);
     }
 
     // ── Private Helpers ──

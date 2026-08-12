@@ -25,7 +25,13 @@ class TicketReplyNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        $kanallar = ['database'];
+
+        if (\App\Support\NotificationPreferences::ister($notifiable, 'email_support')) {
+            $kanallar[] = 'mail';
+        }
+
+        return $kanallar;
     }
 
     public function toMail(object $notifiable): MailMessage

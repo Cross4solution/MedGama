@@ -20,6 +20,8 @@ class AppointmentBookedNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
+        // Randevu bildirimleri hizmetin kendisine ait: kapatılamaz.
+        // Anlık zil güncellemesi ayrıca yapılıyor (NotificationSent dinleyicisi).
         $channels = ['database', 'mail'];
 
         if (config('services.sms.provider', 'log') !== 'log' && $notifiable->phone) {

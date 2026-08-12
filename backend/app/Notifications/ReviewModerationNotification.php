@@ -19,6 +19,11 @@ class ReviewModerationNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
+        // Beğeni/yorum gibi sosyal bildirimler seçimlik: kullanıcı kapatabilir.
+        if (!\App\Support\NotificationPreferences::ister($notifiable, 'inapp_social')) {
+            return [];
+        }
+
         return ['database'];
     }
 

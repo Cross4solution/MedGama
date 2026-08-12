@@ -20,6 +20,7 @@ import { notificationAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationsContext';
 import { useTranslation } from 'react-i18next';
+import NotificationPrefsCard from '../components/notifications/NotificationPrefsCard';
 
 const TYPE_META = {
   appointment_booked:    { label: 'Appointment Booked', icon: CalendarClock, color: 'text-blue-600', bg: 'bg-blue-100/80', category: 'appointment' },
@@ -236,6 +237,13 @@ export default function Notifications() {
                 })}
               </nav>
             </div>
+
+            {/* Tercihler: kullanıcı hangi bildirimleri istediğini buradan seçer.
+                Önceden bu ayarlar yalnızca veritabanında duruyor, hiçbir ekrandan
+                değiştirilemiyordu. */}
+            <div className="sticky top-24 mt-4">
+              <NotificationPrefsCard />
+            </div>
           </aside>
 
           {/* Right: Notification List */}
@@ -322,6 +330,12 @@ export default function Notifications() {
                   </button>
                 </div>
               )}
+            </div>
+
+            {/* Telefonda kenar çubuğu gizli olduğu için tercihler listenin
+                altında gösterilir; ayarlara ulaşamayan kullanıcı kalmasın. */}
+            <div className="md:hidden mt-4">
+              <NotificationPrefsCard />
             </div>
           </section>
         </div>

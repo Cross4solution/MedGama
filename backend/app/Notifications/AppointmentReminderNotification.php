@@ -21,6 +21,8 @@ class AppointmentReminderNotification extends Notification implements ShouldQueu
 
     public function via(object $notifiable): array
     {
+        // Hatırlatma kapatılamaz: hastanın randevusunu kaçırmaması hizmetin
+        // parçası.
         $channels = ['database', 'mail'];
 
         // Add SMS channel if provider is configured and user has a phone number
