@@ -1,4 +1,4 @@
-# MedaGama — Claude Code Rules
+# Medagama — Claude Code Rules
 
 ## Stack
 - **Frontend:** React 19 (CRA / react-scripts), TailwindCSS, Lucide icons, React Router v6
@@ -9,7 +9,7 @@
 
 ## Repo Layout
 ```
-MedGama/
+Medagama/
 ├── backend/          Laravel app
 │   ├── docker/       entrypoint.sh, nginx.conf, supervisord.conf, php-fpm-pool.conf
 │   ├── Dockerfile    multi-stage; Stage 1=composer, Stage 2=php-fpm-alpine
@@ -22,7 +22,7 @@ MedGama/
     └── utils/authRedirect.js
 ```
 
-**Worktree:** `/Users/oguzhan/Documents/MedGama/.claude/worktrees/vigilant-aryabhata`
+**Worktree:** `/Users/oguzhan/Documents/Medagama/.claude/worktrees/vigilant-aryabhata`
 After every file edit in main repo, sync: `cp <file> .claude/worktrees/vigilant-aryabhata/<file>`
 
 ## Role Hierarchy
@@ -70,23 +70,23 @@ After every file edit in main repo, sync: `cp <file> .claude/worktrees/vigilant-
 | `src/components/SidebarPatient.jsx` | CrmSection: hospital top / pro bottom / locked modal |
 | `backend/app/Services/AuthService.php` | register + login logic, email verification |
 | `backend/app/Services/MedStreamService.php` | listPosts, engagement, bookmarks |
-| `backend/routes/api.php` | `/api/system/init-db?key=MedaGama2026SecretInit&fresh=1` |
+| `backend/routes/api.php` | `/api/system/init-db?key=Medagama2026SecretInit&fresh=1` |
 | `backend/docker/entrypoint.sh` | runs `migrate:fresh --force --seed` on container start |
 | `backend/database/seeders/DatabaseSeeder.php` | 5 hospitals, 5 clinics, 5 doctors, 5 patients, 10 posts |
 
 ## Database Seeder (demo data)
 - Hospitals: Medipol İstanbul, Florence Nightingale, Memorial, Acıbadem, Bayındır
-- Clinics: MedaGama, Elite Dental, Vision Eye, Life Ortopedi, Prime Cardio
+- Clinics: Medagama, Elite Dental, Vision Eye, Life Ortopedi, Prime Cardio
 - Doctors: Kardiyoloji, Göz, Diş, Ortopedi, Girişimsel (with full DoctorProfile)
 - 10 MedStream posts: 3 video (YouTube), 4 image (Unsplash), 3 text
 - All passwords: `Password123!`
 
 ## Emergency DB Reset (Render)
 ```
-GET https://medagama-backend.onrender.com/api/system/init-db?key=MedaGama2026SecretInit&fresh=1
+GET https://medagama-backend.onrender.com/api/system/init-db?key=Medagama2026SecretInit&fresh=1
 ```
 Returns JSON with migrate output, seed output, and table counts.
 
 ## Git Workflow
 - Branch: `new-development` → pushes to `main` via `git push origin new-development:main`
-- Remote: `https://github.com/Cross4solution/MedGama.git`
+- Remote: `https://github.com/Cross4solution/Medagama.git`

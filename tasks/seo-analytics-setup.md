@@ -1,6 +1,6 @@
 # SEO Analytics Kurulumu — GA4 + Google Search Console
 
-Bu doküman MedaGama (Next.js) için Google Analytics 4 ve Google Search Console
+Bu doküman Medagama (Next.js) için Google Analytics 4 ve Google Search Console
 kurulumunu adım adım anlatır. Tüm entegrasyon **env-tabanlıdır**: env değişkeni
 set edilmezse hiçbir script/meta yüklenmez (güvenli + performanslı).
 
@@ -17,11 +17,11 @@ set edilmezse hiçbir script/meta yüklenmez (güvenli + performanslı).
 
 1. https://analytics.google.com adresine git, Google hesabınla giriş yap.
 2. **Yönetici (Admin)** → **Mülk oluştur (Create Property)**.
-   - Mülk adı: `MedaGama`
+   - Mülk adı: `Medagama`
    - Saat dilimi: `(GMT+03:00) İstanbul`, Para birimi: TRY
 3. **Veri akışı (Data Stream)** → **Web** seç.
    - Website URL: `https://med-gama.vercel.app`
-   - Akış adı: `MedaGama Web`
+   - Akış adı: `Medagama Web`
 4. Oluşturulan akışta **Measurement ID** görünür: `G-XXXXXXXXXX`.
 5. Bu değeri env'e ekle:
    ```

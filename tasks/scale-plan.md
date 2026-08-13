@@ -1,4 +1,4 @@
-# MedaGama — Büyüme (Scale) Planı
+# Medagama — Büyüme (Scale) Planı
 
 **Amaç:** Kullanıcı arttıkça, hangi adımda ne yapacağımızı önceden görmek.
 **İlke:** Her şeyi baştan kurmak yerine, ihtiyaç doğdukça adım adım ekleriz. Önce ucuz ve risksiz olanlar.

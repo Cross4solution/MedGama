@@ -10,14 +10,14 @@ return [
     'hi'                => 'Merhaba',
     'thanks'            => 'Teşekkürler',
     'regards'           => 'Saygılarımızla',
-    'team'              => 'MedGama Ekibi',
+    'team'              => 'Medagama Ekibi',
     'questions'         => 'Herhangi bir sorunuz varsa lütfen bize ulaşın:',
     'button_trouble'    => 'Butona tıklamakta sorun yaşıyorsanız, aşağıdaki bağlantıyı tarayıcınıza kopyalayıp yapıştırın:',
 
     // ─── Welcome ───
-    'welcome_subject'        => 'MedGama\'ya Hoş Geldiniz!',
+    'welcome_subject'        => 'Medagama\'ya Hoş Geldiniz!',
     'welcome_greeting'       => 'Hoş geldiniz, :name!',
-    'welcome_line1'          => 'MedGama\'ya katıldığınız için teşekkür ederiz. Doktorları ve hastaları buluşturan modern sağlık platformuna hoş geldiniz.',
+    'welcome_line1'          => 'Medagama\'ya katıldığınız için teşekkür ederiz. Doktorları ve hastaları buluşturan modern sağlık platformuna hoş geldiniz.',
     'welcome_line2_doctor'   => 'Bir sağlık profesyoneli olarak artık randevularınızı, reçetelerinizi ve hasta kayıtlarınızı tek bir yerden yönetebilirsiniz.',
     'welcome_line2_patient'  => 'Artık doğrulanmış doktorlardan randevu alabilir, sağlık kayıtlarınızı yönetebilir ve telesağlık hizmetlerine erişebilirsiniz.',
     'welcome_features_title' => 'Neler yapabilirsiniz:',
@@ -80,7 +80,7 @@ return [
     'verify_approved_label'    => 'Belge',
     'verify_approved_badge'    => 'Artık profilinizde tüm hastalara görünür bir Doğrulanmış Profesyonel rozeti bulunmaktadır.',
     'verify_approved_cta'      => 'Panele Git',
-    'verify_approved_thanks'   => 'MedGama\'da güvenilir bir profesyonel olduğunuz için teşekkür ederiz.',
+    'verify_approved_thanks'   => 'Medagama\'da güvenilir bir profesyonel olduğunuz için teşekkür ederiz.',
 
     // ─── Verification Rejected ───
     'verify_rejected_subject'  => 'Doğrulama Talebi Güncellemesi',

@@ -1,4 +1,4 @@
-# MedaGama Backend API
+# Medagama Backend API
 
 Dijital sağlık ve randevu yönetim platformu. Laravel 11 tabanlı RESTful API.
 
@@ -6,7 +6,7 @@ Dijital sağlık ve randevu yönetim platformu. Laravel 11 tabanlı RESTful API.
 
 ## Proje Hakkında
 
-MedaGama, hastaları doktorlar ve kliniklerle buluşturan kapsamlı bir dijital sağlık platformudur.
+Medagama, hastaları doktorlar ve kliniklerle buluşturan kapsamlı bir dijital sağlık platformudur.
 
 **Temel Özellikler:**
 - Hasta / Doktor / Klinik / Admin çoklu rol sistemi
@@ -49,8 +49,8 @@ MedaGama, hastaları doktorlar ve kliniklerle buluşturan kapsamlı bir dijital 
 
 ```bash
 # 1. Repo'yu klonla
-git clone https://github.com/Cross4solution/MedaGama.git
-cd MedaGama/backend
+git clone https://github.com/Cross4solution/Medagama.git
+cd Medagama/backend
 
 # 2. Bağımlılıkları yükle
 composer install

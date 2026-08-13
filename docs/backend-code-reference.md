@@ -1,4 +1,4 @@
-# MedaGama Backend — Controller & Model Kod Referansı
+# Medagama Backend — Controller & Model Kod Referansı
 
 **Tarih:** 19 Şubat 2026  
 **Framework:** Laravel 11 (PHP 8.3)  
@@ -2645,5 +2645,5 @@ Route::get('/media/stream/{path}', [MediaStreamController::class, 'stream'])
 
 ---
 
-*Bu doküman MedaGama backend kaynak kodunun referans kopyasıdır.*
+*Bu doküman Medagama backend kaynak kodunun referans kopyasıdır.*
 *Oluşturulma tarihi: 19 Şubat 2026*

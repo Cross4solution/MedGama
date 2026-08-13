@@ -1,4 +1,4 @@
-# MedaGama — Performans Testi ve RoadRunner Etki Analizi
+# Medagama — Performans Testi ve RoadRunner Etki Analizi
 
 **Amaç:** Mevcut sistemin gerçek hızını ölçmek ve RoadRunner kurulsa şu an anlamlı bir değişiklik OLMAYACAĞINI kanıtlamak.
 **Yöntem:** Canlı sistem (medagama-backend.onrender.com) üzerinde gerçek sayfa/istek ölçümü — sadece okuma, hafif test.

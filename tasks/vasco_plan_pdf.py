@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# MedaGama Vasco AI — Uygulama Planı (MVP). Mavi, görselli (reportlab, TR).
+# Medagama Vasco AI — Uygulama Planı (MVP). Mavi, görselli (reportlab, TR).
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors
@@ -27,7 +27,7 @@ def bullet(t,c='#1d4ed8'): return Paragraph(f'<font color="{c}">•</font>&nbsp;
 def header_band():
     W,H=515,66; d=Drawing(W,H)
     d.add(Rect(0,0,W,H,fillColor=BLUE_D,strokeColor=None)); d.add(Rect(0,0,6,H,fillColor=BLUE_M,strokeColor=None))
-    d.add(String(20,40,'MedaGama — Vasco AI Uygulama Planı',fontName='Arial-Bold',fontSize=16.5,fillColor=colors.white))
+    d.add(String(20,40,'Medagama — Vasco AI Uygulama Planı',fontName='Arial-Bold',fontSize=16.5,fillColor=colors.white))
     d.add(String(20,23,'Semptom → doğru doktor/klinik eşleştirme (MVP)',fontName='Arial',fontSize=9.5,fillColor=colors.HexColor('#bfdbfe')))
     d.add(String(20,10,'Haziran 2026  ·  Sürüm 1.0',fontName='Arial',fontSize=8,fillColor=colors.HexColor('#93c5fd')))
     return d
@@ -80,7 +80,7 @@ def stack_table():
 def footer(c,doc):
     c.saveState(); c.setStrokeColor(BLUE_L2); c.setLineWidth(0.5); c.line(20*mm,15*mm,190*mm,15*mm)
     c.setFont('Arial',8); c.setFillColor(GRAY)
-    c.drawString(20*mm,11*mm,'MedaGama — Vasco AI Uygulama Planı')
+    c.drawString(20*mm,11*mm,'Medagama — Vasco AI Uygulama Planı')
     c.drawRightString(190*mm,11*mm,f'Sayfa {doc.page}'); c.restoreState()
 
 st=[]
@@ -125,6 +125,6 @@ note.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),BLUE_L2),('BOX',(0,0),(-1,
     ('LEFTPADDING',(0,0),(-1,-1),12),('RIGHTPADDING',(0,0),(-1,-1),12),('TOPPADDING',(0,0),(-1,-1),9),('BOTTOMPADDING',(0,0),(-1,-1),9)]))
 st.append(note)
 
-doc=SimpleDocTemplate('tasks/MedaGama-Vasco-Plani.pdf',pagesize=A4,leftMargin=20*mm,rightMargin=20*mm,topMargin=16*mm,bottomMargin=18*mm)
+doc=SimpleDocTemplate('tasks/Medagama-Vasco-Plani.pdf',pagesize=A4,leftMargin=20*mm,rightMargin=20*mm,topMargin=16*mm,bottomMargin=18*mm)
 doc.build(st,onFirstPage=footer,onLaterPages=footer)
-print('PDF: tasks/MedaGama-Vasco-Plani.pdf')
+print('PDF: tasks/Medagama-Vasco-Plani.pdf')

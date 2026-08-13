@@ -1,4 +1,4 @@
-# MedaGama — RoadRunner: Şimdi Gerekli mi? Ne Zaman Gerekir?
+# Medagama — RoadRunner: Şimdi Gerekli mi? Ne Zaman Gerekir?
 
 **Kısa cevap:** Şu an gerekli DEĞİL. Çok yüksek trafikte (yaklaşık 100.000+ aktif kullanıcı) gündeme gelir.
 
@@ -33,7 +33,7 @@ Not: FrankenPHP, RoadRunner ve Swoole aynı amaca hizmet eder. Birini seçmek ye
 Şu anki php-fpm yapısı düşük–orta trafikte sorunsuz çalışır. Darboğaz yok.
 
 ### b) Ölçtük — kazanç şu an anlamsız
-MedaGama'nın kendi sistemini test ettik:
+Medagama'nın kendi sistemini test ettik:
 - Sunucu güçlendirme sadece "hazırlık süresini" (~6 milisaniye) kısaltır.
 - Ama bir sayfa açılırken asıl zaman veritabanı + işlemde geçer — bu, güçlendirmeyle DEĞİŞMEZ.
 - Yani düşük trafikte kullanıcı hiçbir fark hissetmez.

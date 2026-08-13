@@ -10,14 +10,14 @@ return [
     'hi'                => 'Hi',
     'thanks'            => 'Thank you',
     'regards'           => 'Best regards',
-    'team'              => 'MedGama Team',
+    'team'              => 'Medagama Team',
     'questions'         => 'If you have any questions, please contact us at',
     'button_trouble'    => 'If you\'re having trouble clicking the button, copy and paste the URL below into your browser:',
 
     // ─── Welcome ───
-    'welcome_subject'        => 'Welcome to MedGama! \u{1F389}',
+    'welcome_subject'        => 'Welcome to Medagama! \u{1F389}',
     'welcome_greeting'       => 'Welcome aboard, :name!',
-    'welcome_line1'          => 'Thank you for joining MedGama \u{2014} the modern healthcare platform connecting doctors and patients.',
+    'welcome_line1'          => 'Thank you for joining Medagama \u{2014} the modern healthcare platform connecting doctors and patients.',
     'welcome_line2_doctor'   => 'As a healthcare professional, you can now manage your appointments, prescriptions, and patient records all in one place.',
     'welcome_line2_patient'  => 'You can now book appointments with verified doctors, manage your health records, and access telehealth services.',
     'welcome_features_title' => 'What you can do:',
@@ -80,7 +80,7 @@ return [
     'verify_approved_label'    => 'Document',
     'verify_approved_badge'    => 'You now have a Verified Professional badge on your profile, visible to all patients.',
     'verify_approved_cta'      => 'Go to Your Dashboard',
-    'verify_approved_thanks'   => 'Thank you for being a trusted professional on MedGama.',
+    'verify_approved_thanks'   => 'Thank you for being a trusted professional on Medagama.',
 
     // ─── Verification Rejected ───
     'verify_rejected_subject'  => 'Verification Request Update',

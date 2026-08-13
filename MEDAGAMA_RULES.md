@@ -1,6 +1,6 @@
 ---
-name: MedaGama Project Rules
-description: Complete technical documentation for MedaGama healthcare platform - Laravel + React architecture, 4-level hierarchy system (L1-L4), MedStream social media integration, PremiumGate paywall, and critical implementation rules. Essential for Claude Code to understand project structure and maintain business logic integrity.
+name: Medagama Project Rules
+description: Complete technical documentation for Medagama healthcare platform - Laravel + React architecture, 4-level hierarchy system (L1-L4), MedStream social media integration, PremiumGate paywall, and critical implementation rules. Essential for Claude Code to understand project structure and maintain business logic integrity.
 ---
 
 # MEDAGAMA_RULES.md — Claude Code Skill Documentation
@@ -383,4 +383,4 @@ npm run test
 
 ---
 
-**Claude Code:** Follow these rules strictly when modifying the MedaGama project. The 4-level hierarchy and L4 appointment rule are critical business logic that must never be violated.
+**Claude Code:** Follow these rules strictly when modifying the Medagama project. The 4-level hierarchy and L4 appointment rule are critical business logic that must never be violated.

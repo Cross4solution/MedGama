@@ -1,4 +1,4 @@
-# Project Handover Summary — MedaGama Platform
+# Project Handover Summary — Medagama Platform
 
 ## Current Status
 

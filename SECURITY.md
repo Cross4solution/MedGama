@@ -1,6 +1,6 @@
-# MedaGama — Security Policy
+# Medagama — Security Policy
 
-We take the security of MedaGama and the personal/health data it processes
+We take the security of Medagama and the personal/health data it processes
 very seriously. This document explains how to report a vulnerability and
 what to expect from us.
 
@@ -29,7 +29,7 @@ initial assessment within **10 business days**.
 ## Out of Scope
 
 - Findings from automated scanners without a working proof-of-concept.
-- Social engineering of MedaGama staff.
+- Social engineering of Medagama staff.
 - Denial-of-service via volumetric traffic.
 - Issues in third-party services (TiDB Cloud, Render, Vercel, Google Maps)
   — please report those directly to the provider.

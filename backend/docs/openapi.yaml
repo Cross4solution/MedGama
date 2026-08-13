@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: MedaGama API
+  title: Medagama API
   description: |
-    MedaGama Telehealth Platform — Backend API Documentation.
+    Medagama Telehealth Platform — Backend API Documentation.
 
     All protected endpoints require a Bearer token via `Authorization: Bearer <token>`.
     Tokens are obtained from `POST /api/auth/login`.
@@ -28,7 +28,7 @@ info:
     | 500 | INTERNAL_ERROR | Unexpected server error |
   version: 1.0.0
   contact:
-    name: MedaGama Dev Team
+    name: Medagama Dev Team
     email: dev@medagama.com
 
 servers:

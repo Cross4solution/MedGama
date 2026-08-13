@@ -1,5 +1,5 @@
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  MedaGama — CI/CD Pipeline                                     ║
+# ║  Medagama — CI/CD Pipeline                                     ║
 # ║  Runs on every push & PR to main / new-development             ║
 # ║  Jobs: Backend tests (PHPUnit) + Frontend build (React)        ║
 # ╚══════════════════════════════════════════════════════════════════╝
@@ -77,7 +77,7 @@ jobs:
       - name: Prepare environment
         run: |
           cat > .env <<'EOF'
-          APP_NAME=MedaGama
+          APP_NAME=Medagama
           APP_ENV=testing
           APP_KEY=
           APP_DEBUG=true

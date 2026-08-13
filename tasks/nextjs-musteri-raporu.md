@@ -1,4 +1,4 @@
-# MedaGama — Next.js Altyapı Dönüşümü Raporu
+# Medagama — Next.js Altyapı Dönüşümü Raporu
 
 **Tarih:** Haziran 2026
 **Konu:** Platformun modern altyapıya (Next.js) taşınması ve SEO temelinin kurulması

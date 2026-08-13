@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "medagama/backend",
     "type": "project",
-    "description": "MedaGama - Digital Health & Appointment Platform Backend",
+    "description": "Medagama - Digital Health & Appointment Platform Backend",
     "keywords": ["medagama", "health", "appointment", "laravel"],
     "license": "MIT",
     "require": {

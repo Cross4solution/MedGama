@@ -1,6 +1,6 @@
-# MedaGama — RoadRunner / Octane Analizi ve Benchmark
+# Medagama — RoadRunner / Octane Analizi ve Benchmark
 
-**Konu:** Kalıcı worker (RoadRunner/Octane) mimarisinin MedaGama'ya somut faydası — ölçümlü değerlendirme
+**Konu:** Kalıcı worker (RoadRunner/Octane) mimarisinin Medagama'ya somut faydası — ölçümlü değerlendirme
 **Yöntem:** Kontrollü benchmark (gerçek Laravel bootstrap, bu makine) + dürüst end-to-end modelleme
 
 ---
@@ -16,7 +16,7 @@ RoadRunner = Go ile yazılmış bir PHP uygulama sunucusu. Laravel'de **Octane**
 
 ## 2. Benchmark — Gerçek Ölçüm (bu makine)
 
-PHP 8.5.3, opcache açık, gerçek MedaGama Laravel bootstrap'ı ölçüldü (200 istek).
+PHP 8.5.3, opcache açık, gerçek Medagama Laravel bootstrap'ı ölçüldü (200 istek).
 
 | Metrik | php-fpm (her istekte boot) | RoadRunner/Octane (kalıcı) |
 |---|---|---|
@@ -44,7 +44,7 @@ Yukarıdaki **357x**, yalnızca **framework boot kısmını** izole eder. Gerçe
 
 **Sonuç:** Octane/RoadRunner **en çok hafif, sık çağrılan, cache'li API'lerde** kazandırır (boot, toplam sürenin büyük kısmı). Ağır DB isteklerinde kazanç küçülür. Sektör genel kabulü: **gerçek dünyada %30-70 gecikme azalması, 2-4x throughput** (yalnız boot değil, ayrıca kalıcı DB/Redis bağlantıları + worker concurrency'den).
 
-> **Müşteriye net mesaj:** "357x" laboratuvar rakamıdır (sadece boot). MedaGama'da beklenen gerçekçi kazanç **2-4x throughput / %30-50 gecikme** — yine de ciddi, ama doğru beklenti bu.
+> **Müşteriye net mesaj:** "357x" laboratuvar rakamıdır (sadece boot). Medagama'da beklenen gerçekçi kazanç **2-4x throughput / %30-50 gecikme** — yine de ciddi, ama doğru beklenti bu.
 
 ---
 
@@ -85,7 +85,7 @@ RoadRunner/Octane **kalıcı bellek** kullanır — uygulama istekler arası bel
 
 ---
 
-## 7. Öneri (MedaGama'ya özel)
+## 7. Öneri (Medagama'ya özel)
 
 **Aşamalı:**
 1. **Şimdi:** php-fpm + opcache+JIT tuning + Redis (zaten opt-in hazır) + sorgu optimizasyonu → çoğu darboğazı çözer, **sıfır risk**
@@ -99,4 +99,4 @@ RoadRunner/Octane **kalıcı bellek** kullanır — uygulama istekler arası bel
 ## 8. Benchmark Tekrarlanabilirliği
 - Script: `tasks/bench/roadrunner_bench.php` (repo'da)
 - Çalıştır: `php tasks/bench/roadrunner_bench.php 200`
-- Gerçek MedaGama Laravel bootstrap'ını ölçer; herkes aynı sonucu üretebilir.
+- Gerçek Medagama Laravel bootstrap'ını ölçer; herkes aynı sonucu üretebilir.

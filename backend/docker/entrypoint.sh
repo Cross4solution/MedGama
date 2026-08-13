@@ -3,7 +3,7 @@
 
 PORT="${PORT:-8080}"
 echo "════════════════════════════════════════════════"
-echo "  MedaGama Backend — Railway Entrypoint"
+echo "  Medagama Backend — Railway Entrypoint"
 echo "  PORT=$PORT  (Railway must route traffic here)"
 echo "════════════════════════════════════════════════"
 
@@ -82,7 +82,7 @@ else
     echo "════════════════════════════════════════════════════════════════"
     echo "  ⚠ MIGRATIONS FAILED (exit: $MIGRATE_EXIT)"
     echo "  Note: If this is the FIRST deployment, use init-db endpoint:"
-    echo "  GET /api/system/init-db?key=MedaGama2026SecretInit&fresh=1"
+    echo "  GET /api/system/init-db?key=$INIT_DB_KEY"
     echo "════════════════════════════════════════════════════════════════"
 fi
 

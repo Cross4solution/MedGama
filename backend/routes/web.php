@@ -26,37 +26,6 @@ Route::get('/ping', function () {
 });
 
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  MIRROR of init-db in web.php (NO /api prefix)                  ║
-// ║  URL: GET /system/init-db?key=MedaGama2026SecretInit            ║
-// ╚══════════════════════════════════════════════════════════════════╝
-Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Request $request) {
-    // Production guard — disabled unless explicitly opted-in via env (matches api.php).
-    if (app()->environment('production') && !config('app.allow_destructive_init')) {
-        abort(404);
-    }
-
-    // Secret sourced from env (INIT_DB_KEY); legacy fallback in config — rotate ASAP.
-    if (!hash_equals((string) config('app.init_db_key'), (string) $request->query('key'))) {
-        return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
-    }
-    try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
-
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        $seedOutput = \Illuminate\Support\Facades\Artisan::output();
-
-        return response()->json([
-            'status'         => 'success',
-            'message'        => 'Database migrated and seeded.',
-            'migrate_output' => $migrateOutput,
-            'seed_output'    => $seedOutput,
-        ]);
-    } catch (\Throwable $e) {
-        return response()->json([
-            'status'  => 'error',
-            'message' => $e->getMessage(),
-            'trace'   => $e->getTraceAsString(),
-        ], 500);
-    }
-});
+// Not: init-db'nin buradaki kopyası kaldırıldı. Şema onarımı tek yerden
+// yapılır (routes/api.php). Bu kopya hata durumunda yığın izini dışarı
+// veriyordu ve ikinci bir bakım noktası yaratıyordu.

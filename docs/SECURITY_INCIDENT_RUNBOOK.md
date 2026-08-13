@@ -1,6 +1,6 @@
-# MedaGama — Güvenlik Olayı Müdahale Prosedürü (Security Incident Runbook)
+# Medagama — Güvenlik Olayı Müdahale Prosedürü (Security Incident Runbook)
 
-Bu doküman; MedaGama platformunda kişisel veri ihlali (data breach) tespit
+Bu doküman; Medagama platformunda kişisel veri ihlali (data breach) tespit
 edildiğinde uygulanacak adım adım prosedürü tanımlar. KVKK Md. 12, GDPR Art.
 33-34 ve HIPAA § 164.408 yükümlülükleriyle uyumludur.
 

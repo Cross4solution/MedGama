@@ -1,4 +1,4 @@
-# MedaGama — Production Deployment Guide
+# Medagama — Production Deployment Guide
 
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
@@ -21,8 +21,8 @@
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Cross4solution/MedaGama.git
-cd MedaGama
+git clone https://github.com/Cross4solution/Medagama.git
+cd Medagama
 
 # 2. Configure backend environment
 cp backend/.env.example backend/.env

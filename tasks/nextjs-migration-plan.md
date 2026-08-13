@@ -1,4 +1,4 @@
-# MedaGama — CRA → Next.js Taşıma Planı
+# Medagama — CRA → Next.js Taşıma Planı
 
 **Hedef:** CRA (React 19 SPA) → Next.js App Router. SEO için public sayfalar sunucuda render (SSR/SSG); CRM/dashboard client-side kalır. Tamamen ücretsiz, dış servis yok, Vercel native.
 

@@ -1,5 +1,5 @@
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  MedaGama Backend — Render Production Dockerfile               ║
+# ║  Medagama Backend — Render Production Dockerfile               ║
 # ║  Single container: Nginx + PHP-FPM + Queue + Reverb            ║
 # ║  Managed by Supervisor · DB: TiDB Cloud (MySQL / port 4000)    ║
 # ╚══════════════════════════════════════════════════════════════════╝

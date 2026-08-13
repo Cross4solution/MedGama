@@ -1,4 +1,4 @@
-# MedaGama — Büyüme ve Hız Planı
+# Medagama — Büyüme ve Hız Planı
 
 **Soru:** Kullanıcı arttıkça siteyi hızlı tutmak için neyi, ne zaman yapmalıyız?
 **Cevap:** Her adımın net bir "ne zaman" işareti var. Tahminle değil, ihtiyaç doğunca yaparız.
@@ -53,7 +53,7 @@ Hepsi aynı işi yapar: sunucuyu "her seferinde sıfırdan kurmak" yerine "hep h
 
 ## Kanıt — Gerçek Ölçüm
 
-MedaGama'nın kendi sistemi üzerinde test ettik:
+Medagama'nın kendi sistemi üzerinde test ettik:
 
 | | Şu anki (her istekte hazırlık) | Güçlendirilmiş (hep hazır) |
 |---|---|---|

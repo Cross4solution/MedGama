@@ -1,4 +1,4 @@
-# MedaGama — SEO Çalışması Raporu
+# Medagama — SEO Çalışması Raporu
 
 **Konu:** Platformda yapılan tüm SEO (arama motoru optimizasyonu) iyileştirmeleri
 **Tarih:** Haziran 2026

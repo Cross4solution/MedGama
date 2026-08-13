@@ -1,4 +1,4 @@
-# MedGama — System Health Report
+# Medagama — System Health Report
 
 **Date:** 2026-03-17  
 **Auditor:** Cascade AI  

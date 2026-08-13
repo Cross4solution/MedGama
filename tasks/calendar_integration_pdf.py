@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# MedaGama Takvim Entegrasyonu — Mevcut Durum + Plan. Mavi, görselli (reportlab, TR).
+# Medagama Takvim Entegrasyonu — Mevcut Durum + Plan. Mavi, görselli (reportlab, TR).
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors
@@ -27,7 +27,7 @@ def bullet(t,c='#1d4ed8'): return Paragraph(f'<font color="{c}">•</font>&nbsp;
 def header_band():
     W,H=515,66; d=Drawing(W,H)
     d.add(Rect(0,0,W,H,fillColor=BLUE_D,strokeColor=None)); d.add(Rect(0,0,6,H,fillColor=BLUE_M,strokeColor=None))
-    d.add(String(20,40,'MedaGama — Takvim Entegrasyonu',fontName='Arial-Bold',fontSize=16.5,fillColor=colors.white))
+    d.add(String(20,40,'Medagama — Takvim Entegrasyonu',fontName='Arial-Bold',fontSize=16.5,fillColor=colors.white))
     d.add(String(20,23,'Mevcut yapı + dış takvim (Google/Outlook/iCal) entegrasyon planı',fontName='Arial',fontSize=9.5,fillColor=colors.HexColor('#bfdbfe')))
     d.add(String(20,10,'Haziran 2026  ·  Sürüm 1.0',fontName='Arial',fontSize=8,fillColor=colors.HexColor('#93c5fd')))
     return d
@@ -92,7 +92,7 @@ def options_table():
 
 def scenario_table():
     data=[
-        ('Takvim kullanmayan hekim','Doğrudan MedaGama takvimi','HAZIR'),
+        ('Takvim kullanmayan hekim','Doğrudan Medagama takvimi','HAZIR'),
         ('Google Calendar kullanan','Seçenek B — çift yön senkron','PLAN'),
         ('Outlook / Microsoft 365','Seçenek C — Graph API','PLAN'),
         ('Sadece "takvimime ekle" isteyen','Seçenek A — iCal/ICS','PLAN'),
@@ -111,13 +111,13 @@ def scenario_table():
 def footer(c,doc):
     c.saveState(); c.setStrokeColor(BLUE_L2); c.setLineWidth(0.5); c.line(20*mm,15*mm,190*mm,15*mm)
     c.setFont('Arial',8); c.setFillColor(GRAY)
-    c.drawString(20*mm,11*mm,'MedaGama — Takvim Entegrasyonu')
+    c.drawString(20*mm,11*mm,'Medagama — Takvim Entegrasyonu')
     c.drawRightString(190*mm,11*mm,f'Sayfa {doc.page}'); c.restoreState()
 
 st=[]
 st.append(header_band()); st.append(Spacer(1,10))
 st.append(Paragraph('Özet',H2))
-st.append(Paragraph('MedaGama\'nın <b>kendi iç takvim altyapısı güçlü ve çalışır durumdadır</b> — hekimler '
+st.append(Paragraph('Medagama\'nın <b>kendi iç takvim altyapısı güçlü ve çalışır durumdadır</b> — hekimler '
     'müsaitliklerini tanımlar, hastalar randevu alır, randevular telehealth ve hatırlatmalarla yönetilir. '
     '<b>Eksik olan tek şey, hekimlerin halihazırda kullandığı dış takvimlerle (Google, Outlook vb.) senkronizasyondur.</b> '
     'Bu belge mevcut yapıyı ve dış takvim entegrasyon seçeneklerini, mutabık kalmak üzere özetler.',P))
@@ -128,7 +128,7 @@ st.append(Paragraph('Mevcut Yetenekler (hazır)',H2))
 st.append(have_table())
 
 st.append(Paragraph('Eksik: Dış Takvim Senkronu',H2))
-st.append(Paragraph('Şu an randevular yalnızca MedaGama içinde tutulur. Hekimin <b>kişisel Google/Outlook takvimine '
+st.append(Paragraph('Şu an randevular yalnızca Medagama içinde tutulur. Hekimin <b>kişisel Google/Outlook takvimine '
     'yazılmaz</b> ve hekimin o takvimlerdeki <b>meşgul saatleri okunmaz</b> (dolayısıyla dış çakışmalar görülmez). '
     'Müşterinin talebi tam olarak bu köprüdür.',P))
 
@@ -149,6 +149,6 @@ for t in [
 ]:
     st.append(bullet(t))
 
-doc=SimpleDocTemplate('tasks/MedaGama-Takvim-Entegrasyonu.pdf',pagesize=A4,leftMargin=20*mm,rightMargin=20*mm,topMargin=16*mm,bottomMargin=18*mm)
+doc=SimpleDocTemplate('tasks/Medagama-Takvim-Entegrasyonu.pdf',pagesize=A4,leftMargin=20*mm,rightMargin=20*mm,topMargin=16*mm,bottomMargin=18*mm)
 doc.build(st,onFirstPage=footer,onLaterPages=footer)
-print('PDF: tasks/MedaGama-Takvim-Entegrasyonu.pdf')
+print('PDF: tasks/Medagama-Takvim-Entegrasyonu.pdf')

@@ -1,6 +1,6 @@
-# 🧬 MedaGama: Sistem Mimarisi ve Teknik DNA (Master Brief)
+# 🧬 Medagama: Sistem Mimarisi ve Teknik DNA (Master Brief)
 
-> Bu doküman, MedaGama platformunun kullanıcı hiyerarşisini, ticari modelini ve teknik standartlarını tanımlayan **tek gerçek kaynaktır** (Single Source of Truth). Kod yazarken veya öneride bulunurken bu kuralların dışına çıkılmamalıdır.
+> Bu doküman, Medagama platformunun kullanıcı hiyerarşisini, ticari modelini ve teknik standartlarını tanımlayan **tek gerçek kaynaktır** (Single Source of Truth). Kod yazarken veya öneride bulunurken bu kuralların dışına çıkılmamalıdır.
 
 ---
 
@@ -36,7 +36,7 @@ Sistem, roller yerine **"Seviyeler" (Levels)** üzerine kurulu keskin bir yetki 
 
 ## 💼 3. Ticari Model ve CRM (SaaS)
 
-- **MedaGama CRM:** Platforma tam entegre bir hasta yönetim panelidir
+- **Medagama CRM:** Platforma tam entegre bir hasta yönetim panelidir
 - **Erişim:** Yalnızca ücretli abonelik sahibi olan Seviye 2, 3 veya 4 kullanıcıları tarafından satın alınabilir
 - Pazaryeri trafiğini profesyonelce yönetmelerini sağlar
 
@@ -54,4 +54,4 @@ Sistem, roller yerine **"Seviyeler" (Levels)** üzerine kurulu keskin bir yetki 
 
 - **Stack:** Laravel 11 (Backend) + React (SPA Frontend)
 - **Real-Time:** Laravel Reverb (WebSocket). Tüm bildirimler ve mesajlar sayfa yenilenmeden akar
-- **UI:** Kurumsal renk **MedaGama Purple (#7C3AED)**. Modern, hızlı ve akışkan bir deneyim esastır
+- **UI:** Kurumsal renk **Medagama Purple (#7C3AED)**. Modern, hızlı ve akışkan bir deneyim esastır

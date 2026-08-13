@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# MedaGama KVKK/HIPAA/GDPR Uyumluluk Raporu — mavi, görselli (reportlab, TR).
+# Medagama KVKK/HIPAA/GDPR Uyumluluk Raporu — mavi, görselli (reportlab, TR).
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors
@@ -27,7 +27,7 @@ def bullet(t,c='#1d4ed8'): return Paragraph(f'<font color="{c}">•</font>&nbsp;
 def header_band():
     W,H=515,66; d=Drawing(W,H)
     d.add(Rect(0,0,W,H,fillColor=BLUE_D,strokeColor=None)); d.add(Rect(0,0,6,H,fillColor=BLUE_M,strokeColor=None))
-    d.add(String(20,40,'MedaGama — Veri Koruma Uyumluluk Raporu',fontName='Arial-Bold',fontSize=16.5,fillColor=colors.white))
+    d.add(String(20,40,'Medagama — Veri Koruma Uyumluluk Raporu',fontName='Arial-Bold',fontSize=16.5,fillColor=colors.white))
     d.add(String(20,23,'KVKK · HIPAA · GDPR — alınan teknik önlemler',fontName='Arial',fontSize=9.5,fillColor=colors.HexColor('#bfdbfe')))
     d.add(String(20,10,'Haziran 2026  ·  Sürüm 1.0',fontName='Arial',fontSize=8,fillColor=colors.HexColor('#93c5fd')))
     return d
@@ -83,13 +83,13 @@ def area_table():
 def footer(c,doc):
     c.saveState(); c.setStrokeColor(BLUE_L2); c.setLineWidth(0.5); c.line(20*mm,15*mm,190*mm,15*mm)
     c.setFont('Arial',8); c.setFillColor(GRAY)
-    c.drawString(20*mm,11*mm,'MedaGama — Veri Koruma Uyumluluk Raporu')
+    c.drawString(20*mm,11*mm,'Medagama — Veri Koruma Uyumluluk Raporu')
     c.drawRightString(190*mm,11*mm,f'Sayfa {doc.page}'); c.restoreState()
 
 st=[]
 st.append(header_band()); st.append(Spacer(1,10))
 st.append(Paragraph('Özet',H2))
-st.append(Paragraph('MedaGama bir sağlık platformudur; işlediği veriler "özel nitelikli kişisel veri" (sağlık verisi) '
+st.append(Paragraph('Medagama bir sağlık platformudur; işlediği veriler "özel nitelikli kişisel veri" (sağlık verisi) '
     'kapsamındadır. Platform, KVKK, HIPAA ve GDPR\'nin gerektirdiği teknik ve idari önlemleri uygulayacak şekilde '
     'tasarlanmıştır. Aşağıda alınan teknik önlemler ve durumları yer alır.',P))
 st.append(Spacer(1,6))
@@ -132,6 +132,6 @@ st.append(Spacer(1,6))
 st.append(Paragraph('Not: Bu rapor, alınan teknik önlemleri özetler; hukuki uygunluk görüşü yerine geçmez. '
     'Nihai uyum için hukuk/veri koruma uzmanı değerlendirmesi önerilir.',s('disc',fontSize=8,textColor=GRAY)))
 
-doc=SimpleDocTemplate('tasks/MedaGama-Uyumluluk-Raporu.pdf',pagesize=A4,leftMargin=20*mm,rightMargin=20*mm,topMargin=16*mm,bottomMargin=18*mm)
+doc=SimpleDocTemplate('tasks/Medagama-Uyumluluk-Raporu.pdf',pagesize=A4,leftMargin=20*mm,rightMargin=20*mm,topMargin=16*mm,bottomMargin=18*mm)
 doc.build(st,onFirstPage=footer,onLaterPages=footer)
-print('PDF: tasks/MedaGama-Uyumluluk-Raporu.pdf')
+print('PDF: tasks/Medagama-Uyumluluk-Raporu.pdf')

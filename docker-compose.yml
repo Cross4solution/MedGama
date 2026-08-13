@@ -1,5 +1,5 @@
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  MedaGama — Production Docker Compose                           ║
+# ║  Medagama — Production Docker Compose                           ║
 # ║  Usage: docker-compose up -d                                   ║
 # ║  Services: Nginx, PHP-FPM, PostgreSQL, Redis, Reverb, Queue   ║
 # ╚══════════════════════════════════════════════════════════════════╝

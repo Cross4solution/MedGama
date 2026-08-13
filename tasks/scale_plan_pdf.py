@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# MedaGama Büyüme Planı — profesyonel, mavi tema + grafikler (reportlab, Türkçe).
+# Medagama Büyüme Planı — profesyonel, mavi tema + grafikler (reportlab, Türkçe).
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors
@@ -54,7 +54,7 @@ def header_band():
     d = Drawing(W, H)
     d.add(Rect(0, 0, W, H, fillColor=BLUE_D, strokeColor=None))
     d.add(Rect(0, 0, 6, H, fillColor=BLUE_M, strokeColor=None))
-    d.add(String(20, 42, 'MedaGama — Büyüme (Scale) Planı', fontName='Arial-Bold', fontSize=19, fillColor=colors.white))
+    d.add(String(20, 42, 'Medagama — Büyüme (Scale) Planı', fontName='Arial-Bold', fontSize=19, fillColor=colors.white))
     d.add(String(20, 24, 'Kullanıcı artışına göre adım adım teknoloji ve altyapı yol haritası', fontName='Arial', fontSize=10, fillColor=colors.HexColor('#bfdbfe')))
     d.add(String(20, 10, 'Hazırlayan: Geliştirme Ekibi  ·  Sürüm 1.0', fontName='Arial', fontSize=8, fillColor=colors.HexColor('#93c5fd')))
     return d
@@ -162,7 +162,7 @@ def footer(c, doc):
     c.saveState()
     c.setStrokeColor(BLUE_L2); c.setLineWidth(0.5); c.line(20*mm, 15*mm, 190*mm, 15*mm)
     c.setFont('Arial', 8); c.setFillColor(GRAY)
-    c.drawString(20*mm, 11*mm, 'MedaGama — Büyüme (Scale) Planı')
+    c.drawString(20*mm, 11*mm, 'Medagama — Büyüme (Scale) Planı')
     c.drawRightString(190*mm, 11*mm, f'Sayfa {doc.page}')
     c.restoreState()
 
@@ -244,7 +244,7 @@ note.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),BLUE_L2),('BOX',(0,0),(-1,
     ('TOPPADDING',(0,0),(-1,-1),10),('BOTTOMPADDING',(0,0),(-1,-1),10)]))
 story.append(note)
 
-doc = SimpleDocTemplate('tasks/MedaGama-Scale-Plan.pdf', pagesize=A4,
+doc = SimpleDocTemplate('tasks/Medagama-Scale-Plan.pdf', pagesize=A4,
                         leftMargin=20*mm, rightMargin=20*mm, topMargin=16*mm, bottomMargin=18*mm)
 doc.build(story, onFirstPage=footer, onLaterPages=footer)
-print('PDF: tasks/MedaGama-Scale-Plan.pdf')
+print('PDF: tasks/Medagama-Scale-Plan.pdf')
