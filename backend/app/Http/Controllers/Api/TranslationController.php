@@ -4,80 +4,100 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\TranslationService;
-use App\Support\NotificationPreferences;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/**
- * İçerik çevirisi.
- *
- * Arayüz, ekrandaki içerikleri tek istekte gönderir; kayıt başına ayrı istek
- * atmak bir akış sayfasında onlarca çağrı demek olurdu.
- */
 class TranslationController extends Controller
 {
-    public function __construct(
-        private readonly TranslationService $translations,
-    ) {}
+    public function __construct(private TranslationService $translator) {}
+
+    /**
+     * POST /api/translate — on-demand machine translation (cached).
+     * Body: { text, target, source? }
+     */
+    public function translate(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'text'   => 'required|string|max:5000',
+            'target' => 'required|string|max:8',
+            'source' => 'nullable|string|max:8',
+        ]);
+
+        $result = $this->translator->translate(
+            $validated['text'],
+            $validated['target'],
+            $validated['source'] ?? null,
+        );
+
+        return response()->json($result);
+    }
 
     /**
      * GET /api/translation/status
-     * Arayüz, toplu çeviri düğmesini buna göre aktif/pasif gösterir.
+     *
+     * Arayüz, toplu çeviri düğmesini buna göre gösterir. `messages_allowed`
+     * ayrı bir alan: çeviri dışarıdaki bir servisle yapılıyorsa hasta
+     * mesajları çevrilmez — herkese açık gönderiler için sakınca yok, özel
+     * yazışma için var.
      */
     public function status(Request $request): JsonResponse
     {
+        $saglayici = env('TRANSLATE_PROVIDER', 'mymemory');
+        $kendiSunucumuz = $saglayici === 'libretranslate' && env('LIBRETRANSLATE_URL');
+
         $user = $request->user();
 
         return response()->json([
-            'available' => $this->translations->kullanilabilir(),
-            'language'  => $user?->preferred_language ?? 'en',
-            'enabled'   => $user
-                ? NotificationPreferences::ister($user, 'translate_content')
+            'available'        => true,
+            'provider'         => $saglayici,
+            'self_hosted'      => (bool) $kendiSunucumuz,
+            // Mesaj çevirisi yalnızca çeviri kendi sunucumuzda yapılıyorsa açık.
+            'messages_allowed' => (bool) $kendiSunucumuz,
+            'language'         => $user?->preferred_language ?? 'en',
+            'enabled'          => $user
+                ? \App\Support\NotificationPreferences::ister($user, 'translate_content')
                 : false,
-            'languages' => config('translation.languages'),
-            'warn_on_messages' => (bool) config('translation.warn_on_messages'),
         ]);
     }
 
     /**
      * POST /api/translation/batch
      *
-     * Gövde: { items: [{type, id, field, text, lang?}], target?: "de" }
-     * Yanıt: { items: { "post:uuid:body": {text, translated} } }
+     * Bir akış sayfasındaki içerikleri tek istekte çevirir; kayıt başına ayrı
+     * çağrı onlarca istek demek olurdu. Önbellek metnin özetine bağlı olduğu
+     * için aynı metin ikinci kez ücret/istek üretmez.
      *
-     * Çeviri kapalıysa veya motor yoksa özgün metinler döner — arayüz aynı
-     * kodla çalışmaya devam eder, "çeviri yok" diye ayrı bir dal gerekmez.
+     * Gövde: { items: [{key, text, lang?}], target? }
      */
     public function batch(Request $request): JsonResponse
     {
         $veri = $request->validate([
-            'items'          => 'required|array|max:100',
-            'items.*.type'   => 'required|string|in:post,comment,message',
-            'items.*.id'     => 'required|string|max:64',
-            'items.*.field'  => 'sometimes|string|max:32',
-            'items.*.text'   => 'required|string|max:20000',
-            'items.*.lang'   => 'sometimes|nullable|string|max:8',
-            'target'         => 'sometimes|string|in:' . implode(',', config('translation.languages')),
+            'items'         => 'required|array|max:50',
+            'items.*.key'   => 'required|string|max:128',
+            'items.*.text'  => 'required|string|max:5000',
+            'items.*.lang'  => 'sometimes|nullable|string|max:8',
+            'items.*.kind'  => 'sometimes|string|in:post,comment,message',
+            'target'        => 'sometimes|string|max:8',
         ]);
 
-        $user = $request->user();
-        $hedef = $veri['target'] ?? $user?->preferred_language ?? 'en';
+        $hedef = $veri['target'] ?? $request->user()?->preferred_language ?? 'en';
+        $dısServis = env('TRANSLATE_PROVIDER', 'mymemory') !== 'libretranslate';
 
-        $kayitlar = array_map(fn ($k) => [
-            'type'  => $k['type'],
-            'id'    => $k['id'],
-            'field' => $k['field'] ?? 'body',
-            'text'  => $k['text'],
-            'lang'  => $k['lang'] ?? null,
-        ], $veri['items']);
+        $sonuc = [];
+        foreach ($veri['items'] as $k) {
+            // Hasta mesajı dışarıdaki bir servise gönderilmez.
+            if ($dısServis && ($k['kind'] ?? 'post') === 'message') {
+                $sonuc[$k['key']] = ['text' => $k['text'], 'translated' => false, 'reason' => 'private'];
+                continue;
+            }
 
-        // Mesajlar tıbbi yazışma sayılır: motora terimleri koruması söylenir.
-        $tibbi = (bool) config('translation.medical_context')
-            && collect($kayitlar)->contains(fn ($k) => $k['type'] === 'message');
+            $r = $this->translator->translate($k['text'], $hedef, $k['lang'] ?? null);
+            $sonuc[$k['key']] = [
+                'text'       => $r['translated_text'],
+                'translated' => $r['translated_text'] !== $k['text'],
+            ];
+        }
 
-        return response()->json([
-            'target' => $hedef,
-            'items'  => $this->translations->topluCevir($kayitlar, $hedef, $tibbi),
-        ]);
+        return response()->json(['target' => $hedef, 'items' => $sonuc]);
     }
 }
