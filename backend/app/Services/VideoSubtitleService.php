@@ -108,6 +108,7 @@ class VideoSubtitleService
 
         $parcalar = $ozgun->segments ?? [];
         $cevrilen = [];
+        $tamam = true;
 
         foreach ($parcalar as $p) {
             $metin = trim($p['text'] ?? '');
@@ -117,7 +118,31 @@ class VideoSubtitleService
             }
 
             $r = $this->translator->translate($metin, $dil, $ozgun->language);
+            if (($r['ok'] ?? true) === false) {
+                $tamam = false;
+            }
             $cevrilen[] = ['start' => $p['start'] ?? 0, 'end' => $p['end'] ?? 0, 'text' => $r['translated_text']];
+        }
+
+        // Tek satır bile çevrilemediyse saklamıyoruz. Çevirmen servisi anlık
+        // olarak yanıt vermeyebiliyor (kota, zaman aşımı); yarım sonucu kalıcı
+        // kaydedersek o satır sonsuza dek özgün dilde kalır, çünkü bir daha
+        // hiç denenmez. İzleyici elindekini şimdi görsün, eksik kalan satırlar
+        // sonraki istekte tamamlansın.
+        if (!$tamam) {
+            Log::info('Alt yazı çevirisi yarım kaldı, saklanmadı', [
+                'post' => $post->id, 'dil' => $dil,
+            ]);
+
+            return new VideoSubtitle([
+                'post_id'     => $post->id,
+                'media_index' => $mediaIndex,
+                'language'    => $dil,
+                'kind'        => 'translation',
+                'status'      => VideoSubtitle::HAZIR,
+                'segments'    => $cevrilen,
+                'engine'      => 'translation',
+            ]);
         }
 
         return VideoSubtitle::updateOrCreate(

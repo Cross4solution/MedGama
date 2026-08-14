@@ -35,5 +35,18 @@
   "clinicDetail": { "tab_genel-bakis": "Tổng quan", "tab_prices": "Bảng giá", "tab_doktorlar": "Bác sĩ", "tab_degerlendirmeler": "Đánh giá", "tab_galeri": "Thư viện ảnh", "tab_before-after": "Ảnh trước và sau", "tab_konum": "Vị trí", "onlineConsultation": "Tư vấn trực tuyến", "bookAppointment": "Đặt lịch hẹn", "sendMessage": "Gửi tin nhắn" },
   "profile": {
     "title": "Hồ sơ", "settings": "Cài đặt", "settingsDesc": "Quản lý tài khoản, bảo mật và tùy chọn.", "subtitle": "Quản lý tài khoản, bảo mật và tùy chọn.", "pleaseSignIn": "Vui lòng đăng nhập.", "account": "Tài khoản", "accountDesc": "Hồ sơ, quốc gia và giao diện", "security": "Bảo mật", "securityDesc": "Mật khẩu", "notifications": "Thông báo", "notificationsDesc": "Thông báo bệnh nhân", "patientNotifications": "Thông báo bệnh nhân", "medicalHistory": "Tiền sử bệnh", "medicalHistoryDesc": "Bệnh lý và thuốc", "privacyData": "Quyền riêng tư & Dữ liệu", "privacyDataDesc": "Quyền GDPR và cookie", "profileSection": "Hồ sơ", "profilePhoto": "Ảnh hồ sơ", "chooseFile": "Chọn tệp", "noFileSelected": "Chưa chọn tệp", "chooseImageDesc": "Chọn ảnh cho hồ sơ.", "nameLabel": "Tên", "countryLabel": "Quốc gia", "selectCountry": "Chọn quốc gia", "preferredLanguage": "Ngôn ngữ ưa thích", "languageDesc": "Đặt ngôn ngữ ưa thích cho giao diện và liên lạc.", "charactersLeft": "ký tự còn lại", "passwordSection": "Mật khẩu", "currentPassword": "Mật khẩu hiện tại", "newPassword": "Mật khẩu mới", "repeatNew": "Nhập lại mới", "cookiePreferences": "Tùy chọn cookie", "cookiePreferencesDesc": "Quản lý cookie cho phép. Cookie cần thiết luôn hoạt động.", "cookieDesc": "Quản lý cookie cho phép. Cookie cần thiết luôn hoạt động.", "necessary": "Cần thiết", "functional": "Chức năng", "analytics": "Phân tích", "marketing": "Marketing", "always": "Luôn luôn", "on": "Bật", "off": "Tắt", "lastUpdated": "Cập nhật lần cuối", "manageCookies": "Quản lý cookie", "resetPreferences": "Đặt lại tùy chọn", "yourData": "Dữ liệu của bạn (GDPR Điều 20)", "yourDataDesc": "Tải xuống bản sao tất cả dữ liệu cá nhân ở định dạng JSON.", "downloadMyData": "Tải dữ liệu của tôi", "privacyRights": "Quyền riêng tư", "privacyRightsDesc": "Theo GDPR, bạn có quyền truy cập, chỉnh sửa, xóa, hạn chế và chuyển dữ liệu.", "allPrivacyRights": "Tất cả quyền riêng tư", "deleteAccountData": "Xóa tài khoản và dữ liệu", "deleteAccountDesc": "Xóa vĩnh viễn tài khoản và tất cả dữ liệu liên quan. Không thể hoàn tác. Dữ liệu máy chủ sẽ bị xóa trong 30 ngày theo GDPR Điều 17.", "deleteMyAccount": "Xóa tài khoản của tôi", "medicalConditions": "Tình trạng y tế hiện tại", "medicalConditionsDesc": "VD: Tăng huyết áp, Tiểu đường, Hen suyễn", "typeCondition": "Nhập tình trạng và nhấn Enter...", "pressEnter": "Nhấn Enter hoặc , để thêm", "notificationPreferences": "Tùy chọn thông báo", "emailNotifications": "Thông báo email", "emailNotificationsDesc": "Nhận cập nhật qua email", "smsNotifications": "Thông báo SMS", "smsNotificationsDesc": "Nhận cảnh báo SMS", "pushNotifications": "Thông báo đẩy", "pushNotificationsDesc": "Thông báo đẩy trình duyệt", "appointmentReminders": "Nhắc lịch hẹn", "appointmentRemindersDesc": "Nhắc nhở trước lịch hẹn", "marketingMessages": "Tin nhắn marketing", "marketingMessagesDesc": "Ưu đãi và tin tức", "savePreferences": "Lưu tùy chọn"
+  },
+  "subtitles": {
+    "button": "Phụ đề",
+    "short": "CC",
+    "off": "Tắt",
+    "auto": "(tự động)",
+    "loadFailed": "Không tải được phụ đề",
+    "saveFailed": "Không lưu được phụ đề",
+    "saved": "Đã lưu phụ đề",
+    "edit": "Chỉnh sửa phụ đề",
+    "editTitle": "Chỉnh sửa phụ đề",
+    "empty": "Video này không có phụ đề để chỉnh sửa.",
+    "jump": "Chuyển đến thời điểm này"
   }
 }

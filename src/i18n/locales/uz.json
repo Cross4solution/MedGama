@@ -1101,5 +1101,18 @@
     "okay": "Qoniqarli",
     "good": "Yaxshi",
     "excellent": "A'lo"
+  },
+  "subtitles": {
+    "button": "Subtitrlar",
+    "short": "CC",
+    "off": "Oʻchiq",
+    "auto": "(avtomatik)",
+    "loadFailed": "Subtitrlarni yuklab boʻlmadi",
+    "saveFailed": "Subtitrlarni saqlab boʻlmadi",
+    "saved": "Subtitrlar saqlandi",
+    "edit": "Subtitrlarni tahrirlash",
+    "editTitle": "Subtitrlarni tahrirlash",
+    "empty": "Bu videoda tahrirlanadigan subtitr yoʻq.",
+    "jump": "Shu daqiqaga oʻtish"
   }
 }

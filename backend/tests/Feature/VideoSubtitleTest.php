@@ -115,6 +115,26 @@ class VideoSubtitleTest extends TestCase
         $this->assertSame(1, VideoSubtitle::count());
     }
 
+    public function test_ceviri_yarim_kalirsa_kaydedilmez_ve_sonraki_istekte_tekrar_denenir(): void
+    {
+        $this->app->bind(TranscriptionEngine::class, fn () => new SahteMotor());
+        $this->servis()->uret($this->post, 0, '/tmp/video.mp4');
+
+        // Çevirmen ilk satırda düşüyor: kota dolduğunda gerçekte olan bu.
+        $this->app->bind(\App\Services\TranslationService::class, fn () => new YarimCevirmen());
+
+        $de = $this->servis()->getir($this->post, 0, 'de');
+
+        // İzleyici elindekini görebilmeli...
+        $this->assertNotNull($de);
+        $this->assertCount(2, $de->segments);
+
+        // ...ama yarım sonuç kalıcı olmamalı, yoksa o satır sonsuza dek
+        // özgün dilde kalır: bir daha hiç denenmez.
+        $this->assertFalse($de->exists, 'Yarım çeviri veritabanına yazılmış');
+        $this->assertSame(1, VideoSubtitle::count(), 'Yalnızca özgün alt yazı kalmalı');
+    }
+
     public function test_baskasi_alt_yaziyi_duzenleyemez(): void
     {
         $this->app->bind(TranscriptionEngine::class, fn () => new SahteMotor());
@@ -142,6 +162,26 @@ class VideoSubtitleTest extends TestCase
     {
         $this->get("/api/medstream/posts/{$this->post->id}/subtitles/tr")
             ->assertStatus(404);
+    }
+}
+
+/** İlk satırda düşen çevirmen — kota dolduğunda gerçekte olan bu. */
+class YarimCevirmen extends \App\Services\TranslationService
+{
+    private int $sayac = 0;
+
+    public function translate(string $text, string $target, ?string $source = null): array
+    {
+        $this->sayac++;
+        $basarili = $this->sayac > 1;
+
+        return [
+            'translated_text' => $basarili ? "[{$target}] {$text}" : $text,
+            'source_lang'     => $source,
+            'provider'        => 'sahte',
+            'cached'          => false,
+            'ok'              => $basarili,
+        ];
     }
 }
 

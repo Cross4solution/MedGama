@@ -2216,5 +2216,18 @@
     "filterCountry": "Pays : {{country}}",
     "filterSpecialization": "Spécialisation : {{specialty}}",
     "filterSearch": "Recherche : « {{query}} »"
+  },
+  "subtitles": {
+    "button": "Sous-titres",
+    "short": "CC",
+    "off": "Désactivés",
+    "auto": "(auto)",
+    "loadFailed": "Impossible de charger les sous-titres",
+    "saveFailed": "Impossible d'enregistrer les sous-titres",
+    "saved": "Sous-titres enregistrés",
+    "edit": "Modifier les sous-titres",
+    "editTitle": "Modifier les sous-titres",
+    "empty": "Cette vidéo n'a pas de sous-titres à modifier.",
+    "jump": "Aller à ce moment"
   }
 }

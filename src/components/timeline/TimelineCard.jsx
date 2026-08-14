@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { Link, useNavigate } from '@/compat/router';
 import { Heart, MessageCircle, MapPin, Share2, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2, Bookmark, Loader2, Volume2, Film } from 'lucide-react';
@@ -7,6 +7,7 @@ import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
 import { useContentTranslation } from '../../context/ContentTranslationContext';
 import Modal from '../common/Modal';
+import VideoSubtitles from '../video/VideoSubtitles';
 import { medStreamAPI, translateAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -337,6 +338,11 @@ function VideoPreview({ m, className }) {
             onClick={stopProp} onMouseDown={stopProp} onPointerDown={stopProp} onTouchStart={stopProp}
           />
         )}
+        {/* Alt yazı yalnızca kendi videolarımızda; YouTube gömülüsünde
+            oynatıcı bizim değil, kendi alt yazısı zaten var. */}
+        {!ytId && m.postId && (
+          <VideoSubtitles videoRef={videoRef} postId={m.postId} mediaIndex={m.mediaIndex ?? 0} />
+        )}
       </div>
     );
   }
@@ -650,7 +656,14 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const timeAgo = item?.timeAgo || '1 gün';
   const timeLabel = toEnglishTimestamp(timeAgo);
   const socialContext = item?.socialContext || (item?.likes ? `${Math.max(1, item.likes % 7)} kişi beğendi` : '');
-  const media = Array.isArray(item?.media) && item.media.length > 0 ? item.media : [];
+  // Videoların alt yazısı gönderiye ve medyanın sırasına bağlı. Bu bilgiyi
+  // her MediaItem çağrısına ayrı ayrı geçirmek yerine bir kez medyaya
+  // iliştiriyoruz — grid varyantları on iki ayrı yerde çağrılıyor.
+  const media = useMemo(() => (
+    Array.isArray(item?.media) && item.media.length > 0
+      ? item.media.map((m, i) => ({ ...m, postId: item.id, mediaIndex: i }))
+      : []
+  ), [item?.media, item?.id]);
   const actorLink = (() => {
     const actorId = item?.actor?.id;
     const actorRole = item?.actor?.role;

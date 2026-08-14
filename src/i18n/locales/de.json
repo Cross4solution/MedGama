@@ -2216,5 +2216,18 @@
     "filterCountry": "Land: {{country}}",
     "filterSpecialization": "Fachgebiet: {{specialty}}",
     "filterSearch": "Suche: „{{query}}“"
+  },
+  "subtitles": {
+    "button": "Untertitel",
+    "short": "CC",
+    "off": "Aus",
+    "auto": "(automatisch)",
+    "loadFailed": "Untertitel konnten nicht geladen werden",
+    "saveFailed": "Untertitel konnten nicht gespeichert werden",
+    "saved": "Untertitel gespeichert",
+    "edit": "Untertitel bearbeiten",
+    "editTitle": "Untertitel bearbeiten",
+    "empty": "Dieses Video hat keine Untertitel zum Bearbeiten.",
+    "jump": "Zu dieser Stelle springen"
   }
 }

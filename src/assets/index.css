@@ -592,3 +592,19 @@ body.modal-open .site-header * {
   box-shadow: none !important;
   border-color: transparent !important;
 }
+
+/* Alt yazı: kendi CC düğmemiz var, tarayıcınınki de çıkmasın.
+   Aynı işi yapan iki düğme kafa karıştırıyor ve tarayıcıya göre
+   başka başka görünüyor. Alt yazının kendisini yine tarayıcı çiziyor —
+   tam ekranda ve mobilde en güvenilir yol o. */
+video::-webkit-media-controls-toggle-closed-captions-button {
+  display: none;
+}
+
+/* Alt yazı yerleşimi: yazı native kontrol çubuğunun altında kalmasın. */
+video::cue {
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-size: 0.95em;
+  line-height: 1.35;
+}

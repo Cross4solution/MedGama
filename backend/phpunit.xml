@@ -19,6 +19,11 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <!-- Testler bellekte koşar. Aksi hâlde .env'deki sqlite dosyası
+             kullanılıyor ve RefreshDatabase geliştiricinin yerel verisini
+             siliyor — "test çalıştırdım, veritabanım gitti" hatası. -->
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

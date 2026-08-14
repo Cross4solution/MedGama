@@ -1,7 +1,9 @@
 'use client';
 import React from 'react';
 import { useLocation, useParams, useNavigate } from '@/compat/router';
-import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, FileText, Play, Download, Bookmark } from 'lucide-react';
+import { MessageCircle, Heart, X, ChevronLeft, ChevronRight, ThumbsUp, FileText, Play, Download, Bookmark, Pencil } from 'lucide-react';
+import VideoSubtitles from '../components/video/VideoSubtitles';
+import SubtitleEditor from '../components/video/SubtitleEditor';
 import ShareMenu from '../components/ShareMenu';
 import TimelineActionsRow from '../components/timeline/TimelineActionsRow';
 import { useAuth } from '../context/AuthContext';
@@ -117,6 +119,74 @@ function DetailNestedReply({ r, depth, user, replyTo, setReplyTo, replyText, set
   );
 }
 
+/**
+ * Detay sayfasındaki video: alt yazı katmanı ve — gönderi sahibiyse —
+ * düzeltme paneli. Kendi bileşeni, çünkü videoya bir ref gerekiyor:
+ * hem alt yazı hem düzeltme ekranı oynatıcıya doğrudan dokunuyor.
+ */
+function DetayVideo({ media, postId, mediaIndex, duzenlenebilir }) {
+  const { t } = useTranslation();
+  const videoRef = React.useRef(null);
+  const [duzenleDili, setDuzenleDili] = React.useState(null);
+  const [ozgunDil, setOzgunDil] = React.useState(null);
+
+  // Düzeltme her zaman özgün dilde yapılır: çeviriler ondan üretiliyor,
+  // çevrilmiş metni düzeltmek asıl hatayı yerinde bırakırdı.
+  React.useEffect(() => {
+    let iptal = false;
+    if (!postId || !duzenlenebilir) return undefined;
+    medStreamAPI.subtitles(postId)
+      .then((res) => {
+        if (iptal) return;
+        const kayit = (res?.subtitles || res?.data?.subtitles || [])
+          .find((s) => Number(s.media_index) === Number(mediaIndex) && s.kind === 'original');
+        setOzgunDil(kayit?.language || null);
+      })
+      .catch(() => {});
+    return () => { iptal = true; };
+  }, [postId, mediaIndex, duzenlenebilir]);
+
+  return (
+    <div className="relative flex items-center justify-center w-full h-full">
+      <video
+        ref={videoRef}
+        src={toStreamUrl(media.original || media.url)}
+        controls
+        autoPlay
+        playsInline
+        preload="auto"
+        className="max-w-full max-h-full"
+        poster={media.thumb || undefined}
+      />
+
+      {postId && <VideoSubtitles videoRef={videoRef} postId={postId} mediaIndex={mediaIndex} />}
+
+      {duzenlenebilir && ozgunDil && !duzenleDili && (
+        <button
+          type="button"
+          onClick={() => setDuzenleDili(ozgunDil)}
+          className="absolute bottom-16 right-2 z-20 inline-flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1.5 text-xs font-semibold text-white/85 backdrop-blur-sm hover:text-white"
+        >
+          <Pencil className="w-3.5 h-3.5" />
+          {t('subtitles.edit', 'Alt yazıyı düzenle')}
+        </button>
+      )}
+
+      {duzenleDili && (
+        <div className="absolute right-0 top-0 z-30 h-full w-full max-w-md border-l border-gray-200 shadow-2xl">
+          <SubtitleEditor
+            postId={postId}
+            mediaIndex={mediaIndex}
+            lang={duzenleDili}
+            videoRef={videoRef}
+            onClose={() => setDuzenleDili(null)}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function PostDetail() {
   const { state } = useLocation();
   const { id } = useParams();
@@ -199,6 +269,10 @@ export default function PostDetail() {
   }, [id, stateItem, stateHasBlob]);
 
   const item = (stateItem && !stateHasBlob) ? stateItem : (apiItem || stateItem);
+
+  // Alt yazıyı yalnızca gönderinin sahibi düzeltebilir; sunucu da aynı
+  // kuralı uyguluyor, buradaki sadece düğmenin kime görüneceği.
+  const isPostOwner = !!user?.id && (item?.author_id === user.id || item?.actor?.id === user.id);
 
   // Image gallery state
   const mediaList = Array.isArray(item?.media) && item?.media.length > 0
@@ -641,17 +715,13 @@ export default function PostDetail() {
 
             if (mType === 'video') {
               return (
-                <div className="relative flex items-center justify-center w-full h-full">
-                  <video
-                    src={toStreamUrl(currentMedia.original || currentMedia.url)}
-                    controls
-                    autoPlay
-                    playsInline
-                    preload="auto"
-                    className="max-w-full max-h-full"
-                    poster={currentMedia.thumb || undefined}
-                  />
-                </div>
+                <DetayVideo
+                  key={`video-${imgIndex}`}
+                  media={currentMedia}
+                  postId={item?.id || id}
+                  mediaIndex={imgIndex}
+                  duzenlenebilir={isPostOwner}
+                />
               );
             }
 

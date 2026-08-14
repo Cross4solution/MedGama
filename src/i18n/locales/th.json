@@ -35,5 +35,18 @@
   "clinicDetail": { "tab_genel-bakis": "ภาพรวม", "tab_prices": "ราคา", "tab_doktorlar": "แพทย์", "tab_degerlendirmeler": "รีวิว", "tab_galeri": "แกลเลอรี", "tab_before-after": "รูปก่อนและหลัง", "tab_konum": "สถานที่", "onlineConsultation": "ปรึกษาออนไลน์", "bookAppointment": "นัดหมาย", "sendMessage": "ส่งข้อความ" },
   "profile": {
     "title": "โปรไฟล์", "settings": "ตั้งค่า", "settingsDesc": "จัดการบัญชี ความปลอดภัย และการตั้งค่า", "subtitle": "จัดการบัญชี ความปลอดภัย และการตั้งค่า", "pleaseSignIn": "กรุณาเข้าสู่ระบบ", "account": "บัญชี", "accountDesc": "โปรไฟล์ ประเทศ และรูปลักษณ์", "security": "ความปลอดภัย", "securityDesc": "รหัสผ่าน", "notifications": "การแจ้งเตือน", "notificationsDesc": "การแจ้งเตือนผู้ป่วย", "patientNotifications": "การแจ้งเตือนผู้ป่วย", "medicalHistory": "ประวัติการแพทย์", "medicalHistoryDesc": "โรคและยา", "privacyData": "ความเป็นส่วนตัวและข้อมูล", "privacyDataDesc": "สิทธิ์ GDPR และคุกกี้", "profileSection": "โปรไฟล์", "profilePhoto": "รูปโปรไฟล์", "chooseFile": "เลือกไฟล์", "noFileSelected": "ไม่ได้เลือกไฟล์", "chooseImageDesc": "เลือกรูปสำหรับโปรไฟล์", "nameLabel": "ชื่อ", "countryLabel": "ประเทศ", "selectCountry": "เลือกประเทศ", "preferredLanguage": "ภาษาที่ต้องการ", "languageDesc": "ตั้งค่าภาษาที่ต้องการสำหรับอินเทอร์เฟซและการสื่อสาร", "charactersLeft": "ตัวอักษรที่เหลือ", "passwordSection": "รหัสผ่าน", "currentPassword": "รหัสผ่านปัจจุบัน", "newPassword": "รหัสผ่านใหม่", "repeatNew": "ยืนยันรหัสผ่านใหม่", "cookiePreferences": "การตั้งค่าคุกกี้", "cookiePreferencesDesc": "จัดการคุกกี้ที่อนุญาต คุกกี้ที่จำเป็นจะเปิดใช้งานเสมอ", "cookieDesc": "จัดการคุกกี้ที่อนุญาต คุกกี้ที่จำเป็นจะเปิดใช้งานเสมอ", "necessary": "จำเป็น", "functional": "ฟังก์ชัน", "analytics": "วิเคราะห์", "marketing": "การตลาด", "always": "เสมอ", "on": "เปิด", "off": "ปิด", "lastUpdated": "อัปเดตล่าสุด", "manageCookies": "จัดการคุกกี้", "resetPreferences": "รีเซ็ตการตั้งค่า", "yourData": "ข้อมูลของคุณ (GDPR มาตรา 20)", "yourDataDesc": "ดาวน์โหลดสำเนาข้อมูลส่วนบุคคลทั้งหมดในรูปแบบ JSON ที่เครื่องอ่านได้", "downloadMyData": "ดาวน์โหลดข้อมูลของฉัน", "privacyRights": "สิทธิ์ความเป็นส่วนตัว", "privacyRightsDesc": "ตาม GDPR คุณมีสิทธิ์เข้าถึง แก้ไข ลบ จำกัด และโอนข้อมูลของคุณ", "allPrivacyRights": "สิทธิ์ความเป็นส่วนตัวทั้งหมด", "deleteAccountData": "ลบบัญชีและข้อมูล", "deleteAccountDesc": "ลบบัญชีและข้อมูลที่เกี่ยวข้องทั้งหมดอย่างถาวร ไม่สามารถย้อนกลับได้ ข้อมูลบนเซิร์ฟเวอร์จะถูกลบภายใน 30 วันตาม GDPR มาตรา 17", "deleteMyAccount": "ลบบัญชีของฉัน", "medicalConditions": "ภาวะทางการแพทย์ปัจจุบัน", "medicalConditionsDesc": "เช่น ความดันโลหิตสูง, เบาหวาน, หอบหืด", "typeCondition": "พิมพ์ภาวะแล้วกด Enter...", "pressEnter": "กด Enter หรือ , เพื่อเพิ่ม", "notificationPreferences": "การตั้งค่าการแจ้งเตือน", "emailNotifications": "การแจ้งเตือนอีเมล", "emailNotificationsDesc": "รับอัปเดตทางอีเมล", "smsNotifications": "การแจ้งเตือน SMS", "smsNotificationsDesc": "รับการแจ้งเตือน SMS", "pushNotifications": "การแจ้งเตือนพุช", "pushNotificationsDesc": "การแจ้งเตือนพุชเบราว์เซอร์", "appointmentReminders": "เตือนนัดหมาย", "appointmentRemindersDesc": "เตือนก่อนนัดหมาย", "marketingMessages": "ข้อความการตลาด", "marketingMessagesDesc": "ข้อเสนอโปรโมชันและข่าว", "savePreferences": "บันทึกการตั้งค่า"
+  },
+  "subtitles": {
+    "button": "คำบรรยาย",
+    "short": "CC",
+    "off": "ปิด",
+    "auto": "(อัตโนมัติ)",
+    "loadFailed": "โหลดคำบรรยายไม่สำเร็จ",
+    "saveFailed": "บันทึกคำบรรยายไม่สำเร็จ",
+    "saved": "บันทึกคำบรรยายแล้ว",
+    "edit": "แก้ไขคำบรรยาย",
+    "editTitle": "แก้ไขคำบรรยาย",
+    "empty": "วิดีโอนี้ไม่มีคำบรรยายให้แก้ไข",
+    "jump": "ไปยังช่วงเวลานี้"
   }
 }

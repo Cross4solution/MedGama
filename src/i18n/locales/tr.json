@@ -3056,5 +3056,18 @@
     "filterCountry": "Ülke: {{country}}",
     "filterSpecialization": "Uzmanlık: {{specialty}}",
     "filterSearch": "Arama: “{{query}}”"
+  },
+  "subtitles": {
+    "button": "Alt yazı",
+    "short": "CC",
+    "off": "Kapalı",
+    "auto": "(otomatik)",
+    "loadFailed": "Alt yazı yüklenemedi",
+    "saveFailed": "Alt yazı kaydedilemedi",
+    "saved": "Alt yazı kaydedildi",
+    "edit": "Alt yazıyı düzenle",
+    "editTitle": "Alt yazıyı düzenle",
+    "empty": "Bu videoda düzenlenecek alt yazı yok.",
+    "jump": "Bu ana git"
   }
 }

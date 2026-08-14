@@ -29,7 +29,11 @@ class TranslationService
     }
 
     /**
-     * @return array{translated_text:string, source_lang:?string, provider:string, cached:bool}
+     * 'ok' false ise sağlayıcı yanıt vermedi ve metin çevrilmeden döndü.
+     * Çağıran bunu kalıcı olarak saklamamalı: geçici bir aksaklık, kalıcı
+     * bir "çeviri" gibi kaydedilirse bir daha hiç denenmez.
+     *
+     * @return array{translated_text:string, source_lang:?string, provider:string, cached:bool, ok:bool}
      */
     public function translate(string $text, string $target, ?string $source = null): array
     {
@@ -37,7 +41,7 @@ class TranslationService
         $target = strtolower(substr($target, 0, 2));
 
         if ($text === '' || mb_strlen($text) > 5000) {
-            return ['translated_text' => $text, 'source_lang' => $source, 'provider' => 'noop', 'cached' => false];
+            return ['translated_text' => $text, 'source_lang' => $source, 'provider' => 'noop', 'cached' => false, 'ok' => true];
         }
 
         $hash = hash('sha256', $text);
@@ -51,6 +55,7 @@ class TranslationService
                 'source_lang'     => $cached->source_lang,
                 'provider'        => $cached->provider,
                 'cached'          => true,
+                'ok'              => true,
             ];
         }
 
@@ -58,7 +63,7 @@ class TranslationService
             [$translated, $detected] = $this->callProvider($text, $target, $source);
         } catch (\Throwable $e) {
             Log::warning('Translation failed: ' . $e->getMessage());
-            return ['translated_text' => $text, 'source_lang' => $source, 'provider' => $this->provider, 'cached' => false];
+            return ['translated_text' => $text, 'source_lang' => $source, 'provider' => $this->provider, 'cached' => false, 'ok' => false];
         }
 
         // No-op when source already equals target → keep original.
@@ -75,7 +80,7 @@ class TranslationService
             'provider'        => $this->provider,
         ]);
 
-        return ['translated_text' => $translated, 'source_lang' => $detected, 'provider' => $this->provider, 'cached' => false];
+        return ['translated_text' => $translated, 'source_lang' => $detected, 'provider' => $this->provider, 'cached' => false, 'ok' => true];
     }
 
     /** @return array{0:string,1:?string} [translatedText, detectedSourceLang] */
@@ -98,7 +103,17 @@ class TranslationService
                 $params['de'] = $email;
             }
             $res = Http::timeout(8)->get('https://api.mymemory.translated.net/get', $params);
-            $out[] = $res->json('responseData.translatedText') ?? $chunk;
+
+            // Kota dolduğunda MyMemory 200 döner ama gövdedeki responseStatus
+            // 4xx olur. Sessizce özgün metne düşersek çağıran bunu başarılı
+            // bir çeviri sanıp kalıcı olarak saklıyor — bir daha denenmiyor.
+            $cevrilen = $res->json('responseData.translatedText');
+            $durum = (int) ($res->json('responseStatus') ?: 0);
+            if (!$res->successful() || $cevrilen === null || ($durum && $durum >= 400)) {
+                throw new \RuntimeException('MyMemory yanıt vermedi: ' . ($res->json('responseDetails') ?: $res->status()));
+            }
+
+            $out[] = $cevrilen;
         }
         return [implode(' ', $out), $src];
     }

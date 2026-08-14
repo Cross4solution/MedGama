@@ -572,6 +572,19 @@ export const medStreamAPI = {
     params: { path, filename },
     responseType: 'blob',
   }),
+
+  // ── Video alt yazıları ──
+  // Okuma herkese açık (gönderi de öyle), düzeltme yalnızca sahibine.
+  subtitles: (postId) => api.get(`/medstream/posts/${postId}/subtitles`),
+  // İstenen dil hazır değilse sunucu özgün alt yazıdan çevirip saklar; bu
+  // yüzden çağrı biraz uzun sürebilir ama ikinci izleyen hazır bulur.
+  subtitleVtt: (postId, lang, media = 0) =>
+    api.get(`/medstream/posts/${postId}/subtitles/${lang}`, {
+      params: { media },
+      responseType: 'text',
+    }),
+  updateSubtitle: (postId, lang, segments, media = 0) =>
+    api.put(`/medstream/posts/${postId}/subtitles/${lang}`, { segments, media }),
 };
 
 // ── Messaging Service ──

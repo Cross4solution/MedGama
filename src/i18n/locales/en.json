@@ -2807,5 +2807,18 @@
     "filterCountry": "Country: {{country}}",
     "filterSpecialization": "Specialization: {{specialty}}",
     "filterSearch": "Search: “{{query}}”"
+  },
+  "subtitles": {
+    "button": "Subtitles",
+    "short": "CC",
+    "off": "Off",
+    "auto": "(auto)",
+    "loadFailed": "Could not load subtitles",
+    "saveFailed": "Could not save subtitles",
+    "saved": "Subtitles saved",
+    "edit": "Edit subtitles",
+    "editTitle": "Edit subtitles",
+    "empty": "This video has no subtitles to edit.",
+    "jump": "Jump to this moment"
   }
 }

@@ -35,5 +35,18 @@
   "clinicDetail": { "tab_genel-bakis": "概要", "tab_prices": "料金", "tab_doktorlar": "医師", "tab_degerlendirmeler": "レビュー", "tab_galeri": "ギャラリー", "tab_before-after": "ビフォー・アフター写真", "tab_konum": "所在地", "onlineConsultation": "オンライン相談", "bookAppointment": "予約する", "sendMessage": "メッセージを送信" },
   "profile": {
     "title": "プロフィール", "settings": "設定", "settingsDesc": "アカウント、セキュリティ、設定の管理。", "subtitle": "アカウント、セキュリティ、設定の管理。", "pleaseSignIn": "サインインしてください。", "account": "アカウント", "accountDesc": "プロフィール、国、外観", "security": "セキュリティ", "securityDesc": "パスワード", "notifications": "通知", "notificationsDesc": "患者通知", "patientNotifications": "患者通知", "medicalHistory": "病歴", "medicalHistoryDesc": "疾患と薬剤", "privacyData": "プライバシーとデータ", "privacyDataDesc": "GDPR権利とCookie", "profileSection": "プロフィール", "profilePhoto": "プロフィール写真", "chooseFile": "ファイル選択", "noFileSelected": "ファイルが選択されていません", "chooseImageDesc": "プロフィール写真の画像を選択してください。", "nameLabel": "名前", "countryLabel": "国", "selectCountry": "国を選択", "preferredLanguage": "優先言語", "languageDesc": "プラットフォームのインターフェースとコミュニケーションの優先言語を設定します。", "charactersLeft": "文字残り", "passwordSection": "パスワード", "currentPassword": "現在のパスワード", "newPassword": "新しいパスワード", "repeatNew": "新しいパスワードの再入力", "cookiePreferences": "Cookie設定", "cookiePreferencesDesc": "許可するCookieを管理します。必須Cookieは常に有効です。", "cookieDesc": "許可するCookieを管理します。必須Cookieは常に有効です。", "necessary": "必須", "functional": "機能的", "analytics": "分析", "marketing": "マーケティング", "always": "常時", "on": "オン", "off": "オフ", "lastUpdated": "最終更新", "manageCookies": "Cookie管理", "resetPreferences": "設定リセット", "yourData": "あなたのデータ（GDPR 第20条）", "yourDataDesc": "機械可読JSON形式ですべての個人データのコピーをダウンロード。", "downloadMyData": "データをダウンロード", "privacyRights": "プライバシー権", "privacyRightsDesc": "GDPRに基づき、データへのアクセス、修正、削除、制限、移植の権利があります。", "allPrivacyRights": "すべてのプライバシー権", "deleteAccountData": "アカウントとデータの削除", "deleteAccountDesc": "アカウントと関連データを完全に削除します。この操作は元に戻せません。サーバー側のデータはGDPR第17条に従い30日以内に削除されます。", "deleteMyAccount": "アカウントを削除", "medicalConditions": "現在の医療状態", "medicalConditionsDesc": "例：高血圧、糖尿病、喘息", "typeCondition": "状態を入力してEnterを押してください...", "pressEnter": "追加するにはEnterまたは,を押してください", "notificationPreferences": "通知設定", "emailNotifications": "メール通知", "emailNotificationsDesc": "メールでアップデートを受信", "smsNotifications": "SMS通知", "smsNotificationsDesc": "SMSアラートを受信", "pushNotifications": "プッシュ通知", "pushNotificationsDesc": "ブラウザプッシュ通知", "appointmentReminders": "予約リマインダー", "appointmentRemindersDesc": "予約前のリマインダー", "marketingMessages": "マーケティングメッセージ", "marketingMessagesDesc": "プロモーションオファーとニュース", "savePreferences": "設定を保存"
+  },
+  "subtitles": {
+    "button": "字幕",
+    "short": "CC",
+    "off": "オフ",
+    "auto": "（自動）",
+    "loadFailed": "字幕を読み込めませんでした",
+    "saveFailed": "字幕を保存できませんでした",
+    "saved": "字幕を保存しました",
+    "edit": "字幕を編集",
+    "editTitle": "字幕を編集",
+    "empty": "この動画に編集できる字幕はありません。",
+    "jump": "この時点へ移動"
   }
 }

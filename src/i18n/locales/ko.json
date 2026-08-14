@@ -35,5 +35,18 @@
   "clinicDetail": { "tab_genel-bakis": "개요", "tab_prices": "가격", "tab_doktorlar": "의사", "tab_degerlendirmeler": "리뷰", "tab_galeri": "갤러리", "tab_before-after": "전후 사진", "tab_konum": "위치", "onlineConsultation": "온라인 상담", "bookAppointment": "예약하기", "sendMessage": "메시지 보내기" },
   "profile": {
     "title": "프로필", "settings": "설정", "settingsDesc": "계정, 보안 및 환경설정을 관리합니다.", "subtitle": "계정, 보안 및 환경설정을 관리합니다.", "pleaseSignIn": "로그인해 주세요.", "account": "계정", "accountDesc": "프로필, 국가 및 외관", "security": "보안", "securityDesc": "비밀번호", "notifications": "알림", "notificationsDesc": "환자 알림", "patientNotifications": "환자 알림", "medicalHistory": "병력", "medicalHistoryDesc": "질환 및 약물", "privacyData": "개인정보 및 데이터", "privacyDataDesc": "GDPR 권리 및 쿠키", "profileSection": "프로필", "profilePhoto": "프로필 사진", "chooseFile": "파일 선택", "noFileSelected": "선택된 파일 없음", "chooseImageDesc": "프로필 사진에 사용할 이미지를 선택하세요.", "nameLabel": "이름", "countryLabel": "국가", "selectCountry": "국가 선택", "preferredLanguage": "선호 언어", "languageDesc": "플랫폼 인터페이스 및 커뮤니케이션의 선호 언어를 설정합니다.", "charactersLeft": "자 남음", "passwordSection": "비밀번호", "currentPassword": "현재 비밀번호", "newPassword": "새 비밀번호", "repeatNew": "새 비밀번호 재입력", "cookiePreferences": "쿠키 설정", "cookiePreferencesDesc": "허용할 쿠키를 관리합니다. 필수 쿠키는 항상 활성 상태입니다.", "cookieDesc": "허용할 쿠키를 관리합니다. 필수 쿠키는 항상 활성 상태입니다.", "necessary": "필수", "functional": "기능", "analytics": "분석", "marketing": "마케팅", "always": "항상", "on": "켜짐", "off": "꺼짐", "lastUpdated": "마지막 업데이트", "manageCookies": "쿠키 관리", "resetPreferences": "설정 초기화", "yourData": "내 데이터 (GDPR 제20조)", "yourDataDesc": "기계 판독 가능한 JSON 형식으로 모든 개인 데이터의 사본을 다운로드합니다.", "downloadMyData": "내 데이터 다운로드", "privacyRights": "개인정보 권리", "privacyRightsDesc": "GDPR에 따라 데이터에 대한 접근, 정정, 삭제, 제한 및 이동 권리가 있습니다.", "allPrivacyRights": "모든 개인정보 권리", "deleteAccountData": "계정 및 데이터 삭제", "deleteAccountDesc": "계정과 모든 관련 데이터를 영구적으로 삭제합니다. 이 작업은 되돌릴 수 없습니다. 서버 데이터는 GDPR 제17조에 따라 30일 이내에 삭제됩니다.", "deleteMyAccount": "내 계정 삭제", "medicalConditions": "현재 의료 상태", "medicalConditionsDesc": "예: 고혈압, 당뇨병, 천식", "typeCondition": "상태를 입력하고 Enter를 누르세요...", "pressEnter": "추가하려면 Enter 또는 ,를 누르세요", "notificationPreferences": "알림 설정", "emailNotifications": "이메일 알림", "emailNotificationsDesc": "이메일로 업데이트 수신", "smsNotifications": "SMS 알림", "smsNotificationsDesc": "SMS 알림 수신", "pushNotifications": "푸시 알림", "pushNotificationsDesc": "브라우저 푸시 알림", "appointmentReminders": "예약 리마인더", "appointmentRemindersDesc": "예약 전 리마인더", "marketingMessages": "마케팅 메시지", "marketingMessagesDesc": "프로모션 혜택 및 뉴스", "savePreferences": "설정 저장"
+  },
+  "subtitles": {
+    "button": "자막",
+    "short": "CC",
+    "off": "끄기",
+    "auto": "(자동)",
+    "loadFailed": "자막을 불러오지 못했습니다",
+    "saveFailed": "자막을 저장하지 못했습니다",
+    "saved": "자막이 저장되었습니다",
+    "edit": "자막 편집",
+    "editTitle": "자막 편집",
+    "empty": "이 동영상에는 편집할 자막이 없습니다.",
+    "jump": "이 시점으로 이동"
   }
 }

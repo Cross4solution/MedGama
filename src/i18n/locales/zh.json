@@ -35,5 +35,18 @@
   "clinicDetail": { "tab_genel-bakis": "概览", "tab_prices": "价格", "tab_doktorlar": "医生", "tab_degerlendirmeler": "评价", "tab_galeri": "图库", "tab_before-after": "前后对比照片", "tab_konum": "位置", "onlineConsultation": "在线咨询", "bookAppointment": "预约", "sendMessage": "发送消息" },
   "profile": {
     "title": "个人资料", "settings": "设置", "settingsDesc": "管理您的账户、安全和偏好设置。", "subtitle": "管理您的账户、安全和偏好设置。", "pleaseSignIn": "请登录。", "account": "账户", "accountDesc": "个人资料、国家和外观", "security": "安全", "securityDesc": "密码", "notifications": "通知", "notificationsDesc": "患者通知", "patientNotifications": "患者通知", "medicalHistory": "病史", "medicalHistoryDesc": "疾病和药物", "privacyData": "隐私与数据", "privacyDataDesc": "GDPR权利与Cookie", "profileSection": "个人资料", "profilePhoto": "头像", "chooseFile": "选择文件", "noFileSelected": "未选择文件", "chooseImageDesc": "选择一张图片作为您的头像。", "nameLabel": "姓名", "countryLabel": "国家", "selectCountry": "选择国家", "preferredLanguage": "首选语言", "languageDesc": "设置平台界面和通讯的首选语言。", "charactersLeft": "个字符剩余", "passwordSection": "密码", "currentPassword": "当前密码", "newPassword": "新密码", "repeatNew": "重复新密码", "cookiePreferences": "Cookie偏好", "cookiePreferencesDesc": "管理您允许的Cookie。必要Cookie始终处于活跃状态。", "cookieDesc": "管理您允许的Cookie。必要Cookie始终处于活跃状态。", "necessary": "必要", "functional": "功能性", "analytics": "分析", "marketing": "营销", "always": "始终", "on": "开", "off": "关", "lastUpdated": "最后更新", "manageCookies": "管理Cookie", "resetPreferences": "重置偏好", "yourData": "您的数据（GDPR第20条）", "yourDataDesc": "以机器可读的JSON格式下载您所有个人数据的副本。", "downloadMyData": "下载我的数据", "privacyRights": "隐私权", "privacyRightsDesc": "根据GDPR，您有权访问、更正、删除、限制和携带您的数据。", "allPrivacyRights": "所有隐私权", "deleteAccountData": "删除账户和数据", "deleteAccountDesc": "永久删除您的账户和所有相关数据。此操作无法撤销。服务器端数据将在30天内按GDPR第17条删除。", "deleteMyAccount": "删除我的账户", "medicalConditions": "当前医疗状况", "medicalConditionsDesc": "例如：高血压、糖尿病、哮喘", "typeCondition": "输入病症后按Enter...", "pressEnter": "按Enter或逗号添加", "notificationPreferences": "通知偏好", "emailNotifications": "邮件通知", "emailNotificationsDesc": "通过邮件接收更新", "smsNotifications": "短信通知", "smsNotificationsDesc": "接收短信提醒", "pushNotifications": "推送通知", "pushNotificationsDesc": "浏览器推送通知", "appointmentReminders": "预约提醒", "appointmentRemindersDesc": "预约前提醒", "marketingMessages": "营销消息", "marketingMessagesDesc": "促销优惠和新闻", "savePreferences": "保存偏好"
+  },
+  "subtitles": {
+    "button": "字幕",
+    "short": "CC",
+    "off": "关闭",
+    "auto": "（自动）",
+    "loadFailed": "无法加载字幕",
+    "saveFailed": "无法保存字幕",
+    "saved": "字幕已保存",
+    "edit": "编辑字幕",
+    "editTitle": "编辑字幕",
+    "empty": "此视频没有可编辑的字幕。",
+    "jump": "跳到此处"
   }
 }

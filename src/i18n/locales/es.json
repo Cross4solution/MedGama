@@ -2215,5 +2215,18 @@
     "filterCountry": "País: {{country}}",
     "filterSpecialization": "Especialización: {{specialty}}",
     "filterSearch": "Búsqueda: “{{query}}”"
+  },
+  "subtitles": {
+    "button": "Subtítulos",
+    "short": "CC",
+    "off": "Desactivados",
+    "auto": "(automático)",
+    "loadFailed": "No se pudieron cargar los subtítulos",
+    "saveFailed": "No se pudieron guardar los subtítulos",
+    "saved": "Subtítulos guardados",
+    "edit": "Editar subtítulos",
+    "editTitle": "Editar subtítulos",
+    "empty": "Este vídeo no tiene subtítulos que editar.",
+    "jump": "Ir a este momento"
   }
 }

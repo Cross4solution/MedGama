@@ -2259,5 +2259,18 @@
     "filterCountry": "Ölkə: {{country}}",
     "filterSpecialization": "İxtisas: {{specialty}}",
     "filterSearch": "Axtarış: “{{query}}”"
+  },
+  "subtitles": {
+    "button": "Altyazı",
+    "short": "CC",
+    "off": "Bağlı",
+    "auto": "(avtomatik)",
+    "loadFailed": "Altyazı yüklənmədi",
+    "saveFailed": "Altyazı yadda saxlanılmadı",
+    "saved": "Altyazı yadda saxlanıldı",
+    "edit": "Altyazını redaktə et",
+    "editTitle": "Altyazını redaktə et",
+    "empty": "Bu videoda redaktə ediləcək altyazı yoxdur.",
+    "jump": "Bu ana keç"
   }
 }

@@ -2215,5 +2215,18 @@
     "filterCountry": "الدولة: {{country}}",
     "filterSpecialization": "التخصص: {{specialty}}",
     "filterSearch": "بحث: «{{query}}»"
+  },
+  "subtitles": {
+    "button": "الترجمة",
+    "short": "CC",
+    "off": "إيقاف",
+    "auto": "(تلقائي)",
+    "loadFailed": "تعذّر تحميل الترجمة",
+    "saveFailed": "تعذّر حفظ الترجمة",
+    "saved": "تم حفظ الترجمة",
+    "edit": "تحرير الترجمة",
+    "editTitle": "تحرير الترجمة",
+    "empty": "لا توجد ترجمة قابلة للتحرير في هذا الفيديو.",
+    "jump": "الانتقال إلى هذه اللحظة"
   }
 }
