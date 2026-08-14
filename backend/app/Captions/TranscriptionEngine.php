@@ -21,12 +21,31 @@ interface TranscriptionEngine
     public function kullanilabilir(): bool;
 
     /**
-     * Bu görüşme için bir yazıya çevirme oturumu açar ve tarayıcının sesi
-     * göndereceği adresi döner.
+     * CANLI görüşme için yazıya çevirme oturumu açar; tarayıcının sesi
+     * göndereceği adresi döner. Gerçek zamanlı çalışmak zorunda olduğu için
+     * GPU gerektirir.
      *
      * @return array{url:string, token:string, expires_in:int}
      */
     public function oturumAc(string $appointmentId, string $konusmaDili): array;
+
+    /**
+     * KAYITLI bir video/ses dosyasını yazıya döker.
+     *
+     * Canlı oturumdan ayrı bir yetenek: gerçek zamanlı olmak zorunda değil,
+     * arka planda dakikalarca sürebilir. Bu yüzden GPU olmadan da (CPU'da,
+     * yavaşça) çalışabilen bir uygulama yazılabilir — gönderi videolarının
+     * alt yazısı canlı görüşmeden önce devreye alınabilir.
+     *
+     * @param  string      $dosyaYolu  Yerel yol veya erişilebilir URL
+     * @param  string|null $dil        Bilinmiyorsa null — motor tespit eder
+     * @return array{language:string, segments:array<int,array{start:float,end:float,text:string}>}|null
+     *         Başarısızsa null.
+     */
+    public function dosyaCevir(string $dosyaYolu, ?string $dil = null): ?array;
+
+    /** Kayıtlı dosya çevirisi kullanılabilir mi? (canlıdan ayrı olabilir) */
+    public function dosyaCevirisiVarMi(): bool;
 
     /** Desteklediği kaynak dilleri. */
     public function diller(): array;

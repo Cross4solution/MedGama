@@ -69,6 +69,15 @@ class ProcessMedStreamVideo implements ShouldQueue
             // Mark post as published (no longer processing)
             $post->media_processing = false;
             $post->save();
+
+            // Alt yazıyı ayrı bir işte üret: yazıya dökme dakikalar sürebiliyor
+            // ve videonun yayınlanmasını bekletmemeli. Hazır olduğunda
+            // kendiliğinden görünür.
+            \App\Jobs\TranscribeVideoSubtitles::dispatch(
+                $post->id,
+                $this->mediaIndex,
+                $result['original'] ?? '',
+            );
         } catch (\Throwable $e) {
             \Log::error('ProcessMedStreamVideo failed', [
                 'post_id' => $this->postId,

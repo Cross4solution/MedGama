@@ -25,6 +25,16 @@ class UnavailableEngine implements TranscriptionEngine
         );
     }
 
+    public function dosyaCevir(string $dosyaYolu, ?string $dil = null): ?array
+    {
+        return null;
+    }
+
+    public function dosyaCevirisiVarMi(): bool
+    {
+        return false;
+    }
+
     public function diller(): array
     {
         return [];

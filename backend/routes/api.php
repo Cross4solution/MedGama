@@ -293,6 +293,13 @@ Route::get('/health-access-logs', [\App\Http\Controllers\Api\HealthAccessLogCont
 // MedStream konum akışı — misafir IP→ülke (public), giriş sonrası kontrol + kaydet (auth)
 Route::get('/geo/ip-country', [GeoController::class, 'ipCountry']);
 
+// Gönderi videolarının alt yazıları. Okuma herkese açık — gönderi zaten
+// herkese açık; düzeltme yalnızca gönderi sahibine ve yöneticiye.
+Route::get('/medstream/posts/{post}/subtitles', [\App\Http\Controllers\Api\VideoSubtitleController::class, 'index']);
+Route::get('/medstream/posts/{post}/subtitles/{lang}', [\App\Http\Controllers\Api\VideoSubtitleController::class, 'show']);
+Route::put('/medstream/posts/{post}/subtitles/{lang}', [\App\Http\Controllers\Api\VideoSubtitleController::class, 'update'])
+    ->middleware('auth:sanctum');
+
 // İçerik çevirisi. Durum sorgusu herkese açık (giriş yapmamış kullanıcı da
 // düğmenin durumunu görebilmeli); çeviri isteği oturum gerektirir.
 Route::get('/translation/status', [\App\Http\Controllers\Api\TranslationController::class, 'status']);
