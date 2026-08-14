@@ -297,6 +297,68 @@ export default function Profile() {
     return exportData;
   };
 
+  /**
+   * Tek alanı kaydeder. Kaydet düğmesi kaldırıldı: dil ve çeviri zaten anında
+   * kaydediliyordu, ad/ülke/fotoğraf için ayrı bir düğme beklemek tutarsızdı.
+   * Ad alandan çıkınca, ülke seçilince, fotoğraf dosya seçilince kaydedilir.
+   */
+  const alanKaydet = async (alanlar, bildir = true) => {
+    setSaving(true);
+    try {
+      await authAPI.updateProfile(alanlar);
+      if (bildir) showToast(t('profile.profileUpdated'));
+      return true;
+    } catch (err) {
+      // Ağ hatasında kullanıcıyı boşuna telaşlandırma; yerel durum korunuyor.
+      const status = err?.status || 0;
+      if (status && status !== 401) {
+        showToast(err?.message || t('profile.saveFailed', 'Kaydedilemedi'), 'error');
+      }
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  /** Ad alanından çıkınca kaydet — her tuşta istek atmamak için. */
+  const adKaydet = async () => {
+    const yeni = (name || '').slice(0, 30).trim();
+    if (!yeni || yeni === (user?.name || '').trim()) return;
+    if (await alanKaydet({ fullname: yeni })) {
+      updateUser({ name: yeni });
+    }
+  };
+
+  /** Ülke seçilince kaydet — seçim tek seferlik, beklemeye gerek yok. */
+  const ulkeKaydet = async (secilen) => {
+    setCountryName(secilen);
+    const kod = countryCodes[secilen];
+    if (!kod) return;
+    const buyuk = kod.toUpperCase();
+    if (await alanKaydet({ country: buyuk })) {
+      updateUser({}, buyuk);
+    }
+  };
+
+  /** Fotoğraf seçilir seçilmez yüklenir; ayrıca kaydetmeye gerek kalmaz. */
+  const fotografYukle = async (file) => {
+    setSaving(true);
+    try {
+      const res = await authAPI.uploadAvatar(file);
+      const url = res?.avatar_url || res?.url || res?.data?.avatar;
+      if (url) {
+        setAvatar(url);
+        updateUser({ avatar: url });
+      }
+      showToast(t('profile.profileUpdated'));
+    } catch (err) {
+      showToast(err?.message || t('profile.avatarUploadFailed'), 'error');
+    } finally {
+      avatarFileRef.current = null;
+      setSaving(false);
+    }
+  };
+
   const saveAccount = async (e) => {
     e.preventDefault();
     const limitedName = (name || '').slice(0, 30).trim();
@@ -485,9 +547,12 @@ export default function Profile() {
                         if (!file) return;
                         setAvatarFileName(file.name);
                         avatarFileRef.current = file;
+                        // Önce yerel önizleme, sonra yükleme: kullanıcı
+                        // seçtiği fotoğrafı beklemeden görsün.
                         const reader = new FileReader();
                         reader.onload = (ev) => setAvatar(String(ev.target?.result || ''));
                         reader.readAsDataURL(file);
+                        fotografYukle(file);
                       }}
                       className="hidden"
                     />
@@ -512,8 +577,11 @@ export default function Profile() {
                   <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('common.name')}</label>
                   <input
                     type="text"
+                    name="fullname"
+                    autoComplete="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    onBlur={adKaydet}
                     maxLength={30}
                     className="w-full border border-gray-200 rounded-xl px-3 text-sm h-10 hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
                     placeholder={t('profile.yourNamePlaceholder')}
@@ -525,7 +593,7 @@ export default function Profile() {
                   <CountryCombobox
                     options={countriesEurope}
                     value={countryName}
-                    onChange={setCountryName}
+                    onChange={ulkeKaydet}
                     placeholder={t('profile.selectCountry')}
                     triggerClassName="w-full border border-gray-300 rounded-lg px-3 text-sm bg-white h-10 flex items-center gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#1C6A83]/20 transition-shadow"
                     getFlagUrl={(name) => {
@@ -595,8 +663,10 @@ export default function Profile() {
                 </div>
               </div>
 
-              <div className="flex justify-end">
-                <button type="submit" disabled={saving} className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'}`}>{saving ? t('common.saving') : t('common.save')}</button>
+              {/* Kaydet düğmesi yok: her alan değiştiği anda kaydediliyor.
+                  Kullanıcı kaydedildiğinden emin olsun diye durum burada. */}
+              <div className="flex justify-end h-4 text-xs text-gray-400" aria-live="polite">
+                {saving ? t('common.saving') : ''}
               </div>
             </form>
           )}
