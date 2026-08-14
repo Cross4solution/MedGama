@@ -25,7 +25,8 @@ class VascoController extends Controller
 
         $result = $this->vasco->suggest(
             $validated['text'],
-            $validated['lang'] ?? 'tr',
+            // Platform uluslararası: dil belirtilmediyse İngilizce'ye düşülür.
+            $validated['lang'] ?? 'en',
             $validated['location'] ?? null,
         );
 

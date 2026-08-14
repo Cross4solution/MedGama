@@ -18,9 +18,9 @@ function aktifDil() {
     if (cerez) return decodeURIComponent(cerez);
     const kayit = localStorage.getItem('preferred_language');
     if (kayit) return kayit;
-    return (navigator.language || 'tr').split('-')[0];
+    return (navigator.language || 'en').split('-')[0];
   } catch {
-    return 'tr';
+    return 'en';
   }
 }
 

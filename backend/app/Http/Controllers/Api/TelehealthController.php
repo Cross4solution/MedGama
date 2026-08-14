@@ -166,7 +166,7 @@ class TelehealthController extends Controller
         // Alt yazı: motor hazır mı ve kullanıcı hangi dilde görecek.
         // Arayüz bu bilgiye göre düğmeyi aktif/pasif gösterir.
         $motor = app(\App\Captions\TranscriptionEngine::class);
-        $kullaniciDili = $request->user()->preferred_language ?? 'tr';
+        $kullaniciDili = $request->user()->preferred_language ?? 'en';
         $destekli = in_array($kullaniciDili, (array) config('captions.languages', []), true);
 
         return response()->json([
@@ -178,7 +178,7 @@ class TelehealthController extends Controller
             'captions' => [
                 'available'       => $motor->kullanilabilir(),
                 // Dil kullanıcının profilinden gelir; görüşmede ayrıca sorulmaz.
-                'language'        => $destekli ? $kullaniciDili : 'tr',
+                'language'        => $destekli ? $kullaniciDili : 'en',
                 // Karşı tarafın onayı olmadan açılamaz: birinin sesinin
                 // sunucuda işlenmesine diğeri tek başına karar veremez.
                 'requires_consent' => (bool) config('captions.require_peer_consent', true),

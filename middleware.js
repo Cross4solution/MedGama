@@ -6,7 +6,11 @@ import { NextResponse } from 'next/server';
 // - x-locale response header set eder (root layout <html lang>/dir için okur).
 
 const LOCALES = ['tr', 'en', 'de', 'ar', 'ru', 'fr', 'es', 'it', 'az'];
-const DEFAULT_LOCALE = 'tr';
+
+// Platform uluslararası: tanımadığımız bir dilden gelen ziyaretçiye Türkçe
+// göstermek, onun için İngilizce'den daha yabancıdır. Varsayılan İngilizce.
+// (Türkiye odaklı başlangıçtan kalma 'tr' varsayılanı değiştirildi.)
+const DEFAULT_LOCALE = 'en';
 
 function isLocale(x) {
   return LOCALES.includes(x);
@@ -56,7 +60,7 @@ function pickLocale(req) {
   const ulkeDili = ULKE_DILI[ulke];
   if (isLocale(ulkeDili)) return ulkeDili;
 
-  return isLocale('en') ? 'en' : DEFAULT_LOCALE;
+  return DEFAULT_LOCALE;
 }
 
 // medstream.co (ve www) → MedStream feed odaklı domain.
