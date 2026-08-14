@@ -1795,7 +1795,9 @@
     "deleteModalBody": "Bu işlem hesabınızı ve gönderiler, yorumlar, tıbbi geçmiş ve kişisel bilgiler dahil tüm ilişkili verileri kalıcı olarak siler. Bu işlem geri alınamaz.",
     "deleteModalTypePrefix": "Onaylamak için",
     "deleteModalTypeSuffix": "yazın",
-    "deleting": "Siliniyor..."
+    "deleting": "Siliniyor...",
+    "translateContent": "Gönderi ve mesajlar da benim dilimde görünsün",
+    "translateContentDesc": "Kapalıyken içerikler yazıldığı dilde kalır. Açtığınızda tek tek çevirmenize gerek kalmaz."
   },
   "search": {
     "heroTitle": "Size Uygun Doktoru Bulun",

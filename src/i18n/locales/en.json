@@ -1549,7 +1549,9 @@
     "deleteModalBody": "This will permanently delete your account and all associated data including posts, comments, medical history, and personal information. This action cannot be undone.",
     "deleteModalTypePrefix": "Type",
     "deleteModalTypeSuffix": "to confirm",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "translateContent": "Show posts and messages in my language too",
+    "translateContentDesc": "When off, content stays in the language it was written in. Turn it on and you will not have to translate each item."
   },
   "search": {
     "heroTitle": "Find the Right Doctor for You",

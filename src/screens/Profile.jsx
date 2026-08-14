@@ -117,6 +117,36 @@ export default function Profile() {
   const [avatarFileName, setAvatarFileName] = useState('');
   const [preferredLanguage, setPreferredLanguage] = useState(() => i18n.language || 'en');
 
+  // Aktif içerik çevirisi tercihi. Sunucuda bildirim tercihleriyle aynı yerde
+  // saklanıyor; kullanıcı açısından ise bir DİL ayarı olduğu için burada.
+  const [translateContent, setTranslateContent] = useState(false);
+  const [translateSaving, setTranslateSaving] = useState(false);
+
+  useEffect(() => {
+    let iptal = false;
+    authAPI.getNotificationPrefs()
+      .then((r) => {
+        if (iptal) return;
+        const p = r?.data?.preferences ?? r?.preferences ?? {};
+        setTranslateContent(Boolean(p.translate_content));
+      })
+      .catch(() => {});
+    return () => { iptal = true; };
+  }, []);
+
+  const handleTranslateToggle = async () => {
+    const yeni = !translateContent;
+    setTranslateContent(yeni);          // önce ekranda göster
+    setTranslateSaving(true);
+    try {
+      await authAPI.updateNotificationPrefs({ translate_content: yeni });
+    } catch {
+      setTranslateContent(!yeni);       // kaydedilemediyse geri al
+    } finally {
+      setTranslateSaving(false);
+    }
+  };
+
   const handleLanguageChange = async (lang) => {
     setPreferredLanguage(lang);
     i18n.changeLanguage(lang);
@@ -534,6 +564,33 @@ export default function Profile() {
                         </button>
                       );
                     })}
+                  </div>
+
+                  {/* Aktif içerik çevirisi. Dil ayarının hemen altında duruyor:
+                      kullanıcı "hangi dilde göreceğim" sorusunu burada
+                      cevaplıyor, gönderi ve mesajlar da bu sorunun parçası. */}
+                  <div className="mt-4 flex items-start justify-between gap-4 px-3 py-3 rounded-xl border border-gray-200 bg-gray-50/60">
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-medium text-gray-800">
+                        {t('profile.translateContent', 'Gönderi ve mesajlar da benim dilimde görünsün')}
+                      </p>
+                      <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
+                        {t('profile.translateContentDesc', 'Kapalıyken içerikler yazıldığı dilde kalır. Açtığınızda tek tek çevirmenize gerek kalmaz.')}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleTranslateToggle}
+                      disabled={translateSaving}
+                      aria-pressed={translateContent}
+                      className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
+                        translateContent ? 'bg-teal-600' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        translateContent ? 'translate-x-6' : 'translate-x-1'
+                      }`} />
+                    </button>
                   </div>
                 </div>
               </div>
