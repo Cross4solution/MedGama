@@ -28,6 +28,7 @@ test.describe('Bildirim tercihleri', () => {
     const once = await tercihOku(page, 'inapp_social');
 
     const dugme = page.getByRole('button', { name: /Beğeni ve yorum|Likes and comments/i });
+    await expect(dugme).toBeEnabled();
     await dugme.click();
 
     await expect
@@ -37,7 +38,10 @@ test.describe('Bildirim tercihleri', () => {
       })
       .not.toBe(once);
 
-    // Eski hâline döndür
+    // Eski hâline döndür. Sunucu değeri, tarayıcının kendi isteği daha
+    // sonuçlanmadan da değişmiş görünebiliyor; düğme yeniden etkinleşmeden
+    // basılan tık kayboluyordu. Onun için önce düğmenin hazır olmasını bekle.
+    await expect(dugme).toBeEnabled();
     await dugme.click();
     await expect.poll(() => tercihOku(page, 'inapp_social'), { timeout: 20_000 }).toBe(once);
   });

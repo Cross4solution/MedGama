@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { authAPI } from '../../lib/api';
 import { useTranslation } from 'react-i18next';
@@ -32,11 +32,20 @@ export default function NotificationPrefsCard() {
   const [saving, setSaving] = useState(null);
   const [error, setError] = useState('');
 
+  // Kullanıcı bir tercihi değiştirdikten sonra gelen "ilk yükleme" cevabı
+  // ekrandakini eski değere geri çeviriyordu: sunucu yavaşken cevap tıktan
+  // sonra ulaşıyor, kullanıcı kapattığı bildirimi açık görüyor ve ikinci
+  // tıkta aynı isteği tekrar gönderiyordu. Dokunulduktan sonra gelen yükleme
+  // cevabı yok sayılır — ekrandaki değer artık kullanıcınındır.
+  const dokunuldu = useRef(false);
+
   const load = useCallback(async () => {
     try {
       const res = await authAPI.getNotificationPrefs();
+      if (dokunuldu.current) return;
       setPrefs(res?.data?.preferences || res?.preferences || {});
     } catch {
+      if (dokunuldu.current) return;
       setPrefs({});
     }
   }, []);
@@ -45,6 +54,7 @@ export default function NotificationPrefsCard() {
 
   const toggle = async (key) => {
     const next = { ...prefs, [key]: !(prefs?.[key] ?? true) };
+    dokunuldu.current = true;
     setPrefs(next);           // önce ekranda göster, istek arkada gitsin
     setSaving(key);
     setError('');
