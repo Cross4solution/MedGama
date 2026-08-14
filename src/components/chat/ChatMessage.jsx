@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { FileText, Film, Music, File, Download, X, ExternalLink } from 'lucide-react';
+import { FileText, Film, Music, File, Download, X, ExternalLink, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import { useContentTranslation } from '../../context/ContentTranslationContext';
 
 function formatSize(bytes) {
   if (!bytes) return '';
@@ -155,6 +156,17 @@ function ChatMessage({ message, leftAvatar, rightAvatar }) {
   const isSending = message.status === 'sending';
   const isFailed = message.status === 'failed';
 
+  // Mesaj çevirisi: yalnızca kullanıcı istediyse VE çeviri kendi sunucumuzda
+  // yapılıyorsa devreye girer — hasta yazışması dışarıdaki bir servise
+  // gönderilmez. Çeviri gösterildiğinde özgün metne dönmek her zaman mümkün;
+  // tıbbi yazışmada yanlış bir çevirinin fark edilmeden kalması ciddi sonuç
+  // doğurabilir.
+  const otoCeviri = useContentTranslation();
+  const [ozgunuGoster, setOzgunuGoster] = useState(false);
+  const ceviri = otoCeviri.metin(`message:${message.id}`, message.text, 'message', message.lang);
+  const cevrildi = ceviri.translated && !ozgunuGoster;
+  const gosterilecekMetin = cevrildi ? ceviri.text : message.text;
+
   return (
     <div className={`flex ${isDoctor ? 'justify-end' : 'justify-start'}`}>
       <div className={`flex items-end max-w-xs lg:max-w-md gap-2.5 ${isDoctor ? 'flex-row-reverse' : ''}`}>
@@ -170,7 +182,23 @@ function ChatMessage({ message, leftAvatar, rightAvatar }) {
             : 'bg-white border border-gray-200 text-gray-900 rounded-bl-md shadow-[0_1px_4px_rgba(0,0,0,0.06)]'
         } ${isSending ? 'opacity-60' : 'opacity-100'} ${isFailed ? 'ring-2 ring-red-300' : ''}`}>
           {hasText && (
-            <p className="text-[13px] leading-relaxed whitespace-pre-line">{message.text}</p>
+            <p className="text-[13px] leading-relaxed whitespace-pre-line">{gosterilecekMetin}</p>
+          )}
+
+          {/* Otomatik çeviri uyarısı — özgün metne dönüş her zaman açık. */}
+          {ceviri.translated && (
+            <button
+              type="button"
+              onClick={() => setOzgunuGoster((s) => !s)}
+              className={`mt-1 flex items-center gap-1 text-[10px] font-medium underline-offset-2 hover:underline ${
+                isDoctor ? 'text-white/70' : 'text-gray-400'
+              }`}
+            >
+              <Languages className="w-3 h-3" />
+              {ozgunuGoster
+                ? t('chat.showTranslation', 'Çeviriyi göster')
+                : t('chat.autoTranslated', 'Otomatik çeviri · özgününü göster')}
+            </button>
           )}
 
           {/* Attachments */}

@@ -2691,7 +2691,9 @@
     "failed": "Başarısız",
     "statusSent": "Gönderildi",
     "statusDelivered": "İletildi",
-    "statusRead": "Okundu"
+    "statusRead": "Okundu",
+    "autoTranslated": "Otomatik çeviri · özgününü göster",
+    "showTranslation": "Çeviriyi göster"
   },
   "medicalArchive": {
     "empty": "Henüz belge yok",

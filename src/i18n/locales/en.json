@@ -2442,7 +2442,9 @@
     "failed": "Failed",
     "statusSent": "Sent",
     "statusDelivered": "Delivered",
-    "statusRead": "Read"
+    "statusRead": "Read",
+    "autoTranslated": "Auto-translated · show original",
+    "showTranslation": "Show translation"
   },
   "medicalArchive": {
     "empty": "No documents yet",

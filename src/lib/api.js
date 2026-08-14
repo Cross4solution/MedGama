@@ -643,6 +643,15 @@ export const catalogAPI = {
 };
 
 // ── Notification Service ──
+// İçerik çevirisi. `translateAPI` tek metni çevirir (gönderilerdeki "çevir"
+// düğmesi); buradakiler kullanıcının "her şey benim dilimde görünsün" tercihi
+// içindir: durum sorgusu ve toplu çeviri.
+export const contentTranslationAPI = {
+  status: () => api.get('/translation/status'),
+  // items: [{ key, text, lang?, kind? }] — kind: post | comment | message
+  batch: (items, target) => api.post('/translation/batch', { items, target }),
+};
+
 export const notificationAPI = {
   list: (params) => api.get('/notifications', { params }),
   unreadCount: () => api.get('/notifications/unread-count'),

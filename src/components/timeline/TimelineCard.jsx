@@ -5,6 +5,7 @@ import { Heart, MessageCircle, MapPin, Share2, MoreHorizontal, X, Send, ThumbsUp
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
 import { toEnglishTimestamp } from '../../utils/i18n';
+import { useContentTranslation } from '../../context/ContentTranslationContext';
 import Modal from '../common/Modal';
 import { medStreamAPI, translateAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
@@ -439,6 +440,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const isGuest = !authUser;
   const isUnverifiedDoctor = !!(authUser && (authUser.role === 'doctor' || authUser.role_id === 'doctor') && !authUser.is_verified);
   const [expanded, setExpanded] = useState(false);
+  const otoCeviri = useContentTranslation();
   const [translated, setTranslated] = useState(null);
   const [showOriginal, setShowOriginal] = useState(false);
   const [translating, setTranslating] = useState(false);
@@ -618,8 +620,17 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
 
   const displayText = expanded ? item.text : truncate(item.text);
   const isTruncated = !expanded && item?.text && displayText !== item.text;
-  const showingTranslation = !!translated && !showOriginal;
-  const bodyText = showingTranslation ? translated : displayText;
+
+  // Kullanıcı "içerikler de benim dilimde görünsün" dediyse gönderi, tek tek
+  // düğmeye basılmadan otomatik çevrilir. Tercih kapalıysa bu hiçbir şey
+  // yapmaz ve gönderi yazıldığı dilde kalır.
+  const otomatik = otoCeviri.metin(`post:${item?.id}`, item?.text, 'post', item?.lang);
+  const otomatikCevrildi = otomatik.translated && !showOriginal;
+
+  const showingTranslation = (!!translated || otomatikCevrildi) && !showOriginal;
+  const bodyText = showOriginal
+    ? displayText
+    : (translated || (otomatik.translated ? otomatik.text : displayText));
   const targetLang = (i18n.language || 'en').split('-')[0];
   const handleTranslate = async () => {
     if (translated) { setShowOriginal((s) => !s); return; }

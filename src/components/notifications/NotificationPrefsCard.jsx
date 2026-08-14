@@ -17,6 +17,11 @@ import { useTranslation } from 'react-i18next';
  * kapatılabilir gibi göstermek yanıltıcı olurdu.
  */
 const AYARLAR = [
+  {
+    key: 'translate_content',
+    tr: 'Gönderi ve mesajlar benim dilimde görünsün',
+    en: 'Show posts and messages in my language',
+  },
   { key: 'email_review_received', tr: 'Yeni değerlendirme geldiğinde e-posta', en: 'Email me about new reviews' },
   { key: 'email_review_response', tr: 'Değerlendirmeme yanıt verilince e-posta', en: 'Email me when someone replies to my review' },
   { key: 'email_support',         tr: 'Destek talebime yanıt gelince e-posta', en: 'Email me about support replies' },

@@ -13,6 +13,7 @@ import { ToastProvider } from '@/context/ToastContext';
 import { FavoritesProvider } from '@/context/FavoritesContext';
 import { NotificationsProvider } from '@/context/NotificationsContext';
 import { CookieConsentProvider } from '@/context/CookieConsentContext';
+import { ContentTranslationProvider } from '@/context/ContentTranslationContext';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 
 export default function Providers({ children }) {
@@ -23,9 +24,13 @@ export default function Providers({ children }) {
         <ToastProvider>
           <FavoritesProvider>
             <NotificationsProvider>
-              <CookieConsentProvider>
-                {children}
-              </CookieConsentProvider>
+              {/* İçerik çevirisi oturuma bağlı (kullanıcının dili + tercihi),
+                  bu yüzden AuthProvider'ın içinde. */}
+              <ContentTranslationProvider>
+                <CookieConsentProvider>
+                  {children}
+                </CookieConsentProvider>
+              </ContentTranslationProvider>
             </NotificationsProvider>
           </FavoritesProvider>
         </ToastProvider>
