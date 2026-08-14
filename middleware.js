@@ -12,17 +12,51 @@ function isLocale(x) {
   return LOCALES.includes(x);
 }
 
+/**
+ * Ülke → dil. Yalnızca desteklediğimiz diller; listede olmayan ülke
+ * İngilizce'ye düşer (Türkçe değil — Japonya'dan giren biri için Türkçe,
+ * İngilizce'den daha yabancıdır).
+ *
+ * Çok dilli ülkeler (İsviçre, Belçika, Kanada) burada YOK: onlarda tarayıcı
+ * dili zaten doğru sonucu veriyor, ülkeye bakıp tek dil dayatmak yanlış olur.
+ */
+const ULKE_DILI = {
+  TR: 'tr', KZ: 'ru', AZ: 'az',
+  DE: 'de', AT: 'de',
+  RU: 'ru', BY: 'ru', KG: 'ru', UZ: 'ru',
+  FR: 'fr', MC: 'fr',
+  ES: 'es', MX: 'es', AR: 'es', CO: 'es', CL: 'es', PE: 'es',
+  IT: 'it', SM: 'it',
+  SA: 'ar', AE: 'ar', QA: 'ar', KW: 'ar', BH: 'ar', OM: 'ar',
+  EG: 'ar', IQ: 'ar', JO: 'ar', LB: 'ar', LY: 'ar', DZ: 'ar', MA: 'ar', TN: 'ar',
+};
+
+/**
+ * Sitenin hangi dilde açılacağı.
+ *
+ * Sıra bilinçli:
+ *  1. Kullanıcının kendi seçimi (çerez) — her şeyin üstünde
+ *  2. Tarayıcı dili — Almanya'da yaşayan bir Türk Türkçe görmeli; IP "Almanya"
+ *     dese de kişinin dili budur
+ *  3. Ülke — tarayıcı dili desteklenmiyorsa (ör. Japonca) bulunduğu ülkeye bak
+ *  4. İngilizce
+ */
 function pickLocale(req) {
-  // 1) i18next çerezi (kullanıcı tercihi)
   const cookieLang = req.cookies.get('i18next')?.value;
   if (isLocale(cookieLang)) return cookieLang;
-  // 2) Accept-Language
+
   const al = req.headers.get('accept-language') || '';
   for (const part of al.split(',')) {
     const code = part.trim().split(';')[0].split('-')[0].toLowerCase();
     if (isLocale(code)) return code;
   }
-  return DEFAULT_LOCALE;
+
+  // Ülke bilgisi kenar sunucudan hazır gelir — ek istek yapılmaz.
+  const ulke = (req.geo?.country || req.headers.get('x-vercel-ip-country') || '').toUpperCase();
+  const ulkeDili = ULKE_DILI[ulke];
+  if (isLocale(ulkeDili)) return ulkeDili;
+
+  return isLocale('en') ? 'en' : DEFAULT_LOCALE;
 }
 
 // medstream.co (ve www) → MedStream feed odaklı domain.

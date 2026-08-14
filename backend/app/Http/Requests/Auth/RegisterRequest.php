@@ -52,6 +52,9 @@ class RegisterRequest extends FormRequest
                 },
             ],
             'mobile'        => 'nullable|string|max:20',
+            // Kayıt anında ekranda açık olan dil hesabın varsayılanı olur.
+            // Desteklenmeyen bir kod gelirse yok sayılır (AuthService'te İngilizce'ye düşer).
+            'preferred_language' => 'sometimes|string|in:tr,en,de,ar,ru,fr,es,it,az',
             'role_id'       => 'sometimes|in:patient,doctor,clinicOwner',
             'city_id'       => 'sometimes|integer',
             'country_id'    => 'sometimes|integer',

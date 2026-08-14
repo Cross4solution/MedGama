@@ -31,6 +31,11 @@ class NotificationPreferences
 
         // Uygulama içi sosyal bildirimler (beğeni, yorum)
         'inapp_social'          => true,
+
+        // İçerik çevirisi: gönderi, yorum ve mesajlar kullanıcının diline
+        // çevrilsin mi. Varsayılan KAPALI — içerik yazıldığı dilde kalır;
+        // kullanıcı isterse tek düğmeyle hepsini kendi diline çevirir.
+        'translate_content'     => false,
     ];
 
     /**

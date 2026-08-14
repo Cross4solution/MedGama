@@ -19,6 +19,17 @@ class AppServiceProvider extends ServiceProvider
     {
         // Ödeme sağlayıcısı ayardan seçilir. Seçilmediğinde tahsilat KAPALIDIR:
         // UnconfiguredProvider açık hata verir, sessizce "ödendi" saymaz.
+        // İçerik çeviri motoru. Kendi sunucumuzda çalışan dil modeliyle
+        // yapılacak (karar: dış servis yok, hasta mesajları dışarı çıkmasın);
+        // model GPU bekliyor. O gelene kadar içerikler yazıldığı dilde kalır.
+        $this->app->bind(\App\Translation\TranslationEngine::class, function () {
+            return match (config('translation.engine')) {
+                // GPU sunucu gelince buraya tek satır, örn:
+                // 'local_llm' => new \App\Translation\LocalLlmEngine(),
+                default => new \App\Translation\UnavailableEngine(),
+            };
+        });
+
         // Alt yazı motoru. Gerçek zamanlı çalışması GPU gerektiriyor; sunucu
         // gelene kadar UnavailableEngine devrede ve arayüz düğmeyi pasif tutar.
         $this->app->bind(\App\Captions\TranscriptionEngine::class, function () {

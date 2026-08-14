@@ -292,6 +292,12 @@ Route::get('/health-access-logs', [\App\Http\Controllers\Api\HealthAccessLogCont
 
 // MedStream konum akışı — misafir IP→ülke (public), giriş sonrası kontrol + kaydet (auth)
 Route::get('/geo/ip-country', [GeoController::class, 'ipCountry']);
+
+// İçerik çevirisi. Durum sorgusu herkese açık (giriş yapmamış kullanıcı da
+// düğmenin durumunu görebilmeli); çeviri isteği oturum gerektirir.
+Route::get('/translation/status', [\App\Http\Controllers\Api\TranslationController::class, 'status']);
+Route::post('/translation/batch', [\App\Http\Controllers\Api\TranslationController::class, 'batch'])
+    ->middleware('auth:sanctum');
 // Ters-geocode sunucu tarafında: hasta tarayıcısı 3. taraf servise bağlanmaz
 Route::get('/geo/reverse', [GeoController::class, 'reverse'])->middleware('throttle:30,1');
 Route::get('/geo/forward', [GeoController::class, 'forward'])->middleware('throttle:30,1');

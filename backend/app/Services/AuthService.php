@@ -76,6 +76,9 @@ class AuthService
                 'country_id'              => $data['country_id'] ?? null,
                 'date_of_birth'           => $data['date_of_birth'] ?? null,
                 'gender'                  => $data['gender'] ?? null,
+                // Hesabın varsayılan dili: kayıt anında ekranda açık olan dil.
+                // Arayüz metinleri, e-postalar ve bildirimler bu dilde gider.
+                'preferred_language'      => $data['preferred_language'] ?? 'en',
                 'clinic_id'               => $clinicId,
                 'clinic_name'             => $data['clinic_name'] ?? null,
                 // Kayıtta gelen serbest metin geçmiş, okuma tarafının beklediği

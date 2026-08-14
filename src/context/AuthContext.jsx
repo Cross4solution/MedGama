@@ -5,6 +5,25 @@ import { API_BASE_URL } from '../config/apiBase';
 // Very light mock auth just for frontend flows
 const AuthContext = createContext(null);
 
+/**
+ * Ekranda o an açık olan dil.
+ *
+ * Kayıt sırasında hesabın varsayılan dili olarak gönderilir: kişi kayıt olmadan
+ * önce dili değiştirdiyse (ör. Arapça), hesabı açıldığında da Arapça görmeli.
+ * Sıra, dil seçicinin yazdığı yerlerle aynı: çerez → yerel kayıt → tarayıcı.
+ */
+function aktifDil() {
+  try {
+    const cerez = document.cookie.match(/(?:^|;\s*)i18next=([^;]+)/)?.[1];
+    if (cerez) return decodeURIComponent(cerez);
+    const kayit = localStorage.getItem('preferred_language');
+    if (kayit) return kayit;
+    return (navigator.language || 'tr').split('-')[0];
+  } catch {
+    return 'tr';
+  }
+}
+
 const COUNTRY_TO_CURRENCY = {
   TR: { code: 'TRY', locale: 'tr-TR', symbol: '₺' },
   US: { code: 'USD', locale: 'en-US', symbol: '$' },
@@ -275,7 +294,10 @@ export function AuthProvider({ children }) {
   }, [token, country]);
 
   const register = useCallback(async (payload) => {
-    const res = await endpoints.userRegister(payload);
+    // Kayıt anında ekranda hangi dil açıksa hesabın varsayılanı o olur.
+    // Kişi kayıt olmadan önce dili Arapça yaptıysa, hesabı da Arapça açılmalı —
+    // yeniden seçmek zorunda kalmamalı.
+    const res = await endpoints.userRegister({ preferred_language: aktifDil(), ...payload });
     // Laravel UserResource: { data: { ...user }, token, requires_email_verification }
     const apiUser = res?.data ?? res?.user ?? null;
     const access = res?.token ?? res?.access_token ?? null;
@@ -296,7 +318,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const registerDoctor = useCallback(async (payload) => {
-    const res = await endpoints.doctorRegister(payload);
+    const res = await endpoints.doctorRegister({ preferred_language: aktifDil(), ...payload });
     // Laravel UserResource: { data: { ...user }, token, requires_email_verification }
     const apiUser = res?.data ?? res?.user ?? null;
     const access = res?.token ?? res?.access_token ?? null;
