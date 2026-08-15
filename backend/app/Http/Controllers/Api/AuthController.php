@@ -133,6 +133,19 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out successfully.']);
     }
 
+    /**
+     * POST /auth/logout-all — tüm cihazlardan çıkış.
+     *
+     * Şifre değiştirildiğinde de çağrılır: şifreyi değiştirmenin amacı
+     * çalınmış erişimi kesmek, eski jetonlar açık kalırsa amaç boşa çıkar.
+     */
+    public function logoutAllDevices(Request $request): JsonResponse
+    {
+        $this->authService->logoutAllDevices($request->user());
+
+        return response()->json(['message' => 'Tüm cihazlardan çıkış yapıldı.']);
+    }
+
     #[OA\Get(
         path: '/auth/me',
         summary: 'Get authenticated user profile',

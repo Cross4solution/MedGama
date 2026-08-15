@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useLocation } from '@/compat/router';
+import { useLocation, Link } from '@/compat/router';
 import {
   Settings, User, Bell, Shield, Clock, Globe, Palette, Mail,
   Phone, MapPin, Camera, Save, Eye, EyeOff, Lock as LockIcon, Key,
@@ -449,6 +449,65 @@ const CRMSettings = ({ standalone = false }) => {
       setClinicHata(err?.message || (isTr ? 'Kaydedilemedi' : 'Could not save'));
     } finally {
       setClinicSaving(false);
+    }
+  };
+
+  // ── Güvenlik ──
+  // Bu sekmenin tamamı ekranda duruyordu: şifre alanları hiçbir state'e bağlı
+  // değildi, üç düğmenin hiçbirinde onClick yoktu. Yazılan şifre hiçbir yere
+  // gitmiyor, "Hesabı Sil" hiçbir şey yapmıyordu.
+  const [eskiSifre, setEskiSifre] = useState('');
+  const [yeniSifre, setYeniSifre] = useState('');
+  const [yeniSifre2, setYeniSifre2] = useState('');
+  const [sifreKaydediliyor, setSifreKaydediliyor] = useState(false);
+  const [sifreHata, setSifreHata] = useState('');
+  const [sifreBilgi, setSifreBilgi] = useState('');
+  const [cikisYapiliyor, setCikisYapiliyor] = useState(false);
+
+  const sifreDegistir = async () => {
+    setSifreHata('');
+    setSifreBilgi('');
+
+    if (!eskiSifre) {
+      setSifreHata(isTr ? 'Mevcut şifrenizi girin.' : 'Enter your current password.');
+      return;
+    }
+    if (yeniSifre.length < 8) {
+      setSifreHata(isTr ? 'Yeni şifre en az 8 karakter olmalı.' : 'New password must be at least 8 characters.');
+      return;
+    }
+    if (yeniSifre !== yeniSifre2) {
+      setSifreHata(isTr ? 'Yeni şifreler eşleşmiyor.' : 'New passwords do not match.');
+      return;
+    }
+
+    setSifreKaydediliyor(true);
+    try {
+      await authAPI.changePassword({
+        current_password: eskiSifre,
+        password: yeniSifre,
+        password_confirmation: yeniSifre2,
+      });
+      setEskiSifre(''); setYeniSifre(''); setYeniSifre2('');
+      setSifreBilgi(isTr ? 'Şifreniz güncellendi.' : 'Your password has been updated.');
+    } catch (err) {
+      setSifreHata(err?.data?.message || err?.message || (isTr ? 'Şifre güncellenemedi.' : 'Could not update password.'));
+    } finally {
+      setSifreKaydediliyor(false);
+    }
+  };
+
+  const tumCihazlardanCik = async () => {
+    setCikisYapiliyor(true);
+    try {
+      await authAPI.logoutAllDevices();
+      // Kendi oturumumuz da kapandı; girişe dönmek gerekiyor.
+      localStorage.removeItem('auth_state');
+      localStorage.removeItem('access_token');
+      window.location.href = '/login';
+    } catch (err) {
+      setSifreHata(err?.message || (isTr ? 'Çıkış yapılamadı.' : 'Could not sign out.'));
+      setCikisYapiliyor(false);
     }
   };
 
@@ -1356,7 +1415,13 @@ const CRMSettings = ({ standalone = false }) => {
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.currentPassword', 'Current Password')}</label>
                     <div className="relative">
-                      <input type={showPassword ? 'text' : 'password'} className="w-full sm:w-96 h-10 px-3 pr-10 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={eskiSifre}
+                        onChange={(e) => setEskiSifre(e.target.value)}
+                        autoComplete="current-password"
+                        className="w-full sm:w-96 h-10 px-3 pr-10 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                         {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                       </button>
@@ -1365,17 +1430,36 @@ const CRMSettings = ({ standalone = false }) => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.newPassword', 'New Password')}</label>
-                      <input type="password" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      <input
+                        type="password"
+                        value={yeniSifre}
+                        onChange={(e) => setYeniSifre(e.target.value)}
+                        autoComplete="new-password"
+                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.confirmNewPassword', 'Confirm New Password')}</label>
-                      <input type="password" className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                      <input
+                        type="password"
+                        value={yeniSifre2}
+                        onChange={(e) => setYeniSifre2(e.target.value)}
+                        autoComplete="new-password"
+                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      />
                     </div>
                   </div>
+                  {sifreHata && <p className="text-xs text-red-600">{sifreHata}</p>}
+                  {sifreBilgi && <p className="text-xs text-emerald-600">{sifreBilgi}</p>}
                 </div>
                 <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex justify-end">
-                  <button className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
-                    <Key className="w-4 h-4" /> {t('crm.settings.updatePassword', 'Update Password')}
+                  <button
+                    onClick={sifreDegistir}
+                    disabled={sifreKaydediliyor}
+                    className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50"
+                  >
+                    {sifreKaydediliyor ? <Loader2 className="w-4 h-4 animate-spin" /> : <Key className="w-4 h-4" />}
+                    {t('crm.settings.updatePassword', 'Update Password')}
                   </button>
                 </div>
               </div>
@@ -1383,14 +1467,30 @@ const CRMSettings = ({ standalone = false }) => {
               <div className="bg-white rounded-2xl border border-red-200 shadow-sm p-6">
                 <h2 className="text-sm font-bold text-red-700 mb-1">{t('crm.settings.dangerZone', 'Danger Zone')}</h2>
                 <p className="text-xs text-gray-500 mb-4">{t('crm.settings.irreversibleActions', 'Irreversible actions')}</p>
-                <div className="flex items-center gap-3">
-                  <button className="px-4 py-2 border border-red-300 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors flex items-center gap-1.5">
-                    <LogOut className="w-3.5 h-3.5" /> {t('crm.settings.signOutAllDevices', 'Sign Out All Devices')}
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={tumCihazlardanCik}
+                    disabled={cikisYapiliyor}
+                    className="px-4 py-2 border border-red-300 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    {cikisYapiliyor ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LogOut className="w-3.5 h-3.5" />}
+                    {t('crm.settings.signOutAllDevices', 'Sign Out All Devices')}
                   </button>
-                  <button className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors flex items-center gap-1.5">
+                  {/* Hesap silme profildeki mevcut akışa gidiyor: orada yazılı
+                      onay isteyen bir pencere zaten var ve çalışıyor. Geri
+                      dönüşü olmayan bir işlemin iki ayrı uygulaması olmamalı. */}
+                  <Link
+                    to="/profile?tab=security"
+                    className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors flex items-center gap-1.5"
+                  >
                     <Trash2 className="w-3.5 h-3.5" /> {t('crm.settings.deleteAccount', 'Delete Account')}
-                  </button>
+                  </Link>
                 </div>
+                <p className="mt-3 text-[11px] text-gray-400">
+                  {t('crm.settings.signOutAllHint', isTr
+                    ? 'Tüm cihazlardan çıkış, bu oturum dahil her yerde çıkış yapar.'
+                    : 'Signing out of all devices ends every session, including this one.')}
+                </p>
               </div>
             </div>
           )}

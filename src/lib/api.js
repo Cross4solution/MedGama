@@ -156,6 +156,8 @@ export const authAPI = {
   getNotificationPrefs: () => api.get('/auth/profile/notification-preferences'),
   updateNotificationPrefs: (payload) => api.put('/auth/profile/notification-preferences', payload),
   // GDPR data export (Art. 20)
+  // Tüm cihazlardan çıkış: kullanıcının bütün oturum jetonlarını siler.
+  logoutAllDevices: () => api.post('/auth/logout-all'),
   dataExport: () => api.get('/auth/profile/data-export'),
   // Account deletion
   deleteAccount: (payload) => api.delete('/auth/profile', { data: payload }),

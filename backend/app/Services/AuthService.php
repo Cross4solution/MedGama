@@ -258,6 +258,18 @@ class AuthService
         $user->currentAccessToken()->delete();
     }
 
+    /**
+     * Tüm cihazlardan çıkış: kullanıcının bütün oturum jetonlarını siler.
+     *
+     * Ortak bir bilgisayarda açık kalan oturumu kapatmanın başka yolu yoktu;
+     * `logout` yalnızca isteği yapan cihazın jetonunu siliyor, diğerleri
+     * açık kalıyordu. Hasta verisine erişen bir hesapta bu gerçek bir açık.
+     */
+    public function logoutAllDevices(User $user): void
+    {
+        $user->tokens()->delete();
+    }
+
     // ── Profile ──
 
     /**
