@@ -434,8 +434,11 @@ const CRMLayout = ({ children }) => {
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      {/* Logo */}
-      <Link to="/" className="flex items-center gap-2.5 px-5 py-5 border-b border-gray-800/50 hover:bg-white/5 transition-colors">
+      {/* Logo — bağlantı değil.
+          Tıklayınca ana siteye atıyordu ve CRM'de yapılan iş yarıda kalıyordu.
+          Siteye gitmek isteyen için menünün altında "Go to Medagama" var, o da
+          yeni sekmede açılıyor. */}
+      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-gray-800/50">
         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-teal-500/20">
           <Stethoscope className="w-5 h-5 text-white" />
         </div>
@@ -443,7 +446,7 @@ const CRMLayout = ({ children }) => {
           <span className="text-base font-bold text-white tracking-tight">Medagama</span>
           <span className="block text-[10px] text-gray-400 font-medium tracking-wider uppercase">CRM Platform</span>
         </div>
-      </Link>
+      </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-2 space-y-1.5">
