@@ -198,6 +198,47 @@ class AppointmentTest extends TestCase
         $response->assertStatus(422);
     }
 
+    /**
+     * CRM takvimi randevuyu doğru kutuya koyabilmek için mutlak ana ihtiyaç
+     * duyuyor. Saat dilimsiz "2026-08-20T10:00" gönderilirse takvim onu
+     * tarayıcının yerel saati sanıyor ve yurt dışındaki doktorun ekranında
+     * randevu yanlış saatte görünüyor.
+     */
+    public function test_takvim_olaylari_mutlak_an_ve_ret_hakki_tasir(): void
+    {
+        $randevu = Appointment::factory()->create([
+            'patient_id'       => $this->patient->id,
+            'doctor_id'        => $this->doctor->id,
+            'clinic_id'        => $this->clinic->id,
+            'status'           => 'confirmed',
+            'appointment_date' => now()->addDay()->toDateString(),
+            'appointment_time' => '10:00',
+            'starts_at'        => now()->addHours(26),
+            'timezone'         => 'Europe/Istanbul',
+        ]);
+
+        Sanctum::actingAs($this->doctor);
+        $olay = collect($this->getJson('/api/appointments/calendar-events')->assertOk()->json('events'))
+            ->firstWhere('id', $randevu->id);
+
+        $this->assertNotNull($olay, 'Randevu takvim olaylarında yok');
+
+        // Saat dilimi eki olmadan gönderilirse takvim yanlış yere koyar.
+        $this->assertMatchesRegularExpression(
+            '/(Z|[+-]\d{2}:\d{2})$/',
+            $olay['start'],
+            'Takvim olayı saat dilimsiz gönderilmiş',
+        );
+        $this->assertSame(
+            $randevu->starts_at->utc()->toDateTimeString(),
+            \Illuminate\Support\Carbon::parse($olay['start'])->utc()->toDateTimeString(),
+        );
+
+        // Ret hakkını CRM yeniden hesaplamasın diye sunucudan geliyor.
+        $this->assertTrue($olay['extendedProps']['doctor_can_reject']);
+        $this->assertSame('Europe/Istanbul', $olay['extendedProps']['timezone']);
+    }
+
     public function test_doctor_can_view_own_appointment(): void
     {
         $appointment = Appointment::factory()->create([

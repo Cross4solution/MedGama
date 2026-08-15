@@ -270,11 +270,15 @@ class AppointmentService
         return $appointments->map(function ($apt) {
             $date = $apt->appointment_date->format('Y-m-d');
             $time = $apt->appointment_time;
-            $start = "{$date}T{$time}:00";
 
-            // Estimate end time: 30 min default
-            $endTs = strtotime($start) + 1800;
-            $end = date('Y-m-d\TH:i:s', $endTs);
+            // Takvime mutlak an gönderiyoruz. Saat dilimsiz "2026-08-20T14:00"
+            // gönderilirse takvim onu tarayıcının yerel saati sanıyor: yurt
+            // dışındaki doktorun ekranında randevu yanlış saat kutusuna düşüyor.
+            $an = $apt->startsAt();
+            $start = $an ? $an->toIso8601String() : "{$date}T{$time}:00";
+            $end = $an
+                ? $an->copy()->addMinutes(30)->toIso8601String()
+                : date('Y-m-d\TH:i:s', strtotime("{$date}T{$time}:00") + 1800);
 
             $statusColor = match ($apt->status) {
                 'confirmed'  => ['bg' => '#ECFDF5', 'border' => '#10B981', 'text' => '#065F46'],
@@ -301,6 +305,11 @@ class AppointmentService
                     'appointment_type' => $apt->appointment_type,
                     'appointment_date' => $date,
                     'appointment_time' => $time,
+                    // Saat dilimi farkındalıklı gösterim ve ret hakkı için:
+                    // CRM takvimi bunları randevu listesiyle aynı şekilde okur.
+                    'starts_at'        => $an?->toISOString(),
+                    'timezone'         => $apt->timezoneName(),
+                    'doctor_can_reject'=> $apt->doctorCanReject(),
                     'confirmation_note'=> $apt->confirmation_note,
                     'doctor_note'      => $apt->doctor_note,
                     'video_conference_link' => $apt->video_conference_link,

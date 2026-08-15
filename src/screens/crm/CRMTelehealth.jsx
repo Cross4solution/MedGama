@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import ProTeaser from '../../components/crm/ProTeaser';
 import useTelehealth from '../../hooks/useTelehealth';
+import { appointmentTimeDisplay, formatDateInZone, viewerTimezone } from '../../utils/dates';
 import {
   Video, VideoOff, Mic, MicOff, Monitor, PhoneOff, Captions,
   CaptionsOff, Clock, Shield, Wifi, WifiOff, User, Stethoscope,
@@ -12,7 +13,8 @@ import {
 } from 'lucide-react';
 
 function CRMTelehealth() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isTr = i18n.language?.startsWith('tr');
   const { user, isPro } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -402,8 +404,30 @@ function CRMTelehealth() {
               {t('telehealth.appointmentInfo', 'Appointment')}
             </h3>
             <div className="space-y-1.5 text-xs text-gray-400">
-              <p><span className="text-gray-500">{t('telehealth.date', 'Date')}:</span> {session?.appointment?.appointment_date || '—'}</p>
-              <p><span className="text-gray-500">{t('telehealth.time', 'Time')}:</span> {session?.appointment?.appointment_time || '—'}</p>
+              {/* Görüşme saati bakanın kendi diliminde. Uzaktan görüşmede
+                  taraflar farklı ülkelerde olabiliyor; duvar saati tek başına
+                  kimin saati olduğunu söylemiyor. */}
+              {(() => {
+                const apt = session?.appointment;
+                const g = appointmentTimeDisplay(apt, isTr ? 'tr-TR' : 'en-US');
+                const tarih = apt?.starts_at
+                  ? formatDateInZone(apt.starts_at, viewerTimezone(), isTr ? 'tr-TR' : 'en-US')
+                  : (apt?.appointment_date || '—');
+                return (
+                  <>
+                    <p><span className="text-gray-500">{t('telehealth.date', 'Date')}:</span> {tarih}</p>
+                    <p>
+                      <span className="text-gray-500">{t('telehealth.time', 'Time')}:</span>{' '}
+                      {g.time || apt?.appointment_time || '—'}
+                      {g.showProvider && (
+                        <span className="ml-1 text-gray-500">
+                          ({isTr ? 'klinikte' : 'clinic'} {g.providerTime})
+                        </span>
+                      )}
+                    </p>
+                  </>
+                );
+              })()}
               <p><span className="text-gray-500">{t('telehealth.type', 'Type')}:</span> {session?.appointment?.appointment_type || 'Online'}</p>
               <p><span className="text-gray-500">{t('telehealth.status', 'Status')}:</span>{' '}
                 <span className={`font-medium ${

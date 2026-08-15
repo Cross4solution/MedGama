@@ -16,6 +16,7 @@ import { appointmentAPI, doctorProfileAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import useAppointmentSync from '../../hooks/useAppointmentSync';
 import ProTeaser from '../../components/crm/ProTeaser';
+import { appointmentTimeDisplay, formatDateInZone, viewerTimezone } from '../../utils/dates';
 
 const POLL_INTERVAL = 30000; // 30s
 
@@ -40,7 +41,8 @@ const StatusBadge = ({ status, t }) => {
 
 // ─── Main Component ──────────────────────────────────────────
 const CRMSmartCalendar = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isTr = i18n.language?.startsWith('tr');
   const navigate = useNavigate();
   const { user, isPro } = useAuth();
   const calendarRef = useRef(null);
@@ -483,11 +485,32 @@ const CRMSmartCalendar = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-50 rounded-xl px-3 py-2.5">
                   <div className="flex items-center gap-1.5 mb-1"><CalendarDays className="w-3.5 h-3.5 text-gray-400" /><p className="text-[10px] font-semibold text-gray-400 uppercase">{t('common.date', 'Date')}</p></div>
-                  <p className="text-sm text-gray-800 font-medium">{selectedEvent.appointment_date || selectedEvent.start?.slice(0, 10)}</p>
+                  <p className="text-sm text-gray-800 font-medium">
+                    {selectedEvent.starts_at
+                      ? formatDateInZone(selectedEvent.starts_at, viewerTimezone(), isTr ? 'tr-TR' : 'en-US')
+                      : (selectedEvent.appointment_date || selectedEvent.start?.slice(0, 10))}
+                  </p>
                 </div>
                 <div className="bg-gray-50 rounded-xl px-3 py-2.5">
                   <div className="flex items-center gap-1.5 mb-1"><Clock className="w-3.5 h-3.5 text-gray-400" /><p className="text-[10px] font-semibold text-gray-400 uppercase">{t('common.time', 'Time')}</p></div>
-                  <p className="text-sm text-gray-800 font-medium">{selectedEvent.appointment_time || selectedEvent.start?.slice(11, 16)}</p>
+                  {/* Saat, takvime bakanın kendi diliminde; klinik başka
+                      dilimdeyse kliniğin saati de yazılıyor. */}
+                  <p className="text-sm text-gray-800 font-medium">
+                    {(() => {
+                      const g = appointmentTimeDisplay(selectedEvent, isTr ? 'tr-TR' : 'en-US');
+                      const saat = g.time || selectedEvent.appointment_time || selectedEvent.start?.slice(11, 16);
+                      return (
+                        <>
+                          {saat}
+                          {g.showProvider && (
+                            <span className="ml-1 text-[11px] font-normal text-gray-500">
+                              ({isTr ? 'klinikte' : 'clinic'} {g.providerTime})
+                            </span>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </p>
                 </div>
               </div>
 

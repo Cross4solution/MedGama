@@ -12,6 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { appointmentAPI, doctorProfileAPI, clinicVerificationAPI } from '../../lib/api';
 import useAppointmentSync from '../../hooks/useAppointmentSync';
+import { appointmentTimeDisplay, formatDateInZone, viewerTimezone } from '../../utils/dates';
 import CRMModal, { ModalLabel, ModalInput, ModalSelect, ModalTextarea, ModalPrimaryButton, ModalCancelButton } from '../../components/crm/CRMModal';
 import ClinicVerificationModal from '../../components/crm/ClinicVerificationModal';
 import FullCalendar from '@fullcalendar/react';
@@ -60,13 +61,39 @@ const TypeBadge = ({ type }) => {
   );
 };
 
+/**
+ * Randevu saati, CRM'e bakan kişinin KENDİ saat diliminde. Klinik başka bir
+ * dilimdeyse kliniğin yerel saati de yazılır — tek bir "14:00" yurt dışından
+ * çalışan doktor için hangi ülkenin saati olduğunu belirsiz bırakıyordu.
+ * Ana sitedeki hasta/doktor ekranlarıyla aynı yardımcı, aynı sonuç.
+ */
+const RandevuSaati = ({ a, isTr, className = '' }) => {
+  const g = appointmentTimeDisplay(a.raw || a, isTr ? 'tr-TR' : 'en-US');
+  return (
+    <span className={className}>
+      {g.time || a.time || '--:--'}
+      {g.showProvider && (
+        <span className="ml-1 text-[11px] font-normal text-gray-500">
+          ({isTr ? 'klinikte' : 'clinic'} {g.providerTime})
+        </span>
+      )}
+    </span>
+  );
+};
+
 // Map API response to internal format
 const mapApi = (a) => ({
   id: a.id,
   title: a.patient?.fullname || 'Patient',
-  start: a.appointment_date?.split('T')[0] + 'T' + (a.appointment_time || '09:00'),
+  start: a.starts_at || (a.appointment_date?.split('T')[0] + 'T' + (a.appointment_time || '09:00')),
   date: a.appointment_date?.split('T')[0],
   time: a.appointment_time || '09:00',
+  // Saat dilimi hesabı için ham alanlar: starts_at mutlak an, timezone
+  // kliniğin dilimi, doctor_can_reject sunucunun 2 saat kuralı.
+  raw: a,
+  starts_at: a.starts_at || null,
+  timezone: a.timezone || null,
+  doctor_can_reject: !!a.doctor_can_reject,
   appointment_type: a.appointment_type || 'inPerson',
   status: a.status || 'pending',
   patient: a.patient || {},
@@ -328,7 +355,11 @@ const GatekeeperModal = ({ isOpen, onClose, user, needsVerification, needsUpgrad
 // 3-Step Appointment Creation Modal
 // ═══════════════════════════════════════════════════
 const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defaultTime, user }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isTr = i18n.language?.startsWith('tr');
+  // Randevu saatleri sunucuda kliniğin dilimiyle saklanıyor; formda da o
+  // dilim geçerli. Sunucu bildirmediyse platform varsayılanına düşer.
+  const saglayiciTz = user?.provider_timezone || 'Europe/Istanbul';
   const [step, setStep] = useState(1);
   const [creating, setCreating] = useState(false);
   const { notify } = useToast();
@@ -491,6 +522,14 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
                 </ModalSelect>
               </div>
             </div>
+            {/* Girilen saat kliniğin saatidir — muayene fiziksel olarak orada
+                oluyor. Yurt dışından giren doktor kendi saatiyle yazmasın diye
+                dilim açıkça yazılıyor; sunucu da bu dilimle saklıyor. */}
+            <p className="-mt-4 text-[11px] text-gray-500">
+              {t('crm.appointments.timezoneHint', isTr
+                ? `Saatler klinik saat diliminde (${saglayiciTz}).`
+                : `Times are in the clinic's timezone (${saglayiciTz}).`)}
+            </p>
             <div className="border-t border-gray-100 pt-5">
               <ModalLabel icon={UserPlus}>{t('crm.appointments.patientName')}</ModalLabel>
               <ModalInput
@@ -573,7 +612,8 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
 // Appointment Detail Modal
 // ═══════════════════════════════════════════════════
 const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isTr = i18n.language?.startsWith('tr');
   const navigate = useNavigate();
   if (!appointment) return null;
   const a = appointment;
@@ -616,11 +656,17 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('common.date')}</p>
-              <p className="text-sm text-gray-800 font-medium mt-0.5">{a.date}</p>
+              <p className="text-sm text-gray-800 font-medium mt-0.5">
+                {a.starts_at
+                  ? formatDateInZone(a.starts_at, viewerTimezone(), isTr ? 'tr-TR' : 'en-US')
+                  : a.date}
+              </p>
             </div>
             <div>
               <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('common.time')}</p>
-              <p className="text-sm text-gray-800 font-medium mt-0.5">{a.time}</p>
+              <p className="text-sm text-gray-800 font-medium mt-0.5">
+                <RandevuSaati a={a} isTr={isTr} />
+              </p>
             </div>
             <div>
               <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('common.doctor')}</p>
@@ -667,10 +713,14 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
             )}
           </div>
           <div className="flex items-center gap-2">
-            {a.status === 'pending' && (
-              <button onClick={() => onStatusChange(a.id, 'confirmed')} disabled={!!updating}
-                className="px-4 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50">
-                {t('crm.appointments.confirm')}
+            {/* Onay düğmesi yok: hastanın aldığı randevu doğrudan onaylı geliyor.
+                Doktorun hakkı reddetmek ve sunucu bunu randevuya 2 saat kalana
+                kadar açık tutuyor (doctor_can_reject). Kuralı burada yeniden
+                hesaplamıyoruz — iki yerde iki farklı sayı olmasın. */}
+            {a.doctor_can_reject && (
+              <button onClick={() => onStatusChange(a.id, 'cancelled')} disabled={!!updating}
+                className="px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50">
+                {t('crm.appointments.reject', isTr ? 'Reddet' : 'Reject')}
               </button>
             )}
             {(a.status === 'confirmed' || a.status === 'pending') && (
@@ -699,7 +749,8 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
 // Main CRMAppointments Component
 // ═══════════════════════════════════════════════════
 const CRMAppointments = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isTr = i18n.language?.startsWith('tr');
   const { user, isPro } = useAuth();
   const { notify } = useToast();
   const calendarRef = useRef(null);
@@ -854,8 +905,14 @@ const CRMAppointments = () => {
     return list;
   }, [appointments, statusFilter, searchQuery]);
 
-  // ── Pending requests ──
-  const pendingRequests = useMemo(() => appointments.filter(a => a.status === 'pending'), [appointments]);
+  // ── Reddedilebilir randevular ──
+  // Hastanın aldığı randevu doğrudan onaylı; doktorun onaylaması gerekmiyor.
+  // Bu şerit "onay bekleyenler" değil, "hâlâ reddedebileceklerin" listesi.
+  // Hakkın açık olup olmadığını sunucu söylüyor (doctor_can_reject).
+  const reddedilebilir = useMemo(
+    () => appointments.filter(a => a.doctor_can_reject),
+    [appointments],
+  );
 
   // ── Custom event render ──
   const renderEventContent = useCallback((eventInfo) => {
@@ -875,42 +932,53 @@ const CRMAppointments = () => {
 
   return (
     <div className="space-y-5">
-      {/* ── Pending Requests Banner ── */}
-      {pendingRequests.length > 0 && (
-        <div className="bg-white rounded-2xl border border-amber-200/60 shadow-sm">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-amber-100">
+      {/* ── Yaklaşan randevular: onay değil, ret şeridi ──
+          Hasta randevu aldığında doğrudan onaylanıyor. Burası doktora
+          "onayla" demiyor; sadece hâlâ reddedebileceği randevuları
+          gösteriyor. Süre dolunca satır kendiliğinden kayboluyor. */}
+      {reddedilebilir.length > 0 && (
+        <div className="bg-white rounded-2xl border border-teal-200/60 shadow-sm">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-teal-100">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
-                <AlertCircle className="w-4 h-4 text-amber-600" />
+              <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center">
+                <CalendarCheck className="w-4 h-4 text-teal-600" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-gray-900">{t('crm.appointments.pendingRequests')}</h2>
-                <p className="text-[11px] text-gray-500">{t('crm.appointments.awaitingConfirmation', { count: pendingRequests.length })}</p>
+                <h2 className="text-sm font-bold text-gray-900">
+                  {t('crm.appointments.upcomingConfirmed', isTr ? 'Yaklaşan randevular' : 'Upcoming appointments')}
+                </h2>
+                <p className="text-[11px] text-gray-500">
+                  {t('crm.appointments.rejectWindowNote', isTr
+                    ? 'Randevular otomatik onaylı. Saatine 2 saat kalana kadar reddedebilirsiniz.'
+                    : 'Appointments are confirmed automatically. You can reject until 2 hours before.')}
+                </p>
               </div>
             </div>
           </div>
-          <div className="divide-y divide-amber-50 max-h-48 overflow-y-auto">
-            {pendingRequests.slice(0, 5).map((apt) => (
-              <div key={apt.id} className="flex items-center justify-between px-5 py-3 hover:bg-amber-50/30 transition-colors">
+          <div className="divide-y divide-teal-50 max-h-48 overflow-y-auto">
+            {reddedilebilir.slice(0, 5).map((apt) => (
+              <div key={apt.id} className="flex items-center justify-between px-5 py-3 hover:bg-teal-50/30 transition-colors">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-200 to-amber-300 flex items-center justify-center text-amber-700 text-[10px] font-bold flex-shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-200 to-emerald-300 flex items-center justify-center text-teal-800 text-[10px] font-bold flex-shrink-0">
                     {(apt.patient?.fullname || 'P').split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-gray-900 truncate">{apt.patient?.fullname || t('common.patient')}</p>
-                    <p className="text-[11px] text-gray-500">{apt.date} · {apt.time} · <TypeBadge type={apt.appointment_type} /></p>
+                    <p className="text-[11px] text-gray-500 flex items-center gap-1 flex-wrap">
+                      {apt.starts_at
+                        ? formatDateInZone(apt.starts_at, viewerTimezone(), isTr ? 'tr-TR' : 'en-US')
+                        : apt.date}
+                      <span>·</span>
+                      <RandevuSaati a={apt} isTr={isTr} />
+                      <span>·</span>
+                      <TypeBadge type={apt.appointment_type} />
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <button onClick={() => handleStatusChange(apt.id, 'confirmed')} disabled={!!updating}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-teal-600 text-white rounded-lg text-[11px] font-semibold hover:bg-teal-700 disabled:opacity-50">
-                    <CheckCircle2 className="w-3 h-3" /> {t('crm.appointments.confirm')}
-                  </button>
-                  <button onClick={() => handleStatusChange(apt.id, 'cancelled')} disabled={!!updating}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-red-600 bg-red-50 rounded-lg text-[11px] font-semibold hover:bg-red-100 disabled:opacity-50">
-                    <XCircle className="w-3 h-3" /> {t('crm.appointments.decline')}
-                  </button>
-                </div>
+                <button onClick={() => handleStatusChange(apt.id, 'cancelled')} disabled={!!updating}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 text-red-600 bg-red-50 rounded-lg text-[11px] font-semibold hover:bg-red-100 disabled:opacity-50 flex-shrink-0">
+                  <XCircle className="w-3 h-3" /> {t('crm.appointments.reject', isTr ? 'Reddet' : 'Reject')}
+                </button>
               </div>
             ))}
           </div>

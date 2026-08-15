@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { appointmentAPI, clinicVerificationAPI, hospitalAPI } from '../../lib/api';
+import { appointmentTimeDisplay } from '../../utils/dates';
 import {
   CalendarDays,
   Clock,
@@ -195,7 +196,8 @@ const HospitalStatCards = () => {
 
 const CRMDashboard = () => {
   const { user, isPro } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isTr = i18n.language?.startsWith('tr');
   const [appointmentFilter, setAppointmentFilter] = useState('all');
   const [apiAppointments, setApiAppointments] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -208,7 +210,10 @@ const CRMDashboard = () => {
         setApiAppointments(list.map(a => ({
           id: a.id,
           date: a.appointment_date,
-          time: a.appointment_time || '09:00',
+          // Panel saati de bakanın kendi diliminde: randevu ekranıyla farklı
+          // saat göstermesi kafa karıştırıyordu.
+          time: appointmentTimeDisplay(a, isTr ? 'tr-TR' : 'en-US').time
+            || a.appointment_time || '09:00',
           endTime: '',
           patient: a.patient?.fullname || 'Patient',
           age: '',

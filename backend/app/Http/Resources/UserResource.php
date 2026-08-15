@@ -97,6 +97,10 @@ class UserResource extends JsonResource
             $data['onboarding_completed'] = $profile ? (bool) $profile->onboarding_completed : false;
             $data['verification_status'] = $this->verification_status ?? 'unverified';
             $data['admin_verification_note'] = $this->admin_verification_note;
+
+            // Randevu saatleri bu dilimde saklanıyor. CRM randevu girerken
+            // "hangi saat?" sorusunu ancak bunu bilirse yanıtlayabiliyor.
+            $data['provider_timezone'] = $profile?->timezone ?: \App\Models\Appointment::VARSAYILAN_TZ;
         }
 
         // For clinic owners, include onboarding + verification status
@@ -106,6 +110,7 @@ class UserResource extends JsonResource
             $ownedClinic = $this->relationLoaded('ownedClinic') ? $this->ownedClinic : $this->ownedClinic()->first();
             $c = $ownedClinic ?? $clinic;
             $data['onboarding_completed'] = $c ? (bool) $c->onboarding_completed : false;
+            $data['provider_timezone'] = $c?->timezone ?: \App\Models\Appointment::VARSAYILAN_TZ;
         }
 
         // For hospitals, include hospital info
