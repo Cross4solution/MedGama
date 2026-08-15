@@ -72,7 +72,7 @@ class PrescriptionService
             'clinic'        => $clinic,
             'prescriptions' => $record->prescriptions ?? [],
             'vitals'        => $record->vitals ?? [],
-            'icd10_code'    => $record->icd10_code,
+            // ICD-10 kodu artık tutulmuyor; tanı serbest metin olarak yazılıyor.
             'diagnosis'     => $record->diagnosis_note,
             'date'          => $record->created_at->format('d.m.Y'),
             'time'          => $record->created_at->format('H:i'),

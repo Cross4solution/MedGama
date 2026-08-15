@@ -342,7 +342,8 @@ export const examinationAPI = {
   create: (payload) => api.post('/crm/examinations', payload),
   update: (id, payload) => api.put(`/crm/examinations/${id}`, payload),
   delete: (id) => api.delete(`/crm/examinations/${id}`),
-  searchIcd10: (term) => api.get('/crm/icd10/search', { params: { q: term } }),
+  // searchIcd10 kaldırıldı: ICD-10 kodlaması projeden çıkarıldı, sunucuda
+  // karşılığı olmayan bir uca işaret ediyordu.
   prescriptionPdf: (id) => api.get(`/crm/examinations/${id}/prescription-pdf`, { responseType: 'blob' }),
 };
 

@@ -280,9 +280,7 @@ class PatientService
                 'id' => $exam->id,
                 'type' => 'examination',
                 'subtype' => null,
-                'title' => $exam->icd10_code
-                    ? "Examination — {$exam->icd10_code}"
-                    : 'Examination',
+                'title' => 'Examination',
                 'date' => $exam->created_at->toDateString(),
                 'time' => $exam->created_at->format('H:i'),
                 'status' => null,
@@ -291,7 +289,6 @@ class PatientService
                 'notes' => $exam->diagnosis_note,
                 'vitals' => $exam->vitals,
                 'prescriptions' => $exam->prescriptions,
-                'icd10_code' => $exam->icd10_code,
                 'sort_key' => $exam->created_at->toDateTimeString(),
             ]);
         }
@@ -473,16 +470,19 @@ class PatientService
             ->pluck('tag')
             ->toArray();
 
-        // Recent diagnoses (ICD-10 codes)
+        // Son tanılar. ICD-10 kodlaması Mart'ta kaldırıldı (tablo ve kolon
+        // düşürüldü) ama bu sorgu hâlâ o kolonu seçiyordu: MySQL/TiDB'de
+        // "unknown column" hatası veriyordu. Tanı artık serbest metin olarak
+        // diagnosis_note alanında tutuluyor.
         $recentDiagnoses = PatientRecord::active()
             ->examinations()
             ->where('patient_id', $patientId)
-            ->whereNotNull('icd10_code')
+            ->whereNotNull('diagnosis_note')
             ->when($doctorScope, fn($q) => $q->where('doctor_id', $doctorScope))
             ->when($clinicScope, fn($q) => $q->where('clinic_id', $clinicScope))
             ->orderByDesc('created_at')
             ->limit(5)
-            ->select('icd10_code', 'diagnosis_note', 'created_at')
+            ->select('diagnosis_note', 'created_at')
             ->get()
             ->toArray();
 

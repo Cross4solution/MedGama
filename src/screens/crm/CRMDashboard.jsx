@@ -177,7 +177,9 @@ const CRMDashboard = () => {
   useEffect(() => {
     appointmentAPI.list({ per_page: 50 }).then(res => {
       const list = res?.data || [];
-      if (list.length > 0) {
+      // Boş liste de bir cevaptır: eskiden yalnızca dolu liste yazılıyordu,
+      // randevusu olmayan klinikte kutu "—" (bilinmiyor) gösteriyordu.
+      {
         setApiAppointments(list.map(a => ({
           id: a.id,
           date: a.appointment_date,

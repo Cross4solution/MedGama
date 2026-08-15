@@ -17,7 +17,6 @@ class UpdateExaminationRequest extends FormRequest
             'appointment_id'   => 'sometimes|nullable|uuid|exists:appointments,id',
 
             // ICD-10
-            'icd10_code'       => 'sometimes|nullable|string|max:10|exists:icd10_codes,code',
             'diagnosis_note'   => 'sometimes|nullable|string|max:5000',
 
             // Vitals (JSON)

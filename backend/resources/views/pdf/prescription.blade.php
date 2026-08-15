@@ -154,9 +154,8 @@
     {{-- ── DIAGNOSIS ── --}}
     <div class="section">
         <div class="section-title">Tanı / Diagnosis</div>
-        @if($icd10_code)
-            <div class="info-row"><span class="info-label">ICD-10:</span> <span class="info-value">{{ $icd10_code }}</span></div>
-        @endif
+        {{-- ICD-10 satırı kaldırıldı: kodlama projeden çıkarıldı, tanı
+             serbest metin olarak yazılıyor. --}}
         @if($diagnosis)
             <div class="note-text">{{ $diagnosis }}</div>
         @else

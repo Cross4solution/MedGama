@@ -557,7 +557,6 @@ const PrintableReport = ({ exam, t }) => {
   const vitals = exam.vitals || {};
   const prescriptions = exam.prescriptions || [];
   const diagnoses = exam.diagnoses || [];
-  const icd10 = exam.icd10_code;
   const reportDate = exam.created_at ? new Date(exam.created_at) : new Date();
 
   const age = patient.date_of_birth
@@ -648,7 +647,7 @@ const PrintableReport = ({ exam, t }) => {
       )}
 
       {/* ── Diagnoses (ICD-10) ── */}
-      {(icd10 || diagnoses.length > 0) && (
+      {diagnoses.length > 0 && (
         <div className="print-section">
           <div className="print-section-title">
             {t('crm.examination.print.diagnoses', 'Diagnoses')} ({t('crm.examination.symptomsTreatments', 'Symptoms & Treatments')})
@@ -853,7 +852,8 @@ const CRMExamination = () => {
         patient_id: patientId,
         clinic_id: clinicId || undefined,
         appointment_id: appointmentId || undefined,
-        icd10_code: diagnoses[0]?.code || undefined,
+        // ICD-10 kodu gönderilmiyor: kodlama projeden çıkarıldı, sunucuda
+        // karşılığı yok. Tanı serbest metin olarak diagnosis_note'ta.
         diagnosis_note: diagnosisNote || undefined,
         vitals: buildVitalsPayload(),
         examination_note: examinationNote || undefined,
@@ -950,7 +950,6 @@ const CRMExamination = () => {
     return examinations.filter(
       (e) =>
         (e.patient?.fullname || '').toLowerCase().includes(q) ||
-        (e.icd10_code || '').toLowerCase().includes(q) ||
         (e.diagnosis_note || '').toLowerCase().includes(q)
     );
   }, [historySearch, examinations]);
@@ -1359,11 +1358,6 @@ const CRMExamination = () => {
                                 </span>
                               )}
                             </div>
-                            {exam.icd10_code && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-medium bg-teal-50 text-teal-700 px-2 py-0.5 rounded-lg border border-teal-200 mt-1">
-                                <span className="font-bold">{exam.icd10_code}</span>
-                              </span>
-                            )}
                             {exam.prescriptions && exam.prescriptions.length > 0 && (
                               <div className="flex flex-wrap gap-1.5 mt-1.5">
                                 {exam.prescriptions.slice(0, 3).map((m, i) => (
@@ -1420,11 +1414,6 @@ const CRMExamination = () => {
                         <p className="text-base font-bold text-gray-900">{selectedExamDetail.patient?.fullname || t('common.patient', 'Patient')}</p>
                         <p className="text-xs text-gray-500">{new Date(selectedExamDetail.created_at).toLocaleDateString('tr-TR')}</p>
                       </div>
-                      {selectedExamDetail.icd10_code && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold border bg-teal-50 text-teal-700 border-teal-200">
-                          {selectedExamDetail.icd10_code}
-                        </span>
-                      )}
                     </div>
 
                     {/* Vitals Alert */}
