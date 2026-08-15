@@ -475,9 +475,12 @@ const CRMLayout = ({ children }) => {
           </div>
         ))}
 
-        {/* Go to Medagama */}
+        {/* Go to Medagama — yeni sekmede: CRM'de yapılan iş yarıda kalmasın,
+            ana site yanında açılsın. Dışa açılan ok zaten bunu vaat ediyordu. */}
         <Link
           to="/"
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 group"
         >
           <Home className="w-[18px] h-[18px] flex-shrink-0 text-gray-500 group-hover:text-gray-300" />

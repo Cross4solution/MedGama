@@ -298,20 +298,20 @@ const CRMDashboard = () => {
             <p className="text-sm text-gray-500 mt-0.5">{formatDate(TODAY)}</p>
           </div>
           <div className="flex items-center gap-2">
+            {/* Herkese açık profil yeni sekmede: CRM'den çıkıp geri dönmek
+                yerine yan yana bakılabilsin. */}
             <Link
               to={`/hospital/${user?.hospital?.codename || user?.codename || ''}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-teal-200 text-teal-700 bg-teal-50 rounded-xl text-sm font-medium hover:bg-teal-100 transition-colors"
             >
               <ExternalLink className="w-4 h-4" />
               <span className="hidden sm:inline">{t('doctorProfile.viewPublicProfile', 'View Public Profile')}</span>
             </Link>
-            <button
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('common.refresh', 'Refresh')}</span>
-            </button>
+            {/* "Yenile" kaldırıldı: sayfayı baştan yüklüyordu, oysa veri
+                zaten açılışta çekiliyor ve randevu değişikliği anlık
+                düşüyor. Tarayıcının kendi yenileme tuşundan farkı yoktu. */}
           </div>
         </div>
 
@@ -345,19 +345,23 @@ const CRMDashboard = () => {
 
   // ── Doctor / Clinic Dashboard ─────────────────────────────
   return (
-    <div className="space-y-6">
+    {/* Başlık alanı kısaldı: selamlama üç satır yer kaplayınca asıl iş olan
+        randevu listesi ekranın altına düşüyor ve ilk bakışta görünmüyordu. */}
+    <div className="space-y-5">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+          <h1 className="text-base sm:text-lg font-bold text-gray-900">
             Good {TODAY.getHours() < 12 ? 'Morning' : TODAY.getHours() < 18 ? 'Afternoon' : 'Evening'}, {user?.name?.split(' ')[0] || 'Doctor'} 👋
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">{formatDate(TODAY)}</p>
+          <p className="text-xs text-gray-500">{formatDate(TODAY)}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link
             to={`/doctor/${user?.id}`}
-            className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-teal-200 text-teal-700 bg-teal-50 rounded-xl text-sm font-medium hover:bg-teal-100 transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-2 border border-teal-200 text-teal-700 bg-teal-50 rounded-xl text-sm font-medium hover:bg-teal-100 transition-colors"
           >
             <ExternalLink className="w-4 h-4" />
             <span className="hidden sm:inline">{t('doctorProfile.viewPublicProfile')}</span>
@@ -384,10 +388,9 @@ const CRMDashboard = () => {
               {t('crm.dashboard.newAppointment')}
             </Link>
           )}
-          <button className="inline-flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
-            <RefreshCw className="w-4 h-4" />
-            <span className="hidden sm:inline">{t('common.refresh')}</span>
-          </button>
+          {/* "Yenile" kaldırıldı: hiçbir işlevi yoktu (onClick bile yoktu) ve
+              olsaydı bile veri açılışta çekiliyor, randevu değişikliği anlık
+              düşüyor. */}
         </div>
       </div>
 
