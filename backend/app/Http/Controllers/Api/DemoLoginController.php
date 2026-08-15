@@ -61,14 +61,47 @@ class DemoLoginController extends Controller
             'agent'   => substr((string) $request->userAgent(), 0, 200),
         ]);
 
+        $taban = rtrim((string) config('demo.frontend_url'), '/');
+
+        // Jeton adres çubuğunda taşınıyor; hedef bize ait değilse jetonu
+        // üçüncü bir tarafa göndermiş oluruz. Yanlış yapılandırılmış bir
+        // adrese jeton vermektense hiç girmemek doğrusu.
+        if (!$this->guvenliHedef($taban)) {
+            Log::error('Demo girişi hedefi izinli değil', ['hedef' => $taban]);
+
+            return response()->json([
+                'message' => 'Demo yönlendirme adresi yapılandırılmamış.',
+            ], 500);
+        }
+
         $token = $kullanici->createToken('demo-login')->plainTextToken;
 
         // Jetonu arayüze taşıyıp adres çubuğundan hemen sildiriyoruz:
         // tarayıcı geçmişinde ve paylaşılan ekran görüntüsünde kalmasın.
-        $hedef = rtrim((string) config('demo.frontend_url'), '/')
-            . '/tr/crm?demo_token=' . urlencode($token);
+        return redirect()->away($taban . '/tr/crm?demo_token=' . urlencode($token));
+    }
 
-        return redirect()->away($hedef);
+    /** Hedef, bize ait bilinen arayüz adreslerinden biri mi. */
+    private function guvenliHedef(string $adres): bool
+    {
+        $host = parse_url($adres, PHP_URL_HOST);
+        if (!$host) {
+            return false;
+        }
+
+        $host = strtolower($host);
+
+        // CORS için zaten bir izinli köken listesi tutuluyor; ikinci bir
+        // liste tutmak ikisinin ayrışmasına davetiye çıkarır.
+        $izinli = collect(explode(',', (string) env('CORS_ALLOWED_ORIGINS', '')))
+            ->map(fn ($o) => strtolower((string) parse_url(trim($o), PHP_URL_HOST)))
+            ->filter()
+            ->all();
+
+        $izinli[] = 'localhost';
+        $izinli[] = '127.0.0.1';
+
+        return in_array($host, $izinli, true) || str_ends_with($host, '.vercel.app');
     }
 
     private function rolEslestir(string $rol): string

@@ -104,6 +104,18 @@ class DemoLoginTest extends TestCase
         $this->get('/api/demo-login/doktor?key=gizli')->assertRedirect();
     }
 
+    /**
+     * Jeton adres çubuğunda taşınıyor. Hedef bize ait değilse jetonu üçüncü
+     * bir tarafa göndermiş oluruz — bir kez oldu, yanlış varsayılan yüzünden
+     * park edilmiş bir alan adına gitti.
+     */
+    public function test_bize_ait_olmayan_adrese_jeton_gonderilmez(): void
+    {
+        config(['demo.frontend_url' => 'https://baskasinin-sitesi.com']);
+
+        $this->get('/api/demo-login/doktor')->assertStatus(500);
+    }
+
     public function test_taninmayan_rol_acilmaz(): void
     {
         $this->get('/api/demo-login/superAdmin')->assertNotFound();

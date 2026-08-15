@@ -30,6 +30,12 @@ return [
         'clinicOwner' => env('DEMO_CLINIC_EMAIL', 'demo-klinik@medagama.test'),
     ],
 
-    /* Demo girişinden sonra kullanıcının yönlendirileceği arayüz adresi. */
-    'frontend_url' => env('FRONTEND_URL', 'https://medagama.com'),
+    /*
+     * Demo girişinden sonra yönlendirilecek arayüz adresi.
+     *
+     * Varsayılan yayında olan arayüz. Buraya bize ait olmayan bir alan adı
+     * yazılmamalı: oturum jetonu adres çubuğunda taşındığı için yanlış bir
+     * varsayılan jetonu üçüncü bir tarafa gönderir — bir kez oldu.
+     */
+    'frontend_url' => env('FRONTEND_URL', 'https://med-gama.vercel.app'),
 ];
