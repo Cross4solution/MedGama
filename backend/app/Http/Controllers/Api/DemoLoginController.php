@@ -41,6 +41,8 @@ class DemoLoginController extends Controller
             ], 404);
         }
 
+        $this->crmeHazirla($kullanici);
+
         Log::warning('Demo girişi kullanıldı', [
             'user_id' => $kullanici->id,
             'role'    => $kullanici->role_id,
@@ -56,6 +58,47 @@ class DemoLoginController extends Controller
             . '/tr/crm?demo_token=' . urlencode($token);
 
         return redirect()->away($hedef);
+    }
+
+    /**
+     * Demo hesabını CRM'e hazır tutar.
+     *
+     * CRM aboneliğe ve doğrulamaya bakıyor; bunlar kapalıyken bağlantı
+     * kilitli bir ekrana düşüyor ve gösterilecek bir şey kalmıyor. Burada
+     * yalnızca ayarda adı geçen demo hesabına dokunuluyor — başka hiçbir
+     * kullanıcıya değil — ve yalnızca eksikse yazılıyor.
+     */
+    private function crmeHazirla(User $kullanici): void
+    {
+        $degisti = false;
+
+        if (!$kullanici->is_verified) {
+            $kullanici->is_verified = true;
+            $kullanici->verification_status = 'approved';
+            $degisti = true;
+        }
+
+        if (!$kullanici->is_crm_active) {
+            $kullanici->is_crm_active = true;
+            $degisti = true;
+        }
+
+        if (!$kullanici->crm_expires_at || $kullanici->crm_expires_at->isPast()) {
+            $kullanici->crm_expires_at = now()->addYear();
+            $degisti = true;
+        }
+
+        if ($degisti) {
+            $kullanici->save();
+        }
+
+        // Klinik sahibinde abonelik kliniğin üzerinde tutuluyor.
+        $klinik = $kullanici->ownedClinic ?? $kullanici->clinic;
+        if ($klinik && (!$klinik->is_crm_active || !$klinik->crm_expires_at || $klinik->crm_expires_at->isPast())) {
+            $klinik->is_crm_active = true;
+            $klinik->crm_expires_at = now()->addYear();
+            $klinik->save();
+        }
     }
 
     /**

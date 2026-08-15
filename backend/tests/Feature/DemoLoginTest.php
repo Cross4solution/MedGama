@@ -84,6 +84,43 @@ class DemoLoginTest extends TestCase
         $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertStatus(404);
     }
 
+    /**
+     * Bağlantı kilitli bir ekrana düşerse işe yaramaz: demo hesabı
+     * kullanıldığı anda CRM'e hazır hale getirilmeli.
+     */
+    public function test_demo_hesabi_crme_hazir_hale_getirilir(): void
+    {
+        $doktor = User::factory()->doctor()->create([
+            'is_demo'        => true,
+            'is_verified'    => false,
+            'is_crm_active'  => false,
+            'crm_expires_at' => null,
+        ]);
+
+        $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertRedirect();
+
+        $doktor->refresh();
+        $this->assertTrue($doktor->is_verified);
+        $this->assertTrue((bool) $doktor->is_crm_active);
+        $this->assertTrue($doktor->crm_expires_at?->isFuture());
+    }
+
+    /** Demo olmayan hesaba hiçbir ayrıcalık yazılmamalı. */
+    public function test_demo_olmayan_hesaba_dokunulmaz(): void
+    {
+        $baskasi = User::factory()->doctor()->create([
+            'is_demo'       => false,
+            'is_verified'   => false,
+            'is_crm_active' => false,
+        ]);
+
+        $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertStatus(404);
+
+        $baskasi->refresh();
+        $this->assertFalse($baskasi->is_verified);
+        $this->assertFalse((bool) $baskasi->is_crm_active);
+    }
+
     public function test_taninmayan_rol_acilmaz(): void
     {
         User::factory()->doctor()->create(['is_demo' => true]);
