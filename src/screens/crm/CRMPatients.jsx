@@ -285,7 +285,6 @@ const CRMPatients = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.patients.title')}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{t('crm.patients.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleRefresh} className="w-9 h-9 rounded-xl border border-gray-200 hover:bg-gray-50 flex items-center justify-center text-gray-500 transition-colors" title={t('common.refresh')}>

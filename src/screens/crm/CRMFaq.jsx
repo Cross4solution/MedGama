@@ -145,9 +145,6 @@ const CRMFaq = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
             {t('crm.faq.title', 'Frequently Asked Questions')}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {t('crm.faq.subtitle', 'Help your patients find quick answers to common questions')}
-          </p>
         </div>
         <button
           onClick={() => { setEditingFaq(null); setShowEditor(true); }}

@@ -191,7 +191,6 @@ const CRMDocuments = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.documents.title')}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{t('crm.documents.subtitle')}</p>
         </div>
         <button onClick={() => { resetUploadForm(); setShowUploadModal(true); }} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md">
           <Upload className="w-4 h-4" /> {t('crm.documents.uploadDocument')}

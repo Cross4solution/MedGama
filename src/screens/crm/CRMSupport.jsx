@@ -431,7 +431,6 @@ const CRMSupport = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.support.title', 'Help & Support')}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{t('crm.support.subtitle', 'Create and manage support tickets')}</p>
         </div>
         <button onClick={() => setShowCreate(true)}
           className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white text-sm font-semibold rounded-xl hover:bg-teal-700 transition-colors shadow-sm">

@@ -99,7 +99,6 @@ const CRMPrescriptions = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.prescriptions.title')}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{t('crm.prescriptions.subtitle')}</p>
         </div>
         <button onClick={() => navigate('/crm/examination')} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm hover:shadow-md">
           <Plus className="w-4 h-4" /> {t('crm.prescriptions.newPrescription')}

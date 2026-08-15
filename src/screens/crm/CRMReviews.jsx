@@ -64,7 +64,6 @@ export default function CRMReviews() {
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-gray-900">{t('crmReviews.title', 'Patient Reviews')}</h1>
-        <p className="text-sm text-gray-500 mt-1">{t('crmReviews.subtitle', 'View and respond to patient reviews on your profile')}</p>
       </div>
 
       {/* Quick Stats */}

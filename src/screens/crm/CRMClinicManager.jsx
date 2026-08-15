@@ -503,7 +503,6 @@ const CRMClinicManager = () => {
       {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.manager.title', 'Clinic Management')}</h1>
-        <p className="text-sm text-gray-500 mt-0.5">{t('crm.manager.subtitle', 'Manage your clinic, doctors and finances')}</p>
       </div>
 
       {/* Tabs */}
