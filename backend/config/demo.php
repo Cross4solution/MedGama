@@ -2,28 +2,32 @@
 
 return [
     /*
-     * Şifresiz demo girişinin anahtarı. Boşsa uç nokta hiç çalışmaz —
-     * varsayılan durum kapalıdır ve ayarı silmek bağlantıyı kapatmanın yoludur.
+     * Şifresiz demo girişi açık mı.
      *
-     * env() burada, config dosyasında okunuyor: denetleyicinin içinden
-     * çağrılsaydı `php artisan config:cache` sonrası null dönerdi ve bağlantı
-     * sessizce ölürdü.
+     * Teslimden önce sunucuda DEMO_LOGIN_ENABLED=false yapılmalı; bağlantıyı
+     * kapatmanın yolu budur.
+     */
+    'enabled' => filter_var(env('DEMO_LOGIN_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
+
+    /*
+     * İsteğe bağlı anahtar. Tanımlıysa bağlantıda da bulunması gerekir.
+     * Boşsa bağlantı anahtarsız çalışır — CRM'i denemek için tek tık.
+     *
+     * env() burada okunuyor, denetleyicide değil: `php artisan config:cache`
+     * sonrası env() denetleyici içinde null döner.
      */
     'login_key' => env('DEMO_LOGIN_KEY', ''),
 
     /*
-     * Bağlantının açacağı hesaplar, e-posta ile.
+     * Demo hesaplarının e-postaları.
      *
-     * Hesabı veritabanındaki bir alanla değil buradan belirliyoruz: canlıda
-     * veritabanına dokunmadan, yalnızca sunucu ayarıyla kurulabilsin ve
-     * "hangi hesaplar açık" sorusunun cevabı tek yerde dursun.
-     *
-     * Buraya gerçek bir kullanıcının e-postası yazılmamalı: yazılırsa o hesap
-     * bağlantıyı bilen herkese açılır.
+     * Bu adresler bu mekanizmaya ayrılmıştır: hesap yoksa kendisi oluşturur,
+     * örnek veriyi de o hesabın altına kurar. Gerçek bir kullanıcının adresi
+     * buraya yazılmamalı — yazılırsa o hesap bağlantıyı bilen herkese açılır.
      */
     'accounts' => [
-        'doctor'      => env('DEMO_DOCTOR_EMAIL', ''),
-        'clinicOwner' => env('DEMO_CLINIC_EMAIL', ''),
+        'doctor'      => env('DEMO_DOCTOR_EMAIL', 'demo-doktor@medagama.test'),
+        'clinicOwner' => env('DEMO_CLINIC_EMAIL', 'demo-klinik@medagama.test'),
     ],
 
     /* Demo girişinden sonra kullanıcının yönlendirileceği arayüz adresi. */

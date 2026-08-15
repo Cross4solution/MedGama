@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -9,9 +10,9 @@ use Tests\TestCase;
 /**
  * Şifresiz demo girişi.
  *
- * Bu uç nokta bilerek açılmış bir kimlik doğrulama atlaması; sınırlarının
- * gerçekten uygulandığı sınanmalı. Sınırlar gevşerse gerçek bir hesap
- * bağlantıyı bilen herkese açılır.
+ * Bilerek açılmış bir kimlik doğrulama atlaması; sınırlarının gerçekten
+ * uygulandığı sınanmalı. Sınırlar gevşerse gerçek bir hesap, bağlantıyı
+ * bilen herkese açılır.
  */
 class DemoLoginTest extends TestCase
 {
@@ -20,112 +21,92 @@ class DemoLoginTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        config(['demo.login_key' => 'deneme-anahtari']);
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-    }
-
-    public function test_demo_isaretli_doktor_hesabi_acilir(): void
-    {
-        User::factory()->doctor()->create(['is_demo' => true]);
-
-        $this->get('/api/demo-login/doktor?key=deneme-anahtari')
-            ->assertRedirect();
-    }
-
-    public function test_yanlis_anahtar_404_doner(): void
-    {
-        User::factory()->doctor()->create(['is_demo' => true]);
-
-        $this->get('/api/demo-login/doktor?key=yanlis')->assertNotFound();
-        $this->get('/api/demo-login/doktor')->assertNotFound();
-    }
-
-    /** En kritik sınır: demo işareti olmayan hesap asla açılmamalı. */
-    public function test_demo_olmayan_hesap_acilmaz(): void
-    {
-        User::factory()->doctor()->create(['is_demo' => false]);
-
-        $this->get('/api/demo-login/doktor?key=deneme-anahtari')
-            ->assertStatus(404);
-    }
-
-    /** Sunucuda anahtar tanımlı değilse uç nokta hiç yokmuş gibi davranmalı. */
-    public function test_anahtar_tanimsizsa_uc_nokta_kapali(): void
-    {
-        config(['demo.login_key' => '']);
-
-        User::factory()->doctor()->create(['is_demo' => true]);
-
-        $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertNotFound();
-    }
-
-    /**
-     * Canlıda tercih edilen yol: hesap sunucu ayarındaki e-postayla belirlenir,
-     * veritabanına dokunmak gerekmez.
-     */
-    public function test_ayardaki_e_posta_ile_hesap_acilir(): void
-    {
-        $doktor = User::factory()->doctor()->create(['is_demo' => false]);
-        config(['demo.accounts' => ['doctor' => $doktor->email, 'clinicOwner' => '']]);
-
-        $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertRedirect();
-    }
-
-    /** Ayardaki e-posta başka bir role aitse açılmamalı. */
-    public function test_ayardaki_e_posta_rol_tutmuyorsa_acilmaz(): void
-    {
-        $hasta = User::factory()->patient()->create();
-        config(['demo.accounts' => ['doctor' => $hasta->email, 'clinicOwner' => '']]);
-
-        $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertStatus(404);
-    }
-
-    /**
-     * Bağlantı kilitli bir ekrana düşerse işe yaramaz: demo hesabı
-     * kullanıldığı anda CRM'e hazır hale getirilmeli.
-     */
-    public function test_demo_hesabi_crme_hazir_hale_getirilir(): void
-    {
-        $doktor = User::factory()->doctor()->create([
-            'is_demo'        => true,
-            'is_verified'    => false,
-            'is_crm_active'  => false,
-            'crm_expires_at' => null,
+        config([
+            'demo.enabled'   => true,
+            'demo.login_key' => '',
+            'demo.accounts'  => [
+                'doctor'      => 'demo-doktor@test.local',
+                'clinicOwner' => 'demo-klinik@test.local',
+            ],
         ]);
-
-        $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertRedirect();
-
-        $doktor->refresh();
-        $this->assertTrue($doktor->is_verified);
-        $this->assertTrue((bool) $doktor->is_crm_active);
-        $this->assertTrue($doktor->crm_expires_at?->isFuture());
     }
 
-    /** Demo olmayan hesaba hiçbir ayrıcalık yazılmamalı. */
-    public function test_demo_olmayan_hesaba_dokunulmaz(): void
+    public function test_hesap_yokken_kurulur_ve_giris_yapilir(): void
     {
-        $baskasi = User::factory()->doctor()->create([
-            'is_demo'       => false,
+        $this->get('/api/demo-login/doktor')->assertRedirect();
+
+        $doktor = User::where('email', 'demo-doktor@test.local')->first();
+        $this->assertNotNull($doktor);
+        $this->assertSame('doctor', $doktor->role_id);
+        $this->assertTrue((bool) $doktor->is_demo);
+        // CRM kilitli açılırsa bağlantının bir anlamı kalmıyor.
+        $this->assertTrue((bool) $doktor->is_crm_active);
+        $this->assertTrue((bool) $doktor->is_verified);
+    }
+
+    public function test_ornek_veri_kurulur_ve_ikinci_giriste_cogalmaz(): void
+    {
+        $this->get('/api/demo-login/doktor')->assertRedirect();
+        $ilk = Appointment::count();
+        $this->assertGreaterThan(0, $ilk, 'Örnek randevu kurulmamış');
+
+        $this->get('/api/demo-login/doktor')->assertRedirect();
+
+        $this->assertSame($ilk, Appointment::count(), 'Her girişte veri çoğalıyor');
+    }
+
+    public function test_klinik_demosu_da_kurulur(): void
+    {
+        $this->get('/api/demo-login/klinik')->assertRedirect();
+
+        $klinikSahibi = User::where('email', 'demo-klinik@test.local')->first();
+        $this->assertNotNull($klinikSahibi);
+        $this->assertSame('clinicOwner', $klinikSahibi->role_id);
+        $this->assertNotNull($klinikSahibi->clinic_id);
+    }
+
+    /** En kritik sınır: demo adresine ait olmayan bir hesap açılmamalı. */
+    public function test_gercek_hesap_bu_yoldan_acilmaz(): void
+    {
+        $gercek = User::factory()->doctor()->create([
             'is_verified'   => false,
             'is_crm_active' => false,
         ]);
 
-        $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertStatus(404);
+        $this->get('/api/demo-login/doktor')->assertRedirect();
 
-        $baskasi->refresh();
-        $this->assertFalse($baskasi->is_verified);
-        $this->assertFalse((bool) $baskasi->is_crm_active);
+        $gercek->refresh();
+        $this->assertFalse((bool) $gercek->is_verified);
+        $this->assertFalse((bool) $gercek->is_crm_active);
+    }
+
+    /** Ayardaki adres başka role aitse hiçbir şey yapılmamalı. */
+    public function test_adres_baska_role_aitse_acilmaz(): void
+    {
+        User::factory()->patient()->create(['email' => 'demo-doktor@test.local']);
+
+        $this->get('/api/demo-login/doktor')->assertStatus(404);
+    }
+
+    public function test_kapatilinca_uc_nokta_yok_olur(): void
+    {
+        config(['demo.enabled' => false]);
+
+        $this->get('/api/demo-login/doktor')->assertNotFound();
+    }
+
+    public function test_anahtar_tanimliysa_zorunlu_olur(): void
+    {
+        config(['demo.login_key' => 'gizli']);
+
+        $this->get('/api/demo-login/doktor')->assertNotFound();
+        $this->get('/api/demo-login/doktor?key=yanlis')->assertNotFound();
+        $this->get('/api/demo-login/doktor?key=gizli')->assertRedirect();
     }
 
     public function test_taninmayan_rol_acilmaz(): void
     {
-        User::factory()->doctor()->create(['is_demo' => true]);
-
-        $this->get('/api/demo-login/superAdmin?key=deneme-anahtari')->assertNotFound();
-        $this->get('/api/demo-login/admin?key=deneme-anahtari')->assertNotFound();
+        $this->get('/api/demo-login/superAdmin')->assertNotFound();
+        $this->get('/api/demo-login/admin')->assertNotFound();
     }
 }
