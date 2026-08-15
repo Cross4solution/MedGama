@@ -46,7 +46,19 @@ class DemoLoginController extends Controller
             abort(404);
         }
 
-        $kullanici = $this->demo->hazirla($rolId);
+        try {
+            $kullanici = $this->demo->hazirla($rolId);
+        } catch (\Throwable $e) {
+            // Canlıda günlüklere bakmak kolay değil; demo hesabında gerçek
+            // veri olmadığı için sebebi doğrudan söylüyoruz. Aksi hâlde
+            // "DATABASE_ERROR" deyip susmak teşhisi imkânsızlaştırıyor.
+            Log::error('Demo hesabı kurulamadı', ['hata' => $e->getMessage()]);
+
+            return response()->json([
+                'message' => 'Demo hesabı kurulamadı.',
+                'reason'  => substr($e->getMessage(), 0, 300),
+            ], 500);
+        }
 
         if (!$kullanici) {
             return response()->json([
