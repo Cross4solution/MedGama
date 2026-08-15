@@ -271,7 +271,7 @@ const CRMDashboard = () => {
     const HOSPITAL_QUICK_ACTIONS = [
       { label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin,       color: 'bg-teal-50 text-teal-600 hover:bg-teal-100',        path: '/crm/branches' },
       { label: t('crm.sidebar.staff', 'Staff'),               icon: Users,         color: 'bg-violet-50 text-violet-600 hover:bg-violet-100',  path: '/crm/staff' },
-      { label: t('crm.sidebar.medstream', 'MedStream'),       icon: Rss,           color: 'bg-blue-50 text-blue-600 hover:bg-blue-100',        path: '/crm/medstream' },
+      // MedStream kısayolu kaldırıldı: sosyal akış CRM'in işi değil.
       { label: t('crm.sidebar.reviews', 'Reviews'),           icon: Star,          color: 'bg-amber-50 text-amber-600 hover:bg-amber-100',     path: '/crm/reviews' },
       { label: t('crm.sidebar.contactInbox', 'Messages'),     icon: Mail,          color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100', path: '/crm/contact-inbox' },
       { label: t('crm.sidebar.reports', 'Reports'),           icon: PieChart,      color: 'bg-pink-50 text-pink-600 hover:bg-pink-100',        path: '/crm/reports' },

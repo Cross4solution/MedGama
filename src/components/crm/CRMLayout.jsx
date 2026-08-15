@@ -100,7 +100,10 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
           { label: t('crm.sidebar.leads', 'Leadler'), icon: Target, path: '/crm/leads' },
           { label: t('crm.sidebar.salespeople', 'Satışçılar'), icon: Briefcase, path: '/crm/salespeople' },
           { label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' },
-          { label: t('crm.sidebar.medstream', 'MedStream'), icon: Rss, path: '/crm/medstream' },
+          // MedStream burada değil: CRM klinik yönetimi, MedStream herkese
+          // açık sosyal akış. CRM'deki kopya eksikti (video oynatmıyordu bile)
+          // ve iki yerde iki ayrı akış bakımı gerektiriyordu. Menünün altındaki
+          // "Medagama'ya git" bağlantısı akışa götürüyor.
           { label: t('crm.sidebar.contactInbox', 'Contact Messages'), icon: Mail, path: '/crm/contact-inbox', badge: chatUnreadCount > 0 ? chatUnreadCount : undefined },
         ],
       },
