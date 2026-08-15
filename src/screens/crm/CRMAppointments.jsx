@@ -101,6 +101,7 @@ const mapApi = (a) => ({
   clinic: a.clinic || {},
   notes: a.confirmation_note || a.doctor_note || '',
   patient_medical_snapshot: a.patient_medical_snapshot || '',
+  patient_medical_current: a.patient_medical_current || '',
   video_conference_link: a.video_conference_link || '',
   backgroundColor: (TYPE_CONFIG[a.appointment_type] || TYPE_CONFIG.inPerson).color,
   borderColor: (TYPE_CONFIG[a.appointment_type] || TYPE_CONFIG.inPerson).color,
@@ -678,13 +679,31 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
             </div>
           </div>
 
-          {/* Patient medical history / anamnesis (snapshot taken at booking) */}
+          {/* Tıbbi geçmiş iki kayıt hâlinde:
+              — randevu alınırken beyan edilen (o anın kaydı, değişmez)
+              — hastanın bugünkü beyanı
+              Hasta randevudan sonra yeni bir ilaca başlamış olabilir; ilaç
+              etkileşimi kararı güncel listeye bakılarak veriliyor. İkisi
+              aynıysa tek kutu gösteriliyor, gereksiz tekrar olmasın. */}
           {a.patient_medical_snapshot && (
             <div className="rounded-xl border border-rose-100 bg-rose-50/50 p-3">
               <p className="text-[10px] font-bold text-rose-600 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                <Stethoscope className="w-3.5 h-3.5" /> {t('crm.appointments.medicalHistory', 'Tıbbi Geçmiş / Anamnez')}
+                <Stethoscope className="w-3.5 h-3.5" />
+                {a.patient_medical_current && a.patient_medical_current !== a.patient_medical_snapshot
+                  ? t('crm.appointments.medicalHistoryAtBooking', isTr ? 'Randevu alınırken beyan edilen' : 'Declared when booking')
+                  : t('crm.appointments.medicalHistory', 'Tıbbi Geçmiş / Anamnez')}
               </p>
               <p className="text-[13px] text-gray-700 whitespace-pre-line leading-relaxed">{a.patient_medical_snapshot}</p>
+            </div>
+          )}
+
+          {a.patient_medical_current && a.patient_medical_current !== a.patient_medical_snapshot && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
+              <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5" />
+                {t('crm.appointments.medicalHistoryCurrent', isTr ? 'Hastanın güncel beyanı — randevudan sonra değişmiş' : "Patient's current record — changed since booking")}
+              </p>
+              <p className="text-[13px] text-gray-700 whitespace-pre-line leading-relaxed">{a.patient_medical_current}</p>
             </div>
           )}
 

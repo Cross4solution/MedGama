@@ -36,7 +36,20 @@ class AppointmentResource extends JsonResource
             'auto_completed_at'     => $this->auto_completed_at?->toISOString(),
             'confirmation_note'     => $this->confirmation_note,
             'doctor_note'           => $this->doctor_note,
+            // Randevu alınırken beyan edilen tıbbi geçmiş — o anın kaydı,
+            // sonradan değişmez.
             'patient_medical_snapshot' => $this->patient_medical_snapshot,
+            // Hastanın GÜNCEL beyanı. Randevudan sonra yeni bir ilaca
+            // başlamış olabilir; doktorun ikisini de görmesi gerekiyor
+            // (ilaç etkileşimi). Yalnızca tedaviyi üstlenen tarafa gider.
+            'patient_medical_current' => $this->when(
+                $request->user() && (
+                    $request->user()->id === $this->doctor_id
+                    || ($request->user()->clinic_id && $request->user()->clinic_id === $this->clinic_id)
+                    || $request->user()->isAdmin()
+                ),
+                fn () => $this->guncelTibbiGecmis(),
+            ),
             'video_conference_link' => $this->video_conference_link,
             'created_by'            => $this->created_by,
             // Doktorun "Reddet" düğmesi bu bilgiye göre gösterilir; kural sunucuda

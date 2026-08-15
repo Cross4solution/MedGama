@@ -3,9 +3,12 @@
 namespace App\Services;
 
 use App\Models\Appointment;
+use App\Models\Conversation;
 use App\Models\CrmProcessStage;
 use App\Models\CrmTag;
 use App\Models\HealthDataAuditLog;
+use App\Models\Invoice;
+use App\Models\PatientDocument;
 use App\Models\PatientRecord;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -251,6 +254,9 @@ class PatientService
                 'doctor' => $appt->doctor?->fullname ?? 'Unknown',
                 'doctor_avatar' => $appt->doctor?->avatar,
                 'notes' => $appt->confirmation_note,
+                // Görüntülü randevuda görüşmenin gerçekten yapılıp yapılmadığı.
+                // Süre tutulmuyor; olmayan bir bilgiyi uydurmuyoruz.
+                'meeting_status' => $appt->appointment_type === 'online' ? $appt->meeting_status : null,
                 'sort_key' => $appt->appointment_date->toDateString() . ' ' . $appt->appointment_time,
             ]);
         }
@@ -318,6 +324,91 @@ class PatientService
                 'notes' => $rec->description,
                 'file_url' => $rec->file_url,
                 'sort_key' => ($rec->upload_date ?? $rec->created_at)->toDateString() . ' ' . $rec->created_at->format('H:i:s'),
+            ]);
+        }
+
+        // 4. Hastanın kendi yüklediği belgeler
+        // Bunlar ayrı bir ekranda duruyordu; doktor oraya bakmayı unutursa
+        // hastanın gönderdiği tahlil sonucu görülmeden kalıyordu. Çizelgeye
+        // düşünce randevunun yanında, kronolojik olarak görünüyor.
+        foreach (PatientDocument::where('patient_id', $patientId)
+            ->where('is_active', true)
+            ->with('uploader:id,fullname,avatar')
+            ->orderByDesc('created_at')->get() as $doc) {
+            $tarih = ($doc->document_date ?? $doc->created_at);
+            $items->push([
+                'id' => $doc->id,
+                'type' => 'patient_document',
+                'subtype' => $doc->category,
+                'title' => $doc->title ?: 'Belge',
+                'date' => $tarih->toDateString(),
+                'time' => $doc->created_at->format('H:i'),
+                'status' => null,
+                // Hastanın kendi yüklediği mi, klinikten mi geldiği önemli.
+                'doctor' => $doc->uploaded_by === $patientId
+                    ? 'Hasta'
+                    : ($doc->uploader?->fullname ?? 'Bilinmiyor'),
+                'doctor_avatar' => $doc->uploader?->avatar,
+                'notes' => $doc->description,
+                'sort_key' => $tarih->toDateString() . ' ' . $doc->created_at->format('H:i:s'),
+            ]);
+        }
+
+        // 5. Faturalar
+        $invoiceQuery = Invoice::where('patient_id', $patientId);
+        if ($doctorScope) {
+            $invoiceQuery->where('doctor_id', $doctorScope);
+        } elseif ($clinicScope) {
+            $invoiceQuery->where('clinic_id', $clinicScope);
+        }
+
+        foreach ($invoiceQuery->orderByDesc('issue_date')->get() as $inv) {
+            $tarih = $inv->issue_date ?? $inv->created_at;
+            $items->push([
+                'id' => $inv->id,
+                'type' => 'invoice',
+                'subtype' => $inv->status,
+                'title' => 'Fatura ' . $inv->invoice_number,
+                'date' => $tarih->toDateString(),
+                'time' => $inv->created_at->format('H:i'),
+                'status' => $inv->status,
+                'doctor' => null,
+                'doctor_avatar' => null,
+                'notes' => $inv->notes,
+                'amount' => (float) $inv->grand_total,
+                'paid_amount' => (float) $inv->paid_amount,
+                'currency' => $inv->currency,
+                'sort_key' => $tarih->toDateString() . ' ' . $inv->created_at->format('H:i:s'),
+            ]);
+        }
+
+        // 6. Mesajlaşma teması
+        // Yalnızca "şu gün yazışıldı" kaydı; mesajların içeriği çizelgeye
+        // girmiyor. Doktorun ne zaman temas kurulduğunu görmesi yeterli,
+        // yazışmanın kendisi mesajlar ekranında ve orada kalmalı.
+        $konusmalar = Conversation::whereHas('participants', fn ($q) => $q->where('user_id', $patientId))
+            ->whereHas('participants', fn ($q) => $q->where('user_id', $accessor->id))
+            ->where('is_active', true)
+            ->with(['messages' => fn ($q) => $q->latest()->limit(1)])
+            ->get();
+
+        foreach ($konusmalar as $konusma) {
+            $son = $konusma->messages->first();
+            if (!$son) {
+                continue;
+            }
+            $items->push([
+                'id' => $konusma->id,
+                'type' => 'message',
+                'subtype' => null,
+                'title' => 'Mesajlaşma',
+                'date' => $son->created_at->toDateString(),
+                'time' => $son->created_at->format('H:i'),
+                'status' => null,
+                'doctor' => null,
+                'doctor_avatar' => null,
+                'notes' => null,
+                'sort_key' => $son->created_at->toDateString() . ' ' . $son->created_at->format('H:i:s'),
             ]);
         }
 

@@ -63,6 +63,48 @@ class Appointment extends Model
         });
     }
 
+    /**
+     * Hastanın BUGÜNKÜ tıbbi beyanı, randevu anındaki dondurulmuş kopyanın
+     * karşısına konmak üzere.
+     *
+     * İki kayıt da gerekiyor: dondurulmuş olan "randevu alınırken ne beyan
+     * edildi" sorusunun cevabı ve sonradan değiştirilemez; güncel olan ise
+     * hastanın o randevudan sonra başladığı ilacı gösterir. Doktor ilaç
+     * etkileşimine ikincisine bakarak karar verir.
+     */
+    public function guncelTibbiGecmis(): ?string
+    {
+        if (!$this->patient_id) {
+            return null;
+        }
+
+        $hasta = $this->relationLoaded('patient') ? $this->patient : User::find($this->patient_id);
+        if (!$hasta) {
+            return null;
+        }
+
+        $mh = app(\App\Services\AuthService::class)->getMedicalHistory($hasta);
+
+        $parcalar = [];
+        foreach ([
+            'conditions'   => 'Bilinen Durumlar / Alerjiler',
+            'medications'  => 'Kullanılan İlaçlar',
+            'vaccinations' => 'Aşılar',
+        ] as $anahtar => $etiket) {
+            $liste = array_filter((array) ($mh[$anahtar] ?? []));
+            if ($liste) {
+                $parcalar[] = $etiket . ': ' . implode(', ', $liste);
+            }
+        }
+
+        $not = trim((string) ($mh['notes'] ?? ''));
+        if ($not !== '') {
+            $parcalar[] = 'Hasta Notları: ' . $not;
+        }
+
+        return $parcalar ? implode("\n", $parcalar) : null;
+    }
+
     /** Duvar saati hangi saat diliminde yazıldıysa o; bilinmiyorsa uygulama varsayılanı. */
     public const VARSAYILAN_TZ = 'Europe/Istanbul';
 

@@ -5,7 +5,7 @@ import {
   User, Mail, Phone, MapPin, Calendar, AlertCircle,
   FileText, X, ChevronDown, Clock, Loader2,
   Stethoscope, Pill, Activity, Download, Eye, Plus, ArrowLeft,
-  Image, File, Tag, Layers, CalendarPlus, Receipt,
+  Image, File, Tag, Layers, CalendarPlus, Receipt, Upload, MessageCircle, Video,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { patientAPI, clinicVerificationAPI } from '../../lib/api';
@@ -27,6 +27,11 @@ const TIMELINE_CFG = {
   appointment: { color: '#3B82F6', bg: 'bg-blue-50', border: 'border-blue-200', icon: Calendar, label: 'Appointment' },
   examination: { color: '#8B5CF6', bg: 'bg-violet-50', border: 'border-violet-200', icon: Stethoscope, label: 'Examination' },
   document:    { color: '#10B981', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: FileText, label: 'Document' },
+  // Hastanın kendi yüklediği belge klinik kaydından ayrı renkte: doktorun
+  // "bunu hasta gönderdi" bilgisini bir bakışta görmesi gerekiyor.
+  patient_document: { color: '#F59E0B', bg: 'bg-amber-50', border: 'border-amber-200', icon: Upload, label: 'Patient upload' },
+  invoice:     { color: '#0EA5E9', bg: 'bg-sky-50', border: 'border-sky-200', icon: Receipt, label: 'Invoice' },
+  message:     { color: '#64748B', bg: 'bg-slate-50', border: 'border-slate-200', icon: MessageCircle, label: 'Message' },
 };
 const FILE_CFG = {
   labResult: { icon: Activity, color: 'text-violet-600', bg: 'bg-violet-50' },
@@ -92,10 +97,29 @@ const TimelineCard = ({ entry, isLast, t }) => {
                     {entry.status.replace('_', ' ')}
                   </span>
                 )}
+                {/* Görüntülü randevuda görüşmenin yapılıp yapılmadığı.
+                    Süre tutulmuyor, o yüzden süre yazmıyoruz. */}
+                {entry.meeting_status && (
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-teal-200 bg-teal-50 text-teal-700 inline-flex items-center gap-1">
+                    <Video className="w-2.5 h-2.5" />
+                    {entry.meeting_status === 'completed'
+                      ? t('crm.patient360.callDone', 'görüşme yapıldı')
+                      : t('crm.patient360.callNotDone', 'görüşme yapılmadı')}
+                  </span>
+                )}
+                {entry.amount !== undefined && (
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-sky-200 bg-sky-50 text-sky-700">
+                    {entry.paid_amount >= entry.amount
+                      ? t('crm.patient360.invoicePaid', 'ödendi')
+                      : `${entry.paid_amount || 0} / ${entry.amount} ${entry.currency || ''}`}
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-3 mt-1">
                 <span className="text-[11px] text-gray-400 flex items-center gap-1"><Calendar className="w-3 h-3" />{entry.date}{entry.time ? ` ${entry.time}` : ''}</span>
-                <span className="text-[11px] text-gray-400 flex items-center gap-1"><Stethoscope className="w-3 h-3" />{entry.doctor}</span>
+                {entry.doctor && (
+                  <span className="text-[11px] text-gray-400 flex items-center gap-1"><Stethoscope className="w-3 h-3" />{entry.doctor}</span>
+                )}
               </div>
             </div>
             <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ml-2 ${expanded ? 'rotate-180' : ''}`} />
@@ -462,12 +486,20 @@ const CRMPatient360 = () => {
                 <div className="flex items-center justify-between mb-5">
                   <h3 className="text-sm font-bold text-gray-900">{t('crm.patient360.medicalTimeline', 'Medical Timeline')}</h3>
                   <div className="flex items-center gap-2">
-                    {['', 'appointment', 'examination', 'document'].map((f) => (
-                      <button key={f} onClick={() => setTimelineFilter(f)}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-medium capitalize transition-colors ${
-                          timelineFilter === f ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                    {[
+                      { key: '', label: t('common.all', 'All') },
+                      { key: 'appointment', label: t('crm.patient360.filterAppointment', 'Randevu') },
+                      { key: 'examination', label: t('crm.patient360.filterExamination', 'Muayene') },
+                      { key: 'document', label: t('crm.patient360.filterDocument', 'Klinik kaydı') },
+                      { key: 'patient_document', label: t('crm.patient360.filterPatientUpload', 'Hasta belgesi') },
+                      { key: 'invoice', label: t('crm.patient360.filterInvoice', 'Fatura') },
+                      { key: 'message', label: t('crm.patient360.filterMessage', 'Mesaj') },
+                    ].map((f) => (
+                      <button key={f.key} onClick={() => setTimelineFilter(f.key)}
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-colors ${
+                          timelineFilter === f.key ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
                         }`}>
-                        {f || 'All'}
+                        {f.label}
                       </button>
                     ))}
                   </div>
