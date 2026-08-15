@@ -25,7 +25,7 @@ class DemoLoginController extends Controller
 {
     public function __invoke(Request $request, string $rol)
     {
-        $anahtar = (string) env('DEMO_LOGIN_KEY', '');
+        $anahtar = (string) config('demo.login_key', '');
 
         // Ayar yoksa uç nokta yok sayılır: yanlışlıkla açık kalmasın.
         if ($anahtar === '' || !hash_equals($anahtar, (string) $request->query('key'))) {
@@ -54,7 +54,7 @@ class DemoLoginController extends Controller
 
         // Jetonu arayüze taşıyıp adres çubuğundan hemen sildiriyoruz:
         // tarayıcı geçmişinde jeton kalmasın.
-        $hedef = rtrim((string) env('FRONTEND_URL', 'https://medagama.com'), '/')
+        $hedef = rtrim((string) config('demo.frontend_url'), '/')
             . '/tr/crm?demo_token=' . urlencode($token);
 
         return redirect()->away($hedef);

@@ -20,14 +20,11 @@ class DemoLoginTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        putenv('DEMO_LOGIN_KEY=deneme-anahtari');
-        $_ENV['DEMO_LOGIN_KEY'] = 'deneme-anahtari';
+        config(['demo.login_key' => 'deneme-anahtari']);
     }
 
     protected function tearDown(): void
     {
-        putenv('DEMO_LOGIN_KEY');
-        unset($_ENV['DEMO_LOGIN_KEY']);
         parent::tearDown();
     }
 
@@ -59,8 +56,7 @@ class DemoLoginTest extends TestCase
     /** Sunucuda anahtar tanımlı değilse uç nokta hiç yokmuş gibi davranmalı. */
     public function test_anahtar_tanimsizsa_uc_nokta_kapali(): void
     {
-        putenv('DEMO_LOGIN_KEY');
-        unset($_ENV['DEMO_LOGIN_KEY']);
+        config(['demo.login_key' => '']);
 
         User::factory()->doctor()->create(['is_demo' => true]);
 
