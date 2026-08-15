@@ -345,10 +345,9 @@ const CRMDashboard = () => {
 
   // ── Doctor / Clinic Dashboard ─────────────────────────────
   return (
-    {/* Başlık alanı kısaldı: selamlama üç satır yer kaplayınca asıl iş olan
-        randevu listesi ekranın altına düşüyor ve ilk bakışta görünmüyordu. */}
     <div className="space-y-5">
-      {/* Page Header */}
+      {/* Başlık alanı kısaldı: selamlama üç satır yer kaplayınca asıl iş olan
+          randevu listesi ekranın altına düşüyor, ilk bakışta görünmüyordu. */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h1 className="text-base sm:text-lg font-bold text-gray-900">
