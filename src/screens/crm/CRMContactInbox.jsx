@@ -6,6 +6,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { contactMessageAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import { useAuth } from '../../context/AuthContext';
+import ProTeaser from '../../components/crm/ProTeaser';
 
 function timeAgo(dateStr) {
   if (!dateStr) return '';
@@ -26,6 +28,7 @@ function formatBytes(bytes) {
 
 const CRMContactInbox = () => {
   const { t } = useTranslation();
+  const { isPro } = useAuth();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
@@ -79,6 +82,10 @@ const CRMContactInbox = () => {
   };
 
   const unreadCount = messages.filter(m => !m.is_read).length;
+
+  // Kenar çubuğunda kilitli görünüp sayfası açılıyordu; kilit ile ekran
+  // birbirini tutmuyordu. Diğer kilitli ekranlarla aynı tanıtım kartı.
+  if (!isPro) return <ProTeaser page="contactInbox" />;
 
   return (
     <div className="h-[calc(100vh-10rem)] flex flex-col">

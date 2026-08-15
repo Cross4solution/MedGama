@@ -33,7 +33,7 @@ export default function SidebarPatient() {
 
   const patientItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
-    { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
+    { to: '/medstream', label: t('sidebar.medstream'), icon: Newspaper },
     { to: '/patient-dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: Activity },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
@@ -49,7 +49,7 @@ export default function SidebarPatient() {
   const doctorItems = [
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/doctor/dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: LayoutDashboard },
-    { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
+    { to: '/medstream', label: t('sidebar.medstream'), icon: Newspaper },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/doctor/appointments', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor/billing', label: t('sidebar.billing', 'Billing'), icon: Receipt },
@@ -63,7 +63,7 @@ export default function SidebarPatient() {
     { to: '/home-v2', label: t('sidebar.home') || 'Home', icon: Home },
     { to: '/clinic/dashboard', label: t('sidebar.dashboard', 'Dashboard'), icon: LayoutDashboard },
     { to: '/clinic/team', label: t('sidebar.myTeam', 'My Team'), icon: Building2 },
-    { to: '/medstream', label: t('sidebar.medstream'), icon: Video },
+    { to: '/medstream', label: t('sidebar.medstream'), icon: Newspaper },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/doctor/appointments', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },

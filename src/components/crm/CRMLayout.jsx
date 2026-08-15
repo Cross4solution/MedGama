@@ -500,7 +500,7 @@ const CRMLayout = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 lg:w-64 bg-gray-900 z-40">
+      <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 lg:w-56 bg-gray-900 z-40">
         <SidebarContent />
       </aside>
 
@@ -521,7 +521,7 @@ const CRMLayout = ({ children }) => {
       )}
 
       {/* Main Content Area */}
-      <div className="lg:pl-64 flex flex-col min-h-screen">
+      <div className="lg:pl-56 flex flex-col min-h-screen">
         {/* Top Bar */}
         <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/60">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">

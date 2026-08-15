@@ -177,7 +177,7 @@ const GatekeeperModal = ({ isOpen, onClose, user, needsVerification, needsUpgrad
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 lg:pl-[calc(16rem+1rem)]" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 lg:pl-[calc(14rem+1rem)]" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Encouraging Header */}
         <div className="bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500 px-6 py-6 text-center relative overflow-hidden">
@@ -622,7 +622,7 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
   const TypeIcon = typeCfg.icon;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 lg:pl-[calc(16rem+1rem)]" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 lg:pl-[calc(14rem+1rem)]" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
         {/* Header with type color */}
         <div className="px-6 py-4 border-b border-gray-100" style={{ background: `linear-gradient(135deg, ${typeCfg.color}10, white)` }}>

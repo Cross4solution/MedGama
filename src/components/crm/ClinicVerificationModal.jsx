@@ -164,7 +164,7 @@ const ClinicVerificationModal = ({ isOpen, onClose, onStatusChange }) => {
       />
 
       {/* Centering container — sidebar-aware */}
-      <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 lg:pl-[256px] pointer-events-none">
+      <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 lg:pl-[224px] pointer-events-none">
         <div
           className="relative bg-white rounded-2xl max-w-2xl w-full shadow-2xl flex flex-col overflow-hidden animate-fadeIn pointer-events-auto"
           style={{ maxHeight: 'min(92vh, 860px)' }}

@@ -8,6 +8,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { clinicManagerAPI } from '../../lib/api';
+import ProTeaser from '../../components/crm/ProTeaser';
 
 // ─── Helpers ─────────────────────────────────────────────────
 const fmt = (v) => {
@@ -483,6 +484,7 @@ const FinancialsTab = ({ t }) => {
 // ─── Main Component ──────────────────────────────────────────
 const CRMClinicManager = () => {
   const { t } = useTranslation();
+  const { user, isPro } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
   const tabs = [
@@ -490,6 +492,11 @@ const CRMClinicManager = () => {
     { id: 'doctors',    label: t('crm.manager.tabDoctors', 'Doctors'),     icon: Users },
     { id: 'financials', label: t('crm.manager.tabFinancials', 'Financials'), icon: DollarSign },
   ];
+
+  // Kenar çubuğunda kilitli görünüyordu ama sayfa açılıyordu: kilit ile ekran
+  // birbirini tutmuyordu, aboneliksiz kullanıcı boş bir ekran görüyordu.
+  // Diğer kilitli ekranlarla aynı bulanık tanıtım kartı gösteriliyor.
+  if (!isPro) return <ProTeaser page="clinicManager" />;
 
   return (
     <div className="space-y-6">

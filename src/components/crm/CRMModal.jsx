@@ -6,8 +6,8 @@ import { X } from 'lucide-react';
  * CRMModal — Unified modal wrapper for all CRM modals.
  *
  * CENTERING STRATEGY:
- *   Desktop (lg+): The centering container starts at left:256px (sidebar width)
- *   and spans width:calc(100%-256px) so the modal sits in the exact optical
+ *   Desktop (lg+): The centering container starts at left:224px (sidebar width)
+ *   and spans width:calc(100%-224px) so the modal sits in the exact optical
  *   center of the white content area — never overlapping the sidebar.
  *   Mobile: Full viewport centering (no sidebar).
  *
@@ -22,7 +22,7 @@ import { X } from 'lucide-react';
  *  - footer        : footer element (optional)
  *  - hideHeader    : bool (optional)
  */
-const SIDEBAR_WIDTH = 256; // lg:w-64 = 16rem = 256px
+const SIDEBAR_WIDTH = 224; // lg:w-56 = 14rem = 224px
 
 const CRMModal = ({
   isOpen,
@@ -59,7 +59,7 @@ const CRMModal = ({
         Desktop (lg+): offset left by sidebar width so modal centers in content area only
       */}
       <div
-        className="fixed inset-0 z-[1001] flex items-center justify-center p-4 lg:pl-[256px] pointer-events-none"
+        className="fixed inset-0 z-[1001] flex items-center justify-center p-4 lg:pl-[224px] pointer-events-none"
       >
         <div
           className={`relative bg-white rounded-2xl ${maxWidth} w-full shadow-2xl flex flex-col overflow-hidden animate-fadeIn pointer-events-auto`}

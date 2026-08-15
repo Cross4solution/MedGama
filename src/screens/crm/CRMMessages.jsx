@@ -254,7 +254,7 @@ const CRMMessages = () => {
       {/* Yeni konuşma: hasta seçimi */}
       {yeniAcik && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 lg:pl-[calc(16rem+1rem)]"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 lg:pl-[calc(14rem+1rem)]"
           onClick={(e) => e.target === e.currentTarget && setYeniAcik(false)}
         >
           <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col max-h-[70vh]">
