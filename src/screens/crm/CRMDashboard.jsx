@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { appointmentAPI, clinicVerificationAPI, hospitalAPI } from '../../lib/api';
+import { appointmentAPI, clinicVerificationAPI, hospitalAPI, patientAPI, billingAPI } from '../../lib/api';
 import { appointmentTimeDisplay } from '../../utils/dates';
 import {
   CalendarDays,
@@ -50,53 +50,18 @@ import PremiumGate from '../../components/crm/PremiumGate';
 const TODAY = new Date();
 const formatDate = (d) => d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
-const MOCK_STATS = [
-  { label: "Today's Appointments", value: 12, change: '+2', trend: 'up', icon: CalendarDays, color: 'blue', bgColor: 'bg-blue-50', iconColor: 'text-blue-600', borderColor: 'border-blue-100' },
-  { label: 'Pending Approvals', value: 5, change: '-1', trend: 'down', icon: Clock, color: 'amber', bgColor: 'bg-amber-50', iconColor: 'text-amber-600', borderColor: 'border-amber-100' },
-  { label: "Today's Revenue", value: '€2,450', change: '+18%', trend: 'up', icon: DollarSign, color: 'emerald', bgColor: 'bg-emerald-50', iconColor: 'text-emerald-600', borderColor: 'border-emerald-100' },
-  { label: 'Total Patients', value: 1284, change: '+24', trend: 'up', icon: Users, color: 'violet', bgColor: 'bg-violet-50', iconColor: 'text-violet-600', borderColor: 'border-violet-100' },
-];
+/*
+ * Bu panelde bir zamanlar uydurma veri vardı: 1284 hasta, €2.450 günlük gelir,
+ * "Mehmet Özkan'ın laboratuvar sonuçları anormal" diye bir acil uyarı ve
+ * hastaların yanında risk etiketleri. Hiçbirinin arkasında bir şey yoktu —
+ * laboratuvar uyarısı üreten bir sistem de, risk hesaplayan bir şey de
+ * projede hiç yazılmadı. Doktorun böyle bir uyarıya güvenip beklemesi
+ * tıbbi bir risk; müşteriye demoda gerçek gibi gösterilmesi ayrı bir sorun.
+ *
+ * Kutular artık gerçek uçlardan besleniyor, karşılığı olmayan iki blok
+ * kaldırıldı. Yeni bir hesapta sayılar sıfır görünür; doğrusu da budur.
+ */
 
-const MOCK_APPOINTMENTS = [
-  { id: 1, time: '09:00', endTime: '09:30', patient: 'Zeynep Kaya', age: 34, type: 'Check-up', status: 'completed', method: 'in-person', avatar: null, notes: 'Annual physical exam' },
-  { id: 2, time: '09:30', endTime: '10:00', patient: 'Ali Yilmaz', age: 45, type: 'Follow-up', status: 'completed', method: 'video', avatar: null, notes: 'Post-surgery follow-up' },
-  { id: 3, time: '10:00', endTime: '10:30', patient: 'Selin Acar', age: 28, type: 'Consultation', status: 'in-progress', method: 'in-person', avatar: null, notes: 'Dermatology consultation' },
-  { id: 4, time: '10:30', endTime: '11:00', patient: 'Mehmet Ozkan', age: 52, type: 'Lab Review', status: 'upcoming', method: 'phone', avatar: null, notes: 'Blood test results review' },
-  { id: 5, time: '11:00', endTime: '11:30', patient: 'Ayse Demir', age: 38, type: 'Check-up', status: 'upcoming', method: 'in-person', avatar: null, notes: 'Routine check-up' },
-  { id: 6, time: '11:30', endTime: '12:00', patient: 'Fatma Koc', age: 61, type: 'Follow-up', status: 'upcoming', method: 'video', avatar: null, notes: 'Diabetes management' },
-  { id: 7, time: '13:00', endTime: '13:30', patient: 'Burak Sahin', age: 29, type: 'New Patient', status: 'upcoming', method: 'in-person', avatar: null, notes: 'Initial assessment' },
-  { id: 8, time: '14:00', endTime: '14:45', patient: 'Elif Arslan', age: 42, type: 'Procedure', status: 'upcoming', method: 'in-person', avatar: null, notes: 'Minor procedure scheduled' },
-  { id: 9, time: '15:00', endTime: '15:30', patient: 'Can Yildiz', age: 55, type: 'Consultation', status: 'cancelled', method: 'video', avatar: null, notes: 'Cancelled by patient' },
-  { id: 10, time: '15:30', endTime: '16:00', patient: 'Deniz Korkmaz', age: 33, type: 'Follow-up', status: 'upcoming', method: 'phone', avatar: null, notes: 'Medication adjustment' },
-  { id: 11, time: '16:00', endTime: '16:30', patient: 'Pinar Dogan', age: 47, type: 'Check-up', status: 'upcoming', method: 'in-person', avatar: null, notes: 'Cardiology referral review' },
-  { id: 12, time: '16:30', endTime: '17:00', patient: 'Serkan Aydin', age: 39, type: 'Lab Review', status: 'upcoming', method: 'in-person', avatar: null, notes: 'Thyroid panel review' },
-];
-
-const MOCK_URGENT_NOTES = [
-  { id: 1, type: 'critical', from: 'Medagama System', message: 'Lab results for Mehmet Ozkan show abnormal values — requires immediate review.', time: '8 min ago', read: false },
-  { id: 2, type: 'warning', from: 'Secretary', message: 'Patient Fatma Koc requested urgent appointment reschedule for tomorrow.', time: '25 min ago', read: false },
-  { id: 3, type: 'info', from: 'Medagama', message: 'New prescription regulation update effective from March 1st. Please review.', time: '1 hour ago', read: true },
-  { id: 4, type: 'warning', from: 'Secretary', message: 'Insurance pre-authorization pending for Elif Arslan procedure.', time: '2 hours ago', read: true },
-  { id: 5, type: 'info', from: 'System', message: 'Monthly report for January is ready for review.', time: '3 hours ago', read: true },
-];
-
-const MOCK_RECENT_PATIENTS = [
-  { name: 'Zeynep Kaya', lastVisit: 'Today', condition: 'Healthy', risk: 'low' },
-  { name: 'Ali Yilmaz', lastVisit: 'Today', condition: 'Post-Op', risk: 'medium' },
-  { name: 'Selin Acar', lastVisit: 'Today', condition: 'Under Review', risk: 'low' },
-  { name: 'Mehmet Ozkan', lastVisit: '3 days ago', condition: 'Abnormal Labs', risk: 'high' },
-  { name: 'Fatma Koc', lastVisit: '1 week ago', condition: 'Diabetes Mgmt', risk: 'medium' },
-];
-
-const WEEKLY_REVENUE = [
-  { day: 'Mon', amount: 1800 },
-  { day: 'Tue', amount: 2200 },
-  { day: 'Wed', amount: 1950 },
-  { day: 'Thu', amount: 2450 },
-  { day: 'Fri', amount: 0 },
-  { day: 'Sat', amount: 0 },
-  { day: 'Sun', amount: 0 },
-];
 
 // ─── Sub-components ──────────────────────────────────────────
 
@@ -118,14 +83,7 @@ const MethodIcon = ({ method }) => {
   return <MapPin className="w-3.5 h-3.5 text-emerald-500" />;
 };
 
-const RiskBadge = ({ risk }) => {
-  const config = {
-    low: 'bg-green-100 text-green-700',
-    medium: 'bg-yellow-100 text-yellow-700',
-    high: 'bg-red-100 text-red-700',
-  };
-  return <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${config[risk] || config.low}`}>{risk}</span>;
-};
+// Risk rozeti kaldırıldı: hastanın risk düzeyini hesaplayan bir şey yok.
 
 // ─── Upgrade Banner (empty state CTA for free doctors) ───────
 const UpgradeBanner = ({ t, label }) => (
@@ -203,6 +161,19 @@ const CRMDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  // Kutulardaki sayılar sunucudan; gelmezse kutu "—" gösterir, uydurmaz.
+  const [hastaOzeti, setHastaOzeti] = useState(null);
+  const [gelirOzeti, setGelirOzeti] = useState(null);
+  const [gunlukGelir, setGunlukGelir] = useState(null);
+
+  useEffect(() => {
+    patientAPI.stats().then(res => setHastaOzeti(res?.data || res)).catch(() => {});
+    billingAPI.stats().then(res => setGelirOzeti(res?.data || res)).catch(() => {});
+    billingAPI.revenueChart({ period: 'daily' })
+      .then(res => setGunlukGelir(res?.data || res?.chart || res))
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     appointmentAPI.list({ per_page: 50 }).then(res => {
       const list = res?.data || [];
@@ -227,7 +198,35 @@ const CRMDashboard = () => {
     }).catch(() => {});
   }, []);
 
-  const appointments = apiAppointments || MOCK_APPOINTMENTS;
+  const appointments = apiAppointments || [];
+
+  const paraBirimi = { EUR: '€', USD: '$', TRY: '₺', GBP: '£' }[gelirOzeti?.currency] || '';
+  const sayi = (v) => (v === null || v === undefined ? '—' : v);
+  const tutar = (v) => (v === null || v === undefined ? '—' : `${paraBirimi}${Number(v).toLocaleString(isTr ? 'tr-TR' : 'en-US')}`);
+
+  const bugun = new Date().toISOString().slice(0, 10);
+  const bugunkuRandevu = apiAppointments
+    ? apiAppointments.filter(a => a.date?.slice(0, 10) === bugun).length
+    : null;
+
+  // Kutular: hepsinin arkasında gerçek bir uç var. "Bekleyen onay" kutusu
+  // kaldırıldı — randevular artık doğrudan onaylı geliyor, onay diye bir
+  // adım kalmadı.
+  const STATS = [
+    { label: t('crm.dashboard.todayAppointments', isTr ? 'Bugünkü randevu' : "Today's appointments"),
+      value: sayi(bugunkuRandevu), icon: CalendarDays, bgColor: 'bg-blue-50', iconColor: 'text-blue-600', borderColor: 'border-blue-100' },
+    { label: t('crm.dashboard.newPatientsMonth', isTr ? 'Bu ay yeni hasta' : 'New patients this month'),
+      value: sayi(hastaOzeti?.new_this_month), icon: Clock, bgColor: 'bg-amber-50', iconColor: 'text-amber-600', borderColor: 'border-amber-100' },
+    { label: t('crm.dashboard.todayRevenue', isTr ? 'Bugünkü gelir' : "Today's revenue"),
+      value: tutar(gelirOzeti?.today_revenue), icon: DollarSign, bgColor: 'bg-emerald-50', iconColor: 'text-emerald-600', borderColor: 'border-emerald-100' },
+    { label: t('crm.dashboard.totalPatients', isTr ? 'Toplam hasta' : 'Total patients'),
+      value: sayi(hastaOzeti?.total), icon: Users, bgColor: 'bg-violet-50', iconColor: 'text-violet-600', borderColor: 'border-violet-100' },
+  ];
+
+  // Gelir grafiği: son yedi günün gerçek toplamları.
+  const GELIR_GRAFIGI = Array.isArray(gunlukGelir)
+    ? gunlukGelir.slice(-7).map(d => ({ day: d.label || d.period || '', amount: Number(d.total ?? d.gross ?? 0) }))
+    : [];
 
   const filteredAppointments = useMemo(() => {
     if (appointmentFilter === 'all') return appointments;
@@ -245,8 +244,17 @@ const CRMDashboard = () => {
     setCurrentPage(1);
   }, [appointmentFilter]);
 
-  const maxRevenue = Math.max(...WEEKLY_REVENUE.map((d) => d.amount), 1);
-  const todayIndex = TODAY.getDay() === 0 ? 6 : TODAY.getDay() - 1; // Mon=0
+  const maxRevenue = Math.max(...GELIR_GRAFIGI.map((d) => d.amount), 1);
+
+  // "Son hastalar" gerçek randevulardan: her hasta bir kez, en yenisi üstte.
+  const sonHastalar = useMemo(() => {
+    const gorulen = new Map();
+    for (const a of [...appointments].sort((x, y) => String(y.date).localeCompare(String(x.date)))) {
+      if (!a.patient || gorulen.has(a.patient)) continue;
+      gorulen.set(a.patient, { name: a.patient, tarih: a.date || '' });
+    }
+    return [...gorulen.values()].slice(0, 5);
+  }, [appointments]);
 
   const isClinicOwner = user?.role_id === 'clinicOwner';
   const isHospital = user?.role_id === 'hospital';
@@ -306,12 +314,9 @@ const CRMDashboard = () => {
         </div>
 
         {/* AI Banner */}
-        <AiInsightBanner
-          appointments={[]}
-          alerts={MOCK_URGENT_NOTES}
-          stats={[]}
-          patients={[]}
-        />
+        {/* Uyarı kaynağı yok: banner yalnızca gerçekten elimizde olan
+            veriden çıkarım yapar, uydurma uyarı beslenmez. */}
+        <AiInsightBanner appointments={[]} alerts={[]} stats={[]} patients={[]} />
 
         {/* Hospital Network Stats */}
         <HospitalStatCards />
@@ -428,14 +433,14 @@ const CRMDashboard = () => {
       {/* AI Insight Banner */}
       <AiInsightBanner
         appointments={appointments}
-        alerts={MOCK_URGENT_NOTES}
-        stats={MOCK_STATS}
-        patients={MOCK_RECENT_PATIENTS}
+        alerts={[]}
+        stats={STATS}
+        patients={[]}
       />
 
       {/* KPI Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {MOCK_STATS.map((stat) => (
+        {STATS.map((stat) => (
           <div key={stat.label} className={`bg-white rounded-xl border ${stat.borderColor} p-3 sm:p-4 hover:shadow-md transition-shadow`}>
             <div className="flex items-center gap-2.5 mb-2">
               <div className={`w-9 h-9 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
@@ -492,8 +497,15 @@ const CRMDashboard = () => {
                 <CalendarDays className="w-4 h-4 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-gray-900">{t('crm.dashboard.todayAppointments')}</h2>
-                <p className="text-[11px] text-gray-400">{MOCK_APPOINTMENTS.length} appointments</p>
+                {/* Başlık "Bugünkü Randevular"dı ama liste tüm randevuları
+                    gösteriyor ve altında dönem filtreleri var. Üstteki kutu
+                    bugünü sayınca ikisi çelişiyordu. */}
+                <h2 className="text-sm font-bold text-gray-900">
+                  {t('crm.dashboard.appointmentsTitle', isTr ? 'Randevular' : 'Appointments')}
+                </h2>
+                <p className="text-[11px] text-gray-400">
+                  {appointments.length} {isTr ? 'randevu' : 'appointments'}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-1.5 overflow-x-auto">
@@ -638,53 +650,10 @@ const CRMDashboard = () => {
 
         {/* Right Panel */}
         <div className="space-y-4 sm:space-y-6">
-          {/* Urgent Notes */}
-          <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
-                  <Bell className="w-4 h-4 text-red-500" />
-                </div>
-                <h2 className="text-sm font-bold text-gray-900">{t('crm.dashboard.urgentAlerts')}</h2>
-              </div>
-              <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
-                {MOCK_URGENT_NOTES.filter((n) => !n.read).length} new
-              </span>
-            </div>
-            {isFreeTier ? (
-              <UpgradeBanner t={t} label={t('crm.dashboard.upgradeAlerts', 'Upgrade to receive real-time alerts')} />
-            ) : (
-              <>
-                <div className="divide-y divide-gray-50 max-h-72 overflow-y-auto">
-                  {MOCK_URGENT_NOTES.map((note) => (
-                    <div key={note.id} className={`px-5 py-3 hover:bg-gray-50/50 transition-colors ${!note.read ? 'bg-red-50/20' : ''}`}>
-                      <div className="flex items-start gap-2.5">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                          note.type === 'critical' ? 'bg-red-100' : note.type === 'warning' ? 'bg-amber-100' : 'bg-blue-100'
-                        }`}>
-                          {note.type === 'critical' ? <AlertTriangle className="w-3 h-3 text-red-600" /> :
-                           note.type === 'warning' ? <AlertTriangle className="w-3 h-3 text-amber-600" /> :
-                           <Activity className="w-3 h-3 text-blue-600" />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-[11px] font-semibold text-gray-700">{note.from}</span>
-                            <span className="text-[10px] text-gray-400">{note.time}</span>
-                            {!note.read && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
-                          </div>
-                          <p className="text-xs text-gray-600 leading-relaxed">{note.message}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30">
-                  <button className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">{t('crm.dashboard.viewAll')}</button>
-                </div>
-              </>
-            )}
-          </div>
-
+          {/* Acil uyarı bloğu kaldırıldı: uyarı üreten bir sistem yok.
+              "Laboratuvar sonuçları anormal" gibi tıbbi bir uyarıyı,
+              arkasında hiçbir şey yokken göstermek doktorun ona güvenip
+              beklemesine yol açardı. */}
           {/* Weekly Revenue Chart */}
           <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
@@ -694,20 +663,28 @@ const CRMDashboard = () => {
                 </div>
                 <h2 className="text-sm font-bold text-gray-900">{t('crm.dashboard.weeklyRevenue')}</h2>
               </div>
-              <span className="text-xs font-semibold text-emerald-600">€8,400</span>
+              <span className="text-xs font-semibold text-emerald-600">
+                {tutar(GELIR_GRAFIGI.reduce((a, d) => a + d.amount, 0))}
+              </span>
             </div>
             {isFreeTier ? (
               <UpgradeBanner t={t} label={t('crm.dashboard.upgradeRevenue', 'Upgrade to track your weekly revenue')} />
+            ) : GELIR_GRAFIGI.length === 0 ? (
+              // Fatura yoksa gösterilecek bir şey de yok. Eskiden burada
+              // uydurma bir hafta (€8.400) çiziliyordu.
+              <p className="px-5 py-8 text-center text-xs text-gray-400">
+                {isTr ? 'Henüz gelir kaydı yok.' : 'No revenue recorded yet.'}
+              </p>
             ) : (
               <div className="px-5 py-4">
                 <div className="flex items-end justify-between gap-2 h-28">
-                  {WEEKLY_REVENUE.map((d, i) => {
+                  {GELIR_GRAFIGI.map((d, i) => {
                     const h = d.amount > 0 ? Math.max(12, (d.amount / maxRevenue) * 100) : 4;
-                    const isToday = i === todayIndex;
+                    const isToday = i === GELIR_GRAFIGI.length - 1;
                     return (
-                      <div key={d.day} className="flex-1 flex flex-col items-center gap-1.5">
+                      <div key={`${d.day}-${i}`} className="flex-1 flex flex-col items-center gap-1.5">
                         <span className="text-[10px] font-semibold text-gray-500">
-                          {d.amount > 0 ? `€${(d.amount / 1000).toFixed(1)}k` : '—'}
+                          {d.amount > 0 ? tutar(Math.round(d.amount)) : '—'}
                         </span>
                         <div
                           className={`w-full max-w-[32px] rounded-lg transition-all ${
@@ -738,18 +715,25 @@ const CRMDashboard = () => {
             </div>
             {isFreeTier ? (
               <UpgradeBanner t={t} label={t('crm.dashboard.upgradePatients', 'Upgrade to see your recent patients')} />
+            ) : sonHastalar.length === 0 ? (
+              <p className="px-5 py-8 text-center text-xs text-gray-400">
+                {isTr ? 'Henüz hasta kaydı yok.' : 'No patients yet.'}
+              </p>
             ) : (
+              // Liste gerçek randevulardan türetiliyor. Yanlarındaki risk
+              // etiketleri kaldırıldı ("Abnormal Labs · yüksek risk"): risk
+              // hesaplayan bir şey yok, uydurma bir tıbbi değerlendirmeyi
+              // doktorun ekranında göstermek kabul edilemez.
               <div className="divide-y divide-gray-50">
-                {MOCK_RECENT_PATIENTS.map((p, i) => (
-                  <div key={i} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/50 transition-colors">
+                {sonHastalar.map((p) => (
+                  <div key={p.name} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/50 transition-colors">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 text-[10px] font-bold flex-shrink-0">
-                      {p.name.split(' ').map((n) => n[0]).join('')}
+                      {p.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-gray-900 truncate">{p.name}</p>
-                      <p className="text-[10px] text-gray-400">{p.lastVisit} · {p.condition}</p>
+                      <p className="text-[10px] text-gray-400">{p.tarih}</p>
                     </div>
-                    <RiskBadge risk={p.risk} />
                   </div>
                 ))}
               </div>

@@ -11,10 +11,12 @@ import { useTranslation } from 'react-i18next';
  */
 
 // ── Insight generation (client-side) ─────────────────────────
-function generateInsights({ appointments, alerts, stats, patients, t }) {
+function generateInsights({ appointments, alerts, stats, patients, t, isTr }) {
   const insights = [];
   const now = new Date();
   const hour = now.getHours();
+  // Şerit Türkçe arayüzde de İngilizce yazıyordu.
+  const tr = (turkce, ingilizce) => (isTr ? turkce : ingilizce);
 
   // 1. Urgent / critical alerts
   const unreadCritical = (alerts || []).filter((a) => !a.read && a.type === 'critical');
@@ -43,18 +45,29 @@ function generateInsights({ appointments, alerts, stats, patients, t }) {
   }
 
   // 2. Appointment summary
-  const upcoming = (appointments || []).filter((a) => a.status === 'upcoming');
-  const inProgress = (appointments || []).filter((a) => a.status === 'in-progress');
-  const completed = (appointments || []).filter((a) => a.status === 'completed');
-  const cancelled = (appointments || []).filter((a) => a.status === 'cancelled');
-  const total = (appointments || []).length;
+  // "Bugün" gerçekten bugün: eskiden gelen listenin tamamı bugünmüş gibi
+  // sayılıyordu, panelin kutusu 1 derken şerit 2 yazıyordu.
+  const bugun = new Date().toISOString().slice(0, 10);
+  const bugunkuler = (appointments || []).filter((a) => String(a.date || '').slice(0, 10) === bugun);
+
+  const upcoming = bugunkuler.filter((a) => a.status === 'upcoming' || a.status === 'confirmed' || a.status === 'pending');
+  const inProgress = bugunkuler.filter((a) => a.status === 'in-progress');
+  const completed = bugunkuler.filter((a) => a.status === 'completed');
+  const cancelled = bugunkuler.filter((a) => a.status === 'cancelled');
+  const total = bugunkuler.length;
 
   if (inProgress.length > 0) {
     insights.push({
       icon: CalendarDays,
       iconColor: 'text-blue-500',
-      text: `${inProgress[0].patient} is currently in session (${inProgress[0].type}).`,
-      sub: `${upcoming.length} more appointment${upcoming.length !== 1 ? 's' : ''} ahead today`,
+      text: tr(
+        `${inProgress[0].patient} şu anda görüşmede (${inProgress[0].type}).`,
+        `${inProgress[0].patient} is currently in session (${inProgress[0].type}).`,
+      ),
+      sub: tr(
+        `Bugün ${upcoming.length} randevu daha var`,
+        `${upcoming.length} more appointment${upcoming.length !== 1 ? 's' : ''} ahead today`,
+      ),
       priority: 7,
       tag: 'schedule',
     });
@@ -63,46 +76,40 @@ function generateInsights({ appointments, alerts, stats, patients, t }) {
     insights.push({
       icon: CalendarDays,
       iconColor: 'text-teal-500',
-      text: `Next up: ${next.patient} at ${next.time} — ${next.type}.`,
-      sub: `${total} total appointments today, ${completed.length} completed${cancelled.length > 0 ? `, ${cancelled.length} cancelled` : ''}`,
+      text: tr(
+        `Sıradaki: ${next.patient}, saat ${next.time} — ${next.type}.`,
+        `Next up: ${next.patient} at ${next.time} — ${next.type}.`,
+      ),
+      sub: tr(
+        `Bugün toplam ${total} randevu, ${completed.length} tamamlandı${cancelled.length > 0 ? `, ${cancelled.length} iptal` : ''}`,
+        `${total} total appointments today, ${completed.length} completed${cancelled.length > 0 ? `, ${cancelled.length} cancelled` : ''}`,
+      ),
       priority: 6,
       tag: 'schedule',
     });
   }
 
-  // 3. High-risk patients
-  const highRisk = (patients || []).filter((p) => p.risk === 'high');
-  if (highRisk.length > 0) {
-    insights.push({
-      icon: AlertTriangle,
-      iconColor: 'text-orange-500',
-      text: `${highRisk[0].name} is flagged as high-risk (${highRisk[0].condition}).`,
-      sub: `${highRisk.length} high-risk patient${highRisk.length > 1 ? 's' : ''} in your recent list`,
-      priority: 9,
-      tag: 'patient',
-    });
-  }
+  // "Yüksek riskli hasta" çıkarımı kaldırıldı: risk hesaplayan bir şey yok,
+  // veri de gelmiyor. Tıbbi bir değerlendirmeyi uydurmak kabul edilemez.
 
-  // 4. Revenue trend
-  const revenueStat = (stats || []).find((s) => s.label?.includes('Revenue'));
-  if (revenueStat && revenueStat.trend === 'up') {
-    insights.push({
-      icon: TrendingUp,
-      iconColor: 'text-emerald-500',
-      text: `Today's revenue is ${revenueStat.value} (${revenueStat.change} vs yesterday).`,
-      sub: 'Your daily trend is looking positive — keep it up!',
-      priority: 4,
-      tag: 'revenue',
-    });
-  }
+  // Gelir trendi çıkarımı da kaldırıldı: "dün ile karşılaştırma" verisi
+  // hiç üretilmiyordu, uydurma bir yüzdeye dayanıyordu.
 
   // 5. Day overview (always present as fallback)
-  const pendingStat = (stats || []).find((s) => s.label?.includes('Pending'));
+  // "Onay bekleyen" sayısı kaldırıldı: randevular doğrudan onaylı geliyor,
+  // onay diye bir adım kalmadı.
   insights.push({
     icon: Sparkles,
     iconColor: 'text-violet-500',
-    text: `You have ${total} appointments today with ${(pendingStat?.value) || 0} pending approvals.`,
-    sub: `${completed.length} done, ${upcoming.length} upcoming${cancelled.length ? `, ${cancelled.length} cancelled` : ''} — ${hour < 12 ? 'morning is busy' : hour < 17 ? 'afternoon ahead' : 'wrapping up'}.`,
+    text: total === 0
+      ? tr('Bugün randevunuz yok.', 'You have no appointments today.')
+      : tr(`Bugün ${total} randevunuz var.`, `You have ${total} appointment${total > 1 ? 's' : ''} today.`),
+    sub: total === 0
+      ? tr('Takviminiz boş.', 'Your calendar is clear.')
+      : tr(
+          `${completed.length} tamamlandı, ${upcoming.length} sırada${cancelled.length ? `, ${cancelled.length} iptal` : ''}.`,
+          `${completed.length} done, ${upcoming.length} upcoming${cancelled.length ? `, ${cancelled.length} cancelled` : ''} — ${hour < 12 ? 'morning is busy' : hour < 17 ? 'afternoon ahead' : 'wrapping up'}.`,
+        ),
     priority: 3,
     tag: 'overview',
   });
@@ -113,13 +120,14 @@ function generateInsights({ appointments, alerts, stats, patients, t }) {
 
 // ── Component ────────────────────────────────────────────────
 export default function AiInsightBanner({ appointments, alerts, stats, patients }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isTr = i18n.language?.startsWith('tr');
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const insights = useMemo(
-    () => generateInsights({ appointments, alerts, stats, patients, t }),
-    [appointments, alerts, stats, patients, t],
+    () => generateInsights({ appointments, alerts, stats, patients, t, isTr }),
+    [appointments, alerts, stats, patients, t, isTr],
   );
 
   // Auto-rotate every 8 seconds
