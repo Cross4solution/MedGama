@@ -150,7 +150,10 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
     { label: t('crm.sidebar.billing'), icon: Receipt, path: '/crm/billing', locked: !isPremium },
     { label: t('crm.sidebar.reviews', 'Reviews'), icon: Star, path: '/crm/reviews' },
     { label: t('crm.sidebar.reports'), icon: PieChart, path: '/crm/reports', locked: !isPremium },
-    { label: t('crm.sidebar.integrations'), icon: Plug, path: '/crm/integrations', locked: !isPremium },
+    // Entegrasyonlar kaldırıldı: ekrandaki beş kalem (E-Nabız, Medula,
+    // E-Reçete, MHRS, E-Fatura) yazılmamıştı, hepsi "yakında" etiketliydi ve
+    // ekran hiçbir uca bağlı değildi. Çalışan tek şey olan takvim senkronu
+    // zaten Ayarlar'da duruyor.
   ];
 
   return [
