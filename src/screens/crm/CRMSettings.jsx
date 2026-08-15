@@ -17,7 +17,7 @@ import LangFlag from '../../components/ui/LangFlag';
 // Sync with the site: only languages the site actually routes/supports (same as the header LanguageSwitcher).
 const ROUTED_LANGS = LANGUAGES.filter((l) => LOCALES.includes(l.code));
 import { useAuth } from '../../context/AuthContext';
-import { doctorProfileAPI, authAPI } from '../../lib/api';
+import { doctorProfileAPI, authAPI, clinicAPI } from '../../lib/api';
 import CertificationsEditor from '../../components/forms/CertificationsEditor';
 import CalendarSyncCard from '../../components/crm/CalendarSyncCard';
 import { blockNonNumeric } from '../../utils/numericInput';
@@ -75,21 +75,47 @@ const ALL_TABS = [
   { key: 'services', labelKey: 'crm.settings.servicesTab', label: 'Services & Pricing', icon: Stethoscope },
   { key: 'social', labelKey: 'crm.settings.socialTab', label: 'Social & Contact', icon: Link2 },
   { key: 'verification', labelKey: 'crm.settings.verificationTab', label: 'Verification', icon: ShieldCheck },
-  { key: 'clinic', labelKey: 'crm.settings.clinicInfo', label: 'Clinic Info', icon: Building2, crmOnly: true },
+  // Klinik bilgileri yalnızca klinik sahibinde: tek başına çalışan doktorun
+  // adresi ve telefonu Profil ve Sosyal sekmelerinde. İki yerde iki telefon
+  // olunca hangisinin doğru olduğu belirsizleşiyor.
+  { key: 'clinic', labelKey: 'crm.settings.clinicInfo', label: 'Clinic Info', icon: Building2, crmOnly: true, clinicOwnerOnly: true },
   { key: 'notifications', labelKey: 'crm.settings.notifications', label: 'Notifications', icon: Bell },
   { key: 'security', labelKey: 'crm.settings.security', label: 'Security', icon: Shield },
   { key: 'billing', labelKey: 'crm.settings.billing', label: 'Billing', icon: CreditCard, crmOnly: true },
+];
+
+/**
+ * Bildirim tercihleri. Anahtarlar sunucudaki `NotificationPreferences::AYARLAR`
+ * ile birebir aynı; ana sitedeki kartla da aynı liste — iki ekran aynı kaydı
+ * yönetiyor.
+ *
+ * Randevu bildirimleri kasten yok: onay, iptal ve hatırlatma hizmetin kendisi.
+ * Sunucu onları tercihe bakmadan gönderiyor, kapatılabilir göstermek
+ * yanıltıcı olurdu.
+ *
+ * İçerik çevirisi de burada değil — kullanıcı açısından bir dil ayarı; Profil
+ * ekranında dil seçiminin altında duruyor.
+ */
+const BILDIRIM_AYARLARI = [
+  { key: 'email_review_received', tr: 'Yeni değerlendirme geldiğinde e-posta', en: 'Email me about new reviews' },
+  { key: 'email_review_response', tr: 'Değerlendirmeme yanıt verilince e-posta', en: 'Email me when someone replies to my review' },
+  { key: 'email_support',         tr: 'Destek talebime yanıt gelince e-posta', en: 'Email me about support replies' },
+  { key: 'inapp_social',          tr: 'Beğeni ve yorum bildirimleri', en: 'Likes and comments' },
 ];
 
 const CRMSettings = ({ standalone = false }) => {
   const { t, i18n } = useTranslation();
   const { user, updateUser } = useAuth();
   const location = useLocation();
+  const isTr = i18n.language?.startsWith('tr');
   const hasCrm = !!(user?.is_crm_active);
-  const TABS = ALL_TABS.map(tab => ({
-    ...tab,
-    locked: tab.crmOnly && !hasCrm && standalone,
-  }));
+  const isClinicOwner = user?.role_id === 'clinicOwner' || user?.role_id === 'clinic';
+  const TABS = ALL_TABS
+    .filter(tab => !tab.clinicOwnerOnly || isClinicOwner)
+    .map(tab => ({
+      ...tab,
+      locked: tab.crmOnly && !hasCrm && standalone,
+    }));
 
   // Read ?tab= from URL to auto-switch (e.g. from verification banner)
   const urlTab = new URLSearchParams(location.search).get('tab');
@@ -381,23 +407,84 @@ const CRMSettings = ({ standalone = false }) => {
     finally { setSocialSaving(false); }
   };
 
-  const [clinic, setClinic] = useState({
-    name: 'Medagama Health Center', address: 'Levent Mah. Buyukdere Cad. No:185', city: 'Istanbul', country: 'Turkey',
-    phone: '+90 212 300 4000', email: 'info@medagama-clinic.com', website: 'www.medagama.com',
-    workingHours: 'Mon-Fri 08:00-18:00, Sat 09:00-14:00',
-  });
+  // Klinik bilgileri gerçek kayıttan gelir. Eskiden burada uydurma bir klinik
+  // ("Medagama Health Center, Levent Mah...") sabit yazılıydı ve hiçbir yere
+  // kaydedilmiyordu: ekranda gerçek gibi duruyordu.
+  const [clinic, setClinic] = useState(null);
+  const [clinicSaving, setClinicSaving] = useState(false);
+  const [clinicHata, setClinicHata] = useState('');
 
-  const [notifications, setNotifications] = useState({
-    emailAppointments: true, emailMessages: true, emailReports: false,
-    pushAppointments: true, pushMessages: true, pushUrgent: true,
-    smsReminders: true, smsMarketing: false,
-  });
+  useEffect(() => {
+    if (!isClinicOwner) return;
+    // Sahibin kendi kliniğini döndüren uç nokta; kimlik doğrulama sunucuda,
+    // burada klinik kimliği tahmin etmiyoruz.
+    clinicAPI.onboardingProfile()
+      .then((res) => {
+        const c = res?.clinic || res?.data?.clinic;
+        if (!c?.id) { setClinic({}); return; }
+        setClinic({
+          id: c.id,
+          name: c.name || c.fullname || '',
+          address: c.address || '',
+          phone: c.phone || '',
+          biography: c.biography || '',
+        });
+      })
+      .catch(() => setClinic({}));
+  }, [isClinicOwner]);
 
-  const [schedule, setSchedule] = useState({
-    slotDuration: '30', breakTime: '15', startTime: '08:00', endTime: '18:00',
-    workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-    autoConfirm: false, bufferTime: '5',
-  });
+  const saveClinic = async () => {
+    if (!clinic?.id) return;
+    setClinicSaving(true);
+    setClinicHata('');
+    try {
+      await clinicAPI.updateOnboarding({
+        step: 0,
+        name: clinic.name,
+        address: clinic.address,
+        phone: clinic.phone,
+        biography: clinic.biography,
+      });
+    } catch (err) {
+      setClinicHata(err?.message || (isTr ? 'Kaydedilemedi' : 'Could not save'));
+    } finally {
+      setClinicSaving(false);
+    }
+  };
+
+  // Bildirim tercihleri sunucudaki kayıttan; null = henüz yüklenmedi.
+  const [notifications, setNotifications] = useState(null);
+  const [notifKaydediliyor, setNotifKaydediliyor] = useState(null);
+  const [notifHata, setNotifHata] = useState('');
+  // Kullanıcı bir anahtara dokunduktan sonra gelen ilk yükleme cevabı
+  // ekrandakini eski değere geri çevirmesin.
+  const notifDokunuldu = useRef(false);
+
+  useEffect(() => {
+    authAPI.getNotificationPrefs()
+      .then((res) => {
+        if (notifDokunuldu.current) return;
+        setNotifications(res?.data?.preferences || res?.preferences || {});
+      })
+      .catch(() => { if (!notifDokunuldu.current) setNotifications({}); });
+  }, []);
+
+  const bildirimDegistir = async (key) => {
+    const yeni = { ...notifications, [key]: !(notifications?.[key] ?? true) };
+    const eski = notifications;
+    notifDokunuldu.current = true;
+    setNotifications(yeni);          // önce ekranda göster, istek arkada gitsin
+    setNotifKaydediliyor(key);
+    setNotifHata('');
+    try {
+      await authAPI.updateNotificationPrefs({ [key]: yeni[key] });
+    } catch {
+      setNotifications(eski);        // başarısızsa eski hâline dön
+      setNotifHata(isTr ? 'Kaydedilemedi, tekrar deneyin.' : 'Could not save, please try again.');
+    } finally {
+      setNotifKaydediliyor(null);
+    }
+  };
 
   const content = (
     <div className="space-y-6">
@@ -1164,98 +1251,97 @@ const CRMSettings = ({ standalone = false }) => {
                 <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.clinicInfoTitle', 'Clinic Information')}</h2>
                 <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.clinicInfoDesc', 'Update your clinic details')}</p>
               </div>
-              <div className="px-6 py-5 space-y-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.clinicName', 'Clinic Name')}</label>
-                  <input type="text" value={clinic.name} onChange={(e) => setClinic({...clinic, name: e.target.value})}
-                    className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+              {clinic === null ? (
+                <div className="flex items-center justify-center py-10 text-gray-400">
+                  <Loader2 className="w-5 h-5 animate-spin" />
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.address', 'Address')}</label>
-                  <input type="text" value={clinic.address} onChange={(e) => setClinic({...clinic, address: e.target.value})}
-                    className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.city', 'City')}</label>
-                    <input type="text" value={clinic.city} onChange={(e) => setClinic({...clinic, city: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+              ) : !clinic.id ? (
+                <p className="px-6 py-8 text-sm text-gray-500">
+                  {isTr ? 'Bu hesaba bağlı bir klinik kaydı yok.' : 'No clinic record is linked to this account.'}
+                </p>
+              ) : (
+                <>
+                  {/* Alanlar sunucunun gerçekten sakladıklarıyla sınırlı.
+                      Kaydedilmeyen bir alan göstermek, doldurulup kaybolduğu
+                      için hiç göstermemekten kötü. */}
+                  <div className="px-6 py-5 space-y-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.clinicName', 'Clinic Name')}</label>
+                      <input type="text" value={clinic.name} onChange={(e) => setClinic({...clinic, name: e.target.value})}
+                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.address', 'Address')}</label>
+                      <input type="text" value={clinic.address} onChange={(e) => setClinic({...clinic, address: e.target.value})}
+                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.phone', 'Phone')}</label>
+                      <input type="tel" value={clinic.phone} onChange={(e) => setClinic({...clinic, phone: e.target.value})}
+                        className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.clinicBio', isTr ? 'Tanıtım' : 'About')}</label>
+                      <textarea rows={4} value={clinic.biography} onChange={(e) => setClinic({...clinic, biography: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                    </div>
+                    {clinicHata && <p className="text-xs text-red-600">{clinicHata}</p>}
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.country', 'Country')}</label>
-                    <input type="text" value={clinic.country} onChange={(e) => setClinic({...clinic, country: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
+                  <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex justify-end">
+                    <button onClick={saveClinic} disabled={clinicSaving}
+                      className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm disabled:opacity-50">
+                      {clinicSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      {t('crm.settings.saveChanges', 'Save Changes')}
+                    </button>
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.phone', 'Phone')}</label>
-                    <input type="tel" value={clinic.phone} onChange={(e) => setClinic({...clinic, phone: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('common.email', 'Email')}</label>
-                    <input type="email" value={clinic.email} onChange={(e) => setClinic({...clinic, email: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.workingHours', 'Working Hours')}</label>
-                  <input type="text" value={clinic.workingHours} onChange={(e) => setClinic({...clinic, workingHours: e.target.value})}
-                    className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                </div>
-              </div>
-              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex justify-end">
-                <button className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
-                  <Save className="w-4 h-4" /> {t('crm.settings.saveChanges', 'Save Changes')}
-                </button>
-              </div>
+                </>
+              )}
             </div>
           )}
 
           {/* Notifications Tab */}
+          {/* Bildirim tercihleri: anahtarlar sunucudaki gerçek kayıttan gelir
+              ve dokunulduğu anda yazılır. Eskiden bu sekme yalnız ekranda
+              duruyordu — hiçbir yerden yüklenmiyor, hiçbir yere kaydedilmiyordu;
+              doktor kapattığı bildirimi almaya devam ediyordu.
+
+              Randevu bildirimleri listede yok, bilinçli: onay, iptal ve
+              hatırlatma hizmetin kendisi. Sunucu onları tercihe bakmadan
+              gönderiyor; kapatılabilir göstermek yanıltıcı olurdu. */}
           {activeTab === 'notifications' && (
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100">
                 <h2 className="text-sm font-bold text-gray-900">{t('crm.settings.notificationPreferences', 'Notification Preferences')}</h2>
                 <p className="text-xs text-gray-400 mt-0.5">{t('crm.settings.chooseNotifications', 'Choose how you want to be notified')}</p>
               </div>
-              <div className="px-6 py-5 space-y-6">
-                {[
-                  { title: t('crm.settings.pushNotifications', 'Push Notifications'), items: [
-                    { key: 'pushAppointments', label: t('crm.settings.upcomingAppointments', 'Upcoming appointments') },
-                    { key: 'pushMessages', label: t('crm.settings.newMessages', 'New messages') },
-                    { key: 'pushUrgent', label: t('crm.settings.urgentAlertsResults', 'Urgent alerts & critical results') },
-                  ]},
-                  { title: t('crm.settings.appointmentReminders', 'Appointment Reminders'), items: [
-                    { key: 'emailAppointments', label: t('crm.settings.apptConfirmReminders', 'Appointment confirmations & reminders') },
-                    { key: 'emailMessages', label: t('crm.settings.newPatientMessages', 'New patient messages') },
-                  ]},
-                ].map((section) => (
-                  <div key={section.title}>
-                    <h3 className="text-xs font-bold text-gray-700 mb-3">{section.title}</h3>
-                    <div className="space-y-3">
-                      {section.items.map((item) => (
-                        <label key={item.key} className="flex items-center justify-between cursor-pointer group">
-                          <span className="text-sm text-gray-600 group-hover:text-gray-800">{item.label}</span>
+              <div className="px-6 py-5">
+                {notifications === null ? (
+                  <div className="flex items-center justify-center py-8 text-gray-400">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {BILDIRIM_AYARLARI.map(({ key, tr, en }) => {
+                      const acik = notifications?.[key] ?? true;
+                      return (
+                        <label key={key} className="flex items-center justify-between cursor-pointer group">
+                          <span className="text-sm text-gray-600 group-hover:text-gray-800">{isTr ? tr : en}</span>
                           <button
                             type="button"
-                            onClick={() => setNotifications({...notifications, [item.key]: !notifications[item.key]})}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${notifications[item.key] ? 'bg-teal-500' : 'bg-gray-300'}`}
+                            onClick={() => bildirimDegistir(key)}
+                            disabled={notifKaydediliyor === key}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-60 ${acik ? 'bg-teal-500' : 'bg-gray-300'}`}
                           >
-                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${notifications[item.key] ? 'translate-x-6' : 'translate-x-1'}`} />
+                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${acik ? 'translate-x-6' : 'translate-x-1'}`} />
                           </button>
                         </label>
-                      ))}
-                    </div>
+                      );
+                    })}
+                    {notifHata && <p className="text-xs text-red-600">{notifHata}</p>}
                   </div>
-                ))}
+                )}
               </div>
-              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex justify-end">
-                <button className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
-                  <Save className="w-4 h-4" /> {t('crm.settings.savePreferences', 'Save Preferences')}
-                </button>
-              </div>
+              {/* Kaydet düğmesi yok: anahtar değiştiği anda yazılıyor. */}
             </div>
           )}
 
@@ -1305,81 +1391,6 @@ const CRMSettings = ({ standalone = false }) => {
                     <Trash2 className="w-3.5 h-3.5" /> {t('crm.settings.deleteAccount', 'Delete Account')}
                   </button>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* Schedule Tab */}
-          {activeTab === 'schedule' && (
-            <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100">
-                <h2 className="text-sm font-bold text-gray-900">Schedule Settings</h2>
-                <p className="text-xs text-gray-400 mt-0.5">Configure your appointment schedule</p>
-              </div>
-              <div className="px-6 py-5 space-y-5">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Start Time</label>
-                    <input type="time" value={schedule.startTime} onChange={(e) => setSchedule({...schedule, startTime: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">End Time</label>
-                    <input type="time" value={schedule.endTime} onChange={(e) => setSchedule({...schedule, endTime: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Slot Duration</label>
-                    <select value={schedule.slotDuration} onChange={(e) => setSchedule({...schedule, slotDuration: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                      <option value="15">15 min</option>
-                      <option value="20">20 min</option>
-                      <option value="30">30 min</option>
-                      <option value="45">45 min</option>
-                      <option value="60">60 min</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Buffer Time</label>
-                    <select value={schedule.bufferTime} onChange={(e) => setSchedule({...schedule, bufferTime: e.target.value})}
-                      className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                      <option value="0">None</option>
-                      <option value="5">5 min</option>
-                      <option value="10">10 min</option>
-                      <option value="15">15 min</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2">Working Days</label>
-                  <div className="flex flex-wrap gap-2">
-                    {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((day) => {
-                      const active = schedule.workDays.includes(day);
-                      return (
-                        <button key={day} type="button"
-                          onClick={() => setSchedule({...schedule, workDays: active ? schedule.workDays.filter(d => d !== day) : [...schedule.workDays, day]})}
-                          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${active ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
-                          {day}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-                <label className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">Auto-confirm appointments</p>
-                    <p className="text-xs text-gray-400">Automatically confirm new appointment requests</p>
-                  </div>
-                  <button type="button" onClick={() => setSchedule({...schedule, autoConfirm: !schedule.autoConfirm})}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${schedule.autoConfirm ? 'bg-teal-500' : 'bg-gray-300'}`}>
-                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${schedule.autoConfirm ? 'translate-x-6' : 'translate-x-1'}`} />
-                  </button>
-                </label>
-              </div>
-              <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex justify-end">
-                <button className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
-                  <Save className="w-4 h-4" /> Save Schedule
-                </button>
               </div>
             </div>
           )}
