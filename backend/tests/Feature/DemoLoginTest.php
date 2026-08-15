@@ -63,6 +63,27 @@ class DemoLoginTest extends TestCase
         $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertNotFound();
     }
 
+    /**
+     * Canlıda tercih edilen yol: hesap sunucu ayarındaki e-postayla belirlenir,
+     * veritabanına dokunmak gerekmez.
+     */
+    public function test_ayardaki_e_posta_ile_hesap_acilir(): void
+    {
+        $doktor = User::factory()->doctor()->create(['is_demo' => false]);
+        config(['demo.accounts' => ['doctor' => $doktor->email, 'clinicOwner' => '']]);
+
+        $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertRedirect();
+    }
+
+    /** Ayardaki e-posta başka bir role aitse açılmamalı. */
+    public function test_ayardaki_e_posta_rol_tutmuyorsa_acilmaz(): void
+    {
+        $hasta = User::factory()->patient()->create();
+        config(['demo.accounts' => ['doctor' => $hasta->email, 'clinicOwner' => '']]);
+
+        $this->get('/api/demo-login/doktor?key=deneme-anahtari')->assertStatus(404);
+    }
+
     public function test_taninmayan_rol_acilmaz(): void
     {
         User::factory()->doctor()->create(['is_demo' => true]);

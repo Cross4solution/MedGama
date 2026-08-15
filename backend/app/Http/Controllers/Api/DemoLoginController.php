@@ -32,10 +32,8 @@ class DemoLoginController extends Controller
             abort(404);
         }
 
-        $kullanici = User::where('is_demo', true)
-            ->where('role_id', $this->rolEslestir($rol))
-            ->where('is_active', true)
-            ->first();
+        $rolId = $this->rolEslestir($rol);
+        $kullanici = $this->demoHesabi($rolId);
 
         if (!$kullanici) {
             return response()->json([
@@ -58,6 +56,30 @@ class DemoLoginController extends Controller
             . '/tr/crm?demo_token=' . urlencode($token);
 
         return redirect()->away($hedef);
+    }
+
+    /**
+     * Bu rol için açılacak hesap.
+     *
+     * İki yol da kabul ediliyor: sunucu ayarındaki e-posta (canlıda tercih
+     * edilen — veritabanına dokunmadan kurulur) veya hesaptaki is_demo işareti.
+     * Hiçbiri yoksa açılacak hesap yok demektir; asla "ilk doktoru" seçmiyoruz.
+     */
+    private function demoHesabi(string $rolId): ?User
+    {
+        $eposta = trim((string) (config('demo.accounts')[$rolId] ?? ''));
+
+        if ($eposta !== '') {
+            return User::where('email', $eposta)
+                ->where('role_id', $rolId)
+                ->where('is_active', true)
+                ->first();
+        }
+
+        return User::where('is_demo', true)
+            ->where('role_id', $rolId)
+            ->where('is_active', true)
+            ->first();
     }
 
     private function rolEslestir(string $rol): string
