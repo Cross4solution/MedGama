@@ -17,6 +17,35 @@ import { Footer, Header } from '@/components/layout';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 import scrollConfig from '@/config/scroll';
 
+/**
+ * Şifresiz demo bağlantısıyla gelen jetonu karşılar.
+ *
+ * Sunucu jetonu adres çubuğunda gönderiyor; burada oturuma alınıp adresten
+ * hemen siliniyor ki tarayıcı geçmişinde ve paylaşılan ekran görüntüsünde
+ * kalmasın. Jeton yoksa bu bileşen hiçbir şey yapmaz.
+ */
+function DemoTokenGate() {
+  const searchParams = useSearchParams();
+  const token = searchParams?.get('demo_token');
+
+  useEffect(() => {
+    if (!token) return;
+    try {
+      localStorage.setItem('access_token', token);
+      localStorage.setItem('auth_remember', '1');
+      localStorage.removeItem('auth_logout');
+      // Jetonu adresten temizle, sonra oturumu kur.
+      const temiz = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, '', temiz);
+      window.location.replace(temiz);
+    } catch {
+      // Depolama kapalıysa yapacak bir şey yok; kullanıcı normal giriş yapar.
+    }
+  }, [token]);
+
+  return null;
+}
+
 function OnboardingGate() {
   const { user } = useAuth();
   const pathname = stripLocale(usePathname() || '/');
@@ -228,6 +257,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
         {showFooter && <Footer />}
         {showCookieBanner && <CookieBanner />}
         {!isAuthPage && <ScrollToTopButton />}
+        <DemoTokenGate />
         <OnboardingGate />
       </Suspense>
     </div>

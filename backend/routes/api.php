@@ -158,6 +158,17 @@ Route::get('/system/init-db-status', function (\Illuminate\Http\Request $request
 
 /*
 |--------------------------------------------------------------------------
+| Demo Login (şifresiz — yalnızca demo hesapları)
+|--------------------------------------------------------------------------
+| Kasıtlı kimlik doğrulama atlaması. Sunucuda DEMO_LOGIN_KEY tanımlı değilse
+| 404 döner, yani varsayılan olarak kapalıdır. Ayrıntı ve kapatma yolu:
+| DemoLoginController.
+*/
+Route::get('/demo-login/{rol}', \App\Http\Controllers\Api\DemoLoginController::class)
+    ->middleware('throttle:20,1');
+
+/*
+|--------------------------------------------------------------------------
 | Auth Routes (Public)
 |--------------------------------------------------------------------------
 */
@@ -597,7 +608,9 @@ Route::prefix('crm')->middleware(['auth:sanctum', 'role:doctor', 'crm.access'])-
     Route::get('/examinations/{id}/prescription-pdf', [ExaminationController::class, 'prescriptionPdf']);
 
     // ICD-10 code search
-    Route::get('/icd10/search', [ExaminationController::class, 'searchIcd10']);
+    // ICD-10 arama ucu kaldırıldı: kodlama Mart'ta projeden çıkarıldı
+    // (tablo düşürüldü) ama rota kalmıştı ve karşılığı olmayan bir metoda
+    // işaret ettiği için her çağrıda 500 dönüyordu.
 });
 
 /*
