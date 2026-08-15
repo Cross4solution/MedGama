@@ -277,19 +277,19 @@ const CRMLayout = ({ children }) => {
     return () => clearInterval(interval);
   }, [user, fetchChatUnread]);
 
-  const NAV_SECTIONS = getNavSections(t, userRole, isVerified, { chatUnreadCount: chatUnread, userLevel });
+  // isPremium gönderilmiyordu: fonksiyon bunu bekliyor ama yerine userLevel
+  // geçiliyordu, dolayısıyla her zaman false kalıyor ve aboneliği OLAN
+  // kullanıcıda da kilit simgeleri görünüyordu.
+  const NAV_SECTIONS = getNavSections(t, userRole, isVerified, {
+    chatUnreadCount: chatUnread,
+    isPremium: hasCrmSubscription,
+  });
 
-  // ── CRM Access Gate: only users with CRM subscription can access CRM (except /crm/billing for upgrade) ──
-  useEffect(() => {
-    if (!user) return;
-    if (hasCrmSubscription) return;
-    const isBilling = location.pathname === '/crm/billing';
-    if (!isBilling) {
-      // Redirect to appropriate dashboard based on user level
-      const dashboardMap = { 3: '/clinic/dashboard', 4: '/dashboard', 2: '/doctor/dashboard' };
-      navigate(dashboardMap[userLevel] || '/dashboard', { replace: true });
-    }
-  }, [user, hasCrmSubscription, userLevel, location.pathname, navigate]);
+  // Aboneliği olmayan kullanıcı eskiden CRM'den tamamen dışarı atılıyordu;
+  // ne kilitli ekranı ne de tanıtım kartını görebiliyordu. Artık CRM kabuğuna
+  // girebiliyor: ücretli ekranlar kendi içlerinde bulanık tanıtım kartını
+  // gösteriyor. Veri yine korumalı — sunucudaki crm.access ara katmanı
+  // aboneliksiz isteği reddediyor, buradaki yalnızca ne görüneceği.
 
   // ── Notification state ──
   const [notifOpen, setNotifOpen] = useState(false);
