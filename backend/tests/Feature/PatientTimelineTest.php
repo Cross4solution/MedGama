@@ -138,6 +138,30 @@ class PatientTimelineTest extends TestCase
     }
 
     /**
+     * Gelmedi geçmişi hasta kartında toplanmalı: klinik kapora isteyip
+     * istemeyeceğine buna bakarak karar veriyor.
+     */
+    public function test_gelmedi_gecmisi_hasta_ozetinde_toplanir(): void
+    {
+        foreach (['no_show', 'no_show', 'completed', 'cancelled'] as $durum) {
+            Appointment::factory()->create([
+                'patient_id' => $this->patient->id,
+                'doctor_id'  => $this->doctor->id,
+                'clinic_id'  => $this->clinic->id,
+                'status'     => $durum,
+            ]);
+        }
+
+        $ozet = $this->app->make(PatientService::class)
+            ->getPatient360($this->patient->id, $this->doctor)['stats'];
+
+        $this->assertSame(2, $ozet['no_show_count']);
+        $this->assertSame(1, $ozet['cancelled_count']);
+        // Oran gerçekleşmesi beklenenler üzerinden: 2 gelmedi / (1 tamam + 2 gelmedi)
+        $this->assertSame(67, $ozet['no_show_rate']);
+    }
+
+    /**
      * Dondurulmuş anamnez randevu anının kaydıdır; hastanın sonradan
      * eklediği ilaç ayrı bir alanda gelmeli, yoksa doktor yeni ilaçtan
      * habersiz kalır.

@@ -711,6 +711,12 @@ class PatientService
         $upcoming = (clone $apptQuery)->where('appointment_date', '>=', now()->toDateString())
             ->whereIn('status', ['pending', 'confirmed'])->count();
 
+        // Gelmedi geçmişi. Durum randevuda tutuluyordu ama hiçbir yerde
+        // toplanmıyordu; klinik "bu hastadan kapora isteyeyim mi" sorusuna
+        // ancak randevuları tek tek gezerek cevap verebiliyordu.
+        $noShow = (clone $apptQuery)->where('status', 'no_show')->count();
+        $iptal  = (clone $apptQuery)->where('status', 'cancelled')->count();
+
         $examCount = PatientRecord::active()
             ->examinations()
             ->where('patient_id', $patientId)
@@ -723,6 +729,14 @@ class PatientService
             'completed_visits' => $completed,
             'upcoming_appointments' => $upcoming,
             'total_examinations' => $examCount,
+            'no_show_count' => $noShow,
+            'cancelled_count' => $iptal,
+            // Oran yalnızca gerçekleşmesi beklenen randevular üzerinden:
+            // henüz günü gelmemiş randevuyu paydaya katmak oranı düşürüp
+            // yanıltıcı kılıyordu.
+            'no_show_rate' => ($completed + $noShow) > 0
+                ? (int) round($noShow / ($completed + $noShow) * 100)
+                : 0,
         ];
     }
 }

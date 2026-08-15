@@ -421,19 +421,50 @@ const CRMPatient360 = () => {
 
           {/* Visit Stats */}
           {visitStats && (
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: 'Total Appts', value: visitStats.total_appointments, color: 'text-blue-600' },
-                { label: 'Completed', value: visitStats.completed_visits, color: 'text-emerald-600' },
-                { label: 'Upcoming', value: visitStats.upcoming_appointments, color: 'text-amber-600' },
-                { label: 'Examinations', value: visitStats.total_examinations, color: 'text-violet-600' },
-              ].map((s) => (
-                <div key={s.label} className="bg-white rounded-xl border border-gray-200/60 shadow-sm px-4 py-3 text-center">
-                  <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase">{s.label}</p>
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: t('crm.patient360.statTotal', 'Toplam randevu'), value: visitStats.total_appointments, color: 'text-blue-600' },
+                  { label: t('crm.patient360.statCompleted', 'Tamamlanan'), value: visitStats.completed_visits, color: 'text-emerald-600' },
+                  { label: t('crm.patient360.statUpcoming', 'Yaklaşan'), value: visitStats.upcoming_appointments, color: 'text-amber-600' },
+                  { label: t('crm.patient360.statExams', 'Muayene'), value: visitStats.total_examinations, color: 'text-violet-600' },
+                ].map((s) => (
+                  <div key={s.label} className="bg-white rounded-xl border border-gray-200/60 shadow-sm px-4 py-3 text-center">
+                    <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
+                    <p className="text-[10px] font-semibold text-gray-400 uppercase">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Gelmedi geçmişi yalnızca varsa gösteriliyor: sıfırı ayrı bir
+                  kutuda göstermek her hastayı şüpheli gibi sunardı. */}
+              {visitStats.no_show_count > 0 && (
+                <div className="rounded-xl border border-orange-200 bg-orange-50/60 px-4 py-3">
+                  <p className="text-[10px] font-bold text-orange-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    {t('crm.patient360.noShowTitle', 'Gelmedi geçmişi')}
+                  </p>
+                  <p className="text-sm text-gray-700 mt-1">
+                    {t('crm.patient360.noShowCount', {
+                      defaultValue: '{{count}} randevuya gelmedi',
+                      count: visitStats.no_show_count,
+                    })}
+                    {visitStats.no_show_rate > 0 && (
+                      <span className="text-gray-500"> · %{visitStats.no_show_rate}</span>
+                    )}
+                    {visitStats.cancelled_count > 0 && (
+                      <span className="text-gray-500">
+                        {' · '}
+                        {t('crm.patient360.cancelledCount', {
+                          defaultValue: '{{count}} iptal',
+                          count: visitStats.cancelled_count,
+                        })}
+                      </span>
+                    )}
+                  </p>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
 
           {/* Contact Details */}
