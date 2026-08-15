@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
-import { messageAPI } from '../../lib/api';
+import { messageAPI, patientAPI } from '../../lib/api';
 
 // ─── Helpers ─────────────────────────────────────────────────
 const getInitials = (name) => {
@@ -147,6 +147,55 @@ const CRMMessages = () => {
     setMobileShowChat(true);
   };
 
+  // ── Yeni konuşma ──
+  // Düğme buradaydı ama hiçbir şeye bağlı değildi: CRM'den konuşma
+  // başlatılamıyor, yalnızca gelen yanıtlanabiliyordu.
+  const [yeniAcik, setYeniAcik] = useState(false);
+  const [hastalar, setHastalar] = useState(null);
+  const [hastaArama, setHastaArama] = useState('');
+  const [baslatiliyor, setBaslatiliyor] = useState(null);
+  const [yeniHata, setYeniHata] = useState('');
+
+  // Yalnızca kendi hastaları listelenir: hasta listesi randevulardan
+  // türetiliyor, yani doktorun tedavi ilişkisi olmayan birine buradan
+  // ulaşması mümkün değil.
+  useEffect(() => {
+    if (!yeniAcik || hastalar !== null) return;
+    patientAPI.list({ per_page: 100 })
+      .then((res) => setHastalar(res?.data || []))
+      .catch(() => setHastalar([]));
+  }, [yeniAcik, hastalar]);
+
+  const konusmaBaslat = async (hasta) => {
+    setBaslatiliyor(hasta.id);
+    setYeniHata('');
+    try {
+      const res = await messageAPI.createConversation({
+        participant_ids: [hasta.id],
+        type: 'direct',
+      });
+      const konusma = res?.conversation || res?.data?.conversation;
+      await loadConversations();
+      if (konusma?.id) {
+        handleSelectConversation(konusma.id);
+      }
+      setYeniAcik(false);
+      setHastaArama('');
+    } catch (err) {
+      setYeniHata(err?.message || t('crm.messages.startFailed', 'Konuşma başlatılamadı'));
+    } finally {
+      setBaslatiliyor(null);
+    }
+  };
+
+  const suzulmusHastalar = useMemo(() => {
+    const q = hastaArama.trim().toLowerCase();
+    const liste = hastalar || [];
+    if (!q) return liste;
+    return liste.filter((h) => (h.fullname || '').toLowerCase().includes(q)
+      || (h.email || '').toLowerCase().includes(q));
+  }, [hastalar, hastaArama]);
+
   const handleBack = () => {
     setMobileShowChat(false);
   };
@@ -193,11 +242,88 @@ const CRMMessages = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.messages.title')}</h1>
           <p className="text-sm text-gray-500 mt-0.5">{totalUnread} {t('crm.messages.unreadMessages')}</p>
         </div>
-        <button className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
+        <button
+          onClick={() => setYeniAcik(true)}
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm"
+        >
           <Plus className="w-4 h-4" />
           {t('crm.messages.newMessage')}
         </button>
       </div>
+
+      {/* Yeni konuşma: hasta seçimi */}
+      {yeniAcik && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 lg:pl-[calc(16rem+1rem)]"
+          onClick={(e) => e.target === e.currentTarget && setYeniAcik(false)}
+        >
+          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col max-h-[70vh]">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+              <h2 className="text-sm font-bold text-gray-900">
+                {t('crm.messages.newMessage')}
+              </h2>
+              <button
+                onClick={() => setYeniAcik(false)}
+                className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600"
+                aria-label={t('common.close', 'Kapat')}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="px-5 py-3 border-b border-gray-100">
+              <div className="relative">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  autoFocus
+                  value={hastaArama}
+                  onChange={(e) => setHastaArama(e.target.value)}
+                  placeholder={t('crm.messages.searchPatient', 'Hasta ara...')}
+                  className="w-full h-10 pl-9 pr-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                />
+              </div>
+              {/* Yalnızca kendi hastaları: liste randevulardan türetiliyor. */}
+              <p className="mt-2 text-[11px] text-gray-400">
+                {t('crm.messages.ownPatientsOnly', 'Yalnızca randevusu olan hastalarınız listelenir.')}
+              </p>
+            </div>
+
+            <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
+              {hastalar === null ? (
+                <div className="flex items-center justify-center py-10 text-gray-400">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                </div>
+              ) : suzulmusHastalar.length === 0 ? (
+                <p className="py-10 text-center text-sm text-gray-400">
+                  {hastaArama
+                    ? t('crm.messages.noPatientMatch', 'Eşleşen hasta yok.')
+                    : t('crm.messages.noPatients', 'Henüz hastanız yok.')}
+                </p>
+              ) : (
+                suzulmusHastalar.map((h) => (
+                  <button
+                    key={h.id}
+                    onClick={() => konusmaBaslat(h)}
+                    disabled={!!baslatiliyor}
+                    className="w-full flex items-center gap-3 px-5 py-3 text-left hover:bg-gray-50 transition-colors disabled:opacity-60"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0">
+                      {getInitials(h.fullname)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{h.fullname}</p>
+                      <p className="text-[11px] text-gray-400 truncate">{h.email}</p>
+                    </div>
+                    {baslatiliyor === h.id && <Loader2 className="w-4 h-4 animate-spin text-teal-600" />}
+                  </button>
+                ))
+              )}
+            </div>
+
+            {yeniHata && <p className="px-5 py-2 text-xs text-red-600">{yeniHata}</p>}
+          </div>
+        </div>
+      )}
 
       {/* Chat Container */}
       <div className="flex-1 bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden flex min-h-0">
