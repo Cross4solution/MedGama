@@ -160,15 +160,24 @@ class BillingService
 
     /**
      * Get single invoice with full relations.
+     *
+     * Kapsam ZORUNLU: liste sorgusu scopeQuery ile kısıtlanıyordu ama tekil
+     * getirme kısıtlanmıyordu. Sonuç: bir doktor, başka bir doktorun
+     * faturasını kimliğini bilerek okuyabiliyor ve PDF'ini indirebiliyordu —
+     * fatura hastanın adını, hizmeti ve tutarı taşıyor.
      */
-    public function getInvoice(string $id): ?Invoice
+    public function getInvoice(string $id, User $user): ?Invoice
     {
-        return Invoice::with([
+        $query = Invoice::with([
             'items',
             'patient:id,fullname,email,mobile,avatar,country,date_of_birth,gender',
             'doctor:id,fullname,email',
             'clinic:id,name,address,avatar',
-        ])->find($id);
+        ]);
+
+        $this->scopeQuery($query, $user);
+
+        return $query->find($id);
     }
 
     // ══════════════════════════════════════════════

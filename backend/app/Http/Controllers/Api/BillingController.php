@@ -32,9 +32,9 @@ class BillingController extends Controller
     /**
      * GET /crm/billing/invoices/{id} — Single invoice detail.
      */
-    public function show(string $id): JsonResponse
+    public function show(Request $request, string $id): JsonResponse
     {
-        $invoice = $this->billing->getInvoice($id);
+        $invoice = $this->billing->getInvoice($id, $request->user());
 
         if (!$invoice) {
             return response()->json(['message' => 'Invoice not found'], 404);
@@ -75,7 +75,7 @@ class BillingController extends Controller
      */
     public function update(Request $request, string $id): JsonResponse
     {
-        $invoice = $this->billing->getInvoice($id);
+        $invoice = $this->billing->getInvoice($id, $request->user());
         if (!$invoice) {
             return response()->json(['message' => 'Invoice not found'], 404);
         }
@@ -98,9 +98,9 @@ class BillingController extends Controller
     /**
      * DELETE /crm/billing/invoices/{id} — Cancel/soft-delete.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
-        $invoice = $this->billing->getInvoice($id);
+        $invoice = $this->billing->getInvoice($id, $request->user());
         if (!$invoice) {
             return response()->json(['message' => 'Invoice not found'], 404);
         }
@@ -113,9 +113,9 @@ class BillingController extends Controller
     /**
      * GET /crm/billing/invoices/{id}/pdf — Download invoice PDF.
      */
-    public function pdf(string $id): Response|JsonResponse
+    public function pdf(Request $request, string $id): Response|JsonResponse
     {
-        $invoice = $this->billing->getInvoice($id);
+        $invoice = $this->billing->getInvoice($id, $request->user());
         if (!$invoice) {
             return response()->json(['message' => 'Invoice not found'], 404);
         }
