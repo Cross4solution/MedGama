@@ -56,6 +56,9 @@ export function AuthProvider({ children }) {
   const loggedOutRef = React.useRef(false);
   const hydratedRef = React.useRef(false);
   const [hydrated, setHydrated] = useState(false);
+  // Jeton var ama kullanıcı henüz sunucudan gelmedi — koruma katmanı bu süre
+  // boyunca "giriş yapılmamış" kararı vermemeli.
+  const [kullaniciCekiliyor, setKullaniciCekiliyor] = useState(false);
 
   // Bildirim sesi tercihi hesapta duruyor; ses yardımcısının bunu kullanıcı
   // yüklenir yüklenmez bilmesi gerekiyor, yoksa sesi kapatmış biri ilk
@@ -446,14 +449,23 @@ export function AuthProvider({ children }) {
     sidebarMobileOpen,
     setSidebarMobileOpen,
     hydrated,
-  }), [user, token, country, isPro, userLevel, hasCrmSubscription, sidebarMobileOpen, hydrated, login, updateUser, applyApiAuth, fetchCurrentUser, demoLogin, register, registerDoctor, logout]);
+    loading: !hydrated || kullaniciCekiliyor,
+  }), [user, token, country, kullaniciCekiliyor, isPro, userLevel, hasCrmSubscription, sidebarMobileOpen, hydrated, login, updateUser, applyApiAuth, fetchCurrentUser, demoLogin, register, registerDoctor, logout]);
 
   // If we have a token (from fallback) but no user yet, try to fetch current user once
   useEffect(() => {
     if (!user) {
       const lsToken = token || getStoredToken();
       if (lsToken && !meUnavailableRef.current) {
-        fetchCurrentUser(lsToken).catch(() => {});
+        // Kullanıcı sunucudan gelene kadar "yükleniyor" sayılmalı.
+        // Aksi halde elinde geçerli jeton olan biri (şifresiz demo bağlantısı,
+        // ya da auth_state'i temizlenmiş normal bir oturum) korumalı sayfaya
+        // girdiğinde bir an "giriş yapılmamış" görünüyor ve giriş ekranına
+        // atılıyordu — jeton geçerliyken.
+        setKullaniciCekiliyor(true);
+        fetchCurrentUser(lsToken)
+          .catch(() => {})
+          .finally(() => setKullaniciCekiliyor(false));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
