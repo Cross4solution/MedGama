@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { endpoints, authAPI, getStoredToken } from '../lib/api';
 import { API_BASE_URL } from '../config/apiBase';
+import { setNotificationSoundEnabled } from '../utils/notificationSound';
 
 // Very light mock auth just for frontend flows
 const AuthContext = createContext(null);
@@ -55,6 +56,13 @@ export function AuthProvider({ children }) {
   const loggedOutRef = React.useRef(false);
   const hydratedRef = React.useRef(false);
   const [hydrated, setHydrated] = useState(false);
+
+  // Bildirim sesi tercihi hesapta duruyor; ses yardımcısının bunu kullanıcı
+  // yüklenir yüklenmez bilmesi gerekiyor, yoksa sesi kapatmış biri ilk
+  // bildirimde yine ses duyar.
+  useEffect(() => {
+    setNotificationSoundEnabled(user?.notification_sound !== false);
+  }, [user?.notification_sound]);
 
   // Listen for auth:logout events from API interceptor (401)
   useEffect(() => {

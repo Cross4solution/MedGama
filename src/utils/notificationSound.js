@@ -1,12 +1,27 @@
 /**
- * Lightweight notification pop sound using Web Audio API.
- * No external audio files needed — generates a pleasant, professional
- * two-tone "pop" programmatically.
+ * Bildirim sesi.
+ *
+ * İki karakter var ve ayrım bilinçli: gün içinde düşen sıradan bildirimler
+ * (yorum, beğeni, yeni mesaj) yumuşak çan; kaçırılması sorun yaratan
+ * bildirimler (görüşme başlıyor, randevu iptal/saat değişikliği, şifre
+ * değiştirildi) yükselen üçlü. Tek ses kullanılırsa ya hepsi yorucu olur ya
+ * hiçbiri fark edilmez.
+ *
+ * Sesler dosya yerine Web Audio ile üretiliyor: indirilecek varlık yok,
+ * paket büyümüyor ve ilk bildirimde ağ beklenmiyor.
  */
+
+// Kaçırılamayacak bildirimler. Burada olmayan her tip sıradan sayılır.
+const ONEMLI_TIPLER = new Set([
+  'video_call_starting',
+  'appointment_cancelled',
+  'appointment_rescheduled',
+  'password_changed',
+]);
 
 let audioCtx = null;
 
-function getAudioContext() {
+function ctxAl() {
   if (!audioCtx) {
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -14,49 +29,97 @@ function getAudioContext() {
       return null;
     }
   }
+  // Tarayıcı, kullanıcı sayfayla etkileşmeden ses çalmayı engelliyor ve
+  // bağlamı "suspended" bırakıyor. İlk tıklamadan sonra sürdürülebiliyor.
+  if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
   return audioCtx;
 }
 
 /**
- * Play a subtle notification pop sound.
- * Safe to call anytime — silently no-ops if audio is unavailable.
+ * Tek nota: sinüs + hafif ikinci harmonik, üstel sönümleme.
+ * Sert başlangıç "tık" sesi ürettiği için atak bilerek yumuşak.
  */
-export function playNotificationSound() {
+function nota(ctx, frekans, baslangic, sure, seviye) {
+  const osc = ctx.createOscillator();
+  const ust = ctx.createOscillator();
+  const kazanc = ctx.createGain();
+
+  osc.type = 'sine';
+  ust.type = 'sine';
+  osc.frequency.setValueAtTime(frekans, baslangic);
+  ust.frequency.setValueAtTime(frekans * 2, baslangic);
+
+  kazanc.gain.setValueAtTime(0.0001, baslangic);
+  kazanc.gain.exponentialRampToValueAtTime(seviye, baslangic + 0.012);
+  kazanc.gain.exponentialRampToValueAtTime(0.0001, baslangic + sure);
+
+  const ustKazanc = ctx.createGain();
+  ustKazanc.gain.setValueAtTime(0.18, baslangic);
+
+  osc.connect(kazanc);
+  ust.connect(ustKazanc);
+  ustKazanc.connect(kazanc);
+  kazanc.connect(ctx.destination);
+
+  osc.start(baslangic);
+  ust.start(baslangic);
+  osc.stop(baslangic + sure + 0.02);
+  ust.stop(baslangic + sure + 0.02);
+}
+
+/** Yumuşak çan — iki nota, ikincisi beşli yukarıda. */
+function yumusakCan(ctx) {
+  const t = ctx.currentTime;
+  nota(ctx, 880.0, t, 0.55, 0.10);
+  nota(ctx, 1318.5, t + 0.09, 0.50, 0.07);
+}
+
+/** Yükselen üçlü — üç artan nota. */
+function yukselenUclu(ctx) {
+  const t = ctx.currentTime;
+  nota(ctx, 659.3, t, 0.30, 0.09);
+  nota(ctx, 830.6, t + 0.085, 0.30, 0.09);
+  nota(ctx, 987.8, t + 0.17, 0.45, 0.10);
+}
+
+// Kullanıcının tercihi. Sunucudan gelene kadar açık kabul edilir; hesabında
+// kapalıysa ilk yüklemede kapanır.
+let sesAcik = true;
+
+export function setNotificationSoundEnabled(acik) {
+  sesAcik = acik !== false;
+}
+
+export function isNotificationSoundEnabled() {
+  return sesAcik;
+}
+
+/**
+ * Bildirim sesi çal.
+ *
+ * @param {string} tip  Bildirim tipi (ör. 'video_call_starting'). Boş
+ *                      bırakılırsa sıradan sayılır.
+ */
+export function playNotificationSound(tip = '') {
   try {
-    const ctx = getAudioContext();
+    if (!sesAcik) return;
+
+    const onemli = ONEMLI_TIPLER.has(tip);
+
+    // Sıradan bildirim yalnızca kullanıcı başka yerdeyken duyulur: ekrana
+    // bakarken bildirim zaten görünüyor, ses fazladan rahatsızlık. Önemli
+    // olan her durumda çalar — görüşme başlarken kullanıcı ekranda olsa bile
+    // duyması gerekiyor.
+    if (!onemli && document.visibilityState === 'visible') return;
+
+    const ctx = ctxAl();
     if (!ctx) return;
 
-    const now = ctx.currentTime;
-
-    // First tone — soft high pop
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(880, now);
-    osc1.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
-    gain1.gain.setValueAtTime(0.15, now);
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-    osc1.connect(gain1);
-    gain1.connect(ctx.destination);
-    osc1.start(now);
-    osc1.stop(now + 0.15);
-
-    // Second tone — gentle confirmation (slightly delayed)
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(1320, now + 0.08);
-    osc2.frequency.exponentialRampToValueAtTime(1500, now + 0.18);
-    gain2.gain.setValueAtTime(0, now);
-    gain2.gain.setValueAtTime(0.12, now + 0.08);
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-    osc2.connect(gain2);
-    gain2.connect(ctx.destination);
-    osc2.start(now + 0.08);
-    osc2.stop(now + 0.25);
+    if (onemli) yukselenUclu(ctx);
+    else yumusakCan(ctx);
   } catch {
-    // Silent fail — audio is optional
+    // Ses hiçbir zaman akışı bozmamalı.
   }
 }
 
-export default playNotificationSound;
+export { ONEMLI_TIPLER };

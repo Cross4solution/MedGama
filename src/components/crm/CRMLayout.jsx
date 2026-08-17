@@ -331,7 +331,7 @@ const CRMLayout = ({ children }) => {
     channel.listen('.notification.new', (payload) => {
       setUnreadCount(prev => prev + 1);
       globalIncrement(1);
-      playNotificationSound();
+      playNotificationSound(String(payload?.data?.type || payload?.type || ''));
       setNotifications(prev => {
         if (prev.some(n => n.id === payload.id)) return prev;
         return [payload, ...prev].slice(0, 10);

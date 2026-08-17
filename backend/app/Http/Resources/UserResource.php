@@ -59,6 +59,10 @@ class UserResource extends JsonResource
             'longitude'          => $this->longitude !== null ? (float) $this->longitude : null,
             'location_updated_at' => $this->location_updated_at?->toISOString(),
             'preferred_language' => $this->preferred_language,
+            // Ses tercihi açılışta gerekiyor: kapalıysa ilk bildirimin sesi
+            // çıkmadan bilinmeli. Tüm tercihleri değil yalnızca bunu
+            // taşıyoruz — gerisi ayarlar ekranı açılınca ayrıca çekiliyor.
+            'notification_sound' => (bool) (($this->notification_preferences['sound_enabled'] ?? true)),
             'date_of_birth'      => $this->date_of_birth?->toDateString(),
             'gender'             => $this->gender,
             'last_login'         => $this->last_login?->toISOString(),

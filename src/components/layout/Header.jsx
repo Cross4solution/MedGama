@@ -75,8 +75,9 @@ const Header = () => {
       // Increment badge count (local + global)
       setUnreadCount(prev => prev + 1);
       globalIncrement(1);
-      // Play subtle notification sound
-      playNotificationSound();
+      // Bildirimin tipi sesi belirliyor: kaçırılamayacak olanlar yükselen
+      // üçlü, gerisi yumuşak çan (ve yalnızca sekme arka plandayken).
+      playNotificationSound(String(payload?.data?.type || payload?.type || ''));
       // Prepend to list if dropdown is open
       setNotifications(prev => {
         if (prev.some(n => n.id === payload.id)) return prev;

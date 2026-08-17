@@ -32,6 +32,11 @@ class NotificationPreferences
         // Uygulama içi sosyal bildirimler (beğeni, yorum)
         'inapp_social'          => true,
 
+        // Bildirim sesi. Klinikte hasta karşısındayken sesin susturulabilmesi
+        // gerekiyor; tercih cihazda değil hesapta tutulur ki kullanıcı hangi
+        // bilgisayara oturursa otursun aynı davranışı bulsun.
+        'sound_enabled'         => true,
+
         // İçerik çevirisi: gönderi, yorum ve mesajlar kullanıcının diline
         // çevrilsin mi. Varsayılan KAPALI — içerik yazıldığı dilde kalır;
         // kullanıcı isterse tek düğmeyle hepsini kendi diline çevirir.

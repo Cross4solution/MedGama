@@ -24,6 +24,7 @@ import { blockNonNumeric } from '../../utils/numericInput';
 import GlobalSuggest from '../../components/forms/GlobalSuggest';
 import StatusBadge from '../../components/ui/StatusBadge';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import { setNotificationSoundEnabled } from '../../utils/notificationSound';
 
 // ── OpenStreetMap helpers ──────────────────────────────
 function hasValidCoordinates(coords) {
@@ -101,6 +102,7 @@ const BILDIRIM_AYARLARI = [
   { key: 'email_review_response', tr: 'Değerlendirmeme yanıt verilince e-posta', en: 'Email me when someone replies to my review' },
   { key: 'email_support',         tr: 'Destek talebime yanıt gelince e-posta', en: 'Email me about support replies' },
   { key: 'inapp_social',          tr: 'Beğeni ve yorum bildirimleri', en: 'Likes and comments' },
+  { key: 'sound_enabled',         tr: 'Bildirim sesi', en: 'Notification sound' },
 ];
 
 const CRMSettings = ({ standalone = false }) => {
@@ -549,12 +551,25 @@ const CRMSettings = ({ standalone = false }) => {
     const eski = notifications;
     notifDokunuldu.current = true;
     setNotifications(yeni);          // önce ekranda göster, istek arkada gitsin
+
+    // Ses anahtarı sayfa yenilenmeden geçerli olmalı: kullanıcı sesi hasta
+    // içeri girerken kapatıyor, bir sonraki bildirimde susmuş olmalı.
+    if (key === 'sound_enabled') {
+      setNotificationSoundEnabled(yeni[key]);
+      updateUser?.({ notification_sound: yeni[key] });
+    }
+
     setNotifKaydediliyor(key);
     setNotifHata('');
     try {
       await authAPI.updateNotificationPrefs({ [key]: yeni[key] });
     } catch {
       setNotifications(eski);        // başarısızsa eski hâline dön
+      if (key === 'sound_enabled') {
+        const oncekiDeger = eski?.[key] ?? true;
+        setNotificationSoundEnabled(oncekiDeger);
+        updateUser?.({ notification_sound: oncekiDeger });
+      }
       setNotifHata(isTr ? 'Kaydedilemedi, tekrar deneyin.' : 'Could not save, please try again.');
     } finally {
       setNotifKaydediliyor(null);
