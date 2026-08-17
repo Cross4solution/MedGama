@@ -387,7 +387,20 @@ class AuthService
         try {
             Mail::to($user->email)->send(new PasswordResetMail($code, $user->fullname));
         } catch (\Throwable $e) {
-            \Log::warning('Password reset email failed: ' . $e->getMessage());
+            // Kullanıcıya hâlâ aynı cevabı veriyoruz (e-posta sayımını
+            // engellemek için), ama hata artık yalnızca log dosyasına
+            // yazılmıyor: yapılandırma bozukken şifre sıfırlama sessizce
+            // ölüyordu ve dışarıdan bakınca çalışıyor gibi görünüyordu.
+            \Log::error('Şifre sıfırlama e-postası gönderilemedi', [
+                'user_id' => $user->id,
+                'mailer'  => config('mail.default'),
+                'from'    => config('mail.from.address'),
+                'hata'    => $e->getMessage(),
+            ]);
+
+            if (app()->bound('sentry')) {
+                app('sentry')->captureException($e);
+            }
         }
     }
 
