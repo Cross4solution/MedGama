@@ -99,7 +99,10 @@ export default function Footer() {
             <span className="text-xs text-white/50">© {year} Medagama. {t('footer.allRightsReserved')}</span>
             <span className="inline-flex items-center gap-1.5 text-[11px] text-white/60">
               <svg className="w-3 h-3 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              {t('footer.compliantWith', 'Compliant with')} KVKK · GDPR · HIPAA
+              {/* "Uyumlu:" öneki kaldırıldı: kalkan simgesi ve üç kısaltma
+                  zaten aynı şeyi söylüyor, kelime yer kaplamaktan başka bir
+                  şey yapmıyordu. */}
+              KVKK · GDPR · HIPAA
             </span>
           </div>
           <div className="flex items-center gap-4 text-xs text-white/50">

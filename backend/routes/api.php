@@ -168,6 +168,14 @@ Route::get('/demo-login/{rol}', \App\Http\Controllers\Api\DemoLoginController::c
     ->middleware('throttle:20,1');
 
 /*
+| E-posta yapılandırma durumu — teşhis içindir, HİÇBİR ŞEY GÖNDERMEZ.
+| Barındırma ortamında kabuk erişimi olmadığı için sunucunun okuduğu ayarı
+| başka türlü göremiyoruz. Teslimden önce kaldırılmalı.
+*/
+Route::get('/system/mail-status', \App\Http\Controllers\Api\MailStatusController::class)
+    ->middleware('throttle:10,1');
+
+/*
 |--------------------------------------------------------------------------
 | Auth Routes (Public)
 |--------------------------------------------------------------------------
