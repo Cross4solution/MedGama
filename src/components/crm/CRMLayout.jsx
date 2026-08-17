@@ -452,7 +452,13 @@ const CRMLayout = ({ children }) => {
       {/* Bölümler arası boşluk vardı ama bölüm İÇİNDEKİ maddeler bitişikti;
           on altı satır tek blok gibi görünüyordu. Hem maddeler arasına hem
           gruplar arasına nefes payı kondu. */}
-      <nav className="flex-1 px-3 py-2 space-y-4">
+      {/*
+        Menü kaydırılabilir olmalı: klinik rolünde satır sayısı kısa ekranlara
+        sığmıyor ve alttaki maddeler (Destek, SSS, Ayarlar) erişilemez kalıyordu.
+        flex-1 tek başına yetmiyor — min-h-0 olmadan flex çocuğu küçülmüyor,
+        dolayısıyla taşma hiç oluşmuyor ve kaydırma da başlamıyor.
+      */}
+      <nav className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-4">
         {NAV_SECTIONS.map((section) => (
           <div key={section.title} className="space-y-1">
             {section.items.map((item) => {
