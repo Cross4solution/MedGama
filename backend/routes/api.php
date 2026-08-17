@@ -175,6 +175,11 @@ Route::get('/demo-login/{rol}', \App\Http\Controllers\Api\DemoLoginController::c
 Route::get('/system/mail-status', \App\Http\Controllers\Api\MailStatusController::class)
     ->middleware('throttle:10,1');
 
+// GECICI: tasarim incelemesi icin her sablondan ornek gonderir.
+// Teslimden once MailPreviewController ile birlikte kaldirilacak.
+Route::get('/system/mail-preview', \App\Http\Controllers\Api\MailPreviewController::class)
+    ->middleware('throttle:3,1');
+
 /*
 |--------------------------------------------------------------------------
 | Auth Routes (Public)
