@@ -110,4 +110,15 @@ return [
     'ticket_reply_cta'         => 'Talebi Görüntüle',
     'ticket_reply_thanks'      => 'Sabrınız için teşekkür ederiz.',
 
+
+    // ── Şifre sıfırlama ──
+    'footer_brand' => 'Medagama Sağlık Platformu',
+    'pwd_reset_subject' => 'Şifre sıfırlama kodunuz',
+    'pwd_reset_preheader' => 'Şifrenizi sıfırlamak için 6 haneli kodunuz — 15 dakika geçerli.',
+    'pwd_reset_header' => 'Hesap güvenliği',
+    'pwd_reset_greeting' => 'Merhaba :name,',
+    'pwd_reset_intro' => 'Şifrenizi sıfırlamak için bir istek aldık. Aşağıdaki kodu uygulamaya girerek yeni şifrenizi belirleyebilirsiniz.',
+    'pwd_reset_code_label' => 'Sıfırlama kodu',
+    'pwd_reset_expiry' => 'Kod :minutes dakika boyunca geçerlidir.',
+    'pwd_reset_ignore' => 'Bu isteği siz yapmadıysanız bu e-postayı yok sayabilirsiniz; şifreniz değişmez. İsteği siz yapmadığınız hâlde bu e-postayı sık sık alıyorsanız bize bildirin.',
 ];

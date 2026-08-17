@@ -12,19 +12,22 @@ class PasswordResetMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public string $code;
-    public string $userName;
-
-    public function __construct(string $code, string $userName = 'User')
-    {
-        $this->code = $code;
-        $this->userName = $userName;
+    public function __construct(
+        public string $code,
+        public string $userName = 'User',
+        ?string $dil = null,
+    ) {
+        // Laravel'in kendi yerelleştirmesi: gönderim boyunca uygulama diline
+        // geçiyor, böylece hem konu satırı hem gövde alıcının dilinde kuruluyor
+        // ve şablona ayrıca dil taşımak gerekmiyor.
+        // ($locale adı Mailable'da zaten var, üzerine yazılamaz.)
+        $this->locale($dil ?: config('app.locale'));
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Medagama — Password Reset Code',
+            subject: trans('email.pwd_reset_subject'),
         );
     }
 
@@ -32,6 +35,10 @@ class PasswordResetMail extends Mailable
     {
         return new Content(
             view: 'emails.password-reset',
+            with: [
+                'code' => $this->code,
+                'name' => $this->userName,
+            ],
         );
     }
 

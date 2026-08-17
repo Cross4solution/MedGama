@@ -385,7 +385,9 @@ class AuthService
         ]);
 
         try {
-            Mail::to($user->email)->send(new PasswordResetMail($code, $user->fullname));
+            Mail::to($user->email)->send(
+                new PasswordResetMail($code, $user->fullname, $user->preferred_language),
+            );
         } catch (\Throwable $e) {
             // Kullanıcıya hâlâ aynı cevabı veriyoruz (e-posta sayımını
             // engellemek için), ama hata artık yalnızca log dosyasına

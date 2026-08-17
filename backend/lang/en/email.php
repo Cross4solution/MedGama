@@ -110,4 +110,15 @@ return [
     'ticket_reply_cta'         => 'View Ticket',
     'ticket_reply_thanks'      => 'Thank you for your patience.',
 
+
+    // ── Şifre sıfırlama ──
+    'footer_brand' => 'Medagama Healthcare Platform',
+    'pwd_reset_subject' => 'Your password reset code',
+    'pwd_reset_preheader' => 'Your 6-digit code to reset your password — valid for 15 minutes.',
+    'pwd_reset_header' => 'Account security',
+    'pwd_reset_greeting' => 'Hello :name,',
+    'pwd_reset_intro' => 'We received a request to reset your password. Enter the code below in the app to choose a new one.',
+    'pwd_reset_code_label' => 'Reset code',
+    'pwd_reset_expiry' => 'The code is valid for :minutes minutes.',
+    'pwd_reset_ignore' => 'If you did not request this, you can ignore this email — your password stays unchanged. If these keep arriving without you asking, please tell us.',
 ];

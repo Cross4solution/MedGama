@@ -73,7 +73,18 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
-    'frontend_url' => env('APP_FRONTEND_URL', 'http://localhost:3000'),
+    /*
+     * Arayüzün adresi — e-postalardaki her bağlantı buradan kuruluyor.
+     *
+     * Önce FRONTEND_URL okunuyor: sunucuda tanımlı olan değişken bu, ve
+     * yalnızca APP_FRONTEND_URL aransaydı (öyleydi) tanımsız kalıp
+     * localhost'a düşerdi — kullanıcıya giden e-postalardaki düğmeler
+     * kendi bilgisayarlarını işaret ederdi.
+     */
+    'frontend_url' => env('FRONTEND_URL', env('APP_FRONTEND_URL', 'http://localhost:3000')),
+
+    /* Alt bilgide gösterilen destek adresi. */
+    'support_email' => env('SUPPORT_EMAIL', 'destek@medagama.com'),
 
     /*
     |--------------------------------------------------------------------------
