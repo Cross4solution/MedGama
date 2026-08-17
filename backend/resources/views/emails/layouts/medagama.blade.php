@@ -67,7 +67,7 @@
 
         {{-- ── Başlık ── --}}
         <tr>
-            <td class="pad-top" style="background:linear-gradient(135deg,#0d9488 0%,#059669 100%);background-color:#0d9488;padding:26px 40px 28px;">
+            <td class="pad-top" align="center" style="background:linear-gradient(135deg,#0d9488 0%,#059669 100%);background-color:#0d9488;padding:30px 40px 32px;text-align:center;">
                 {{--
                     Başlıkta önce konu okunur, marka sonra: alıcı kutuyu açtığında
                     "hangi Medagama e-postası" sorusunun cevabını arıyor, kimden
@@ -80,21 +80,6 @@
                     mümkün olduğu için $message yokken (önizleme/render) sessizce
                     atlanır — başlık logosuz da okunur kalır.
                 --}}
-                <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 14px;">
-                    <tr>
-                        @isset($message)
-                            <td style="vertical-align:middle;padding-right:9px;">
-                                <img src="{{ $message->embed(public_path('images/logo/favicon-icon-white.png')) }}"
-                                     width="26" height="26" alt=""
-                                     style="display:block;width:26px;height:26px;border:0;outline:none;">
-                            </td>
-                        @endisset
-                        <td style="vertical-align:middle;">
-                            <span style="font-size:15px;font-weight:600;color:rgba(255,255,255,0.92);letter-spacing:-0.2px;">Medagama</span>
-                        </td>
-                    </tr>
-                </table>
-
                 @isset($headerTitle)
                     {{--
                         Simge + başlık aynı satırda, ayrıntı (tarih, talep no)
@@ -110,16 +95,16 @@
                         $ikonVar  = $ikonYolu && is_file($ikonYolu);
                     @endphp
 
-                    <table role="presentation" cellpadding="0" cellspacing="0">
+                    <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;">
                         <tr>
                             @if ($ikonVar && isset($message))
-                                <td style="vertical-align:top;padding-right:12px;padding-top:3px;">
+                                <td style="vertical-align:middle;padding-right:12px;">
                                     <img src="{{ $message->embed($ikonYolu) }}"
                                          width="30" height="30" alt=""
                                          style="display:block;width:30px;height:30px;border:0;outline:none;">
                                 </td>
                             @endif
-                            <td style="vertical-align:top;">
+                            <td style="vertical-align:middle;text-align:left;">
                                 <div style="font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.25;">{{ $headerTitle }}</div>
                                 @if (!empty($headerMeta))
                                     <div style="margin-top:5px;font-size:14px;font-weight:400;color:rgba(255,255,255,0.85);">{{ $headerMeta }}</div>
