@@ -39,6 +39,7 @@ class NewReviewNotification extends Notification implements ShouldQueue
                 'locale'      => $locale,
                 'subject'     => trans('email.new_review_subject', [], $locale),
                 'headerTitle' => trans('email.new_review_header', [], $locale),
+                'headerIcon'  => 'star',
                 'intro'       => trans('email.new_review_intro', ['name' => $hasta, 'rating' => $this->review->rating], $locale),
                 'quote'       => $this->review->comment ?: null,
                 'outro'       => trans('email.new_review_outro', [], $locale),

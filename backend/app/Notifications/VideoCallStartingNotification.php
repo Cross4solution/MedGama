@@ -54,6 +54,7 @@ class VideoCallStartingNotification extends Notification implements ShouldQueue
                 'locale'      => $locale,
                 'subject'     => trans('email.call_starting_subject', [], $locale),
                 'headerTitle' => trans('email.call_starting_header', [], $locale),
+                'headerIcon'  => 'video',
                 'intro'       => trans('email.call_starting_intro', ['name' => $karsiTaraf], $locale),
                 'rows'        => [
                     trans('email.row_time', [], $locale)     => (string) $appt->appointment_time,

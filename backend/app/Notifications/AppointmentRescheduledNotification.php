@@ -50,6 +50,7 @@ class AppointmentRescheduledNotification extends Notification implements ShouldQ
                 'locale'      => $locale,
                 'subject'     => trans('email.appt_moved_subject', [], $locale),
                 'headerTitle' => trans('email.appt_moved_header', [], $locale),
+                'headerIcon'  => 'calendar',
                 'intro'       => trans('email.appt_moved_intro', ['name' => $karsiTaraf], $locale),
                 'rows'        => [
                     trans('email.row_old_time', [], $locale) => $this->eskiTarih . ' · ' . $this->eskiSaat,

@@ -195,4 +195,11 @@ return [
     'call_starting_intro' => 'Your video consultation with :name starts in a few minutes.',
     'call_starting_outro' => 'Check your camera and microphone. If you drop or run late, the room stays open for you.',
     'call_starting_action' => 'Join the call',
+
+    // Baslik satirlari (veri alt satirda)
+    'appt_booked_header' => 'Your appointment is booked',
+    'appt_booked_header_doctor' => 'New appointment request',
+    'ticket_received_header' => 'We received your request',
+    'ticket_reply_header' => 'Reply to your request',
+    'appt_reminder_header' => 'Appointment reminder',
 ];

@@ -2,7 +2,7 @@
     'locale'      => $locale,
     'subject'     => trans('email.welcome_subject', [], $locale),
     'preheader'   => trans('email.welcome_line1', [], $locale),
-    'headerIcon'  => '👋',
+    'headerIcon'  => 'wave',
     'headerTitle' => trans('email.welcome_subject', [], $locale),
 ])
 

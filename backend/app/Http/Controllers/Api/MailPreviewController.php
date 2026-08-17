@@ -214,6 +214,7 @@ class MailPreviewController extends Controller
                 'data' => $ortak + [
                     'subject' => $t('new_review_subject'),
                     'headerTitle' => $t('new_review_header'),
+                    'headerIcon' => 'star',
                     'intro' => $t('new_review_intro', ['name' => 'Ayşe K.', 'rating' => 5]),
                     'quote' => 'Doktor çok ilgiliydi, görüşme tam saatinde başladı.',
                     'outro' => $t('new_review_outro'),
@@ -227,6 +228,7 @@ class MailPreviewController extends Controller
                 'data' => $ortak + [
                     'subject' => $t('review_response_subject'),
                     'headerTitle' => $t('review_response_header'),
+                    'headerIcon' => 'star',
                     'intro' => $t('review_response_intro', ['doctor' => 'Elif Yılmaz']),
                     'quote' => 'Nazik yorumunuz için teşekkür ederim, geçmiş olsun.',
                     'outro' => $t('review_response_outro'),
@@ -240,6 +242,7 @@ class MailPreviewController extends Controller
                 'data' => $ortak + [
                     'subject' => $t('ticket_admin_subject', ['number' => 'TKT-2026-0184']),
                     'headerTitle' => $t('ticket_admin_header'),
+                    'headerIcon' => 'chat',
                     'intro' => $t('ticket_admin_intro'),
                     'rows' => [
                         $t('row_ticket') => 'TKT-2026-0184',
@@ -258,6 +261,7 @@ class MailPreviewController extends Controller
                 'data' => $ortak + [
                     'subject' => $t('call_starting_subject'),
                     'headerTitle' => $t('call_starting_header'),
+                    'headerIcon' => 'video',
                     'intro' => $t('call_starting_intro', ['name' => $doktor]),
                     'rows' => [
                         $t('row_time') => '14:30',
@@ -274,6 +278,7 @@ class MailPreviewController extends Controller
                 'data' => $ortak + [
                     'subject' => $t('pwd_changed_subject'),
                     'headerTitle' => $t('pwd_changed_header'),
+                    'headerIcon' => 'lock',
                     'intro' => $t('pwd_changed_intro'),
                     'rows' => [
                         $t('row_when') => '17.08.2026 19:42 UTC',
@@ -291,6 +296,7 @@ class MailPreviewController extends Controller
                 'data' => $ortak + [
                     'subject' => $t('appt_moved_subject'),
                     'headerTitle' => $t('appt_moved_header'),
+                    'headerIcon' => 'calendar',
                     'intro' => $t('appt_moved_intro', ['name' => $doktor]),
                     'rows' => [
                         $t('row_old_time') => '12.09.2026 · 14:30',
@@ -308,6 +314,7 @@ class MailPreviewController extends Controller
                 'data' => $ortak + [
                     'subject' => $t('invoice_subject', ['number' => 'INV-2026-0341']),
                     'headerTitle' => $t('invoice_header'),
+                    'headerIcon' => 'receipt',
                     'intro' => $t('invoice_intro', ['amount' => '1.250,00 EUR']),
                     'rows' => [
                         $t('row_invoice_no') => 'INV-2026-0341',
@@ -326,6 +333,7 @@ class MailPreviewController extends Controller
                 'data' => $ortak + [
                     'subject' => $t('verify_info_subject'),
                     'headerTitle' => $t('verify_info_header'),
+                    'headerIcon' => 'document',
                     'intro' => $t('verify_info_intro'),
                     'quote' => 'Diplomanın arka yüzünü de yükler misiniz?',
                     'outro' => $t('verify_info_outro'),

@@ -4,7 +4,7 @@
     'preheader'   => $isDoctor
         ? trans('email.appt_cancelled_line1_doctor', [], $locale)
         : trans('email.appt_cancelled_line1', [], $locale),
-    'headerIcon'  => '❌',
+    'headerIcon'  => 'cross',
     'headerTitle' => trans('email.appt_cancelled_subject', [], $locale),
 ])
 

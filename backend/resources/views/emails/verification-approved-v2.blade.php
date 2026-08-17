@@ -2,7 +2,7 @@
     'locale'      => $locale,
     'subject'     => trans('email.verify_approved_subject', [], $locale),
     'preheader'   => trans('email.verify_approved_line1', [], $locale),
-    'headerIcon'  => '🏅',
+    'headerIcon'  => 'badge',
     'headerTitle' => trans('email.verify_approved_subject', [], $locale),
 ])
 

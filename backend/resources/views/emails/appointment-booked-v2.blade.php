@@ -6,10 +6,11 @@
     'preheader'   => $isDoctor
         ? trans('email.appt_booked_line1_doctor', ['patient' => $counterpartName], $locale)
         : trans('email.appt_booked_line1', [], $locale),
-    'headerIcon'  => '📅',
+    'headerIcon'  => 'calendar',
     'headerTitle' => $isDoctor
-        ? trans('email.appt_booked_subject_doctor', ['date' => $date], $locale)
-        : trans('email.appt_booked_subject', ['date' => $date], $locale),
+        ? trans('email.appt_booked_header_doctor', [], $locale)
+        : trans('email.appt_booked_header', [], $locale),
+    'headerMeta'  => $date . ' · ' . $time,
 ])
 
 @section('content')

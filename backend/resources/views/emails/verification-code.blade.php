@@ -1,6 +1,7 @@
 @extends('emails.layouts.medagama', [
     'subject'     => trans('email.verify_code_subject', [], $locale),
     'preheader'   => trans('email.verify_code_preheader', [], $locale),
+    'headerIcon'  => 'mail',
     'headerTitle' => trans('email.verify_code_header', [], $locale),
 ])
 

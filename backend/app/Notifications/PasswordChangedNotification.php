@@ -47,6 +47,7 @@ class PasswordChangedNotification extends Notification implements ShouldQueue
                 'locale'      => $locale,
                 'subject'     => trans('email.pwd_changed_subject', [], $locale),
                 'headerTitle' => trans('email.pwd_changed_header', [], $locale),
+                'headerIcon'  => 'lock',
                 'intro'       => trans('email.pwd_changed_intro', [], $locale),
                 'rows'        => $rows,
                 'outro'       => trans('email.pwd_changed_outro', [], $locale),

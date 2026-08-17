@@ -18,6 +18,8 @@
     'subject'     => $subject,
     'preheader'   => $preheader ?? $intro,
     'headerTitle' => $headerTitle,
+    'headerIcon'  => $headerIcon ?? null,
+    'headerMeta'  => $headerMeta ?? null,
 ])
 
 @section('content')

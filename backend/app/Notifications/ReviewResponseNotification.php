@@ -38,6 +38,7 @@ class ReviewResponseNotification extends Notification implements ShouldQueue
                 'locale'      => $locale,
                 'subject'     => trans('email.review_response_subject', [], $locale),
                 'headerTitle' => trans('email.review_response_header', [], $locale),
+                'headerIcon'  => 'star',
                 'intro'       => trans('email.review_response_intro', ['doctor' => $doktor], $locale),
                 'quote'       => $this->review->doctor_response,
                 'outro'       => trans('email.review_response_outro', [], $locale),

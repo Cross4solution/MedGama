@@ -195,4 +195,11 @@ return [
     'call_starting_intro' => ':name ile görüntülü görüşmeniz birkaç dakika içinde başlıyor.',
     'call_starting_outro' => 'Kameranızı ve mikrofonunuzu kontrol edin. Bağlantı kopar veya geç kalırsanız oda sizi bekliyor olacak.',
     'call_starting_action' => 'Görüşmeye katıl',
+
+    // Baslik satirlari (veri alt satirda)
+    'appt_booked_header' => 'Randevunuz oluşturuldu',
+    'appt_booked_header_doctor' => 'Yeni randevu talebi',
+    'ticket_received_header' => 'Destek talebiniz alındı',
+    'ticket_reply_header' => 'Destek talebinize yanıt',
+    'appt_reminder_header' => 'Randevu hatırlatması',
 ];

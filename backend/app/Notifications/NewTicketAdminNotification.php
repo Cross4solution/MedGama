@@ -33,6 +33,7 @@ class NewTicketAdminNotification extends Notification implements ShouldQueue
                 'locale'      => $locale,
                 'subject'     => trans('email.ticket_admin_subject', ['number' => $this->ticket->ticket_number], $locale),
                 'headerTitle' => trans('email.ticket_admin_header', [], $locale),
+                'headerIcon'  => 'chat',
                 'intro'       => trans('email.ticket_admin_intro', [], $locale),
                 'rows'        => [
                     trans('email.row_ticket', [], $locale)   => $this->ticket->ticket_number,

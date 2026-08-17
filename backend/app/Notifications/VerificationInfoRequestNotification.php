@@ -39,6 +39,7 @@ class VerificationInfoRequestNotification extends Notification implements Should
                 'locale'      => $locale,
                 'subject'     => trans('email.verify_info_subject', [], $locale),
                 'headerTitle' => trans('email.verify_info_header', [], $locale),
+                'headerIcon'  => 'document',
                 'intro'       => trans('email.verify_info_intro', [], $locale),
                 'quote'       => $this->message,
                 'outro'       => trans('email.verify_info_outro', [], $locale),

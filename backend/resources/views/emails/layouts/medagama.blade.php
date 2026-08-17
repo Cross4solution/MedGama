@@ -96,7 +96,37 @@
                 </table>
 
                 @isset($headerTitle)
-                    <div style="font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.25;">{{ $headerTitle }}</div>
+                    {{--
+                        Simge + başlık aynı satırda, ayrıntı (tarih, talep no)
+                        altta: başlığın içine sıkıştırılan tarih uzun ekranlarda
+                        satır kırıyor ve "12" tek başına alta düşüyordu.
+
+                        Simge de logo gibi CID ile gömülür — e-posta istemcileri
+                        SVG'yi engelliyor, uzak adres ise sahibi olmadığımız bir
+                        alan adına giderdi. Dosya yoksa simge sessizce atlanır.
+                    --}}
+                    @php
+                        $ikonYolu = !empty($headerIcon) ? public_path('images/email-icons/' . $headerIcon . '.png') : null;
+                        $ikonVar  = $ikonYolu && is_file($ikonYolu);
+                    @endphp
+
+                    <table role="presentation" cellpadding="0" cellspacing="0">
+                        <tr>
+                            @if ($ikonVar && isset($message))
+                                <td style="vertical-align:top;padding-right:12px;padding-top:3px;">
+                                    <img src="{{ $message->embed($ikonYolu) }}"
+                                         width="30" height="30" alt=""
+                                         style="display:block;width:30px;height:30px;border:0;outline:none;">
+                                </td>
+                            @endif
+                            <td style="vertical-align:top;">
+                                <div style="font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.25;">{{ $headerTitle }}</div>
+                                @if (!empty($headerMeta))
+                                    <div style="margin-top:5px;font-size:14px;font-weight:400;color:rgba(255,255,255,0.85);">{{ $headerMeta }}</div>
+                                @endif
+                            </td>
+                        </tr>
+                    </table>
                 @endisset
             </td>
         </tr>

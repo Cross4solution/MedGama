@@ -2,7 +2,7 @@
     'locale'      => $locale,
     'subject'     => trans('email.appt_confirmed_subject', [], $locale),
     'preheader'   => trans('email.appt_confirmed_line1', [], $locale),
-    'headerIcon'  => '✅',
+    'headerIcon'  => 'check',
     'headerTitle' => trans('email.appt_confirmed_subject', [], $locale),
 ])
 

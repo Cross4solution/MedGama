@@ -4,8 +4,9 @@
     'preheader'   => $isDoctor
         ? trans('email.appt_reminder_line1_doctor', ['time' => $timeLabel], $locale)
         : trans('email.appt_reminder_line1', ['time' => $timeLabel], $locale),
-    'headerIcon'  => '⏰',
-    'headerTitle' => trans('email.appt_reminder_subject', ['time' => $timeLabel], $locale),
+    'headerIcon'  => 'clock',
+    'headerTitle' => trans('email.appt_reminder_header', [], $locale),
+    'headerMeta'  => $date . ' · ' . $timeLabel,
 ])
 
 @section('content')

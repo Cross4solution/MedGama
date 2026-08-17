@@ -2,8 +2,9 @@
     'locale'      => $locale,
     'subject'     => trans('email.ticket_received_subject', ['number' => $ticketNumber], $locale),
     'preheader'   => trans('email.ticket_received_line1', ['number' => $ticketNumber], $locale),
-    'headerIcon'  => '🎫',
-    'headerTitle' => trans('email.ticket_received_subject', ['number' => $ticketNumber], $locale),
+    'headerIcon'  => 'chat',
+    'headerTitle' => trans('email.ticket_received_header', [], $locale),
+    'headerMeta'  => $ticketNumber,
 ])
 
 @section('content')

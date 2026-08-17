@@ -53,6 +53,7 @@ class InvoiceIssuedNotification extends Notification implements ShouldQueue
                 'locale'      => $locale,
                 'subject'     => trans('email.invoice_subject', ['number' => $fatura->invoice_number], $locale),
                 'headerTitle' => trans('email.invoice_header', [], $locale),
+                'headerIcon'  => 'receipt',
                 'intro'       => trans('email.invoice_intro', ['amount' => $tutar], $locale),
                 'rows'        => $rows,
                 'outro'       => trans('email.invoice_outro', [], $locale),
