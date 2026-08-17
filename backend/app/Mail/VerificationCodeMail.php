@@ -12,19 +12,20 @@ class VerificationCodeMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public string $code;
-    public string $userName;
-
-    public function __construct(string $code, string $userName = 'User')
-    {
-        $this->code = $code;
-        $this->userName = $userName;
+    public function __construct(
+        public string $code,
+        public string $userName = 'User',
+        ?string $dil = null,
+    ) {
+        // Gönderim boyunca alıcının diline geçilir; konu ve gövde birlikte
+        // çevrilir. ($locale adı Mailable'da zaten kullanılıyor.)
+        $this->locale($dil ?: config('app.locale'));
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Medagama — Verify Your Email',
+            subject: trans('email.verify_code_subject'),
         );
     }
 
@@ -32,6 +33,10 @@ class VerificationCodeMail extends Mailable
     {
         return new Content(
             view: 'emails.verification-code',
+            with: [
+                'code' => $this->code,
+                'name' => $this->userName,
+            ],
         );
     }
 

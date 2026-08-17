@@ -1,4 +1,4 @@
-@extends('emails.layouts.medgama', [
+@extends('emails.layouts.medagama', [
     'locale'      => $locale,
     'subject'     => $isDoctor
         ? trans('email.appt_booked_subject_doctor', ['date' => $date], $locale)

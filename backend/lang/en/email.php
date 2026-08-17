@@ -121,4 +121,14 @@ return [
     'pwd_reset_code_label' => 'Reset code',
     'pwd_reset_expiry' => 'The code is valid for :minutes minutes.',
     'pwd_reset_ignore' => 'If you did not request this, you can ignore this email — your password stays unchanged. If these keep arriving without you asking, please tell us.',
+
+    // ── E-posta doğrulama ──
+    'verify_code_subject' => 'Verify your email address',
+    'verify_code_preheader' => 'Your 6-digit code to activate your account.',
+    'verify_code_header' => 'Email verification',
+    'verify_code_greeting' => 'Welcome :name,',
+    'verify_code_intro' => 'To start using your Medagama account, please confirm your email address. Enter the code below in the app.',
+    'verify_code_label' => 'Verification code',
+    'verify_code_expiry' => 'The code is valid for :minutes minutes.',
+    'verify_code_ignore' => 'If you did not create this account, you can ignore this email.',
 ];

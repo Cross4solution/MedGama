@@ -1,4 +1,4 @@
-@extends('emails.layouts.medgama', [
+@extends('emails.layouts.medagama', [
     'locale'      => $locale,
     'subject'     => trans('email.appt_confirmed_subject', [], $locale),
     'preheader'   => trans('email.appt_confirmed_line1', [], $locale),

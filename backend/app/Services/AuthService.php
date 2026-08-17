@@ -165,7 +165,7 @@ class AuthService
             $user->refresh();
         } else {
             // Only patient and doctor get the verification email
-            $this->sendVerificationEmail($user->email, $verificationCode, $user->fullname);
+            $this->sendVerificationEmail($user->email, $verificationCode, $user->fullname, $user->preferred_language);
         }
 
         $token = $user->createToken('auth-token')->plainTextToken;
@@ -361,7 +361,7 @@ class AuthService
         $code = (string) random_int(100000, 999999);
         $user->update(['email_verification_code' => $code]);
 
-        $this->sendVerificationEmail($user->email, $code, $user->fullname);
+        $this->sendVerificationEmail($user->email, $code, $user->fullname, $user->preferred_language);
     }
 
     // ── Password Reset ──
@@ -554,12 +554,22 @@ class AuthService
 
     // ── Private Helpers ──
 
-    private function sendVerificationEmail(string $email, string $code, string $name): void
+    private function sendVerificationEmail(string $email, string $code, string $name, ?string $dil = null): void
     {
         try {
-            Mail::to($email)->send(new VerificationCodeMail($code, $name));
+            Mail::to($email)->send(new VerificationCodeMail($code, $name, $dil));
         } catch (\Throwable $e) {
-            \Log::warning('Verification email failed: ' . $e->getMessage());
+            // Şifre sıfırlamada olduğu gibi: yalnızca log'a yazmak arızayı
+            // görünmez kılıyordu. Kayıt olan kullanıcı kodu bekler, biz
+            // hiçbir şey olmamış sanırız.
+            \Log::error('Doğrulama e-postası gönderilemedi', [
+                'mailer' => config('mail.default'),
+                'hata'   => $e->getMessage(),
+            ]);
+
+            if (app()->bound('sentry')) {
+                app('sentry')->captureException($e);
+            }
         }
     }
 }

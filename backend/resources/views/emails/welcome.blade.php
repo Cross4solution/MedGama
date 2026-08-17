@@ -1,4 +1,4 @@
-@extends('emails.layouts.medgama', [
+@extends('emails.layouts.medagama', [
     'locale'      => $locale,
     'subject'     => trans('email.welcome_subject', [], $locale),
     'preheader'   => trans('email.welcome_line1', [], $locale),
@@ -42,5 +42,5 @@
     </p>
 @endsection
 
-@section('actionUrl', $actionUrl ?? config('app.frontend_url', 'https://medgama.com'))
+@section('actionUrl', $actionUrl ?? config('app.frontend_url'))
 @section('actionText', trans('email.welcome_cta', [], $locale))

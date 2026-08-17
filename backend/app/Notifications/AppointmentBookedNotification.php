@@ -31,7 +31,7 @@ class AppointmentBookedNotification extends Notification implements ShouldQueue
         $isDoctor = $this->recipientRole === 'doctor';
         $date = $appt->appointment_date?->format('d M Y') ?? $appt->appointment_date;
         $time = $appt->appointment_time;
-        $frontendUrl = config('app.frontend_url', 'https://medgama.com');
+        $frontendUrl = config('app.frontend_url');
 
         $subject = $isDoctor
             ? trans('email.appt_booked_subject_doctor', ['date' => $date], $locale)

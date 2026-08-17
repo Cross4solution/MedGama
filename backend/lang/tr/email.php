@@ -121,4 +121,14 @@ return [
     'pwd_reset_code_label' => 'Sıfırlama kodu',
     'pwd_reset_expiry' => 'Kod :minutes dakika boyunca geçerlidir.',
     'pwd_reset_ignore' => 'Bu isteği siz yapmadıysanız bu e-postayı yok sayabilirsiniz; şifreniz değişmez. İsteği siz yapmadığınız hâlde bu e-postayı sık sık alıyorsanız bize bildirin.',
+
+    // ── E-posta doğrulama ──
+    'verify_code_subject' => 'E-posta adresinizi doğrulayın',
+    'verify_code_preheader' => 'Hesabınızı etkinleştirmek için 6 haneli doğrulama kodunuz.',
+    'verify_code_header' => 'E-posta doğrulama',
+    'verify_code_greeting' => 'Hoş geldiniz :name,',
+    'verify_code_intro' => 'Medagama hesabınızı kullanmaya başlamak için e-posta adresinizi doğrulamanız gerekiyor. Aşağıdaki kodu uygulamaya girin.',
+    'verify_code_label' => 'Doğrulama kodu',
+    'verify_code_expiry' => 'Kod :minutes dakika boyunca geçerlidir.',
+    'verify_code_ignore' => 'Bu hesabı siz açmadıysanız bu e-postayı yok sayabilirsiniz.',
 ];

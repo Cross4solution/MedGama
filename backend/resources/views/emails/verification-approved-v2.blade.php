@@ -1,4 +1,4 @@
-@extends('emails.layouts.medgama', [
+@extends('emails.layouts.medagama', [
     'locale'      => $locale,
     'subject'     => trans('email.verify_approved_subject', [], $locale),
     'preheader'   => trans('email.verify_approved_line1', [], $locale),
@@ -34,5 +34,5 @@
     </p>
 @endsection
 
-@section('actionUrl', $actionUrl ?? config('app.frontend_url', 'https://medgama.com') . '/crm')
+@section('actionUrl', $actionUrl ?? config('app.frontend_url') . '/crm')
 @section('actionText', trans('email.verify_approved_cta', [], $locale))

@@ -530,7 +530,7 @@ class SuperAdminService
             ['key' => 'branding.site_description',  'value' => 'Modern healthcare platform for patients and doctors', 'type' => 'string',  'group' => 'branding', 'label' => 'Meta Description',  'description' => 'Default meta description for SEO'],
             ['key' => 'branding.site_logo_url',     'value' => '/images/logo.svg',                         'type' => 'string',  'group' => 'branding', 'label' => 'Logo URL',           'description' => 'Path or URL for the site logo'],
             ['key' => 'branding.primary_color',     'value' => '#0D9488',                                  'type' => 'string',  'group' => 'branding', 'label' => 'Primary Color',      'description' => 'Primary brand color (hex)'],
-            ['key' => 'branding.support_email',     'value' => 'support@medgama.com',                      'type' => 'string',  'group' => 'branding', 'label' => 'Support Email',      'description' => 'Public support contact email'],
+            ['key' => 'branding.support_email',     'value' => 'destek@medagama.com',                      'type' => 'string',  'group' => 'branding', 'label' => 'Support Email',      'description' => 'Public support contact email'],
         ];
 
         foreach ($defaults as $setting) {

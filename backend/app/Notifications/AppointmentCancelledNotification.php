@@ -30,7 +30,7 @@ class AppointmentCancelledNotification extends Notification implements ShouldQue
         $isDoctor = $this->recipientRole === 'doctor';
         $date = $appt->appointment_date?->format('d M Y') ?? $appt->appointment_date;
         $time = $appt->appointment_time;
-        $frontendUrl = config('app.frontend_url', 'https://medgama.com');
+        $frontendUrl = config('app.frontend_url');
 
         return (new MailMessage)
             ->subject('Medagama — ' . trans('email.appt_cancelled_subject', [], $locale))

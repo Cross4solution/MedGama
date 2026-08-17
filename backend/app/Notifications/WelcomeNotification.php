@@ -24,7 +24,7 @@ class WelcomeNotification extends Notification implements ShouldQueue
     {
         $locale = $notifiable->preferred_language ?? 'en';
         $isDoctor = in_array($this->role, ['doctor', 'clinicOwner']);
-        $frontendUrl = config('app.frontend_url', 'https://medgama.com');
+        $frontendUrl = config('app.frontend_url');
 
         return (new MailMessage)
             ->subject(trans('email.welcome_subject', [], $locale))

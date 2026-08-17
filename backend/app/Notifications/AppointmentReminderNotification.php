@@ -34,7 +34,7 @@ class AppointmentReminderNotification extends Notification implements ShouldQueu
         $time = $appt->appointment_time;
         $isOnline = $appt->appointment_type === 'online';
         $timeLabel = $this->reminderType === '1h' ? '1 hour' : '24 hours';
-        $frontendUrl = config('app.frontend_url', 'https://medgama.com');
+        $frontendUrl = config('app.frontend_url');
 
         $actionUrl = $isDoctor
             ? $frontendUrl . '/crm/appointments'

@@ -1,4 +1,4 @@
-@extends('emails.layouts.medgama', [
+@extends('emails.layouts.medagama', [
     'locale'      => $locale,
     'subject'     => trans('email.ticket_received_subject', ['number' => $ticketNumber], $locale),
     'preheader'   => trans('email.ticket_received_line1', ['number' => $ticketNumber], $locale),
@@ -31,5 +31,5 @@
     </p>
 @endsection
 
-@section('actionUrl', $actionUrl ?? config('app.frontend_url', 'https://medgama.com') . '/crm/support')
+@section('actionUrl', $actionUrl ?? config('app.frontend_url') . '/crm/support')
 @section('actionText', trans('email.ticket_received_cta', [], $locale))
