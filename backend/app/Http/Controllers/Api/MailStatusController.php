@@ -41,7 +41,7 @@ class MailStatusController extends Controller
             $surucuHatasi = $e->getMessage();
         }
 
-        return response()->json([
+        $durum = [
             'mailer'          => config('mail.default'),
             'from_address'    => config('mail.from.address'),
             'from_name'       => config('mail.from.name'),
@@ -50,6 +50,26 @@ class MailStatusController extends Controller
             'driver_ready'    => $surucuHazir,
             'driver_error'    => $surucuHatasi,
             'queue'           => config('queue.default'),
-        ]);
+        ];
+
+        // İsteğe bağlı gerçek gönderim: uygulamanın kendi akışları hatayı
+        // yutuyor, bu yüzden sağlayıcının söylediğini olduğu gibi görmenin
+        // başka yolu yok. Adres verilmezse hiçbir şey gönderilmez.
+        $alici = trim((string) $request->query('to'));
+        if ($alici !== '') {
+            try {
+                \Illuminate\Support\Facades\Mail::raw(
+                    'Medagama e-posta testi — ' . now()->toDateTimeString(),
+                    fn ($m) => $m->to($alici)->subject('Medagama — e-posta testi'),
+                );
+                $durum['send_result'] = 'ok';
+            } catch (\Throwable $e) {
+                $durum['send_result'] = 'failed';
+                $durum['send_error']  = $e->getMessage();
+                $durum['send_error_type'] = get_class($e);
+            }
+        }
+
+        return response()->json($durum);
     }
 }
