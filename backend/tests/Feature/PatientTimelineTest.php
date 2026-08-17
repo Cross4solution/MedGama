@@ -35,6 +35,15 @@ class PatientTimelineTest extends TestCase
         $this->clinic = Clinic::factory()->create();
         $this->doctor = User::factory()->doctor()->create(['clinic_id' => $this->clinic->id]);
         $this->patient = User::factory()->patient()->create();
+
+        // Çizelge yalnızca tedavi ilişkisi olan hastada açılıyor; ilişkiyi
+        // kuran şey randevu. Bu randevu olmadan hiçbir uç yanıt vermez.
+        Appointment::factory()->create([
+            'patient_id' => $this->patient->id,
+            'doctor_id'  => $this->doctor->id,
+            'clinic_id'  => $this->clinic->id,
+            'status'     => 'completed',
+        ]);
     }
 
     private function cizelge(): array
@@ -109,7 +118,7 @@ class PatientTimelineTest extends TestCase
 
     public function test_gorusme_durumu_randevu_satirinda_tasinir(): void
     {
-        Appointment::factory()->create([
+        $randevu = Appointment::factory()->create([
             'patient_id'       => $this->patient->id,
             'doctor_id'        => $this->doctor->id,
             'clinic_id'        => $this->clinic->id,
@@ -117,14 +126,15 @@ class PatientTimelineTest extends TestCase
             'meeting_status'   => 'completed',
         ]);
 
-        $satir = collect($this->cizelge())->firstWhere('type', 'appointment');
+        // setUp'taki ilişki randevusu da çizelgede; kendi kaydımızı kimliğiyle buluyoruz.
+        $satir = collect($this->cizelge())->firstWhere('id', $randevu->id);
 
         $this->assertSame('completed', $satir['meeting_status']);
     }
 
     public function test_yuz_yuze_randevuda_gorusme_durumu_gosterilmez(): void
     {
-        Appointment::factory()->create([
+        $randevu = Appointment::factory()->create([
             'patient_id'       => $this->patient->id,
             'doctor_id'        => $this->doctor->id,
             'clinic_id'        => $this->clinic->id,
@@ -132,7 +142,7 @@ class PatientTimelineTest extends TestCase
             'meeting_status'   => 'pending',
         ]);
 
-        $satir = collect($this->cizelge())->firstWhere('type', 'appointment');
+        $satir = collect($this->cizelge())->firstWhere('id', $randevu->id);
 
         $this->assertNull($satir['meeting_status']);
     }
@@ -157,8 +167,8 @@ class PatientTimelineTest extends TestCase
 
         $this->assertSame(2, $ozet['no_show_count']);
         $this->assertSame(1, $ozet['cancelled_count']);
-        // Oran gerçekleşmesi beklenenler üzerinden: 2 gelmedi / (1 tamam + 2 gelmedi)
-        $this->assertSame(67, $ozet['no_show_rate']);
+        // setUp'taki ilişki randevusu da 'completed'; 2 gelmedi / (2 tamam + 2 gelmedi)
+        $this->assertSame(50, $ozet['no_show_rate']);
     }
 
     /**

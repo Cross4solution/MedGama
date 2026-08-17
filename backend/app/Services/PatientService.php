@@ -189,6 +189,42 @@ class PatientService
     // ══════════════════════════════════════════════
 
     /**
+     * Bu hasta, isteği yapanın gerçekten tedavi ettiği biri mi?
+     *
+     * Hasta kartı uçları (profil, zaman çizelgesi, özet, belgeler) kimliği
+     * doğrulanmış HERKESE açıktı: bir doktor, hiç görmediği bir hastanın
+     * kimliğini ve kayıtlarını yalnızca kimliğini bilerek okuyabiliyordu.
+     * Randevu ve belge uçları bunu zaten engelliyordu, hasta kartı atlanmıştı.
+     *
+     * KVKK, GDPR (Md. 9) ve HIPAA üçü de sağlık verisine erişimi tedavi
+     * ilişkisiyle sınırlıyor; "giriş yapmış olmak" yeterli bir gerekçe değil.
+     *
+     * İlişkinin ölçüsü randevu: hasta listesi de aynı ölçüyle türetiliyor,
+     * yani listede göremediği birini tekil olarak da açamıyor.
+     */
+    private function tedaviIliskisiZorunlu(string $patientId, User $accessor): void
+    {
+        // Yönetici denetim için erişebilir; erişimi zaten kayda geçiyor.
+        if ($accessor->isAdmin()) {
+            return;
+        }
+
+        $iliski = Appointment::where('patient_id', $patientId)
+            ->when($accessor->isDoctor(), fn ($q) => $q->where('doctor_id', $accessor->id))
+            ->when($accessor->isClinicOwner(), fn ($q) => $q->where('clinic_id', $accessor->clinic_id))
+            ->exists();
+
+        // Ne doktor ne klinik sahibi olan bir rol buraya hiç gelmemeli.
+        if (!$accessor->isDoctor() && !$accessor->isClinicOwner()) {
+            abort(403, 'Bu hastanın kaydına erişim yetkiniz yok.');
+        }
+
+        if (!$iliski) {
+            abort(403, 'Bu hastanın kaydına erişim yetkiniz yok.');
+        }
+    }
+
+    /**
      * Get comprehensive patient 360° data.
      * Logs access for GDPR compliance.
      */
@@ -197,6 +233,8 @@ class PatientService
         $patient = User::where('role_id', 'patient')
             ->where('is_active', true)
             ->findOrFail($patientId);
+
+        $this->tedaviIliskisiZorunlu($patient->id, $accessor);
 
         // GDPR Art. 9 — Audit every access to patient profile
         HealthDataAuditLog::log(
@@ -224,6 +262,8 @@ class PatientService
      */
     public function getPatientTimeline(string $patientId, User $accessor, array $filters): array
     {
+        $this->tedaviIliskisiZorunlu($patientId, $accessor);
+
         $doctorScope = $accessor->isDoctor() ? $accessor->id : null;
         $clinicScope = $accessor->isClinicOwner() ? $accessor->clinic_id : null;
 
@@ -383,6 +423,8 @@ class PatientService
         // Yalnızca "şu gün yazışıldı" kaydı; mesajların içeriği çizelgeye
         // girmiyor. Doktorun ne zaman temas kurulduğunu görmesi yeterli,
         // yazışmanın kendisi mesajlar ekranında ve orada kalmalı.
+        // Yalnızca isteği yapanın kendi de katılımcı olduğu konuşmalar; hastanın
+        // başka biriyle yazışması buraya girmez.
         $konusmalar = Conversation::whereHas('participants', fn ($q) => $q->where('user_id', $patientId))
             ->whereHas('participants', fn ($q) => $q->where('user_id', $accessor->id))
             ->where('is_active', true)
@@ -425,6 +467,8 @@ class PatientService
      */
     public function getMedicalSummary(string $patientId, User $accessor): array
     {
+        $this->tedaviIliskisiZorunlu($patientId, $accessor);
+
         $doctorScope = $accessor->isDoctor() ? $accessor->id : null;
         $clinicScope = $accessor->isClinicOwner() ? $accessor->clinic_id : null;
 
@@ -503,6 +547,8 @@ class PatientService
      */
     public function getPatientDocuments(string $patientId, User $accessor, array $filters): LengthAwarePaginator
     {
+        $this->tedaviIliskisiZorunlu($patientId, $accessor);
+
         $query = PatientRecord::active()
             ->where('patient_id', $patientId)
             ->where('record_type', '!=', 'examination')
@@ -536,6 +582,8 @@ class PatientService
 
     public function addTag(string $patientId, User $user, string $tag): CrmTag
     {
+        $this->tedaviIliskisiZorunlu($patientId, $user);
+
         // Check patient exists
         User::where('role_id', 'patient')->findOrFail($patientId);
 
@@ -562,6 +610,8 @@ class PatientService
 
     public function setStage(string $patientId, User $user, string $stage): CrmProcessStage
     {
+        $this->tedaviIliskisiZorunlu($patientId, $user);
+
         // Check patient exists
         User::where('role_id', 'patient')->findOrFail($patientId);
 
