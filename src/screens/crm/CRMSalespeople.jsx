@@ -215,10 +215,6 @@ const CRMSalespeople = () => {
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Users className="w-5 h-5 text-teal-600" /> {t('crm.salespeople.title', 'Salespeople')}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {t('crm.salespeople.subtitle', 'Manage your sales team')}
-            {people.length > 0 && <span className="ml-1 text-teal-600 font-semibold">({people.length})</span>}
-          </p>
         </div>
         <button onClick={() => setShowAdd(true)} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
           <UserPlus className="w-4 h-4" /> {t('crm.salespeople.newSalesperson', 'New Salesperson')}

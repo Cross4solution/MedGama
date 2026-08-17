@@ -426,7 +426,6 @@ const CRMLeads = () => {
             <Target className="w-5 h-5 text-teal-600" />
             {t('crm.leads.title')}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">{t('crm.leads.subtitle')}</p>
         </div>
         <button onClick={() => setShowNew(true)} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-700 transition-all shadow-sm">
           <Plus className="w-4 h-4" /> {t('crm.leads.newLead')}

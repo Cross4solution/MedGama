@@ -303,19 +303,22 @@ const CRMSmartCalendar = () => {
   if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="calendar" />;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3.5">
       {/* ─── Header ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('crm.calendar.title', 'Smart Calendar')}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {t('crm.calendar.subtitle', 'Manage all appointments from a single calendar')}
-            {lastSync && (
-              <span className="ml-2 text-[10px] text-gray-400">
-                {t('crm.calendar.lastSync', 'Synced')}: {lastSync.toLocaleTimeString()}
-              </span>
-            )}
-          </p>
+        {/*
+          Ekranın işi takvimi göstermek; başlık alanı ne kadar yer kaplarsa
+          takvim o kadar aşağı iniyordu. Açıklama satırı kaldırıldı — sayfanın
+          ne olduğu başlıktan ve içerikten zaten belli. Senkron saati başlığın
+          yanına alındı.
+        */}
+        <div className="flex items-baseline gap-2.5">
+          <h1 className="text-xl font-bold text-gray-900">{t('crm.calendar.title', 'Smart Calendar')}</h1>
+          {lastSync && (
+            <span className="text-[11px] text-gray-400">
+              {t('crm.calendar.lastSync', 'Synced')}: {lastSync.toLocaleTimeString()}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <button onClick={manualRefresh} className="inline-flex items-center gap-1.5 px-3 py-2 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-all">
@@ -335,28 +338,24 @@ const CRMSmartCalendar = () => {
       </div>
 
       {/* ─── Stats Row ─── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {[
           { label: t('crm.calendar.todayAppointments', "Today's Appointments"), value: stats.todayCount, color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200', icon: CalendarDays },
           { label: t('crm.calendar.totalVisible', 'Total Visible'), value: stats.total, color: 'text-teal-700', bg: 'bg-teal-50 border-teal-200', icon: Globe },
           { label: t('crm.calendar.status_confirmed', 'Confirmed'), value: stats.confirmed, color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200', icon: CheckCircle },
           { label: t('crm.calendar.status_pending', 'Pending'), value: stats.pending, color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200', icon: Clock },
         ].map((s) => (
-          <div key={s.label} className={`rounded-xl border px-4 py-3 ${s.bg} flex items-center gap-3`}>
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${s.bg}`}>
-              <s.icon className={`w-4.5 h-4.5 ${s.color}`} />
-            </div>
-            <div>
-              <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
-              <p className="text-[11px] text-gray-500 font-medium">{s.label}</p>
-            </div>
+          <div key={s.label} className={`rounded-lg border px-3 py-2 ${s.bg} flex items-center gap-2.5`}>
+            <s.icon className={`w-4 h-4 shrink-0 ${s.color}`} />
+            <p className={`text-base font-bold leading-none ${s.color}`}>{s.value}</p>
+            <p className="text-[11px] text-gray-500 font-medium leading-tight">{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* ─── Filters & View ─── */}
       <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 px-5 py-3 border-b border-gray-100">
           {/* Status Legend */}
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('crm.calendar.filterByStatus', 'Status')}:</span>

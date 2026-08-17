@@ -432,9 +432,6 @@ export default function CRMBranches() {
             <MapPin className="w-5 h-5 text-teal-600" />
             {t('crm.branches.title', 'Branch Management')}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {t('crm.branches.subtitle', 'Manage your hospital\'s branch locations')}
-          </p>
         </div>
         <button
           onClick={() => setFormModal({ open: true, branch: null })}

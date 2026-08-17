@@ -295,7 +295,6 @@ const CRMDashboard = () => {
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
               {TODAY.getHours() < 12 ? 'Good Morning' : TODAY.getHours() < 18 ? 'Good Afternoon' : 'Good Evening'}, {user?.name?.split(' ')[0] || 'Admin'} 👋
             </h1>
-            <p className="text-sm text-gray-500 mt-0.5">{formatDate(TODAY)}</p>
           </div>
           <div className="flex items-center gap-2">
             {/* Herkese açık profil yeni sekmede: CRM'den çıkıp geri dönmek
@@ -353,7 +352,6 @@ const CRMDashboard = () => {
           <h1 className="text-base sm:text-lg font-bold text-gray-900">
             Good {TODAY.getHours() < 12 ? 'Morning' : TODAY.getHours() < 18 ? 'Afternoon' : 'Evening'}, {user?.name?.split(' ')[0] || 'Doctor'} 👋
           </h1>
-          <p className="text-xs text-gray-500">{formatDate(TODAY)}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link

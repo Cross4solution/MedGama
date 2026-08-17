@@ -458,7 +458,7 @@ const CRMLayout = ({ children }) => {
         flex-1 tek başına yetmiyor — min-h-0 olmadan flex çocuğu küçülmüyor,
         dolayısıyla taşma hiç oluşmuyor ve kaydırma da başlamıyor.
       */}
-      <nav className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-4">
+      <nav className="crm-sidebar-scroll flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-2 space-y-4">
         {NAV_SECTIONS.map((section) => (
           <div key={section.title} className="space-y-1">
             {section.items.map((item) => {
@@ -468,10 +468,10 @@ const CRMLayout = ({ children }) => {
                     key={item.path}
                     to={item.path}
                     onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
+                    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group ${
                       active
-                        ? 'bg-teal-500/15 text-teal-400 shadow-sm'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-white/[0.06] text-white font-semibold before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-[3px] before:rounded-full before:bg-teal-400'
+                        : 'text-gray-400 font-medium hover:text-white hover:bg-white/[0.03]'
                     }`}
                   >
                     <item.icon className={`w-[18px] h-[18px] flex-shrink-0 ${active ? 'text-teal-400' : 'text-gray-500 group-hover:text-gray-300'}`} />

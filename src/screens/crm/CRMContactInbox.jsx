@@ -95,11 +95,6 @@ const CRMContactInbox = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
             {t('crm.contactInbox.title', 'Contact Messages')}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {unreadCount > 0
-              ? `${unreadCount} ${t('crm.contactInbox.unread', 'unread')}`
-              : t('crm.contactInbox.allRead', 'All caught up')}
-          </p>
         </div>
       </div>
 

@@ -342,10 +342,6 @@ const CRMStaff = () => {
             <Users className="w-5 h-5 text-teal-600" />
             {t('crm.staff.title', 'My Team')}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {t('crm.staff.subtitle', 'Manage doctors and staff in your clinic')}
-            {staff.length > 0 && <span className="ml-1 text-teal-600 font-semibold">({staff.length})</span>}
-          </p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
