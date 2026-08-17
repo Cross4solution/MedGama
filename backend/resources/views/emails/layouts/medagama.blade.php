@@ -67,24 +67,36 @@
 
         {{-- ── Başlık ── --}}
         <tr>
-            <td class="pad-top" align="center" style="background:linear-gradient(135deg,#0d9488 0%,#059669 100%);background-color:#0d9488;padding:32px 40px;text-align:center;">
+            <td class="pad-top" style="background:linear-gradient(135deg,#0d9488 0%,#059669 100%);background-color:#0d9488;padding:26px 40px 28px;">
                 {{--
+                    Başlıkta önce konu okunur, marka sonra: alıcı kutuyu açtığında
+                    "hangi Medagama e-postası" sorusunun cevabını arıyor, kimden
+                    geldiğini zaten biliyor. Bu yüzden konu büyük, marka logonun
+                    yanında küçük bir künye.
+
                     Logo CID ile gömülür, data: URI ile değil: Gmail data: kaynaklı
                     görselleri engelliyor, uzak adres ise henüz sahibi olmadığımız
                     bir alan adına işaret ederdi. Gömme yalnızca gerçek gönderimde
                     mümkün olduğu için $message yokken (önizleme/render) sessizce
-                    atlanır — başlık logosuz da dursa okunur kalır.
+                    atlanır — başlık logosuz da okunur kalır.
                 --}}
-                @isset($message)
-                    <img src="{{ $message->embed(public_path('images/logo/favicon-icon-white.png')) }}"
-                         width="52" height="52" alt="Medagama"
-                         style="display:block;margin:0 auto 12px;width:52px;height:52px;border:0;outline:none;">
-                @endisset
-
-                <div style="font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.2;">Medagama</div>
+                <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 14px;">
+                    <tr>
+                        @isset($message)
+                            <td style="vertical-align:middle;padding-right:9px;">
+                                <img src="{{ $message->embed(public_path('images/logo/favicon-icon-white.png')) }}"
+                                     width="26" height="26" alt=""
+                                     style="display:block;width:26px;height:26px;border:0;outline:none;">
+                            </td>
+                        @endisset
+                        <td style="vertical-align:middle;">
+                            <span style="font-size:15px;font-weight:600;color:rgba(255,255,255,0.92);letter-spacing:-0.2px;">Medagama</span>
+                        </td>
+                    </tr>
+                </table>
 
                 @isset($headerTitle)
-                    <div style="margin-top:6px;font-size:14px;color:rgba(255,255,255,0.88);font-weight:400;">{{ $headerTitle }}</div>
+                    <div style="font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.25;">{{ $headerTitle }}</div>
                 @endisset
             </td>
         </tr>
@@ -99,8 +111,8 @@
         {{-- ── Eylem düğmesi (yalnızca tanımlıysa) ── --}}
         @hasSection('actionUrl')
         <tr>
-            <td class="pad" style="padding:16px 40px 32px;">
-                <table role="presentation" cellpadding="0" cellspacing="0">
+            <td class="pad" align="center" style="padding:16px 40px 32px;text-align:center;">
+                <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;">
                     <tr>
                         <td style="border-radius:10px;background-color:#0d9488;">
                             <a href="@yield('actionUrl')" target="_blank" rel="noopener"

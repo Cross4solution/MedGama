@@ -66,5 +66,6 @@
 
 @if (!empty($actionUrl))
     @section('actionUrl', $actionUrl)
-    @section('actionLabel', $actionLabel ?? trans('email.open'))
+    {{-- Düzen bu bölümü actionText adıyla bekliyor; adı tutmazsa buton yazısız çıkar. --}}
+    @section('actionText', $actionLabel ?? trans('email.open'))
 @endif
