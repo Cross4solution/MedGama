@@ -49,6 +49,9 @@ class MailPreviewController extends Controller
             'locale'    => $dil,
             'mailer'    => config('mail.default'),
             'from'      => config('mail.from.address'),
+            // Bağlantılar buradan kuruluyor; localhost görünüyorsa canlıda
+            // FRONTEND_URL tanımsız demektir ve e-postadaki her bağlantı kırıktır.
+            'site_url'  => config('app.frontend_url'),
             'sablon_sayisi' => count($ornekler),
             'sonuc'     => $sonuc,
         ]);
