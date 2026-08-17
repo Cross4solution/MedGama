@@ -71,17 +71,16 @@ services:
         value: https://3a7995b14f91ee94e6f79a6817043205@o4511896657592320.ingest.de.sentry.io/4511896694030416
       - key: SENTRY_ENVIRONMENT
         value: production
+      # ── E-posta (Resend) ──
+      # Burada `value:` yazılan her alan, panelden yapılan düzenlemeyi sonraki
+      # deploy'da geri alır. MAIL_MAILER'da sabit "smtp" yazıyordu: panele
+      # "resend" girilse bile ilk deploy'da smtp'ye dönerdi ve e-posta sessizce
+      # gitmemeye başlardı. Panelden yönetilenler artık sync:false.
       - key: MAIL_MAILER
-        value: smtp
-      - key: MAIL_HOST
-        sync: false
-      - key: MAIL_PORT
-        value: "587"
-      - key: MAIL_USERNAME
-        sync: false
-      - key: MAIL_PASSWORD
-        sync: false
+        sync: false           # resend
+      - key: RESEND_API_KEY
+        sync: false           # Resend panelinden üretilen anahtar
       - key: MAIL_FROM_ADDRESS
-        sync: false
+        sync: false           # alan adı doğrulanana kadar onboarding@resend.dev
       - key: MAIL_FROM_NAME
         value: Medagama
