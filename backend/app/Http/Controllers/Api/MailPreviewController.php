@@ -77,37 +77,52 @@ class MailPreviewController extends Controller
 
         $t = fn (string $k, array $r = []) => trans("email.$k", $r, $dil);
 
+        $tr = $dil === 'tr';
+        $hasta   = 'Sarah Whitfield';
+        $doktor  = 'Dr. Elif Yılmaz';
+        $tarih   = $tr ? '12 Eylül 2026' : '12 September 2026';
+        $not     = $tr ? 'Kontrol muayenesi.' : 'Follow-up examination.';
+        $iptalSebep = $tr ? 'Doktorun programında acil değişiklik.' : 'An urgent change in the doctor\'s schedule.';
+        $redSebep   = $tr ? 'Belgenin tarih alanı okunamıyor.' : 'The date on the document is not legible.';
+        $talepKonu  = $tr ? 'Faturamı indiremiyorum' : 'I cannot download my invoice';
+        $talepYanit = $tr ? 'Sorunu tespit ettik, fatura indirme bağlantısı yenilendi.' : 'We found the problem and refreshed your invoice download link.';
+        $belgeAdi   = $tr ? 'Diploma' : 'Medical diploma';
+        $ekBelgeNot = $tr ? 'Diplomanızın arka yüzünü de yükler misiniz?' : 'Could you also upload the reverse side of your diploma?';
+        $yorum      = $tr ? 'Çok ilgili bir doktor, her sorumu sabırla yanıtladı.' : 'A very attentive doctor who answered every question patiently.';
+        $yorumYanit = $tr ? 'Güzel sözleriniz için teşekkür ederim, geçmiş olsun.' : 'Thank you for your kind words — I wish you a swift recovery.';
+        $saat       = $tr ? '1 saat' : '1 hour';
+
         return [
             'sifre-sifirlama' => [
                 'view' => 'emails.password-reset',
                 'subject' => $t('pwd_reset_subject'),
-                'data' => $ortak + ['code' => '482913', 'name' => 'Oğuzhan Özcan'],
+                'data' => $ortak + ['code' => '482913', 'name' => $hasta],
             ],
             'dogrulama-kodu' => [
                 'view' => 'emails.verification-code',
                 'subject' => $t('verify_code_subject'),
-                'data' => $ortak + ['code' => '739154', 'name' => 'Oğuzhan Özcan'],
+                'data' => $ortak + ['code' => '739154', 'name' => $hasta],
             ],
             'hosgeldin' => [
                 'view' => 'emails.welcome',
                 'subject' => $t('welcome_subject'),
                 'data' => $ortak + [
-                    'userName' => 'Oğuzhan Özcan',
+                    'userName' => $hasta,
                     'isDoctor' => false,
                     'actionUrl' => $site . '/medstream',
                 ],
             ],
             'randevu-olusturuldu' => [
                 'view' => 'emails.appointment-booked-v2',
-                'subject' => $t('appt_booked_subject', ['date' => '12 Eylül 2026']),
+                'subject' => $t('appt_booked_subject', ['date' => $tarih]),
                 'data' => $ortak + [
                     'isDoctor' => false,
-                    'userName' => 'Oğuzhan Özcan',
-                    'counterpartName' => 'Dr. Elif Yılmaz',
-                    'date' => '12 Eylül 2026',
+                    'userName' => $hasta,
+                    'counterpartName' => $doktor,
+                    'date' => $tarih,
                     'time' => '14:30',
                     'type' => 'online',
-                    'patientNote' => 'Kontrol muayenesi.',
+                    'patientNote' => $not,
                     'actionUrl' => $site . '/telehealth',
                 ],
             ],
@@ -115,9 +130,9 @@ class MailPreviewController extends Controller
                 'view' => 'emails.appointment-confirmed-v2',
                 'subject' => $t('appt_confirmed_subject'),
                 'data' => $ortak + [
-                    'userName' => 'Oğuzhan Özcan',
-                    'doctorName' => 'Dr. Elif Yılmaz',
-                    'date' => '12 Eylül 2026',
+                    'userName' => $hasta,
+                    'doctorName' => $doktor,
+                    'date' => $tarih,
                     'time' => '14:30',
                     'type' => 'online',
                     'actionUrl' => $site . '/telehealth',
@@ -125,12 +140,12 @@ class MailPreviewController extends Controller
             ],
             'randevu-hatirlatma' => [
                 'view' => 'emails.appointment-reminder-v2',
-                'subject' => $t('appt_reminder_subject', ['time' => '1 saat']),
+                'subject' => $t('appt_reminder_subject', ['time' => $saat]),
                 'data' => $ortak + [
                     'isDoctor' => false,
-                    'userName' => 'Oğuzhan Özcan',
-                    'counterpartName' => 'Dr. Elif Yılmaz',
-                    'date' => '12 Eylül 2026',
+                    'userName' => $hasta,
+                    'counterpartName' => $doktor,
+                    'date' => $tarih,
                     'time' => '14:30',
                     'timeLabel' => '14:30 (Europe/Istanbul)',
                     'isOnline' => true,
@@ -143,12 +158,12 @@ class MailPreviewController extends Controller
                 'subject' => $t('appt_cancelled_subject'),
                 'data' => $ortak + [
                     'isDoctor' => false,
-                    'userName' => 'Oğuzhan Özcan',
-                    'counterpartName' => 'Dr. Elif Yılmaz',
+                    'userName' => $hasta,
+                    'counterpartName' => $doktor,
                     'cancelledBy' => 'doctor',
-                    'date' => '12 Eylül 2026',
+                    'date' => $tarih,
                     'time' => '14:30',
-                    'reason' => 'Doktorun programında acil değişiklik.',
+                    'reason' => $iptalSebep,
                     'actionUrl' => $site . '/telehealth-appointment',
                 ],
             ],
@@ -156,8 +171,8 @@ class MailPreviewController extends Controller
                 'view' => 'emails.verification-approved-v2',
                 'subject' => $t('verify_approved_subject'),
                 'data' => $ortak + [
-                    'userName' => 'Dr. Elif Yılmaz',
-                    'documentLabel' => 'Diploma',
+                    'userName' => $doktor,
+                    'documentLabel' => $belgeAdi,
                     'actionUrl' => $site . '/crm',
                 ],
             ],
@@ -165,9 +180,9 @@ class MailPreviewController extends Controller
                 'view' => 'emails.verification-rejected-v2',
                 'subject' => $t('verify_rejected_subject'),
                 'data' => $ortak + [
-                    'userName' => 'Dr. Elif Yılmaz',
-                    'documentLabel' => 'Diploma',
-                    'reason' => 'Belgenin tarih alanı okunamıyor.',
+                    'userName' => $doktor,
+                    'documentLabel' => $belgeAdi,
+                    'reason' => $redSebep,
                     'actionUrl' => $site . '/crm/settings?tab=verification',
                 ],
             ],
@@ -175,9 +190,9 @@ class MailPreviewController extends Controller
                 'view' => 'emails.ticket-received-v2',
                 'subject' => $t('ticket_received_subject', ['number' => 'TKT-2026-0184']),
                 'data' => $ortak + [
-                    'userName' => 'Oğuzhan Özcan',
+                    'userName' => $hasta,
                     'ticketNumber' => 'TKT-2026-0184',
-                    'ticketSubject' => 'Faturamı indiremiyorum',
+                    'ticketSubject' => $talepKonu,
                     'ticketPriority' => 'high',
                     'actionUrl' => $site . '/crm/support',
                 ],
@@ -186,10 +201,10 @@ class MailPreviewController extends Controller
                 'view' => 'emails.ticket-reply-v2',
                 'subject' => $t('ticket_reply_subject', ['number' => 'TKT-2026-0184']),
                 'data' => $ortak + [
-                    'userName' => 'Oğuzhan Özcan',
+                    'userName' => $hasta,
                     'ticketNumber' => 'TKT-2026-0184',
-                    'ticketSubject' => 'Faturamı indiremiyorum',
-                    'replyPreview' => 'Sorunu tespit ettik, fatura indirme bağlantısı yenilendi.',
+                    'ticketSubject' => $talepKonu,
+                    'replyPreview' => $talepYanit,
                     'actionUrl' => $site . '/crm/support',
                 ],
             ],
@@ -228,7 +243,7 @@ class MailPreviewController extends Controller
                     'intro' => $t('ticket_admin_intro'),
                     'rows' => [
                         $t('row_ticket') => 'TKT-2026-0184',
-                        $t('row_subject') => 'Faturamı indiremiyorum',
+                        $t('row_subject') => $talepKonu,
                         $t('row_from') => 'Ayşe K. <ayse@ornek.test>',
                         $t('row_priority') => 'High',
                     ],
@@ -243,7 +258,7 @@ class MailPreviewController extends Controller
                 'data' => $ortak + [
                     'subject' => $t('call_starting_subject'),
                     'headerTitle' => $t('call_starting_header'),
-                    'intro' => $t('call_starting_intro', ['name' => 'Dr. Elif Yılmaz']),
+                    'intro' => $t('call_starting_intro', ['name' => $doktor]),
                     'rows' => [
                         $t('row_time') => '14:30',
                         $t('row_timezone') => 'Europe/Istanbul',
@@ -276,7 +291,7 @@ class MailPreviewController extends Controller
                 'data' => $ortak + [
                     'subject' => $t('appt_moved_subject'),
                     'headerTitle' => $t('appt_moved_header'),
-                    'intro' => $t('appt_moved_intro', ['name' => 'Dr. Elif Yılmaz']),
+                    'intro' => $t('appt_moved_intro', ['name' => $doktor]),
                     'rows' => [
                         $t('row_old_time') => '12.09.2026 · 14:30',
                         $t('row_new_time') => '14.09.2026 · 11:00',

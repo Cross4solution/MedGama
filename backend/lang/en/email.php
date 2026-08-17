@@ -15,9 +15,9 @@ return [
     'button_trouble'    => 'If you\'re having trouble clicking the button, copy and paste the URL below into your browser:',
 
     // ─── Welcome ───
-    'welcome_subject'        => 'Welcome to Medagama! \u{1F389}',
+    'welcome_subject'        => 'Welcome to Medagama',
     'welcome_greeting'       => 'Welcome aboard, :name!',
-    'welcome_line1'          => 'Thank you for joining Medagama \u{2014} the modern healthcare platform connecting doctors and patients.',
+    'welcome_line1'          => 'Thank you for joining Medagama — the modern healthcare platform connecting doctors and patients.',
     'welcome_line2_doctor'   => 'As a healthcare professional, you can now manage your appointments, prescriptions, and patient records all in one place.',
     'welcome_line2_patient'  => 'You can now book appointments with verified doctors, manage your health records, and access telehealth services.',
     'welcome_features_title' => 'What you can do:',

@@ -1,23 +1,23 @@
 @extends('emails.layouts.medagama', [
-    'subject'     => trans('email.verify_code_subject'),
-    'preheader'   => trans('email.verify_code_preheader'),
-    'headerTitle' => trans('email.verify_code_header'),
+    'subject'     => trans('email.verify_code_subject', [], $locale),
+    'preheader'   => trans('email.verify_code_preheader', [], $locale),
+    'headerTitle' => trans('email.verify_code_header', [], $locale),
 ])
 
 @section('content')
     <p style="margin:0 0 16px;font-size:16px;font-weight:600;line-height:1.4;">
-        {{ trans('email.verify_code_greeting', ['name' => $name]) }}
+        {{ trans('email.verify_code_greeting', ['name' => $name], $locale) }}
     </p>
 
     <p class="txt" style="margin:0 0 24px;font-size:14px;line-height:1.65;color:#334155;">
-        {{ trans('email.verify_code_intro') }}
+        {{ trans('email.verify_code_intro', [], $locale) }}
     </p>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <td class="bg-panel" align="center" style="background-color:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:24px 16px;">
                 <p class="txt-soft" style="margin:0 0 8px;font-size:11px;color:#0f766e;text-transform:uppercase;letter-spacing:1px;font-weight:600;">
-                    {{ trans('email.verify_code_label') }}
+                    {{ trans('email.verify_code_label', [], $locale) }}
                 </p>
                 <p style="margin:0;font-size:32px;font-weight:700;color:#0f766e;letter-spacing:8px;font-family:'SF Mono',Menlo,Consolas,monospace;">
                     {{ $code }}
@@ -27,10 +27,10 @@
     </table>
 
     <p class="txt-soft" style="margin:20px 0 0;font-size:13px;line-height:1.65;color:#64748b;">
-        {{ trans('email.verify_code_expiry', ['minutes' => 15]) }}
+        {{ trans('email.verify_code_expiry', ['minutes' => 15], $locale) }}
     </p>
 
     <p class="txt-soft" style="margin:12px 0 0;font-size:13px;line-height:1.65;color:#64748b;">
-        {{ trans('email.verify_code_ignore') }}
+        {{ trans('email.verify_code_ignore', [], $locale) }}
     </p>
 @endsection
