@@ -56,6 +56,9 @@ class MailPreviewController extends Controller
             // FRONTEND_URL tanımsız demektir ve e-postadaki her bağlantı kırıktır.
             'site_url'  => config('app.frontend_url'),
             'sablon_sayisi' => count($ornekler),
+            // Gönderilen konu satırları: dolmamış bir yer tutucu ya da eski
+            // bir sürümün canlıda kaldığı buradan görülür.
+            'konular'   => array_map(fn ($v) => $v['subject'], $ornekler),
             'sonuc'     => $sonuc,
         ]);
     }
