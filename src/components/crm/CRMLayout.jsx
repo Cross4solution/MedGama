@@ -50,6 +50,7 @@ import {
   Target,
   Briefcase,
 } from 'lucide-react';
+import { stripLocale } from '@/lib/locales';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
@@ -423,8 +424,16 @@ const CRMLayout = ({ children }) => {
   }, [user, navigate]);
 
   const isActive = (path) => {
-    if (path === '/crm') return location.pathname === '/crm';
-    return location.pathname.startsWith(path);
+    // Adresler dil önekiyle geliyor (/tr/crm, /en/crm/patients). Karşılaştırma
+    // önek soyulmadan yapıldığı için hiçbir menü satırı seçili görünmüyordu.
+    const yol = stripLocale(location.pathname || '/');
+
+    // Sorgu dizesi taşıyan satırlar var (ör. ?tab=gallery); yalnızca yol
+    // kısmı karşılaştırılır.
+    const hedef = path.split('?')[0];
+
+    if (hedef === '/crm') return yol === '/crm';
+    return yol === hedef || yol.startsWith(hedef + '/');
   };
 
   const handleLogout = () => {
