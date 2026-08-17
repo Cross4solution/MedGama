@@ -187,4 +187,12 @@ return [
     'invoice_intro' => 'Tutarı :amount olan faturanız düzenlendi.',
     'invoice_outro' => 'Faturanızı hesabınıza giriş yaparak indirebilirsiniz.',
     'invoice_action' => 'Faturayı görüntüle',
+
+    // Goruntulu gorusme basliyor
+    'row_time' => 'Saat',
+    'call_starting_subject' => 'Görüntülü görüşmeniz birazdan başlıyor',
+    'call_starting_header' => 'Görüşmeniz başlamak üzere',
+    'call_starting_intro' => ':name ile görüntülü görüşmeniz birkaç dakika içinde başlıyor.',
+    'call_starting_outro' => 'Kameranızı ve mikrofonunuzu kontrol edin. Bağlantı kopar veya geç kalırsanız oda sizi bekliyor olacak.',
+    'call_starting_action' => 'Görüşmeye katıl',
 ];

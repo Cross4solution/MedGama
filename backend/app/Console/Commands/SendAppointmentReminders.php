@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Appointment;
 use App\Models\User;
 use App\Notifications\AppointmentReminderNotification;
+use App\Notifications\VideoCallStartingNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -31,7 +32,57 @@ class SendAppointmentReminders extends Command
             type: '1h',
         );
 
+        // ── Görüntülü görüşme: başlamadan hemen önce ──
+        // Ayrı tutuluyor çünkü ne aynı içerik ne aynı zamanlama: 24 saat ve
+        // 1 saat önceki hatırlatma takvime yazdırmak için, bu ise odaya
+        // girmek için. Sadece online randevulara gider.
+        $this->sendVideoCallAlerts(
+            from: $now->copy()->addMinutes(5),
+            to: $now->copy()->addMinutes(15),
+        );
+
         return self::SUCCESS;
+    }
+
+    /**
+     * Başlamak üzere olan görüntülü görüşmeler için katılım bağlantısı gönder.
+     */
+    private function sendVideoCallAlerts(Carbon $from, Carbon $to): void
+    {
+        $appointments = Appointment::active()
+            ->where('appointment_type', 'online')
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereNotNull('starts_at')
+            ->whereBetween('starts_at', [$from->utc(), $to->utc()])
+            ->with(['patient', 'doctor'])
+            ->get();
+
+        $sent = 0;
+
+        foreach ($appointments as $appointment) {
+            foreach (['patient', 'doctor'] as $rol) {
+                $alici = $appointment->{$rol};
+                if (!$alici) {
+                    continue;
+                }
+
+                // Zamanlayıcı dakikada bir koşuyor, pencere ise 10 dakika:
+                // aynı görüşme için tekrar tekrar gönderilmesini bu engelliyor.
+                $zatenGitti = $alici->notifications()
+                    ->where('type', VideoCallStartingNotification::class)
+                    ->whereJsonContains('data->appointment_id', $appointment->id)
+                    ->exists();
+
+                if ($zatenGitti) {
+                    continue;
+                }
+
+                $alici->notify(new VideoCallStartingNotification($appointment, $rol));
+                $sent++;
+            }
+        }
+
+        $this->info("[call] Sent {$sent} alert(s) for {$appointments->count()} video appointment(s).");
     }
 
     private function sendReminders(Carbon $from, Carbon $to, string $type): void

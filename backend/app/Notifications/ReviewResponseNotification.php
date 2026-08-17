@@ -41,7 +41,7 @@ class ReviewResponseNotification extends Notification implements ShouldQueue
                 'intro'       => trans('email.review_response_intro', ['doctor' => $doktor], $locale),
                 'quote'       => $this->review->doctor_response,
                 'outro'       => trans('email.review_response_outro', [], $locale),
-                'actionUrl'   => config('app.frontend_url') . '/doctors/' . $this->review->doctor_id,
+                'actionUrl'   => config('app.frontend_url') . '/doctor/' . $this->review->doctor_id,
                 'actionLabel' => trans('email.review_response_action', [], $locale),
             ]);
     }
@@ -54,7 +54,7 @@ class ReviewResponseNotification extends Notification implements ShouldQueue
             'message' => 'Dr. ' . ($this->review->doctor?->fullname ?? 'Your doctor') . ' responded to your review.',
             'review_id' => $this->review->id,
             'doctor_id' => $this->review->doctor_id,
-            'link' => '/doctors/' . $this->review->doctor_id,
+            'link' => '/doctor/' . $this->review->doctor_id,
         ];
     }
 }

@@ -57,7 +57,7 @@ class AppointmentRescheduledNotification extends Notification implements ShouldQ
                     trans('email.row_timezone', [], $locale) => $appt->timezone ?: config('app.timezone'),
                 ],
                 'outro'       => trans('email.appt_moved_outro', [], $locale),
-                'actionUrl'   => config('app.frontend_url') . ($isDoctor ? '/crm/appointments' : '/appointments'),
+                'actionUrl'   => config('app.frontend_url') . ($isDoctor ? '/crm/appointments' : '/patient/appointments'),
                 'actionLabel' => trans('email.appt_moved_action', [], $locale),
             ]);
     }

@@ -187,4 +187,12 @@ return [
     'invoice_intro' => 'An invoice for :amount has been issued.',
     'invoice_outro' => 'You can download it after signing in to your account.',
     'invoice_action' => 'View invoice',
+
+    // Goruntulu gorusme basliyor
+    'row_time' => 'Time',
+    'call_starting_subject' => 'Your video consultation starts shortly',
+    'call_starting_header' => 'Your consultation is about to start',
+    'call_starting_intro' => 'Your video consultation with :name starts in a few minutes.',
+    'call_starting_outro' => 'Check your camera and microphone. If you drop or run late, the room stays open for you.',
+    'call_starting_action' => 'Join the call',
 ];
