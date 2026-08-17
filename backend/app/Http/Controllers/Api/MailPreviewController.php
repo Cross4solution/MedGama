@@ -40,6 +40,13 @@ class MailPreviewController extends Controller
                     // onu öncekinin altına iliştirir ve gövdeyi gizler.
                     Mail::send($veri['view'], $veri['data'], function ($m) use ($alici, $veri) {
                         $m->to($alici)->subject($veri['subject']);
+
+                        // Gmail aynı konulu postaları tek başlıkta topluyor ve
+                        // sonrakilerin gövdesini "tekrar eden metin" sayıp
+                        // gizliyor — örnekler incelenemez hale geliyor.
+                        // X-Entity-Ref-ID her iletiyi ayrı bir konuşma yapar;
+                        // konu ve gövde olduğu gibi kalır.
+                        $m->getHeaders()->addTextHeader('X-Entity-Ref-ID', bin2hex(random_bytes(8)));
                     });
                     $sonuc[$alici][$ad] = 'gonderildi';
                 } catch (\Throwable $e) {
