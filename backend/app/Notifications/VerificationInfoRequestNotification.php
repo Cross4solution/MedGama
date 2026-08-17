@@ -31,15 +31,20 @@ class VerificationInfoRequestNotification extends Notification implements Should
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $locale = $notifiable->preferred_language ?? 'en';
+
         return (new MailMessage)
-            ->subject('Additional Documents Needed - Medagama Verification')
-            ->greeting("Hello {$notifiable->fullname},")
-            ->line('Our admin team has reviewed your verification documents and requires additional information.')
-            ->line("**Admin Note:** {$this->message}")
-            ->action('Update Documents', url('/crm/settings?tab=verification'))
-            ->line('Please upload the requested documents to complete your verification process.')
-            ->line('If you have any questions, feel free to contact our support team.')
-            ->salutation('Best regards, Medagama Team');
+            ->subject(trans('email.verify_info_subject', [], $locale))
+            ->view('emails.generic', [
+                'locale'      => $locale,
+                'subject'     => trans('email.verify_info_subject', [], $locale),
+                'headerTitle' => trans('email.verify_info_header', [], $locale),
+                'intro'       => trans('email.verify_info_intro', [], $locale),
+                'quote'       => $this->message,
+                'outro'       => trans('email.verify_info_outro', [], $locale),
+                'actionUrl'   => config('app.frontend_url') . '/crm/settings?tab=verification',
+                'actionLabel' => trans('email.verify_info_action', [], $locale),
+            ]);
     }
 
     /**

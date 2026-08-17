@@ -24,18 +24,26 @@ class NewTicketAdminNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $user = $this->ticket->user;
+        $locale = $notifiable->preferred_language ?? 'en';
+        $user   = $this->ticket->user;
 
         return (new MailMessage)
-            ->subject("New Support Ticket — {$this->ticket->ticket_number}")
-            ->greeting("Hello {$notifiable->fullname},")
-            ->line("A new support ticket has been submitted.")
-            ->line("**Ticket:** {$this->ticket->ticket_number}")
-            ->line("**Subject:** {$this->ticket->subject}")
-            ->line("**From:** " . ($user->fullname ?? 'Unknown') . " ({$user->email})")
-            ->line("**Priority:** " . ucfirst($this->ticket->priority))
-            ->action('View Ticket', config('app.frontend_url', 'http://localhost:3000') . '/admin/support')
-            ->line('Please review and respond as soon as possible.');
+            ->subject(trans('email.ticket_admin_subject', ['number' => $this->ticket->ticket_number], $locale))
+            ->view('emails.generic', [
+                'locale'      => $locale,
+                'subject'     => trans('email.ticket_admin_subject', ['number' => $this->ticket->ticket_number], $locale),
+                'headerTitle' => trans('email.ticket_admin_header', [], $locale),
+                'intro'       => trans('email.ticket_admin_intro', [], $locale),
+                'rows'        => [
+                    trans('email.row_ticket', [], $locale)   => $this->ticket->ticket_number,
+                    trans('email.row_subject', [], $locale)  => $this->ticket->subject,
+                    trans('email.row_from', [], $locale)     => trim(($user->fullname ?? '-') . ' <' . ($user->email ?? '-') . '>'),
+                    trans('email.row_priority', [], $locale) => ucfirst((string) $this->ticket->priority),
+                ],
+                'outro'       => trans('email.ticket_admin_outro', [], $locale),
+                'actionUrl'   => config('app.frontend_url') . '/admin/support',
+                'actionLabel' => trans('email.ticket_admin_action', [], $locale),
+            ]);
     }
 
     public function toArray(object $notifiable): array

@@ -30,16 +30,21 @@ class NewReviewNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $patientName = $this->review->patient?->fullname ?? 'A patient';
-        $rating = $this->review->rating;
+        $locale = $notifiable->preferred_language ?? 'en';
+        $hasta  = $this->review->patient?->fullname ?? trans('email.a_patient', [], $locale);
 
         return (new MailMessage)
-            ->subject('Medagama — New Patient Review')
-            ->greeting("Hello, Dr. {$notifiable->fullname}!")
-            ->line("{$patientName} has left a **{$rating}-star** review on your profile.")
-            ->line($this->review->comment ? "**Comment:** \"{$this->review->comment}\"" : '')
-            ->action('View Your Reviews', url('/crm/reviews'))
-            ->line('You can respond to this review from your CRM dashboard.');
+            ->subject(trans('email.new_review_subject', [], $locale))
+            ->view('emails.generic', [
+                'locale'      => $locale,
+                'subject'     => trans('email.new_review_subject', [], $locale),
+                'headerTitle' => trans('email.new_review_header', [], $locale),
+                'intro'       => trans('email.new_review_intro', ['name' => $hasta, 'rating' => $this->review->rating], $locale),
+                'quote'       => $this->review->comment ?: null,
+                'outro'       => trans('email.new_review_outro', [], $locale),
+                'actionUrl'   => config('app.frontend_url') . '/crm/reviews',
+                'actionLabel' => trans('email.new_review_action', [], $locale),
+            ]);
     }
 
     public function toArray(object $notifiable): array

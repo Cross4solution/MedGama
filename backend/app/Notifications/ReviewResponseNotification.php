@@ -29,15 +29,21 @@ class ReviewResponseNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $doctorName = $this->review->doctor?->fullname ?? 'Your doctor';
+        $locale  = $notifiable->preferred_language ?? 'en';
+        $doktor  = $this->review->doctor?->fullname ?? trans('email.your_doctor', [], $locale);
 
         return (new MailMessage)
-            ->subject('Medagama — Doctor Responded to Your Review')
-            ->greeting("Hello, {$notifiable->fullname}!")
-            ->line("Dr. {$doctorName} has responded to your review.")
-            ->line("**Doctor's Response:** \"{$this->review->doctor_response}\"")
-            ->action('View Review', url('/doctors/' . $this->review->doctor_id))
-            ->line('Thank you for sharing your experience on Medagama.');
+            ->subject(trans('email.review_response_subject', [], $locale))
+            ->view('emails.generic', [
+                'locale'      => $locale,
+                'subject'     => trans('email.review_response_subject', [], $locale),
+                'headerTitle' => trans('email.review_response_header', [], $locale),
+                'intro'       => trans('email.review_response_intro', ['doctor' => $doktor], $locale),
+                'quote'       => $this->review->doctor_response,
+                'outro'       => trans('email.review_response_outro', [], $locale),
+                'actionUrl'   => config('app.frontend_url') . '/doctors/' . $this->review->doctor_id,
+                'actionLabel' => trans('email.review_response_action', [], $locale),
+            ]);
     }
 
     public function toArray(object $notifiable): array
