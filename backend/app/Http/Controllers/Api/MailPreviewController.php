@@ -35,8 +35,11 @@ class MailPreviewController extends Controller
         foreach ($aliciListesi as $alici) {
             foreach ($ornekler as $ad => $veri) {
                 try {
-                    Mail::send($veri['view'], $veri['data'], function ($m) use ($alici, $veri, $ad) {
-                        $m->to($alici)->subject('[ÖRNEK ' . $ad . '] ' . $veri['subject']);
+                    // Konu gerçek gönderimdekinin aynısı — etiket, damga yok.
+                    // Yan etkisi: aynı şablon ikinci kez gönderilince Gmail
+                    // onu öncekinin altına iliştirir ve gövdeyi gizler.
+                    Mail::send($veri['view'], $veri['data'], function ($m) use ($alici, $veri) {
+                        $m->to($alici)->subject($veri['subject']);
                     });
                     $sonuc[$alici][$ad] = 'gonderildi';
                 } catch (\Throwable $e) {
@@ -112,7 +115,7 @@ class MailPreviewController extends Controller
             ],
             'randevu-hatirlatma' => [
                 'view' => 'emails.appointment-reminder-v2',
-                'subject' => $t('appt_reminder_subject'),
+                'subject' => $t('appt_reminder_subject', ['time' => '1 saat']),
                 'data' => $ortak + [
                     'isDoctor' => false,
                     'userName' => 'Oğuzhan Özcan',
@@ -160,7 +163,7 @@ class MailPreviewController extends Controller
             ],
             'destek-talebi-alindi' => [
                 'view' => 'emails.ticket-received-v2',
-                'subject' => $t('ticket_received_subject'),
+                'subject' => $t('ticket_received_subject', ['number' => 'TKT-2026-0184']),
                 'data' => $ortak + [
                     'userName' => 'Oğuzhan Özcan',
                     'ticketNumber' => 'TKT-2026-0184',
@@ -171,7 +174,7 @@ class MailPreviewController extends Controller
             ],
             'destek-talebi-yanit' => [
                 'view' => 'emails.ticket-reply-v2',
-                'subject' => $t('ticket_reply_subject'),
+                'subject' => $t('ticket_reply_subject', ['number' => 'TKT-2026-0184']),
                 'data' => $ortak + [
                     'userName' => 'Oğuzhan Özcan',
                     'ticketNumber' => 'TKT-2026-0184',

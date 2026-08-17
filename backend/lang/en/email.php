@@ -31,8 +31,8 @@ return [
     'welcome_footer'         => 'We\'re excited to have you on board!',
 
     // ─── Appointment Booked ───
-    'appt_booked_subject'          => 'Appointment Booked \u{2014} :date',
-    'appt_booked_subject_doctor'   => 'New Appointment Request \u{2014} :date',
+    'appt_booked_subject'          => 'Your appointment is booked — :date',
+    'appt_booked_subject_doctor'   => 'New appointment request — :date',
     'appt_booked_greeting'         => 'Hello, :name!',
     'appt_booked_line1'            => 'Your appointment has been successfully booked.',
     'appt_booked_line1_doctor'     => ':patient has booked an appointment with you.',
@@ -47,7 +47,7 @@ return [
     'appt_booked_label_note'       => 'Patient Note',
 
     // ─── Appointment Confirmed ───
-    'appt_confirmed_subject'   => 'Appointment Confirmed ✅',
+    'appt_confirmed_subject'   => 'Your appointment is confirmed',
     'appt_confirmed_greeting'  => 'Great news, :name!',
     'appt_confirmed_line1'     => 'Your appointment has been confirmed by the doctor.',
     'appt_confirmed_available' => 'Please make sure to be available at the scheduled time.',
@@ -55,7 +55,7 @@ return [
     'appt_confirmed_join'      => 'Join Video Call',
 
     // ─── Appointment Cancelled ───
-    'appt_cancelled_subject'          => 'Appointment Cancelled',
+    'appt_cancelled_subject'          => 'Your appointment was cancelled',
     'appt_cancelled_greeting'         => 'Hello, :name',
     'appt_cancelled_line1'            => 'We\'re sorry to inform you that your appointment has been cancelled.',
     'appt_cancelled_line1_doctor'     => 'An appointment has been cancelled.',
@@ -66,7 +66,7 @@ return [
     'appt_cancelled_cta_doctor'       => 'View Appointments',
 
     // ─── Appointment Reminder ───
-    'appt_reminder_subject'     => 'Appointment in :time',
+    'appt_reminder_subject'     => 'Your appointment starts in :time',
     'appt_reminder_greeting'    => 'Hello, :name!',
     'appt_reminder_line1'       => 'This is a friendly reminder that your appointment is in :time.',
     'appt_reminder_line1_doctor'=> 'You have an appointment in :time.',
@@ -74,7 +74,7 @@ return [
     'appt_reminder_inperson_tip'=> 'Please arrive 10 minutes before your scheduled time.',
 
     // ─── Verification Approved ───
-    'verify_approved_subject'  => 'Your Verification Has Been Approved! ✅',
+    'verify_approved_subject'  => 'Your verification was approved',
     'verify_approved_greeting' => 'Congratulations, :name!',
     'verify_approved_line1'    => 'Your professional verification request has been approved.',
     'verify_approved_label'    => 'Document',
@@ -83,7 +83,7 @@ return [
     'verify_approved_thanks'   => 'Thank you for being a trusted professional on Medagama.',
 
     // ─── Verification Rejected ───
-    'verify_rejected_subject'  => 'Verification Request Update',
+    'verify_rejected_subject'  => 'About your verification request',
     'verify_rejected_greeting' => 'Hello, :name',
     'verify_rejected_line1'    => 'Unfortunately, your verification request could not be approved at this time.',
     'verify_rejected_label'    => 'Document',
@@ -93,7 +93,7 @@ return [
     'verify_rejected_help'     => 'If you have questions, please contact our support team.',
 
     // ─── Ticket Received ───
-    'ticket_received_subject'  => 'Support Ticket Received — :number',
+    'ticket_received_subject'  => 'We received your support request — :number',
     'ticket_received_greeting' => 'Hello, :name',
     'ticket_received_line1'    => 'Your support ticket :number has been received. Our team will review it shortly.',
     'ticket_received_label_subject'  => 'Subject',
@@ -102,7 +102,7 @@ return [
     'ticket_received_thanks'   => 'Thank you for contacting us.',
 
     // ─── Ticket Reply ───
-    'ticket_reply_subject'     => 'New Reply on Ticket :number',
+    'ticket_reply_subject'     => 'Reply to your support request — :number',
     'ticket_reply_greeting'    => 'Hello, :name',
     'ticket_reply_line1'       => 'Your support ticket :number has received a new reply from our team.',
     'ticket_reply_label_subject' => 'Subject',

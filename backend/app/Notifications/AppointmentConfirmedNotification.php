@@ -30,7 +30,7 @@ class AppointmentConfirmedNotification extends Notification implements ShouldQue
         $frontendUrl = config('app.frontend_url');
 
         return (new MailMessage)
-            ->subject('Medagama — ' . trans('email.appt_confirmed_subject', [], $locale))
+            ->subject(trans('email.appt_confirmed_subject', [], $locale))
             ->view('emails.appointment-confirmed-v2', [
                 'locale'     => $locale,
                 'userName'   => $notifiable->fullname ?? $notifiable->email,

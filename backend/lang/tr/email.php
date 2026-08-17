@@ -15,7 +15,7 @@ return [
     'button_trouble'    => 'Butona tıklamakta sorun yaşıyorsanız, aşağıdaki bağlantıyı tarayıcınıza kopyalayıp yapıştırın:',
 
     // ─── Welcome ───
-    'welcome_subject'        => 'Medagama\'ya Hoş Geldiniz!',
+    'welcome_subject'        => 'Medagama\'ya hoş geldiniz',
     'welcome_greeting'       => 'Hoş geldiniz, :name!',
     'welcome_line1'          => 'Medagama\'ya katıldığınız için teşekkür ederiz. Doktorları ve hastaları buluşturan modern sağlık platformuna hoş geldiniz.',
     'welcome_line2_doctor'   => 'Bir sağlık profesyoneli olarak artık randevularınızı, reçetelerinizi ve hasta kayıtlarınızı tek bir yerden yönetebilirsiniz.',
@@ -31,8 +31,8 @@ return [
     'welcome_footer'         => 'Sizi aramızda görmekten mutluluk duyuyoruz!',
 
     // ─── Appointment Booked ───
-    'appt_booked_subject'          => 'Randevu Oluşturuldu — :date',
-    'appt_booked_subject_doctor'   => 'Yeni Randevu Talebi — :date',
+    'appt_booked_subject'          => 'Randevunuz oluşturuldu — :date',
+    'appt_booked_subject_doctor'   => 'Yeni randevu talebi — :date',
     'appt_booked_greeting'         => 'Merhaba, :name!',
     'appt_booked_line1'            => 'Randevunuz başarıyla oluşturulmuştur.',
     'appt_booked_line1_doctor'     => ':patient sizinle bir randevu oluşturdu.',
@@ -47,7 +47,7 @@ return [
     'appt_booked_label_note'       => 'Hasta Notu',
 
     // ─── Appointment Confirmed ───
-    'appt_confirmed_subject'   => 'Randevu Onaylandı ✅',
+    'appt_confirmed_subject'   => 'Randevunuz onaylandı',
     'appt_confirmed_greeting'  => 'Harika haber, :name!',
     'appt_confirmed_line1'     => 'Randevunuz doktor tarafından onaylanmıştır.',
     'appt_confirmed_available' => 'Lütfen planlanan saatte hazır olduğunuzdan emin olun.',
@@ -55,7 +55,7 @@ return [
     'appt_confirmed_join'      => 'Video Görüşmeye Katıl',
 
     // ─── Appointment Cancelled ───
-    'appt_cancelled_subject'          => 'Randevu İptal Edildi',
+    'appt_cancelled_subject'          => 'Randevunuz iptal edildi',
     'appt_cancelled_greeting'         => 'Merhaba, :name',
     'appt_cancelled_line1'            => 'Randevunuzun iptal edildiğini bildirmek isteriz.',
     'appt_cancelled_line1_doctor'     => 'Bir randevu iptal edilmiştir.',
@@ -66,7 +66,7 @@ return [
     'appt_cancelled_cta_doctor'       => 'Randevuları Görüntüle',
 
     // ─── Appointment Reminder ───
-    'appt_reminder_subject'     => ':time İçinde Randevunuz Var',
+    'appt_reminder_subject'     => 'Randevunuza :time kaldı',
     'appt_reminder_greeting'    => 'Merhaba, :name!',
     'appt_reminder_line1'       => 'Bu, randevunuzun :time içinde olduğunu hatırlatan bir bildirimdir.',
     'appt_reminder_line1_doctor'=> ':time içinde bir randevunuz var.',
@@ -74,7 +74,7 @@ return [
     'appt_reminder_inperson_tip'=> 'Lütfen planlanan saatten 10 dakika önce geliniz.',
 
     // ─── Verification Approved ───
-    'verify_approved_subject'  => 'Doğrulama Talebiniz Onaylandı! ✅',
+    'verify_approved_subject'  => 'Doğrulama talebiniz onaylandı',
     'verify_approved_greeting' => 'Tebrikler, :name!',
     'verify_approved_line1'    => 'Profesyonel doğrulama talebiniz onaylanmıştır.',
     'verify_approved_label'    => 'Belge',
@@ -83,7 +83,7 @@ return [
     'verify_approved_thanks'   => 'Medagama\'da güvenilir bir profesyonel olduğunuz için teşekkür ederiz.',
 
     // ─── Verification Rejected ───
-    'verify_rejected_subject'  => 'Doğrulama Talebi Güncellemesi',
+    'verify_rejected_subject'  => 'Doğrulama talebiniz hakkında',
     'verify_rejected_greeting' => 'Merhaba, :name',
     'verify_rejected_line1'    => 'Maalesef doğrulama talebiniz şu anda onaylanamamıştır.',
     'verify_rejected_label'    => 'Belge',
@@ -93,7 +93,7 @@ return [
     'verify_rejected_help'     => 'Sorularınız varsa lütfen destek ekibimizle iletişime geçin.',
 
     // ─── Ticket Received ───
-    'ticket_received_subject'  => 'Destek Talebi Alındı — :number',
+    'ticket_received_subject'  => 'Destek talebiniz alındı — :number',
     'ticket_received_greeting' => 'Merhaba, :name',
     'ticket_received_line1'    => ':number numaralı destek talebiniz alınmıştır. Ekibimiz en kısa sürede inceleyecektir.',
     'ticket_received_label_subject'  => 'Konu',
@@ -102,7 +102,7 @@ return [
     'ticket_received_thanks'   => 'Bize ulaştığınız için teşekkür ederiz.',
 
     // ─── Ticket Reply ───
-    'ticket_reply_subject'     => 'Destek Talebinize Yanıt — :number',
+    'ticket_reply_subject'     => 'Destek talebinize yanıt — :number',
     'ticket_reply_greeting'    => 'Merhaba, :name',
     'ticket_reply_line1'       => ':number numaralı destek talebinize ekibimizden yeni bir yanıt geldi.',
     'ticket_reply_label_subject' => 'Konu',

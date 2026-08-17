@@ -28,7 +28,7 @@ class VerificationRejectedNotification extends Notification implements ShouldQue
         $frontendUrl = config('app.frontend_url');
 
         return (new MailMessage)
-            ->subject('Medagama — ' . trans('email.verify_rejected_subject', [], $locale))
+            ->subject(trans('email.verify_rejected_subject', [], $locale))
             ->view('emails.verification-rejected-v2', [
                 'locale'          => $locale,
                 'userName'        => $notifiable->fullname ?? $notifiable->email,
