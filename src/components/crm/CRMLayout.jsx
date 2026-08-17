@@ -449,9 +449,12 @@ const CRMLayout = ({ children }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-2 space-y-1.5">
+      {/* Bölümler arası boşluk vardı ama bölüm İÇİNDEKİ maddeler bitişikti;
+          on altı satır tek blok gibi görünüyordu. Hem maddeler arasına hem
+          gruplar arasına nefes payı kondu. */}
+      <nav className="flex-1 px-3 py-2 space-y-4">
         {NAV_SECTIONS.map((section) => (
-          <div key={section.title}>
+          <div key={section.title} className="space-y-1">
             {section.items.map((item) => {
                 const active = isActive(item.path);
                 return (
@@ -459,7 +462,7 @@ const CRMLayout = ({ children }) => {
                     key={item.path}
                     to={item.path}
                     onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 group ${
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
                       active
                         ? 'bg-teal-500/15 text-teal-400 shadow-sm'
                         : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -487,7 +490,7 @@ const CRMLayout = ({ children }) => {
           to="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 group"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 group"
         >
           <Home className="w-[18px] h-[18px] flex-shrink-0 text-gray-500 group-hover:text-gray-300" />
           <span className="flex-1">Go to Medagama</span>
