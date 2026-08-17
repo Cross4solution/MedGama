@@ -320,6 +320,22 @@ class AuthService
         }
 
         $user->update(['password' => $newPassword]);
+
+        // Şifre değişimi hesap sahibine bildirilir: değişikliği yapan kişi
+        // hesabın sahibi değilse, öğrenebileceği tek yer bu e-posta.
+        // Bildirim atılamazsa şifre değişimi geri alınmaz — yalnızca kaydedilir.
+        try {
+            $istek = request();
+            $user->notify(new \App\Notifications\PasswordChangedNotification(
+                $istek?->ip(),
+                $istek?->userAgent(),
+            ));
+        } catch (\Throwable $e) {
+            \Log::warning('Password changed notification failed: ' . $e->getMessage());
+            if (app()->bound('sentry')) {
+                app('sentry')->captureException($e);
+            }
+        }
     }
 
     // ── Email & Mobile Verification ──

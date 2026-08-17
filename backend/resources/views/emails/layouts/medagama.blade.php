@@ -67,17 +67,25 @@
 
         {{-- ── Başlık ── --}}
         <tr>
-            <td class="pad-top" style="background:linear-gradient(135deg,#0d9488 0%,#059669 100%);background-color:#0d9488;padding:28px 40px;">
-                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                        <td style="vertical-align:middle;">
-                            <span style="font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.4px;">Medagama</span>
-                            @isset($headerTitle)
-                                <span style="display:block;margin-top:4px;font-size:13px;color:rgba(255,255,255,0.85);font-weight:400;">{{ $headerTitle }}</span>
-                            @endisset
-                        </td>
-                    </tr>
-                </table>
+            <td class="pad-top" align="center" style="background:linear-gradient(135deg,#0d9488 0%,#059669 100%);background-color:#0d9488;padding:32px 40px;text-align:center;">
+                {{--
+                    Logo CID ile gömülür, data: URI ile değil: Gmail data: kaynaklı
+                    görselleri engelliyor, uzak adres ise henüz sahibi olmadığımız
+                    bir alan adına işaret ederdi. Gömme yalnızca gerçek gönderimde
+                    mümkün olduğu için $message yokken (önizleme/render) sessizce
+                    atlanır — başlık logosuz da dursa okunur kalır.
+                --}}
+                @isset($message)
+                    <img src="{{ $message->embed(public_path('images/logo/favicon-icon-white.png')) }}"
+                         width="52" height="52" alt="Medagama"
+                         style="display:block;margin:0 auto 12px;width:52px;height:52px;border:0;outline:none;">
+                @endisset
+
+                <div style="font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.2;">Medagama</div>
+
+                @isset($headerTitle)
+                    <div style="margin-top:6px;font-size:14px;color:rgba(255,255,255,0.88);font-weight:400;">{{ $headerTitle }}</div>
+                @endisset
             </td>
         </tr>
 

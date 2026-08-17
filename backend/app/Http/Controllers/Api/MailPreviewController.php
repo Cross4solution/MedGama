@@ -221,6 +221,58 @@ class MailPreviewController extends Controller
                     'actionLabel' => $t('ticket_admin_action'),
                 ],
             ],
+            'sifre-degistirildi' => [
+                'view' => 'emails.generic',
+                'subject' => $t('pwd_changed_subject'),
+                'data' => $ortak + [
+                    'subject' => $t('pwd_changed_subject'),
+                    'headerTitle' => $t('pwd_changed_header'),
+                    'intro' => $t('pwd_changed_intro'),
+                    'rows' => [
+                        $t('row_when') => '17.08.2026 19:42 UTC',
+                        $t('row_ip') => '88.243.10.7',
+                        $t('row_device') => 'Chrome · macOS',
+                    ],
+                    'outro' => $t('pwd_changed_outro'),
+                    'actionUrl' => $site . '/forgot-password',
+                    'actionLabel' => $t('pwd_changed_action'),
+                ],
+            ],
+            'randevu-saati-degisti' => [
+                'view' => 'emails.generic',
+                'subject' => $t('appt_moved_subject'),
+                'data' => $ortak + [
+                    'subject' => $t('appt_moved_subject'),
+                    'headerTitle' => $t('appt_moved_header'),
+                    'intro' => $t('appt_moved_intro', ['name' => 'Dr. Elif Yılmaz']),
+                    'rows' => [
+                        $t('row_old_time') => '12.09.2026 · 14:30',
+                        $t('row_new_time') => '14.09.2026 · 11:00',
+                        $t('row_timezone') => 'Europe/Istanbul',
+                    ],
+                    'outro' => $t('appt_moved_outro'),
+                    'actionUrl' => $site . '/appointments',
+                    'actionLabel' => $t('appt_moved_action'),
+                ],
+            ],
+            'fatura-kesildi' => [
+                'view' => 'emails.generic',
+                'subject' => $t('invoice_subject', ['number' => 'INV-2026-0341']),
+                'data' => $ortak + [
+                    'subject' => $t('invoice_subject', ['number' => 'INV-2026-0341']),
+                    'headerTitle' => $t('invoice_header'),
+                    'intro' => $t('invoice_intro', ['amount' => '1.250,00 EUR']),
+                    'rows' => [
+                        $t('row_invoice_no') => 'INV-2026-0341',
+                        $t('row_amount') => '1.250,00 EUR',
+                        $t('row_issued') => '17.08.2026',
+                        $t('row_due') => '31.08.2026',
+                    ],
+                    'outro' => $t('invoice_outro'),
+                    'actionUrl' => $site . '/billing/ornek',
+                    'actionLabel' => $t('invoice_action'),
+                ],
+            ],
             'ek-belge-istendi' => [
                 'view' => 'emails.generic',
                 'subject' => $t('verify_info_subject'),

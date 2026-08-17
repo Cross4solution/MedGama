@@ -7,6 +7,7 @@ use App\Events\AppointmentChanged;
 use App\Models\CalendarSlot;
 use App\Models\User;
 use App\Notifications\AppointmentBookedNotification;
+use App\Notifications\AppointmentRescheduledNotification;
 use App\Notifications\AppointmentConfirmedNotification;
 use App\Notifications\AppointmentCancelledNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -340,6 +341,10 @@ class AppointmentService
      */
     public function reschedule(User $user, Appointment $appointment, array $data): Appointment
     {
+        // Bildirimde eski saat de yazacak; güncellemeden önce alınmalı.
+        $eskiTarih = $appointment->appointment_date?->format('d.m.Y') ?? (string) $appointment->appointment_date;
+        $eskiSaat  = (string) $appointment->appointment_time;
+
         DB::transaction(function () use ($appointment, $data) {
             // Release old slot
             if ($appointment->slot_id) {
@@ -373,6 +378,8 @@ class AppointmentService
         $appointment->refresh()->load(['patient:id,fullname,avatar,email,mobile', 'doctor:id,fullname,avatar', 'clinic:id,fullname']);
 
         event(new AppointmentChanged($appointment, 'rescheduled'));
+
+        $this->sendRescheduledNotifications($appointment, $eskiTarih, $eskiSaat);
 
         return $appointment;
     }
@@ -520,6 +527,26 @@ class AppointmentService
             );
         } catch (\Throwable $e) {
             \Log::warning('Appointment booked doctor notification failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Randevu saati değiştiğinde iki tarafı da haberdar et.
+     *
+     * Bildirim gönderimi randevunun kendisini bozmamalı: takvimde saat
+     * kaydırıldı, kayıt yazıldı; posta kuyruğu tökezlerse işlem geri
+     * alınmaz, yalnızca kaydedilir.
+     */
+    private function sendRescheduledNotifications(Appointment $appointment, string $eskiTarih, string $eskiSaat): void
+    {
+        foreach (['patient', 'doctor'] as $rol) {
+            try {
+                $appointment->{$rol}?->notify(
+                    new AppointmentRescheduledNotification($appointment, $eskiTarih, $eskiSaat, $rol)
+                );
+            } catch (\Throwable $e) {
+                \Log::warning("Appointment rescheduled {$rol} notification failed: " . $e->getMessage());
+            }
         }
     }
 

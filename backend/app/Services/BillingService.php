@@ -65,7 +65,7 @@ class BillingService
      */
     public function createInvoice(User $user, array $data): Invoice
     {
-        return DB::transaction(function () use ($user, $data) {
+        $fatura = DB::transaction(function () use ($user, $data) {
             $clinicId = $this->resolveClinicId($user);
 
             // Create invoice
@@ -110,6 +110,16 @@ class BillingService
 
             return $invoice;
         });
+
+        // Hasta faturadan haberdar edilir. Gönderim işlemin dışında: posta
+        // kuyruğu tökezlerse fatura yine de kesilmiş kalır.
+        try {
+            $fatura->patient?->notify(new \App\Notifications\InvoiceIssuedNotification($fatura));
+        } catch (\Throwable $e) {
+            \Log::warning('Invoice issued notification failed: ' . $e->getMessage());
+        }
+
+        return $fatura;
     }
 
     /**
