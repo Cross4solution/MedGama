@@ -252,7 +252,15 @@ class AuthController extends Controller
             $request->validated('password'),
         );
 
-        return response()->json(['message' => 'Password updated successfully.']);
+        // Şifre değişimi açık tüm oturumları iptal ediyor; isteği yapan
+        // cihazın jetonu da öldü. Arayüz bunu bayraktan anlayıp kullanıcıyı
+        // açıklamayla giriş ekranına gönderir — aksi halde bir sonraki
+        // istekte sebepsiz bir 401 ile karşılaşırdı.
+        return response()->json([
+            'message'           => 'Password updated successfully.',
+            'sessions_revoked'  => true,
+            'relogin_required'  => true,
+        ]);
     }
 
     /**

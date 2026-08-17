@@ -416,9 +416,19 @@ export default function Profile() {
     setSaving(true);
     try {
       // Try dedicated password endpoint first
-      await authAPI.changePassword({ current_password: oldPwd, password: newPwd, password_confirmation: newPwd2 });
-      showToast(t('profile.passwordUpdated') + ' ✓');
+      const yanit = await authAPI.changePassword({ current_password: oldPwd, password: newPwd, password_confirmation: newPwd2 });
       setOldPwd(''); setNewPwd(''); setNewPwd2('');
+
+      // Sunucu şifre değişiminde tüm jetonları siliyor — bu cihazınki dahil.
+      // Kullanıcıyı sebebini söyleyerek girişe gönder, açıklamasız 401 yerine.
+      if (yanit?.data?.relogin_required ?? yanit?.relogin_required) {
+        showToast(t('profile.passwordUpdatedReloginRequired',
+          'Şifreniz güncellendi. Güvenliğiniz için tüm oturumlar kapatıldı; tekrar giriş yapın.') + ' ✓');
+        setTimeout(() => logout({ skipConfirmation: true }), 2500);
+        return;
+      }
+
+      showToast(t('profile.passwordUpdated') + ' ✓');
     } catch (err) {
       // If dedicated endpoint doesn't exist (404), fallback to updateProfile
       if (err?.status === 404) {

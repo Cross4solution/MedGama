@@ -321,6 +321,15 @@ class AuthService
 
         $user->update(['password' => $newPassword]);
 
+        // Şifre değişince açık tüm oturumlar iptal edilir.
+        //
+        // Çalınmış bir şifreyle giren kişi, sahibi şifreyi değiştirse bile
+        // jetonu elinde durduğu için hasta verisini okumaya devam
+        // edebiliyordu — şifre değiştirmek saldırganı dışarı atmıyordu.
+        // Yeni jetonu çağıran katman üretir; kullanıcı her cihazda
+        // yeniden giriş yapar.
+        $user->tokens()->delete();
+
         // Şifre değişimi hesap sahibine bildirilir: değişikliği yapan kişi
         // hesabın sahibi değilse, öğrenebileceği tek yer bu e-posta.
         // Bildirim atılamazsa şifre değişimi geri alınmaz — yalnızca kaydedilir.

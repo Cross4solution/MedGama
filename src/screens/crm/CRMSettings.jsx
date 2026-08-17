@@ -483,12 +483,28 @@ const CRMSettings = ({ standalone = false }) => {
 
     setSifreKaydediliyor(true);
     try {
-      await authAPI.changePassword({
+      const yanit = await authAPI.changePassword({
         current_password: eskiSifre,
         password: yeniSifre,
         password_confirmation: yeniSifre2,
       });
       setEskiSifre(''); setYeniSifre(''); setYeniSifre2('');
+
+      // Sunucu şifre değişiminde tüm oturumları iptal ediyor; bu cihazın
+      // jetonu da öldü. Kullanıcı sebebini bilerek giriş ekranına gitsin,
+      // bir sonraki istekte açıklamasız bir 401 yemesin.
+      if (yanit?.data?.relogin_required ?? yanit?.relogin_required) {
+        setSifreBilgi(isTr
+          ? 'Şifreniz güncellendi. Güvenliğiniz için tüm cihazlardaki oturumlar kapatıldı; yeni şifrenizle tekrar giriş yapın.'
+          : 'Your password has been updated. For your security all sessions were signed out; please sign in again with your new password.');
+        setTimeout(() => {
+          localStorage.removeItem('auth_state');
+          localStorage.removeItem('access_token');
+          window.location.href = '/login';
+        }, 2500);
+        return;
+      }
+
       setSifreBilgi(isTr ? 'Şifreniz güncellendi.' : 'Your password has been updated.');
     } catch (err) {
       setSifreHata(err?.data?.message || err?.message || (isTr ? 'Şifre güncellenemedi.' : 'Could not update password.'));
