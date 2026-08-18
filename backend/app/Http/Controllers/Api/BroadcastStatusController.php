@@ -24,7 +24,30 @@ class BroadcastStatusController extends Controller
 
         $surucu = config('broadcasting.default');
 
+        // ?user=<id> verilirse gerçek bir yayın denenir ve hata varsa
+        // metniyle döner. Kuyrukta sessizce düşen yayını başka türlü
+        // göremiyoruz.
+        $deneme = null;
+        if ($kullaniciId = $request->query('user')) {
+            try {
+                broadcast(new \App\Events\NewNotification(
+                    userId: (string) $kullaniciId,
+                    notification: [
+                        'id'         => (string) \Illuminate\Support\Str::uuid(),
+                        'type'       => 'diagnostic',
+                        'data'       => ['type' => 'diagnostic', 'title' => 'Yayın denemesi', 'message' => 'Bu bir teşhis iletisidir.'],
+                        'read_at'    => null,
+                        'created_at' => now()->toISOString(),
+                    ],
+                ));
+                $deneme = 'gonderildi';
+            } catch (\Throwable $e) {
+                $deneme = 'HATA: ' . $e->getMessage();
+            }
+        }
+
         return response()->json([
+            'deneme'          => $deneme,
             'surucu'          => $surucu,
             'reverb_host'     => config('broadcasting.connections.reverb.options.host'),
             'reverb_port'     => config('broadcasting.connections.reverb.options.port'),
