@@ -20,7 +20,9 @@ test.describe('Bildirim tercihleri', () => {
   };
 
   test('kapatılan tercih sunucuya kaydediliyor', async ({ page }) => {
-    await page.goto('/tr/notifications');
+    // Tercihler Bildirimler ekranından Profil'e taşındı: bildirim listesi
+    // ekranı yalnızca listeyi gösteriyor.
+    await page.goto('/tr/profile');
     await cerezBandiniKapat(page);
 
     await expect(page.getByText(/Bildirim Tercihleri|Notification Settings/i).first()).toBeVisible();
@@ -47,7 +49,9 @@ test.describe('Bildirim tercihleri', () => {
   });
 
   test('randevu bildirimleri kapatılabilir tercihler arasında değil', async ({ page }) => {
-    await page.goto('/tr/notifications');
+    // Tercihler Bildirimler ekranından Profil'e taşındı: bildirim listesi
+    // ekranı yalnızca listeyi gösteriyor.
+    await page.goto('/tr/profile');
 
     const { govde } = await apiIstek(page, TERCIH_YOLU);
     const anahtarlar = Object.keys(govde?.preferences ?? govde?.data?.preferences ?? {});
@@ -59,7 +63,9 @@ test.describe('Bildirim tercihleri', () => {
   });
 
   test('bildirim listesi yükleniyor', async ({ page }) => {
-    await page.goto('/tr/notifications');
+    // Tercihler Bildirimler ekranından Profil'e taşındı: bildirim listesi
+    // ekranı yalnızca listeyi gösteriyor.
+    await page.goto('/tr/profile');
     await cerezBandiniKapat(page);
 
     const { http } = await apiIstek(page, '/api/notifications?per_page=5');

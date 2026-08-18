@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import NotificationPrefsCard from '../components/notifications/NotificationPrefsCard';
 import { authAPI } from '../lib/api';
 import countriesEurope from '../data/countriesEurope';
 import CountryCombobox from '../components/forms/CountryCombobox';
@@ -671,6 +672,15 @@ export default function Profile() {
                     </button>
                   </div>
                 </div>
+              </div>
+
+              {/*
+                  Bildirim tercihleri. Bildirimler ekranından kaldırılınca
+                  hastanın seçimlik bildirimleri kapatabileceği hiçbir yer
+                  kalmamıştı; kapatma imkânı KVKK açısından da gerekli.
+              */}
+              <div className="pt-2">
+                <NotificationPrefsCard />
               </div>
 
               {/* Kaydet düğmesi yok: her alan değiştiği anda kaydediliyor.
