@@ -90,7 +90,7 @@ export default function Notifications() {
   const fetchUnreadCount = useCallback(async () => {
     try {
       const res = await notificationAPI.unreadCount();
-      const c = res?.data?.unread_count ?? res?.data?.count ?? 0;
+      const c = res?.unread_count ?? res?.data?.unread_count ?? res?.count ?? 0;
       setUnreadCount(c);
       globalSetCount(c);
     } catch {}

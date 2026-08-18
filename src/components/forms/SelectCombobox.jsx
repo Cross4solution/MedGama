@@ -115,8 +115,11 @@ export default function SelectCombobox({
         </div>
       )}
 
-      {/* Subtle shadow on focus/hover (visual only) */}
-      <div className="absolute inset-0 rounded-[inherit] shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none" />
+      {/* Yalnızca varsayılan biçimde: özel bir tetikleyici verildiğinde bu
+          katman onun yarıçapını bilemiyor ve altında kare bir gölge bırakıyor. */}
+      {!triggerClassName && (
+        <div className="absolute inset-0 rounded-xl shadow-sm group-hover:shadow-md group-focus-within:shadow-lg transition-shadow duration-300 pointer-events-none" />
+      )}
 
       {open && createPortal(
         <div
