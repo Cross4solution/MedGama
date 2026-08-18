@@ -549,13 +549,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
    ═══════════════════════════════════════════════════ */
 .crm-sidebar-scroll {
   scrollbar-width: thin;
-  /* Koyu menüde açık gri bir çubuk kaba duruyordu; saydam beyaz zeminle
-     karışıyor ve yalnızca gerektiği kadar görünüyor. */
-  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+  /* Koyu menüde açık gri bir çubuk kaba duruyordu. Marka yeşilinin soluk
+     hâli koyu zeminde ayırt ediliyor ama göze batmıyor; imleç girince
+     belirginleşir. */
+  scrollbar-color: rgba(45, 212, 191, 0.30) transparent;
 }
 
 .crm-sidebar-scroll::-webkit-scrollbar {
-  width: 3px;
+  width: 2px;
 }
 
 .crm-sidebar-scroll::-webkit-scrollbar-track {
@@ -563,14 +564,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .crm-sidebar-scroll::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.10);
+  background-color: rgba(45, 212, 191, 0.28);
   border-radius: 9999px;
   transition: background-color 0.2s ease;
 }
 
 /* İmleç menüye girince belirginleşir, çıkınca geri çekilir. */
 .crm-sidebar-scroll:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(45, 212, 191, 0.55);
 }
 
 /* Modal açıkken header alanını overlay ile doldur (tam uyum) */
