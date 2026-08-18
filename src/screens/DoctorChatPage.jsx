@@ -253,7 +253,9 @@ const DoctorChatPage = () => {
       const data = res?.data || [];
       const mapped = data.map(m => apiMsgToLocal(m, currentUserId));
       setMessages(mapped);
-      chatAPI.markAsRead(convId).catch(() => {});
+      chatAPI.markAsRead(convId)
+        .then(() => window.dispatchEvent(new Event('chat:unread-changed')))
+        .catch(() => {});
     } catch {
       setMessages([]);
     }
@@ -505,7 +507,7 @@ const DoctorChatPage = () => {
     <div className="h-[calc(100vh-4.5rem)] w-full flex flex-col overflow-hidden">
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex-1 overflow-hidden min-h-0">
-          <div className="max-w-7xl mx-auto px-0 sm:px-3 lg:px-4 py-0 sm:py-2 h-full overflow-hidden min-h-0 flex flex-col">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-5 py-3 sm:py-4 h-full overflow-hidden min-h-0 flex flex-col">
         {/* Mobile: Threads list or Chat view */}
         <div className="lg:hidden flex-1 flex flex-col min-h-0 overflow-hidden">
           {!mobileChatOpen ? (

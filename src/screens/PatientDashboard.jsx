@@ -436,31 +436,6 @@ const PatientDashboard = () => {
               </div>
             </div>
 
-            {/* Health Tips */}
-            <div className="rounded-2xl border border-gray-200/60 bg-gradient-to-br from-teal-50/50 to-emerald-50/30 p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Heart className="w-4 h-4 text-teal-600" />
-                <h3 className="text-xs font-bold text-teal-800 uppercase tracking-wider">
-                  {t('patientDashboard.healthTip', 'Health Tip')}
-                </h3>
-              </div>
-              <p className="text-xs text-teal-700 leading-relaxed">
-                {t('patientDashboard.healthTipText', 'Keep your medical documents organized in your Medical Archive. Share them with your doctors before appointments for better care.')}
-              </p>
-            </div>
-
-            {/* GDPR Notice */}
-            <div className="rounded-2xl border border-gray-200/60 bg-white p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Shield className="w-4 h-4 text-blue-600" />
-                <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  {t('patientDashboard.dataProtection', 'Data Protection')}
-                </h3>
-              </div>
-              <p className="text-[11px] text-gray-500 leading-relaxed">
-                {t('patientDashboard.gdprNotice', 'Your health data is encrypted and stored securely in compliance with GDPR Art. 9. You control who can access your medical documents.')}
-              </p>
-            </div>
           </div>
         </div>
       </div>

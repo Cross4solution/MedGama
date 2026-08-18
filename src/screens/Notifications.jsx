@@ -78,7 +78,9 @@ export default function Notifications() {
     setLoading(true);
     try {
       const res = await notificationAPI.list({ per_page: 20, page: pg });
-      const data = res?.data;
+      // İstemci zaten response.data'yı açıyor; sayfalayıcı doğrudan res.
+      // Bir kat daha derine bakıldığı için liste her zaman boş görünüyordu.
+      const data = res?.data?.data ? res.data : res;
       setItems(data?.data || []);
       setLastPage(data?.last_page || 1);
       setPage(data?.current_page || 1);
@@ -238,16 +240,10 @@ export default function Notifications() {
               </nav>
             </div>
 
-            {/* Tercihler: kullanıcı hangi bildirimleri istediğini buradan seçer.
-                Önceden bu ayarlar yalnızca veritabanında duruyor, hiçbir ekrandan
-                değiştirilemiyordu. */}
-            <div className="sticky top-24 mt-4">
-              <NotificationPrefsCard />
-            </div>
           </aside>
 
-          {/* Right: Notification List */}
-          <section className="col-span-12 md:col-span-9">
+          {/* Orta: bildirim listesi */}
+          <section className="col-span-12 md:col-span-6">
             <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
               <div className="min-h-[60vh] max-h-[70vh] overflow-y-auto">
                 {loading ? (

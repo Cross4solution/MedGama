@@ -316,7 +316,7 @@ function AppContent() {
   // Salesperson management is restricted to clinic owners / hospitals (not salespeople themselves)
   const crmManager = (el) => <PrivateRoute roles={['clinic', 'clinicOwner', 'hospital']}>{el}</PrivateRoute>;
   return (
-    <div className={hasSidebar ? "lg:pl-[9.75rem]" : ""}>
+    <div className={hasSidebar ? "lg:pl-[10.75rem]" : ""}>
       {/* Global Header - auth sayfalarında gizle */}
       {showHeader && <Header />}
       

@@ -114,14 +114,14 @@ export default function SidebarPatient() {
       return (
         <a href={href} target="_blank" rel="noopener noreferrer" className={baseClasses}>
           {accent}
-          <span className="flex items-center gap-2.5">
+          <span className="flex items-center gap-2.5 min-w-0 flex-1">
             <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
               <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
             </span>
-            <span className="leading-tight text-[13px] min-w-0">{label}</span>
+            <span className="leading-tight text-[13px] min-w-0 truncate">{label}</span>
           </span>
           {badge ? (
-            <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white">{badge > 9 ? '9+' : badge}</span>
+            <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 ml-2 shrink-0 bg-rose-400 text-white">{badge > 9 ? '9+' : badge}</span>
           ) : null}
         </a>
       );
@@ -129,14 +129,14 @@ export default function SidebarPatient() {
     return (
       <Link to={to} className={baseClasses}>
         {accent}
-        <span className="flex items-center gap-2.5">
+        <span className="flex items-center gap-2.5 min-w-0 flex-1">
           <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
             <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
           </span>
-          {label}
+          <span className="min-w-0 truncate">{label}</span>
         </span>
         {badge ? (
-          <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white">{badge > 9 ? '9+' : badge}</span>
+          <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 ml-2 shrink-0 bg-rose-400 text-white">{badge > 9 ? '9+' : badge}</span>
         ) : null}
       </Link>
     );
@@ -151,7 +151,7 @@ export default function SidebarPatient() {
           onClick={onNavigate}
           className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-sm hover:from-teal-700 hover:to-emerald-700 hover:shadow-md"
         >
-          <span className="flex items-center gap-2.5">
+          <span className="flex items-center gap-2.5 min-w-0 flex-1">
             <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors">
               <LayoutDashboard className="w-3.5 h-3.5 text-white" />
             </span>
@@ -172,7 +172,7 @@ export default function SidebarPatient() {
             onClick={onNavigate}
             className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-sm hover:from-teal-700 hover:to-emerald-700 hover:shadow-md"
           >
-            <span className="flex items-center gap-2.5">
+            <span className="flex items-center gap-2.5 min-w-0 flex-1">
               <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors">
                 <LayoutDashboard className="w-3.5 h-3.5 text-white" />
               </span>
@@ -192,7 +192,7 @@ export default function SidebarPatient() {
           onClick={() => setShowUpgradeModal(true)}
           className="group w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 bg-gray-50 text-gray-400 border border-dashed border-gray-200 hover:bg-gray-100 hover:border-gray-300"
         >
-          <span className="flex items-center gap-2.5">
+          <span className="flex items-center gap-2.5 min-w-0 flex-1">
             <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100 transition-colors">
               <Lock className="w-3.5 h-3.5 text-gray-400" />
             </span>
@@ -260,7 +260,7 @@ export default function SidebarPatient() {
       )}
 
       {/* Desktop Sidebar */}
-      <aside className={`hidden lg:block fixed left-0 w-[9.75rem] top-[3.5rem] z-40 h-[calc(100vh-3.5rem)]`}>
+      <aside className={`hidden lg:block fixed left-0 w-[10.75rem] top-[3.5rem] z-40 h-[calc(100vh-3.5rem)]`}>
         <div className="h-full">
           <div className="h-full border-r border-gray-100 bg-white flex flex-col overflow-hidden">
             {/* Navigation */}
@@ -321,14 +321,14 @@ export default function SidebarPatient() {
                           onClick={() => setSidebarMobileOpen(false)}
                           className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 text-gray-600 hover:bg-gray-50/80 hover:text-gray-900`}
                         >
-                          <span className="flex items-center gap-2.5">
+                          <span className="flex items-center gap-2.5 min-w-0 flex-1">
                             <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100/80 group-hover:bg-gray-200/60 transition-colors">
                               <it.icon className="w-3.5 h-3.5 text-gray-500 group-hover:text-gray-700" />
                             </span>
                             {it.label}
                           </span>
                           {it.badge ? (
-                            <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white">{it.badge > 9 ? '9+' : it.badge}</span>
+                            <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 ml-2 shrink-0 bg-rose-400 text-white">{it.badge > 9 ? '9+' : it.badge}</span>
                           ) : null}
                         </a>
                       );
@@ -341,14 +341,14 @@ export default function SidebarPatient() {
                         className={`group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${active ? 'bg-gradient-to-r from-teal-50 to-emerald-50/60 text-teal-700 shadow-sm ring-1 ring-teal-100' : 'text-gray-600 hover:bg-gray-50/80 hover:text-gray-900'}`}
                       >
                         {active && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-full bg-teal-600" />}
-                        <span className="flex items-center gap-2.5">
+                        <span className="flex items-center gap-2.5 min-w-0 flex-1">
                           <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
                             <it.icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
                           </span>
                           {it.label}
                         </span>
                         {it.badge ? (
-                          <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white">{it.badge > 9 ? '9+' : it.badge}</span>
+                          <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 ml-2 shrink-0 bg-rose-400 text-white">{it.badge > 9 ? '9+' : it.badge}</span>
                         ) : null}
                       </Link>
                     );
