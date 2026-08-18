@@ -57,6 +57,27 @@ module.exports = async function kurulum(config) {
       await context.storageState({ path: oturumDosyasi(rol) });
       await context.close();
     }
+
+    // Şifresiz demo doktoru: kurulumda DOĞRULANMIŞ olarak açılıyor, bu yüzden
+    // randevu onaylama gibi doğrulama isteyen işlemler yalnızca onunla
+    // sınanabiliyor. Seed'deki doctor@demo.com doğrulanmamış.
+    try {
+      const context = await browser.newContext({ baseURL });
+      const page = await context.newPage();
+      await page.goto('https://medagama-backend.onrender.com/api/demo-login/doctor', { waitUntil: 'domcontentloaded' });
+      await page.waitForURL(/med-gama\.vercel\.app|localhost/, { timeout: 60_000 }).catch(() => {});
+      await page.waitForTimeout(2000);
+      await page.evaluate(() => {
+        localStorage.setItem('auth_remember', '1');
+        localStorage.removeItem('auth_logout');
+        localStorage.setItem('cookie_consent_v1', JSON.stringify({ necessary: true, analytics: false, personalization: false }));
+      });
+      await context.storageState({ path: oturumDosyasi('demoDoktor') });
+      await context.close();
+    } catch (e) {
+      // Demo giriş kapalıysa (teslimde kapatılacak) o testler atlanır.
+      console.warn('Demo doktor oturumu alınamadı:', e.message);
+    }
   } finally {
     await browser.close();
   }
