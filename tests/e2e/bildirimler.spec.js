@@ -63,9 +63,7 @@ test.describe('Bildirim tercihleri', () => {
   });
 
   test('bildirim listesi yükleniyor', async ({ page }) => {
-    // Tercihler Bildirimler ekranından Profil'e taşındı: bildirim listesi
-    // ekranı yalnızca listeyi gösteriyor.
-    await page.goto('/tr/profile');
+    await page.goto('/tr/notifications');
     await cerezBandiniKapat(page);
 
     const { http } = await apiIstek(page, '/api/notifications?per_page=5');
