@@ -172,6 +172,8 @@ Route::get('/demo-login/{rol}', \App\Http\Controllers\Api\DemoLoginController::c
 | Barındırma ortamında kabuk erişimi olmadığı için sunucunun okuduğu ayarı
 | başka türlü göremiyoruz. Teslimden önce kaldırılmalı.
 */
+Route::get('/system/broadcast-status', \App\Http\Controllers\Api\BroadcastStatusController::class);
+
 Route::get('/system/mail-status', \App\Http\Controllers\Api\MailStatusController::class)
     ->middleware('throttle:10,1');
 
