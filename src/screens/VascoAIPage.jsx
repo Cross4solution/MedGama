@@ -206,7 +206,7 @@ export default function VascoAIPage() {
       </section>
 
       {/* How it works */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
         <h2 className="text-center text-2xl font-bold text-gray-900 mb-8">{t('vascoAI.howTitle', 'Nasıl çalışır?')}</h2>
         <div className="grid gap-5 sm:grid-cols-3">
           <Step n="1" icon={ListChecks} title={t('vascoAI.step1Title', 'Şikâyetinizi anlatın')} desc={t('vascoAI.step1Desc', 'Serbest metinle, kendi dilinizde yazarsınız.')} />
@@ -216,7 +216,7 @@ export default function VascoAIPage() {
       </section>
 
       {/* Capabilities */}
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="rounded-2xl border border-gray-100 bg-white p-5">
             <h3 className="font-semibold text-gray-900 flex items-center gap-2"><Languages className="w-4 h-4 text-teal-600" />{t('vascoAI.canTitle', 'Neler yapar')}</h3>
