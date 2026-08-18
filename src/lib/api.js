@@ -394,6 +394,14 @@ export const billingAPI = {
   outstanding: (params) => api.get('/crm/billing/outstanding', { params }),
 };
 
+// ── Hastanın kendi faturaları (salt okunur) ──
+// Yazma uçları bilerek yok: fatura yalnızca klinik tarafında kesilir.
+export const patientBillingAPI = {
+  invoices: (params) => api.get('/patient/billing/invoices', { params }),
+  getInvoice: (id) => api.get(`/patient/billing/invoices/${id}`),
+  invoicePdf: (id) => api.get(`/patient/billing/invoices/${id}/pdf`, { responseType: 'blob' }),
+};
+
 // ── Finance / Analytics (Bölüm 7.5) ──
 export const financeAPI = {
   topServices: (params) => api.get('/finance/top-services', { params }),

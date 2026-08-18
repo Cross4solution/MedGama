@@ -237,7 +237,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
 
   return (
     <BrandProvider brand={brand}>
-    <div className={hasSidebar ? 'lg:pl-[11rem]' : ''}>
+    <div className={hasSidebar ? 'lg:pl-[9.75rem]' : ''}>
       <Suspense fallback={null}>
         {showHeader && <Header />}
         {hasSidebar && <SidebarPatient />}

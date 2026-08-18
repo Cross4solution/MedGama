@@ -611,7 +611,7 @@ export default function ExploreTimeline() {
           />
         </div>
 
-        <div className={focused ? '' : 'grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8'}>
+        <div className={focused ? '' : 'grid grid-cols-1 lg:grid-cols-[236px_1fr] gap-7'}>
           {/* Filters (LEFT) — hidden in the standalone medstream.co feed */}
           {!focused && (
           <TimelineFilterSidebar

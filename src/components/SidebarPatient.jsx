@@ -243,9 +243,9 @@ export default function SidebarPatient() {
       )}
 
       {/* Desktop Sidebar */}
-      <aside className={`hidden lg:block fixed left-0 w-[11rem] top-[3.5rem] z-40 h-[calc(100vh-3.5rem)]`}>
+      <aside className={`hidden lg:block fixed left-0 w-[9.75rem] top-[3.5rem] z-40 h-[calc(100vh-3.5rem)]`}>
         <div className="h-full">
-          <div className="h-full border-r border-gray-200/60 bg-white flex flex-col overflow-hidden">
+          <div className="h-full border-r border-gray-100 bg-white flex flex-col overflow-hidden">
             {/* Navigation */}
             <div className="flex-1 overflow-y-auto pb-3 pt-6">
               <div className="px-3">
