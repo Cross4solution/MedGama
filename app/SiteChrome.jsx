@@ -242,7 +242,13 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
         {showHeader && <Header />}
         {hasSidebar && <SidebarPatient />}
       </Suspense>
-      <div className={`${showHeader ? (hasOwnContainer || isDoctorChat ? 'pt-14' : 'pt-12') : ''} ${
+      {/*
+        İçerik menüden sonra kalan alanda ortalanıyordu: geniş ekranda solda
+        büyük bir boşluk kalıp sayfa sağa yanaşmış görünüyordu ve başlangıç
+        noktası ekran genişliğine göre kayıyordu. Blok artık sola yaslı
+        (mr-auto) ve üst sınırı var — her sayfa aynı yerden başlıyor.
+      */}
+      <div className={`${hasSidebar ? 'w-full max-w-[1320px] mr-auto' : ''} ${showHeader ? (hasOwnContainer || isDoctorChat ? 'pt-14' : 'pt-12') : ''} ${
         isCallRoom ? 'h-[calc(100dvh-3rem)] overflow-hidden' : 'min-h-[70vh]'
       }`}>
         {/* min-h: içerik async yüklenirken (Suspense/CSR bailout/veri) footer'ın

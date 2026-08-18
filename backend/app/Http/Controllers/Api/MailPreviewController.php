@@ -323,7 +323,7 @@ class MailPreviewController extends Controller
                         $t('row_due') => '31.08.2026',
                     ],
                     'outro' => $t('invoice_outro'),
-                    'actionUrl' => $site . '/patient/appointments',
+                    'actionUrl' => $site . '/patient/invoices',
                     'actionLabel' => $t('invoice_action'),
                 ],
             ],

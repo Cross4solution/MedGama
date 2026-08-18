@@ -48,6 +48,7 @@ const DoctorDashboard = React.lazy(() => import('./pages/DoctorDashboard'));
 const DoctorBilling = React.lazy(() => import('./pages/DoctorBilling'));
 const PatientDashboard = React.lazy(() => import('./pages/PatientDashboard'));
 const PatientAppointments = React.lazy(() => import('./pages/PatientAppointments'));
+const PatientInvoices = React.lazy(() => import('./screens/PatientInvoices'));
 const MedicalArchive = React.lazy(() => import('./pages/MedicalArchive'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 const ServerErrorPage = React.lazy(() => import('./pages/ServerErrorPage'));
@@ -343,6 +344,7 @@ function AppContent() {
         <Route path="/doctor-chat" element={<PrivateRoute><DoctorChatPage /></PrivateRoute>} />
         <Route path="/telehealth" element={<PrivateRoute><TelehealthPage /></PrivateRoute>} />
         <Route path="/patient-dashboard" element={<PrivateRoute roles={['patient']}><PatientDashboard /></PrivateRoute>} />
+        <Route path="/patient/invoices" element={<PrivateRoute roles={['patient']}><PatientInvoices /></PrivateRoute>} />
         <Route path="/patient/appointments" element={<PrivateRoute roles={['patient']}><PatientAppointments /></PrivateRoute>} />
         <Route path="/medical-archive" element={<PrivateRoute roles={['patient']}><MedicalArchive /></PrivateRoute>} />
         <Route path="/telehealth-appointment" element={<PrivateRoute roles={['patient', 'doctor']}><TelehealthAppointmentPage /></PrivateRoute>} />

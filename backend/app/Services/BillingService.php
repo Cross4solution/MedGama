@@ -637,6 +637,17 @@ HTML;
             return; // see all
         }
 
+        // Hasta yalnızca kendi faturalarını görür.
+        //
+        // Bu dal yoktu: hasta rolü aşağıdaki "doktor" dalına düşüyor ve
+        // doctor_id kendi kimliğiyle karşılaştırılıyordu — sonuç her zaman
+        // boş liste. Erişim açığı değildi ama hastanın kendi faturasına
+        // ulaşmasının da yolu yoktu.
+        if ($role === 'patient') {
+            $query->where('patient_id', $user->id);
+            return;
+        }
+
         if ($role === 'clinicOwner') {
             $clinicId = $user->ownedClinic?->id ?? $user->clinic_id;
             if ($clinicId) {

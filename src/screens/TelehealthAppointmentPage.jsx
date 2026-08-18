@@ -592,7 +592,7 @@ export default function TelehealthAppointmentPage() {
         )}
 
         {/* Stepper */}
-        <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-4 sm:p-5 mb-6">
+        <div className="bg-white rounded-xl border border-gray-200/60 px-4 py-2.5 mb-4">
           <div className="flex items-center justify-between">
             {STEPS.map((s, i) => {
               const isActive = i === step;
@@ -604,24 +604,21 @@ export default function TelehealthAppointmentPage() {
                     onClick={() => { if (isDone) setStep(i); }}
                     className={`flex items-center gap-2 sm:gap-2.5 transition-all duration-200 ${isDone ? 'cursor-pointer' : 'cursor-default'}`}
                   >
-                    <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                      isActive ? 'bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-lg shadow-teal-200/50 scale-110' :
-                      isDone ? 'bg-emerald-100 text-emerald-600' :
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200 ${
+                      isActive ? 'bg-teal-600 text-white' :
+                      isDone ? 'bg-emerald-50 text-emerald-600' :
                       'bg-gray-100 text-gray-400'
                     }`}>
-                      {isDone ? <CheckCircle2 className="w-4.5 h-4.5 sm:w-5 sm:h-5" /> : <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />}
+                      {isDone ? <CheckCircle2 className="w-4 h-4" /> : <Icon className="w-3.5 h-3.5" />}
                     </div>
-                    <div className="hidden sm:block text-left">
-                      <p className={`text-[10px] font-semibold uppercase tracking-wider ${isActive ? 'text-teal-600' : isDone ? 'text-emerald-600' : 'text-gray-400'}`}>
-                        Step {i + 1}
-                      </p>
-                      <p className={`text-xs font-bold ${isActive ? 'text-gray-900' : isDone ? 'text-gray-700' : 'text-gray-400'}`}>
-                        {s.label}
-                      </p>
-                    </div>
+                    <span className={`hidden sm:block text-[13px] ${
+                      isActive ? 'text-gray-900 font-semibold' : isDone ? 'text-gray-600' : 'text-gray-400'
+                    }`}>
+                      {s.label}
+                    </span>
                   </button>
                   {i < STEPS.length - 1 && (
-                    <div className={`flex-1 h-0.5 mx-2 sm:mx-4 rounded-full transition-colors duration-300 ${i < step ? 'bg-emerald-400' : 'bg-gray-200'}`} />
+                    <div className={`flex-1 h-px mx-2 sm:mx-3 transition-colors duration-200 ${i < step ? 'bg-emerald-300' : 'bg-gray-200'}`} />
                   )}
                 </React.Fragment>
               );

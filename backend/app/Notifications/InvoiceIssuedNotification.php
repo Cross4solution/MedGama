@@ -57,7 +57,7 @@ class InvoiceIssuedNotification extends Notification implements ShouldQueue
                 'intro'       => trans('email.invoice_intro', ['amount' => $tutar], $locale),
                 'rows'        => $rows,
                 'outro'       => trans('email.invoice_outro', [], $locale),
-                'actionUrl'   => config('app.frontend_url') . '/patient/appointments',
+                'actionUrl'   => config('app.frontend_url') . '/patient/invoices',
                 'actionLabel' => trans('email.invoice_action', [], $locale),
             ]);
     }
@@ -72,7 +72,7 @@ class InvoiceIssuedNotification extends Notification implements ShouldQueue
             'message'        => 'Invoice ' . $this->invoice->invoice_number . ' has been issued.',
             'amount'         => $this->invoice->grand_total,
             'currency'       => $this->invoice->currency,
-            'link'           => '/patient/appointments',
+            'link'           => '/patient/invoices',
         ];
     }
 }

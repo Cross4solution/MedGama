@@ -579,6 +579,20 @@ Route::prefix('doctor/billing')->middleware(['auth:sanctum', 'role:doctor'])->gr
     Route::get('/patient-search', [BillingController::class, 'patientSearch']);
 });
 
+/*
+| Hastanın kendi faturaları — salt okunur.
+|
+| Fatura hastanın adını, aldığı hizmeti ve tutarı taşıyor; kendi kaydına
+| erişmesi gerekiyor (fatura e-postası da buraya yönleniyor). Yazma uçları
+| bilerek yok: fatura yalnızca klinik tarafında kesilir ve değiştirilir.
+| Kapsam BillingService::scopeQuery içinde patient_id ile kısıtlı.
+*/
+Route::prefix('patient/billing')->middleware(['auth:sanctum', 'role:patient'])->group(function () {
+    Route::get('/invoices', [BillingController::class, 'index']);
+    Route::get('/invoices/{id}', [BillingController::class, 'show']);
+    Route::get('/invoices/{id}/pdf', [BillingController::class, 'pdf']);
+});
+
 Route::prefix('crm/billing')->middleware(['auth:sanctum', 'role:doctor,clinicOwner,hospital,superAdmin', 'crm.access'])->group(function () {
     Route::get('/invoices', [BillingController::class, 'index']);
     Route::post('/invoices', [BillingController::class, 'store']);
