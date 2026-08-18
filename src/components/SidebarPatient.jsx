@@ -117,7 +117,7 @@ export default function SidebarPatient() {
           <span className="flex items-center gap-2.5 min-w-0 flex-1">
             <span className={`relative flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
               <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
-              {badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white ring-2 ring-white">{badge > 9 ? '9+' : badge}</span> : null}
+              {badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-500 text-white ring-2 ring-white">{badge > 9 ? '9+' : badge}</span> : null}
             </span>
             <span className="leading-tight text-[13px] min-w-0">{label}</span>
           </span>
@@ -130,7 +130,7 @@ export default function SidebarPatient() {
         <span className="flex items-center gap-2.5 min-w-0 flex-1">
           <span className={`relative flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
             <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
-            {badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white ring-2 ring-white">{badge > 9 ? '9+' : badge}</span> : null}
+            {badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-500 text-white ring-2 ring-white">{badge > 9 ? '9+' : badge}</span> : null}
           </span>
           <span className="leading-tight min-w-0">{label}</span>
         </span>
@@ -320,7 +320,7 @@ export default function SidebarPatient() {
                           <span className="flex items-center gap-2.5 min-w-0 flex-1">
                             <span className="relative flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100/80 group-hover:bg-gray-200/60 transition-colors">
                               <it.icon className="w-3.5 h-3.5 text-gray-500 group-hover:text-gray-700" />
-                              {it.badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white ring-2 ring-white">{it.badge > 9 ? '9+' : it.badge}</span> : null}
+                              {it.badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-500 text-white ring-2 ring-white">{it.badge > 9 ? '9+' : it.badge}</span> : null}
                             </span>
                             {it.label}
                           </span>
@@ -338,7 +338,7 @@ export default function SidebarPatient() {
                         <span className="flex items-center gap-2.5 min-w-0 flex-1">
                           <span className={`relative flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
                             <it.icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
-                            {it.badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white ring-2 ring-white">{it.badge > 9 ? '9+' : it.badge}</span> : null}
+                            {it.badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-500 text-white ring-2 ring-white">{it.badge > 9 ? '9+' : it.badge}</span> : null}
                           </span>
                           {it.label}
                         </span>
