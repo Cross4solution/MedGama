@@ -106,11 +106,21 @@ export function playNotificationSound(tip = '') {
 
     const onemli = ONEMLI_TIPLER.has(tip);
 
-    // Sıradan bildirim yalnızca kullanıcı başka yerdeyken duyulur: ekrana
-    // bakarken bildirim zaten görünüyor, ses fazladan rahatsızlık. Önemli
-    // olan her durumda çalar — görüşme başlarken kullanıcı ekranda olsa bile
-    // duyması gerekiyor.
-    if (!onemli && document.visibilityState === 'visible') return;
+    // Önemli bildirim her durumda duyulur.
+    //
+    // Mesajlar da duyulur — ama sohbet ekranı açıkken değil: orada mesaj
+    // zaten gözünüzün önüne düşüyor, her satırda ses çıkarmak yazışmayı
+    // yorucu hale getiriyor. Başka bir ekrandayken (panel, randevular,
+    // akış) çalar.
+    //
+    // Geri kalan sıradan bildirimler yalnızca sekme arka plandayken çalar.
+    const mesajMi = tip.includes('message') || tip.includes('chat');
+    const sohbetteyiz = mesajMi
+      && document.visibilityState === 'visible'
+      && /\/(doctor-chat|messages|crm\/messages)(\/|$)/.test(window.location.pathname);
+
+    if (sohbetteyiz) return;
+    if (!onemli && !mesajMi && document.visibilityState === 'visible') return;
 
     const ctx = ctxAl();
     if (!ctx) return;
