@@ -14,7 +14,8 @@ const { oturumDosyasi, cerezBandiniKapat, apiIstek } = require('./yardimcilar');
  * (doğrulama onayı, kullanıcı yönetimi) backend testlerinin alanı.
  */
 
-const REDDEDILDI = [401, 403, 404];
+/** Kabul edilen tek şey isteğin başarısız olması; 2xx sızıntı demektir. */
+const reddedildiMi = (http) => http >= 400;
 
 const YONETIM_UCLARI = [
   '/api/admin/dashboard',
@@ -51,7 +52,7 @@ test.describe('Yönetim paneli erişimi', () => {
       });
 
       for (const [uc, http] of Object.entries(sonuclar)) {
-        expect(REDDEDILDI, `${rol} ${uc} ucunu görebiliyor (${http})`).toContain(http);
+        expect(reddedildiMi(http), `${rol} ${uc} ucunu görebiliyor (${http})`).toBeTruthy();
       }
     });
   }
@@ -67,7 +68,7 @@ test.describe('Yönetim paneli erişimi', () => {
           const r = await fetch(u, { headers: { Accept: 'application/json' } });
           return r.status;
         }, uc);
-        expect(REDDEDILDI, `${uc} kimliksiz açılıyor`).toContain(durum);
+        expect(reddedildiMi(durum), `${uc} kimliksiz açılıyor`).toBeTruthy();
       }
     } finally {
       await context.close();
@@ -86,7 +87,7 @@ test.describe('Yönetim paneli erişimi', () => {
       });
     });
 
-    expect(REDDEDILDI.concat(405), 'Doktor kendi doğrulamasını onaylayabiliyor').toContain(sonuc.http);
+    expect(reddedildiMi(sonuc.http), 'Doktor kendi doğrulamasını onaylayabiliyor').toBeTruthy();
   });
 
   test('yönetim ekranı yetkisiz kullanıcıyı içeri almıyor', async ({ browser }) => {

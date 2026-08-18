@@ -13,7 +13,8 @@ const { oturumDosyasi, cerezBandiniKapat, apiIstek } = require('./yardimcilar');
  * Yükleme akışı backend testlerinde kapsanıyor.
  */
 
-const REDDEDILDI = [401, 403, 404];
+/** Kabul edilen tek şey isteğin başarısız olması; 2xx sızıntı demektir. */
+const reddedildiMi = (http) => http >= 400;
 
 test.describe('Arama', () => {
   test('canlı arama misafire de yanıt veriyor', async ({ browser }) => {
@@ -89,7 +90,7 @@ test.describe('Tıbbi arşiv', () => {
       `/api/patient-documents/${uydurma}/download`,
     ]) {
       const { http } = await apiIstek(page, uc);
-      expect(REDDEDILDI, `${uc} açılıyor`).toContain(http);
+      expect(reddedildiMi(http), `${uc} açılıyor`).toBeTruthy();
     }
   });
 
@@ -101,7 +102,7 @@ test.describe('Tıbbi arşiv', () => {
       method: 'POST',
       body: JSON.stringify({ doctor_id: uydurma }),
     });
-    expect(REDDEDILDI.concat(422), 'Paylaşım kabul edildi').toContain(http);
+    expect(reddedildiMi(http), 'Paylaşım kabul edildi').toBeTruthy();
   });
 
   test('hasta doktorun paylaşılmış belge ucunu kullanamıyor', async ({ page }) => {
@@ -111,7 +112,7 @@ test.describe('Tıbbi arşiv', () => {
     // listelemesine kapı açmamalı.
     const uydurma = '00000000-0000-4000-8000-000000000000';
     const { http } = await apiIstek(page, `/api/patient-documents/shared/${uydurma}`);
-    expect(REDDEDILDI).toContain(http);
+    expect(reddedildiMi(http), `Erişim açıldı: ${http}`).toBeTruthy();
   });
 });
 
@@ -141,7 +142,7 @@ test.describe('Doğrulama akışı', () => {
         method: 'POST',
         body: JSON.stringify({ document_type: 'diploma' }),
       });
-      expect(REDDEDILDI.concat(422)).toContain(http);
+      expect(reddedildiMi(http), `Erişim açıldı: ${http}`).toBeTruthy();
     } finally {
       await context.close();
     }

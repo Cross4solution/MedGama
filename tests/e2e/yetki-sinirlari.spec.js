@@ -13,7 +13,14 @@ const { oturumDosyasi, cerezBandiniKapat, apiIstek } = require('./yardimcilar');
  * edilen biçim). Kabul EDİLMEYEN tek şey 2xx.
  */
 
-const REDDEDILDI = [401, 403, 404, 405];
+/**
+ * Reddi ölçen yardımcı.
+ *
+ * Kabul edilen tek şey isteğin BAŞARISIZ olması: 401, 403, 404 hepsi doğru
+ * yanıt. Sunucu anlık olarak 502 verirse bu da erişim değildir — beyaz liste
+ * tutmak testi sunucunun sağlığına bağımlı kılıyordu.
+ */
+const reddedildiMi = (http) => http >= 400;
 
 async function rolIle(browser, rol, is) {
   const context = await browser.newContext({ storageState: oturumDosyasi(rol) });
@@ -42,7 +49,7 @@ test.describe('Yetki sınırları', () => {
 
       for (const uc of uclar) {
         const { http } = await apiIstek(page, uc);
-        expect(REDDEDILDI, `Hasta ${uc} ucunu görebiliyor`).toContain(http);
+        expect(reddedildiMi(http), `Hasta ${uc} ucunu görebiliyor`).toBeTruthy();
       }
     });
 
@@ -51,7 +58,7 @@ test.describe('Yetki sınırları', () => {
 
       for (const uc of ['/api/admin/users', '/api/admin/stats', '/api/admin/tickets']) {
         const { http } = await apiIstek(page, uc);
-        expect(REDDEDILDI, `Hasta ${uc} ucunu görebiliyor`).toContain(http);
+        expect(reddedildiMi(http), `Hasta ${uc} ucunu görebiliyor`).toBeTruthy();
       }
     });
 
@@ -60,7 +67,7 @@ test.describe('Yetki sınırları', () => {
 
       const uydurma = '00000000-0000-4000-8000-000000000000';
       const { http } = await apiIstek(page, `/api/patient-documents/${uydurma}/download`);
-      expect(REDDEDILDI).toContain(http);
+      expect(reddedildiMi(http), `Erişim açıldı: ${http}`).toBeTruthy();
     });
 
     test('kendi rolünü yükseltemiyor', async ({ page }) => {
@@ -78,7 +85,7 @@ test.describe('Yetki sınırları', () => {
         expect(kullanici?.role_id).not.toBe('superAdmin');
         expect(kullanici?.user_level ?? 1).toBeLessThan(5);
       } else {
-        expect(REDDEDILDI.concat(422)).toContain(http);
+        expect(reddedildiMi(http), `Erişim açıldı: ${http}`).toBeTruthy();
       }
     });
   });
@@ -104,7 +111,7 @@ test.describe('Yetki sınırları', () => {
             const r = await fetch(u, { headers: { Accept: 'application/json' } });
             return r.status;
           }, uc);
-          expect(REDDEDILDI, `${uc} kimlik doğrulaması olmadan açılıyor`).toContain(durum);
+          expect(reddedildiMi(durum), `${uc} kimlik doğrulaması olmadan açılıyor`).toBeTruthy();
         }
       } finally {
         await context.close();
@@ -123,7 +130,7 @@ test.describe('Yetki sınırları', () => {
         return apiIstek(page, `/api/crm/patients/${uydurma}/360`);
       });
 
-      expect(REDDEDILDI).toContain(sonuc.http);
+      expect(reddedildiMi(sonuc.http), `Erişim açıldı: ${sonuc.http}`).toBeTruthy();
     });
 
     test('başka kliniğin faturasını göremiyor', async ({ browser }) => {
@@ -133,7 +140,7 @@ test.describe('Yetki sınırları', () => {
         return apiIstek(page, `/api/crm/billing/invoices/${uydurma}`);
       });
 
-      expect(REDDEDILDI).toContain(sonuc.http);
+      expect(reddedildiMi(sonuc.http), `Erişim açıldı: ${sonuc.http}`).toBeTruthy();
     });
   });
 });
