@@ -34,7 +34,7 @@ export default function SidebarPatient() {
     if (!user?.id) return;
     let iptal = false;
     const getir = () => chatAPI.unreadCount()
-      .then((r) => { if (!iptal) setSohbetSayisi(Number(r?.count ?? r?.data?.count ?? 0) || 0); })
+      .then((r) => { if (!iptal) setSohbetSayisi(Number(r?.unread_count ?? r?.data?.unread_count ?? r?.count ?? 0) || 0); })
       .catch(() => {});
     getir();
     const zamanlayici = setInterval(getir, 60000);

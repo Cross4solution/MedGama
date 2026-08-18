@@ -28,6 +28,7 @@ return [
     'accounts' => [
         'doctor'      => env('DEMO_DOCTOR_EMAIL', 'demo-doktor@medagama.test'),
         'clinicOwner' => env('DEMO_CLINIC_EMAIL', 'demo-klinik@medagama.test'),
+        'patient'     => env('DEMO_PATIENT_EMAIL', 'demo-hasta@medagama.test'),
     ],
 
     /*

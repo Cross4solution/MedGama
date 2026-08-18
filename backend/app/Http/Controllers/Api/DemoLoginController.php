@@ -90,7 +90,10 @@ class DemoLoginController extends Controller
 
         // Jetonu arayüze taşıyıp adres çubuğundan hemen sildiriyoruz:
         // tarayıcı geçmişinde ve paylaşılan ekran görüntüsünde kalmasın.
-        return redirect()->away($taban . '/tr/crm?demo_token=' . urlencode($token));
+        // Hasta CRM'e giremez; akışa düşer.
+        $hedefYol = $kullanici->role_id === 'patient' ? '/tr/medstream' : '/tr/crm';
+
+        return redirect()->away($taban . $hedefYol . '?demo_token=' . urlencode($token));
     }
 
     /** Hedef, bize ait bilinen arayüz adreslerinden biri mi. */
@@ -121,6 +124,7 @@ class DemoLoginController extends Controller
         return match ($rol) {
             'doktor', 'doctor' => 'doctor',
             'klinik', 'clinic' => 'clinicOwner',
+            'hasta', 'patient' => 'patient',
             default            => 'yok',
         };
     }

@@ -48,8 +48,12 @@ class DemoAccountService
                 $kullanici = $this->hesapAc($rolId, $eposta);
             }
 
-            $this->crmeHazirla($kullanici);
-            $this->ornekVeriKur($kullanici);
+            if ($rolId === 'patient') {
+                $this->hastaVerisiKur($kullanici);
+            } else {
+                $this->crmeHazirla($kullanici);
+                $this->ornekVeriKur($kullanici);
+            }
 
             return $kullanici->fresh();
         });
@@ -58,10 +62,11 @@ class DemoAccountService
     private function hesapAc(string $rolId, string $eposta): User
     {
         $doktorMu = $rolId === 'doctor';
+        $hastaMi  = $rolId === 'patient';
 
         $kullanici = User::create([
-            'fullname'          => $doktorMu ? 'Dr. Demo Hekim' : 'Demo Klinik Yönetimi',
-            'username'          => $doktorMu ? 'demo_hekim' : 'demo_klinik',
+            'fullname'          => $doktorMu ? 'Dr. Demo Hekim' : ($hastaMi ? 'Demo Hasta' : 'Demo Klinik Yönetimi'),
+            'username'          => $doktorMu ? 'demo_hekim' : ($hastaMi ? 'demo_hasta' : 'demo_klinik'),
             'email'             => $eposta,
             'password'          => bcrypt(self::SIFRE),
             'role_id'           => $rolId,
@@ -249,5 +254,142 @@ class DemoAccountService
         );
 
         return $hekim;
+    }
+
+    /**
+     * Hasta demosu: randevu, fatura, okunmamış mesaj ve bildirim.
+     *
+     * Hastanın gördüğü ekranların hepsi dolu gelsin — boş bir akışta
+     * rozetleri, faturayı ve randevu kartını denemek mümkün değil.
+     */
+    private function hastaVerisiKur(User $hasta): void
+    {
+        // Karşı taraf gerekiyor: randevuyu veren ve mesajı yazan hekim.
+        $doktor = $this->hazirla('doctor');
+        if (!$doktor) {
+            return;
+        }
+
+        // Bir kez kurulur; her girişte yeni randevu/mesaj üretmek birkaç
+        // günde anlamsız bir yığın bırakıyor.
+        if (Appointment::where('patient_id', $hasta->id)->exists()) {
+            return;
+        }
+
+        $plan = [
+            [now()->addHours(5),  'online',   'confirmed'],
+            [now()->addDays(3),   'inPerson', 'pending'],
+            [now()->subDays(9),   'inPerson', 'completed'],
+        ];
+
+        foreach ($plan as [$an, $tur, $durum]) {
+            Appointment::create([
+                'patient_id'       => $hasta->id,
+                'doctor_id'        => $doktor->id,
+                'clinic_id'        => $doktor->clinic_id,
+                'created_by'       => $hasta->id,
+                'appointment_type' => $tur,
+                'appointment_date' => $an->toDateString(),
+                'appointment_time' => $an->format('H:i'),
+                'starts_at'        => $an->copy()->utc(),
+                'timezone'         => 'Europe/Istanbul',
+                'status'           => $durum,
+            ]);
+        }
+
+        $this->hastaFaturasi($hasta, $doktor);
+        $this->hastaSohbeti($hasta, $doktor);
+        $this->hastaBildirimleri($hasta);
+    }
+
+    /** Faturalar ekranı için ödenmiş ve bekleyen birer kayıt. */
+    private function hastaFaturasi(User $hasta, User $doktor): void
+    {
+        foreach ([['paid', 1450.00, -9], ['pending', 890.00, -1]] as [$durum, $tutar, $gun]) {
+            $fatura = Invoice::create([
+                'invoice_number' => Invoice::generateInvoiceNumber(),
+                'patient_id'     => $hasta->id,
+                'doctor_id'      => $doktor->id,
+                'clinic_id'      => $doktor->clinic_id,
+                'subtotal'       => $tutar,
+                'tax_rate'       => 0,
+                'tax_amount'     => 0,
+                'discount_amount' => 0,
+                'grand_total'    => $tutar,
+                'paid_amount'    => $durum === 'paid' ? $tutar : 0,
+                'currency'       => 'EUR',
+                'status'         => $durum,
+                'issue_date'     => now()->addDays($gun)->toDateString(),
+                'due_date'       => now()->addDays($gun + 14)->toDateString(),
+                'paid_at'        => $durum === 'paid' ? now()->addDays($gun) : null,
+            ]);
+
+            \App\Models\InvoiceItem::create([
+                'invoice_id'  => $fatura->id,
+                'description' => $durum === 'paid' ? 'Kardiyoloji muayenesi' : 'Kontrol muayenesi ve EKG',
+                'quantity'    => 1,
+                'unit_price'  => $tutar,
+                'total_price' => $tutar,
+            ]);
+        }
+    }
+
+    /** Menüdeki mesaj rozetinin görünmesi için okunmamış iki mesaj. */
+    private function hastaSohbeti(User $hasta, User $doktor): void
+    {
+        $sohbet = \App\Models\ChatConversation::create([
+            'user_one_id'            => $doktor->id,
+            'user_two_id'            => $hasta->id,
+            'last_message_at'        => now()->subMinutes(4),
+            'last_message_content'   => 'Tahlil sonuçlarınız elime ulaştı, birlikte bakalım.',
+            'last_message_type'      => 'text',
+            'last_message_sender_id' => $doktor->id,
+            'is_active'              => true,
+        ]);
+
+        $mesajlar = [
+            ['Merhaba, randevunuz için hazırlık notlarını gönderiyorum.', 12],
+            ['Tahlil sonuçlarınız elime ulaştı, birlikte bakalım.', 4],
+        ];
+
+        foreach ($mesajlar as [$metin, $dakika]) {
+            \App\Models\ChatMessage::create([
+                'conversation_id' => $sohbet->id,
+                'sender_id'       => $doktor->id,
+                'message_type'    => 'text',
+                'content'         => $metin,
+                'read_at'         => null, // okunmamış: rozet bunun için var
+                'created_at'      => now()->subMinutes($dakika),
+                'updated_at'      => now()->subMinutes($dakika),
+            ]);
+        }
+    }
+
+    /** Zil rozetinin görünmesi için okunmamış bildirimler. */
+    private function hastaBildirimleri(User $hasta): void
+    {
+        $kayitlar = [
+            ['appointment_confirmed', 'Randevunuz onaylandı', 'Dr. Demo Hekim randevunuzu onayladı.', '/patient/appointments'],
+            ['invoice_issued', 'Faturanız hazır', 'Kontrol muayenesi faturanız düzenlendi.', '/patient/invoices'],
+            ['new_chat_message', 'Yeni mesaj', 'Dr. Demo Hekim size bir mesaj gönderdi.', '/doctor-chat'],
+        ];
+
+        foreach ($kayitlar as $i => [$tip, $baslik, $metin, $yol]) {
+            DB::table('notifications')->insert([
+                'id'              => (string) Str::uuid(),
+                'type'            => 'App\\Notifications\\DemoNotification',
+                'notifiable_type' => User::class,
+                'notifiable_id'   => $hasta->id,
+                'data'            => json_encode([
+                    'type'    => $tip,
+                    'title'   => $baslik,
+                    'message' => $metin,
+                    'link'    => $yol,
+                ], JSON_UNESCAPED_UNICODE),
+                'read_at'         => null,
+                'created_at'      => now()->subMinutes(($i + 1) * 7),
+                'updated_at'      => now()->subMinutes(($i + 1) * 7),
+            ]);
+        }
     }
 }
