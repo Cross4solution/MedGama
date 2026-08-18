@@ -99,14 +99,44 @@ export default function PopularClinicsShowcase({
     return grps;
   }, [items]);
 
+  /**
+   * Kartları bir grup kaydırır.
+   *
+   * Tarayıcının kendi 'smooth' davranışı sert ve süresi ayarlanamıyor: kartlar
+   * hızla gidip aniden duruyordu. Kendi eğrimizi kullanıyoruz — sonu yavaşlayan
+   * 500 ms, göz kartı yerine oturana kadar takip edebiliyor.
+   *
+   * Hareketi azaltma tercihi açık olan kullanıcıda animasyon yok, doğrudan
+   * atlar (erişilebilirlik).
+   */
   const scrollByAmount = (ref, dir = 1) => {
     const el = ref?.current;
     if (!el) return;
-    // Scroll by one full group (now 6 items in 3×2 grid)
+
     const firstGroup = el.querySelector('.snap-start');
     const gap = 16;
     const amount = firstGroup ? firstGroup.clientWidth + gap : el.clientWidth;
-    el.scrollBy({ left: dir * amount, behavior: 'smooth' });
+    const hedef = el.scrollLeft + dir * amount;
+
+    const azHareket = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if (azHareket) {
+      el.scrollLeft = hedef;
+      return;
+    }
+
+    const baslangic = el.scrollLeft;
+    const mesafe = hedef - baslangic;
+    const sure = 500;
+    const t0 = performance.now();
+
+    const adim = (t) => {
+      const p = Math.min(1, (t - t0) / sure);
+      // easeOutCubic: hızlı başlar, sona doğru yavaşlar.
+      const e = 1 - Math.pow(1 - p, 3);
+      el.scrollLeft = baslangic + mesafe * e;
+      if (p < 1) requestAnimationFrame(adim);
+    };
+    requestAnimationFrame(adim);
   };
 
   const handleCardClick = (c) => {
