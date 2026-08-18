@@ -115,14 +115,12 @@ export default function SidebarPatient() {
         <a href={href} target="_blank" rel="noopener noreferrer" className={baseClasses}>
           {accent}
           <span className="flex items-center gap-2.5 min-w-0 flex-1">
-            <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
+            <span className={`relative flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
               <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
+              {badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white ring-2 ring-white">{badge > 9 ? '9+' : badge}</span> : null}
             </span>
             <span className="leading-tight text-[13px] min-w-0">{label}</span>
           </span>
-          {badge ? (
-            <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 ml-2 shrink-0 bg-rose-400 text-white">{badge > 9 ? '9+' : badge}</span>
-          ) : null}
         </a>
       );
     }
@@ -130,14 +128,12 @@ export default function SidebarPatient() {
       <Link to={to} className={baseClasses}>
         {accent}
         <span className="flex items-center gap-2.5 min-w-0 flex-1">
-          <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
+          <span className={`relative flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
             <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
+            {badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white ring-2 ring-white">{badge > 9 ? '9+' : badge}</span> : null}
           </span>
           <span className="leading-tight min-w-0">{label}</span>
         </span>
-        {badge ? (
-          <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 ml-2 shrink-0 bg-rose-400 text-white">{badge > 9 ? '9+' : badge}</span>
-        ) : null}
       </Link>
     );
   };
@@ -322,14 +318,12 @@ export default function SidebarPatient() {
                           className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 text-gray-600 hover:bg-gray-50/80 hover:text-gray-900`}
                         >
                           <span className="flex items-center gap-2.5 min-w-0 flex-1">
-                            <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100/80 group-hover:bg-gray-200/60 transition-colors">
+                            <span className="relative flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100/80 group-hover:bg-gray-200/60 transition-colors">
                               <it.icon className="w-3.5 h-3.5 text-gray-500 group-hover:text-gray-700" />
+                              {it.badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white ring-2 ring-white">{it.badge > 9 ? '9+' : it.badge}</span> : null}
                             </span>
                             {it.label}
                           </span>
-                          {it.badge ? (
-                            <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 ml-2 shrink-0 bg-rose-400 text-white">{it.badge > 9 ? '9+' : it.badge}</span>
-                          ) : null}
                         </a>
                       );
                     }
@@ -342,14 +336,12 @@ export default function SidebarPatient() {
                       >
                         {active && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-full bg-teal-600" />}
                         <span className="flex items-center gap-2.5 min-w-0 flex-1">
-                          <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
+                          <span className={`relative flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
                             <it.icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
+                            {it.badge ? <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-[16px] text-[9px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white ring-2 ring-white">{it.badge > 9 ? '9+' : it.badge}</span> : null}
                           </span>
                           {it.label}
                         </span>
-                        {it.badge ? (
-                          <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 ml-2 shrink-0 bg-rose-400 text-white">{it.badge > 9 ? '9+' : it.badge}</span>
-                        ) : null}
                       </Link>
                     );
                   })}

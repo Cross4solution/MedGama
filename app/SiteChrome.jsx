@@ -248,7 +248,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
         noktası ekran genişliğine göre kayıyordu. Blok artık sola yaslı
         (mr-auto) ve üst sınırı var — her sayfa aynı yerden başlıyor.
       */}
-      <div className={`${hasSidebar ? 'hasta-govde w-full max-w-[1320px] mr-auto' : ''} ${showHeader ? (hasOwnContainer || isDoctorChat ? 'pt-14' : 'pt-12') : ''} ${
+      <div className={`${hasSidebar ? 'hasta-govde w-full max-w-[1180px] mx-auto px-1' : ''} ${showHeader ? (hasOwnContainer || isDoctorChat ? 'pt-14' : 'pt-12') : ''} ${
         isCallRoom ? 'h-[calc(100dvh-3rem)] overflow-hidden' : 'min-h-[70vh]'
       }`}>
         {/* min-h: içerik async yüklenirken (Suspense/CSR bailout/veri) footer'ın
