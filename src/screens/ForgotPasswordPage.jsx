@@ -116,7 +116,7 @@ export default function ForgotPasswordPage() {
   // Step 4: Success
   if (step === 4) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50/60 via-white to-emerald-50/40 px-4">
         <SEOHead title="Şifremi Unuttum" canonical="/forgot-password" noIndex />
         <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
@@ -126,7 +126,7 @@ export default function ForgotPasswordPage() {
           <p className="text-sm text-gray-500 mb-6">Your password has been successfully changed.</p>
           <button
             onClick={() => navigate('/login')}
-            className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-all shadow-sm"
+            className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 transition-all shadow-sm"
           >
             Go to Login
           </button>
@@ -136,15 +136,15 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50/60 via-white to-emerald-50/40 px-4">
       <SEOHead title="Şifremi Unuttum" canonical="/forgot-password" noIndex />
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 max-w-md w-full">
 
         {/* Icon */}
-        <div className="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-5">
-          {step === 1 && <Mail className="w-8 h-8 text-indigo-600" />}
-          {step === 2 && <KeyRound className="w-8 h-8 text-indigo-600" />}
-          {step === 3 && <KeyRound className="w-8 h-8 text-indigo-600" />}
+        <div className="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center mx-auto mb-5">
+          {step === 1 && <Mail className="w-8 h-8 text-teal-600" />}
+          {step === 2 && <KeyRound className="w-8 h-8 text-teal-600" />}
+          {step === 3 && <KeyRound className="w-8 h-8 text-teal-600" />}
         </div>
 
         {/* Step 1: Enter email */}
@@ -165,7 +165,7 @@ export default function ForgotPasswordPage() {
                   onChange={(e) => { setEmail(e.target.value); setError(''); }}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendCode()}
                   placeholder="you@example.com"
-                  className="w-full h-11 pl-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all outline-none"
+                  className="w-full h-11 pl-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
                   autoFocus
                 />
               </div>
@@ -176,13 +176,13 @@ export default function ForgotPasswordPage() {
             <button
               onClick={handleSendCode}
               disabled={loading || !email}
-              className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+              className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
             >
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <>Send Reset Code <ArrowRight className="w-4 h-4" /></>}
             </button>
 
             <div className="text-center mt-5">
-              <Link to="/login" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1">
+              <Link to="/login" className="text-sm font-medium text-teal-600 hover:text-teal-700 inline-flex items-center gap-1">
                 <ArrowLeft className="w-3.5 h-3.5" /> Back to Login
               </Link>
             </div>
@@ -210,8 +210,8 @@ export default function ForgotPasswordPage() {
                   onKeyDown={(e) => handleCodeKeyDown(i, e)}
                   className={`w-11 h-13 text-center text-lg font-bold border-2 rounded-xl transition-all outline-none ${
                     error ? 'border-red-300 focus:border-red-500 focus:ring-red-200' :
-                    digit ? 'border-indigo-400 bg-indigo-50/50' :
-                    'border-gray-200 focus:border-indigo-500 focus:ring-indigo-200'
+                    digit ? 'border-teal-400 bg-teal-50/50' :
+                    'border-gray-200 focus:border-teal-500 focus:ring-teal-200'
                   } focus:ring-2`}
                   autoFocus={i === 0}
                 />
@@ -223,7 +223,7 @@ export default function ForgotPasswordPage() {
             <button
               onClick={handleVerifyCode}
               disabled={code.join('').length !== 6}
-              className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+              className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
             >
               Continue <ArrowRight className="w-4 h-4" />
             </button>
@@ -233,7 +233,7 @@ export default function ForgotPasswordPage() {
               <button
                 onClick={handleResend}
                 disabled={loading || resendCooldown > 0}
-                className="text-sm font-medium text-indigo-600 hover:text-indigo-700 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+                className="text-sm font-medium text-teal-600 hover:text-teal-700 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {loading ? 'Sending...' : resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend Code'}
               </button>
@@ -265,7 +265,7 @@ export default function ForgotPasswordPage() {
                     value={password}
                     onChange={(e) => { setPassword(e.target.value); setError(''); }}
                     placeholder="Min. 6 characters"
-                    className="w-full h-11 pl-10 pr-10 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all outline-none"
+                    className="w-full h-11 pl-10 pr-10 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
                     autoFocus
                   />
                   <button
@@ -288,7 +288,7 @@ export default function ForgotPasswordPage() {
                     onChange={(e) => { setConfirmPassword(e.target.value); setError(''); }}
                     onKeyDown={(e) => e.key === 'Enter' && handleResetPassword()}
                     placeholder="Repeat your password"
-                    className="w-full h-11 pl-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all outline-none"
+                    className="w-full h-11 pl-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
                   />
                 </div>
               </div>
@@ -320,7 +320,7 @@ export default function ForgotPasswordPage() {
             <button
               onClick={handleResetPassword}
               disabled={loading || !password || !confirmPassword}
-              className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+              className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
             >
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <>Reset Password <ArrowRight className="w-4 h-4" /></>}
             </button>

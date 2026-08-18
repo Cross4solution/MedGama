@@ -9,7 +9,7 @@ export async function generateMetadata({ params }) {
     ...buildMetadata({
       locale,
       path: '/medstream',
-      title: { tr: 'MedStream', en: 'MedStream' },
+      title: { tr: 'Medstream', en: 'Medstream' },
       description: {
         tr: 'Medagama sağlık akışı — doktor ve klinik paylaşımları.',
         en: 'Medagama health feed — posts from doctors and clinics.',

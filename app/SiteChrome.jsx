@@ -183,7 +183,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
   }, [pathname, navType]);
 
   // Auth ve CRM sayfalarında header ve cookie banner'ı gizle
-  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/hospital-login', '/admin-login', '/verify-email', '/forgot-password', '/dashboard', '/onboarding', '/clinic/onboarding'];
+  const hideOnAuthPages = ['/login', '/register', '/auth', '/doctor-login', '/clinic-login', '/hospital-login', '/admin-login', '/verify-email', '/dashboard', '/onboarding', '/clinic/onboarding'];
   const isAuthPage = hideOnAuthPages.includes(pathname);
   const isCRMPage = pathname.startsWith('/crm');
   const isAdminPage = pathname.startsWith('/admin');
