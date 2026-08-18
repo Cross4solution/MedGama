@@ -31,11 +31,10 @@ function TimelineControls({
     <div className="mb-6">
       <div className="flex items-center justify-between">
         {/* Left: Title */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 pr-4">
           <h1 className="text-[15px] font-semibold text-gray-700 tracking-tight">
             {t('medstream.exploreTimeline', 'Explore Timeline')}
           </h1>
-          <p className="text-[11px] text-gray-400 mt-0.5 hidden md:block">{t('medstream.discoverLatest', 'Discover the latest from your medical network')}</p>
         </div>
 
         {/* Center: Segmented toggle (desktop) */}
