@@ -223,9 +223,14 @@ const CRMPatients = () => {
       params.sort_dir = sortDir;
 
       const res = await patientAPI.list(params);
-      const data = res?.data || res;
-      setPatients(data.data || []);
-      setPagination({ total: data.total || 0, last_page: data.last_page || 1 });
+
+      // İstemci zaten response.data'yı açıyor; sayfalayıcı doğrudan res.
+      // `res.data` burada HASTA DİZİSİ, bir kat daha derine bakınca undefined
+      // dönüyordu: sunucu üç hasta gönderirken ekran "Sonuç bulunamadı" yazıyor,
+      // üstteki sayaç ise 3 gösteriyordu.
+      const sayfa = Array.isArray(res?.data) ? res : (res?.data ?? res);
+      setPatients(Array.isArray(sayfa?.data) ? sayfa.data : []);
+      setPagination({ total: sayfa?.total || 0, last_page: sayfa?.last_page || 1 });
     } catch (err) {
       console.error('Failed to fetch patients:', err);
       setPatients([]);
