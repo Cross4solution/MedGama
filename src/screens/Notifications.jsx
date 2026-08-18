@@ -334,6 +334,14 @@ export default function Notifications() {
               <NotificationPrefsCard />
             </div>
           </section>
+
+          {/* Sağ: tercihler. Kategori listesinin altındayken sayfayı aşağı
+              uzatıyor ve ayarlara ulaşmak için kaydırmak gerekiyordu. */}
+          <aside className="hidden md:block col-span-3">
+            <div className="sticky top-24">
+              <NotificationPrefsCard />
+            </div>
+          </aside>
         </div>
       </div>
     </div>
