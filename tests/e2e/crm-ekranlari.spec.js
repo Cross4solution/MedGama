@@ -80,10 +80,17 @@ test.describe('CRM ekranları', () => {
     await page.goto('/tr/crm/calendar');
     await cerezBandiniKapat(page);
 
-    const { http, govde } = await apiIstek(page, '/api/appointments/calendar-events');
-    expect(http).toBe(200);
-
-    const olaylar = govde?.events ?? govde?.data?.events ?? [];
+    // Takvim ilk açılışta aralığı belirleyip veriyi sonra çekiyor; istek
+    // hazır olana kadar yoklanır (tek denemede boş dönüp testi düşürüyordu).
+    let olaylar = [];
+    await expect
+      .poll(async () => {
+        const { http, govde } = await apiIstek(page, '/api/appointments/calendar-events');
+        if (http !== 200) return -1;
+        olaylar = govde?.events ?? govde?.data?.events ?? [];
+        return Array.isArray(olaylar) ? 1 : -1;
+      }, { message: 'Takvim olayları alınamadı', timeout: 25_000 })
+      .toBe(1);
     if (!olaylar.length) test.skip(true, 'Takvimde olay yok');
 
     // Duvar saati tek başına hangi ülkenin saati olduğunu belirsiz bırakıyordu;

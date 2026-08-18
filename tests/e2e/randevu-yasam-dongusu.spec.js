@@ -72,9 +72,14 @@ test.describe('Randevu yaşam döngüsü', () => {
     await page.goto('/tr/patient/appointments');
     await cerezBandiniKapat(page);
 
-    const { govde } = await apiIstek(page, `/api/appointments/${randevuId}`);
-    const kayit = govde?.data ?? govde;
-    expect(kayit?.id).toBe(randevuId);
+    let kayit = null;
+    await expect
+      .poll(async () => {
+        const { govde } = await apiIstek(page, `/api/appointments/${randevuId}`);
+        kayit = govde?.data ?? govde;
+        return kayit?.id ?? null;
+      }, { message: 'Yeni randevu okunamadı', timeout: 20_000 })
+      .toBe(randevuId);
 
     // Mutlak an saklanmış olmalı: duvar saati tek başına hangi ülkenin saati
     // olduğunu belirsiz bırakıyordu.
