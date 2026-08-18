@@ -118,7 +118,7 @@ export default function SidebarPatient() {
             <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
               <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
             </span>
-            <span className="leading-tight text-[13px] min-w-0 truncate">{label}</span>
+            <span className="leading-tight text-[13px] min-w-0">{label}</span>
           </span>
           {badge ? (
             <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 ml-2 shrink-0 bg-rose-400 text-white">{badge > 9 ? '9+' : badge}</span>
@@ -133,7 +133,7 @@ export default function SidebarPatient() {
           <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-white shadow-sm' : 'bg-gray-100/80 group-hover:bg-gray-200/60'} transition-colors`}>
             <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500 group-hover:text-gray-700'}`} />
           </span>
-          <span className="min-w-0 truncate">{label}</span>
+          <span className="leading-tight min-w-0">{label}</span>
         </span>
         {badge ? (
           <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 ml-2 shrink-0 bg-rose-400 text-white">{badge > 9 ? '9+' : badge}</span>
