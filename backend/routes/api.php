@@ -292,6 +292,11 @@ Route::prefix('social')->middleware('auth:sanctum')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/clinics', [ClinicController::class, 'index'])->middleware('cache.headers:public;max_age=60');
+// Sabit yol joker rotadan önce: aksi halde "reviewable-appointments" bir
+// klinik kod adı sanılıp 404 dönüyor.
+Route::get('/clinics/reviewable-appointments', [ClinicController::class, 'reviewableAppointments'])
+    ->middleware('auth:sanctum');
+
 Route::get('/clinics/{codename}', [ClinicController::class, 'show'])->middleware('cache.headers:public;max_age=60');
 
 // Hospital (L4): CRM stats (auth) + public profile. stats BEFORE {codename} so it isn't captured as a codename.
@@ -375,18 +380,25 @@ Route::get('/accreditations', [AccreditationController::class, 'index']);
 */
 Route::get('/doctors', [DoctorController::class, 'index'])->middleware('cache.headers:public;max_age=60');
 Route::get('/doctors/suggestions', [DoctorController::class, 'suggestions'])->middleware('cache.headers:public;max_age=60');
+/*
+| Sabit yollar joker rotadan ÖNCE gelmeli.
+|
+| `/doctors/{id}` daha üstte tanımlıyken `/doctors/my-reviews` isteği
+| "my-reviews" kimlikli bir doktor araması olarak eşleşiyor ve 404 dönüyordu:
+| doktorun kendi yorumları ekranı ve "yorum yazılabilir randevular" listesi
+| hiç çalışmıyordu.
+*/
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/doctors/my-reviews', [DoctorController::class, 'myReviews']);
+    Route::get('/doctors/reviewable-appointments', [DoctorController::class, 'reviewableAppointments']);
+    Route::put('/doctors/reviews/{reviewId}/respond', [DoctorController::class, 'respondToReview']);
+});
+
 Route::get('/doctors/{id}', [DoctorController::class, 'show'])->middleware('cache.headers:public;max_age=60');
 Route::get('/doctors/{id}/reviews', [DoctorController::class, 'reviews'])->middleware('cache.headers:public;max_age=60');
 Route::get('/doctors/{id}/availability', [DoctorController::class, 'availability'])->middleware('cache.headers:public;max_age=60');
 Route::get('/doctors/{id}/faqs', [DoctorFaqController::class, 'index'])->middleware('cache.headers:public;max_age=60');
 Route::post('/doctors/{id}/reviews', [DoctorController::class, 'submitReview'])->middleware('auth:sanctum');
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/doctors/my-reviews', [DoctorController::class, 'myReviews']);
-    Route::get('/doctors/reviewable-appointments', [DoctorController::class, 'reviewableAppointments']);
-    Route::get('/clinics/reviewable-appointments', [ClinicController::class, 'reviewableAppointments']);
-    Route::put('/doctors/reviews/{reviewId}/respond', [DoctorController::class, 'respondToReview']);
-});
-
 /*
 |--------------------------------------------------------------------------
 | Doctor Profile (Protected — own profile management + onboarding)
