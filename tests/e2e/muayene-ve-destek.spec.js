@@ -116,7 +116,7 @@ test.describe('Destek talepleri', () => {
       await page.goto('/tr/crm/support');
       await cerezBandiniKapat(page);
 
-      return apiIstek(page, '/api/tickets', {
+      return apiIstek(page, '/api/support/tickets', {
         method: 'POST',
         body: JSON.stringify({
           subject: `${ONEK} destek talebi`,
@@ -135,7 +135,7 @@ test.describe('Destek talepleri', () => {
 
     const yanit = await rolIle(browser, 'demoDoktor', async (page) => {
       await page.goto('/tr/crm/support');
-      return apiIstek(page, `/api/tickets/${talepId}/reply`, {
+      return apiIstek(page, `/api/support/tickets/${talepId}/reply`, {
         method: 'POST',
         body: JSON.stringify({ body: 'Otomatik test yanıtı.' }),
       });
@@ -148,7 +148,7 @@ test.describe('Destek talepleri', () => {
 
     const sonuc = await rolIle(browser, 'hasta', async (page) => {
       await page.goto('/tr/profile');
-      return apiIstek(page, `/api/tickets/${talepId}`);
+      return apiIstek(page, `/api/support/tickets/${talepId}`);
     });
 
     expect(REDDEDILDI).toContain(sonuc.http);
