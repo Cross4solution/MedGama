@@ -16,6 +16,7 @@ import CookieBanner from '@/components/CookieBanner';
 import { Footer, Header } from '@/components/layout';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 import scrollConfig from '@/config/scroll';
+import resolveStorageUrl from '@/utils/resolveStorageUrl';
 
 /**
  * Şifresiz demo bağlantısıyla gelen jetonu karşılar.
@@ -227,7 +228,30 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
               <Link to="/" className="flex items-center gap-1.5 font-bold text-[#0f766e]">
                 <span className="text-base tracking-tight">Medstream</span>
               </Link>
-              <LanguageSwitcher compact />
+              <div className="flex items-center gap-2.5">
+                <LanguageSwitcher compact />
+                {/*
+                  Kullanıcı alanı yoktu: oturum açık olmasına rağmen sayfa
+                  çıkış yapılmış gibi görünüyordu ve ana siteye dönüş yolu
+                  yalnızca logoydu.
+                */}
+                {user ? (
+                  <Link to="/medstream" className="flex items-center gap-1.5 pl-2 border-l border-gray-200">
+                    {user.avatar ? (
+                      <img src={resolveStorageUrl(user.avatar)} alt="" className="w-6 h-6 rounded-full object-cover" />
+                    ) : (
+                      <span className="w-6 h-6 rounded-full bg-teal-100 text-teal-700 text-[10px] font-bold flex items-center justify-center">
+                        {(user.fullname || 'U').slice(0, 1).toUpperCase()}
+                      </span>
+                    )}
+                    <span className="hidden sm:block text-xs font-medium text-gray-600 max-w-[120px] truncate">{user.fullname}</span>
+                  </Link>
+                ) : (
+                  <Link to="/login" className="text-xs font-semibold text-teal-700 pl-2 border-l border-gray-200">
+                    Giriş yap
+                  </Link>
+                )}
+              </div>
             </header>
           </Suspense>
           <div className="min-h-[70vh]">
