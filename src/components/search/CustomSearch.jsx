@@ -249,11 +249,28 @@ export default function CustomSearch() {
             {geoLoading
               ? t('medstream.locating', 'Locating…')
               : geoError === 'permission'
-                ? t('medstream.locationPermission', 'Location permission blocked — allow it in your browser')
+                ? t('medstream.locationPermissionShort', 'Konum izni kapalı')
                 : geoError
                   ? `${t('medstream.locationDenied', 'Location unavailable')} — ${t('common.retry', 'retry')}`
                   : t('medstream.useMyLocation', 'Use my location')}
           </button>
+
+          {/*
+              Tarayıcı izni bir kez reddedildikten sonra site yeniden
+              soramıyor — bu bir güvenlik kuralı, kod tetikleyemez. O yüzden
+              kullanıcıya ne yapacağı yazılır ve bekletmeyen bir çıkış yolu
+              gösterilir: şehri elle seçmek.
+          */}
+          {geoError === 'permission' && (
+            <div className="mt-2 rounded-lg border border-gray-200 bg-gray-50/70 px-3 py-2">
+              <p className="text-[11px] leading-relaxed text-gray-600">
+                {t('medstream.locationHowTo', 'Açmak için adres çubuğundaki kilit simgesine tıklayın → Konum → İzin ver.')}
+              </p>
+              <p className="mt-1 text-[11px] text-gray-500">
+                {t('medstream.locationManual', 'Ya da aşağıdan ülke ve şehri elle seçin.')}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* 2. City */}

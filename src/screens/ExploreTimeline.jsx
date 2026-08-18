@@ -17,6 +17,8 @@ import resolveStorageUrl from '../utils/resolveStorageUrl';
 import SEOHead from '../components/seo/SEOHead';
 import { useTranslation } from 'react-i18next';
 import { useIsMedstream } from '../context/BrandContext';
+import { Search } from 'lucide-react';
+import { SelectCombobox } from 'components/forms';
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
@@ -630,6 +632,33 @@ export default function ExploreTimeline() {
           {/* Feed (RIGHT) */}
           <section className={focused ? '' : 'order-1 lg:order-2'}>
             <div className={focused ? 'max-w-[680px] mx-auto' : 'max-w-[680px] mx-auto lg:mx-0 lg:ml-6'}>
+              {/*
+                  Tek kolonlu akışta yan filtre yok; arama ve uzmanlık yine de
+                  gerekiyor. Akışın üstünde tek satır: aramak için tıklamak
+                  gerekmiyor, kolon da açılmıyor.
+              */}
+              {focused && (
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="relative flex-1">
+                    <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="search"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder={t('medstream.searchInTimeline')}
+                      className="w-full h-9 pl-9 pr-3 rounded-full border border-gray-200 bg-gray-50/60 text-[13px] placeholder:text-gray-400 focus:bg-white focus:border-teal-400 focus:ring-2 focus:ring-teal-500/15 outline-none transition-all"
+                    />
+                  </div>
+                  <SelectCombobox
+                    options={specialtyOptions}
+                    value={specialty}
+                    onChange={setSpecialty}
+                    placeholder={t('medstream.all')}
+                    hideChevron
+                    triggerClassName="h-9 px-3 rounded-full border border-gray-200 bg-gray-50/60 text-[13px] text-left min-w-[132px] hover:bg-white transition-colors"
+                  />
+                </div>
+              )}
               {/* Composer — clinics, clinic groups (hospitals) and doctors only (NOT patients) */}
               {(() => {
                 const isDoctor = !!(user && (user.role === 'doctor' || (user?.specialty || user?.hospital || user?.access)));
