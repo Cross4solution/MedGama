@@ -20,7 +20,6 @@ import { notificationAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationsContext';
 import { useTranslation } from 'react-i18next';
-import NotificationPrefsCard from '../components/notifications/NotificationPrefsCard';
 
 const TYPE_META = {
   appointment_booked:    { label: 'Appointment Booked', icon: CalendarClock, color: 'text-blue-600', bg: 'bg-blue-100/80', category: 'appointment' },
@@ -214,7 +213,7 @@ export default function Notifications() {
 
         <div className="grid grid-cols-12 gap-5">
           {/* Left: Sidebar */}
-          <aside className="hidden md:block col-span-3">
+          <aside className="hidden md:block col-span-3 lg:col-span-2">
             <div className="sticky top-24 rounded-2xl border border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-lg shadow-gray-200/40 overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
                 <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">{t('notifications.categories', 'Categories')}</div>
@@ -243,7 +242,7 @@ export default function Notifications() {
           </aside>
 
           {/* Orta: bildirim listesi */}
-          <section className="col-span-12 md:col-span-6">
+          <section className="col-span-12 md:col-span-9 lg:col-span-10">
             <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
               <div className="min-h-[60vh] max-h-[70vh] overflow-y-auto">
                 {loading ? (
@@ -328,20 +327,8 @@ export default function Notifications() {
               )}
             </div>
 
-            {/* Telefonda kenar çubuğu gizli olduğu için tercihler listenin
-                altında gösterilir; ayarlara ulaşamayan kullanıcı kalmasın. */}
-            <div className="md:hidden mt-4">
-              <NotificationPrefsCard />
-            </div>
           </section>
 
-          {/* Sağ: tercihler. Kategori listesinin altındayken sayfayı aşağı
-              uzatıyor ve ayarlara ulaşmak için kaydırmak gerekiyordu. */}
-          <aside className="hidden md:block col-span-3">
-            <div className="sticky top-24">
-              <NotificationPrefsCard />
-            </div>
-          </aside>
         </div>
       </div>
     </div>
