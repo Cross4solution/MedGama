@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from '@/compat/router';
 import { stripLocale } from '../lib/locales';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../context/NotificationsContext';
+import { chatAPI } from '../lib/api';
 import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, Heart, FolderHeart, Activity, Lock, X, Sparkles, Receipt } from 'lucide-react';
 
 // Custom chat icon using public SVG (accepts className via props)
@@ -26,6 +27,21 @@ export default function SidebarPatient() {
   const { unreadCount: notifCount } = useNotifications();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
+  // Sohbetteki okunmamış mesaj sayısı. Canlı bildirim geldiğinde de tazelenir;
+  // ekranı açık unutan kullanıcı sayının arttığını görür.
+  const [sohbetSayisi, setSohbetSayisi] = useState(0);
+  useEffect(() => {
+    if (!user?.id) return;
+    let iptal = false;
+    const getir = () => chatAPI.unreadCount()
+      .then((r) => { if (!iptal) setSohbetSayisi(Number(r?.count ?? r?.data?.count ?? 0) || 0); })
+      .catch(() => {});
+    getir();
+    const zamanlayici = setInterval(getir, 60000);
+    window.addEventListener('chat:unread-changed', getir);
+    return () => { iptal = true; clearInterval(zamanlayici); window.removeEventListener('chat:unread-changed', getir); };
+  }, [user?.id]);
+
   if (!user) return null;
 
   const role = user?.role || 'patient';
@@ -39,7 +55,7 @@ export default function SidebarPatient() {
     { to: '/saved-clinics', label: t('sidebar.favoriteClinics', 'Favorite Clinics'), icon: Heart },
     { to: '/patient/appointments', label: t('sidebar.myAppointments', 'Appointments'), icon: CalendarClock },
     { to: '/patient/invoices', label: t('sidebar.myInvoices', 'Faturalar'), icon: Receipt },
-    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
+    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon, badge: sohbetSayisi || undefined },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
     { to: '/medical-archive', label: t('sidebar.medicalArchive', 'Archive'), icon: FolderHeart },
     { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: notifCount || undefined },
@@ -54,7 +70,7 @@ export default function SidebarPatient() {
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/doctor/appointments', label: t('sidebar.appointments'), icon: CalendarClock },
     { to: '/doctor/billing', label: t('sidebar.billing', 'Billing'), icon: Receipt },
-    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
+    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon, badge: sohbetSayisi || undefined },
     { to: '/telehealth', label: t('sidebar.telehealth'), icon: Monitor },
     { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: notifCount || undefined },
     { to: '/profile', label: t('sidebar.profile'), icon: User },
@@ -67,7 +83,7 @@ export default function SidebarPatient() {
     { to: '/medstream', label: t('sidebar.medstream'), icon: Newspaper },
     { to: '/saved', label: t('sidebar.savedPosts', 'Saved Posts'), icon: Bookmark },
     { to: '/doctor/appointments', label: t('sidebar.appointments'), icon: CalendarClock },
-    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon },
+    { to: '/doctor-chat', label: t('sidebar.messages'), icon: ChatRoundIcon, badge: sohbetSayisi || undefined },
     { to: '/notifications', label: t('sidebar.notifications'), icon: Bell, badge: notifCount || undefined },
     { to: '/clinic-edit', label: t('sidebar.clinicProfile', 'Clinic Profile'), icon: User },
   ];
@@ -105,7 +121,7 @@ export default function SidebarPatient() {
             <span className="leading-tight text-[13px] min-w-0">{label}</span>
           </span>
           {badge ? (
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-teal-600 text-white shadow-sm">{badge}</span>
+            <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-red-500 text-white shadow-sm">{badge > 9 ? '9+' : badge}</span>
           ) : null}
         </a>
       );
@@ -120,7 +136,7 @@ export default function SidebarPatient() {
           {label}
         </span>
         {badge ? (
-          <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-teal-600 text-white shadow-sm">{badge}</span>
+          <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-red-500 text-white shadow-sm">{badge > 9 ? '9+' : badge}</span>
         ) : null}
       </Link>
     );
@@ -312,7 +328,7 @@ export default function SidebarPatient() {
                             {it.label}
                           </span>
                           {it.badge ? (
-                            <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-teal-600 text-white shadow-sm">{it.badge}</span>
+                            <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-red-500 text-white shadow-sm">{it.badge > 9 ? '9+' : it.badge}</span>
                           ) : null}
                         </a>
                       );
@@ -332,7 +348,7 @@ export default function SidebarPatient() {
                           {it.label}
                         </span>
                         {it.badge ? (
-                          <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-teal-600 text-white shadow-sm">{it.badge}</span>
+                          <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-red-500 text-white shadow-sm">{it.badge > 9 ? '9+' : it.badge}</span>
                         ) : null}
                       </Link>
                     );

@@ -612,3 +612,18 @@ video::cue {
   font-size: 0.95em;
   line-height: 1.35;
 }
+
+/* ═══════════════════════════════════════════════════
+   Hasta kabuğu — sayfa kapları sola yaslanır
+   ═══════════════════════════════════════════════════
+   Ekranlar içeriğini `max-w-… mx-auto` ile ortalıyor. Menü zaten solda yer
+   kapladığı için bu ortalama sayfayı sağa itiyor ve başlangıç noktası ekran
+   genişliğine göre kayıyordu; "Kaydedilen Gönderiler" başlığı ekranın
+   ortasında duruyordu. Yalnızca sayfanın en dıştaki kabı hedeflenir —
+   kart içindeki ortalı öğelere ve kaplama (modal) katmanlarına dokunulmaz. */
+.hasta-govde > .mx-auto,
+.hasta-govde > div:not([class*="fixed"]):not([class*="absolute"]) > .mx-auto,
+.hasta-govde > div:not([class*="fixed"]) > div:not([class*="fixed"]):not([class*="absolute"]) > .mx-auto {
+  margin-left: 0;
+  margin-right: auto;
+}

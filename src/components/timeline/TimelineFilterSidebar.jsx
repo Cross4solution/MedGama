@@ -19,6 +19,17 @@ function TimelineFilterSidebar({
   // Use local state for search (debounced), but apply country/specialty instantly
   const [localQuery, setLocalQuery] = useState(initialQuery);
 
+  // Sayfa aşağı kaydırıldığında filtre kutusu küçülür: ekranın asıl konusu
+  // gönderiler, sabitlenip yanda duran kocaman bir kutu dikkati bölüyordu.
+  // Başlık ve alan etiketleri düşer, girişler incelir; işlev aynı kalır.
+  const [kompakt, setKompakt] = useState(false);
+  useEffect(() => {
+    const izle = () => setKompakt(window.scrollY > 220);
+    izle();
+    window.addEventListener('scroll', izle, { passive: true });
+    return () => window.removeEventListener('scroll', izle);
+  }, []);
+
   // Update local query when prop changes
   useEffect(() => {
     setLocalQuery(initialQuery);
@@ -55,16 +66,18 @@ function TimelineFilterSidebar({
     <aside className="order-1 lg:order-1 lg:sticky lg:top-24 h-max">
       <div className="bg-white rounded-xl border border-gray-200/70 overflow-hidden">
         {/* Header */}
-        <div className="px-4 pt-3.5 pb-1">
-          <h3 className="text-[11px] font-semibold text-gray-400 tracking-wider uppercase">
-            {t('medstream.filters')}
-          </h3>
-        </div>
+        {!kompakt && (
+          <div className="px-4 pt-3.5 pb-1">
+            <h3 className="text-[11px] font-semibold text-gray-400 tracking-wider uppercase">
+              {t('medstream.filters')}
+            </h3>
+          </div>
+        )}
 
-        <div className="px-4 pb-4 pt-2 space-y-3.5">
+        <div className={`px-3 transition-all duration-200 ${kompakt ? "py-2.5 space-y-2" : "px-4 pb-4 pt-2 space-y-3.5"}`}>
           {/* Search */}
           <div>
-            <label className="block text-[11px] font-medium text-gray-400 mb-1.5">{t('medstream.search')}</label>
+            <label className={`block text-[11px] font-medium text-gray-400 mb-1.5 ${kompakt ? 'sr-only' : ''}`}>{t('medstream.search')}</label>
             <div className="relative group">
               <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-teal-500 transition-colors" />
               <input
@@ -81,7 +94,7 @@ function TimelineFilterSidebar({
           <div className="block md:hidden">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-medium text-gray-400 mb-1.5">{t('medstream.country')}</label>
+                <label className={`block text-[11px] font-medium text-gray-400 mb-1.5 ${kompakt ? 'sr-only' : ''}`}>{t('medstream.country')}</label>
                 <CountryCombobox
                   options={countryOptions}
                   value={initialCountryName}
@@ -97,7 +110,7 @@ function TimelineFilterSidebar({
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-gray-400 mb-1.5">{t('medstream.specialization')}</label>
+                <label className={`block text-[11px] font-medium text-gray-400 mb-1.5 ${kompakt ? 'sr-only' : ''}`}>{t('medstream.specialization')}</label>
                 <SelectCombobox
                   options={specialtyOptions}
                   value={initialSpecialty}
@@ -111,9 +124,9 @@ function TimelineFilterSidebar({
           </div>
 
           {/* Desktop: Separate sections */}
-          <div className="hidden md:block space-y-3.5">
+          <div className={`hidden md:block ${kompakt ? "space-y-2" : "space-y-3.5"}`}>
             <div>
-              <label className="block text-[11px] font-medium text-gray-400 mb-1.5">{t('medstream.country')}</label>
+              <label className={`block text-[11px] font-medium text-gray-400 mb-1.5 ${kompakt ? 'sr-only' : ''}`}>{t('medstream.country')}</label>
               <CountryCombobox
                 options={countryOptions}
                 value={initialCountryName}
@@ -130,7 +143,7 @@ function TimelineFilterSidebar({
             </div>
 
             <div>
-              <label className="block text-[11px] font-medium text-gray-400 mb-1.5">{t('medstream.specialization')}</label>
+              <label className={`block text-[11px] font-medium text-gray-400 mb-1.5 ${kompakt ? 'sr-only' : ''}`}>{t('medstream.specialization')}</label>
               <SelectCombobox
                 options={specialtyOptions}
                 value={initialSpecialty}

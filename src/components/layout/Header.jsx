@@ -77,7 +77,14 @@ const Header = () => {
       globalIncrement(1);
       // Bildirimin tipi sesi belirliyor: kaçırılamayacak olanlar yükselen
       // üçlü, gerisi yumuşak çan (ve yalnızca sekme arka plandayken).
-      playNotificationSound(String(payload?.data?.type || payload?.type || ''));
+      const bildirimTipi = String(payload?.data?.type || payload?.type || '');
+      playNotificationSound(bildirimTipi);
+
+      // Mesaj bildirimi geldiğinde menüdeki okunmamış sayacı hemen tazelensin;
+      // yoksa kullanıcı sayının artmasını bir sonraki yoklamaya kadar bekliyor.
+      if (bildirimTipi.includes('message') || bildirimTipi.includes('chat')) {
+        window.dispatchEvent(new Event('chat:unread-changed'));
+      }
       // Prepend to list if dropdown is open
       setNotifications(prev => {
         if (prev.some(n => n.id === payload.id)) return prev;
