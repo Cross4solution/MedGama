@@ -66,7 +66,10 @@ class DemoAccountService
 
         $kullanici = User::create([
             'fullname'          => $doktorMu ? 'Dr. Demo Hekim' : ($hastaMi ? 'Demo Hasta' : 'Demo Klinik Yönetimi'),
-            'username'          => $doktorMu ? 'demo_hekim' : ($hastaMi ? 'demo_hasta' : 'demo_klinik'),
+            // Sabit kullanıcı adı canlıda çakıştı: aynı adı taşıyan başka bir
+            // hesap vardı ve demo hesabı hiç açılamıyordu. Hesap e-postayla
+            // bulunduğu için ad benzersiz olabilir.
+            'username'          => ($doktorMu ? 'demo_hekim' : ($hastaMi ? 'demo_hasta' : 'demo_klinik')) . '_' . Str::lower(Str::random(4)),
             'email'             => $eposta,
             'password'          => bcrypt(self::SIFRE),
             'role_id'           => $rolId,
