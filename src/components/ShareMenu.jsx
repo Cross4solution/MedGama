@@ -131,7 +131,7 @@ export default function ShareMenu({ url, title, className = '', showNative = fal
             {showNative && (
               <button onClick={handleNativeShare} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 text-[13px] transition-colors">
                 <span className="inline-flex items-center justify-center shrink-0">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                     <path d="M22 2L11 13"></path>
                     <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
                   </svg>
@@ -140,16 +140,16 @@ export default function ShareMenu({ url, title, className = '', showNative = fal
               </button>
             )}
             <a href={wa} target="_blank" rel="noopener noreferrer" className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 text-[13px] transition-colors">
-              <WhatsAppIcon className="w-4 h-4 text-gray-400 shrink-0" />
+              <WhatsAppIcon className="w-4 h-4 text-emerald-500 shrink-0" />
               <span>WhatsApp</span>
             </a>
             <a href={mail} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 text-[13px] transition-colors">
-              <Mail className="w-4 h-4 text-gray-400 shrink-0" strokeWidth={1.8} />
+              <Mail className="w-4 h-4 text-amber-500 shrink-0" strokeWidth={1.8} />
               <span>{t('share.email')}</span>
             </a>
             <div className="mx-3 my-1 border-t border-gray-100" />
             <button onClick={handleCopy} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 text-[13px] transition-colors">
-              <LinkIcon className="w-4 h-4 text-gray-400 shrink-0" strokeWidth={1.8} />
+              <LinkIcon className="w-4 h-4 text-teal-600 shrink-0" strokeWidth={1.8} />
               <span>{t('share.copyLink')}</span>
             </button>
           </div>
