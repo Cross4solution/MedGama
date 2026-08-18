@@ -77,7 +77,7 @@ export default function HomeV2() {
         <>
       {/* Hero / Slogan */}
       <section className="relative overflow-hidden">
-          <div className="relative overflow-hidden rounded-b-2xl">
+          <div className="relative overflow-hidden rounded-b-lg">
             {/* Background layer */}
             <div
               className="absolute inset-0 bg-cover bg-center brightness-95 md:brightness-100"
