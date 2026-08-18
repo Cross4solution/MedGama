@@ -78,6 +78,10 @@ class ExaminationService
                 'clinic_id'        => $data['clinic_id'] ?? $doctor->clinic_id,
                 'appointment_id'   => $data['appointment_id'] ?? null,
                 'record_type'      => 'examination',
+                // Tanı notu doğrulanıyor ve sütunu var ama oluşturmada
+                // yazılmıyordu: doktorun ilk kayıtta girdiği tanı kayboluyordu
+                // (güncellemede yazılıyor, bu yüzden fark edilmemiş).
+                'diagnosis_note'   => $data['diagnosis_note'] ?? null,
                 'vitals'           => $data['vitals'] ?? null,
                 'examination_note' => $data['examination_note'] ?? null,
                 'treatment_plan'   => $data['treatment_plan'] ?? null,
