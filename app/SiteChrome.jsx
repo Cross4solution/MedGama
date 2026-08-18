@@ -193,9 +193,12 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
   const pagesWithOwnContainer = [
     '/profile', '/notifications', '/doctors-departments', '/search',
     '/patient-home', '/telehealth', '/telehealth-appointment',
-    '/clinic', '/medstream', '/post', '/doctor'
+    '/clinic', '/medstream', '/post', '/doctor',
+    '/home', '/home-v2', '/patient-dashboard',
   ];
-  const hasOwnContainer = pagesWithOwnContainer.some(page => pathname.startsWith(page));
+  // Kök adres de ana sayfa.
+  const anaSayfaMi = pathname === '/' || pathname === '';
+  const hasOwnContainer = anaSayfaMi || pagesWithOwnContainer.some(page => pathname.startsWith(page));
 
   // Footer sadece ana site sayfalarında görünsün
   const footerOnlyOn = ['/', '/home', '/home-v2'];
