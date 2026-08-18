@@ -59,6 +59,19 @@ const echoConfig = reverbKey
           Accept: 'application/json',
         },
       },
+      // laravel-echo 2 / pusher-js 8: yetkilendirme ayarının adı
+      // `channelAuthorization` oldu. Eski `authEndpoint` + `auth.headers`
+      // ikilisi sessizce yok sayılıyor; sonuç: özel kanala abonelik hiç
+      // tamamlanmıyor, hata da üretilmiyor. Sunucu yayın yapıyor, istemci
+      // kanalda olmadığı için hiçbir şey duymuyordu.
+      channelAuthorization: {
+        endpoint: `${wsAuthHost}/broadcasting/auth`,
+        transport: 'ajax',
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+          Accept: 'application/json',
+        },
+      },
     }
   : pusherKey
     ? {
@@ -74,6 +87,19 @@ const echoConfig = reverbKey
             Accept: 'application/json',
           },
         },
+      // laravel-echo 2 / pusher-js 8: yetkilendirme ayarının adı
+      // `channelAuthorization` oldu. Eski `authEndpoint` + `auth.headers`
+      // ikilisi sessizce yok sayılıyor; sonuç: özel kanala abonelik hiç
+      // tamamlanmıyor, hata da üretilmiyor. Sunucu yayın yapıyor, istemci
+      // kanalda olmadığı için hiçbir şey duymuyordu.
+      channelAuthorization: {
+        endpoint: `${wsAuthHost}/broadcasting/auth`,
+        transport: 'ajax',
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+          Accept: 'application/json',
+        },
+      },
       }
     : null;
 
@@ -93,8 +119,14 @@ export function getEcho() {
   // Refresh auth token on every access
   try {
     const token = getAuthToken();
-    if (echoInstance.connector?.pusher?.config?.auth?.headers) {
-      echoInstance.connector.pusher.config.auth.headers.Authorization = `Bearer ${token}`;
+    const cfg = echoInstance.connector?.pusher?.config;
+    // İki ad da tazelenir: eski sürüm auth.headers, yeni sürüm
+    // channelAuthorization.headers okuyor.
+    if (cfg?.auth?.headers) {
+      cfg.auth.headers.Authorization = `Bearer ${token}`;
+    }
+    if (cfg?.channelAuthorization?.headers) {
+      cfg.channelAuthorization.headers.Authorization = `Bearer ${token}`;
     }
   } catch {}
 

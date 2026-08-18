@@ -195,6 +195,9 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
     '/patient-home', '/telehealth', '/telehealth-appointment',
     '/clinic', '/medstream', '/post', '/doctor',
     '/home', '/home-v2', '/patient-dashboard', '/vasco-ai',
+    '/for-patients', '/for-clinics', '/about', '/contact',
+    '/privacy', '/privacy-policy', '/cookie-policy', '/kvkk', '/data-rights',
+    '/browse', '/medical-archive', '/saved', '/saved-clinics',
   ];
   // Kök adres de ana sayfa.
   const anaSayfaMi = pathname === '/' || pathname === '';
