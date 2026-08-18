@@ -19,7 +19,7 @@ export function NotificationsProvider({ children }) {
     if (!user) { setUnreadCount(0); return; }
     notificationAPI.unreadCount()
       .then(res => {
-        const c = res?.data?.unread_count ?? res?.data?.count ?? 0;
+        const c = res?.unread_count ?? res?.data?.unread_count ?? res?.count ?? 0;
         setUnreadCount(c);
       })
       .catch(() => {});

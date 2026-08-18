@@ -266,7 +266,7 @@ const CRMLayout = ({ children }) => {
     if (!user) return;
     try {
       const res = await chatAPI.unreadCount();
-      const c = res?.data?.unread_count ?? 0;
+      const c = res?.unread_count ?? res?.data?.unread_count ?? res?.count ?? 0;
       setChatUnread(c);
     } catch {}
   }, [user]);
@@ -307,7 +307,7 @@ const CRMLayout = ({ children }) => {
     if (!user) return;
     try {
       const res = await notificationAPI.unreadCount();
-      const c = res?.data?.unread_count ?? res?.data?.count ?? 0;
+      const c = res?.unread_count ?? res?.data?.unread_count ?? res?.count ?? 0;
       setUnreadCount(c);
       globalSetCount(c);
     } catch {}
