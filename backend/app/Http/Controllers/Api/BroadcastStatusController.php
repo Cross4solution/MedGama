@@ -54,7 +54,7 @@ class BroadcastStatusController extends Controller
             'reverb_scheme'   => config('broadcasting.connections.reverb.options.scheme'),
             // Anahtar zaten istemci paketinde açık; gizli olan app_id ve secret.
             'app_key'         => config('broadcasting.connections.reverb.key'),
-            'app_id_tanimli'  => (bool) config('broadcasting.connections.reverb.app_id'),
+            'app_id'          => config('broadcasting.connections.reverb.app_id'),
             'secret_tanimli'  => (bool) config('broadcasting.connections.reverb.secret'),
             'queue'           => config('queue.default'),
         ]);
