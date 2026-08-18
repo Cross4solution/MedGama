@@ -489,7 +489,7 @@ const CRMLayout = ({ children }) => {
                       <Lock className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
                     )}
                     {item.badge && (
-                      <span className="min-w-[20px] h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1.5">
+                      <span className="min-w-[17px] h-[17px] flex items-center justify-center rounded-full bg-rose-400 text-white text-[10px] leading-none font-semibold px-1">
                         {item.badge}
                       </span>
                     )}

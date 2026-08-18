@@ -121,7 +121,7 @@ export default function SidebarPatient() {
             <span className="leading-tight text-[13px] min-w-0">{label}</span>
           </span>
           {badge ? (
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-red-500 text-white shadow-sm">{badge > 9 ? '9+' : badge}</span>
+            <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white">{badge > 9 ? '9+' : badge}</span>
           ) : null}
         </a>
       );
@@ -136,7 +136,7 @@ export default function SidebarPatient() {
           {label}
         </span>
         {badge ? (
-          <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-red-500 text-white shadow-sm">{badge > 9 ? '9+' : badge}</span>
+          <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white">{badge > 9 ? '9+' : badge}</span>
         ) : null}
       </Link>
     );
@@ -328,7 +328,7 @@ export default function SidebarPatient() {
                             {it.label}
                           </span>
                           {it.badge ? (
-                            <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-red-500 text-white shadow-sm">{it.badge > 9 ? '9+' : it.badge}</span>
+                            <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white">{it.badge > 9 ? '9+' : it.badge}</span>
                           ) : null}
                         </a>
                       );
@@ -348,7 +348,7 @@ export default function SidebarPatient() {
                           {it.label}
                         </span>
                         {it.badge ? (
-                          <span className="inline-flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold rounded-full px-1.5 bg-red-500 text-white shadow-sm">{it.badge > 9 ? '9+' : it.badge}</span>
+                          <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] text-[10px] leading-none font-semibold rounded-full px-1 bg-rose-400 text-white">{it.badge > 9 ? '9+' : it.badge}</span>
                         ) : null}
                       </Link>
                     );
