@@ -24,8 +24,8 @@ class TranslationService
 
     public function __construct()
     {
-        $this->provider = env('TRANSLATE_PROVIDER', 'mymemory');
-        $this->defaultSource = env('TRANSLATE_DEFAULT_SOURCE', 'tr');
+        $this->provider = config('translation.provider');
+        $this->defaultSource = config('translation.default_source');
     }
 
     /**
@@ -95,7 +95,7 @@ class TranslationService
     private function myMemory(string $text, string $target, ?string $source): array
     {
         $src = $source ?: $this->defaultSource;
-        $email = env('MYMEMORY_EMAIL'); // raises the free quota when set
+        $email = config('translation.mymemory.email'); // raises the free quota when set
         $out = [];
         foreach ($this->chunk($text, 480) as $chunk) {
             $params = ['q' => $chunk, 'langpair' => $src . '|' . $target];
@@ -120,9 +120,9 @@ class TranslationService
 
     private function libreTranslate(string $text, string $target, ?string $source): array
     {
-        $base = rtrim((string) env('LIBRETRANSLATE_URL', ''), '/');
+        $base = rtrim((string) config('translation.libretranslate.url'), '/');
         $payload = ['q' => $text, 'source' => $source ?: 'auto', 'target' => $target, 'format' => 'text'];
-        if ($key = env('LIBRETRANSLATE_API_KEY')) {
+        if ($key = config('translation.libretranslate.api_key')) {
             $payload['api_key'] = $key;
         }
         $res = Http::timeout(10)->asForm()->post($base . '/translate', $payload);

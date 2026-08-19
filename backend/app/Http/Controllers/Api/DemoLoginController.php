@@ -108,7 +108,7 @@ class DemoLoginController extends Controller
 
         // CORS için zaten bir izinli köken listesi tutuluyor; ikinci bir
         // liste tutmak ikisinin ayrışmasına davetiye çıkarır.
-        $izinli = collect(explode(',', (string) env('CORS_ALLOWED_ORIGINS', '')))
+        $izinli = collect(config('cors.allowed_origins'))
             ->map(fn ($o) => strtolower((string) parse_url(trim($o), PHP_URL_HOST)))
             ->filter()
             ->all();

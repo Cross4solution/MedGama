@@ -28,7 +28,7 @@ class MailStatusController extends Controller
             abort(404);
         }
 
-        $anahtar = (string) (config('services.resend.key') ?: env('RESEND_API_KEY', ''));
+        $anahtar = (string) config('services.resend.key');
 
         // Sürücü çözümlenebiliyor mu: paket eksikse Laravel burada patlar ve
         // "Unsupported mail transport" der — asıl bilmek istediğimiz bu.

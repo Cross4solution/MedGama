@@ -91,6 +91,24 @@ fi
 #         First-time deploy: php artisan db:seed --force
 
 
+# ── 7b. Yapılandırma / rota / olay / görünüm önbelleği ──
+#       Bunlar alınmadığında her istek tüm config dosyalarını ve 800 satırlık
+#       rota dosyasını yeniden yorumluyordu. Küçük bir örnekte bu, istek
+#       başına doğrudan işlemci maliyeti demek.
+#
+#       config:cache .env'i devre dışı bırakır: yapılandırma DIŞINDA kalan
+#       her env() çağrısı null döner. Bunu koruyan bir test var
+#       (YapilandirmaOnbellegiTest); bozulursa dağıtımdan önce yakalanır.
+#
+#       Önbellek alınamazsa dağıtım durdurulmaz — uygulama yavaş ama çalışır
+#       hâlde ayağa kalkar.
+echo ""
+echo "→ Building config/route/event/view caches..."
+php artisan config:cache 2>&1 || echo "⚠ config:cache failed — running without it"
+php artisan route:cache  2>&1 || echo "⚠ route:cache failed — running without it"
+php artisan event:cache  2>&1 || echo "⚠ event:cache failed — running without it"
+php artisan view:cache   2>&1 || echo "⚠ view:cache failed — running without it"
+
 # ── 8. Debug: show registered routes ──
 echo "→ Registered routes (init/ping/health):"
 php artisan route:list 2>&1 | grep -iE "init|ping|health" || echo "(none matched)"

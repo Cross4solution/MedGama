@@ -29,7 +29,7 @@ class SendTestMail extends Command
         $this->line('Gönderen    : ' . config('mail.from.address'));
         $this->line('Alıcı       : ' . $adres);
 
-        if (config('mail.default') === 'resend' && !config('services.resend.key') && !env('RESEND_API_KEY')) {
+        if (config('mail.default') === 'resend' && !config('services.resend.key')) {
             $this->error('RESEND_API_KEY tanımlı değil — gönderim başarısız olur.');
 
             return self::FAILURE;

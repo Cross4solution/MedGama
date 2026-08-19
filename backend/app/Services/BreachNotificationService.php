@@ -51,7 +51,7 @@ class BreachNotificationService
         // 2. Email the admin / security inbox.
         $adminEmail = config('mail.admin_email')
             ?: config('mail.from.address')
-            ?: env('SECURITY_CONTACT_EMAIL', 'security@medagama.com');
+            ?: config('mail.security_contact');
 
         try {
             Mail::raw(

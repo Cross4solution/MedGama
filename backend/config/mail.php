@@ -110,6 +110,22 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Yönetim ve güvenlik adresleri
+    |--------------------------------------------------------------------------
+    |
+    | Veri ihlali bildirimi bu adrese gider. KVKK/GDPR bildirim süresi kısa
+    | olduğu için adresin okunan bir kutu olması gerekir. Kod bir dönem bunu
+    | doğrudan env() ile okuyordu; yapılandırma önbelleğe alındığında env()
+    | null döner ve bildirim sessizce hiçbir yere gitmez.
+    |
+    */
+
+    'admin_email' => env('ADMIN_EMAIL'),
+
+    'security_contact' => env('SECURITY_CONTACT_EMAIL', 'security@medagama.com'),
+
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),

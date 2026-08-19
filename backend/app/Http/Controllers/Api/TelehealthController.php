@@ -75,7 +75,7 @@ class TelehealthController extends Controller
         // Transkripsiyon (Deepgram, ABD) KVKK/HIPAA gereği KAPALI — PHI'nin üçüncü taraf
         // bulutta işlenmemesi için. BAA + açık rıza sonrası TELEHEALTH_RECORDING=true ile açılır.
         // Görüşme (video/ses) bu durumdan etkilenmez; yalnızca canlı altyazı devre dışıdır.
-        if (!env('TELEHEALTH_RECORDING', false)) {
+        if (!config('telehealth.recording')) {
             return response()->json([
                 'enabled' => false,
                 'mode'    => 'disabled',
@@ -202,16 +202,16 @@ class TelehealthController extends Controller
      */
     private function iceServers(): array
     {
-        $stun = env('STUN_URLS', 'stun:stun.l.google.com:19302');
+        $stun = config('telehealth.stun_urls');
         $servers = [];
         foreach (array_filter(array_map('trim', explode(',', $stun))) as $url) {
             $servers[] = ['urls' => $url];
         }
 
-        $turnUrls = array_filter(array_map('trim', explode(',', (string) env('TURN_URLS', ''))));
-        $secret = env('TURN_SECRET');
+        $turnUrls = array_filter(array_map('trim', explode(',', (string) config('telehealth.turn_urls'))));
+        $secret = config('telehealth.turn_secret');
         if ($turnUrls && $secret) {
-            $ttl = (int) env('TURN_TTL', 3600);
+            $ttl = (int) config('telehealth.turn_ttl');
             $username = (time() + $ttl) . ':medgama';
             $credential = base64_encode(hash_hmac('sha1', $username, $secret, true));
             $servers[] = [

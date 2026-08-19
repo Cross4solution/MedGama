@@ -28,7 +28,7 @@ class DailyService
         // Kayıt KVKK/HIPAA gereği VARSAYILAN OLARAK KAPALI — ses/video PHI'nin üçüncü
         // taraf bulutta (Daily.co, ABD) saklanmaması için. Yalnızca imzalı BAA + hasta
         // açık rızası sonrası env ile (TELEHEALTH_RECORDING=true) açılabilir.
-        $this->recordingEnabled = (bool) env('TELEHEALTH_RECORDING', false);
+        $this->recordingEnabled = (bool) config('telehealth.recording');
     }
 
     /**

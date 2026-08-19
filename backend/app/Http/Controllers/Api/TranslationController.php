@@ -42,8 +42,8 @@ class TranslationController extends Controller
      */
     public function status(Request $request): JsonResponse
     {
-        $saglayici = env('TRANSLATE_PROVIDER', 'mymemory');
-        $kendiSunucumuz = $saglayici === 'libretranslate' && env('LIBRETRANSLATE_URL');
+        $saglayici = config('translation.provider');
+        $kendiSunucumuz = $saglayici === 'libretranslate' && config('translation.libretranslate.url');
 
         $user = $request->user();
 
@@ -81,7 +81,7 @@ class TranslationController extends Controller
         ]);
 
         $hedef = $veri['target'] ?? $request->user()?->preferred_language ?? 'en';
-        $dısServis = env('TRANSLATE_PROVIDER', 'mymemory') !== 'libretranslate';
+        $dısServis = config('translation.provider') !== 'libretranslate';
 
         $sonuc = [];
         foreach ($veri['items'] as $k) {

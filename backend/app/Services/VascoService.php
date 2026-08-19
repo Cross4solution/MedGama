@@ -57,8 +57,8 @@ class VascoService
     {
         // Default: Google Gemini Flash-Lite (best Turkish + 1500 req/day free,
         // OpenAI-compatible). Swap to Groq/Cerebras/self-host Ollama via env.
-        $base = rtrim((string) env('VASCO_LLM_BASE', 'https://generativelanguage.googleapis.com/v1beta/openai'), '/');
-        $key = env('VASCO_LLM_KEY');
+        $base = rtrim((string) config('vasco.llm.base'), '/');
+        $key = config('vasco.llm.key');
         if ($key) {
             try {
                 return $this->llmExtract($base, $key, $text, $lang, $specialties);
@@ -82,7 +82,7 @@ class VascoService
             . "If the complaint is too vague to choose, set code=null and provide follow_up.";
 
         $res = Http::timeout(15)->withToken($key)->post($base . '/chat/completions', [
-            'model'       => env('VASCO_LLM_MODEL', 'gemini-2.5-flash-lite'),
+            'model'       => config('vasco.llm.model'),
             'temperature' => 0.2,
             'messages'    => [
                 ['role' => 'system', 'content' => $sys],

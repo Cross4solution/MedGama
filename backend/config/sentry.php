@@ -52,41 +52,10 @@ return [
 
     /**
      * Son süzgeç: rapor gönderilmeden hemen önce çalışır.
-     * Hassas alan adları maskelenir. Yeni bir alan eklenirse buraya da eklenmeli.
+     * Maskelenen alanların listesi SentryVeriTemizleyici içinde; yeni bir
+     * hassas alan eklenirse oraya eklenmeli. Burada kapanış yerine sınıf
+     * duruyor çünkü kapanış yapılandırmanın önbelleğe alınmasını engelliyor.
      */
-    'before_send' => function (\Sentry\Event $event): ?\Sentry\Event {
-        $maskele = [
-            'password', 'password_confirmation', 'token', 'access_token',
-            'api_key', 'secret', 'authorization', 'cookie',
-            'email', 'mobile', 'phone', 'date_of_birth', 'national_id',
-            'patient_medical_snapshot', 'doctor_note', 'confirmation_note',
-            'anamnesis', 'medications', 'allergies', 'conditions', 'diagnosis',
-        ];
-
-        $temizle = static function (array $veri) use ($maskele, &$temizle): array {
-            foreach ($veri as $anahtar => $deger) {
-                if (is_string($anahtar) && in_array(strtolower($anahtar), $maskele, true)) {
-                    $veri[$anahtar] = '[gizlendi]';
-                } elseif (is_array($deger)) {
-                    $veri[$anahtar] = $temizle($deger);
-                }
-            }
-            return $veri;
-        };
-
-        $istek = $event->getRequest();
-        if (!empty($istek)) {
-            unset($istek['data'], $istek['cookies'], $istek['env']);
-            if (isset($istek['headers']) && is_array($istek['headers'])) {
-                $istek['headers'] = $temizle($istek['headers']);
-            }
-            $event->setRequest($istek);
-        }
-
-        $event->setExtra($temizle($event->getExtra()));
-        $event->setTags($temizle($event->getTags()));
-
-        return $event;
-    },
+    'before_send' => [\App\Observability\SentryVeriTemizleyici::class, 'uygula'],
 
 ];
