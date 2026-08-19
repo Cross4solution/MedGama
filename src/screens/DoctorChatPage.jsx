@@ -12,6 +12,7 @@ import resolveStorageUrl from '../utils/resolveStorageUrl';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { getEcho } from '../lib/echo';
+import { useGorunurYoklama } from '../hooks/useGorunurYoklama';
 
 // ── Helpers ──
 
@@ -322,19 +323,19 @@ const DoctorChatPage = () => {
     };
   }, [isApiMode, activeThreadId, currentUserId, fetchConversations]);
 
-  // Polling fallback: refresh conversations every 10s (messages only if no Echo)
-  useEffect(() => {
-    if (!isApiMode) return;
-    const echo = getEcho();
-    const pollInterval = echo ? 30000 : 10000; // Slower polling when Echo is active
-    pollRef.current = setInterval(() => {
+  // Yedek yoklama: mesajlar sokete geliyor, bu yalnızca soket kopmuşsa
+  // devreye giren ağ. Sekme görünmüyorsa hiç sorulmuyor — sekme öne
+  // gelince zaten hemen tazeleniyor, yani kullanıcı geri döndüğünde
+  // eksik mesaj görmüyor.
+  useGorunurYoklama(
+    () => {
+      const echo = getEcho();
       fetchConversations();
-      if (!echo && activeThreadId) {
-        fetchMessages(activeThreadId);
-      }
-    }, pollInterval);
-    return () => clearInterval(pollRef.current);
-  }, [isApiMode, activeThreadId, fetchConversations, fetchMessages]);
+      if (!echo && activeThreadId) fetchMessages(activeThreadId);
+    },
+    (typeof window !== 'undefined' && getEcho()) ? 30000 : 10000,
+    isApiMode,
+  );
 
   // Dynamic timestamp refresh: recompute `when` every 30s so sidebar stays live
   const [, setTick] = useState(0);

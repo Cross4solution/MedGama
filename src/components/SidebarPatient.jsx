@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from '@/compat/router';
 import { stripLocale } from '../lib/locales';
 import { useAuth } from '../context/AuthContext';
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../context/NotificationsContext';
 import { chatAPI } from '../lib/api';
 import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, Heart, FolderHeart, Activity, Lock, X, Sparkles, Receipt } from 'lucide-react';
+import { useGorunurYoklama } from '../hooks/useGorunurYoklama';
 
 // Custom chat icon using public SVG (accepts className via props)
 const ChatRoundIcon = (props) => (
@@ -30,17 +31,24 @@ export default function SidebarPatient() {
   // Sohbetteki okunmamış mesaj sayısı. Canlı bildirim geldiğinde de tazelenir;
   // ekranı açık unutan kullanıcı sayının arttığını görür.
   const [sohbetSayisi, setSohbetSayisi] = useState(0);
+
+  const sohbetSayisiGetir = useCallback(() => {
+    if (!user?.id) return;
+    chatAPI.unreadCount()
+      .then((r) => setSohbetSayisi(Number(r?.unread_count ?? r?.data?.unread_count ?? r?.count ?? 0) || 0))
+      .catch(() => {});
+  }, [user?.id]);
+
+  // Sekme görünmüyorsa sorulmuyor: rozeti kimse görmüyorken tazelemenin
+  // karşılığı yok, sekme öne gelince zaten hemen tazeleniyor.
+  useGorunurYoklama(sohbetSayisiGetir, 60000, Boolean(user?.id));
+
+  // Mesaj okununca sayaç anında düşsün (yoklamayı beklemeden).
   useEffect(() => {
     if (!user?.id) return;
-    let iptal = false;
-    const getir = () => chatAPI.unreadCount()
-      .then((r) => { if (!iptal) setSohbetSayisi(Number(r?.unread_count ?? r?.data?.unread_count ?? r?.count ?? 0) || 0); })
-      .catch(() => {});
-    getir();
-    const zamanlayici = setInterval(getir, 60000);
-    window.addEventListener('chat:unread-changed', getir);
-    return () => { iptal = true; clearInterval(zamanlayici); window.removeEventListener('chat:unread-changed', getir); };
-  }, [user?.id]);
+    window.addEventListener('chat:unread-changed', sohbetSayisiGetir);
+    return () => window.removeEventListener('chat:unread-changed', sohbetSayisiGetir);
+  }, [user?.id, sohbetSayisiGetir]);
 
   if (!user) return null;
 

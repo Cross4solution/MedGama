@@ -17,6 +17,7 @@ import { useAuth } from '../../context/AuthContext';
 import useAppointmentSync from '../../hooks/useAppointmentSync';
 import ProTeaser from '../../components/crm/ProTeaser';
 import { appointmentTimeDisplay, formatDateInZone, viewerTimezone } from '../../utils/dates';
+import { useGorunurYoklama } from '../../hooks/useGorunurYoklama';
 
 const POLL_INTERVAL = 30000; // 30s
 
@@ -98,13 +99,14 @@ const CRMSmartCalendar = () => {
     }
   }, [dateRange, fetchEvents]);
 
-  useEffect(() => {
-    if (!dateRange.start) return;
-    const interval = setInterval(() => {
-      fetchEvents(dateRange.start, dateRange.end);
-    }, POLL_INTERVAL);
-    return () => clearInterval(interval);
-  }, [dateRange, fetchEvents]);
+  // Takvim yalnızca ekranda görünürken tazeleniyor. Arka plandaki sekmede
+  // randevu listesini yenilemenin karşılığı yok; sekme öne gelince zaten
+  // hemen tazeleniyor, yani kullanıcı bayat takvim görmüyor.
+  useGorunurYoklama(
+    () => fetchEvents(dateRange.start, dateRange.end),
+    POLL_INTERVAL,
+    Boolean(dateRange.start),
+  );
 
   // ── Generate closed-hours background events from operating hours ──
   const availabilityEvents = useMemo(() => {

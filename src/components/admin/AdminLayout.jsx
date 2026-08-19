@@ -34,6 +34,7 @@ import { useAuth } from '../../context/AuthContext';
 import { adminAPI, supportAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import AnnouncementBanner from '../ui/AnnouncementBanner';
+import { useGorunurYoklama } from '../../hooks/useGorunurYoklama';
 
 // ── Admin Login Gate ──────────────────────────────────────
 const ADMIN_ROLES = ['superAdmin', 'saasAdmin'];
@@ -256,12 +257,8 @@ const AdminLayout = ({ children }) => {
     }
   }, [isAdmin]);
 
-  useEffect(() => {
-    if (!isAdmin) return;
-    fetchAlerts();
-    const t = setInterval(fetchAlerts, 60000);
-    return () => clearInterval(t);
-  }, [fetchAlerts, isAdmin]);
+  // Sekme görünmüyorsa uyarı sorulmuyor; öne gelince hemen tazeleniyor.
+  useGorunurYoklama(fetchAlerts, 60000, isAdmin);
 
   // Close alerts on outside click
   useEffect(() => {

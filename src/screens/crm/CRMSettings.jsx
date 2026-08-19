@@ -25,6 +25,7 @@ import GlobalSuggest from '../../components/forms/GlobalSuggest';
 import StatusBadge from '../../components/ui/StatusBadge';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import { setNotificationSoundEnabled } from '../../utils/notificationSound';
+import { useGorunurYoklama } from '../../hooks/useGorunurYoklama';
 
 // ── OpenStreetMap helpers ──────────────────────────────
 function hasValidCoordinates(coords) {
@@ -243,13 +244,11 @@ const CRMSettings = ({ standalone = false }) => {
     setVerificationLoading(false);
   }, [user?.is_verified, updateUser]);
 
-  useEffect(() => {
-    if (activeTab === 'verification') {
-      fetchVerificationRequests();
-      const poll = setInterval(fetchVerificationRequests, 15000);
-      return () => clearInterval(poll);
-    }
-  }, [activeTab, fetchVerificationRequests]);
+  // Doğrulama sonucu zaten soket üzerinden anlık düşüyor
+  // (useVerificationListener). Buradaki yoklama yalnızca soket kopmuşsa
+  // devreye giren emniyet ağı; 15 saniyede bir sormanın karşılığı yoktu —
+  // yönetici onayı dakikalar sürer. Sekme görünmüyorsa hiç sorulmuyor.
+  useGorunurYoklama(fetchVerificationRequests, 60000, activeTab === 'verification');
 
   const handleVerificationUpload = async () => {
     const file = verificationFileRef.current?.files?.[0];

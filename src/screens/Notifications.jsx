@@ -20,6 +20,7 @@ import { notificationAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationsContext';
 import { useTranslation } from 'react-i18next';
+import { useGorunurYoklama } from '../hooks/useGorunurYoklama';
 
 const TYPE_META = {
   appointment_booked:    { label: 'Appointment Booked', icon: CalendarClock, color: 'text-blue-600', bg: 'bg-blue-100/80', category: 'appointment' },
@@ -100,12 +101,8 @@ export default function Notifications() {
     if (user) { fetchNotifications(1); fetchUnreadCount(); }
   }, [user, fetchNotifications, fetchUnreadCount]);
 
-  // Polling
-  useEffect(() => {
-    if (!user) return;
-    const interval = setInterval(() => { fetchUnreadCount(); }, 30000);
-    return () => clearInterval(interval);
-  }, [user, fetchUnreadCount]);
+  // Yedek yoklama — sekme görünmüyorsa sorulmuyor.
+  useGorunurYoklama(fetchUnreadCount, 30000, Boolean(user));
 
   const handleMarkRead = async (id) => {
     try {

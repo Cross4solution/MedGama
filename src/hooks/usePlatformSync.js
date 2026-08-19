@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { doctorProfileAPI, adminAPI } from '../lib/api';
+import { useGorunurYoklama } from './useGorunurYoklama';
 
 /**
  * usePlatformSync — Real-time sync hook (polling-based).
@@ -47,12 +48,8 @@ export function useDoctorVerificationSync({ interval = DEFAULT_INTERVAL, enabled
     }
   }, [enabled, user, updateUser]);
 
-  useEffect(() => {
-    if (!enabled) return;
-    fetchStatus();
-    const timer = setInterval(fetchStatus, interval);
-    return () => clearInterval(timer);
-  }, [fetchStatus, interval, enabled]);
+  // Sekme görünmüyorsa durum sorulmuyor.
+  useGorunurYoklama(fetchStatus, interval, enabled);
 
   return {
     verificationRequests,
@@ -93,12 +90,8 @@ export function useAdminDashboardSync({ interval = 60000, enabled = true } = {})
     }
   }, [enabled]);
 
-  useEffect(() => {
-    if (!enabled) return;
-    fetchStats();
-    const timer = setInterval(fetchStats, interval);
-    return () => clearInterval(timer);
-  }, [fetchStats, interval, enabled]);
+  // Sekme görünmüyorsa istatistik sorulmuyor.
+  useGorunurYoklama(fetchStats, interval, enabled);
 
   return { stats, alerts, loading, refreshNow: fetchStats };
 }
