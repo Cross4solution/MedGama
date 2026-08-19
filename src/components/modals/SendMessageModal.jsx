@@ -90,14 +90,12 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
 
   if (!open) return null;
 
+  // Dış katman ekranın tamamını kaplar ve pencereyi ekrana göre ortalar.
+  // Burada `lg:pl-64` vardı: sol menü için yer bırakıyordu, ama bu pencere
+  // doktor ve klinik profili gibi menüsüz sayfalarda açılıyor ve o boşluk
+  // pencereyi 120 piksel sağa itiyordu. Randevu ve görüntülü görüşme
+  // pencereleri zaten aşağıdaki sınıfları kullanıyor.
   return (
-    {/*
-      Ekranın tamamını kaplayan katman: pencere ekrana göre ortalanır.
-      Buradaki `lg:pl-64` sol menü için yer bırakıyordu, ama bu pencere
-      doktor ve klinik profili gibi menüsüz sayfalarda açılıyor ve boşluk
-      pencereyi sağa itiyordu. Diğer pencereler (randevu, görüntülü görüşme)
-      zaten bu satırdaki sınıfları kullanıyor.
-    */}
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md z-10">
