@@ -17,6 +17,11 @@ body {
 :root {
   /* Keep in sync with Sidebar width (Tailwind w-52 ≈ 13rem) */
   --sidebar-width: 12rem;
+  /* Sabit başlığın gerçek yüksekliği (py-3 + içerik + alt çizgi).
+     Sayfa gövdesi bu kadar aşağıdan başlar. Yaklaşık bir değer
+     kullanıldığında ana sayfada görselle başlık arasında ince beyaz
+     bir şerit kalıyordu. Başlığın yüksekliği değişirse tek yer burası. */
+  --site-header-h: 65px;
 }
 @tailwind base;
 @tailwind components;

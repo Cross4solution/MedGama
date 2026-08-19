@@ -25,6 +25,10 @@ return [
     */
     'allow_destructive_init' => env('ALLOW_DESTRUCTIVE_INIT', false),
 
+    // Geçici teşhis başlığı (Server-Timing). Yalnızca süre sayıları yazar.
+    // TESLİMDEN ÖNCE KALDIRILACAK.
+    'timing_header' => env('TIMING_HEADER', false),
+
     /*
     | init-db endpoint secret. Prefer the INIT_DB_KEY env var.
     | The hardcoded fallback below is legacy and MUST be rotated:

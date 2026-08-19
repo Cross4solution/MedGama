@@ -32,6 +32,28 @@ const Header = () => {
   const [mobileLoginExpanded, setMobileLoginExpanded] = useState(false);
   const { pathname } = useLocation();
 
+  // ── Başlık yüksekliğini sayfa gövdesine bildir ──
+  // Gövde, sabit başlığın altından başlasın diye --site-header-h kadar
+  // aşağıdan başlıyor. Bu yükseklik sabit değil: menüsü farklı sayfalarda
+  // 61-65 px arasında değişiyor. Sabit bir sayı yazıldığında kimi sayfada
+  // görselle başlık arasında ince beyaz bir şerit kalıyor, kimi sayfada
+  // içerik başlığın altına giriyordu. Bu yüzden ölçüp yazıyoruz.
+  const headerRef = useRef(null);
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+
+    const yaz = () => {
+      const y = Math.round(el.getBoundingClientRect().height);
+      if (y > 0) document.documentElement.style.setProperty('--site-header-h', `${y}px`);
+    };
+
+    yaz();
+    const gozlemci = new ResizeObserver(yaz);
+    gozlemci.observe(el);
+    return () => gozlemci.disconnect();
+  }, [pathname]);
+
   // ── Notification state ──
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef(null);
@@ -260,7 +282,7 @@ const Header = () => {
 
   return (
     <>
-    <header className={`site-header fixed top-0 left-0 right-0 z-50 border-b border-gray-200/80 bg-white/95 backdrop-blur-sm`}>
+    <header ref={headerRef} className={`site-header fixed top-0 left-0 right-0 z-50 border-b border-gray-200/80 bg-white/95 backdrop-blur-sm`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="grid grid-cols-[auto,1fr,auto] items-center gap-3">
           {/* Logo */}

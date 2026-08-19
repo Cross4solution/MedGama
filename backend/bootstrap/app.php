@@ -50,6 +50,8 @@ return Application::configure(basePath: dirname(__DIR__))
             ],
             append: [
                 \App\Http\Middleware\SetLocale::class,
+                // Geçici teşhis — TIMING_HEADER olmadan kapalı, teslimden önce kaldırılacak.
+                \App\Http\Middleware\SureOlcer::class,
                 // Varsayılan: hiçbir API yanıtı önbelleğe yazılmaz. Hasta
                 // verisi taşıyan uçlar bu middleware'e tek tek bağlanmıyordu
                 // ve Symfony'nin varsayılanıyla (no-cache, private) çıkıyordu
