@@ -215,4 +215,98 @@ class SorguYukuTest extends TestCase
             fn () => $this->getJson("/api/medstream/posts/{$gonderi->id}/comments?per_page=50"),
         );
     }
+
+    /**
+     * CRM erişimi olan bir doktor üretir.
+     *
+     * CRM uçları abonelik istiyor; abonesiz kullanıcıda hepsi 403 döner ve
+     * ölçüm yapılamaz.
+     */
+    private function crmDoktoru(): array
+    {
+        $klinik = Clinic::factory()->create([
+            'is_crm_active'  => true,
+            'crm_expires_at' => now()->addYear(),
+        ]);
+
+        $doktor = User::factory()->doctor()->create([
+            'clinic_id'      => $klinik->id,
+            'is_crm_active'  => true,
+            'crm_expires_at' => now()->addYear(),
+        ]);
+
+        $this->actingAs($doktor, 'sanctum');
+
+        return [$doktor, $klinik];
+    }
+
+    public function test_crm_hasta_listesi_satir_basina_sorgu_atmiyor(): void
+    {
+        [$doktor, $klinik] = $this->crmDoktoru();
+
+        // CRM hasta listesi randevu ilişkisi üzerinden kuruluyor: her hasta
+        // için ayrı randevu sorgusu atılırsa klinik büyüdükçe ekran durur.
+        $uret = function (int $adet) use ($doktor, $klinik) {
+            for ($i = 0; $i < $adet; $i++) {
+                $hasta = User::factory()->patient()->create();
+                Appointment::factory()->create([
+                    'patient_id' => $hasta->id,
+                    'doctor_id'  => $doktor->id,
+                    'clinic_id'  => $klinik->id,
+                    'status'     => 'completed',
+                    'starts_at'  => now()->subDays($i + 1),
+                    'timezone'   => 'Europe/Istanbul',
+                ]);
+            }
+        };
+
+        $this->olcekle('CRM hasta listesi', $uret, fn () => $this->getJson('/api/crm/patients?per_page=50'));
+    }
+
+    public function test_crm_fatura_listesi_satir_basina_sorgu_atmiyor(): void
+    {
+        [$doktor, $klinik] = $this->crmDoktoru();
+
+        $sayac = 0;
+        $uret = function (int $adet) use ($doktor, $klinik, &$sayac) {
+            for ($i = 0; $i < $adet; $i++) {
+                $sayac++;
+                $hasta = User::factory()->patient()->create();
+                \App\Models\Invoice::create([
+                    'invoice_number' => 'TEST-' . $sayac,
+                    'patient_id'     => $hasta->id,
+                    'doctor_id'      => $doktor->id,
+                    'clinic_id'      => $klinik->id,
+                    'subtotal'       => 100,
+                    'grand_total'    => 100,
+                    'paid_amount'    => 0,
+                    'currency'       => 'EUR',
+                    'status'         => 'pending',
+                    'issue_date'     => now()->toDateString(),
+                ]);
+            }
+        };
+
+        $this->olcekle('CRM fatura listesi', $uret, fn () => $this->getJson('/api/crm/billing/invoices?per_page=50'));
+    }
+
+    public function test_takvim_olaylari_satir_basina_sorgu_atmiyor(): void
+    {
+        [$doktor, $klinik] = $this->crmDoktoru();
+
+        $uret = function (int $adet) use ($doktor, $klinik) {
+            for ($i = 0; $i < $adet; $i++) {
+                Appointment::factory()->create([
+                    'patient_id' => User::factory()->patient()->create()->id,
+                    'doctor_id'  => $doktor->id,
+                    'clinic_id'  => $klinik->id,
+                    'status'     => 'confirmed',
+                    'starts_at'  => now()->addDays($i + 1),
+                    'timezone'   => 'Europe/Istanbul',
+                ]);
+            }
+        };
+
+        $this->olcekle('Takvim olayları', $uret, fn () => $this->getJson('/api/appointments/calendar-events'));
+    }
 }
