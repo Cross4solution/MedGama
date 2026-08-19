@@ -7,6 +7,7 @@ use App\Models\Clinic;
 use App\Models\MedStreamPost;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -33,6 +34,11 @@ class SorguYukuTest extends TestCase
      */
     private function sorguSayisi(callable $istek): int
     {
+        // Ölçülen şey isteğin VERİTABANI yükü. Bazı uçlar yanıtı önbelleğe
+        // alıyor; önbellek temizlenmezse ikinci ölçüm sıfır sorgu görür ve
+        // test N+1'i değil önbelleği ölçmüş olur.
+        Cache::flush();
+
         DB::flushQueryLog();
         DB::enableQueryLog();
         $yanit = $istek();
@@ -86,6 +92,7 @@ class SorguYukuTest extends TestCase
         // Boş liste dönen bir uç bu testi kendiliğinden geçerdi: sorgu sayısı
         // sabit kalır çünkü ortada satır yoktur. Bu yüzden ucun gerçekten
         // üretilen kayıtları döndürdüğü ayrıca doğrulanıyor.
+        Cache::flush();
         $this->assertGreaterThanOrEqual(
             15,
             $this->satirSay($istek()->json()),

@@ -19,21 +19,52 @@ class DoctorController extends Controller
      *               verified, sort, per_page,
      *               specialty (name/code), city (name) — Round 4 landing
      */
+    /** Listeyi daraltan parametreler — biri doluysa sonuç kişiye/aramaya özeldir. */
+    private const SUZGECLER = [
+        'search_text', 'specialty_id', 'city_id', 'language',
+        'min_rating', 'gender', 'online_only', 'clinic_id',
+        'verified', 'city', 'search', 'specialty',
+    ];
+
     public function index(Request $request): JsonResponse
     {
-        $doctors = $this->doctorService->listDoctors(
-            $request->only([
-                'search_text', 'specialty_id', 'city_id', 'language',
-                'min_rating', 'gender', 'online_only', 'clinic_id',
-                'verified', 'sort', 'per_page',
-                // Round 4 landing: name-based filters
-                'city',
-                // Legacy compat
-                'search', 'specialty',
-            ]),
+        $filtreler = $request->only([...self::SUZGECLER, 'sort', 'per_page']);
+
+        $suzgecVar = collect(self::SUZGECLER)
+            ->contains(fn ($ad) => filled($filtreler[$ad] ?? null));
+
+        // Süzgeçsiz liste açılış sayfasının çektiği şey: herkes için aynı ve
+        // dakikalarca değişmiyor. Ölçümde bu uç isteğin 200 ms'sini yalnızca
+        // veritabanını beklemekle geçiriyordu (5 sorgu), üstelik her ziyaretçi
+        // için baştan. Katalog uçlarında zaten kullanılan kalıp buraya da
+        // uygulandı.
+        //
+        // Süzgeçli aramalar önbelleğe ALINMAZ: birleşim sayısı sınırsız,
+        // önbellek şişer ve isabet oranı düşer.
+        //
+        // 60 sn'lik ömür bilinçli: yeni kaydolan doktor listede en fazla bir
+        // dakika geç görünür. Elle temizleme eklenmedi — doktor profilinin
+        // değişebileceği yer çok, ve unutulan tek bir yer bayat veriyi kalıcı
+        // hale getirirdi. Süre dolması bunu kendiliğinden garanti eder.
+        if ($suzgecVar) {
+            return response()->json($this->doctorService->listDoctors($filtreler));
+        }
+
+        $anahtar = sprintf(
+            'doctors:list:%s:%s:%s:%s',
+            app()->getLocale(),
+            (int) $request->query('page', 1),
+            (int) ($filtreler['per_page'] ?? 20),
+            $filtreler['sort'] ?? 'name',
         );
 
-        return response()->json($doctors);
+        $liste = cache()->remember(
+            $anahtar,
+            60,
+            fn () => $this->doctorService->listDoctors($filtreler)->toArray(),
+        );
+
+        return response()->json($liste);
     }
 
     /**
