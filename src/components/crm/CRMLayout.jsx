@@ -293,23 +293,22 @@ const CRMLayout = ({ children }) => {
   // ── Notification state ──
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef(null);
-  const { unreadCount: globalUnreadCount, increment: globalIncrement, decrement: globalDecrement, reset: globalReset, setCount: globalSetCount } = useNotifications();
-  const [unreadCount, setUnreadCount] = useState(globalUnreadCount);
+  const {
+    unreadCount,
+    refresh: fetchUnreadCount,
+    increment: globalIncrement,
+    decrement: globalDecrement,
+    reset: globalReset,
+  } = useNotifications();
   const [notifications, setNotifications] = useState([]);
   const [notifLoading, setNotifLoading] = useState(false);
 
-  // Keep local count in sync with global context
-  useEffect(() => { setUnreadCount(globalUnreadCount); }, [globalUnreadCount]);
-
-  const fetchUnreadCount = useCallback(async () => {
-    if (!user) return;
-    try {
-      const res = await notificationAPI.unreadCount();
-      const c = res?.unread_count ?? res?.data?.unread_count ?? res?.count ?? 0;
-      setUnreadCount(c);
-      globalSetCount(c);
-    } catch {}
-  }, [user, globalSetCount]);
+  // Okunmamış sayısının TEK kaynağı bildirim bağlamı.
+  //
+  // Burada ayrı bir yerel sayaç tutuluyor, ayrıca aynı uç ayrı ayrı
+  // yoklanıyordu: CRM açık bir kullanıcı için /notifications/unread-count'a iki
+  // istek gidiyordu ve iki sayaç birbirini eziyordu (yerel artış, bir sonraki
+  // genel tazelemede kayboluyordu).
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
@@ -328,7 +327,6 @@ const CRMLayout = ({ children }) => {
     if (!echo) return;
     const channel = echo.private(`notifications.${user.id}`);
     channel.listen('.notification.new', (payload) => {
-      setUnreadCount(prev => prev + 1);
       globalIncrement(1);
       playNotificationSound(String(payload?.data?.type || payload?.type || ''));
       setNotifications(prev => {
@@ -378,7 +376,6 @@ const CRMLayout = ({ children }) => {
     try {
       await notificationAPI.markAsRead(id);
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
-      setUnreadCount(prev => Math.max(0, prev - 1));
       globalDecrement(1);
     } catch {}
   };
@@ -387,7 +384,6 @@ const CRMLayout = ({ children }) => {
     try {
       await notificationAPI.markAllAsRead();
       setNotifications(prev => prev.map(n => ({ ...n, read_at: n.read_at || new Date().toISOString() })));
-      setUnreadCount(0);
       globalReset();
     } catch {}
   };
