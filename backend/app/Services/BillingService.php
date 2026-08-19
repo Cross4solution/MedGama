@@ -558,35 +558,62 @@ HTML;
 
         if ($period === 'weekly') {
             // Last 12 weeks
+            //
+            // Burada EXTRACT(ISOYEAR ...) kullanılıyordu; ISOYEAR PostgreSQL'e
+            // özgü, MySQL/TiDB'de böyle bir birim yok. Canlıda bu uç haftalık
+            // seçilince veritabanı hatasıyla düşüyordu (aylık ve günlük
+            // çalıştığı için gözden kaçmış).
+            //
+            // Toplama GÜNE göre yapılıyor: DATE(...) üç sürücüde de aynı
+            // çalışıyor ve 12 haftada en çok 84 satır dönüyor. Haftalara
+            // bölme PHP'de, yani takvim kuralları tek yerde ve sürücüden
+            // bağımsız.
             $start = Carbon::now()->subWeeks(11)->startOfWeek();
-            $rows = (clone $query)
+
+            $gunler = (clone $query)
                 ->where('paid_at', '>=', $start)
-                ->select(
-                    DB::raw("EXTRACT(ISOYEAR FROM paid_at) as yr"),
-                    DB::raw("EXTRACT(WEEK FROM paid_at) as wk"),
-                    DB::raw('SUM(grand_total) as total')
-                )
-                ->groupBy(DB::raw("EXTRACT(ISOYEAR FROM paid_at)"), DB::raw("EXTRACT(WEEK FROM paid_at)"))
-                ->orderBy('yr')->orderBy('wk')
+                ->select(DB::raw('DATE(paid_at) as date'), DB::raw('SUM(grand_total) as total'))
+                ->groupBy(DB::raw('DATE(paid_at)'))
                 ->get();
 
-            return $rows->map(fn($r) => [
-                'label' => "W{$r->wk}",
-                'total' => round((float) $r->total, 2),
-            ])->values()->toArray();
+            $haftalik = [];
+            foreach ($gunler as $gun) {
+                $anahtar = Carbon::parse($gun->date)->startOfWeek()->toDateString();
+                $haftalik[$anahtar] = ($haftalik[$anahtar] ?? 0) + (float) $gun->total;
+            }
+
+            // Geliri olmayan haftalar da dönüyor: eskiden atlanıyordu ve
+            // grafikte boş haftalar hiç görünmediği için eğri yanıltıyordu.
+            $sonuc = [];
+            for ($h = $start->copy(), $i = 0; $i < 12; $h->addWeek(), $i++) {
+                $anahtar = $h->toDateString();
+                $sonuc[] = [
+                    'label' => 'W' . $h->isoWeek(),
+                    'week_start' => $anahtar,
+                    'total' => round($haftalik[$anahtar] ?? 0, 2),
+                ];
+            }
+
+            return $sonuc;
         }
 
         // Monthly (default)
-        $rows = (clone $query)
+        //
+        // Burada da EXTRACT(MONTH ...) vardı. MySQL ve PostgreSQL bunu
+        // anlıyor ama SQLite anlamıyor — yani uç canlıda çalışırken testlerde
+        // düşüyordu ve bu yüzden hiç test edilememişti. Haftalıkla aynı
+        // yaklaşım: toplama güne göre (her sürücüde aynı), ay toplamı PHP'de.
+        $gunler = (clone $query)
             ->whereYear('paid_at', $year)
-            ->select(
-                DB::raw("EXTRACT(MONTH FROM paid_at) as month"),
-                DB::raw('SUM(grand_total) as total')
-            )
-            ->groupBy(DB::raw("EXTRACT(MONTH FROM paid_at)"))
-            ->orderBy('month')
-            ->get()
-            ->keyBy('month');
+            ->select(DB::raw('DATE(paid_at) as date'), DB::raw('SUM(grand_total) as total'))
+            ->groupBy(DB::raw('DATE(paid_at)'))
+            ->get();
+
+        $aylik = [];
+        foreach ($gunler as $gun) {
+            $ay = (int) Carbon::parse($gun->date)->format('n');
+            $aylik[$ay] = ($aylik[$ay] ?? 0) + (float) $gun->total;
+        }
 
         $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         $result = [];
@@ -594,7 +621,7 @@ HTML;
             $result[] = [
                 'label' => $months[$m - 1],
                 'month' => $m,
-                'total' => round((float) ($rows[$m]->total ?? 0), 2),
+                'total' => round($aylik[$m] ?? 0, 2),
             ];
         }
         return $result;
