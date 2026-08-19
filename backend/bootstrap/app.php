@@ -50,6 +50,14 @@ return Application::configure(basePath: dirname(__DIR__))
             ],
             append: [
                 \App\Http\Middleware\SetLocale::class,
+                // Varsayılan: hiçbir API yanıtı önbelleğe yazılmaz. Hasta
+                // verisi taşıyan uçlar bu middleware'e tek tek bağlanmıyordu
+                // ve Symfony'nin varsayılanıyla (no-cache, private) çıkıyordu
+                // — paylaşılan önbelleğe girmez ama tarayıcının diske
+                // yazmasını engellemez. Herkese açık uçlar kendi rotasında
+                // `cache.headers:public;...` ile bunu gevşetiyor; o middleware
+                // sonra çalıştığı için üstüne yazar.
+                \App\Http\Middleware\CacheHeaders::class,
                 // General API rate limit (120/min, user-id or IP based).
                 // Stricter auth-specific throttles (login/register/password)
                 // are applied per-route and remain in effect.
