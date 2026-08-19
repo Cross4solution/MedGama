@@ -15,6 +15,11 @@ ARIAL = '/System/Library/Fonts/Supplemental/Arial.ttf'
 ARIAL_B = '/System/Library/Fonts/Supplemental/Arial Bold.ttf'
 pdfmetrics.registerFont(TTFont('Arial', ARIAL))
 pdfmetrics.registerFont(TTFont('Arial-Bold', ARIAL_B))
+# <b> etiketinin işe yaraması için aile eşlemesi şart: yoksa **kalın** yazılar
+# metinde kalın görünmüyor, sessizce düz çıkıyordu.
+from reportlab.pdfbase.pdfmetrics import registerFontFamily
+registerFontFamily('Arial', normal='Arial', bold='Arial-Bold',
+                   italic='Arial', boldItalic='Arial-Bold')
 
 TEAL = colors.HexColor('#1d4ed8')   # mavi tema (eski teal yerine)
 INK = colors.HexColor('#1f2937')

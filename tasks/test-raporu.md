@@ -8,17 +8,6 @@ Platformun tamamı uçtan uca test edildi — taklit bir ortamda değil, **gerç
 
 ---
 
-## Rakamlar
-
-| Ölçüm | Sayı |
-|---|---|
-| Sunucu tarafı test | **190** |
-| Arayüz testi (uçtan uca) | **77** |
-| Başarısız | **0** |
-| Bulunan ve düzeltilen canlı hata | **10** |
-
----
-
 ## Neyi test ettik
 
 | Alan | Kapsam |
@@ -36,14 +25,20 @@ Platformun tamamı uçtan uca test edildi — taklit bir ortamda değil, **gerç
 | Arama | Doktor, uzmanlık, şehir, semptom |
 | Destek talepleri | Açma, yanıtlama, gizlilik |
 | Doktor doğrulama | Başvuru ve onay yetkisi |
+| Yük ve performans | Yanıt süreleri, eşzamanlı kullanım, veri büyümesi |
 
-Bunlara ek olarak sistemin yük altındaki davranışı ölçüldü — ayrıntısı aşağıda.
+**Test edilmeyen tek alan: ödeme.** Ödeme altyapısı henüz kurulmadı — test edilecek bir davranış yok. Altyapının kendisi (tutar, para birimi, iade, komisyon) hazır ve kendi testleri geçiyor; eksik olan yalnızca ödeme kuruluşu bağlantısı.
 
-**Test edilmeyen tek alan: ödeme.** Ödeme altyapısı henüz kurulmadı — test edilecek bir davranış yok. Alt yapının kendisi (tutar, para birimi, iade, komisyon) hazır ve kendi testleri geçiyor; eksik olan yalnızca ödeme kuruluşu bağlantısı.
+### Rakamlar
 
----
+| Ölçüm | Sayı |
+|---|---|
+| Sunucu tarafı test | 190 |
+| Arayüz testi (uçtan uca) | 77 |
+| Başarısız test | 0 |
+| Bulunan ve düzeltilen canlı hata | 10 |
 
-## Testlerin uyduğu kurallar
+### Testlerin uyduğu kurallar
 
 Sağlık verisiyle çalışıldığı için testler bilinçli olarak sınırlandırıldı:
 
@@ -54,68 +49,86 @@ Sağlık verisiyle çalışıldığı için testler bilinçli olarak sınırland
 
 ---
 
-## Bulunan hatalar
+## Bulunan hatalar ve düzeltmeleri
 
-Hepsinin ortak yanı: **hiçbiri hata vermiyordu.** Sistem çalışıyor görünüyordu.
+Hepsinin ortak yanı: **hiçbiri hata vermiyordu.** Sistem çalışıyor görünüyordu. Elle yapılan denemelerde fark edilmeleri mümkün değildi.
 
 ### 1. Aynı saat birden fazla hastaya verilebiliyordu
 
-En ciddi bulgu. Aynı doktora, aynı güne, aynı saate eşzamanlı beş talep gönderildi — **beşi de kabul edildi.** Doktor o saatte beş hastayı bekliyor olurdu.
+**Belirti.** Aynı doktora, aynı güne, aynı saate eşzamanlı beş talep gönderildi — beşi de kabul edildi. Doktor o saatte beş hastayı bekliyor olurdu. Bu hata tek kullanıcıyla asla görünmez; yalnızca iki kişi aynı anda aynı saati istediğinde ortaya çıkar, yani platform büyüdükçe sıklaşır.
 
-Bu hata tek kullanıcıyla asla görünmez; ancak iki kişi aynı anda aynı saati istediğinde ortaya çıkar. Yani platform büyüdükçe sıklaşır.
+**Düzeltme.** Koruma veritabanının kendisine taşındı. Aynı doktorun aynı saati ikinci kez kaydedilemiyor. Randevu iptal edilince o saat gerçekten yeniden açılıyor.
 
-Koruma artık veritabanının kendisinde. Randevu iptal edilince saat gerçekten yeniden açılıyor. Canlı sistemde doğrulandı: beş talepten yalnızca biri kabul ediliyor.
+**Doğrulama.** Canlı sistemde tekrarlandı: beş eşzamanlı talepten yalnızca biri kabul ediliyor, diğerleri "bu saat az önce doldu" uyarısı alıyor.
 
 ### 2. Anlık bildirimler hiç çalışmıyordu
 
-Bildirim altyapısı ayakta, sunucu mesajı gönderiyor, ama tarayıcı hiçbir zaman bağlanmıyordu. Kullanıcı sayfayı yenilemeden hiçbir bildirim görmüyordu.
+**Belirti.** Bildirim altyapısı ayaktaydı ve sunucu mesajı gönderiyordu, ama tarayıcı hiçbir zaman bağlanmıyordu. Kullanıcı sayfayı yenilemeden hiçbir bildirim görmüyordu.
+
+**Düzeltme.** Tarayıcı tarafındaki bağlantı ayarı düzeltildi. Bildirimler artık anında düşüyor.
 
 ### 3. Muayene kaydı hiç açılamıyordu
 
-Doktor muayene kaydetmeye çalıştığında işlem her seferinde sunucu hatasıyla sonuçlanıyordu. Özellik bugüne kadar bir kez bile çalışmamıştı.
+**Belirti.** Doktor muayene kaydetmeye çalıştığında işlem her seferinde sunucu hatasıyla sonuçlanıyordu. Özellik bugüne kadar bir kez bile çalışmamıştı.
+
+**Düzeltme.** Kayıt yapısındaki zorunluluk hatası giderildi. Muayene açılıyor, reçete çıktısı alınabiliyor.
 
 ### 4. Tanı notu kayboluyordu
 
-Muayene açılırken yazılan tanı notu kaydedilmiyordu. Doktor yazıyor, kaydediyor, not yok oluyordu.
+**Belirti.** Muayene açılırken yazılan tanı notu kaydedilmiyordu. Doktor yazıyor, kaydediyor, not yok oluyordu. Sonradan düzenlenirse kaydediliyordu — bu yüzden hata düzensiz görünüyordu.
+
+**Düzeltme.** Not artık ilk kayıtta da saklanıyor.
 
 ### 5. CRM hasta listesi boş görünüyordu
 
-Sayaç "3 hasta" derken liste "sonuç yok" diyordu. Veriler yerindeydi, ekran yanlış yerden okuyordu.
+**Belirti.** Sayaç "3 hasta" derken liste "sonuç yok" diyordu. Veriler yerindeydi; ekran yanlış yerden okuyordu.
+
+**Düzeltme.** Liste doğru kaynağa bağlandı.
 
 ### 6. Üç ekran veri çekemiyordu
 
-Doktor değerlendirmeleri ve yorum yazılabilir randevular ekranları veriyi bulamıyordu — adres çakışması yüzünden istekler yanlış yere gidiyordu.
+**Belirti.** Doktor değerlendirmeleri ve yorum yazılabilir randevular ekranları veri bulamıyordu. Adres çakışması yüzünden istekler yanlış yere gidiyordu.
+
+**Düzeltme.** Adres sıralaması düzeltildi; üç ekran da veriyi görüyor.
 
 ### 7. Bildirim listesi ve zil rozeti çalışmıyordu
 
-Bildirim sayfası hep boş, rozet hep sıfır görünüyordu. Bildirimler kayıtlıydı, okunamıyordu.
+**Belirti.** Bildirim sayfası hep boş, rozet hep sıfır görünüyordu. Bildirimler kayıtlıydı ama okunamıyordu. "Hepsini okundu işaretle" de bu yüzden görünmüyordu.
+
+**Düzeltme.** Dört ayrı yerdeki okuma hatası giderildi.
 
 ### 8. Hasta verisi tarayıcı diskine yazılabiliyordu
 
-Hasta bilgisi taşıyan sayfalar, tarayıcının içeriği diskte saklamasını engelleyecek şekilde işaretlenmemişti. Ortak kullanılan bir bilgisayarda risk oluşturur. Artık tüm sistem varsayılan olarak "saklama" diyor.
+**Belirti.** Hasta bilgisi taşıyan sayfalar, tarayıcının içeriği diskte saklamasını engelleyecek şekilde işaretlenmemişti. Ortak kullanılan bir bilgisayarda risk oluşturur.
+
+**Düzeltme.** Sistemin tamamı artık varsayılan olarak "saklama" diyor; yalnızca herkese açık içerikler bu kuraldan muaf.
 
 ### 9. Herkese açık sayfalar hiç önbelleklenmiyordu
 
-Doktor listesi, arama, akış gibi saniyede değişmeyen içerikler için sisteme "bunları önbelleğe alma" talimatı gidiyordu. Her ziyaretçinin her isteği sunucuya ve veritabanına kadar iniyordu — gereksiz yük ve gereksiz bekleme.
+**Belirti.** Doktor listesi, arama ve akış gibi saniyede değişmeyen içerikler için sisteme "bunları önbelleğe alma" talimatı gidiyordu. Her ziyaretçinin her isteği sunucuya ve veritabanına kadar iniyordu.
+
+**Düzeltme.** Talimat düzeltildi; bu içerikler artık önbelleğe alınabiliyor.
 
 ### 10. Sunucu her istekte kendini yeniden kuruyordu
 
-Açılışta yapılması gereken hazırlık hiç yapılmıyor, her istek aynı işi baştan tekrarlıyordu. Düzeltmeden sonra arama %31, doktor listesi %16 hızlandı.
+**Belirti.** Açılışta bir kez yapılması gereken hazırlık hiç yapılmıyor, her istek aynı işi baştan tekrarlıyordu.
+
+**Düzeltme.** Hazırlık açılışa alındı. Arama %31, doktor listesi %16 hızlandı.
 
 ---
 
 ## Performans
 
-Sistemin yanıt süreleri gerçek sunucuda ölçüldü.
+Yanıt süreleri gerçek sunucuda ölçüldü.
 
 | | Tek kullanıcı | Dört eşzamanlı kullanıcı |
 |---|---|---|
 | Arama | ~0,3 sn | 0,8 sn |
 | Doktor listesi | ~0,3 sn | 1,0 sn |
 
-Ayrıca listelerin veri büyüdükçe yavaşlamadığı kalıcı testlerle güvence altına alındı: kayıt sayısı beş katına çıktığında sistemin veritabanına gitme sayısı **hiç artmıyor.** Bu, ileride binlerce kayda çıkıldığında da ekranların açılmaya devam edeceği anlamına gelir.
+Listelerin veri büyüdükçe yavaşlamadığı kalıcı testlerle güvence altına alındı: kayıt sayısı beş katına çıktığında sistemin veritabanına gitme sayısı **hiç artmıyor.** Bu, ileride binlerce kayda çıkıldığında da ekranların açılmaya devam edeceği anlamına gelir.
 
-**Kalan sınır donanımdır.** Dört kullanıcı aynı anda işlem yaptığında bekleme süresi dört katına çıkıyor. Bunun sebebi yazılım değil, şu an kullanılan sunucunun kapasitesi. Kod tarafında kapatılacak boşluk kalmadı; sonraki adım sunucu kapasitesidir.
+**Kalan sınır donanımdır.** Dört kullanıcı aynı anda işlem yaptığında bekleme süresi dört katına çıkıyor. Sebebi yazılım değil, şu an kullanılan sunucunun kapasitesi. Kod tarafında kapatılacak boşluk kalmadı; sonraki adım sunucu kapasitesidir.
 
 ---
 
@@ -125,12 +138,10 @@ Sistemde **ara sıra ortaya çıkan bir sunucu hatası** var: birkaç istek üst
 
 Elenen olasılıklar: istek sınırı, önbellek, zaman aşımı. Sorun uygulamanın kendi içinde.
 
-En olası sebep veritabanı bağlantı sınırı, ancak bu **henüz kanıtlanmadı.** Tahmine dayanarak canlı sisteme müdahale edilmedi. Hata kayıt sistemi (Sentry) bu hatanın ayrıntısını tutuyor; o kayda bakıldığında çözüm netleşecek.
+En olası sebep veritabanı bağlantı sınırı, ancak bu **henüz kanıtlanmadı.** Tahmine dayanarak canlı sisteme müdahale edilmedi. Hata kayıt sistemi bu hatanın ayrıntısını tutuyor; o kayda bakıldığında çözüm netleşecek.
 
 ---
 
 ## Sonuç
 
 Platform, üzerinde otomatik olarak koşan **267 testle** korunuyor. Bundan sonra yapılacak her değişiklikte bu testler yeniden çalışır; yukarıdaki hatalardan biri geri gelirse teslimattan önce yakalanır.
-
-Bulunan hataların tamamının sessiz olması dikkate değer: hiçbiri ekrana hata yazmıyordu, hiçbiri kayıtlara düşmüyordu. Elle yapılan denemelerde fark edilmeleri mümkün değildi.
