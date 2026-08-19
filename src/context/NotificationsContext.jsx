@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { notificationAPI } from '../lib/api';
+import { getEcho } from '../lib/echo';
+import { useGorunurYoklama } from '../hooks/useGorunurYoklama';
 
 const NotificationsContext = createContext({
   unreadCount: 0,
@@ -32,12 +34,14 @@ export function NotificationsProvider({ children }) {
   // Oturum yerleşmeden sorma.
   useEffect(() => { if (hydrated) refresh(); }, [hydrated, refresh]);
 
-  // Polling fallback — every 30s
-  useEffect(() => {
-    if (!user) return;
-    const interval = setInterval(refresh, 30000);
-    return () => clearInterval(interval);
-  }, [user, refresh]);
+  // Yedek yoklama.
+  //
+  // Bildirimler soket üzerinden anlık geliyor; bu yoklama yalnızca soket
+  // kopmuşsa devreye giren emniyet ağı. Bu yüzden soket varken seyrek
+  // (2 dk), yokken sık (30 sn) çalışıyor — ve sekme görünmüyorsa hiç
+  // çalışmıyor.
+  const soketVar = typeof window !== 'undefined' && Boolean(getEcho());
+  useGorunurYoklama(refresh, soketVar ? 120000 : 30000, Boolean(kullaniciId));
 
   const increment = useCallback((by = 1) => setUnreadCount(c => c + by), []);
   const decrement = useCallback((by = 1) => setUnreadCount(c => Math.max(0, c - by)), []);

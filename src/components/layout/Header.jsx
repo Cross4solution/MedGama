@@ -10,6 +10,7 @@ import { useToast } from '../../context/ToastContext';
 import { useNotifications } from '../../context/NotificationsContext';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import { playNotificationSound } from '../../utils/notificationSound';
+import { useGorunurYoklama } from '../../hooks/useGorunurYoklama';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
 
 // MedStream is a standalone, Twitter-like destination. When NEXT_PUBLIC_MEDSTREAM_URL
@@ -133,22 +134,9 @@ const Header = () => {
     };
   }, [user?.id]);
 
-  // Poll unread count — minimum 60s, sekme görünür değilse fetch atla
-  useEffect(() => {
-    if (!user) return;
-    const fetchIfVisible = () => {
-      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
-        fetchUnreadCount();
-      }
-    };
-    fetchIfVisible();
-    const interval = setInterval(fetchIfVisible, 60000);
-    document.addEventListener('visibilitychange', fetchIfVisible);
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', fetchIfVisible);
-    };
-  }, [user, fetchUnreadCount]);
+  // Yedek yoklama — bildirimler soketten geliyor; sekme görünmüyorsa sorulmaz.
+  // (Aynı kalıp CRM düzeninde ve bildirim bağlamında da kullanılıyor.)
+  useGorunurYoklama(fetchUnreadCount, 60000, Boolean(user));
 
   // Fetch full list when dropdown opens
   useEffect(() => {

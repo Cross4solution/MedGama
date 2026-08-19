@@ -59,6 +59,7 @@ import useVerificationListener from '../../hooks/useVerificationListener';
 import AnnouncementBanner from '../ui/AnnouncementBanner';
 import { useNotifications } from '../../context/NotificationsContext';
 import { getEcho } from '../../lib/echo';
+import { useGorunurYoklama } from '../../hooks/useGorunurYoklama';
 import { useToast } from '../../context/ToastContext';
 import { playNotificationSound } from '../../utils/notificationSound';
 
@@ -271,12 +272,9 @@ const CRMLayout = ({ children }) => {
     } catch {}
   }, [user]);
 
-  useEffect(() => {
-    if (!user) return;
-    fetchChatUnread();
-    const interval = setInterval(fetchChatUnread, 30000);
-    return () => clearInterval(interval);
-  }, [user, fetchChatUnread]);
+  // Sekme görünmüyorsa sorma: CRM gün boyu arka planda açık kalıyor ve
+  // kimsenin bakmadığı ekran için sunucuya istek göndermenin karşılığı yok.
+  useGorunurYoklama(fetchChatUnread, 60000, Boolean(user));
 
   // isPremium gönderilmiyordu: fonksiyon bunu bekliyor ama yerine userLevel
   // geçiliyordu, dolayısıyla her zaman false kalıyor ve aboneliği OLAN
@@ -354,15 +352,13 @@ const CRMLayout = ({ children }) => {
     return () => { echo.leave(`notifications.${user.id}`); };
   }, [user?.id]);
 
-  // Polling fallback
-  useEffect(() => {
-    if (!user) return;
-    fetchUnreadCount();
-    const echo = getEcho();
-    // Polling minimum 30s — server yükünü azaltır (Echo varsa 60s)
-    const interval = setInterval(fetchUnreadCount, echo ? 60000 : 30000);
-    return () => clearInterval(interval);
-  }, [user, fetchUnreadCount]);
+  // Yedek yoklama — bildirimler soketten anlık geliyor, bu emniyet ağı.
+  // Soket varsa seyrek, yoksa sık; sekme görünmüyorsa hiç.
+  useGorunurYoklama(
+    fetchUnreadCount,
+    (typeof window !== 'undefined' && getEcho()) ? 120000 : 30000,
+    Boolean(user),
+  );
 
   // Fetch list when dropdown opens
   useEffect(() => {
