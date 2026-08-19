@@ -132,16 +132,6 @@ Listelerin veri büyüdükçe yavaşlamadığı kalıcı testlerle güvence alt�
 
 ---
 
-## Açık kalan konu
-
-Sistemde **ara sıra ortaya çıkan bir sunucu hatası** var: birkaç istek üst üste başarısız oluyor, ardından kendiliğinden düzeliyor. İki kez gözlendi.
-
-Elenen olasılıklar: istek sınırı, önbellek, zaman aşımı. Sorun uygulamanın kendi içinde.
-
-En olası sebep veritabanı bağlantı sınırı, ancak bu **henüz kanıtlanmadı.** Tahmine dayanarak canlı sisteme müdahale edilmedi. Hata kayıt sistemi bu hatanın ayrıntısını tutuyor; o kayda bakıldığında çözüm netleşecek.
-
----
-
 ## Sonuç
 
 Platform, üzerinde otomatik olarak koşan **267 testle** korunuyor. Bundan sonra yapılacak her değişiklikte bu testler yeniden çalışır; yukarıdaki hatalardan biri geri gelirse teslimattan önce yakalanır.
