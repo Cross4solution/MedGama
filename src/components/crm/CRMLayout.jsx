@@ -295,7 +295,6 @@ const CRMLayout = ({ children }) => {
   const notifRef = useRef(null);
   const {
     unreadCount,
-    refresh: fetchUnreadCount,
     increment: globalIncrement,
     decrement: globalDecrement,
     reset: globalReset,
@@ -352,11 +351,9 @@ const CRMLayout = ({ children }) => {
 
   // Yedek yoklama — bildirimler soketten anlık geliyor, bu emniyet ağı.
   // Soket varsa seyrek, yoksa sık; sekme görünmüyorsa hiç.
-  useGorunurYoklama(
-    fetchUnreadCount,
-    (typeof window !== 'undefined' && getEcho()) ? 120000 : 30000,
-    Boolean(user),
-  );
+  // Buradan yoklama YOK — sayacı bildirim bağlamı zaten yokluyor (uygulamanın
+  // her yerinde geçerli). Burada ikinci bir yoklayıcı kurmak, aynı fonksiyonu
+  // iki ayrı zamanlayıcıya bağlayıp aynı uca çift istek göndermek oluyordu.
 
   // Fetch list when dropdown opens
   useEffect(() => {
