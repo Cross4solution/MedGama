@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\Sorgu;
 use App\Models\Appointment;
 use App\Models\CalendarSlot;
 use App\Models\Clinic;
@@ -120,10 +121,10 @@ class ClinicManagerService
         $weeklyTrend = Appointment::whereIn('clinic_id', $clinicIds)
             ->where('appointment_date', '>=', $weekStart)
             ->select(
-                DB::raw("TO_CHAR(appointment_date, 'IYYY-IW') as week"),
+                DB::raw(Sorgu::haftaIfadesi('appointment_date') . ' as week'),
                 DB::raw('COUNT(*) as count')
             )
-            ->groupBy(DB::raw("TO_CHAR(appointment_date, 'IYYY-IW')"))
+            ->groupBy(DB::raw(Sorgu::haftaIfadesi('appointment_date')))
             ->orderBy('week')
             ->get()
             ->toArray();
@@ -173,7 +174,7 @@ class ClinicManagerService
         if (!empty($filters['search'])) {
             $s = '%' . $filters['search'] . '%';
             $query->where(function ($q) use ($s) {
-                $q->where('fullname', 'ilike', $s)->orWhere('email', 'ilike', $s);
+                $q->where('fullname', Sorgu::benzer(), $s)->orWhere('email', Sorgu::benzer(), $s);
             });
         }
 
@@ -240,10 +241,10 @@ class ClinicManagerService
             ->where('status', 'paid')
             ->where('paid_at', '>=', $sixMonthsAgo)
             ->select(
-                DB::raw("TO_CHAR(paid_at, 'YYYY-MM') as period"),
+                DB::raw(Sorgu::ayIfadesi('paid_at') . ' as period'),
                 DB::raw('SUM(grand_total) as revenue')
             )
-            ->groupBy(DB::raw("TO_CHAR(paid_at, 'YYYY-MM')"))
+            ->groupBy(DB::raw(Sorgu::ayIfadesi('paid_at')))
             ->orderBy('period')
             ->get()
             ->toArray();
@@ -355,11 +356,11 @@ class ClinicManagerService
         $monthStart = Carbon::now()->subMonths(11)->startOfMonth();
         $monthly = (clone $paidQuery)->where('paid_at', '>=', $monthStart)
             ->select(
-                DB::raw("TO_CHAR(paid_at, 'YYYY-MM') as period"),
+                DB::raw(Sorgu::ayIfadesi('paid_at') . ' as period'),
                 DB::raw('SUM(grand_total) as gross'),
                 DB::raw('COUNT(*) as invoice_count')
             )
-            ->groupBy(DB::raw("TO_CHAR(paid_at, 'YYYY-MM')"))
+            ->groupBy(DB::raw(Sorgu::ayIfadesi('paid_at')))
             ->orderBy('period')
             ->get()
             ->map(function ($row) {

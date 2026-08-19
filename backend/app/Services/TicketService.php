@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\Sorgu;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
@@ -43,8 +44,8 @@ class TicketService
         if (!empty($filters['search'])) {
             $s = '%' . $filters['search'] . '%';
             $query->where(function ($q) use ($s) {
-                $q->where('subject', 'ilike', $s)
-                  ->orWhere('ticket_number', 'ilike', $s);
+                $q->where('subject', Sorgu::benzer(), $s)
+                  ->orWhere('ticket_number', Sorgu::benzer(), $s);
             });
         }
 

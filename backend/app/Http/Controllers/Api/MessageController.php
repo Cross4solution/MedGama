@@ -497,14 +497,18 @@ class MessageController extends Controller
             })
             ->where(function ($q) use ($user) {
                 // Only count messages newer than last_read_at per conversation
+                // '1970-01-01'::timestamp yazılıydı; :: dönüşümü PostgreSQL'e
+                // özgü ve MySQL/TiDB anlamıyor — bu uç canlıda 500 veriyordu.
+                // Dönüşüme gerek yok: düz tarih dizgesi üç sürücüde de bir
+                // zaman damgasıyla karşılaştırılabiliyor.
                 $q->whereRaw(
                     'messages.created_at > COALESCE(
                         (SELECT cp.last_read_at FROM conversation_participants cp
                          WHERE cp.conversation_id = messages.conversation_id
                          AND cp.user_id = ? AND cp.is_active = true),
-                        \'1970-01-01\'::timestamp
+                        ?
                     )',
-                    [$user->id]
+                    [$user->id, '1970-01-01 00:00:00']
                 );
             })
             ->count();

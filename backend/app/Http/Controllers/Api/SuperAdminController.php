@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Support\Sorgu;
 use App\Http\Controllers\Controller;
 use App\Services\SuperAdminService;
 use Illuminate\Http\JsonResponse;
@@ -345,8 +346,8 @@ class SuperAdminController extends Controller
         $q = $request->input('q', '');
         $users = \App\Models\User::query()
             ->where(function ($query) use ($q) {
-                $query->where('fullname', 'ilike', "%{$q}%")
-                      ->orWhere('email', 'ilike', "%{$q}%");
+                $query->where('fullname', Sorgu::benzer(), "%{$q}%")
+                      ->orWhere('email', Sorgu::benzer(), "%{$q}%");
             })
             ->select('id', 'fullname', 'email', 'role_id', 'avatar')
             ->limit(20)

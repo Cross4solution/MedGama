@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Support\Sorgu;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Clinic;
@@ -134,8 +135,8 @@ class ContactMessageController extends Controller
         }
         if ($search = $request->query('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('subject', 'ilike', "%{$search}%")
-                  ->orWhere('body', 'ilike', "%{$search}%");
+                $q->where('subject', Sorgu::benzer(), "%{$search}%")
+                  ->orWhere('body', Sorgu::benzer(), "%{$search}%");
             });
         }
 

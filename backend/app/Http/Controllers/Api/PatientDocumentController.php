@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Support\Sorgu;
 use App\Http\Controllers\Controller;
 use App\Models\HealthDataAuditLog;
 use App\Models\PatientDocument;
@@ -33,8 +34,8 @@ class PatientDocumentController extends Controller
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'ilike', "%{$search}%")
-                  ->orWhere('file_name', 'ilike', "%{$search}%");
+                $q->where('title', Sorgu::benzer(), "%{$search}%")
+                  ->orWhere('file_name', Sorgu::benzer(), "%{$search}%");
             });
         }
 

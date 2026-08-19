@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\Sorgu;
 use App\Models\Appointment;
 use App\Models\Conversation;
 use App\Models\CrmProcessStage;
@@ -48,8 +49,8 @@ class PatientService
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 TurkishStr::addNormalizedSearch($q, 'fullname', $search, 'or');
-                $q->orWhere('email', 'ilike', "%{$search}%")
-                  ->orWhere('mobile', 'ilike', "%{$search}%");
+                $q->orWhere('email', Sorgu::benzer(), "%{$search}%")
+                  ->orWhere('mobile', Sorgu::benzer(), "%{$search}%");
             });
         }
 

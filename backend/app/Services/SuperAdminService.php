@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Support\Sorgu;
+use App\Models\DoctorReview;
 use App\Models\Appointment;
 use App\Models\AuditLog;
 use App\Models\Clinic;
@@ -119,8 +121,8 @@ class SuperAdminService
             })
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $q->where(function ($q2) use ($search) {
-                    $q2->where('fullname', 'ilike', "%{$search}%")
-                       ->orWhere('email', 'ilike', "%{$search}%");
+                    $q2->where('fullname', Sorgu::benzer(), "%{$search}%")
+                       ->orWhere('email', Sorgu::benzer(), "%{$search}%");
                 });
             })
             ->select('id', 'fullname', 'email', 'avatar', 'is_verified', 'created_at', 'clinic_id')
@@ -270,9 +272,9 @@ class SuperAdminService
             ->when(isset($filters['is_verified']), fn($q) => $q->where('is_verified', filter_var($filters['is_verified'], FILTER_VALIDATE_BOOLEAN)))
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $q->where(function ($q2) use ($search) {
-                    $q2->where('fullname', 'ilike', "%{$search}%")
-                       ->orWhere('email', 'ilike', "%{$search}%")
-                       ->orWhere('mobile', 'ilike', "%{$search}%");
+                    $q2->where('fullname', Sorgu::benzer(), "%{$search}%")
+                       ->orWhere('email', Sorgu::benzer(), "%{$search}%")
+                       ->orWhere('mobile', Sorgu::benzer(), "%{$search}%");
                 });
             })
             ->select('id', 'fullname', 'email', 'avatar', 'role_id', 'mobile', 'is_verified', 'is_active', 'clinic_id', 'created_at', 'last_login')
@@ -412,24 +414,20 @@ class SuperAdminService
             // Aggregate user registrations per month
             $userRows = User::query()
                 ->where('created_at', '>=', $months[0]['start'])
-                ->selectRaw("
-                    TO_CHAR(created_at, 'YYYY-MM') as month,
+                ->selectRaw(Sorgu::ayIfadesi('created_at') . " as month,
                     COUNT(*) as total,
                     SUM(CASE WHEN role_id = 'doctor' THEN 1 ELSE 0 END) as doctors,
                     SUM(CASE WHEN role_id = 'patient' THEN 1 ELSE 0 END) as patients
                 ")
-                ->groupBy(DB::raw("TO_CHAR(created_at, 'YYYY-MM')"))
+                ->groupBy(DB::raw(Sorgu::ayIfadesi('created_at')))
                 ->get()
                 ->keyBy('month');
 
             // Aggregate clinic registrations per month
             $clinicRows = Clinic::query()
                 ->where('created_at', '>=', $months[0]['start'])
-                ->selectRaw("
-                    TO_CHAR(created_at, 'YYYY-MM') as month,
-                    COUNT(*) as total
-                ")
-                ->groupBy(DB::raw("TO_CHAR(created_at, 'YYYY-MM')"))
+                ->selectRaw(Sorgu::ayIfadesi('created_at') . " as month, COUNT(*) as total")
+                ->groupBy(DB::raw(Sorgu::ayIfadesi('created_at')))
                 ->get()
                 ->keyBy('month');
 
@@ -549,14 +547,14 @@ class SuperAdminService
     {
         return AuditLog::query()
             ->with('user:id,fullname,email,avatar,role_id')
-            ->when($filters['action'] ?? null, fn($q, $v) => $q->where('action', 'ilike', "%{$v}%"))
+            ->when($filters['action'] ?? null, fn($q, $v) => $q->where('action', Sorgu::benzer(), "%{$v}%"))
             ->when($filters['resource_type'] ?? null, fn($q, $v) => $q->where('resource_type', $v))
             ->when($filters['user_id'] ?? null, fn($q, $v) => $q->where('user_id', $v))
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $q->where(function ($q2) use ($search) {
-                    $q2->where('action', 'ilike', "%{$search}%")
-                       ->orWhere('description', 'ilike', "%{$search}%")
-                       ->orWhere('resource_type', 'ilike', "%{$search}%");
+                    $q2->where('action', Sorgu::benzer(), "%{$search}%")
+                       ->orWhere('description', Sorgu::benzer(), "%{$search}%")
+                       ->orWhere('resource_type', Sorgu::benzer(), "%{$search}%");
                 });
             })
             ->when($filters['date_from'] ?? null, fn($q, $v) => $q->where('created_at', '>=', $v))
@@ -614,8 +612,8 @@ class SuperAdminService
             ->when($filters['doctor_id'] ?? null, fn($q, $v) => $q->where('doctor_id', $v))
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $q->whereHas('doctor', function ($dq) use ($search) {
-                    $dq->where('fullname', 'ilike', "%{$search}%")
-                       ->orWhere('email', 'ilike', "%{$search}%");
+                    $dq->where('fullname', Sorgu::benzer(), "%{$search}%")
+                       ->orWhere('email', Sorgu::benzer(), "%{$search}%");
                 });
             })
             ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
@@ -911,8 +909,8 @@ class SuperAdminService
             ->when($filters['status'] ?? null, fn($q, $v) => $q->where('moderation_status', $v))
             ->when($filters['doctor_id'] ?? null, fn($q, $v) => $q->where('doctor_id', $v))
             ->when($filters['search'] ?? null, function ($q, $s) {
-                $q->whereHas('patient', fn($pq) => $pq->where('fullname', 'ilike', "%{$s}%"))
-                  ->orWhereHas('doctor', fn($dq) => $dq->where('fullname', 'ilike', "%{$s}%"));
+                $q->whereHas('patient', fn($pq) => $pq->where('fullname', Sorgu::benzer(), "%{$s}%"))
+                  ->orWhereHas('doctor', fn($dq) => $dq->where('fullname', Sorgu::benzer(), "%{$s}%"));
             })
             ->orderByDesc('created_at')
             ->paginate($filters['per_page'] ?? 15);

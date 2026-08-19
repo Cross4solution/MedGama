@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\Sorgu;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\User;
@@ -95,11 +96,11 @@ class FinanceService
         // Monthly breakdown
         $monthly = (clone $query)
             ->select(
-                DB::raw("TO_CHAR(paid_at, 'YYYY-MM') as period"),
+                DB::raw(Sorgu::ayIfadesi('paid_at') . ' as period'),
                 DB::raw('SUM(grand_total) as gross'),
                 DB::raw('COUNT(*) as invoice_count')
             )
-            ->groupBy(DB::raw("TO_CHAR(paid_at, 'YYYY-MM')"))
+            ->groupBy(DB::raw(Sorgu::ayIfadesi('paid_at')))
             ->orderBy('period')
             ->get()
             ->map(function ($row) use ($commissionRate) {
@@ -162,10 +163,10 @@ class FinanceService
         $monthlyRevenue = (clone $paidQuery)
             ->where('paid_at', '>=', $monthStart)
             ->select(
-                DB::raw("TO_CHAR(paid_at, 'YYYY-MM') as period"),
+                DB::raw(Sorgu::ayIfadesi('paid_at') . ' as period'),
                 DB::raw('SUM(grand_total) as gross')
             )
-            ->groupBy(DB::raw("TO_CHAR(paid_at, 'YYYY-MM')"))
+            ->groupBy(DB::raw(Sorgu::ayIfadesi('paid_at')))
             ->orderBy('period')
             ->get()
             ->map(function ($row) {
@@ -179,10 +180,13 @@ class FinanceService
             });
 
         // Top doctors by revenue
+        // Sütunlar tablo adıyla nitelendirildi: users tablosunda da
+        // status/deleted_at/currency var, birleştirmeden sonra hangi tablonun
+        // kastedildiği belirsiz kalıyor ve sorgu hata veriyordu.
         $topDoctors = Invoice::query()
-            ->where('status', 'paid')
-            ->whereNull('deleted_at')
-            ->when($currency, fn($q, $c) => $q->where('currency', $c))
+            ->where('invoices.status', 'paid')
+            ->whereNull('invoices.deleted_at')
+            ->when($currency, fn($q, $c) => $q->where('invoices.currency', $c))
             ->join('users', 'invoices.doctor_id', '=', 'users.id')
             ->select(
                 'invoices.doctor_id',
