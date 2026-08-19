@@ -30,6 +30,45 @@ class Appointment extends Model
         'reminder_24h_sent_at', 'reminder_1h_sent_at',
     ];
 
+    // cakisma_anahtari bilerek $fillable DIŞINDA: yalnızca model üretir.
+    // Toplu atamaya açık olsaydı istekle beraber gönderilip kilit atlatılabilirdi.
+
+    /** Aynı saatin iki kez verilmesini engelleyen anahtarın aktif olduğu durumlar. */
+    public const CAKISMA_DURUMLARI = ['pending', 'confirmed'];
+
+    protected static function booted(): void
+    {
+        // Çakışma anahtarı her kayıtta yeniden hesaplanır: durum, tarih, saat
+        // veya doktor değişince kilit de değişmeli. İptal edilen randevuda
+        // anahtar NULL olur ve o saat yeniden verilebilir hâle gelir
+        // (benzersiz dizin birden çok NULL'a izin verir).
+        static::saving(function (self $randevu) {
+            $randevu->cakisma_anahtari = $randevu->cakismaAnahtariUret();
+        });
+    }
+
+    /**
+     * doctor_id|YYYY-AA-GG|SS:DD — yalnızca aktif randevular için.
+     */
+    public function cakismaAnahtariUret(): ?string
+    {
+        if (!$this->doctor_id || !in_array($this->status, self::CAKISMA_DURUMLARI, true)) {
+            return null;
+        }
+
+        $tarih = $this->appointment_date instanceof \DateTimeInterface
+            ? $this->appointment_date->format('Y-m-d')
+            : substr((string) $this->appointment_date, 0, 10);
+
+        $saat = substr((string) $this->appointment_time, 0, 5);
+
+        if (!$tarih || !$saat) {
+            return null;
+        }
+
+        return $this->doctor_id . '|' . $tarih . '|' . $saat;
+    }
+
     protected function casts(): array
     {
         return [

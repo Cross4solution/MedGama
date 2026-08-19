@@ -11,6 +11,7 @@ use App\Notifications\AppointmentRescheduledNotification;
 use App\Notifications\AppointmentConfirmedNotification;
 use App\Notifications\AppointmentCancelledNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -130,7 +131,19 @@ class AppointmentService
             }
 
             // 5. Create appointment
-            return Appointment::create($appointmentData);
+            //
+            // Aynı doktorun aynı saati iki kez verilemez. Bu kontrol
+            // veritabanındaki benzersiz dizinle yapılıyor, önce okuyup sonra
+            // yazarak değil: iki istek aynı anda "bu saat boş" okuyup ikisi de
+            // yazabilir. Canlıda 5 eşzamanlı istekten 5'i birden kabul
+            // edilmişti; aradaki boşluk milisaniyelik ama yük altında gerçek.
+            try {
+                return Appointment::create($appointmentData);
+            } catch (UniqueConstraintViolationException $e) {
+                throw ValidationException::withMessages([
+                    'appointment_time' => ['Bu saat az önce doldu. Lütfen başka bir saat seçin.'],
+                ]);
+            }
         });
 
         // 5. Eager-load relations for response & notifications
