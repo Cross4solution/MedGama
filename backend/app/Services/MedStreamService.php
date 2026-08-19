@@ -471,6 +471,28 @@ class MedStreamService
         $query = MedStreamBookmark::active()
             ->where('user_id', $userId)
             ->when($filters['type'] ?? null, fn($q, $v) => $q->where('bookmarked_type', $v))
+            // Gönderisi artık görünmeyen yer imleri listelenmez.
+            //
+            // Kaydedilen gönderi silinince (veya gizlenince) yer imi satırı
+            // yerinde kalıyordu. Sayaç bu satırları da sayıyor, liste ise
+            // gönderisi olmayanları eliyordu: ekranda "4 gönderi kaydedildi"
+            // yazarken altında "kayıtlı gönderi yok" görünüyordu.
+            //
+            // Süzgeç sorgunun içinde: sayı ile listenin aynı kaynaktan gelmesi
+            // ikisinin ayrışmasını yapısal olarak imkânsız kılar. Dışarıda
+            // filtrelemek yalnızca listeyi düzeltir, sayacı yine yanlış
+            // bırakırdı.
+            ->where(function ($q) {
+                $q->where('bookmarked_type', '!=', 'post')
+                    ->orWhereExists(function ($alt) {
+                        $alt->selectRaw('1')
+                            ->from('med_stream_posts')
+                            ->whereColumn('med_stream_posts.id', 'med_stream_bookmarks.target_id')
+                            ->whereNull('med_stream_posts.deleted_at')
+                            ->where('med_stream_posts.is_active', true)
+                            ->where('med_stream_posts.is_hidden', false);
+                    });
+            })
             ->orderByDesc('created_at');
 
         $bookmarks = $query->paginate($filters['per_page'] ?? 20);
