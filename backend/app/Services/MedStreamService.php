@@ -52,12 +52,16 @@ class MedStreamService
                 'clinic:id,fullname,avatar',
                 'hospital:id,name,avatar',
                 'specialty:id,code,name',
-                'engagementCounter',
+                // engagementCounter BİLEREK yüklenmiyor: MedStreamPostResource
+                // onu yalnızca gerçek sayılar yokken yedek olarak kullanıyor,
+                // burada ikisi de her zaman hesaplandığı için yedek hiç
+                // devreye girmiyordu — istek başına bir sorgu boşa gidiyordu.
             ])
             ->withCount([
                 'comments as real_comment_count' => fn($q) => $q->where('is_hidden', false),
                 'likes as real_like_count' => fn($q) => $q->where('is_active', true),
-                'reports as report_count',
+                // report_count kaldırıldı: hiçbir yerde okunmuyordu ama her
+                // satır için ayrı bir alt sorgu çalıştırıyordu.
             ])
             ->when($filters['author_id'] ?? null, fn($q, $v) => $q->where('author_id', $v))
             ->when($filters['clinic_id'] ?? null, fn($q, $v) => $q->where('clinic_id', $v))
@@ -146,6 +150,12 @@ class MedStreamService
             $query->where('med_stream_posts.created_at', '>=', now()->subDays(30));
         }
 
+        // Etkileşim puanı yalnızca ona göre sıralarken hesaplanır.
+        //
+        // Puan, satır başına iki alt sorgu daha demek; varsayılan akış
+        // ("recent") tarihe göre sıralandığı için bu iş boşa gidiyordu.
+        $puanGerekli = $sort === 'top';
+
         // Add is_followed_author subselect + engagement_score computed column
         if ($userId) {
             $query->addSelect(['med_stream_posts.*'])
@@ -156,25 +166,31 @@ class MedStreamService
                         ->where('is_active', true)
                         ->limit(1),
                     'is_followed_author'
-                )
-                ->selectRaw($this->engagementScoreSql() . ' as engagement_score');
+                );
+
+            if ($puanGerekli) {
+                $query->selectRaw($this->engagementScoreSql() . ' as engagement_score');
+            }
 
             // Primary: followed authors first (MySQL-compatible NULLS LAST equivalent)
             $query->orderByRaw('(is_followed_author IS NULL) ASC, is_followed_author DESC');
 
             // Secondary: by sort mode
-            if ($sort === 'top') {
+            if ($puanGerekli) {
                 $query->orderByRaw('engagement_score DESC');
             } else {
                 $query->orderByDesc('med_stream_posts.created_at');
             }
         } else {
             // Guest user — no follow prioritization
-            $query->selectRaw('med_stream_posts.*, ' . $this->engagementScoreSql() . ' as engagement_score');
-
-            if ($sort === 'top') {
+            if ($puanGerekli) {
+                $query->selectRaw('med_stream_posts.*, ' . $this->engagementScoreSql() . ' as engagement_score');
                 $query->orderByRaw('engagement_score DESC');
             } else {
+                // Burada select YOK: withCount sütun listesine kendisi
+                // `med_stream_posts.*` ekliyor. Açıkça select() çağırmak o
+                // listeyi ezip sayaç alt sorgularını siliyor ve beğeni/yorum
+                // sayıları sessizce sıfıra düşüyordu.
                 $query->orderByDesc('med_stream_posts.created_at');
             }
         }
