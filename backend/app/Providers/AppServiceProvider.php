@@ -46,6 +46,14 @@ class AppServiceProvider extends ServiceProvider
         // Broadcast database notifications via WebSocket in real-time
         Event::listen(NotificationSent::class, BroadcastNotificationCreated::class);
 
+        // NOT: Bu sınırlayıcılar ->response(...) kullandığı için Laravel yanıtı
+        // HttpResponseException ile taşıyor. bootstrap/app.php'deki "her şeyi
+        // yakala" bloğu bir dönem onu da yakalayıp 500'e çeviriyordu; sınırı
+        // aşan kullanıcı "sunucu hatası" görüyordu. Orada artık ayrıksı tutuluyor.
+        //
+        // Yanıtlar Laravel'in verdiği başlıkları ($basliklar) aynen taşıyor:
+        // Retry-After olmadan istemci ne zaman yeniden deneyeceğini bilemez.
+
         // Rate limiter: general API — 120 req/min.
         // Authenticated → keyed by user id; anonymous → keyed by IP.
         // Generous enough for normal use + parallel frontend requests,
@@ -53,45 +61,45 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(120)
                 ->by($request->user()?->id ?: $request->ip())
-                ->response(function () {
+                ->response(function ($istek, array $basliklar) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Too many requests. Please try again later.',
                         'code'    => 'RATE_LIMIT_EXCEEDED',
-                    ], 429);
+                    ], 429, $basliklar);
                 });
         });
 
         // Rate limiter: login — 5 attempts per minute per IP
         RateLimiter::for('auth-login', function (Request $request) {
-            return Limit::perMinute(5)->by($request->ip())->response(function () {
+            return Limit::perMinute(5)->by($request->ip())->response(function ($istek, array $basliklar) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Too many login attempts. Please try again in a minute.',
                     'code'    => 'RATE_LIMIT_EXCEEDED',
-                ], 429);
+                ], 429, $basliklar);
             });
         });
 
         // Rate limiter: register — 3 attempts per minute per IP
         RateLimiter::for('auth-register', function (Request $request) {
-            return Limit::perMinute(3)->by($request->ip())->response(function () {
+            return Limit::perMinute(3)->by($request->ip())->response(function ($istek, array $basliklar) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Too many registration attempts. Please try again in a minute.',
                     'code'    => 'RATE_LIMIT_EXCEEDED',
-                ], 429);
+                ], 429, $basliklar);
             });
         });
 
         // Rate limiter: password reset — 3 attempts per minute per IP
         RateLimiter::for('auth-password', function (Request $request) {
-            return Limit::perMinute(3)->by($request->ip())->response(function () {
+            return Limit::perMinute(3)->by($request->ip())->response(function ($istek, array $basliklar) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Too many attempts. Please try again in a minute.',
                     'code'    => 'RATE_LIMIT_EXCEEDED',
-                ], 429);
+                ], 429, $basliklar);
             });
         });
     }

@@ -187,6 +187,22 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // ── Catch-all for unexpected errors (500) ──
         $exceptions->render(function (\Throwable $e, Request $request) {
+            // HttpResponseException bir hata DEĞİL: içinde hazır bir yanıt
+            // taşıyor ve Laravel onu olduğu gibi döndürmeli.
+            //
+            // Hız sınırlayıcı ("çok fazla istek", 429) yanıtını bu istisnayla
+            // taşıyor. Aşağıdaki blok onu da yakalayıp 500'e çevirdiği için
+            // sınırı aşan her istek, kullanıcıya "sunucu hatası" olarak
+            // dönüyordu — canlıda aylardır görülen aralıklı 500 patlamalarının
+            // sebebi buydu. Yük altında %80'e kadar çıktığı ölçüldü.
+            //
+            // Ayrıca hatayı gizliyordu: gerçek sebep "istek sınırı aşıldı"
+            // iken loga "Unhandled exception" olarak düşüyor, istemci de
+            // yeniden denemesi gerektiğini anlayamıyordu.
+            if ($e instanceof \Illuminate\Http\Exceptions\HttpResponseException) {
+                return null; // Laravel kendi işlesin
+            }
+
             if ($request->is('api/*') || $request->expectsJson()) {
                 \Log::error('Unhandled exception', [
                     'exception' => get_class($e),
