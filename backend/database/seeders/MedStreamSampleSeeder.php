@@ -129,10 +129,25 @@
              ],
          ];
  
+         // Tekrar çalıştırılabilir olmalı.
+         //
+         // Düz create() ile her tohumlama örnek gönderileri baştan ekliyor,
+         // yani akış kopyalarla doluyordu. Bu yüzden canlı demo verisi bir kez
+         // yaratılıp bir daha tazelenemedi: gönderiler 100 günü aştı ve "en çok
+         // etkileşim" sekmesi (son 30 günü gösterir) bomboş kaldı.
+         //
+         // İçerik metni her örnek için farklı ve sabit; anahtar olarak o
+         // kullanılıyor. Böylece yeniden tohumlamak kopya üretmek yerine
+         // tarihleri güncelliyor.
          foreach ($posts as $postData) {
-             MedStreamPost::create($postData);
+             $anahtar = [
+                 'content'   => $postData['content'],
+                 'author_id' => $postData['author_id'],
+             ];
+
+             MedStreamPost::updateOrCreate($anahtar, $postData);
          }
- 
-         $this->command->info('15 professional MedStream posts created successfully.');
+
+         $this->command->info(count($posts) . ' professional MedStream posts seeded (idempotent).');
      }
  }

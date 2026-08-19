@@ -774,12 +774,19 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
-        foreach ($posts as $p) {
+        foreach ($posts as $sira => $p) {
             try {
+                // Eşleştirme TAM içerikle yapılmalı.
+                //
+                // Önceki anahtar içeriğin ilk 80 karakterini tam content
+                // sütunuyla karşılaştırıyordu; bu koşul hiçbir zaman tutmadığı
+                // için her tohumlama aynı 10 gönderiyi yeniden ekliyordu.
+                // Demo akışı bu yüzden yeniden tohumlandıkça kopyalarla
+                // doluyordu.
                 MedStreamPost::updateOrCreate(
                     [
                         'author_id' => $p['author']->id,
-                        'content'   => substr($p['content'], 0, 80), // match on first 80 chars
+                        'content'   => $p['content'],
                     ],
                     [
                         'author_id'    => $p['author']->id,
@@ -793,6 +800,11 @@ class DatabaseSeeder extends Seeder
                         'is_anonymous' => false,
                         'gdpr_consent' => true,
                         'view_count'   => $p['view_count'],
+                        // Tarih göreli veriliyor ve her tohumlamada tazeleniyor.
+                        // Sabit kalsaydı demo verisi eskidikçe "en çok
+                        // etkileşim" sekmesi (son 30 günü gösterir) boşalırdı —
+                        // canlıda tam olarak bu oldu, gönderiler 100 günü aştı.
+                        'created_at'   => now()->subHours(($sira + 1) * 9),
                     ]
                 );
             } catch (\Throwable $e) {
@@ -872,6 +884,26 @@ class DatabaseSeeder extends Seeder
                     continue; // skip weekends
                 }
                 foreach ($slotTimes as $tm) {
+                    // Tablo (doctor_id, slot_date, start_time) üzerinde benzersiz.
+                    // Düz create() ile ikinci tohumlama bu kısıta çarpıp
+                    // tohumlamanın tamamını yarıda kesiyordu — yani demo verisi
+                    // bir kez kurulup bir daha tazelenemiyordu.
+                    //
+                    // Var olan saatin müsaitliği KORUNUYOR: hasta o saati almışsa
+                    // yeniden tohumlama randevuyu görünmez kılıp saati yeniden
+                    // satışa açamaz.
+                    // Arama whereDate ile: slot_date sürücüye göre bazen tam
+                    // zaman damgası olarak saklanıyor, düz eşitlik SQLite'ta
+                    // tutmuyor ve kayıt varmış gibi görünmüyordu.
+                    $varOlan = \App\Models\CalendarSlot::where('doctor_id', $doc->id)
+                        ->whereDate('slot_date', $date->toDateString())
+                        ->where('start_time', $tm)
+                        ->exists();
+
+                    if ($varOlan) {
+                        continue;
+                    }
+
                     \App\Models\CalendarSlot::create([
                         'doctor_id'        => $doc->id,
                         'clinic_id'        => $doc->clinic_id,
