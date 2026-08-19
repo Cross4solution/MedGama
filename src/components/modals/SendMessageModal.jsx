@@ -91,7 +91,14 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 lg:pl-64">
+    {/*
+      Ekranın tamamını kaplayan katman: pencere ekrana göre ortalanır.
+      Buradaki `lg:pl-64` sol menü için yer bırakıyordu, ama bu pencere
+      doktor ve klinik profili gibi menüsüz sayfalarda açılıyor ve boşluk
+      pencereyi sağa itiyordu. Diğer pencereler (randevu, görüntülü görüşme)
+      zaten bu satırdaki sınıfları kullanıyor.
+    */}
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md z-10">
         {/* Hidden file inputs */}
