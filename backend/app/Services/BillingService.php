@@ -438,48 +438,70 @@ HTML;
         $today = Carbon::today();
         $monthStart = Carbon::now()->startOfMonth();
 
-        // Build stats for a specific currency
-        $buildForCurrency = function (string $cur) use ($baseQuery, $today, $monthStart) {
-            $q = (clone $baseQuery)->where('currency', $cur);
+        // Tüm para birimlerinin tüm toplamları TEK sorguda.
+        //
+        // Burada para birimi başına on bir ayrı toplama sorgusu, üstüne her
+        // para birimi için üç tane daha çalışıyordu: tek para biriminde 14,
+        // üç para biriminde 21 sorgu. Hepsi aynı tablodan aynı filtreyle
+        // okuyor, yalnızca koşulları farklı — yani koşullu toplamayla tek
+        // sorguya sığıyor.
+        //
+        // "Bugün" karşılaştırması gün başı/sonu aralığıyla yapılıyor: DATE()
+        // gibi sürücüye özel işlevler SQLite ile TiDB arasında farklı davranır.
+        $gunBasi = $today->copy()->startOfDay();
+        $gunSonu = $today->copy()->endOfDay();
 
-            $totalInvoices    = (clone $q)->count();
-            $totalRevenue     = (clone $q)->paid()->sum('grand_total');
-            $monthlyRevenue   = (clone $q)->paid()->where('paid_at', '>=', $monthStart)->sum('grand_total');
-            $todayRevenue     = (clone $q)->paid()->whereDate('paid_at', $today)->sum('grand_total');
-            $pendingAmount    = (clone $q)->where('status', 'pending')->sum('grand_total');
-            $partialPaid      = (clone $q)->where('status', 'partial')->sum('paid_amount');
-            $partialRemaining = (clone $q)->where('status', 'partial')->sum(DB::raw('grand_total - paid_amount'));
-            $expectedRevenue  = (clone $q)->whereIn('status', ['pending', 'partial'])->sum('grand_total');
-            $receivableAmount = (clone $q)->whereIn('status', ['pending', 'partial'])->sum(DB::raw('grand_total - paid_amount'));
-            $overdueCount     = (clone $q)->where('status', 'pending')->whereNotNull('due_date')->where('due_date', '<', $today)->count();
+        $satirlar = (clone $baseQuery)
+            ->selectRaw('currency')
+            ->selectRaw('COUNT(*) as adet')
+            ->selectRaw("COALESCE(SUM(CASE WHEN status = 'paid' THEN grand_total ELSE 0 END), 0) as tahsil_edilen")
+            ->selectRaw("COALESCE(SUM(CASE WHEN status = 'paid' AND paid_at >= ? THEN grand_total ELSE 0 END), 0) as bu_ay", [$monthStart])
+            ->selectRaw("COALESCE(SUM(CASE WHEN status = 'paid' AND paid_at >= ? AND paid_at <= ? THEN grand_total ELSE 0 END), 0) as bugun", [$gunBasi, $gunSonu])
+            ->selectRaw("COALESCE(SUM(CASE WHEN status = 'pending' THEN grand_total ELSE 0 END), 0) as bekleyen")
+            ->selectRaw("COALESCE(SUM(CASE WHEN status = 'partial' THEN paid_amount ELSE 0 END), 0) as kismi_odenen")
+            ->selectRaw("COALESCE(SUM(CASE WHEN status = 'partial' THEN grand_total - paid_amount ELSE 0 END), 0) as kismi_kalan")
+            ->selectRaw("COALESCE(SUM(CASE WHEN status IN ('pending','partial') THEN grand_total ELSE 0 END), 0) as beklenen")
+            ->selectRaw("COALESCE(SUM(CASE WHEN status IN ('pending','partial') THEN grand_total - paid_amount ELSE 0 END), 0) as alacak")
+            ->selectRaw("COALESCE(SUM(CASE WHEN status = 'pending' AND due_date IS NOT NULL AND due_date < ? THEN 1 ELSE 0 END), 0) as geciken", [$today])
+            ->groupBy('currency')
+            ->get()
+            ->keyBy('currency');
+
+        $bosSatir = (object) [
+            'adet' => 0, 'tahsil_edilen' => 0, 'bu_ay' => 0, 'bugun' => 0, 'bekleyen' => 0,
+            'kismi_odenen' => 0, 'kismi_kalan' => 0, 'beklenen' => 0, 'alacak' => 0, 'geciken' => 0,
+        ];
+
+        $bicimle = function (string $cur) use ($satirlar, $bosSatir): array {
+            $s = $satirlar[$cur] ?? $bosSatir;
 
             return [
                 'currency'          => $cur,
-                'total_invoices'    => $totalInvoices,
-                'total_revenue'     => round((float) $totalRevenue, 2),
-                'monthly_revenue'   => round((float) $monthlyRevenue, 2),
-                'today_revenue'     => round((float) $todayRevenue, 2),
-                'expected_revenue'  => round((float) $expectedRevenue, 2),
-                'receivable_amount' => round((float) $receivableAmount, 2),
-                'pending_amount'    => round((float) $pendingAmount, 2),
-                'partial_paid'      => round((float) $partialPaid, 2),
-                'partial_remaining' => round((float) $partialRemaining, 2),
-                'overdue_count'     => $overdueCount,
+                'total_invoices'    => (int) $s->adet,
+                'total_revenue'     => round((float) $s->tahsil_edilen, 2),
+                'monthly_revenue'   => round((float) $s->bu_ay, 2),
+                'today_revenue'     => round((float) $s->bugun, 2),
+                'expected_revenue'  => round((float) $s->beklenen, 2),
+                'receivable_amount' => round((float) $s->alacak, 2),
+                'pending_amount'    => round((float) $s->bekleyen, 2),
+                'partial_paid'      => round((float) $s->kismi_odenen, 2),
+                'partial_remaining' => round((float) $s->kismi_kalan, 2),
+                'overdue_count'     => (int) $s->geciken,
             ];
         };
 
         // Primary stats for the active/selected currency
-        $primary = $buildForCurrency($activeCurrency);
+        $primary = $bicimle($activeCurrency);
 
         // Per-currency summary (lightweight: just totals for each currency)
         $byCurrency = [];
         foreach ($currencies as $cur) {
-            $cq = (clone $baseQuery)->where('currency', $cur);
+            $s = $satirlar[$cur] ?? $bosSatir;
             $byCurrency[] = [
                 'currency'          => $cur,
-                'total_revenue'     => round((float) (clone $cq)->paid()->sum('grand_total'), 2),
-                'receivable_amount' => round((float) (clone $cq)->whereIn('status', ['pending', 'partial'])->sum(DB::raw('grand_total - paid_amount')), 2),
-                'invoice_count'     => (clone $cq)->count(),
+                'total_revenue'     => round((float) $s->tahsil_edilen, 2),
+                'receivable_amount' => round((float) $s->alacak, 2),
+                'invoice_count'     => (int) $s->adet,
             ];
         }
 
