@@ -196,13 +196,26 @@ return Application::configure(basePath: dirname(__DIR__))
                     'user_id'   => $request->user()?->id,
                 ]);
 
-                return response()->json([
+                $yanit = response()->json([
                     'success' => false,
                     'message' => app()->isProduction()
                         ? 'An unexpected error occurred. Please try again later.'
                         : $e->getMessage(),
                     'code'    => 'INTERNAL_ERROR',
                 ], 500);
+
+                // Geçici teşhis: canlıda ara ara 500 patlamaları oluyor ve
+                // yalnızca yük altında çıktığı için hangi istisna olduğu
+                // görülemedi. Sunucu loglarına erişim olmadığından sınıf adı
+                // yanıta da yazılıyor — YALNIZCA sınıf adı: mesaj, dosya ve
+                // yığın izi dışarı verilmez, onlar log ve Sentry tarafında.
+                // Ölçüm bayrağı kapalıyken hiç eklenmez.
+                // TESLİMDEN ÖNCE SureOlcer ile birlikte KALDIRILACAK.
+                if (config('app.timing_header')) {
+                    $yanit->headers->set('X-Hata-Sinifi', get_class($e));
+                }
+
+                return $yanit;
             }
         });
 
