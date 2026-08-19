@@ -5,18 +5,26 @@ import { socialAPI } from '../lib/api';
 const FavoritesContext = createContext({ count: 0, refresh: () => {}, increment: () => {}, decrement: () => {}, setCount: () => {} });
 
 export function FavoritesProvider({ children }) {
-  const { user } = useAuth();
+  const { user, hydrated } = useAuth();
   const [count, setCount] = useState(0);
 
+  // Kullanıcı NESNESİ değil kimliği izleniyor.
+  //
+  // Oturum bilgisi tazelendiğinde (ör. /auth/me dönünce) nesne yenileniyor;
+  // bağımlılık nesne olduğu için refresh de yenileniyor ve efekt tekrar
+  // çalışıyordu. Sayfa açılışında bu uca iki istek gidiyordu.
+  const kullaniciId = user?.id ?? null;
+
   const refresh = useCallback(() => {
-    if (!user) { setCount(0); return; }
+    if (!kullaniciId) { setCount(0); return; }
     socialAPI.favoritesCount()
       .then(res => setCount(res?.data?.count ?? res?.count ?? 0))
       .catch(() => {});
-  }, [user]);
+  }, [kullaniciId]);
 
-  // Fetch on mount & user change
-  useEffect(() => { refresh(); }, [refresh]);
+  // Oturum yerleşmeden istek atma: yerleşme sırasındaki ara durumlar
+  // gereksiz çağrı üretiyor.
+  useEffect(() => { if (hydrated) refresh(); }, [hydrated, refresh]);
 
   // Optimistic increment/decrement helpers
   const increment = useCallback(() => setCount(c => c + 1), []);

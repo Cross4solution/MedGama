@@ -20,7 +20,7 @@ import { useAuth } from './AuthContext';
 const Ctx = createContext(null);
 
 export function ContentTranslationProvider({ children }) {
-  const { user } = useAuth();
+  const { user, hydrated } = useAuth();
   const [durum, setDurum] = useState(null);      // {available, enabled, language, messages_allowed}
   const [ceviriler, setCeviriler] = useState({}); // key → {text, translated}
 
@@ -29,13 +29,28 @@ export function ContentTranslationProvider({ children }) {
   const kuyruk = useRef([]);
   const zamanlayici = useRef(null);
 
+  // Durumun en son hangi kullanıcı için sorulduğu.
+  const sorulanKullanici = useRef(Symbol('henüz sorulmadı'));
+
   useEffect(() => {
+    // Oturum bilgisi yerleşene kadar bekle.
+    //
+    // Açılışta kullanıcı birkaç ara durumdan geçiyor (bilinmiyor → misafir →
+    // giriş yapılmışsa kullanıcı). Efekt yalnızca user.id'ye bağlıyken bu
+    // geçişlerin her biri yeni bir istek üretiyordu: tek sayfa açılışında
+    // aynı uca beş çağrı gidiyordu.
+    if (!hydrated) return;
+
+    const kimlik = user?.id ?? null;
+    if (sorulanKullanici.current === kimlik) return; // aynı kullanıcı, tekrar sorma
+    sorulanKullanici.current = kimlik;
+
     let iptal = false;
     contentTranslationAPI.status()
       .then((r) => { if (!iptal) setDurum(r?.data || r); })
       .catch(() => { if (!iptal) setDurum({ available: false, enabled: false }); });
     return () => { iptal = true; };
-  }, [user?.id]);
+  }, [hydrated, user?.id]);
 
   const acik = Boolean(durum?.available && durum?.enabled);
 

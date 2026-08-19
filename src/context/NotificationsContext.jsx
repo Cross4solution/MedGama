@@ -12,21 +12,25 @@ const NotificationsContext = createContext({
 });
 
 export function NotificationsProvider({ children }) {
-  const { user } = useAuth();
+  const { user, hydrated } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Kullanıcı NESNESİ değil kimliği izleniyor — nesne her tazelemede
+  // yenilendiği için efekt gereksiz yere ikinci kez çalışıyordu.
+  const kullaniciId = user?.id ?? null;
+
   const refresh = useCallback(() => {
-    if (!user) { setUnreadCount(0); return; }
+    if (!kullaniciId) { setUnreadCount(0); return; }
     notificationAPI.unreadCount()
       .then(res => {
         const c = res?.unread_count ?? res?.data?.unread_count ?? res?.count ?? 0;
         setUnreadCount(c);
       })
       .catch(() => {});
-  }, [user]);
+  }, [kullaniciId]);
 
-  // Fetch on mount & user change
-  useEffect(() => { refresh(); }, [refresh]);
+  // Oturum yerleşmeden sorma.
+  useEffect(() => { if (hydrated) refresh(); }, [hydrated, refresh]);
 
   // Polling fallback — every 30s
   useEffect(() => {

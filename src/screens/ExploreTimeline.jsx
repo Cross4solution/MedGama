@@ -22,13 +22,17 @@ import { SelectCombobox } from 'components/forms';
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
-function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you', refreshKey = 0, injectedPosts = [], onApiRefresh, geo = null, radius = 25 }) {
+function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = '', textQuery = '', page = 1, pageSize = 12, sort = 'top', tab = 'for-you', refreshKey = 0, injectedPosts = [], onApiRefresh, geo = null, radius = 25, hazir = true }) {
   // API'den gelen postlar
   const [apiPosts, setApiPosts] = useState([]);
   const [apiLoaded, setApiLoaded] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
+    // Konum okuma denemesi bitmeden çekme: yoksa aynı akış iki kez isteniyor
+    // (önce konumsuz, sonra konum gelince).
+    if (!hazir) return;
+
     const controller = new AbortController();
     setApiLoaded(false);
     setIsRefreshing(true);
@@ -105,7 +109,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
       setIsRefreshing(false);
     });
     return () => controller.abort();
-  }, [refreshKey, sort, textQuery, specialtyFilter, countryName, geo?.lat, geo?.lon, radius]);
+  }, [hazir, refreshKey, sort, textQuery, specialtyFilter, countryName, geo?.lat, geo?.lon, radius]);
 
   // Yalnızca API verileri kullanılır (mock feed üretici kaldırıldı).
   // API yüklenirken boş gösterilir (navigasyonda flash önlenir).
@@ -155,6 +159,8 @@ export default function ExploreTimeline() {
   const [tab, setTab] = useState('for-you'); // for-you | latest
   // Konum (Use my location) — useExploreFeed'den önce tanımlı olmalı (TDZ).
   const [geo, setGeo] = useState(null);
+  // Yerel depodaki konum okundu mu? Akış bunu bekliyor (bkz. aşağıdaki efekt).
+  const [geoYuklendi, setGeoYuklendi] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const [geoRadius, setGeoRadius] = useState(25); // km — sonuç azsa kademeli büyür
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -417,6 +423,7 @@ export default function ExploreTimeline() {
     injectedPosts: localPosts,
     geo: (geo && typeof geo.lat === 'number') ? geo : null,
     radius: geoRadius,
+    hazir: geoYuklendi,
     onApiRefresh: (apiIds) => {
       // Remove localPosts that are now in API results to prevent duplicates/jumps
       setLocalPosts(prev => prev.filter(p => !apiIds.includes(p.id)));
@@ -511,11 +518,20 @@ export default function ExploreTimeline() {
   // Görünüm sabit: LinkedIn benzeri tek sütun liste
 
   // Sayfa yüklenince: son bilinen konumu hemen göster (bekletmeden akış çalışsın).
+  //
+  // Konum yerel depodan ilk render'DAN SONRA okunabiliyor (sunucu tarafında
+  // depo yok). Akış efekti konuma bağlı olduğu için ilk istek konumsuz
+  // gidiyor, konum gelince aynı istek bir daha gidiyordu: sayfa açılışında
+  // akış iki kez çekiliyordu — hem de en ağır uç.
+  //
+  // Bu yüzden akış, konum okuma denemesi bitene kadar bekliyor. Depo boş olsa
+  // bile bayrak kalkıyor, yani konumu olmayan kullanıcı beklemiyor.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(GEO_POS_KEY);
       if (raw) setGeo(JSON.parse(raw));
     } catch {}
+    setGeoYuklendi(true);
   }, []);
 
   // Hassas konum ne zaman istenecek? (elle giriş → hep; cookie giriş → ülke/eyalet
