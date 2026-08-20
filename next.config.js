@@ -54,6 +54,53 @@ const nextConfig = {
     // Build sırasında lint hatası deploy'u kırmasın (CRA CI=false davranışı)
     ignoreDuringBuilds: true,
   },
+
+  // İçerik Güvenlik Politikası — ÖNCE YALNIZCA İZLEME.
+  //
+  // CSP, tarayıcıya "kod ve içerik yalnızca şu kaynaklardan gelebilir" der ve
+  // XSS'e karşı en güçlü katmandır: saldırgan sayfaya betik enjekte etse bile
+  // tarayıcı çalıştırmaz.
+  //
+  // Ama yanlış yazılmış bir politika meşru şeyleri de keser — harita, video,
+  // analitik, canlı bildirim. Bu yüzden `Report-Only` başlığıyla açılıyor:
+  // tarayıcı HİÇBİR ŞEYİ engellemez, yalnızca "bu politika olsaydı şunu
+  // keserdim" diye rapor gönderir. Raporlar birkaç gün izlenip politika
+  // gerçek trafiğe göre düzeltildikten sonra engelleyici moda alınacak.
+  async headers() {
+    const politika = [
+      "default-src 'self'",
+      // Next.js kendi betiklerini satır içi yerleştiriyor; nonce'a geçilene
+      // kadar unsafe-inline gerekli. Raporlar bunun ne kadar daraltılabileceğini
+      // gösterecek.
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://api.mapbox.com",
+      "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
+      // Görseller çok kaynaklı (klinik/doktor avatarları, bayraklar, yer
+      // tutucular, arka uç depolama) — https geneli bilinçli.
+      "img-src 'self' data: blob: https:",
+      "font-src 'self' data:",
+      // Canlı bildirim ve görüntülü görüşme sinyali için soket bağlantısı.
+      "connect-src 'self' https://www.google-analytics.com https://api.mapbox.com https://events.mapbox.com https://medagama-backend.onrender.com wss://57-128-27-244.sslip.io",
+      // MedStream'de YouTube gömülü videolar var.
+      "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
+      "media-src 'self' blob: https:",
+      "worker-src 'self' blob:",
+      // Eklenti/nesne gömme tamamen kapalı — kullanılmıyor, saldırı yüzeyi.
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      'upgrade-insecure-requests',
+      // İhlaller arka uçta toplanıyor (hız sınırlı, kırpılmış).
+      'report-uri /api/csp-report',
+    ].join('; ');
+
+    return [
+      {
+        source: '/:path*',
+        headers: [{ key: 'Content-Security-Policy-Report-Only', value: politika }],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

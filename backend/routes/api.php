@@ -48,6 +48,14 @@ Route::get('/health', function () {
     return response('ok', 200)->header('Content-Type', 'text/plain');
 });
 
+// İçerik güvenlik politikası ihlal raporları.
+//
+// Tarayıcı gönderir, kimlik taşımaz — o yüzden herkese açık olmak zorunda.
+// Kötüye kullanımı sınırlamak için kendi hız sınırı var; genel API sınırından
+// ayrı tutuldu ki rapor seli gerçek kullanıcıların kotasını yemesin.
+Route::post('/csp-report', [\App\Http\Controllers\Api\CspRaporController::class, 'store'])
+    ->middleware('throttle:csp-report');
+
 // ╔══════════════════════════════════════════════════════════════════╗
 // ║  Şema onarımı: eksik migration'ları uygular (migrate + seed).     ║
 // ║  Usage: GET /api/system/init-db?key=<INIT_DB_KEY>                 ║

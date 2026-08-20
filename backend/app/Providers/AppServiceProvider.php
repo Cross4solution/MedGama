@@ -70,6 +70,15 @@ class AppServiceProvider extends ServiceProvider
                 });
         });
 
+        // Rate limiter: CSP ihlal raporları — IP başına dakikada 30.
+        // Tarayıcı bir sayfada onlarca ihlal bildirebilir; sınır bunu
+        // karşılayacak kadar geniş ama log'u sele boğduramayacak kadar dar.
+        RateLimiter::for('csp-report', function (Request $request) {
+            return Limit::perMinute(30)->by($request->ip())->response(function ($istek, array $basliklar) {
+                return response()->noContent(429, $basliklar);
+            });
+        });
+
         // Rate limiter: login — 5 attempts per minute per IP
         RateLimiter::for('auth-login', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip())->response(function ($istek, array $basliklar) {
