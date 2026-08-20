@@ -44,11 +44,42 @@ const nextConfig = {
       { source: '/500', destination: '/tr/server-error' },
     ];
   },
-  // Mevcut görseller public/ altında — Next Image optimizasyonu opsiyonel, şimdilik unoptimized
   images: {
+    // BEYAZ LİSTE — burada "**" YAZMAYIN.
+    //
+    // Eskiden `hostname: '**'` idi ve üstündeki yorum optimizasyonun kapalı
+    // olduğunu söylüyordu; ayar hiç konmamıştı, yani optimizasyon açıktı.
+    // Sonuç: /_next/image İNTERNETTEKİ HERHANGİ bir görseli işleyip
+    // sunuyordu. Canlıda doğrulandı — Wikipedia, GitHub ve rastgele siteler
+    // bizim alan adımız üzerinden geçti.
+    //
+    // İki somut zarar: Vercel görsel işlemeyi faturalandırıyor (kota
+    // tüketilebilir) ve daha ağırı, bizim alan adımız üzerinden herhangi bir
+    // içerik dağıtılabiliyordu. Sağlık platformu için kabul edilebilir değil.
+    //
+    // Liste kodun taranmasıyla değil, CANLI VERİNİN taranmasıyla çıkarıldı;
+    // yeni bir kaynak eklenirse görsel sessizce kırılır, buraya eklenmeli.
     remotePatterns: [
-      { protocol: 'https', hostname: '**' },
+      // Tohum verisindeki tüm görseller (canlıda 113 kayıt).
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      // Görsel bulunmayan kartlarda yer tutucu.
+      { protocol: 'https', hostname: 'placehold.co' },
+      // Ülke bayrakları (telefon kodu ve dil seçici).
+      { protocol: 'https', hostname: 'flagcdn.com' },
+      // MedStream video gönderilerinin kapak görselleri.
+      { protocol: 'https', hostname: 'img.youtube.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
+      // Arka uç depolama. Normalde Vercel yönlendirmesiyle aynı kaynaktan
+      // geliyor; doğrudan adresle gelen durumlar için de açık.
+      { protocol: 'https', hostname: 'medagama-backend.onrender.com' },
+      { protocol: 'https', hostname: 'medagama.com' },
+      { protocol: 'https', hostname: 'www.medagama.com' },
+      // Yerel geliştirme — arka uç http üzerinden çalışıyor.
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'http', hostname: '127.0.0.1' },
     ],
+    // SVG betik taşıyabilir; optimizasyondan geçirilmesi XSS yüzeyi açar.
+    dangerouslyAllowSVG: false,
   },
   eslint: {
     // Build sırasında lint hatası deploy'u kırmasın (CRA CI=false davranışı)
