@@ -22,10 +22,33 @@ return [
     // Explicit allow-list. Env-driven (CORS_ALLOWED_ORIGINS, comma-separated,
     // set in render.yaml). Safe default covers production Vercel app, custom
     // domains and local dev so an empty env never locks out legitimate origins.
-    'allowed_origins' => array_filter(array_map('trim', explode(',', env(
-        'CORS_ALLOWED_ORIGINS',
-        'https://med-gama.vercel.app,https://medagama.com,https://www.medagama.com,http://localhost:3000'
-    )))),
+    //
+    // JOKER (*) KABUL EDİLMEZ.
+    //
+    // Canlıda bu değişkene "*" yazılmıştı ve kodun beyaz listesini tamamen
+    // iptal ediyordu: sunucu her kaynağa izin veriyordu, saldırgan siteler
+    // dahil. Hasta verisi sızmıyordu (jeton tarayıcı deposunda, başka site
+    // okuyamaz) ama API herkese sınırsız taranabilir haldeydi.
+    //
+    // Panel ayarı yanlışsa kod devreye girip güvenli listeye düşüyor. Bu tür
+    // bir ayarın tek bir yanlış değerle açılabilmesi, sağlık verisi taşıyan
+    // bir sistemde kabul edilebilir değil.
+    //
+    // Not: ön yüz bu kapıyı ZATEN kullanmıyor — tarayıcı Vercel'e istek
+    // atıyor, Vercel sunucu tarafında backend'e gidiyor. Yani kısıtlamanın
+    // uygulamaya etkisi yok.
+    'allowed_origins' => (function (): array {
+        $varsayilan = 'https://med-gama.vercel.app,https://medagama.com,https://www.medagama.com,http://localhost:3000';
+
+        $liste = array_values(array_filter(
+            array_map('trim', explode(',', (string) env('CORS_ALLOWED_ORIGINS', $varsayilan))),
+            fn ($kaynak) => $kaynak !== '' && $kaynak !== '*',
+        ));
+
+        // Süzgeçten sonra liste boşaldıysa (ör. değişken sadece "*" idi)
+        // güvenli varsayılana dön — aksi hâlde meşru site de kilitlenirdi.
+        return $liste ?: array_map('trim', explode(',', $varsayilan));
+    })(),
 
     'allowed_origins_patterns' => [
         // Project-specific Vercel preview deployments ONLY (e.g.
