@@ -1616,7 +1616,46 @@
     "startChat": "بدء المحادثة",
     "askVasco": "اسأل Vasco AI...",
     "analyzing": "جاري التحليل...",
-    "disclaimer": "يقدم Vasco AI معلومات صحية عامة فقط. استشر دائماً متخصصاً مؤهلاً في الرعاية الصحية للحصول على مشورة طبية."
+    "disclaimer": "يقدم Vasco AI معلومات صحية عامة فقط. استشر دائماً متخصصاً مؤهلاً في الرعاية الصحية للحصول على مشورة طبية.",
+    "a1": "لا. لا يضع Vasco AI تشخيصًا ولا يوصي بعلاج ولا يقدّم استشارة طبية. هو يوجّهك فقط إلى التخصص والأخصائيين المناسبين.",
+    "a2": "اطّلع على أخصائيي التخصص المقترح ثم",
+    "a2b": "موعدًا.",
+    "a3": "نعم، صُمّم Vasco AI ليكون متعدد اللغات.",
+    "answerPlaceholder": "اكتب إجابتك…",
+    "appointment": "احجز",
+    "ask": "اقترح",
+    "askAnother": "↺ شكوى جديدة",
+    "assistantTitle": "صِف شكواك وسنجد لك الأخصائي المناسب",
+    "badge": "مساعد التوجيه بالذكاء الاصطناعي",
+    "browseDoctors": "عرض أطباء هذا التخصص ←",
+    "can1": "يقترح التخصص المرجّح بناءً على شكواك",
+    "can2": "يوجّهك إلى الأطباء الأخصائيين والعيادات",
+    "can3": "يعمل بلغات عديدة (مناسب للسياحة العلاجية)",
+    "canTitle": "ما الذي يقوم به",
+    "cant1": "لا يضع تشخيصًا",
+    "cant2": "لا يوصي بدواء أو علاج",
+    "cant3": "لا يغني عن الكشف الطبي",
+    "cantTitle": "ما الذي لا يقوم به",
+    "disclaimerShort": "لا يضع Vasco AI تشخيصًا؛ هو يوجّهك فقط إلى الأخصائي المناسب.",
+    "error": "حدث خطأ ما، يُرجى المحاولة مرة أخرى.",
+    "faqTitle": "الأسئلة الشائعة",
+    "hero": "صِف شكواك؛ يوجّهك Vasco إلى الأخصائي المناسب. وهو لا يضع تشخيصًا.",
+    "howTitle": "كيف يعمل",
+    "importantLabel": "مهم:",
+    "placeholder": "مثال: أعاني منذ يومين من ألم في الصدر وخفقان…",
+    "q1": "هل يضع Vasco AI تشخيصًا؟",
+    "q2": "ماذا أفعل بعد التوجيه؟",
+    "q3": "هل يمكنني استخدامه بلغات أخرى؟",
+    "step1Desc": "اكتب بحرية، بلغتك.",
+    "step1Title": "صِف شكواك",
+    "step2Desc": "يحدّد Vasco التخصص الطبي المناسب.",
+    "step2Title": "اقتراح التخصص",
+    "step3Desc": "اطّلع على الأطباء الأنسب واحجز.",
+    "step3Title": "الوصول إلى أخصائي",
+    "thinking": "Vasco يفكّر",
+    "trust": "بلا تشخيص · متعدد اللغات · شكواك تبقى سرّية",
+    "typeExample": "أعاني منذ يومين من ألم شديد في الأسنان",
+    "vague": "هل يمكنك وصف شكواك بمزيد من التفصيل؟"
   },
   "telehealthPage": {
     "title": "الصحة عن بعد",
@@ -1703,7 +1742,42 @@
     "sendMessage": "إرسال رسالة",
     "addedToFavorites": "تمت الإضافة إلى المفضلة",
     "removedFromFavorites": "تمت الإزالة من المفضلة",
-    "clinic": "عيادة"
+    "clinic": "عيادة",
+    "accreditations": "الاعتمادات",
+    "basedOnReviews": "بناءً على {{count}} تقييمًا",
+    "book": "احجز",
+    "certifications": "الشهادات",
+    "clinicResponse": "رد العيادة",
+    "hide": "إخفاء",
+    "noDoctors": "لا يوجد أطباء مسجّلون في هذه العيادة بعد.",
+    "noDoctorsMatch": "لم يُعثر على أطباء مطابقين لبحثك.",
+    "noReviewsHint": "كن أول من يشارك تجربته.",
+    "noReviewsYet": "لا توجد تقييمات بعد",
+    "noTreatmentMatch": "لم يُعثر على علاجات مطابقة لبحثك.",
+    "ourDoctors": "أطباؤنا",
+    "priceDisclaimer": "* قد تختلف الأسعار حسب تعقيد الإجراء وحالة المريض.",
+    "priceRange": "نطاق الأسعار",
+    "priceRangeDisclaimer": "*قد تختلف الأسعار. للحصول على سعر دقيق، يُرجى حجز موعد.",
+    "pricing": "الأسعار",
+    "procedure": "الإجراء",
+    "reviewAlreadyExists": "سبق أن قيّمت هذه العيادة.",
+    "reviewFloodLimit": "يجب الانتظار 24 ساعة بين تقييم وآخر.",
+    "reviewGateDesc": "يمكن فقط للمرضى الذين أتمّوا موعدًا في هذه العيادة مشاركة تجربتهم. أتمِم موعدك ثم عُد لكتابة تقييم.",
+    "reviewGateTitle": "تقييمات موثّقة فقط",
+    "reviewMinChars": "يُرجى كتابة 10 أحرف على الأقل.",
+    "reviewNeedAppointment": "تحتاج إلى موعد مكتمل لكتابة تقييم.",
+    "reviewPlaceholder": "شارِك تجربتك (10 أحرف على الأقل)…",
+    "reviewSubmitError": "تعذّر إرسال التقييم. يُرجى المحاولة مرة أخرى.",
+    "reviewSuccess": "شكرًا على تقييمك!",
+    "reviewSuccessDesc": "أُرسل تقييمك وسيظهر بعد المراجعة.",
+    "searchDoctor": "ابحث عن طبيب…",
+    "submitReview": "إرسال التقييم",
+    "topServices": "الخدمات البارزة",
+    "treatmentSearchPlaceholder": "ابحث عن علاج أو إجراء…",
+    "treatmentTypePlaceholder": "نوع العلاج (مثال: تنظيف الأسنان)",
+    "verifiedReview": "موثّق",
+    "viewAllDoctors": "عرض جميع الأطباء ({{count}})",
+    "writeReview": "اكتب تقييمًا"
   },
   "profile": {
     "title": "الملف الشخصي",
@@ -1944,7 +2018,20 @@
     "editSettings": "تعديل في الإعدادات",
     "operatingHours": "ساعات العمل",
     "galleryComingSoon": "صور المعرض قريباً",
-    "galleryComingSoonHint": "لم يرفع هذا الطبيب أي صور للعيادة أو المكتب بعد."
+    "galleryComingSoonHint": "لم يرفع هذا الطبيب أي صور للعيادة أو المكتب بعد.",
+    "addedToFavorites": "أُضيف إلى المفضلة",
+    "appointment": "موعد",
+    "faq": "الأسئلة الشائعة",
+    "noFaqs": "لا توجد أسئلة شائعة بعد.",
+    "removedFromFavorites": "أُزيل من المفضلة",
+    "reviewAlreadyExists": "سبق أن قيّمت هذا الطبيب.",
+    "reviewFloodLimit": "يجب الانتظار 24 ساعة بين تقييم وآخر.",
+    "reviewGateDesc": "يمكن فقط للمرضى الذين أتمّوا موعدًا مع هذا الطبيب مشاركة تجربتهم. أتمِم موعدك ثم عُد لكتابة تقييم.",
+    "reviewGateTitle": "تقييمات موثّقة فقط",
+    "reviewMinChars": "يُرجى كتابة 10 أحرف على الأقل.",
+    "reviewNeedAppointment": "تحتاج إلى موعد مكتمل لكتابة تقييم.",
+    "reviewSubmitError": "تعذّر إرسال التقييم. يُرجى المحاولة مرة أخرى.",
+    "reviewSuccessDesc": "أُرسل تقييمك وسيظهر بعد المراجعة."
   },
   "crmReviews": {
     "title": "تقييمات المرضى",
@@ -2181,7 +2268,23 @@
     "specialtiesSubtitle": "اختر الأقسام التي تقدمها عيادتك",
     "searchSpecialties": "ابحث عن التخصصات...",
     "teamTitle": "إعداد الفريق",
-    "teamSubtitle": "ادعُ أطباء للانضمام إلى عيادتك"
+    "teamSubtitle": "ادعُ أطباء للانضمام إلى عيادتك",
+    "accreditations": "الشهادات والاعتمادات",
+    "accreditationsHint": "اختر الشهادات المهنية التي تحملها عيادتك. هذا يبعث الثقة لدى المرضى.",
+    "addDoctor": "إضافة طبيب",
+    "addDoctorBtn": "إضافة إلى الفريق",
+    "certificates": "الشهادات (مع صورة)",
+    "certificatesHint": "أضِف اسم الشهادة والسنة، وصورة المستند إن رغبت.",
+    "doctorEmail": "البريد الإلكتروني",
+    "doctorName": "الاسم الكامل",
+    "doctorSpecialty": "التخصص (اختياري)",
+    "finish": "إنهاء الإعداد",
+    "logo": "الشعار",
+    "nameRequired": "يُرجى إدخال اسم العيادة.",
+    "skipTeam": "تخطّي الآن، سأضيف أعضاء الفريق لاحقًا",
+    "tempPassword": "كلمة مرور مؤقتة (6 أحرف على الأقل)",
+    "treatmentsSubtitle": "اختر العلاجات التي تقدّمها عيادتك — يجدك المرضى حسب العلاج.",
+    "treatmentsTitle": "العلاجات المقدَّمة"
   },
   "admin": {
     "auditLogs": {
@@ -2916,7 +3019,8 @@
     "healthTip": "نصيحة صحية",
     "healthTipText": "حافظ على تنظيم مستنداتك الطبية في أرشيفك الطبي. شاركها مع أطبائك قبل المواعيد للحصول على رعاية أفضل.",
     "dataProtection": "حماية البيانات",
-    "gdprNotice": "يتم تشفير بياناتك الصحية وتخزينها بشكل آمن وفقاً للمادة 9 من اللائحة العامة لحماية البيانات. أنت تتحكم في من يمكنه الوصول إلى مستنداتك الطبية."
+    "gdprNotice": "يتم تشفير بياناتك الصحية وتخزينها بشكل آمن وفقاً للمادة 9 من اللائحة العامة لحماية البيانات. أنت تتحكم في من يمكنه الوصول إلى مستنداتك الطبية.",
+    "noUpcomingDesc": "احجز موعدًا مع أخصائي لتبدأ رحلتك الصحية."
   },
   "header": {
     "forClinics": "للعيادات",
@@ -3587,5 +3691,356 @@
     "rotate": "تدوير",
     "zoomIn": "تكبير",
     "zoomOut": "تصغير"
+  },
+  "beforeAfterTab": {
+    "after": "بعد",
+    "before": "قبل",
+    "beforeAfterPhotos": "صور قبل وبعد"
+  },
+  "cRMAppointments": {
+    "905xxXxxXxxx": "+90 5XX XXX XXXX",
+    "emailExampleCom": "email@example.com",
+    "pdfJpgPngMax10": "PDF، JPG، PNG · 10 ميغابايت كحد أقصى"
+  },
+  "cRMBranches": {
+    "branchHospitalCom": "branch@hospital.com",
+    "istanbul": "إسطنبول",
+    "turkey": "تركيا"
+  },
+  "cRMDocuments": {
+    "pdfDocxXlsxJpgPng": "PDF، DOCX، XLSX، JPG، PNG، DICOM (20 ميغابايت كحد أقصى)"
+  },
+  "cRMExamination": {
+    "after": "بعد",
+    "before": "قبل",
+    "bp": "ضغط الدم:",
+    "hr": "النبض:",
+    "im": "عضلي",
+    "inhalation": "استنشاق",
+    "iv": "وريدي",
+    "nasal": "أنفي",
+    "oral": "فموي",
+    "rectal": "شرجي",
+    "sc": "تحت الجلد",
+    "topical": "موضعي"
+  },
+  "cRMLayout": {
+    "crmPlatform": "منصة CRM",
+    "goToMedagama": "الانتقال إلى Medagama",
+    "loading": "جارٍ التحميل…",
+    "searchPatientsAppointments": "ابحث عن مرضى ومواعيد…"
+  },
+  "cRMLeads": {
+    "905xxXxxXxxx": "+90 5XX XXX XXXX",
+    "ornekEmailCom": "ornek@email.com",
+    "webReferralManual": "الموقع / توصية / يدوي"
+  },
+  "cRMPatient360": {
+    "backToPatients": "العودة إلى المرضى",
+    "icd10": "التصنيف الدولي للأمراض ICD-10",
+    "medicalSummaryWillPopulateAfter": "سيتكوّن الملخّص الطبي مع إجراء الكشوفات",
+    "noDocumentsYet": "لا توجد مستندات بعد",
+    "noMedicalDataYet": "لا توجد بيانات طبية بعد",
+    "noPatientIdProvided": "لم يُحدَّد معرّف المريض",
+    "noTimelineEntriesYet": "لا توجد إدخالات في التسلسل الزمني بعد",
+    "noVitalsRecordedYet": "لم تُسجَّل علامات حيوية بعد",
+    "patientNotFound": "لم يُعثر على المريض",
+    "tag": "وسم…",
+    "verified": "موثّق"
+  },
+  "cRMReports": {
+    "excelOlarak": "بصيغة Excel",
+    "hastaDemografisi": "التركيبة السكانية للمرضى",
+    "hizmetTedaviAnalizi": "تحليل الخدمات والعلاجات",
+    "pdfOlarak": "بصيغة PDF"
+  },
+  "cRMRevenue": {
+    "exportAsExcel": "تصدير بصيغة Excel",
+    "exportAsPdf": "تصدير بصيغة PDF",
+    "superAdmin": "المسؤول الأعلى"
+  },
+  "cRMSalespeople": {
+    "905xxXxxXxxx": "+90 5XX XXX XXXX",
+    "mehmetDemir": "محمد دمير",
+    "satisciEmailCom": "sales@email.com"
+  },
+  "cRMSettings": {
+    "https": "https://…",
+    "httpsWwwExampleCom": "https://www.example.com",
+    "openstreetmapPreview": "معاينة OpenStreetMap"
+  },
+  "cRMStaff": {
+    "5Years": "5 سنوات",
+    "905xxXxxXxxx": "+90 5XX XXX XXXX",
+    "cardiologyDermatology": "أمراض القلب، الأمراض الجلدية…",
+    "doctorEmailCom": "doctor@email.com",
+    "drJohnDoe": "د. أحمد محمد",
+    "drProfUzm": "د. / أ.د. / أخصائي",
+    "email": "البريد الإلكتروني",
+    "min6Characters": "6 أحرف على الأقل"
+  },
+  "cRMSupport": {
+    "pngJpgPdfDocMax": "PNG، JPG، PDF، DOC (10 ميغابايت كحد أقصى)"
+  },
+  "clinicDashboard": {
+    "activeDoctors": "الأطباء النشطون",
+    "appointments": "المواعيد",
+    "appointmentsDesc": "اطّلع على جميع المواعيد وأدِرها",
+    "clinicProfile": "ملف العيادة",
+    "clinicProfileDesc": "عدّل ملفك العام",
+    "confirmed": "المؤكَّدة",
+    "myTeam": "فريقي",
+    "newAppointment": "موعد جديد",
+    "pendingRequests": "الطلبات المعلّقة",
+    "teamDesc": "أضِف الأطباء أو عدّلهم أو ألغِ تفعيلهم",
+    "teamManagement": "إدارة الفريق",
+    "teamOverview": "نظرة عامة على الفريق",
+    "title": "لوحة العيادة",
+    "totalAppointments": "إجمالي المواعيد"
+  },
+  "clinicHero": {
+    "plus": "Plus"
+  },
+  "clinicLogin": {
+    "clinicExampleCom": "clinic@example.com"
+  },
+  "clinicProfileEdit": {
+    "aboutClinic": "عن العيادة",
+    "aboutTheClinic": "عن العيادة",
+    "accommodation": "الإقامة",
+    "accreditations": "الاعتمادات",
+    "activity": "النشاط",
+    "addItem": "إضافة عنصر",
+    "addProcedure": "إضافة إجراء",
+    "addTag": "إضافة وسم",
+    "backgroundImage": "صورة الخلفية",
+    "brain": "الدماغ",
+    "cancel": "إلغاء",
+    "clickOrDragMarkerTo": "اضغط أو اسحب العلامة لتحديد الموقع",
+    "clinicMap": "clinic-map",
+    "cover": "صورة الغلاف",
+    "createPackage": "إنشاء باقة",
+    "currency": "العملة",
+    "department": "القسم",
+    "durationEG45Min": "المدة (مثال: 45 دقيقة)",
+    "eG3NightsHotel": "مثال: 3 ليالٍ في الفندق",
+    "eGAirportPickup": "مثال: الاستقبال من المطار",
+    "eGConsultation": "مثال: استشارة",
+    "eGDentalImplant": "مثال: زراعة أسنان",
+    "edit": "تعديل",
+    "editClinicProfile": "تعديل ملف العيادة",
+    "gallery": "المعرض",
+    "givePatientsAClearCost": "امنح المرضى تصوّرًا واضحًا لتكلفة كل خدمة.",
+    "healthTourismPackages": "باقات السياحة العلاجية",
+    "hidden": "مخفي",
+    "insurance": "التأمين",
+    "logo": "الشعار",
+    "manageYourClinicInformationAnd": "أدِر معلومات عيادتك وخدماتها",
+    "maxPrice": "الحد الأقصى للسعر",
+    "minMax": "₺الأدنى – ₺الأقصى",
+    "minPrice": "الحد الأدنى للسعر",
+    "noImagesYet": "لا توجد صور بعد.",
+    "noReviewsYet": "لا توجد تقييمات بعد.",
+    "noServicesYet": "لا توجد خدمات بعد.",
+    "packageNameEGBasic": "اسم الباقة (مثال: الباقة الأساسية)",
+    "preview": "معاينة:",
+    "priceRanges": "نطاقات الأسعار",
+    "remove": "إزالة",
+    "save": "حفظ",
+    "scissors": "مقص",
+    "service": "خدمة",
+    "serviceName": "اسم الخدمة",
+    "services": "الخدمات",
+    "shortDescription": "وصف موجز",
+    "stethoscope": "سماعة طبية",
+    "total": "الإجمالي:",
+    "totalPrice": "السعر الإجمالي",
+    "trEn": "TR, EN",
+    "transfer": "التنقّل",
+    "treatment": "العلاج",
+    "typeClinicAddressDistrictOr": "اكتب عنوان العيادة أو الحي أو المدينة…"
+  },
+  "clinicTeam": {
+    "active": "نشط",
+    "addDoctor": "إضافة طبيب",
+    "addDoctorTitle": "إضافة طبيب جديد",
+    "addToTeam": "إضافة إلى الفريق",
+    "cardiology": "أمراض القلب",
+    "clinicNotFound": "لم يُعثر على العيادة. يُرجى إكمال الإعداد أولًا.",
+    "deactivate": "إلغاء التفعيل",
+    "doctorExampleCom": "doctor@example.com",
+    "drJohnSmith": "د. أحمد محمد",
+    "email": "البريد الإلكتروني",
+    "emptyDesc": "أضِف طبيبك الأول للبدء.",
+    "emptyTitle": "لا يوجد أعضاء في الفريق بعد",
+    "fullName": "الاسم الكامل",
+    "inactive": "غير نشط",
+    "nameEmailRequired": "الاسم والبريد الإلكتروني مطلوبان.",
+    "phone": "الهاتف",
+    "reactivate": "إعادة التفعيل",
+    "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني…",
+    "specialty": "التخصص",
+    "subtitle": "أدِر أطباء عيادتك وطاقمها",
+    "tempPassword": "كلمة مرور مؤقتة",
+    "tempPasswordHint": "6 أحرف على الأقل (الافتراضية: Temp1234!)",
+    "title": "فريقي"
+  },
+  "contactPage": {
+    "gizlilikVeVeri": "الخصوصية والبيانات",
+    "hastalar": "المرضى",
+    "infoMedagamaCom": "info@medagama.com",
+    "klinikler": "العيادات",
+    "tedavileriInceleyin": "تصفّح العلاجات",
+    "verilerimleIlgiliTalebimVar": "لديّ طلب بخصوص بياناتي."
+  },
+  "dataPrivacyRightsPage": {
+    "deleteAccountData": "حذف الحساب والبيانات",
+    "dpoMedagamaCom": "dpo@medagama.com",
+    "email": "البريد الإلكتروني:",
+    "gdprRightsManagementCenter": "مركز إدارة الحقوق وفق اللائحة العامة لحماية البيانات",
+    "generalDataProtectionRegulationGdpr": "اللائحة العامة لحماية البيانات (GDPR)",
+    "privacyInquiries": "استفسارات الخصوصية:",
+    "privacyMedagamaCom": "privacy@medagama.com",
+    "rightToLodgeAComplaint": "الحق في تقديم شكوى (المادة 77)",
+    "thisActionCannotBeUndone": "لا يمكن التراجع عن هذا الإجراء",
+    "warning": "تحذير:",
+    "yourDataPrivacyRights": "حقوقك في خصوصية البيانات",
+    "yourRights": "حقوقك"
+  },
+  "doctorAppointmentManager": {
+    "appointmentRequests": "طلبات المواعيد",
+    "confirmedAppointmentsWillAppearHere": "ستظهر هنا المواعيد المؤكَّدة",
+    "loadingAppointments": "جارٍ تحميل المواعيد…",
+    "manageIncomingPatientAppointments": "أدِر مواعيد المرضى الواردة",
+    "newAppointmentRequestsWillAppear": "ستظهر هنا طلبات المواعيد الجديدة",
+    "noConfirmedAppointments": "لا توجد مواعيد مؤكَّدة",
+    "noPendingRequests": "لا توجد طلبات معلّقة"
+  },
+  "doctorChatPage": {
+    "channel": "القناة",
+    "loadingMessages": "جارٍ تحميل الرسائل…"
+  },
+  "doctorDashboard": {
+    "appointments": "المواعيد",
+    "billingThisMonth": "إيرادات هذا الشهر",
+    "bookmarkFailed": "تعذّر الحفظ.",
+    "crmAccess": "باقة CRM الاحترافية",
+    "crmAccessDesc": "ادخل إلى لوحة CRM الكاملة بجميع الأدوات الاحترافية.",
+    "crmDesc": "تقويم ذكي، تحليل الإيرادات، استشارات بالفيديو، إدارة المرضى وغير ذلك.",
+    "crmTitle": "Medagama CRM — الباقة الاحترافية",
+    "editProfile": "تعديل الملف",
+    "featureCalendar": "تقويم ذكي",
+    "featurePatients": "CRM المرضى",
+    "featureRevenue": "تحليل الإيرادات",
+    "featureTelehealth": "استشارات بالفيديو",
+    "infoRequested": "مطلوب مستندات إضافية",
+    "infoRequestedDesc": "طلب فريق الإدارة معلومات إضافية.",
+    "notifications": "الإشعارات",
+    "openCrm": "فتح CRM",
+    "paidInvoices": "مدفوعة",
+    "pendingDesc": "ارفع مستنداتك لتوثيق حسابك والبدء في استقبال المواعيد.",
+    "pendingPayments": "معلّقة",
+    "pendingVerification": "التوثيق قيد الانتظار",
+    "quickActions": "إجراءات سريعة",
+    "rating": "التقييم",
+    "rejected": "تم رفض التوثيق",
+    "rejectedDesc": "لم تُعتمد عملية التوثيق. يُرجى إعادة رفع المستندات الصحيحة.",
+    "resubmitDocs": "إعادة إرسال المستندات",
+    "reviews": "تقييمات",
+    "settings": "الإعدادات",
+    "subtitle": "أدِر ملفك على Medagama",
+    "totalInvoiced": "إجمالي المفوتر",
+    "underReview": "المستندات قيد المراجعة",
+    "underReviewDesc": "وصلتنا مستنداتك. يراجعها فريق الإدارة (من 2 إلى 5 أيام عمل).",
+    "upcomingAppts": "مواعيد قادمة",
+    "upcomingTitle": "المواعيد القادمة",
+    "updateDocs": "تحديث المستندات",
+    "upgradeCta": "الترقية إلى Pro",
+    "uploadDocs": "رفع المستندات",
+    "verified": "الحساب موثّق",
+    "verifiedDesc": "حسابك موثّق. يمكن للمرضى حجز المواعيد.",
+    "viewAll": "عرض الكل",
+    "viewProfile": "عرض الملف العام",
+    "welcome": "مرحبًا"
+  },
+  "doctorLocationEditor": {
+    "clickOrDragMarkerTo": "اضغط أو اسحب العلامة لتحديد الموقع",
+    "doctorMap": "doctor-map",
+    "searchAnAddressThenDrag": "ابحث عن عنوان ثم اسحب المؤشّر للضبط الدقيق.",
+    "setYourLocation": "حدّد موقعك",
+    "typeYourAddressDistrictOr": "اكتب عنوانك أو حيّك أو مدينتك…"
+  },
+  "doctorLogin": {
+    "doctorExampleCom": "doctor@example.com"
+  },
+  "doctorOnboarding": {
+    "eGCardiology": "مثال: أمراض القلب"
+  },
+  "forClinicsPage": {
+    "arama": "بحث"
+  },
+  "forPatientsPage": {
+    "arama": "بحث",
+    "doktorVeKlinikBulun": "اعثر على طبيب وعيادة",
+    "klinikMisiniz": "هل أنت عيادة؟",
+    "onlineRandevu": "حجز عبر الإنترنت",
+    "randevuVeTelehealth": "المواعيد والاستشارات بالفيديو",
+    "tedavileriInceleyin": "تصفّح العلاجات"
+  },
+  "galleryTab": {
+    "gallery": "المعرض"
+  },
+  "googleMapsPreview": {
+    "googleMapsPreview": "معاينة خرائط Google",
+    "invalidGoogleMapsUrlPlease": "رابط خرائط Google غير صالح. يُرجى لصق رابط صحيح.",
+    "mapLinkDetected": "تم اكتشاف رابط خريطة"
+  },
+  "kVKKPage": {
+    "dpoMedgamaCom": "dpo@medgama.com",
+    "kvkkMedgamaCom": "kvkk@medgama.com",
+    "veriSorumlusu": "المسؤول عن البيانات:"
+  },
+  "locationTab": {
+    "location": "الموقع"
+  },
+  "mapboxMap": {
+    "loadingMap": "جارٍ تحميل الخريطة…",
+    "noLocationProvidedYet": "لم يُحدَّد موقع بعد."
+  },
+  "mapboxView": {
+    "location": "الموقع"
+  },
+  "proTeaser": {
+    "apr": "أبريل",
+    "aug": "أغسطس",
+    "dec": "ديسمبر",
+    "feb": "فبراير",
+    "jan": "يناير",
+    "jul": "يوليو",
+    "jun": "يونيو",
+    "mar": "مارس",
+    "may": "مايو",
+    "nov": "نوفمبر",
+    "oct": "أكتوبر",
+    "sep": "سبتمبر"
+  },
+  "quickContactCard": {
+    "quickContact": "تواصل سريع"
+  },
+  "servicesTab": {
+    "ourServices": "خدماتنا"
+  },
+  "termsPopup": {
+    "dataProtectionOfficer": "مسؤول حماية البيانات:",
+    "dataRights": "حقوق البيانات",
+    "dpoMedagamaCom": "dpo@medagama.com",
+    "generalInquiries": "الاستفسارات العامة:",
+    "infoMedagamaCom": "info@medagama.com",
+    "privacyPolicy": "سياسة الخصوصية",
+    "termsOfServicePage": "صفحة شروط الاستخدام",
+    "termsOfUse": "شروط الاستخدام"
+  },
+  "vascoAIPage": {
+    "online": "متصل"
   }
 }
