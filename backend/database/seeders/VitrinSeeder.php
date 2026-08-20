@@ -126,8 +126,60 @@ class VitrinSeeder extends Seeder
     //  DOKTORLAR
     // ══════════════════════════════════════════════════════════════════════
 
+    /**
+     * Uzmanlık adından specialty_id çözer.
+     *
+     * İlk sürümde bu adım atlanmıştı ve yeni doktorların specialty_id alanı
+     * boş kalıyordu. Metinle arama çalışıyordu ama kimliğe dayanan uzmanlık
+     * filtreleri ve semptom→uzman eşleştirmesi bu doktorları hiç görmüyordu —
+     * yani mevcut doktorların yanında ikinci sınıf kayıtlardı.
+     *
+     * Eşleme DatabaseSeeder'daki ile aynı mantık: önce birebir, sonra
+     * "Kadın Hastalıkları ve Doğum" → "kadın hastalıkları" gibi gevşek eşleşme.
+     */
+    private function uzmanlikHaritasi(): array
+    {
+        $harita = [];
+
+        foreach (\App\Models\Specialty::all() as $uzmanlik) {
+            $ham     = $uzmanlik->getAttributes()['name'];
+            $cozulen = is_string($ham) ? json_decode($ham, true) : $ham;
+
+            if (is_array($cozulen)) {
+                foreach ($cozulen as $ad) {
+                    $harita[mb_strtolower(trim((string) $ad))] = $uzmanlik;
+                }
+            } else {
+                $harita[mb_strtolower(trim((string) $ham))] = $uzmanlik;
+            }
+        }
+
+        return $harita;
+    }
+
+    private function uzmanlikIdBul(array $harita, string $metin): ?string
+    {
+        // "Kardiyoloji – Girişimsel" → "kardiyoloji"
+        $sade = mb_strtolower(trim(preg_split('/[\s]*[–\-][\s]*/u', $metin)[0]));
+
+        if (isset($harita[$sade])) {
+            return $harita[$sade]->id;
+        }
+
+        foreach ($harita as $anahtar => $uzmanlik) {
+            if (str_starts_with($sade, $anahtar) || str_starts_with($anahtar, $sade)
+                || str_contains($anahtar, $sade) || str_contains($sade, $anahtar)) {
+                return $uzmanlik->id;
+            }
+        }
+
+        return null;
+    }
+
     private function doktorlariEkle(array $klinikler): array
     {
+        $uzmanlikHaritasi = $this->uzmanlikHaritasi();
+
         $veri = [
             ['selin-arslan', 'Dr. Selin Arslan', 'Doç. Dr.', 'Kadın Hastalıkları ve Doğum', 16, 'Tüp bebek ve üremeye yardımcı tedaviler alanında çalışıyor. 2.000’in üzerinde IVF siklusu yönetti.', ['Türkçe', 'İngilizce'], 4.9, 213, 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&q=80'],
             ['mert-dogan', 'Dt. Mert Doğan', 'Dt.', 'Diş Hekimliği', 11, 'Dijital gülüş tasarımı ve implantoloji üzerine uzmanlaştı. Tek seans zirkonyum uygulamaları yapıyor.', ['Türkçe', 'Almanca'], 4.7, 168, 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&q=80'],
@@ -142,6 +194,22 @@ class VitrinSeeder extends Seeder
         ];
 
         $doktorlar = [];
+
+        // Baktığı durumlar — semptom araması ("belim ağrıyor" → hangi uzman)
+        // bu alan üzerinden çalışıyor. Boş bırakılırsa doktor semptomla
+        // aranamaz; halk dilinde yazıldı, çünkü hasta tıbbi terim yazmıyor.
+        $durumlar = [
+            'selin-arslan'   => ['kısırlık', 'tüp bebek', 'gebelik takibi', 'düşük', 'yumurtalık kisti', 'adet düzensizliği'],
+            'mert-dogan'     => ['diş ağrısı', 'diş çürüğü', 'implant', 'diş eti kanaması', 'diş beyazlatma', 'çarpık diş'],
+            'ela-yildirim'   => ['akne', 'sivilce', 'egzama', 'saç dökülmesi', 'ben kontrolü', 'cilt lekesi', 'sedef'],
+            'kaan-ozturk'    => ['baş ağrısı', 'migren', 'epilepsi', 'havale', 'el titremesi', 'uyuşma', 'baş dönmesi'],
+            'nazli-cetin'    => ['kanser', 'meme kanseri', 'akciğer kanseri', 'kemoterapi', 'tümör', 'kilo kaybı'],
+            'burak-sahin'    => ['bel ağrısı', 'boyun ağrısı', 'diz ağrısı', 'spor sakatlığı', 'ameliyat sonrası rehabilitasyon', 'bel fıtığı'],
+            'deniz-korkmaz'  => ['çocukta ateş', 'aşı', 'büyüme geriliği', 'çocukta öksürük', 'karın ağrısı', 'beslenme sorunu'],
+            'irem-aydin'     => ['gebelik', 'riskli gebelik', 'ultrason', 'doğum', 'kanama', 'kasık ağrısı'],
+            'emre-tas'       => ['böbrek taşı', 'idrar yaparken yanma', 'prostat', 'sık idrara çıkma', 'kanlı idrar', 'kısırlık'],
+            'ceren-kilic'    => ['burun tıkanıklığı', 'sinüzit', 'horlama', 'uyku apnesi', 'boğaz ağrısı', 'kulak ağrısı', 'işitme kaybı'],
+        ];
 
         foreach ($veri as $sira => [$kod, $ad, $unvan, $uzmanlik, $yil, $ozgecmis, $diller, $puan, $yorum, $avatar]) {
             $klinik = $klinikler[$sira]['klinik'] ?? null;
@@ -173,6 +241,10 @@ class VitrinSeeder extends Seeder
                     'clinic_id'           => $klinik?->id,
                     'title'               => $unvan,
                     'specialty'           => $uzmanlik,
+                    // Kimliğe dayalı uzmanlık filtreleri bu alana bakıyor;
+                    // yalnızca metin yazmak doktoru filtrelerden gizliyordu.
+                    'specialty_id'        => $this->uzmanlikIdBul($uzmanlikHaritasi, $uzmanlik),
+                    'treated_conditions'  => $durumlar[$kod] ?? [],
                     'bio'                 => $ozgecmis,
                     'experience_years'    => (string) $yil,
                     'languages'           => $diller,
