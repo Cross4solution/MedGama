@@ -68,7 +68,42 @@
     "learnMore": "Más información",
     "saving": "Guardando...",
     "country": "País",
-    "clear": "Borrar"
+    "clear": "Borrar",
+    "backToHome": "Volver al inicio",
+    "cancelled": "Cancelado",
+    "clearAll": "Borrar todo",
+    "comment": "Comentar",
+    "comments": "comentarios",
+    "creating": "Creando…",
+    "done": "Listo",
+    "filters": "Filtros",
+    "following": "Siguiendo",
+    "like": "Me gusta",
+    "loadError": "Se produjo un error al cargar los documentos.",
+    "loadMore": "Cargar más",
+    "new": "Nuevo",
+    "noData": "No hay datos disponibles",
+    "noReviewsYet": "Aún no hay reseñas",
+    "noSavedPosts": "Aún no hay publicaciones guardadas",
+    "now": "Ahora",
+    "of": "de",
+    "optional": "opcional",
+    "previous": "Anterior",
+    "readMore": "Leer más",
+    "ready": "Listo",
+    "saveChanges": "Guardar cambios",
+    "savedPosts": "Publicaciones guardadas",
+    "share": "Compartir",
+    "showLess": "Mostrar menos",
+    "showing": "Mostrando",
+    "signInRequired": "Se requiere iniciar sesión",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "upgrade": "Mejorar plan",
+    "uploading": "Subiendo…",
+    "verified": "Verificado",
+    "viewAll": "Ver todo",
+    "years": "años"
   },
   "nav": {
     "home": "Inicio",
@@ -222,7 +257,8 @@
     "passwordsMatch": "Las contraseñas coinciden",
     "selectCountryPlaceholder": "Selecciona un país",
     "guardianConsentNotice": "Se requiere el consentimiento de un tutor para registrarse si eres menor de 18 años. Introduce la dirección de correo electrónico del tutor.",
-    "guardianEmailPlaceholder": "tutor@ejemplo.com"
+    "guardianEmailPlaceholder": "tutor@ejemplo.com",
+    "signInAsDifferentRole": "Iniciar sesión con otro rol"
   },
   "aboutPage": {
     "heroDesc": "Un mercado de salud y turismo médico, independiente del idioma y la ubicación, que reúne a pacientes con médicos expertos y clínicas/hospitales verificados en una sola plataforma digital.",
@@ -288,7 +324,12 @@
     "contactUs": "Contáctanos",
     "privacyShort": "Privacidad",
     "termsShort": "Términos",
-    "popularTreatments": "Tratamientos populares"
+    "popularTreatments": "Tratamientos populares",
+    "allTreatments": "Todos los tratamientos",
+    "medagamaLogo": "Logotipo de Medagama",
+    "popCardiologyIstanbul": "Cardiología Estambul",
+    "popDermatologyIstanbul": "Dermatología Estambul",
+    "popOrthopedicsAnkara": "Traumatología Ankara"
   },
   "crm": {
     "sidebar": {
@@ -1055,7 +1096,12 @@
     "medicalArchive": "Archivo Médico",
     "savedPosts": "Publicaciones guardadas",
     "favoriteClinics": "Clínicas favoritas",
-    "myAppointments": "Citas"
+    "myAppointments": "Citas",
+    "billing": "Facturación",
+    "clinicProfile": "Perfil de la clínica",
+    "managementPanel": "Panel CRM",
+    "myInvoices": "Facturas",
+    "myTeam": "Mi equipo"
   },
   "cookie": {
     "title": "Preferencias de cookies",
@@ -1188,7 +1234,23 @@
     "deleteModalBody": "Esto eliminará de forma permanente tu cuenta y todos los datos asociados, incluidas publicaciones, comentarios, historial médico e información personal. Esta acción no se puede deshacer.",
     "deleteModalTypePrefix": "Escribe",
     "deleteModalTypeSuffix": "para confirmar",
-    "deleting": "Eliminando..."
+    "deleting": "Eliminando...",
+    "delete": "ELIMINAR",
+    "medicalNotes": "Notas",
+    "medicalNotesDesc": "Cualquier otra cosa que su médico deba saber.",
+    "medicalNotesPlaceholder": "p. ej. cirugías previas, antecedentes familiares, sensibilidades…",
+    "medicalShareNotice": "Esta información se compartirá con el médico con el que reserve la cita. Para un tratamiento correcto y seguro es importante que sus medicamentos, alergias y antecedentes estén completos.",
+    "medications": "Medicamentos",
+    "medicationsDesc": "Los medicamentos que toma actualmente.",
+    "medicationsPlaceholder": "p. ej. Aspirina 100 mg, Metformina…",
+    "passwordUpdatedReloginRequired": "Su contraseña se ha actualizado. Por seguridad se han cerrado todas las sesiones; vuelva a iniciar sesión.",
+    "profileSectionDesc": "Foto, nombre, país e idioma",
+    "saveFailed": "No se pudo guardar",
+    "translateContent": "Mostrar también las publicaciones y mensajes en mi idioma",
+    "translateContentDesc": "Si está desactivado, el contenido permanece en su idioma original. Actívelo y no tendrá que traducir cada elemento.",
+    "vaccinations": "Vacunas",
+    "vaccinationsDesc": "Las vacunas que ha recibido.",
+    "vaccinationsPlaceholder": "p. ej. COVID-19, tétanos, hepatitis B…"
   },
   "patientDashboard": {
     "welcome": "Bienvenido",
@@ -1230,7 +1292,17 @@
     "documentDate": "Fecha del documento",
     "description": "Descripción",
     "descriptionPlaceholder": "Notas opcionales sobre este documento...",
-    "upload": "Subir"
+    "upload": "Subir",
+    "allCategories": "Todas las categorías",
+    "categories": "Categorías",
+    "encrypted": "Cifrado",
+    "gdprArt9": "RGPD art. 9",
+    "pdfJpegPngWordExcel": "PDF, JPEG, PNG, Word, Excel · máx. 20 MB",
+    "searchPlaceholder": "Buscar en los documentos…",
+    "subtitle": "Sus documentos médicos, guardados de forma segura",
+    "title": "Archivo médico",
+    "totalFiles": "Archivos en total",
+    "totalSize": "Tamaño total"
   },
   "admin": {
     "panel": "Panel de administración",
@@ -1549,7 +1621,9 @@
     "failed": "Error",
     "statusSent": "Enviado",
     "statusDelivered": "Entregado",
-    "statusRead": "Leído"
+    "statusRead": "Leído",
+    "autoTranslated": "Traducido automáticamente · mostrar original",
+    "showTranslation": "Mostrar traducción"
   },
   "review": {
     "rateExperience": "Califique su experiencia",
@@ -1781,7 +1855,11 @@
     "catSocial": "Social",
     "catMessages": "Mensajes",
     "catSystem": "Sistema",
-    "unreadLabel": "No leídas"
+    "unreadLabel": "No leídas",
+    "allClear": "¡Estupendo! Ahora mismo no hay nada urgente.",
+    "allClearDesc": "Todas las tareas están al día. ¡Buen trabajo!",
+    "taskTracker": "Seguimiento inteligente de tareas",
+    "urgentAlerts": "Alertas urgentes"
   },
   "telehealth": {
     "title": "Sesión de telemedicina",
@@ -1827,7 +1905,29 @@
     "waiting": "En espera",
     "transcriptHistory": "Transcripción",
     "recording": "GRAB",
-    "noTranscripts": "Las transcripciones aparecerán aquí cuando comience la sesión."
+    "noTranscripts": "Las transcripciones aparecerán aquí cuando comience la sesión.",
+    "camera": "Cámara",
+    "captionAccept": "Aceptar",
+    "captionAskBody": "La otra persona desea usar subtítulos. Si acepta, el habla se transcribe en nuestro servidor. El texto no se almacena y se elimina al finalizar la llamada.",
+    "captionAskTitle": "¿Activar los subtítulos?",
+    "captionReject": "No",
+    "captionToggle": "Subtítulos",
+    "captionUnavailable": "Los subtítulos aún no están disponibles",
+    "captionWaiting": "Esperando los subtítulos…",
+    "consentAccept": "Aceptar y continuar",
+    "consentBody": "La llamada está cifrada de extremo a extremo y no se graba. Al continuar, autoriza el uso de su cámara y micrófono para esta llamada.",
+    "consentTitle": "Unirse a la llamada",
+    "ended": "Llamada finalizada",
+    "endedNetwork": "No se pudo restablecer la conexión.",
+    "errAccess": "No tiene acceso a esta llamada.",
+    "errMedia": "Se denegó el acceso a la cámara o al micrófono.",
+    "errSignaling": "No se pudo contactar con el servidor de llamadas.",
+    "joinNow": "Unirse a la llamada",
+    "microphone": "Micrófono",
+    "prepareBody": "Compruebe su cámara y su micrófono. La barra debe moverse cuando habla.",
+    "prepareTitle": "¿Listo para unirse?",
+    "reconnecting": "Reconectando…",
+    "waitingPeer": "Esperando a la otra persona…"
   },
   "onboarding": {
     "title": "Completa tu perfil",
@@ -1878,7 +1978,11 @@
     "welcomeSubtitle": "Tu perfil ya está completo",
     "welcomeMessage": "¡Enhorabuena, {{name}}! Tu perfil profesional se ha configurado correctamente.",
     "welcomeHint": "Los pacientes ya pueden encontrarte y reservar citas. Puedes actualizar tu perfil en cualquier momento desde tu panel.",
-    "goToDashboard": "Ir al panel"
+    "goToDashboard": "Ir al panel",
+    "avatarFormatError": "La foto de perfil debe estar en formato JPG, PNG o WebP.",
+    "avatarSizeError": "La foto de perfil no debe superar los 2 MB.",
+    "fileTooLarge": "El archivo no debe superar los 10 MB.",
+    "saveFailed": "No se pudo guardar. Inténtelo de nuevo."
   },
   "clinicOnboarding": {
     "profileTitle": "Perfil de la clínica",
@@ -1909,7 +2013,20 @@
     "changeSpecialty": "Cambiar especialidad",
     "loadingDoctors": "Cargando médicos...",
     "noDoctors": "No hay médicos disponibles para esta especialidad",
-    "tryDifferent": "Por favor, prueba con otra especialidad"
+    "tryDifferent": "Por favor, prueba con otra especialidad",
+    "clearSearch": "Borrar búsqueda",
+    "createNew": "Crear nueva cita",
+    "findDoctor": "Buscar médico",
+    "findDoctorDesc": "Escriba el nombre de un médico, una especialidad o una clínica",
+    "findDoctorPlaceholder": "p. ej. Dra. Ayşe, Oftalmología, Medicana…",
+    "goToVerification": "Ir a la verificación",
+    "noTelehealthDoctors": "Ningún médico ofrece teleconsulta en esta especialidad",
+    "orPickSpecialty": "o elija una especialidad abajo",
+    "searchSpecialty": "Buscar especialidad…",
+    "verificationMessage": "Por la seguridad de los pacientes y la confianza en la plataforma, debe completar la verificación antes de crear citas. Envíe sus documentos profesionales para su revisión.",
+    "verificationNote": "La verificación suele tardar de 24 a 48 horas tras el envío de los documentos.",
+    "verificationRequired": "Verificación requerida",
+    "verificationRequiredSubtitle": "Primero debe verificarse su cuenta"
   },
   "pro": {
     "teaser": {
@@ -1925,7 +2042,8 @@
       "telehealthDesc": "Realiza sesiones de telemedicina con tus pacientes.",
       "upgradeCta": "Mejorar a Profesional",
       "compareCta": "Comparar planes",
-      "trustBadge": "Cancela cuando quieras · Sin compromiso · Conforme con el GDPR"
+      "trustBadge": "Cancela cuando quieras · Sin compromiso · Conforme con el GDPR",
+      "professionalBadge": "Profesional"
     },
     "pricing": {
       "title": "Comparar planes",
@@ -1941,7 +2059,8 @@
       "archive": "Archivo médico ilimitado",
       "prioritySupport": "Soporte prioritario",
       "maybeLater": "Quizás más tarde",
-      "upgradePro": "Mejorar a Profesional"
+      "upgradePro": "Mejorar a Profesional",
+      "free": "Gratis"
     }
   },
   "header": {
@@ -1953,7 +2072,9 @@
     "closeProfileMenu": "Cerrar el menú de perfil",
     "openProfileMenu": "Abrir el menú de perfil",
     "closeMenu": "Cerrar el menú",
-    "openMenu": "Abrir el menú"
+    "openMenu": "Abrir el menú",
+    "medagamaLogo": "Logotipo de Medagama",
+    "vascoAi": "Vasco AI"
   },
   "share": {
     "share": "Compartir",
@@ -2214,7 +2335,21 @@
     "emojiCount": "{{count}} emojis",
     "filterCountry": "País: {{country}}",
     "filterSpecialization": "Especialización: {{specialty}}",
-    "filterSearch": "Búsqueda: “{{query}}”"
+    "filterSearch": "Búsqueda: “{{query}}”",
+    "description": "Descripción",
+    "linkCopied": "Enlace copiado al portapapeles",
+    "locationHint": "El permiso de ubicación está bloqueado. Actívelo en los ajustes del sitio de su navegador (icono del candado en la barra de direcciones) e inténtelo de nuevo.",
+    "locationHowTo": "Para activarlo, haga clic en el candado de la barra de direcciones → Ubicación → Permitir.",
+    "locationManual": "O seleccione manualmente el país y la ciudad abajo.",
+    "locationPermissionShort": "Ubicación desactivada",
+    "nearbyActive": "Mostrando resultados cercanos",
+    "reportDescMin": "Escriba al menos {{min}} caracteres",
+    "reportDescOk": "Correcto",
+    "reportFailed": "No se pudo enviar la denuncia. Inténtelo de nuevo.",
+    "showOriginal": "Mostrar original",
+    "translate": "Traducir",
+    "translating": "Traduciendo…",
+    "verifyToLike": "Verifique su cuenta para dar «me gusta» a las publicaciones."
   },
   "subtitles": {
     "button": "Subtítulos",
@@ -2228,5 +2363,254 @@
     "editTitle": "Editar subtítulos",
     "empty": "Este vídeo no tiene subtítulos que editar.",
     "jump": "Ir a este momento"
+  },
+  "activeFilterChips": {
+    "clear": "borrar"
+  },
+  "authContext": {
+    "areYouSureYouWant": "¿Seguro que desea cerrar sesión?",
+    "logout": "Cerrar sesión"
+  },
+  "authPages": {
+    "gdprCompliant": "Conforme al RGPD",
+    "sslSecure": "Seguro con SSL",
+    "welcomeTo": "Bienvenido a"
+  },
+  "browse": {
+    "allClinics": "Todas las clínicas",
+    "allSpecialties": "Todas las especialidades",
+    "clinicsForTreatment": "Clínicas para «{{name}}»",
+    "clinicsInSpecialty": "Clínicas de {{name}}",
+    "clinicsSubtitle": "Descubra las clínicas y hospitales mejor valorados de todas las especialidades.",
+    "noClinics": "No se encontraron clínicas",
+    "noTagsYet": "Aún no se ha añadido una lista de tratamientos para esta especialidad.",
+    "noTreatments": "No se encontraron tratamientos",
+    "searchClinics": "Buscar clínicas por nombre, ciudad o especialidad…",
+    "searchTreatments": "Buscar tratamiento (p. ej. implante, cataratas, FIV)…",
+    "treatments": "Tratamientos",
+    "treatmentsSubtitle": "Encuentre clínicas y hospitales por tipo de tratamiento y especialidad.",
+    "tryDifferent": "Pruebe con otro término de búsqueda."
+  },
+  "browseClinics": {
+    "view": "Ver →"
+  },
+  "browseTreatments": {
+    "view": "Ver →"
+  },
+  "calendar": {
+    "addApple": "Apple / Outlook (webcal)",
+    "addGoogle": "Añadir a Google Calendar",
+    "addToCalendar": "Añadir al calendario",
+    "appleOther": "Apple / .ics",
+    "copied": "Copiado",
+    "copy": "Copiar",
+    "regen": "Restablecer enlace",
+    "regenConfirm": "El enlace de suscripción actual dejará de funcionar. ¿Continuar?",
+    "syncError": "No se pudo cargar el enlace.",
+    "syncNote": "Este enlace es privado: no lo comparta. Las aplicaciones de calendario se actualizan cada pocos minutos.",
+    "syncSubtitle": "Reciba sus citas automáticamente en Google, Apple u Outlook: añádalo una sola vez.",
+    "syncTitle": "Sincronización del calendario"
+  },
+  "cityCombobox": {
+    "noResults": "Sin resultados"
+  },
+  "countryCombobox": {
+    "noResults": "Sin resultados",
+    "searchCountry": "Buscar país"
+  },
+  "dateOfBirthPicker": {
+    "dd": "DD",
+    "mm": "MM",
+    "yyyy": "AAAA"
+  },
+  "exploreTimeline": {
+    "category": "Categoría",
+    "observer": "Observador"
+  },
+  "forgotPasswordForm": {
+    "nameExampleCom": "nombre@ejemplo.es"
+  },
+  "forgotPasswordPage": {
+    "confirmPassword": "Confirmar contraseña",
+    "didnTReceiveTheCode": "¿No ha recibido el código?",
+    "emailAddress": "Correo electrónico",
+    "enterResetCode": "Introduzca el código de restablecimiento",
+    "forgotYourPassword": "¿Ha olvidado su contraseña?",
+    "min6Characters": "Mínimo 6 caracteres",
+    "newPassword": "Nueva contraseña",
+    "passwordReset": "¡Contraseña restablecida!",
+    "repeatYourPassword": "Repita su contraseña",
+    "resetPassword": "Restablecer contraseña",
+    "sendResetCode": "Enviar código",
+    "setNewPassword": "Establecer nueva contraseña",
+    "youExampleCom": "usted@ejemplo.es",
+    "yourPasswordHasBeenSuccessfully": "Su contraseña se ha cambiado correctamente."
+  },
+  "hospital": {
+    "about": "Acerca de",
+    "appointmentNote": "Las citas se gestionan en cada centro. Seleccione un centro para reservar.",
+    "branches": "Centros",
+    "clinics": "Clínicas",
+    "comingSoon": "Próximamente",
+    "director": "Director médico",
+    "doctors": "médicos",
+    "hospitalInfo": "Información del hospital",
+    "legalName": "Razón social",
+    "level": "Red hospitalaria",
+    "location": "Ubicación",
+    "noBio": "No hay descripción disponible.",
+    "noBranches": "Aún no hay centros registrados.",
+    "notFound": "Hospital no encontrado",
+    "notFoundDesc": "Este perfil de hospital no existe o ya no está activo.",
+    "ourBranches": "Nuestros centros",
+    "selectBranch": "Seleccione un centro abajo",
+    "verified": "Verificado",
+    "viewBranch": "Ver el centro",
+    "viewMap": "Mapa"
+  },
+  "invoices": {
+    "discount": "Descuento",
+    "doctor": "Médico",
+    "downloadFailed": "No se pudo descargar la factura, inténtelo de nuevo.",
+    "downloadPdf": "Descargar PDF",
+    "dueDate": "Vencimiento",
+    "empty": "Aún no tiene facturas.",
+    "issueDate": "Fecha de emisión",
+    "loadFailed": "No se pudieron cargar las facturas.",
+    "paid": "Pagado",
+    "payAtClinic": "Los pagos los cobra la clínica. Póngase en contacto con su clínica para abonarlos.",
+    "status": {
+      "cancelled": "Cancelada",
+      "overdue": "Vencida",
+      "paid": "Pagada",
+      "partial": "Pagada parcialmente",
+      "pending": "Pendiente de pago"
+    },
+    "tax": "IVA",
+    "title": "Mis facturas",
+    "total": "Total"
+  },
+  "loginForm": {
+    "nameExampleCom": "nombre@ejemplo.es"
+  },
+  "medstreamProfileFeed": {
+    "postMedia": "Contenido multimedia de la publicación",
+    "videoThumbnail": "Miniatura del vídeo",
+    "videoUnavailable": "Vídeo no disponible"
+  },
+  "myAppointments": {
+    "empty": "No hay citas.",
+    "subtitle": "Gestione sus citas entrantes",
+    "title": "Mis citas"
+  },
+  "page": {
+    "anaSayfa": "Inicio",
+    "breadcrumb": "breadcrumb",
+    "tedaviler": "Tratamientos"
+  },
+  "postComposer": {
+    "emoji": "Emoji",
+    "photo": "Foto",
+    "video": "Vídeo"
+  },
+  "postCreateModal": {
+    "preview": "vista previa"
+  },
+  "postDetail": {
+    "areYouSureYouWant": "¿Seguro que desea eliminar este comentario?",
+    "close": "Cerrar",
+    "delete": "Eliminar",
+    "next": "Siguiente",
+    "noCommentsYetBeThe": "Aún no hay comentarios. ¡Sea el primero!",
+    "noMediaAvailable": "No hay contenido multimedia",
+    "postNotFoundPleaseGo": "Publicación no encontrada. Vuelva atrás e inténtelo de nuevo.",
+    "previous": "Anterior",
+    "reply": "Responder",
+    "writeAReply": "Escriba una respuesta…",
+    "you": "Usted"
+  },
+  "registerForm": {
+    "nameExampleCom": "nombre@ejemplo.es"
+  },
+  "savedClinics": {
+    "favorites": "Favoritos",
+    "noFavoriteClinicsYet": "Aún no hay clínicas favoritas",
+    "noFavoriteDoctorsYet": "Aún no hay médicos favoritos",
+    "removeFromFavorites": "¿Quitar de favoritos?",
+    "saveClinicsFromSearchResults": "Guarde clínicas desde los resultados de búsqueda o los perfiles de clínica.",
+    "saveDoctorsFromSearchResults": "Guarde médicos desde los resultados de búsqueda o los perfiles de médico.",
+    "signInRequired": "Se requiere iniciar sesión",
+    "youNeedToSignIn": "Debe iniciar sesión para ver sus favoritos."
+  },
+  "selectCombobox": {
+    "noResults": "Sin resultados",
+    "search": "Buscar…"
+  },
+  "sidebarPatient": {
+    "messages": "Mensajes",
+    "vascoAi": "Vasco AI"
+  },
+  "telehealthAppointmentPage": {
+    "appointmentConfirmed": "¡Cita confirmada!",
+    "bookAppointment": "Reservar cita",
+    "clearSearch": "Borrar búsqueda",
+    "dataProtectionNotice": "Aviso de protección de datos",
+    "date": "Fecha",
+    "dateTime": "Fecha y hora",
+    "ddMmYyyy": "dd.mm.aaaa",
+    "doctor": "Médico",
+    "email": "Correo electrónico",
+    "loadingAvailableSlots": "Cargando horarios disponibles…",
+    "name": "Nombre",
+    "noAvailableSlotsForThis": "No hay horarios disponibles para esta fecha",
+    "notes": "Notas",
+    "oopsNoSpecialtyFound": "No se encontró ninguna especialidad",
+    "patient": "Paciente",
+    "patientInformation": "Datos del paciente",
+    "payment": "Pago",
+    "phone": "Teléfono",
+    "pleaseReviewAllDetailsBefore": "Revise todos los datos antes de confirmar",
+    "selectADoctor": "Seleccione un médico",
+    "time": "Hora",
+    "tryADifferentSearchTerm": "Pruebe con otro término de búsqueda",
+    "trySelectingADifferentDate": "Pruebe con otra fecha",
+    "type": "Tipo",
+    "youDoctor": "Usted (médico)"
+  },
+  "threadsSidebar": {
+    "messages": "Mensajes",
+    "searchConversations": "Buscar en las conversaciones…"
+  },
+  "timelineCard": {
+    "attachment": "Adjunto",
+    "comments": "comentarios",
+    "delete": "Eliminar",
+    "downloadFile": "Descargar archivo",
+    "likes": "me gusta",
+    "openFile": "Abrir archivo",
+    "playbackErrorTapToRetry": "Error de reproducción: toque para reintentar",
+    "post": "Publicar",
+    "reply": "Responder",
+    "video": "Vídeo",
+    "videoProcessing": "Procesando el vídeo…",
+    "writeAReply": "Escriba una respuesta…"
+  },
+  "timelineFilterSidebar": {
+    "all": "Todos"
+  },
+  "timelinePostCard": {
+    "avatar": "Avatar",
+    "postContent": "Contenido de la publicación"
+  },
+  "timelineShareBox": {
+    "file": "Archivo",
+    "image": "Imagen",
+    "post": "Publicar"
+  },
+  "verifyEmailPage": {
+    "didnTReceiveTheCode": "¿No ha recibido el código?",
+    "emailVerified": "¡Correo verificado!",
+    "redirectingToYourDashboard": "Redirigiendo a su panel…",
+    "verifyYourEmail": "Verifique su correo electrónico"
   }
 }
