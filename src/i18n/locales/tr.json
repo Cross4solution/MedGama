@@ -81,7 +81,29 @@
     "ready": "Hazır",
     "saveChanges": "Değişiklikleri kaydet",
     "showing": "Gösteriliyor",
-    "upgrade": "Yükselt"
+    "upgrade": "Yükselt",
+    "following": "Takip ediliyor",
+    "years": "yıl",
+    "comments": "yorum",
+    "like": "Beğen",
+    "comment": "Yorum",
+    "share": "Paylaş",
+    "loadMore": "Daha Fazla Yükle",
+    "verified": "Doğrulanmış",
+    "viewAll": "Tümünü Gör",
+    "showLess": "Daha az göster",
+    "readMore": "Devamını oku",
+    "backToHome": "Ana sayfaya dön",
+    "uploading": "Yükleniyor...",
+    "previous": "Önceki",
+    "today": "Bugün",
+    "tomorrow": "Yarın",
+    "now": "Şimdi",
+    "signInRequired": "Giriş yapmanız gerekiyor",
+    "savedPosts": "Kaydedilenler",
+    "noSavedPosts": "Henüz kaydedilmiş gönderi yok",
+    "done": "Tamam",
+    "loadError": "Dokümanlar yüklenirken bir hata oluştu."
   },
   "nav": {
     "home": "Ana Sayfa",
@@ -354,7 +376,8 @@
       "branches": "Şubeler",
       "gallery": "Galeri",
       "leads": "Lead'ler",
-      "medstream": "MedStream"
+      "medstream": "MedStream",
+      "salespeople": "Satışçılar"
     },
     "premiumGate": {
       "title": "Premium Özellik",
@@ -459,7 +482,11 @@
       "resubmitAction": "Belgeleri Yeniden Gönder",
       "unverifiedTitle": "Doğrulama Bekliyor",
       "updateAction": "Belgeleri Güncelle",
-      "uploadAction": "Belge Yükle"
+      "uploadAction": "Belge Yükle",
+      "unverifiedDesc": "Doğrulanmak ve randevu almaya başlamak için mesleki belgelerinizi yükleyin.",
+      "pendingDesc": "Belgeleriniz alındı. Yönetici ekibimiz inceliyor (2-5 iş günü).",
+      "infoDesc": "Yönetici ekibi ek bilgi talep etti. Lütfen belgelerinizi güncelleyin.",
+      "rejectedDesc": "Doğrulamanız onaylanmadı. Lütfen doğru belgeleri yeniden yükleyin veya destek ekibiyle iletişime geçin."
     },
     "clinicVerification": {
       "title": "Klinik Doğrulama",
@@ -633,7 +660,8 @@
       "docSpecialtyCertificate": "Uzmanlık Belgesi",
       "docClinicLicense": "Klinik Ruhsatı",
       "docIdCard": "Kimlik / Pasaport",
-      "docOther": "Diğer"
+      "docOther": "Diğer",
+      "medicalHistory": "Tıbbi Geçmiş / Anamnez"
     },
     "calendar": {
       "title": "Akıllı Takvim",
@@ -723,7 +751,21 @@
       "latestVitals": "Son Vital Bulgular",
       "medicalSummary": "Tıbbi Özet",
       "recentDiagnoses": "Son Tanılar",
-      "startExamination": "Muayeneye Başla"
+      "startExamination": "Muayeneye Başla",
+      "callDone": "görüşme yapıldı",
+      "callNotDone": "görüşme yapılmadı",
+      "invoicePaid": "ödendi",
+      "statTotal": "Toplam randevu",
+      "statCompleted": "Tamamlanan",
+      "statUpcoming": "Yaklaşan",
+      "statExams": "Muayene",
+      "noShowTitle": "Gelmedi geçmişi",
+      "filterAppointment": "Randevu",
+      "filterExamination": "Muayene",
+      "filterDocument": "Klinik kaydı",
+      "filterPatientUpload": "Hasta belgesi",
+      "filterInvoice": "Fatura",
+      "filterMessage": "Mesaj"
     },
     "patients": {
       "title": "Hastalar",
@@ -802,7 +844,16 @@
       "offline": "Çevrimdışı",
       "typeMessage": "Bir mesaj yazın...",
       "noConversations": "Konuşma bulunamadı",
-      "unknownUser": "Bilinmeyen"
+      "unknownUser": "Bilinmeyen",
+      "conversation": "Konuşma",
+      "loadError": "Konuşmalar yüklenemedi.",
+      "startFailed": "Konuşma başlatılamadı",
+      "sendError": "Mesaj gönderilemedi.",
+      "searchPatient": "Hasta ara...",
+      "ownPatientsOnly": "Yalnızca randevusu olan hastalarınız listelenir.",
+      "noPatientMatch": "Eşleşen hasta yok.",
+      "noPatients": "Henüz hastanız yok.",
+      "noMessages": "Henüz mesaj yok"
     },
     "revenue": {
       "title": "Gelir & Finans",
@@ -842,7 +893,8 @@
       "topServices": "En Çok Hizmetler",
       "totalCommission": "Platform Komisyonu",
       "totalInvoices": "Toplam Fatura",
-      "totalPlatformRevenue": "Toplam Platform Geliri"
+      "totalPlatformRevenue": "Toplam Platform Geliri",
+      "payoutSummary": "Payout Summary (Hakediş)"
     },
     "billing": {
       "title": "Tahsilat & Finans",
@@ -917,7 +969,10 @@
       "receivable": "Alacak",
       "searchInvoices": "Fatura ara...",
       "serviceItems": "Hizmet kalemleri",
-      "taxRate": "Vergi oranı"
+      "taxRate": "Vergi oranı",
+      "createInvoiceError": "Fatura oluşturulamadı.",
+      "recordPaymentError": "Ödeme kaydedilemedi.",
+      "todayRevenue": "Bugünkü Gelir"
     },
     "prescriptions": {
       "title": "Reçeteler",
@@ -937,7 +992,10 @@
       "addMedication": "Başka İlaç Ekle",
       "createPrescription": "Reçete Oluştur",
       "additionalInstructions": "Ek talimatlar...",
-      "goToExamination": "Muayeneye git"
+      "goToExamination": "Muayeneye git",
+      "infoTitle": "Reçeteler muayene üzerinden oluşturulur",
+      "infoBody": "Yeni reçete yazmak için bir muayene kaydı açın. Aşağıda geçmiş muayenelerinizdeki reçeteler listelenir.",
+      "empty": "Henüz reçete yok"
     },
     "reports": {
       "title": "Raporlar & Analitik",
@@ -951,7 +1009,9 @@
       "revenueReport": "Gelir Raporu",
       "treatmentOutcomes": "Tedavi Sonuçları",
       "prescriptionAnalysis": "Reçete Analizi",
-      "operationalEfficiency": "Operasyonel Verimlilik"
+      "operationalEfficiency": "Operasyonel Verimlilik",
+      "revenueTrend": "Gelir Grafiği",
+      "upcoming": "Yakında Eklenecek Raporlar"
     },
     "documents": {
       "title": "Dökümanlar",
@@ -967,7 +1027,15 @@
       "linkToPatient": "Hastaya bağla",
       "optional": "isteğe bağlı",
       "searchDocuments": "Döküman ara...",
-      "upload": "Yükle"
+      "upload": "Yükle",
+      "fileTooLarge": "Dosya çok büyük (maks. 20MB).",
+      "fileTypeNotAllowed": "İzin verilmeyen dosya türü. PDF, JPEG, PNG, WebP, Word, Excel veya DICOM yükleyin.",
+      "selectFile": "Lütfen bir dosya seçin.",
+      "titleRequired": "Başlık gereklidir.",
+      "uploadFailed": "Yükleme başarısız oldu.",
+      "confirmDelete": "Bu dokümanı silmek istediğinize emin misiniz?",
+      "empty": "Henüz doküman yok",
+      "documentTitle": "Başlık"
     },
     "integrations": {
       "title": "Entegrasyonlar",
@@ -1288,7 +1356,18 @@
       "socialTitle": "Sosyal Medya",
       "uploadFailed": "Yükleme başarısız. Lütfen tekrar deneyin.",
       "uploadSuccess": "Belge başarıyla gönderildi! Kısa sürede incelenecek.",
-      "websiteLabel": "Web sitesi"
+      "websiteLabel": "Web sitesi",
+      "certName": "Sertifika adı",
+      "certYear": "Yıl",
+      "addCertification": "Sertifika ekle",
+      "conditionsRequired": "Lütfen baktığınız en az bir durum/semptom ekleyin.",
+      "treatedConditionsHeading": "Baktığım Durumlar / Şikâyetler",
+      "treatedConditionsSubtitle": "Hastaların sizi semptomlarına göre bulabilmesi için baktığınız durumları ekleyin (ör. baş ağrısı, bel fıtığı). Zorunlu.",
+      "noConditionsYet": "Henüz eklenmedi",
+      "addConditionPlaceholder": "Durum yazıp Enter’a basın",
+      "hoursNote": "Çalışma saatleri randevu widget’ınızla eşitlenir. Hastalar yalnızca açık saatlerde randevu alabilir.",
+      "coordsHelper": "Konumunuzun haritada görünmesi için koordinatları girin. openstreetmap.org üzerinden bulabilirsiniz.",
+      "infoRequestedDesc": "Yönetici ekibi ek bilgi talep etti. Lütfen istenen belgeleri aşağıdan yükleyin."
     },
     "leads": {
       "title": "Potansiyel Müşteriler",
@@ -1390,7 +1469,8 @@
       "show": "Göster",
       "subtitle": "Hastalarınızın sık sorulan sorulara hızlı yanıt bulmasına yardımcı olun",
       "title": "Sık Sorulan Sorular",
-      "visible": "Herkese açık profilde görünür"
+      "visible": "Herkese açık profilde görünür",
+      "emptyDesc": "Hastaların randevu almadan önce çalışma şeklinizi tanıması için sık sorulan sorular ekleyin."
     },
     "manager": {
       "actions": "İşlemler",
@@ -1450,7 +1530,10 @@
     },
     "verification": {
       "docUploaded": "Belge başarıyla yüklendi. İnceleniyor."
-    }
+    },
+    "upgradeTitle": "CRM Paketine Geçin",
+    "upgradeDesc": "Randevu yönetimi, hasta takibi, gelir raporları ve daha fazlası için CRM paketini aktif edin.",
+    "upgradeBtn": "CRM\\'e Geç →"
   },
   "home": {
     "heroTitle": "Dünyanın #1 Sağlık Portalı",
@@ -1605,7 +1688,12 @@
     "savedPosts": "Kaydedilen Gönderiler",
     "favoriteClinics": "Favori Klinikler",
     "medicalArchive": "Arşiv",
-    "dashboard": "Panel"
+    "dashboard": "Panel",
+    "myInvoices": "Faturalar",
+    "billing": "Gelir",
+    "myTeam": "Ekibim",
+    "clinicProfile": "Klinik Profili",
+    "managementPanel": "CRM Paneli"
   },
   "cookie": {
     "title": "Çerez Tercihleri",
@@ -1656,7 +1744,10 @@
     "clinicsInSpecialty": "{{name}} klinikleri",
     "allClinics": "Tüm klinikler",
     "noTreatments": "Sonuç bulunamadı",
-    "tryDifferent": "Farklı bir arama veya filtre deneyin."
+    "tryDifferent": "Farklı bir arama veya filtre deneyin.",
+    "clinicsSubtitle": "Tüm uzmanlık alanlarında en beğenilen klinik ve hastaneleri keşfedin.",
+    "searchClinics": "Ada, şehre veya uzmanlığa göre klinik ara...",
+    "noClinics": "Klinik bulunamadı"
   },
   "clinicDetail": {
     "ourDoctors": "Doktorlarımız",
@@ -1687,7 +1778,25 @@
     "sendMessage": "Mesaj Gönder",
     "addedToFavorites": "Favorilere eklendi",
     "removedFromFavorites": "Favorilerden çıkarıldı",
-    "clinic": "Klinik"
+    "clinic": "Klinik",
+    "noDoctors": "Bu klinikte henüz kayıtlı doktor yok.",
+    "verifiedReview": "Doğrulanmış",
+    "clinicResponse": "Kliniğin Yanıtı",
+    "reviewNeedAppointment": "Yorum yapmak için tamamlanmış randevu gerekli.",
+    "reviewAlreadyExists": "Bu kliniği daha önce değerlendirdiniz.",
+    "reviewFloodLimit": "Değerlendirmeler arasında 24 saat beklemeniz gerekir.",
+    "reviewSubmitError": "Değerlendirme gönderilemedi. Lütfen tekrar deneyin.",
+    "reviewSuccess": "Değerlendirmeniz için teşekkürler!",
+    "reviewSuccessDesc": "Değerlendirmeniz gönderildi, inceleme sonrası yayımlanacak.",
+    "writeReview": "Değerlendirme Yaz",
+    "treatmentTypePlaceholder": "Tedavi türü (ör. Diş Temizliği)",
+    "reviewPlaceholder": "Deneyiminizi paylaşın (en az 10 karakter)...",
+    "reviewMinChars": "Lütfen en az 10 karakter yazın.",
+    "submitReview": "Değerlendirmeyi Gönder",
+    "reviewGateTitle": "Yalnızca Doğrulanmış Değerlendirmeler",
+    "reviewGateDesc": "Yalnızca bu klinikte randevusunu tamamlamış hastalar deneyimlerini paylaşabilir. Randevunuzu tamamlayıp değerlendirme bırakmak için geri dönün.",
+    "noReviewsYet": "Henüz değerlendirme yok",
+    "noReviewsHint": "Deneyiminizi ilk paylaşan siz olun."
   },
   "profile": {
     "title": "Profil",
@@ -1797,7 +1906,10 @@
     "deleteModalTypeSuffix": "yazın",
     "deleting": "Siliniyor...",
     "translateContent": "Gönderi ve mesajlar da benim dilimde görünsün",
-    "translateContentDesc": "Kapalıyken içerikler yazıldığı dilde kalır. Açtığınızda tek tek çevirmenize gerek kalmaz."
+    "translateContentDesc": "Kapalıyken içerikler yazıldığı dilde kalır. Açtığınızda tek tek çevirmenize gerek kalmaz.",
+    "saveFailed": "Kaydedilemedi",
+    "passwordUpdatedReloginRequired": "Şifreniz güncellendi. Güvenliğiniz için tüm oturumlar kapatıldı; tekrar giriş yapın.",
+    "medicalShareNotice": "Bu bilgiler, randevu aldığınız doktorla paylaşılacaktır. Doğru ve güvenli tedavi için ilaç, alerji ve tıbbi geçmişinizin eksiksiz olması önemlidir."
   },
   "search": {
     "heroTitle": "Size Uygun Doktoru Bulun",
@@ -1924,7 +2036,19 @@
     "operatingHours": "Çalışma Saatleri",
     "galleryComingSoon": "Galeri fotoğrafları yakında",
     "galleryComingSoonHint": "Bu doktor henüz klinik veya ofis fotoğrafı yüklememiş.",
-    "appointment": "Randevu"
+    "appointment": "Randevu",
+    "noFaqs": "Henüz sık sorulan soru yok.",
+    "faq": "Sık Sorulan Sorular",
+    "addedToFavorites": "Favorilere eklendi",
+    "removedFromFavorites": "Favorilerden çıkarıldı",
+    "reviewNeedAppointment": "Yorum yapmak için tamamlanmış randevu gerekli.",
+    "reviewAlreadyExists": "Bu doktoru daha önce değerlendirdiniz.",
+    "reviewFloodLimit": "Değerlendirmeler arasında 24 saat beklemeniz gerekir.",
+    "reviewSubmitError": "Değerlendirme gönderilemedi. Lütfen tekrar deneyin.",
+    "reviewSuccessDesc": "Değerlendirmeniz gönderildi, inceleme sonrası yayımlanacak.",
+    "reviewMinChars": "Lütfen en az 10 karakter yazın.",
+    "reviewGateTitle": "Yalnızca Doğrulanmış Değerlendirmeler",
+    "reviewGateDesc": "Yalnızca bu doktordan randevusunu tamamlamış hastalar deneyimlerini paylaşabilir. Randevunuzu tamamlayıp değerlendirme bırakmak için geri dönün."
   },
   "crmReviews": {
     "title": "Hasta Yorumları",
@@ -2018,7 +2142,8 @@
     "unreadLabel": "Okunmadı",
     "allClearDesc": "Tüm görevler güncel. Harika gidiyorsunuz!",
     "taskTracker": "Akıllı görev takibi",
-    "urgentAlerts": "Acil Uyarılar"
+    "urgentAlerts": "Acil Uyarılar",
+    "allClear": "Harika! Şu an acil bir durum yok."
   },
   "telehealth": {
     "title": "Telehealth Oturumu",
@@ -2138,7 +2263,10 @@
     "welcomeMessage": "Tebrikler, {{name}}! Profesyonel profiliniz başarıyla oluşturuldu.",
     "welcomeHint": "Hastalar artık sizi bulabilir ve randevu alabilir. Profilinizi istediğiniz zaman panelden güncelleyebilirsiniz.",
     "goToDashboard": "Panele Git",
-    "fileTooLarge": "Dosya 10 MB'tan küçük olmalı."
+    "fileTooLarge": "Dosya 10 MB'tan küçük olmalı.",
+    "saveFailed": "Kaydedilemedi. Lütfen tekrar deneyin.",
+    "avatarFormatError": "Profil fotoğrafı JPG, PNG veya WebP biçiminde olmalıdır.",
+    "avatarSizeError": "Profil fotoğrafı 2 MB’tan küçük olmalıdır."
   },
   "clinicOnboarding": {
     "profileTitle": "Klinik Profili",
@@ -2157,7 +2285,22 @@
     "specialtiesSubtitle": "Kliniğinizin sunduğu bölümleri seçin",
     "searchSpecialties": "Uzmanlık ara...",
     "teamTitle": "Ekip Kurulumu",
-    "teamSubtitle": "Doktorları kliniğinize davet edin"
+    "teamSubtitle": "Doktorları kliniğinize davet edin",
+    "nameRequired": "Lütfen klinik adını girin.",
+    "accreditations": "Sertifikalar & Akreditasyonlar",
+    "accreditationsHint": "Klinağinizin sahip olduğu profesyonel sertifikaları seçin. Hastalara güven aşılar.",
+    "certificates": "Sertifikalar (görselli)",
+    "certificatesHint": "Sertifika adı, yıl ve isterseniz belge görseli ekleyin.",
+    "treatmentsTitle": "Sunulan Tedaviler",
+    "treatmentsSubtitle": "Kliniğinizin sunduğu tedavileri seçin — hastalar tedaviye göre sizi bulur.",
+    "addDoctor": "Doktor Ekle",
+    "doctorName": "Ad Soyad",
+    "doctorEmail": "E-posta Adresi",
+    "doctorSpecialty": "Uzmanlık (isteğe bağlı)",
+    "tempPassword": "Geçici Parola (en az 6)",
+    "addDoctorBtn": "Ekibe Ekle",
+    "finish": "Kurulumu Tamamla",
+    "skipTeam": "Şimdilik geç, ekip üyelerini sonra eklerim"
   },
   "admin": {
     "auditLogs": {
@@ -2230,7 +2373,8 @@
       "totalAppt": "Toplam",
       "totalPosts": "Toplam Gönderi",
       "pendingReports": "Bekleyen Şikayet",
-      "reviewReports": "Şikayetleri İncele"
+      "reviewReports": "Şikayetleri İncele",
+      "announcementPlaceholder": "Duyuru metninizi buraya yazın..."
     },
     "users": {
       "title": "Kullanıcı Yönetimi",
@@ -2717,7 +2861,15 @@
     "documentDate": "Belge Tarihi",
     "description": "Açıklama",
     "descriptionPlaceholder": "Bu belge hakkında isteğe bağlı notlar...",
-    "upload": "Yükle"
+    "upload": "Yükle",
+    "title": "Tıbbi Arşiv",
+    "subtitle": "Tıbbi belgeleriniz, güvenle saklanıyor",
+    "totalFiles": "Toplam Dosya",
+    "totalSize": "Toplam Boyut",
+    "categories": "Kategoriler",
+    "encrypted": "Şifreli",
+    "searchPlaceholder": "Belgelerde ara...",
+    "allCategories": "Tüm Kategoriler"
   },
   "appointment": {
     "selectSpecialty": "Branş Seçin",
@@ -2729,7 +2881,20 @@
     "changeSpecialty": "Branş değiştir",
     "loadingDoctors": "Doktorlar yükleniyor...",
     "noDoctors": "Bu branşta uygun doktor bulunamadı",
-    "tryDifferent": "Lütfen farklı bir branş deneyin"
+    "tryDifferent": "Lütfen farklı bir branş deneyin",
+    "createNew": "Yeni Randevu Oluştur",
+    "verificationRequired": "Doğrulama Gerekli",
+    "verificationRequiredSubtitle": "Önce hesabınızın doğrulanması gerekiyor",
+    "verificationMessage": "Hasta güvenliği ve platform güveni için randevu oluşturmadan önce doğrulama sürecini tamamlamanız gerekir. Lütfen mesleki belgelerinizi incelenmek üzere gönderin.",
+    "verificationNote": "Doğrulama, belgeler gönderildikten sonra genellikle 24-48 saat sürer.",
+    "goToVerification": "Doğrulamaya Git",
+    "findDoctor": "Doktor ara",
+    "findDoctorDesc": "Doktor adı, uzmanlık veya klinik yazın",
+    "findDoctorPlaceholder": "ör. Dr. Ayşe, Göz, Medicana...",
+    "orPickSpecialty": "veya aşağıdan uzmanlık seçin",
+    "searchSpecialty": "Uzmanlık ara...",
+    "clearSearch": "Aramayı temizle",
+    "noTelehealthDoctors": "Bu uzmanlıkta görüntülü görüşme sunan doktor yok"
   },
   "review": {
     "rateExperience": "Deneyiminizi Puanlayın",
@@ -3078,5 +3243,147 @@
     "editTitle": "Alt yazıyı düzenle",
     "empty": "Bu videoda düzenlenecek alt yazı yok.",
     "jump": "Bu ana git"
+  },
+  "clinicDashboard": {
+    "totalAppointments": "Toplam Randevu",
+    "pendingRequests": "Bekleyen Talepler",
+    "confirmed": "Onaylandı",
+    "activeDoctors": "Aktif Doktorlar",
+    "title": "Klinik Paneli",
+    "myTeam": "Ekibim",
+    "newAppointment": "Yeni Randevu",
+    "teamManagement": "Ekip Yönetimi",
+    "teamDesc": "Doktor ekleyin, düzenleyin veya pasife alın",
+    "appointments": "Randevular",
+    "appointmentsDesc": "Tüm randevuları görüntüleyin ve yönetin",
+    "clinicProfile": "Klinik Profili",
+    "clinicProfileDesc": "Herkese açık profilinizi düzenleyin",
+    "teamOverview": "Ekip Özeti"
+  },
+  "clinicTeam": {
+    "nameEmailRequired": "Ad ve e-posta zorunludur.",
+    "clinicNotFound": "Klinik bulunamadı. Lütfen önce kurulumu tamamlayın.",
+    "title": "Ekibim",
+    "subtitle": "Kliniğinizin doktorlarını ve personelini yönetin",
+    "addDoctor": "Doktor Ekle",
+    "searchPlaceholder": "Ada veya e-postaya göre ara...",
+    "active": "Aktif",
+    "inactive": "Pasif",
+    "emptyTitle": "Henüz ekip üyesi yok",
+    "emptyDesc": "Başlamak için ilk doktorunuzu ekleyin.",
+    "addDoctorTitle": "Yeni Doktor Ekle",
+    "fullName": "Ad Soyad",
+    "email": "E-posta",
+    "specialty": "Uzmanlık",
+    "phone": "Telefon",
+    "tempPassword": "Geçici Parola",
+    "tempPasswordHint": "En az 6 karakter (varsayılan: Temp1234!)",
+    "addToTeam": "Ekibe Ekle",
+    "deactivate": "Pasife Al",
+    "reactivate": "Yeniden Aktifleştir"
+  },
+  "doctorDashboard": {
+    "welcome": "Hoş geldiniz",
+    "subtitle": "Medagama profilinizi yönetin",
+    "viewProfile": "Herkese Açık Profili Gör",
+    "editProfile": "Profili Düzenle",
+    "verified": "Hesap Doğrulandı",
+    "verifiedDesc": "Hesabınız doğrulandı. Hastalar randevu alabilir.",
+    "pendingVerification": "Doğrulama Bekleniyor",
+    "pendingDesc": "Doğrulanmak ve randevu almaya başlamak için belgelerinizi yükleyin.",
+    "uploadDocs": "Belge Yükle",
+    "underReview": "Belgeler İnceleniyor",
+    "underReviewDesc": "Belgeleriniz alındı. Yönetici ekibimiz inceliyor (2-5 iş günü).",
+    "infoRequested": "Ek Belge Gerekli",
+    "infoRequestedDesc": "Yönetici ekibi ek bilgi talep etti.",
+    "updateDocs": "Belgeleri Güncelle",
+    "rejected": "Doğrulama Reddedildi",
+    "rejectedDesc": "Doğrulamanız onaylanmadı. Lütfen doğru belgeleri yeniden yükleyin.",
+    "resubmitDocs": "Belgeleri Yeniden Gönder",
+    "appointments": "Randevular",
+    "upcomingAppts": "yaklaşan randevu",
+    "rating": "Puan",
+    "reviews": "değerlendirme",
+    "crmTitle": "Medagama CRM — Profesyonel Paket",
+    "crmDesc": "Akıllı takvim, gelir analizi, görüntülü görüşme, hasta yönetimi ve daha fazlası.",
+    "upgradeCta": "Pro’ya Geç",
+    "featureCalendar": "Akıllı Takvim",
+    "featureRevenue": "Gelir Analizi",
+    "featureTelehealth": "Görüntülü Görüşme",
+    "featurePatients": "Hasta CRM",
+    "crmAccess": "CRM Profesyonel Paket",
+    "crmAccessDesc": "Tüm profesyonel araçlarıyla CRM panelinize erişin.",
+    "openCrm": "CRM’i Aç",
+    "billingThisMonth": "Bu Ayki Gelir",
+    "viewAll": "Tümünü Gör",
+    "totalInvoiced": "Toplam Faturalanan",
+    "pendingPayments": "Bekleyen",
+    "paidInvoices": "Ödendi",
+    "quickActions": "Hızlı İşlemler",
+    "notifications": "Bildirimler",
+    "settings": "Ayarlar",
+    "upcomingTitle": "Yaklaşan Randevular",
+    "bookmarkFailed": "İşaretleme başarısız oldu."
+  },
+  "hospital": {
+    "verified": "Doğrulanmış",
+    "level": "Hastane Ağı",
+    "branches": "Şubeler",
+    "clinics": "Klinikler",
+    "about": "Hakkında",
+    "noBio": "Açıklama bulunmuyor.",
+    "doctors": "doktor",
+    "viewMap": "Harita",
+    "viewBranch": "Şubeyi İncele",
+    "comingSoon": "Yakında",
+    "noBranches": "Henüz şube eklenmemiş.",
+    "ourBranches": "Şubelerimiz",
+    "hospitalInfo": "Hastane Bilgileri",
+    "legalName": "Ticari Unvan",
+    "location": "Konum",
+    "director": "Başhekim",
+    "appointmentNote": "Randevular her şubede ayrı yönetilir. Randevu almak için lütfen bir şube seçin.",
+    "selectBranch": "Aşağıdan bir şube seçin",
+    "notFound": "Hastane bulunamadı",
+    "notFoundDesc": "Bu hastane profili mevcut değil veya artık aktif değil."
+  },
+  "patientDashboard": {
+    "upcomingAppointments": "Yaklaşan",
+    "completedVisits": "Tamamlanan",
+    "telehealthSessions": "Görüntülü Görüşme",
+    "medicalDocuments": "Belgeler",
+    "welcome": "Hoş geldiniz",
+    "subtitle": "Sağlık durumunuza genel bakış",
+    "bookAppointment": "Randevu Al",
+    "noUpcoming": "Yaklaşan randevu yok",
+    "noUpcomingDesc": "Sağlık yolculuğunuza başlamak için bir uzmandan randevu alın.",
+    "bookNow": "Randevu Oluştur",
+    "joinNow": "Katıl",
+    "quickActions": "Hızlı İşlemler",
+    "myTelehealth": "Görüşmelerim",
+    "medicalArchive": "Tıbbi Arşiv",
+    "messages": "Mesajlar"
+  },
+  "invoices": {
+    "status": {
+      "paid": "Ödendi",
+      "partial": "Kısmi ödendi",
+      "pending": "Ödeme bekliyor",
+      "overdue": "Gecikmiş",
+      "cancelled": "İptal edildi"
+    },
+    "loadFailed": "Faturalar yüklenemedi.",
+    "downloadFailed": "Fatura indirilemedi, tekrar deneyin.",
+    "title": "Faturalarım",
+    "empty": "Henüz faturanız yok.",
+    "issueDate": "Düzenlenme",
+    "dueDate": "Son ödeme",
+    "doctor": "Doktor",
+    "discount": "İndirim",
+    "tax": "Vergi",
+    "total": "Toplam",
+    "paid": "Ödenen",
+    "payAtClinic": "Ödemeler klinik tarafından alınır. Ödeme için kliniğinizle iletişime geçin.",
+    "downloadPdf": "PDF indir"
   }
 }
