@@ -1616,7 +1616,46 @@
     "startChat": "Начать чат",
     "askVasco": "Спросить Vasco AI...",
     "analyzing": "Анализ...",
-    "disclaimer": "Vasco AI предоставляет только общую информацию о здоровье. Всегда консультируйтесь с квалифицированным специалистом для получения медицинских рекомендаций."
+    "disclaimer": "Vasco AI предоставляет только общую информацию о здоровье. Всегда консультируйтесь с квалифицированным специалистом для получения медицинских рекомендаций.",
+    "a1": "Нет. Vasco AI не ставит диагнозы, не назначает лечение и не даёт медицинских советов. Он лишь направляет вас к нужной специальности и нужным специалистам.",
+    "a2": "Посмотрите специалистов предложенной специальности и",
+    "a2b": "на приём.",
+    "a3": "Да, Vasco AI создан многоязычным.",
+    "answerPlaceholder": "Введите ответ…",
+    "appointment": "запишитесь",
+    "ask": "Предложить",
+    "askAnother": "↺ Новая жалоба",
+    "assistantTitle": "Опишите жалобу — мы найдём нужного специалиста",
+    "badge": "ИИ-помощник по маршрутизации",
+    "browseDoctors": "Показать врачей этой специальности →",
+    "can1": "Предполагает подходящую специальность по вашей жалобе",
+    "can2": "Направляет вас к врачам-специалистам и клиникам",
+    "can3": "Работает на многих языках (удобно для медицинского туризма)",
+    "canTitle": "Что он делает",
+    "cant1": "Не ставит диагнозы",
+    "cant2": "Не назначает лекарства и лечение",
+    "cant3": "Не заменяет осмотр врача",
+    "cantTitle": "Чего он не делает",
+    "disclaimerShort": "Vasco AI не ставит диагнозы — он лишь направляет вас к нужному специалисту.",
+    "error": "Что-то пошло не так, попробуйте ещё раз.",
+    "faqTitle": "Частые вопросы",
+    "hero": "Опишите жалобу — Vasco направит вас к нужному специалисту. Диагнозы он не ставит.",
+    "howTitle": "Как это работает",
+    "importantLabel": "Важно:",
+    "placeholder": "напр. Уже два дня боль в груди и сердцебиение…",
+    "q1": "Ставит ли Vasco AI диагнозы?",
+    "q2": "Что делать после маршрутизации?",
+    "q3": "Можно ли пользоваться им на других языках?",
+    "step1Desc": "Пишите свободно, на своём языке.",
+    "step1Title": "Опишите жалобу",
+    "step2Desc": "Vasco определяет подходящую медицинскую специальность.",
+    "step2Title": "Специальность предложена",
+    "step3Desc": "Посмотрите наиболее подходящих врачей и запишитесь.",
+    "step3Title": "Дойдите до специалиста",
+    "thinking": "Vasco думает",
+    "trust": "Без диагнозов · Многоязычно · Ваша жалоба остаётся конфиденциальной",
+    "typeExample": "Уже два дня сильно болит зуб",
+    "vague": "Не могли бы вы описать жалобу немного подробнее?"
   },
   "telehealthPage": {
     "title": "Телемедицина",
@@ -1703,7 +1742,42 @@
     "sendMessage": "Отправить сообщение",
     "addedToFavorites": "Добавлено в избранное",
     "removedFromFavorites": "Удалено из избранного",
-    "clinic": "Клиника"
+    "clinic": "Клиника",
+    "accreditations": "Аккредитации",
+    "basedOnReviews": "По {{count}} отзывам",
+    "book": "Записаться",
+    "certifications": "Сертификаты",
+    "clinicResponse": "Ответ клиники",
+    "hide": "Скрыть",
+    "noDoctors": "В этой клинике пока нет зарегистрированных врачей.",
+    "noDoctorsMatch": "Врачи по вашему запросу не найдены.",
+    "noReviewsHint": "Поделитесь опытом первым.",
+    "noReviewsYet": "Отзывов пока нет",
+    "noTreatmentMatch": "Процедуры по вашему запросу не найдены.",
+    "ourDoctors": "Наши врачи",
+    "priceDisclaimer": "* Цены могут отличаться в зависимости от сложности вмешательства и состояния пациента.",
+    "priceRange": "Диапазон цен",
+    "priceRangeDisclaimer": "*Цены могут отличаться. Для точной цены запишитесь на приём.",
+    "pricing": "Цены",
+    "procedure": "Процедура",
+    "reviewAlreadyExists": "Вы уже оставляли отзыв об этой клинике.",
+    "reviewFloodLimit": "Между отзывами должно пройти 24 часа.",
+    "reviewGateDesc": "Поделиться опытом могут только пациенты, завершившие приём в этой клинике. Завершите приём и возвращайтесь, чтобы оставить отзыв.",
+    "reviewGateTitle": "Только подтверждённые отзывы",
+    "reviewMinChars": "Напишите не менее 10 символов.",
+    "reviewNeedAppointment": "Чтобы оставить отзыв, нужен завершённый приём.",
+    "reviewPlaceholder": "Поделитесь опытом (не менее 10 символов)…",
+    "reviewSubmitError": "Не удалось отправить отзыв. Попробуйте ещё раз.",
+    "reviewSuccess": "Спасибо за ваш отзыв!",
+    "reviewSuccessDesc": "Ваш отзыв отправлен и появится после модерации.",
+    "searchDoctor": "Поиск врача…",
+    "submitReview": "Отправить отзыв",
+    "topServices": "Популярные услуги",
+    "treatmentSearchPlaceholder": "Поиск процедуры или вмешательства…",
+    "treatmentTypePlaceholder": "Вид процедуры (напр. чистка зубов)",
+    "verifiedReview": "Подтверждён",
+    "viewAllDoctors": "Показать всех врачей ({{count}})",
+    "writeReview": "Написать отзыв"
   },
   "profile": {
     "title": "Профиль",
@@ -1944,7 +2018,20 @@
     "editSettings": "Изменить в настройках",
     "operatingHours": "Часы работы",
     "galleryComingSoon": "Фото галереи скоро появятся",
-    "galleryComingSoonHint": "Этот врач ещё не загрузил фотографии клиники или кабинета."
+    "galleryComingSoonHint": "Этот врач ещё не загрузил фотографии клиники или кабинета.",
+    "addedToFavorites": "Добавлено в избранное",
+    "appointment": "Приём",
+    "faq": "Частые вопросы",
+    "noFaqs": "Частых вопросов пока нет.",
+    "removedFromFavorites": "Убрано из избранного",
+    "reviewAlreadyExists": "Вы уже оставляли отзыв об этом враче.",
+    "reviewFloodLimit": "Между отзывами должно пройти 24 часа.",
+    "reviewGateDesc": "Поделиться опытом могут только пациенты, завершившие приём у этого врача. Завершите приём и возвращайтесь, чтобы оставить отзыв.",
+    "reviewGateTitle": "Только подтверждённые отзывы",
+    "reviewMinChars": "Напишите не менее 10 символов.",
+    "reviewNeedAppointment": "Чтобы оставить отзыв, нужен завершённый приём.",
+    "reviewSubmitError": "Не удалось отправить отзыв. Попробуйте ещё раз.",
+    "reviewSuccessDesc": "Ваш отзыв отправлен и появится после модерации."
   },
   "crmReviews": {
     "title": "Отзывы пациентов",
@@ -2181,7 +2268,23 @@
     "specialtiesSubtitle": "Выберите отделения, которые предлагает ваша клиника",
     "searchSpecialties": "Поиск специализаций...",
     "teamTitle": "Настройка команды",
-    "teamSubtitle": "Пригласите врачей присоединиться к вашей клинике"
+    "teamSubtitle": "Пригласите врачей присоединиться к вашей клинике",
+    "accreditations": "Сертификаты и аккредитации",
+    "accreditationsHint": "Выберите профессиональные сертификаты вашей клиники. Это вызывает доверие у пациентов.",
+    "addDoctor": "Добавить врача",
+    "addDoctorBtn": "Добавить в команду",
+    "certificates": "Сертификаты (с изображением)",
+    "certificatesHint": "Добавьте название сертификата, год и, при желании, изображение.",
+    "doctorEmail": "Адрес электронной почты",
+    "doctorName": "ФИО",
+    "doctorSpecialty": "Специальность (необязательно)",
+    "finish": "Завершить настройку",
+    "logo": "Логотип",
+    "nameRequired": "Введите название клиники.",
+    "skipTeam": "Пропустить, добавлю участников позже",
+    "tempPassword": "Временный пароль (мин. 6)",
+    "treatmentsSubtitle": "Выберите процедуры, которые оказывает ваша клиника, — пациенты находят вас по процедуре.",
+    "treatmentsTitle": "Оказываемые процедуры"
   },
   "admin": {
     "auditLogs": {
@@ -2916,7 +3019,8 @@
     "healthTip": "Совет по здоровью",
     "healthTipText": "Храните медицинские документы в своём Медицинском архиве. Делитесь ими с врачами перед приёмами для лучшего лечения.",
     "dataProtection": "Защита данных",
-    "gdprNotice": "Ваши медицинские данные зашифрованы и надёжно хранятся в соответствии со ст. 9 GDPR. Вы контролируете, кто может просматривать ваши документы."
+    "gdprNotice": "Ваши медицинские данные зашифрованы и надёжно хранятся в соответствии со ст. 9 GDPR. Вы контролируете, кто может просматривать ваши документы.",
+    "noUpcomingDesc": "Запишитесь к специалисту, чтобы начать заботиться о своём здоровье."
   },
   "header": {
     "forClinics": "Для клиник",
@@ -3587,5 +3691,356 @@
     "rotate": "Повернуть",
     "zoomIn": "Увеличить",
     "zoomOut": "Уменьшить"
+  },
+  "beforeAfterTab": {
+    "after": "После",
+    "before": "До",
+    "beforeAfterPhotos": "Фото до и после"
+  },
+  "cRMAppointments": {
+    "905xxXxxXxxx": "+7 9XX XXX-XX-XX",
+    "emailExampleCom": "email@primer.ru",
+    "pdfJpgPngMax10": "PDF, JPG, PNG · до 10 МБ"
+  },
+  "cRMBranches": {
+    "branchHospitalCom": "filial@klinika.ru",
+    "istanbul": "Стамбул",
+    "turkey": "Турция"
+  },
+  "cRMDocuments": {
+    "pdfDocxXlsxJpgPng": "PDF, DOCX, XLSX, JPG, PNG, DICOM (до 20 МБ)"
+  },
+  "cRMExamination": {
+    "after": "После",
+    "before": "До",
+    "bp": "АД:",
+    "hr": "ЧСС:",
+    "im": "в/м",
+    "inhalation": "Ингаляционно",
+    "iv": "в/в",
+    "nasal": "Интраназально",
+    "oral": "Внутрь",
+    "rectal": "Ректально",
+    "sc": "п/к",
+    "topical": "Наружно"
+  },
+  "cRMLayout": {
+    "crmPlatform": "Платформа CRM",
+    "goToMedagama": "Перейти в Medagama",
+    "loading": "Загрузка…",
+    "searchPatientsAppointments": "Поиск пациентов, записей…"
+  },
+  "cRMLeads": {
+    "905xxXxxXxxx": "+7 9XX XXX-XX-XX",
+    "ornekEmailCom": "primer@email.ru",
+    "webReferralManual": "сайт / рекомендация / вручную"
+  },
+  "cRMPatient360": {
+    "backToPatients": "Назад к пациентам",
+    "icd10": "МКБ-10",
+    "medicalSummaryWillPopulateAfter": "Медицинская сводка будет пополняться после приёмов",
+    "noDocumentsYet": "Документов пока нет",
+    "noMedicalDataYet": "Медицинских данных пока нет",
+    "noPatientIdProvided": "ID пациента не указан",
+    "noTimelineEntriesYet": "Записей в хронологии пока нет",
+    "noVitalsRecordedYet": "Жизненные показатели пока не внесены",
+    "patientNotFound": "Пациент не найден",
+    "tag": "Метка…",
+    "verified": "Подтверждён"
+  },
+  "cRMReports": {
+    "excelOlarak": "В формате Excel",
+    "hastaDemografisi": "Демография пациентов",
+    "hizmetTedaviAnalizi": "Анализ услуг и процедур",
+    "pdfOlarak": "В формате PDF"
+  },
+  "cRMRevenue": {
+    "exportAsExcel": "Экспорт в Excel",
+    "exportAsPdf": "Экспорт в PDF",
+    "superAdmin": "СУПЕРАДМИНИСТРАТОР"
+  },
+  "cRMSalespeople": {
+    "905xxXxxXxxx": "+7 9XX XXX-XX-XX",
+    "mehmetDemir": "Мехмет Демир",
+    "satisciEmailCom": "menedzher@email.ru"
+  },
+  "cRMSettings": {
+    "https": "https://…",
+    "httpsWwwExampleCom": "https://www.primer.ru",
+    "openstreetmapPreview": "Предпросмотр OpenStreetMap"
+  },
+  "cRMStaff": {
+    "5Years": "5 лет",
+    "905xxXxxXxxx": "+7 9XX XXX-XX-XX",
+    "cardiologyDermatology": "Кардиология, дерматология…",
+    "doctorEmailCom": "vrach@email.ru",
+    "drJohnDoe": "Д-р Иван Иванов",
+    "drProfUzm": "Д-р / проф. / специалист",
+    "email": "Эл. почта",
+    "min6Characters": "Минимум 6 символов"
+  },
+  "cRMSupport": {
+    "pngJpgPdfDocMax": "PNG, JPG, PDF, DOC (до 10 МБ)"
+  },
+  "clinicDashboard": {
+    "activeDoctors": "Активные врачи",
+    "appointments": "Записи",
+    "appointmentsDesc": "Просматривайте и ведите все записи",
+    "clinicProfile": "Профиль клиники",
+    "clinicProfileDesc": "Измените свой публичный профиль",
+    "confirmed": "Подтверждённые",
+    "myTeam": "Моя команда",
+    "newAppointment": "Новая запись",
+    "pendingRequests": "Заявки в ожидании",
+    "teamDesc": "Добавляйте, изменяйте или деактивируйте врачей",
+    "teamManagement": "Управление командой",
+    "teamOverview": "Обзор команды",
+    "title": "Панель клиники",
+    "totalAppointments": "Всего записей"
+  },
+  "clinicHero": {
+    "plus": "Plus"
+  },
+  "clinicLogin": {
+    "clinicExampleCom": "klinika@primer.ru"
+  },
+  "clinicProfileEdit": {
+    "aboutClinic": "О клинике",
+    "aboutTheClinic": "О клинике",
+    "accommodation": "Проживание",
+    "accreditations": "Аккредитации",
+    "activity": "Активность",
+    "addItem": "Добавить позицию",
+    "addProcedure": "Добавить процедуру",
+    "addTag": "Добавить метку",
+    "backgroundImage": "Фоновое изображение",
+    "brain": "Мозг",
+    "cancel": "Отмена",
+    "clickOrDragMarkerTo": "Нажмите или перетащите маркер, чтобы задать местоположение",
+    "clinicMap": "clinic-map",
+    "cover": "обложка",
+    "createPackage": "Создать пакет",
+    "currency": "Валюта",
+    "department": "Отделение",
+    "durationEG45Min": "Длительность (напр. 45 мин)",
+    "eG3NightsHotel": "напр. 3 ночи в отеле",
+    "eGAirportPickup": "напр. Встреча в аэропорту",
+    "eGConsultation": "напр. Консультация",
+    "eGDentalImplant": "напр. Зубной имплант",
+    "edit": "Изменить",
+    "editClinicProfile": "Изменить профиль клиники",
+    "gallery": "Галерея",
+    "givePatientsAClearCost": "Дайте пациентам ясное представление о стоимости каждой услуги.",
+    "healthTourismPackages": "Пакеты медицинского туризма",
+    "hidden": "Скрыто",
+    "insurance": "Страхование",
+    "logo": "логотип",
+    "manageYourClinicInformationAnd": "Управляйте сведениями и услугами своей клиники",
+    "maxPrice": "Максимальная цена",
+    "minMax": "₺мин – ₺макс",
+    "minPrice": "Минимальная цена",
+    "noImagesYet": "Изображений пока нет.",
+    "noReviewsYet": "Отзывов пока нет.",
+    "noServicesYet": "Услуг пока нет.",
+    "packageNameEGBasic": "Название пакета (напр. Базовый пакет)",
+    "preview": "Предпросмотр:",
+    "priceRanges": "Диапазоны цен",
+    "remove": "Убрать",
+    "save": "Сохранить",
+    "scissors": "Ножницы",
+    "service": "Услуга",
+    "serviceName": "Название услуги",
+    "services": "Услуги",
+    "shortDescription": "Краткое описание",
+    "stethoscope": "Стетоскоп",
+    "total": "Итого:",
+    "totalPrice": "Общая цена",
+    "trEn": "TR, EN",
+    "transfer": "Трансфер",
+    "treatment": "Процедура",
+    "typeClinicAddressDistrictOr": "Введите адрес клиники, район или город…"
+  },
+  "clinicTeam": {
+    "active": "Активен",
+    "addDoctor": "Добавить врача",
+    "addDoctorTitle": "Добавить нового врача",
+    "addToTeam": "Добавить в команду",
+    "cardiology": "Кардиология",
+    "clinicNotFound": "Клиника не найдена. Сначала завершите настройку.",
+    "deactivate": "Деактивировать",
+    "doctorExampleCom": "vrach@primer.ru",
+    "drJohnSmith": "Д-р Иван Иванов",
+    "email": "Эл. почта",
+    "emptyDesc": "Добавьте первого врача, чтобы начать.",
+    "emptyTitle": "Участников команды пока нет",
+    "fullName": "ФИО",
+    "inactive": "Неактивен",
+    "nameEmailRequired": "Имя и электронная почта обязательны.",
+    "phone": "Телефон",
+    "reactivate": "Активировать снова",
+    "searchPlaceholder": "Поиск по имени или почте…",
+    "specialty": "Специальность",
+    "subtitle": "Управляйте врачами и персоналом своей клиники",
+    "tempPassword": "Временный пароль",
+    "tempPasswordHint": "Минимум 6 символов (по умолчанию: Temp1234!)",
+    "title": "Моя команда"
+  },
+  "contactPage": {
+    "gizlilikVeVeri": "Конфиденциальность и данные",
+    "hastalar": "Пациенты",
+    "infoMedagamaCom": "info@medagama.com",
+    "klinikler": "Клиники",
+    "tedavileriInceleyin": "посмотреть процедуры",
+    "verilerimleIlgiliTalebimVar": "У меня есть запрос о моих данных."
+  },
+  "dataPrivacyRightsPage": {
+    "deleteAccountData": "Удалить учётную запись и данные",
+    "dpoMedagamaCom": "dpo@medagama.com",
+    "email": "Эл. почта:",
+    "gdprRightsManagementCenter": "Центр управления правами по GDPR",
+    "generalDataProtectionRegulationGdpr": "Общий регламент по защите данных (GDPR)",
+    "privacyInquiries": "Вопросы о конфиденциальности:",
+    "privacyMedagamaCom": "privacy@medagama.com",
+    "rightToLodgeAComplaint": "Право на подачу жалобы (ст. 77)",
+    "thisActionCannotBeUndone": "Это действие нельзя отменить",
+    "warning": "Предупреждение:",
+    "yourDataPrivacyRights": "Ваши права на защиту данных",
+    "yourRights": "Ваши права"
+  },
+  "doctorAppointmentManager": {
+    "appointmentRequests": "Заявки на приём",
+    "confirmedAppointmentsWillAppearHere": "Подтверждённые записи появятся здесь",
+    "loadingAppointments": "Загрузка записей…",
+    "manageIncomingPatientAppointments": "Управляйте входящими записями пациентов",
+    "newAppointmentRequestsWillAppear": "Новые заявки на приём появятся здесь",
+    "noConfirmedAppointments": "Подтверждённых записей нет",
+    "noPendingRequests": "Заявок в ожидании нет"
+  },
+  "doctorChatPage": {
+    "channel": "Канал",
+    "loadingMessages": "Загрузка сообщений…"
+  },
+  "doctorDashboard": {
+    "appointments": "Записи",
+    "billingThisMonth": "Выручка за этот месяц",
+    "bookmarkFailed": "Не удалось сохранить.",
+    "crmAccess": "CRM «Профессиональный»",
+    "crmAccessDesc": "Откройте полную панель CRM со всеми профессиональными инструментами.",
+    "crmDesc": "Умный календарь, анализ выручки, видеоконсультации, ведение пациентов и не только.",
+    "crmTitle": "Medagama CRM — «Профессиональный»",
+    "editProfile": "Изменить профиль",
+    "featureCalendar": "Умный календарь",
+    "featurePatients": "CRM пациентов",
+    "featureRevenue": "Анализ выручки",
+    "featureTelehealth": "Видеоконсультации",
+    "infoRequested": "Нужны дополнительные документы",
+    "infoRequestedDesc": "Команда администрации запросила дополнительные сведения.",
+    "notifications": "Уведомления",
+    "openCrm": "Открыть CRM",
+    "paidInvoices": "Оплачено",
+    "pendingDesc": "Загрузите документы, чтобы пройти проверку и начать принимать записи.",
+    "pendingPayments": "Ожидает",
+    "pendingVerification": "Проверка ожидается",
+    "quickActions": "Быстрые действия",
+    "rating": "Рейтинг",
+    "rejected": "Проверка отклонена",
+    "rejectedDesc": "Ваша проверка не пройдена. Загрузите правильные документы ещё раз.",
+    "resubmitDocs": "Отправить документы повторно",
+    "reviews": "отзывов",
+    "settings": "Настройки",
+    "subtitle": "Управляйте своим профилем в Medagama",
+    "totalInvoiced": "Всего выставлено",
+    "underReview": "Документы на рассмотрении",
+    "underReviewDesc": "Ваши документы получены. Наша администрация их рассматривает (2–5 рабочих дней).",
+    "upcomingAppts": "предстоящих записей",
+    "upcomingTitle": "Предстоящие записи",
+    "updateDocs": "Обновить документы",
+    "upgradeCta": "Перейти на Pro",
+    "uploadDocs": "Загрузить документы",
+    "verified": "Учётная запись подтверждена",
+    "verifiedDesc": "Ваша учётная запись подтверждена. Пациенты могут записываться на приём.",
+    "viewAll": "Показать всё",
+    "viewProfile": "Открыть публичный профиль",
+    "welcome": "Добро пожаловать"
+  },
+  "doctorLocationEditor": {
+    "clickOrDragMarkerTo": "Нажмите или перетащите маркер, чтобы задать местоположение",
+    "doctorMap": "doctor-map",
+    "searchAnAddressThenDrag": "Найдите адрес, затем перетащите метку для точной настройки.",
+    "setYourLocation": "Задайте своё местоположение",
+    "typeYourAddressDistrictOr": "Введите свой адрес, район или город…"
+  },
+  "doctorLogin": {
+    "doctorExampleCom": "vrach@primer.ru"
+  },
+  "doctorOnboarding": {
+    "eGCardiology": "напр. Кардиология"
+  },
+  "forClinicsPage": {
+    "arama": "поиск"
+  },
+  "forPatientsPage": {
+    "arama": "поиск",
+    "doktorVeKlinikBulun": "Найдите врача и клинику",
+    "klinikMisiniz": "Вы клиника?",
+    "onlineRandevu": "Онлайн-запись",
+    "randevuVeTelehealth": "Записи и видеоконсультации",
+    "tedavileriInceleyin": "посмотреть процедуры"
+  },
+  "galleryTab": {
+    "gallery": "Галерея"
+  },
+  "googleMapsPreview": {
+    "googleMapsPreview": "Предпросмотр Google Карт",
+    "invalidGoogleMapsUrlPlease": "Неверная ссылка Google Карт. Вставьте действительную ссылку.",
+    "mapLinkDetected": "Обнаружена ссылка на карту"
+  },
+  "kVKKPage": {
+    "dpoMedgamaCom": "dpo@medgama.com",
+    "kvkkMedgamaCom": "kvkk@medgama.com",
+    "veriSorumlusu": "Оператор данных:"
+  },
+  "locationTab": {
+    "location": "Расположение"
+  },
+  "mapboxMap": {
+    "loadingMap": "Загрузка карты…",
+    "noLocationProvidedYet": "Местоположение пока не указано."
+  },
+  "mapboxView": {
+    "location": "Расположение"
+  },
+  "proTeaser": {
+    "apr": "апр",
+    "aug": "авг",
+    "dec": "дек",
+    "feb": "фев",
+    "jan": "янв",
+    "jul": "июл",
+    "jun": "июн",
+    "mar": "мар",
+    "may": "май",
+    "nov": "ноя",
+    "oct": "окт",
+    "sep": "сен"
+  },
+  "quickContactCard": {
+    "quickContact": "Быстрая связь"
+  },
+  "servicesTab": {
+    "ourServices": "Наши услуги"
+  },
+  "termsPopup": {
+    "dataProtectionOfficer": "Специалист по защите данных:",
+    "dataRights": "Права на данные",
+    "dpoMedagamaCom": "dpo@medagama.com",
+    "generalInquiries": "Общие вопросы:",
+    "infoMedagamaCom": "info@medagama.com",
+    "privacyPolicy": "Политика конфиденциальности",
+    "termsOfServicePage": "страница условий использования",
+    "termsOfUse": "Условия использования"
+  },
+  "vascoAIPage": {
+    "online": "В сети"
   }
 }
