@@ -1301,7 +1301,7 @@
       "newThisMonth": "Bu ay yeni",
       "clinics": "Klinikalar",
       "totalClinics": "Ümumi klinikalar",
-      "pendingVerification": "{{count}} həkim doğrulama gözləyir",
+      "pendingVerification": "həkim doğrulama gözləyir",
       "clickToReview": "Nəzərdən keçirmək üçün klikləyin",
       "growthTrend": "Aylıq artım trendi (Son 12 ay)",
       "newUsers": "Yeni istifadəçilər",

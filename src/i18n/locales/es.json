@@ -1257,7 +1257,7 @@
       "newThisMonth": "Nuevos este mes",
       "clinics": "Clínicas",
       "totalClinics": "Total de clínicas",
-      "pendingVerification": "{{count}} médico(s) pendientes de verificación",
+      "pendingVerification": "médico(s) pendientes de verificación",
       "clickToReview": "Haz clic para revisar y verificar",
       "growthTrend": "Tendencia de crecimiento mensual (Últimos 12 meses)",
       "newUsers": "Nuevos usuarios",

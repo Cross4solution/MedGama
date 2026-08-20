@@ -1590,7 +1590,7 @@
       "newUsers": "مستخدمون جدد",
       "thisMonth": "هذا الشهر",
       "verifiedSuffix": "موثّق",
-      "pendingVerification": "{{count}} طبيب بانتظار التوثيق",
+      "pendingVerification": "طبيب بانتظار التوثيق",
       "clickToReview": "انقر للمراجعة والتوثيق",
       "growthTrend": "اتجاه النمو الشهري (آخر 12 شهراً)",
       "newUsersLegend": "مستخدمون جدد",

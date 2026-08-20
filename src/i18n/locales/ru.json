@@ -1591,7 +1591,7 @@
       "newUsers": "Новые пользователи",
       "thisMonth": "в этом месяце",
       "verifiedSuffix": "проверено",
-      "pendingVerification": "{{count}} врач(ей) ожидают верификации",
+      "pendingVerification": "врач(ей) ожидают верификации",
       "clickToReview": "Нажмите для проверки",
       "growthTrend": "Тренд роста за 12 месяцев",
       "newUsersLegend": "Новые пользователи",
