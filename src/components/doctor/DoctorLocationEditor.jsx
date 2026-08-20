@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Save, Loader2, CheckCircle2 } from 'lucide-react';
 import MapboxSearchInput from '../map/MapboxSearchInput';
 import { doctorProfileAPI } from '../../lib/api';
+import { useTranslation } from 'react-i18next';
 
 /**
  * DoctorLocationEditor — doktorun kendi konumunu kolayca ayarlaması için.
@@ -9,6 +10,7 @@ import { doctorProfileAPI } from '../../lib/api';
  * Klinik konum editörüyle aynı UX. Kaydedince map_coordinates + lat/lng persist olur.
  */
 export default function DoctorLocationEditor({ address = '', lat, lng, onSaved }) {
+  const { t } = useTranslation();
   const [addr, setAddr] = useState(address || '');
   const [mLat, setMLat] = useState(lat != null && !isNaN(parseFloat(lat)) ? parseFloat(lat) : 41.0082);
   const [mLng, setMLng] = useState(lng != null && !isNaN(parseFloat(lng)) ? parseFloat(lng) : 28.9784);
@@ -74,14 +76,14 @@ marker.on('dragend',function(){var ll=marker.getLngLat();report(ll.lat,ll.lng)})
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
       <div>
-        <h4 className="text-sm font-semibold text-gray-900">Set your location</h4>
-        <p className="text-xs text-gray-500 mt-0.5">Search an address, then drag the pin to fine-tune.</p>
+        <h4 className="text-sm font-semibold text-gray-900">{t('doctorLocationEditor.setYourLocation', "Set your location")}</h4>
+        <p className="text-xs text-gray-500 mt-0.5">{t('doctorLocationEditor.searchAnAddressThenDrag', "Search an address, then drag the pin to fine-tune.")}</p>
       </div>
 
       <MapboxSearchInput
         value={addr}
         label=""
-        placeholder="Type your address, district or city…"
+        placeholder={t('doctorLocationEditor.typeYourAddressDistrictOr', "Type your address, district or city…")}
         onChange={(a, coords) => {
           setAddr(a);
           if (coords && typeof coords.lat === 'number') { setMLat(coords.lat); setMLng(coords.lng); }
@@ -90,10 +92,10 @@ marker.on('dragend',function(){var ll=marker.getLngLat();report(ll.lat,ll.lng)})
 
       <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
         <div className="px-4 py-2 bg-gradient-to-r from-teal-50 to-emerald-50 border-b border-gray-100 flex items-center justify-between">
-          <span className="text-xs font-semibold text-teal-700">Click or drag marker to set location</span>
+          <span className="text-xs font-semibold text-teal-700">{t('doctorLocationEditor.clickOrDragMarkerTo', "Click or drag marker to set location")}</span>
           <span className="text-[11px] text-gray-500 font-mono">{mLat.toFixed(5)}, {mLng.toFixed(5)}</span>
         </div>
-        <iframe title="doctor-map" srcDoc={html} className="w-full h-[320px] border-0" />
+        <iframe title={t('doctorLocationEditor.doctorMap', "doctor-map")} srcDoc={html} className="w-full h-[320px] border-0" />
       </div>
 
       <div className="flex items-center justify-end gap-3">

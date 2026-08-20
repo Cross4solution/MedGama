@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Image as ImageIcon, Video, Smile } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import PostCreateModal from './timeline/PostCreateModal';
+import { useTranslation } from 'react-i18next';
 
 export default function PostComposer() {
+
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [initialAction, setInitialAction] = useState(''); // 'photo' | 'video' | 'emoji'
@@ -89,15 +92,15 @@ export default function PostComposer() {
 
           <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 py-0.5 px-1.5 rounded-md hover:bg-gray-50" type="button" onClick={() => { setInitialAction('photo'); setOpen(true); }}>
             <ImageIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
-            <span className="text-xs sm:text-sm">Photo</span>
+            <span className="text-xs sm:text-sm">{t('postComposer.photo', "Photo")}</span>
           </button>
           <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 py-0.5 px-1.5 rounded-md hover:bg-gray-50" type="button" onClick={() => { setInitialAction('video'); setOpen(true); }}>
             <Video className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
-            <span className="text-xs sm:text-sm">Video</span>
+            <span className="text-xs sm:text-sm">{t('postComposer.video', "Video")}</span>
           </button>
           <button ref={emojiBtnRef} className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 py-0.5 px-1.5 rounded-md hover:bg-gray-50" type="button" onClick={() => { setShowEmoji(v=>!v); }}>
             <Smile className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
-            <span className="text-xs sm:text-sm">Emoji</span>
+            <span className="text-xs sm:text-sm">{t('postComposer.emoji', "Emoji")}</span>
           </button>
           {showEmoji && (
             <div

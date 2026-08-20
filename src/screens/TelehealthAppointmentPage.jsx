@@ -76,6 +76,7 @@ const STEPS_DOCTOR = [
 ];
 
 export default function TelehealthAppointmentPage() {
+
   const { t, i18n } = useTranslation();
   const { formatCurrency, country, user } = useAuth();
   const navigate = useNavigate();
@@ -409,7 +410,7 @@ export default function TelehealthAppointmentPage() {
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-200/50">
             <CheckCircle2 className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Appointment Confirmed!</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('telehealthAppointmentPage.appointmentConfirmed', "Appointment Confirmed!")}</h1>
           <p className="text-sm text-gray-500 mb-6">{isDoctor ? `Appointment for ${patientInfo.fullName || 'the patient'} has been successfully created.` : 'Your telehealth appointment has been successfully booked.'}</p>
 
           <div className="bg-gray-50 rounded-2xl p-5 mb-6 text-left space-y-3">
@@ -419,7 +420,7 @@ export default function TelehealthAppointmentPage() {
                   <User className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 font-medium">Patient</p>
+                  <p className="text-xs text-gray-400 font-medium">{t('telehealthAppointmentPage.patient', "Patient")}</p>
                   <p className="text-sm font-semibold text-gray-900">{patientInfo.fullName || '—'}</p>
                   {patientInfo.email && <p className="text-[11px] text-gray-400">{patientInfo.email}</p>}
                 </div>
@@ -430,7 +431,7 @@ export default function TelehealthAppointmentPage() {
                 <Stethoscope className="w-5 h-5 text-teal-600" />
               </div>
               <div>
-                <p className="text-xs text-gray-400 font-medium">Doctor</p>
+                <p className="text-xs text-gray-400 font-medium">{t('telehealthAppointmentPage.doctor', "Doctor")}</p>
                 <p className="text-sm font-semibold text-gray-900">{isDoctor ? (user?.fullname || user?.name || '—') : (selectedDoctorObj?.name || '—')}</p>
               </div>
             </div>
@@ -439,7 +440,7 @@ export default function TelehealthAppointmentPage() {
                 <CalendarDays className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-xs text-gray-400 font-medium">Date & Time</p>
+                <p className="text-xs text-gray-400 font-medium">{t('telehealthAppointmentPage.dateTime', "Date & Time")}</p>
                 <p className="text-sm font-semibold text-gray-900">{formatDateDisplay(selectedDate)} at {selectedTime}</p>
               </div>
             </div>
@@ -448,7 +449,7 @@ export default function TelehealthAppointmentPage() {
                 <Video className="w-5 h-5 text-violet-600" />
               </div>
               <div>
-                <p className="text-xs text-gray-400 font-medium">Type</p>
+                <p className="text-xs text-gray-400 font-medium">{t('telehealthAppointmentPage.type', "Type")}</p>
                 <p className="text-sm font-semibold text-gray-900">{appointmentType === 'online' ? 'Online Telehealth' : 'In-Person Visit'}</p>
               </div>
             </div>
@@ -574,7 +575,7 @@ export default function TelehealthAppointmentPage() {
         {/* Header */}
         {!isDoctor && (
           <div className="mb-4">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Book Appointment</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('telehealthAppointmentPage.bookAppointment', "Book Appointment")}</h1>
           </div>
         )}
 
@@ -761,9 +762,9 @@ export default function TelehealthAppointmentPage() {
                           ) : (
                             <div className="flex flex-col items-center justify-center py-12">
                               <Search className="w-10 h-10 mb-3 text-gray-200" />
-                              <p className="text-sm font-semibold text-gray-500">Oops! No specialty found</p>
-                              <p className="text-xs text-gray-400 mt-1">Try a different search term</p>
-                              <button onClick={() => setSpecialtySearch('')} className="mt-3 text-xs font-medium text-teal-600 hover:underline transition-colors">Clear search</button>
+                              <p className="text-sm font-semibold text-gray-500">{t('telehealthAppointmentPage.oopsNoSpecialtyFound', "Oops! No specialty found")}</p>
+                              <p className="text-xs text-gray-400 mt-1">{t('telehealthAppointmentPage.tryADifferentSearchTerm', "Try a different search term")}</p>
+                              <button onClick={() => setSpecialtySearch('')} className="mt-3 text-xs font-medium text-teal-600 hover:underline transition-colors">{t('telehealthAppointmentPage.clearSearch', "Clear search")}</button>
                             </div>
                           )}
                         </div>
@@ -991,7 +992,7 @@ export default function TelehealthAppointmentPage() {
                   {loadingSlots ? (
                     <div className="flex items-center justify-center py-8">
                       <Loader2 className="w-5 h-5 animate-spin text-teal-500 mr-2" />
-                      <span className="text-sm text-gray-400">Loading available slots...</span>
+                      <span className="text-sm text-gray-400">{t('telehealthAppointmentPage.loadingAvailableSlots', "Loading available slots...")}</span>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -1030,8 +1031,8 @@ export default function TelehealthAppointmentPage() {
                       {allTimeSlots.length === 0 && (
                         <div className="text-center py-6">
                           <Clock className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                          <p className="text-sm text-gray-500">No available slots for this date</p>
-                          <p className="text-xs text-gray-400 mt-1">Try selecting a different date</p>
+                          <p className="text-sm text-gray-500">{t('telehealthAppointmentPage.noAvailableSlotsForThis', "No available slots for this date")}</p>
+                          <p className="text-xs text-gray-400 mt-1">{t('telehealthAppointmentPage.trySelectingADifferentDate', "Try selecting a different date")}</p>
                         </div>
                       )}
                     </div>
@@ -1103,7 +1104,7 @@ export default function TelehealthAppointmentPage() {
                           <Calendar className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                           <input
                             type="text"
-                            placeholder="dd.mm.yyyy"
+                            placeholder={t('telehealthAppointmentPage.ddMmYyyy', "dd.mm.yyyy")}
                             value={patientInfo.birthDate}
                             onChange={(e) => {
                               let v = e.target.value.replace(/[^0-9.]/g, '');
@@ -1183,7 +1184,7 @@ export default function TelehealthAppointmentPage() {
                       <Sparkles className="w-4 h-4 text-teal-600" />
                       Review Your Appointment
                     </h3>
-                    <p className="text-[11px] text-gray-400 mt-0.5">Please review all details before confirming</p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">{t('telehealthAppointmentPage.pleaseReviewAllDetailsBefore', "Please review all details before confirming")}</p>
                   </div>
 
                   <div className="p-5 space-y-5">
@@ -1201,7 +1202,7 @@ export default function TelehealthAppointmentPage() {
                         />
                       )}
                       <div>
-                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Doctor</p>
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('telehealthAppointmentPage.doctor', "Doctor")}</p>
                         <p className="text-sm font-bold text-gray-900">{isDoctor ? (user?.fullname || user?.name || '—') : (selectedDoctorObj?.name || '—')}</p>
                         {!isDoctor && <p className="text-xs text-gray-500">{selectedDoctorObj?.specialty}</p>}
                       </div>
@@ -1212,28 +1213,28 @@ export default function TelehealthAppointmentPage() {
                       <div className="p-3.5 bg-gray-50 rounded-xl">
                         <div className="flex items-center gap-2 mb-1.5">
                           <CalendarDays className="w-4 h-4 text-blue-500" />
-                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Date</p>
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('telehealthAppointmentPage.date', "Date")}</p>
                         </div>
                         <p className="text-sm font-bold text-gray-900">{formatDateDisplay(selectedDate)}</p>
                       </div>
                       <div className="p-3.5 bg-gray-50 rounded-xl">
                         <div className="flex items-center gap-2 mb-1.5">
                           <Clock className="w-4 h-4 text-violet-500" />
-                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Time</p>
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('telehealthAppointmentPage.time', "Time")}</p>
                         </div>
                         <p className="text-sm font-bold text-gray-900">{selectedTime || '—'}</p>
                       </div>
                       <div className="p-3.5 bg-gray-50 rounded-xl">
                         <div className="flex items-center gap-2 mb-1.5">
                           <Video className="w-4 h-4 text-teal-500" />
-                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Type</p>
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('telehealthAppointmentPage.type', "Type")}</p>
                         </div>
                         <p className="text-sm font-bold text-gray-900">{appointmentType === 'online' ? 'Online Telehealth' : 'In-Person Visit'}</p>
                       </div>
                       <div className="p-3.5 bg-gray-50 rounded-xl">
                         <div className="flex items-center gap-2 mb-1.5">
                           <CreditCard className="w-4 h-4 text-amber-500" />
-                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Payment</p>
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('telehealthAppointmentPage.payment', "Payment")}</p>
                         </div>
                         <p className="text-sm font-bold text-gray-900 capitalize">
                           {paymentMethod === 'credit' ? 'Credit Card' : paymentMethod === 'transfer' ? 'Bank Transfer' : 'Before Session'}
@@ -1243,25 +1244,25 @@ export default function TelehealthAppointmentPage() {
 
                     {/* Patient Info */}
                     <div className="p-4 bg-gray-50 rounded-xl">
-                      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Patient Information</p>
+                      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('telehealthAppointmentPage.patientInformation', "Patient Information")}</p>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <p className="text-[11px] text-gray-400">Name</p>
+                          <p className="text-[11px] text-gray-400">{t('telehealthAppointmentPage.name', "Name")}</p>
                           <p className="text-sm font-semibold text-gray-900">{patientInfo.fullName || '—'}</p>
                         </div>
                         <div>
-                          <p className="text-[11px] text-gray-400">Email</p>
+                          <p className="text-[11px] text-gray-400">{t('telehealthAppointmentPage.email', "Email")}</p>
                           <p className="text-sm font-semibold text-gray-900">{patientInfo.email || '—'}</p>
                         </div>
                         {patientInfo.phone && (
                           <div>
-                            <p className="text-[11px] text-gray-400">Phone</p>
+                            <p className="text-[11px] text-gray-400">{t('telehealthAppointmentPage.phone', "Phone")}</p>
                             <p className="text-sm font-semibold text-gray-900">{patientInfo.phone}</p>
                           </div>
                         )}
                         {patientInfo.symptoms && (
                           <div className="col-span-2">
-                            <p className="text-[11px] text-gray-400">Notes</p>
+                            <p className="text-[11px] text-gray-400">{t('telehealthAppointmentPage.notes', "Notes")}</p>
                             <p className="text-sm text-gray-700 mt-0.5">{patientInfo.symptoms}</p>
                           </div>
                         )}
@@ -1274,7 +1275,7 @@ export default function TelehealthAppointmentPage() {
                 <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
                   <Shield className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold text-blue-800">Data Protection Notice</p>
+                    <p className="text-xs font-semibold text-blue-800">{t('telehealthAppointmentPage.dataProtectionNotice', "Data Protection Notice")}</p>
                     <p className="text-[11px] text-blue-600 mt-0.5 leading-relaxed">
                       By confirming this appointment, you consent to the processing of your health data for the purpose of this consultation in accordance with GDPR Art. 9(2)(a). Your data is encrypted and stored securely.
                     </p>
@@ -1342,7 +1343,7 @@ export default function TelehealthAppointmentPage() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-gray-900 truncate">{user?.fullname || user?.name}</p>
-                      <p className="text-[11px] text-teal-600 font-medium">You (Doctor)</p>
+                      <p className="text-[11px] text-teal-600 font-medium">{t('telehealthAppointmentPage.youDoctor', "You (Doctor)")}</p>
                     </div>
                   </div>
                 ) : selectedDoctorObj ? (
@@ -1362,7 +1363,7 @@ export default function TelehealthAppointmentPage() {
                     <div className="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center">
                       <Stethoscope className="w-5 h-5 text-gray-300" />
                     </div>
-                    <p className="text-xs text-gray-400">Select a doctor</p>
+                    <p className="text-xs text-gray-400">{t('telehealthAppointmentPage.selectADoctor', "Select a doctor")}</p>
                   </div>
                 )}
 

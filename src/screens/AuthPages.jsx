@@ -10,8 +10,11 @@ import ForgotPasswordForm from '../components/auth/ForgotPasswordForm';
 import TermsPopup from '../components/auth/TermsPopup';
 import PrivacyPopup from '../components/auth/PrivacyPopup';
 import SEOHead from '../components/seo/SEOHead';
+import { useTranslation } from 'react-i18next';
 
 const AuthPages = () => {
+
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { login, register, registerDoctor, demoLogin } = useAuth();
@@ -286,7 +289,7 @@ const AuthPages = () => {
                 <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 border border-white/20">
                   <Heart className="w-10 h-10" />
                 </div>
-                <h2 className="text-4xl font-bold mb-4 leading-tight">Welcome to<br />Medagama</h2>
+                <h2 className="text-4xl font-bold mb-4 leading-tight">{t('authPages.welcomeTo', "Welcome to")}<br />Medagama</h2>
                 <p className="text-base text-teal-100/90 mb-10 leading-relaxed">Your trusted platform for healthcare services, expert doctors, and modern treatment methods — all in one place.</p>
 
                 {/* Features */}
@@ -319,11 +322,11 @@ const AuthPages = () => {
                 <div className="flex gap-3 mt-8">
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 text-white/80 border border-white/10">
                     <Shield className="w-3.5 h-3.5" />
-                    <span className="text-xs font-medium">SSL Secure</span>
+                    <span className="text-xs font-medium">{t('authPages.sslSecure', "SSL Secure")}</span>
                   </div>
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 text-white/80 border border-white/10">
                     <CheckCircle className="w-3.5 h-3.5" />
-                    <span className="text-xs font-medium">GDPR Compliant</span>
+                    <span className="text-xs font-medium">{t('authPages.gdprCompliant', "GDPR Compliant")}</span>
                   </div>
                 </div>
               </div>

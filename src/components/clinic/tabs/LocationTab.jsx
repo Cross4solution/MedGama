@@ -1,11 +1,14 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
 import MapboxMap from '../../map/MapboxMap';
+import { useTranslation } from 'react-i18next';
 
 export default function LocationTab({ locationAddress, latitude, longitude }) {
+
+  const { t } = useTranslation();
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-bold text-gray-900">Location</h3>
+      <h3 className="text-lg font-bold text-gray-900">{t('locationTab.location', "Location")}</h3>
       <div className="space-y-3">
         {locationAddress && (
           <div className="flex items-start gap-2 text-sm text-gray-600">

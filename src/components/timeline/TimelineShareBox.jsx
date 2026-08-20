@@ -4,8 +4,11 @@ import TimelineActionsRow from './TimelineActionsRow';
 import TimelineButton from './TimelineButton';
 import { useAuth } from '../../context/AuthContext';
 import PostCreateModal from './PostCreateModal';
+import { useTranslation } from 'react-i18next';
 
 export default function TimelineShareBox() {
+
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
 
@@ -41,15 +44,15 @@ export default function TimelineShareBox() {
           <>
             <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
               <Image className="w-5 h-5" />
-              <span>Image</span>
+              <span>{t('timelineShareBox.image', "Image")}</span>
             </button>
             <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
               <Folder className="w-5 h-5" />
-              <span>File</span>
+              <span>{t('timelineShareBox.file', "File")}</span>
             </button>
           </>
         }
-        right={<TimelineButton onClick={() => setOpen(true)} className="w-full sm:w-auto">Post</TimelineButton>}
+        right={<TimelineButton onClick={() => setOpen(true)} className="w-full sm:w-auto">{t('timelineShareBox.post', "Post")}</TimelineButton>}
       />
 
       <PostCreateModal open={open} onClose={() => setOpen(false)} user={user} onPost={handlePost} />

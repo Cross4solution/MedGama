@@ -4,6 +4,7 @@ import { appointmentAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
 import MedicalArchivePanel from '../medical/MedicalArchivePanel';
 import { appointmentTimeDisplay } from '../../utils/dates';
+import { useTranslation } from 'react-i18next';
 
 const StatusBadge = ({ status }) => {
   const map = {
@@ -22,6 +23,8 @@ const MethodIcon = ({ type }) => {
 };
 
 export default function DoctorAppointmentManager() {
+
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,8 +91,8 @@ export default function DoctorAppointmentManager() {
             <CalendarClock className="w-4.5 h-4.5 text-teal-600" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-gray-900">Appointment Requests</h2>
-            <p className="text-[11px] text-gray-400">Manage incoming patient appointments</p>
+            <h2 className="text-sm font-bold text-gray-900">{t('doctorAppointmentManager.appointmentRequests', "Appointment Requests")}</h2>
+            <p className="text-[11px] text-gray-400">{t('doctorAppointmentManager.manageIncomingPatientAppointments', "Manage incoming patient appointments")}</p>
           </div>
         </div>
       </div>
@@ -136,21 +139,21 @@ export default function DoctorAppointmentManager() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12 text-gray-400">
             <Loader2 className="w-7 h-7 animate-spin mb-2 text-teal-500" />
-            <p className="text-xs font-medium">Loading appointments...</p>
+            <p className="text-xs font-medium">{t('doctorAppointmentManager.loadingAppointments', "Loading appointments...")}</p>
           </div>
         ) : displayList.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-gray-400">
             {activeTab === 'incoming' ? (
               <>
                 <Inbox className="w-10 h-10 mb-2 text-gray-300" />
-                <p className="text-sm font-medium text-gray-500">No pending requests</p>
-                <p className="text-xs text-gray-400 mt-0.5">New appointment requests will appear here</p>
+                <p className="text-sm font-medium text-gray-500">{t('doctorAppointmentManager.noPendingRequests', "No pending requests")}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{t('doctorAppointmentManager.newAppointmentRequestsWillAppear', "New appointment requests will appear here")}</p>
               </>
             ) : (
               <>
                 <CheckCheck className="w-10 h-10 mb-2 text-gray-300" />
-                <p className="text-sm font-medium text-gray-500">No confirmed appointments</p>
-                <p className="text-xs text-gray-400 mt-0.5">Confirmed appointments will appear here</p>
+                <p className="text-sm font-medium text-gray-500">{t('doctorAppointmentManager.noConfirmedAppointments', "No confirmed appointments")}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{t('doctorAppointmentManager.confirmedAppointmentsWillAppearHere', "Confirmed appointments will appear here")}</p>
               </>
             )}
           </div>

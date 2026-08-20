@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { endpoints, authAPI, getStoredToken } from '../lib/api';
 import { API_BASE_URL } from '../config/apiBase';
 import { setNotificationSoundEnabled } from '../utils/notificationSound';
+import { useTranslation } from 'react-i18next';
 
 // Very light mock auth just for frontend flows
 const AuthContext = createContext(null);
@@ -47,6 +48,8 @@ function formatCurrency(amountUSD, countryCode = 'US') {
 }
 
 export function AuthProvider({ children }) {
+
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [country, setCountry] = useState('TR'); // default TR for demo
@@ -490,8 +493,8 @@ export function AuthProvider({ children }) {
       {showLogoutConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-sm mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Logout</h3>
-            <p className="text-gray-600 mb-6">Are you sure you want to log out?</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('authContext.logout', "Logout")}</h3>
+            <p className="text-gray-600 mb-6">{t('authContext.areYouSureYouWant', "Are you sure you want to log out?")}</p>
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => logoutCallback?.(false)}

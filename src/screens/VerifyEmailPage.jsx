@@ -4,8 +4,11 @@ import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../lib/api';
 import { Mail, ArrowRight, RefreshCw, CheckCircle2 } from 'lucide-react';
 import SEOHead from '../components/seo/SEOHead';
+import { useTranslation } from 'react-i18next';
 
 export default function VerifyEmailPage() {
+
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, setUser } = useAuth();
   const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -112,8 +115,8 @@ export default function VerifyEmailPage() {
           <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-emerald-600" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Email Verified!</h1>
-          <p className="text-sm text-gray-500">Redirecting to your dashboard...</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">{t('verifyEmailPage.emailVerified', "Email Verified!")}</h1>
+          <p className="text-sm text-gray-500">{t('verifyEmailPage.redirectingToYourDashboard', "Redirecting to your dashboard...")}</p>
         </div>
       </div>
     );
@@ -129,7 +132,7 @@ export default function VerifyEmailPage() {
         </div>
 
         {/* Title */}
-        <h1 className="text-xl font-bold text-gray-900 text-center mb-2">Verify your email</h1>
+        <h1 className="text-xl font-bold text-gray-900 text-center mb-2">{t('verifyEmailPage.verifyYourEmail', "Verify your email")}</h1>
         <p className="text-sm text-gray-500 text-center mb-6">
           We sent a 6-digit code to <span className="font-medium text-gray-700">{maskedEmail}</span>
         </p>
@@ -179,7 +182,7 @@ export default function VerifyEmailPage() {
 
         {/* Resend */}
         <div className="text-center mt-5">
-          <p className="text-xs text-gray-400 mb-1">Didn't receive the code?</p>
+          <p className="text-xs text-gray-400 mb-1">{t('verifyEmailPage.didnTReceiveTheCode', "Didn't receive the code?")}</p>
           <button
             onClick={handleResend}
             disabled={resending || resendCooldown > 0}

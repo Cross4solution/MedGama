@@ -29,6 +29,7 @@ const STATUS_CONFIG = {
    Document Viewer — Full-screen capable
    ═══════════════════════════════════════════ */
 function DocumentViewer({ vr, token, onClose }) {
+  const { t } = useTranslation();
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [fullscreen, setFullscreen] = useState(false);

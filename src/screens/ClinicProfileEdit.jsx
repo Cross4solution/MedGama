@@ -4,6 +4,7 @@ import { clinicAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import MapboxSearchInput from '../components/map/MapboxSearchInput';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
+import { useTranslation } from 'react-i18next';
 
 function TagEditor({ label, value = [], onChange, placeholder }) {
   const [text, setText] = useState('');
@@ -46,6 +47,8 @@ function TagEditor({ label, value = [], onChange, placeholder }) {
 }
 
 function ServiceModal({ initial, onClose, onSave }) {
+
+  const { t } = useTranslation();
   const [name, setName] = useState(initial?.name || '');
   const [department, setDepartment] = useState(initial?.department || '');
   const [icon, setIcon] = useState(initial?.icon || 'Activity');
@@ -73,34 +76,34 @@ function ServiceModal({ initial, onClose, onSave }) {
         </div>
         <div className="px-5 py-4 space-y-3 max-h-[70vh] overflow-y-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <input value={name} onChange={(e)=>setName(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="Service name" />
-            <input value={department} onChange={(e)=>setDepartment(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="Department" />
+            <input value={name} onChange={(e)=>setName(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('clinicProfileEdit.serviceName', "Service name")} />
+            <input value={department} onChange={(e)=>setDepartment(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('clinicProfileEdit.department', "Department")} />
             <select value={icon} onChange={(e)=>setIcon(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none">
-              <option value="Activity">Activity</option>
-              <option value="Stethoscope">Stethoscope</option>
-              <option value="Brain">Brain</option>
-              <option value="Scissors">Scissors</option>
+              <option value="Activity">{t('clinicProfileEdit.activity', "Activity")}</option>
+              <option value="Stethoscope">{t('clinicProfileEdit.stethoscope', "Stethoscope")}</option>
+              <option value="Brain">{t('clinicProfileEdit.brain', "Brain")}</option>
+              <option value="Scissors">{t('clinicProfileEdit.scissors', "Scissors")}</option>
             </select>
-            <input value={priceRange} onChange={(e)=>setPriceRange(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="₺min - ₺max" />
-            <input value={duration} onChange={(e)=>setDuration(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="Duration (e.g., 45 min)" />
+            <input value={priceRange} onChange={(e)=>setPriceRange(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('clinicProfileEdit.minMax', "₺min - ₺max")} />
+            <input value={duration} onChange={(e)=>setDuration(e.target.value)} className="h-10 px-3 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('clinicProfileEdit.durationEG45Min', "Duration (e.g., 45 min)")} />
             <div className="h-10 px-3 border border-gray-200 rounded-xl text-sm flex items-center gap-3">
               <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={availability.includes('Onsite')} onChange={()=>toggleAvail('Onsite')} /> Onsite</label>
               <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={availability.includes('Telehealth')} onChange={()=>toggleAvail('Telehealth')} /> Telehealth</label>
             </div>
           </div>
-          <textarea value={description} onChange={(e)=>setDescription(e.target.value)} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="Short description" />
+          <textarea value={description} onChange={(e)=>setDescription(e.target.value)} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('clinicProfileEdit.shortDescription', "Short description")} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <TagEditor label="Linked Procedures" value={procedures} onChange={setProcedures} placeholder="Add procedure" />
-            <TagEditor label="Tags" value={tags} onChange={setTags} placeholder="Add tag" />
-            <TagEditor label="Languages" value={languages} onChange={setLanguages} placeholder="TR, EN" />
-            <TagEditor label="Insurance" value={insurance} onChange={setInsurance} placeholder="Insurance" />
+            <TagEditor label="Linked Procedures" value={procedures} onChange={setProcedures} placeholder={t('clinicProfileEdit.addProcedure', "Add procedure")} />
+            <TagEditor label="Tags" value={tags} onChange={setTags} placeholder={t('clinicProfileEdit.addTag', "Add tag")} />
+            <TagEditor label="Languages" value={languages} onChange={setLanguages} placeholder={t('clinicProfileEdit.trEn', "TR, EN")} />
+            <TagEditor label="Insurance" value={insurance} onChange={setInsurance} placeholder={t('clinicProfileEdit.insurance', "Insurance")} />
           </div>
         </div>
         <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between">
           <label className="flex items-center gap-2 text-xs font-medium text-gray-600"><input type="checkbox" className="rounded" checked={visibility} onChange={(e)=>setVisibility(e.target.checked)} /> Visible</label>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-            <button type="button" onClick={()=> onSave({ name, department, icon, description, procedures, priceRange, duration, availability, tags, languages, insurance, visibility }) } className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 rounded-xl shadow-md shadow-teal-200/50 transition-all duration-200">Save</button>
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">{t('clinicProfileEdit.cancel', "Cancel")}</button>
+            <button type="button" onClick={()=> onSave({ name, department, icon, description, procedures, priceRange, duration, availability, tags, languages, insurance, visibility }) } className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 rounded-xl shadow-md shadow-teal-200/50 transition-all duration-200">{t('clinicProfileEdit.save', "Save")}</button>
           </div>
         </div>
       </div>
@@ -120,6 +123,8 @@ function StarRow({ value = 0 }) {
 }
 
 export default function ClinicProfileEdit() {
+
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [tab, setTab] = useState('overview');
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -370,8 +375,8 @@ export default function ClinicProfileEdit() {
             <Building2 className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">Edit Clinic Profile</h1>
-            <p className="text-[11px] text-gray-400 font-medium">Manage your clinic information and services</p>
+            <h1 className="text-lg font-bold text-gray-900">{t('clinicProfileEdit.editClinicProfile', "Edit Clinic Profile")}</h1>
+            <p className="text-[11px] text-gray-400 font-medium">{t('clinicProfileEdit.manageYourClinicInformationAnd', "Manage your clinic information and services")}</p>
           </div>
         </div>
 
@@ -400,11 +405,11 @@ export default function ClinicProfileEdit() {
               {/* Branding (Logo & Background) */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Logo</label>
+                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('clinicProfileEdit.logo', "Logo")}</label>
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
                       {(logoUrl || form.logo) ? (
-                        <img src={logoUrl || form.logo} alt="logo" className="w-full h-full object-cover" />
+                        <img src={logoUrl || form.logo} alt={t('clinicProfileEdit.logo', "logo")} className="w-full h-full object-cover" />
                       ) : (
                         <ImageIcon className="w-5 h-5 text-gray-300" />
                       )}
@@ -416,11 +421,11 @@ export default function ClinicProfileEdit() {
                   </div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Background Image</label>
+                  <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('clinicProfileEdit.backgroundImage', "Background Image")}</label>
                   <div className="flex items-center gap-4">
                     <div className="w-full h-24 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
                       {(heroPreview || form.heroImage) ? (
-                        <img src={heroPreview || form.heroImage} alt="cover" className="w-full h-full object-cover" />
+                        <img src={heroPreview || form.heroImage} alt={t('clinicProfileEdit.cover', "cover")} className="w-full h-full object-cover" />
                       ) : (
                         <ImageIcon className="w-6 h-6 text-gray-300" />
                       )}
@@ -434,12 +439,12 @@ export default function ClinicProfileEdit() {
               </div>
 
               <div className="mt-5">
-                <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">About Clinic</label>
-                <textarea value={form.aboutP1} name="aboutP1" onChange={onChange} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder="About the clinic" />
+                <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('clinicProfileEdit.aboutClinic', "About Clinic")}</label>
+                <textarea value={form.aboutP1} name="aboutP1" onChange={onChange} rows={3} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none" placeholder={t('clinicProfileEdit.aboutTheClinic', "About the clinic")} />
               </div>
 
               <div className="mt-5">
-                <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Accreditations</label>
+                <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('clinicProfileEdit.accreditations', "Accreditations")}</label>
                 <div className="flex flex-wrap gap-2">
                   {['JCI Accredited','ISO 9001','Ministry of Health','Health Tourism'].map((lab)=> (
                     <label key={lab} className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium cursor-pointer transition-all duration-200 ${accreditations.includes(lab) ? 'bg-teal-50 border-teal-200 text-teal-700 shadow-sm' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'}`}>
@@ -464,7 +469,7 @@ export default function ClinicProfileEdit() {
             {tab === 'services' && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-base font-semibold text-gray-900">Services</h2>
+                  <h2 className="text-base font-semibold text-gray-900">{t('clinicProfileEdit.services', "Services")}</h2>
                   <button type="button" onClick={()=> { setEditingService(null); setServiceModalOpen(true); }} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Plus className="w-4 h-4"/> Add Service</button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -482,18 +487,18 @@ export default function ClinicProfileEdit() {
                             {Array.isArray(s.availability) && s.availability.map((a)=> (
                               <span key={a} className="text-xs px-2 py-0.5 rounded-full border bg-gray-50">{a}</span>
                             ))}
-                            {s.visibility === false && <span className="text-xs px-2 py-0.5 rounded-full border bg-yellow-50 text-yellow-700">Hidden</span>}
+                            {s.visibility === false && <span className="text-xs px-2 py-0.5 rounded-full border bg-yellow-50 text-yellow-700">{t('clinicProfileEdit.hidden', "Hidden")}</span>}
                           </div>
                         </div>
                         <div className="flex flex-col items-end gap-2">
-                          <button type="button" onClick={()=> { setEditingService({ data: s, index: idx }); setServiceModalOpen(true); }} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Edit</button>
-                          <button type="button" onClick={()=> setServices((arr)=> arr.filter((_,i)=> i!==idx))} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">Remove</button>
+                          <button type="button" onClick={()=> { setEditingService({ data: s, index: idx }); setServiceModalOpen(true); }} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">{t('clinicProfileEdit.edit', "Edit")}</button>
+                          <button type="button" onClick={()=> setServices((arr)=> arr.filter((_,i)=> i!==idx))} className="px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm">{t('clinicProfileEdit.remove', "Remove")}</button>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
-                {services.length === 0 && <div className="text-sm text-gray-500">No services yet.</div>}
+                {services.length === 0 && <div className="text-sm text-gray-500">{t('clinicProfileEdit.noServicesYet', "No services yet.")}</div>}
 
                 {serviceModalOpen && (
                   <ServiceModal
@@ -532,7 +537,7 @@ export default function ClinicProfileEdit() {
                       </div>
                     </div>
                   ))}
-                  {reviews.length === 0 && <div className="text-sm text-gray-500">No reviews yet.</div>}
+                  {reviews.length === 0 && <div className="text-sm text-gray-500">{t('clinicProfileEdit.noReviewsYet', "No reviews yet.")}</div>}
                 </div>
               </div>
             )}
@@ -541,7 +546,7 @@ export default function ClinicProfileEdit() {
             {tab === 'gallery' && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-base font-semibold text-gray-900">Gallery</h2>
+                  <h2 className="text-base font-semibold text-gray-900">{t('clinicProfileEdit.gallery', "Gallery")}</h2>
                   <div>
                     <input ref={galleryInputRef} onChange={addGalleryImages} type="file" accept="image/*" multiple className="hidden" />
                     <button type="button" onClick={()=>galleryInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Images className="w-4 h-4"/> Add Images</button>
@@ -554,7 +559,7 @@ export default function ClinicProfileEdit() {
                       <button type="button" onClick={()=>removeGalleryImage(idx)} className="absolute top-2 right-2 bg-white/90 hover:bg-white border rounded-full p-1 shadow"><X className="w-4 h-4"/></button>
                     </div>
                   ))}
-                  {gallery.length === 0 && <div className="text-sm text-gray-500">No images yet.</div>}
+                  {gallery.length === 0 && <div className="text-sm text-gray-500">{t('clinicProfileEdit.noImagesYet', "No images yet.")}</div>}
                 </div>
               </div>
             )}
@@ -566,7 +571,7 @@ export default function ClinicProfileEdit() {
                 <MapboxSearchInput
                   value={address}
                   label="Find your address"
-                  placeholder="Type clinic address, district or city…"
+                  placeholder={t('clinicProfileEdit.typeClinicAddressDistrictOr', "Type clinic address, district or city…")}
                   hint="Pick a suggestion to drop the pin automatically — then fine-tune on the map."
                   onChange={(addr, coords) => {
                     setAddress(addr);
@@ -637,12 +642,12 @@ export default function ClinicProfileEdit() {
                   return (
                     <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                       <div className="px-4 py-2.5 bg-gradient-to-r from-teal-50 to-emerald-50 border-b border-gray-100 flex items-center justify-between">
-                        <span className="text-xs font-semibold text-teal-700">Click or drag marker to set location</span>
+                        <span className="text-xs font-semibold text-teal-700">{t('clinicProfileEdit.clickOrDragMarkerTo', "Click or drag marker to set location")}</span>
                         <span className="text-[11px] text-gray-500 font-mono">
                           {mapLat.toFixed(5)}, {mapLng.toFixed(5)}
                         </span>
                       </div>
-                      <iframe title="clinic-map" srcDoc={html} className="w-full h-[380px] border-0" />
+                      <iframe title={t('clinicProfileEdit.clinicMap', "clinic-map")} srcDoc={html} className="w-full h-[380px] border-0" />
                     </div>
                   );
                 })()}
@@ -654,8 +659,8 @@ export default function ClinicProfileEdit() {
               <div>
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h2 className="text-base font-semibold text-gray-900">Price Ranges</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">Give patients a clear cost expectation per service.</p>
+                    <h2 className="text-base font-semibold text-gray-900">{t('clinicProfileEdit.priceRanges', "Price Ranges")}</h2>
+                    <p className="text-xs text-gray-500 mt-0.5">{t('clinicProfileEdit.givePatientsAClearCost', "Give patients a clear cost expectation per service.")}</p>
                   </div>
                   <button type="button" onClick={()=> setPricing((p)=> [...p, { id: `pr${Date.now()}`, service: '', min: '', max: '', currency: '₺' }]) } className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm font-semibold shadow-sm transition-colors flex-shrink-0"><Plus className="w-4 h-4"/> Add Item</button>
                 </div>
@@ -667,26 +672,26 @@ export default function ClinicProfileEdit() {
                     <div key={it.id} className="p-4 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition-colors">
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                         <div className="md:col-span-5">
-                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Service</label>
-                          <input value={it.service} onChange={(e)=> upd({ service: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="e.g. Consultation" />
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">{t('clinicProfileEdit.service', "Service")}</label>
+                          <input value={it.service} onChange={(e)=> upd({ service: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder={t('clinicProfileEdit.eGConsultation', "e.g. Consultation")} />
                         </div>
                         <div className="md:col-span-2">
-                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Currency</label>
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">{t('clinicProfileEdit.currency', "Currency")}</label>
                           <select value={it.currency} onChange={(e)=> upd({ currency: e.target.value })} className="w-full h-10 px-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400">
                             <option value="₺">₺ TRY</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option>
                           </select>
                         </div>
                         <div className="md:col-span-2">
-                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Min price</label>
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">{t('clinicProfileEdit.minPrice', "Min price")}</label>
                           <input value={it.min} onChange={(e)=> upd({ min: e.target.value.replace(/[^0-9]/g,'') })} inputMode="numeric" className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="200" />
                         </div>
                         <div className="md:col-span-3">
-                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Max price</label>
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">{t('clinicProfileEdit.maxPrice', "Max price")}</label>
                           <input value={it.max} onChange={(e)=> upd({ max: e.target.value.replace(/[^0-9]/g,'') })} inputMode="numeric" className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="500" />
                         </div>
                       </div>
                       <div className="mt-3 flex items-center justify-between">
-                        <span className="text-xs text-gray-500">Preview: <span className="font-semibold text-gray-800">{it.currency}{fmt(it.min)} – {it.currency}{fmt(it.max)}</span></span>
+                        <span className="text-xs text-gray-500">{t('clinicProfileEdit.preview', "Preview:")} <span className="font-semibold text-gray-800">{it.currency}{fmt(it.min)} – {it.currency}{fmt(it.max)}</span></span>
                         <button type="button" onClick={()=> setPricing((arr)=> arr.filter((_,i)=> i!==idx))} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 hover:bg-red-50 transition-colors"><X className="w-3.5 h-3.5"/> Remove</button>
                       </div>
                     </div>
@@ -694,7 +699,7 @@ export default function ClinicProfileEdit() {
                   })}
                   {pricing.length === 0 && (
                     <div className="text-center py-10 border border-dashed border-gray-200 rounded-xl text-sm text-gray-500">
-                      No price items yet. Click <span className="font-semibold">Add Item</span> to start.
+                      No price items yet. Click <span className="font-semibold">{t('clinicProfileEdit.addItem', "Add Item")}</span> to start.
                     </div>
                   )}
                 </div>
@@ -706,7 +711,7 @@ export default function ClinicProfileEdit() {
               <div>
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h2 className="text-base font-semibold text-gray-900">Health Tourism Packages</h2>
+                    <h2 className="text-base font-semibold text-gray-900">{t('clinicProfileEdit.healthTourismPackages', "Health Tourism Packages")}</h2>
                     <p className="text-xs text-gray-500 mt-0.5">All-inclusive bundles (treatment + stay + transfer) for international patients.</p>
                   </div>
                   <button type="button" onClick={addPackage} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm font-semibold shadow-sm transition-colors flex-shrink-0"><Plus className="w-4 h-4"/> Create Package</button>
@@ -716,23 +721,23 @@ export default function ClinicProfileEdit() {
                     <div key={p.id} className="p-4 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition-colors">
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0"><Package className="w-4 h-4 text-teal-600" /></div>
-                        <input value={p.name} onChange={(e)=>updatePackage(p.id,{ name: e.target.value })} className="flex-1 h-10 px-3 border border-gray-200 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="Package name (e.g. Basic Package)" />
+                        <input value={p.name} onChange={(e)=>updatePackage(p.id,{ name: e.target.value })} className="flex-1 h-10 px-3 border border-gray-200 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder={t('clinicProfileEdit.packageNameEGBasic', "Package name (e.g. Basic Package)")} />
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Treatment</label>
-                          <input value={p.treatment} onChange={(e)=>updatePackage(p.id,{ treatment: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="e.g. Dental Implant" />
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">{t('clinicProfileEdit.treatment', "Treatment")}</label>
+                          <input value={p.treatment} onChange={(e)=>updatePackage(p.id,{ treatment: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder={t('clinicProfileEdit.eGDentalImplant', "e.g. Dental Implant")} />
                         </div>
                         <div>
-                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Accommodation</label>
-                          <input value={p.accommodation} onChange={(e)=>updatePackage(p.id,{ accommodation: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="e.g. 3 nights hotel" />
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">{t('clinicProfileEdit.accommodation', "Accommodation")}</label>
+                          <input value={p.accommodation} onChange={(e)=>updatePackage(p.id,{ accommodation: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder={t('clinicProfileEdit.eG3NightsHotel', "e.g. 3 nights hotel")} />
                         </div>
                         <div>
-                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Transfer</label>
-                          <input value={p.transfer} onChange={(e)=>updatePackage(p.id,{ transfer: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder="e.g. Airport pickup" />
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">{t('clinicProfileEdit.transfer', "Transfer")}</label>
+                          <input value={p.transfer} onChange={(e)=>updatePackage(p.id,{ transfer: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400" placeholder={t('clinicProfileEdit.eGAirportPickup', "e.g. Airport pickup")} />
                         </div>
                         <div>
-                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">Total price</label>
+                          <label className="block text-[11px] font-semibold text-gray-500 mb-1">{t('clinicProfileEdit.totalPrice', "Total price")}</label>
                           <div className="flex gap-2">
                             <select value={p.currency || '₺'} onChange={(e)=>updatePackage(p.id,{ currency: e.target.value })} className="h-10 px-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400">
                               <option value="₺">₺</option><option value="$">$</option><option value="€">€</option><option value="£">£</option>
@@ -742,14 +747,14 @@ export default function ClinicProfileEdit() {
                         </div>
                       </div>
                       <div className="mt-3 flex items-center justify-between">
-                        <span className="text-xs text-gray-500">{p.price ? <>Total: <span className="font-semibold text-gray-800">{p.currency || '₺'}{Number(p.price).toLocaleString('tr-TR')}</span></> : 'Set a total price'}</span>
+                        <span className="text-xs text-gray-500">{p.price ? <>{t('clinicProfileEdit.total', "Total:")} <span className="font-semibold text-gray-800">{p.currency || '₺'}{Number(p.price).toLocaleString('tr-TR')}</span></> : 'Set a total price'}</span>
                         <button type="button" onClick={()=>removePackage(p.id)} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 hover:bg-red-50 transition-colors"><X className="w-3.5 h-3.5"/> Remove</button>
                       </div>
                     </div>
                   ))}
                   {packages.length === 0 && (
                     <div className="text-center py-10 border border-dashed border-gray-200 rounded-xl text-sm text-gray-500">
-                      No packages yet. Click <span className="font-semibold">Create Package</span> to add one.
+                      No packages yet. Click <span className="font-semibold">{t('clinicProfileEdit.createPackage', "Create Package")}</span> to add one.
                     </div>
                   )}
                 </div>

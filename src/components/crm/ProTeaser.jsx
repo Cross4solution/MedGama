@@ -133,7 +133,9 @@ const PricingModal = ({ open, onClose, t }) => {
 // ═══════════════════════════════════════════════════
 // Mock CRM Dashboard Background (Demo data)
 // ═══════════════════════════════════════════════════
-const MockDashboardBg = () => (
+const MockDashboardBg = () => {
+  const { t } = useTranslation();
+  return (
   <div className="p-6 space-y-6 select-none pointer-events-none" aria-hidden="true">
     {/* Stats Row */}
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -234,6 +236,7 @@ const MockDashboardBg = () => (
     </div>
   </div>
 );
+};
 
 // ═══════════════════════════════════════════════════
 // ProTeaser — Main Export

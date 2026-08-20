@@ -401,7 +401,7 @@ export default function OnboardingWizard() {
               <div>
                 <label className={labelCls}>{t('onboarding.specialty')}</label>
                 <input value={specialty} onChange={e => setSpecialty(e.target.value)}
-                  placeholder="e.g. Cardiology" className={inputCls} />
+                  placeholder={t('doctorOnboarding.eGCardiology', "e.g. Cardiology")} className={inputCls} />
               </div>
             </div>
 

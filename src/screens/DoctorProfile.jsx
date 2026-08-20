@@ -22,6 +22,7 @@ import DoctorBookingModal from '../components/modals/DoctorBookingModal';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import MedstreamProfileFeed from '../components/profile/MedstreamProfileFeed';
 import DoctorFaqSection from '../components/doctor/DoctorFaqSection';
+import { aramaIceriyor, aramaBasliyor } from '../utils/searchNormalize';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
@@ -203,7 +204,7 @@ const DoctorProfilePage = ({ initialDoctor }) => {
   
   // Compose the display name once, avoiding a duplicated title — the fullname may
   // already include it (e.g. "Prof. Dr. Mustafa Çelik" with title "Prof. Dr.").
-  const nameHasTitle = doctorTitle && doctorName.toLowerCase().startsWith(doctorTitle.toLowerCase());
+  const nameHasTitle = doctorTitle && aramaBasliyor(doctorName, doctorTitle);
   const displayName = nameHasTitle
     ? doctorName
     : (doctorName.startsWith('Dr. ')

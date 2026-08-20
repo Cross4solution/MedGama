@@ -20,6 +20,7 @@ const STEPS = [
 ];
 
 export default function ClinicOnboarding() {
+
   const { t, i18n } = useTranslation();
   const { notify } = useToast();
   const { user, updateUser } = useAuth();
@@ -276,7 +277,7 @@ export default function ClinicOnboarding() {
                 <div className="relative">
                   <div className="w-20 h-20 rounded-2xl bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
                     {logoPreview ? (
-                      <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+                      <img src={logoPreview} alt={t('clinicOnboarding.logo', "Logo")} className="w-full h-full object-cover" />
                     ) : (
                       <Camera className="w-6 h-6 text-gray-400" />
                     )}

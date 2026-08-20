@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { MapPin, ExternalLink, AlertCircle, Cookie } from 'lucide-react';
 import { useCookieConsent } from '../../context/CookieConsentContext';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Converts a standard Google Maps share link into an embeddable iframe URL.
@@ -96,6 +97,7 @@ export function isValidGoogleMapsUrl(url) {
  *   compact    - smaller variant for forms (default: false)
  */
 export default function GoogleMapsPreview({ url, height = 220, className = '', compact = false }) {
+  const { t } = useTranslation();
   const { embedUrl, isValid, isShortLink } = useMemo(() => parseGoogleMapsUrl(url), [url]);
 
   // GDPR / KVKK — Google Maps loads third-party assets and may transfer data outside the EEA.
@@ -140,7 +142,7 @@ export default function GoogleMapsPreview({ url, height = 220, className = '', c
     return (
       <div className={`flex items-center gap-2 px-3 py-2 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs ${className}`}>
         <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-        <span>Invalid Google Maps URL. Please paste a valid link.</span>
+        <span>{t('googleMapsPreview.invalidGoogleMapsUrlPlease', "Invalid Google Maps URL. Please paste a valid link.")}</span>
       </div>
     );
   }
@@ -151,7 +153,7 @@ export default function GoogleMapsPreview({ url, height = 220, className = '', c
       <div className={`flex items-center gap-2 px-3 py-2.5 rounded-xl bg-blue-50 border border-blue-200 ${className}`}>
         <MapPin className="w-4 h-4 text-blue-500 flex-shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-blue-700 font-medium">Map link detected</p>
+          <p className="text-xs text-blue-700 font-medium">{t('googleMapsPreview.mapLinkDetected', "Map link detected")}</p>
           <p className="text-[11px] text-blue-500 mt-0.5">Short links can't be previewed. Use a full Google Maps URL for preview.</p>
         </div>
         <a href={url} target="_blank" rel="noopener noreferrer"
@@ -172,7 +174,7 @@ export default function GoogleMapsPreview({ url, height = 220, className = '', c
         allowFullScreen=""
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
-        title="Google Maps Preview"
+        title={t('googleMapsPreview.googleMapsPreview', "Google Maps Preview")}
         className="w-full"
       />
       <div className="flex items-center justify-between px-3 py-1.5 bg-white border-t border-gray-100">

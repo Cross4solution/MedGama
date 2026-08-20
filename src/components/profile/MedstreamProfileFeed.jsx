@@ -23,6 +23,7 @@ function timeAgo(dateStr) {
 
 /* ── Video Player with thumbnail + play button ── */
 function VideoPlayer({ src, thumbnail }) {
+  const { t } = useTranslation();
   const [playing, setPlaying] = useState(false);
   const [error, setError] = useState(false);
   const videoRef = useRef(null);

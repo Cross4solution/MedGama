@@ -1,6 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const TermsPopup = ({ setShowTermsPopup }) => {
+
+  const { t } = useTranslation();
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       setShowTermsPopup(false);
@@ -14,7 +17,7 @@ const TermsPopup = ({ setShowTermsPopup }) => {
     >
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Terms of Use</h2>
+        <h2 className="text-xl font-bold text-gray-900">{t('termsPopup.termsOfUse', "Terms of Use")}</h2>
         <button
           onClick={() => setShowTermsPopup(false)}
           className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -24,7 +27,7 @@ const TermsPopup = ({ setShowTermsPopup }) => {
       </div>
       <div className="text-sm text-gray-700 space-y-4">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800">
-          This is a summary. For the full version, please visit our <a href="/terms-of-service" className="font-semibold underline underline-offset-2">Terms of Service page</a>.
+          This is a summary. For the full version, please visit our <a href="/terms-of-service" className="font-semibold underline underline-offset-2">{t('termsPopup.termsOfServicePage', "Terms of Service page")}</a>.
         </div>
 
         <p><strong>1. PARTIES AND SUBJECT</strong></p>
@@ -41,10 +44,10 @@ const TermsPopup = ({ setShowTermsPopup }) => {
         <p>3.3. Users must not use the platform for unlawful purposes.</p>
         
         <p><strong>4. DATA PROTECTION AND PRIVACY</strong></p>
-        <p>4.1. Your personal data is processed in accordance with the GDPR (EU) 2016/679 and our <a href="/privacy-policy" className="text-teal-600 font-medium underline underline-offset-2">Privacy Policy</a>.</p>
+        <p>4.1. Your personal data is processed in accordance with the GDPR (EU) 2016/679 and our <a href="/privacy-policy" className="text-teal-600 font-medium underline underline-offset-2">{t('termsPopup.privacyPolicy', "Privacy Policy")}</a>.</p>
         <p>4.2. Health data (special category data under Art. 9 GDPR) is only processed with your explicit consent.</p>
-        <p>4.3. You have the right to access, rectify, delete, restrict, and port your data at any time via our <a href="/data-rights" className="text-teal-600 font-medium underline underline-offset-2">Data Rights</a> page.</p>
-        <p>4.4. Our Data Protection Officer can be reached at <span className="text-teal-600">dpo@medagama.com</span>.</p>
+        <p>4.3. You have the right to access, rectify, delete, restrict, and port your data at any time via our <a href="/data-rights" className="text-teal-600 font-medium underline underline-offset-2">{t('termsPopup.dataRights', "Data Rights")}</a> page.</p>
+        <p>4.4. Our Data Protection Officer can be reached at <span className="text-teal-600">{t('termsPopup.dpoMedagamaCom', "dpo@medagama.com")}</span>.</p>
         
         <p><strong>5. INTELLECTUAL PROPERTY RIGHTS</strong></p>
         <p>5.1. The platform content, design, and software are protected by the Company's intellectual property rights.</p>
@@ -64,8 +67,8 @@ const TermsPopup = ({ setShowTermsPopup }) => {
         <p>8.2. The laws of the Republic of Turkey shall apply, without prejudice to mandatory EU consumer protection and GDPR provisions.</p>
         
         <p><strong>9. CONTACT</strong></p>
-        <p>General inquiries: <span className="text-teal-600">info@medagama.com</span></p>
-        <p>Data Protection Officer: <span className="text-teal-600">dpo@medagama.com</span></p>
+        <p>{t('termsPopup.generalInquiries', "General inquiries:")} <span className="text-teal-600">{t('termsPopup.infoMedagamaCom', "info@medagama.com")}</span></p>
+        <p>{t('termsPopup.dataProtectionOfficer', "Data Protection Officer:")} <span className="text-teal-600">{t('termsPopup.dpoMedagamaCom', "dpo@medagama.com")}</span></p>
       </div>
       <div className="mt-6 flex items-center justify-between">
         <a href="/terms-of-service" className="text-xs text-teal-600 hover:text-teal-700 font-medium underline underline-offset-2">

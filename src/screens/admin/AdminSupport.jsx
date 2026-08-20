@@ -6,6 +6,7 @@ import {
   Users, XCircle, Shield,
 } from 'lucide-react';
 import { supportAPI } from '../../lib/api';
+import { useTranslation } from 'react-i18next';
 
 // ─── Config ──────────────────────────────────────────────────
 const STATUS_CFG = {
@@ -55,6 +56,7 @@ const timeAgo = (date) => {
 
 // ─── Ticket Detail Drawer (sidebar-aware) ────────────────────
 function TicketDrawer({ ticketId, onClose }) {
+  const { t } = useTranslation();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [replyBody, setReplyBody] = useState('');
@@ -150,11 +152,11 @@ function TicketDrawer({ ticketId, onClose }) {
               <Loader2 className="w-6 h-6 text-purple-500 animate-spin" />
             </div>
           ) : !ticket ? (
-            <div className="text-center py-12 text-gray-400 text-sm">Ticket not found</div>
+            <div className="text-center py-12 text-gray-400 text-sm">{t('adminSupport.ticketNotFound', "Ticket not found")}</div>
           ) : ticket.messages?.length === 0 ? (
             <div className="text-center py-12 text-gray-400">
               <MessageSquare className="w-10 h-10 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">No messages yet</p>
+              <p className="text-sm">{t('adminSupport.noMessagesYet', "No messages yet")}</p>
             </div>
           ) : (
             ticket.messages?.map((msg) => {
@@ -204,7 +206,7 @@ function TicketDrawer({ ticketId, onClose }) {
                   onChange={e => setReplyBody(e.target.value)}
                   rows={2}
                   className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none resize-none"
-                  placeholder="Type your admin reply..."
+                  placeholder={t('adminSupport.typeYourAdminReply', "Type your admin reply...")}
                 />
                 {replyFiles.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -240,6 +242,7 @@ function TicketDrawer({ ticketId, onClose }) {
 
 // ─── Main Admin Support Page ─────────────────────────────────
 export default function AdminSupport() {
+  const { t } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -321,7 +324,7 @@ export default function AdminSupport() {
             <LifeBuoy className="w-5 h-5 text-purple-600" />
             Support Management
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage incoming support tickets, respond & resolve</p>
+          <p className="text-sm text-gray-500 mt-0.5">{t('adminSupport.manageIncomingSupportTicketsRespond', "Manage incoming support tickets, respond & resolve")}</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleRefresh} disabled={refreshing}
@@ -366,7 +369,7 @@ export default function AdminSupport() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search tickets..."
+            placeholder={t('adminSupport.searchTickets', "Search tickets...")}
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-9 pr-8 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
@@ -382,7 +385,7 @@ export default function AdminSupport() {
           onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
           className="text-xs border border-gray-200 rounded-xl px-3 py-2 bg-white text-gray-600 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none"
         >
-          <option value="">All Statuses</option>
+          <option value="">{t('adminSupport.allStatuses', "All Statuses")}</option>
           {['open', 'in_progress', 'resolved', 'closed'].map(s => (
             <option key={s} value={s}>{STATUS_CFG[s]?.label}</option>
           ))}
@@ -392,7 +395,7 @@ export default function AdminSupport() {
           onChange={e => { setPriorityFilter(e.target.value); setPage(1); }}
           className="text-xs border border-gray-200 rounded-xl px-3 py-2 bg-white text-gray-600 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none"
         >
-          <option value="">All Priorities</option>
+          <option value="">{t('adminSupport.allPriorities', "All Priorities")}</option>
           {['low', 'medium', 'high', 'urgent'].map(p => (
             <option key={p} value={p}>{PRIORITY_CFG[p]?.label}</option>
           ))}
@@ -414,21 +417,21 @@ export default function AdminSupport() {
         ) : tickets.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
             <LifeBuoy className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm font-medium">No tickets found</p>
-            <p className="text-xs mt-1 text-gray-400">Adjust your filters or wait for incoming tickets</p>
+            <p className="text-sm font-medium">{t('adminSupport.noTicketsFound', "No tickets found")}</p>
+            <p className="text-xs mt-1 text-gray-400">{t('adminSupport.adjustYourFiltersOrWait', "Adjust your filters or wait for incoming tickets")}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Ticket ID</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">User</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Subject</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Category</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs">Priority</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs">Status</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600 text-xs">Last Update</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.ticketId', "Ticket ID")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.user', "User")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.subject', "Subject")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.category', "Category")}</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.priority', "Priority")}</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.status', "Status")}</th>
+                  <th className="text-right px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminSupport.lastUpdate', "Last Update")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">

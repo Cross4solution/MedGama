@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Navigation, Loader2 } from 'lucide-react';
 import { getStaticMapURL, getDirectionsURL, geocodeAddress, isValidCoordinates } from '../../config/mapbox';
+import { useTranslation } from 'react-i18next';
 
 /**
  * MapboxMap - Reusable map component with geocoding support
@@ -24,6 +25,7 @@ export default function MapboxMap({
   showDirections = true,
   showAddress = true,
 }) {
+  const { t } = useTranslation();
   const [coordinates, setCoordinates] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -69,7 +71,7 @@ export default function MapboxMap({
       >
         <div className="text-center">
           <MapPin className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-          <p className="text-sm text-gray-500">No location provided yet.</p>
+          <p className="text-sm text-gray-500">{t('mapboxMap.noLocationProvidedYet', "No location provided yet.")}</p>
         </div>
       </div>
     );
@@ -84,7 +86,7 @@ export default function MapboxMap({
       >
         <div className="text-center">
           <Loader2 className="w-8 h-8 text-teal-600 animate-spin mx-auto mb-2" />
-          <p className="text-sm text-gray-500">Loading map...</p>
+          <p className="text-sm text-gray-500">{t('mapboxMap.loadingMap', "Loading map...")}</p>
         </div>
       </div>
     );

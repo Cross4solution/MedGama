@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import { useTranslation } from 'react-i18next';
+import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
 
 export default function ThreadsSidebar({
   threads = [],
@@ -10,11 +12,13 @@ export default function ThreadsSidebar({
   onSelectThread,
   threadsPerPage = 8,
 }) {
+
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState('');
 
   const filtered = search.trim()
-    ? threads.filter(t => t.name.toLowerCase().includes(search.toLowerCase()))
+    ? threads.filter(t => aramaIceriyor(t.name, search))
     : threads;
 
   const totalPages = Math.ceil(filtered.length / threadsPerPage);
@@ -28,14 +32,14 @@ export default function ThreadsSidebar({
       <aside className="w-full rounded-2xl border border-gray-200/60 bg-white/95 backdrop-blur-sm shadow-lg shadow-gray-200/40 overflow-hidden flex-1 flex flex-col">
         {/* Header */}
         <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
-          <h2 className="text-sm font-bold text-gray-900 mb-2.5">Messages</h2>
+          <h2 className="text-sm font-bold text-gray-900 mb-2.5">{t('threadsSidebar.messages', "Messages")}</h2>
           <div className="relative">
             <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-              placeholder="Search conversations..."
+              placeholder={t('threadsSidebar.searchConversations', "Search conversations...")}
               className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none placeholder:text-gray-400"
             />
           </div>

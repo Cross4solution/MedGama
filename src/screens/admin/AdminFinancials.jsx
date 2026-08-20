@@ -5,6 +5,8 @@ import {
   DollarSign, Users, Calendar, Loader2, Crown,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
+import { useTranslation } from 'react-i18next';
+import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
 
 const STATUS_MAP = {
   active: { label: 'Active', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: CheckCircle },
@@ -35,6 +37,8 @@ function StatCard({ icon: Icon, label, value, sub, color = 'purple' }) {
 }
 
 export default function AdminFinancials() {
+
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalRevenue: 0, activePro: 0, pastDue: 0, cancelled: 0 });
   const [subscriptions, setSubscriptions] = useState([]);
@@ -76,7 +80,7 @@ export default function AdminFinancials() {
     if (filter !== 'all' && s.status !== filter) return false;
     if (search.trim()) {
       const q = search.toLowerCase();
-      return s.user.name.toLowerCase().includes(q) || s.user.email.toLowerCase().includes(q);
+      return aramaIceriyor(s.user.name, q) || aramaIceriyor(s.user.email, q);
     }
     return true;
   });
@@ -127,7 +131,7 @@ export default function AdminFinancials() {
             <CreditCard className="w-5 h-5 text-purple-600" />
             Financials
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">Pro subscriptions, revenue, and billing overview</p>
+          <p className="text-sm text-gray-500 mt-0.5">{t('adminFinancials.proSubscriptionsRevenueAndBilling', "Pro subscriptions, revenue, and billing overview")}</p>
         </div>
         <button
           onClick={handleExportCSV}
@@ -169,7 +173,7 @@ export default function AdminFinancials() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder={t('adminFinancials.searchByNameOrEmail', "Search by name or email...")}
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-9 pr-8 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
@@ -184,19 +188,19 @@ export default function AdminFinancials() {
 
       {/* Table */}
       {filtered.length === 0 ? (
-        <div className="text-center py-12 text-gray-400 text-sm">No subscriptions found.</div>
+        <div className="text-center py-12 text-gray-400 text-sm">{t('adminFinancials.noSubscriptionsFound', "No subscriptions found.")}</div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">User</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Plan</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Amount</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Started</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Next Billing</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600">Status</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.user', "User")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.plan', "Plan")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.amount', "Amount")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.started', "Started")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.nextBilling', "Next Billing")}</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('adminFinancials.status', "Status")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">

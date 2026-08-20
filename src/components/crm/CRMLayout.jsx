@@ -175,7 +175,9 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
 const CRM_ALLOWED_ROLES = ['doctor', 'clinic', 'clinicOwner', 'hospital', 'salesperson', 'superAdmin', 'saasAdmin'];
 
 // Smooth loading overlay for page transitions
-const PageTransitionLoader = () => (
+const PageTransitionLoader = () => {
+  const { t } = useTranslation();
+  return (
   <div className="flex items-center justify-center min-h-[60vh] animate-fadeIn">
     <div className="flex flex-col items-center gap-3">
       <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
@@ -183,6 +185,7 @@ const PageTransitionLoader = () => (
     </div>
   </div>
 );
+};
 
 // ── Notification Severity System ──
 // 4 categories: critical (red), warning (amber), info (blue), operational (orange)

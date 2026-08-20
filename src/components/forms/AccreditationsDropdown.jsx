@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, Check } from 'lucide-react';
+import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
 
 /**
  * AccreditationsDropdown — Multi-select searchable dropdown for clinic accreditations
@@ -37,7 +38,7 @@ export default function AccreditationsDropdown({ selected = [], onChange, disabl
 
   // Filter accreditations based on search term
   const filteredAccreditations = accreditations.filter((acc) =>
-    acc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    aramaIceriyor(acc.name, searchTerm) ||
     acc.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

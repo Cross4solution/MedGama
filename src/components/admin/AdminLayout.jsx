@@ -35,11 +35,14 @@ import { adminAPI, supportAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import AnnouncementBanner from '../ui/AnnouncementBanner';
 import { useGorunurYoklama } from '../../hooks/useGorunurYoklama';
+import { useTranslation } from 'react-i18next';
 
 // ── Admin Login Gate ──────────────────────────────────────
 const ADMIN_ROLES = ['superAdmin', 'saasAdmin'];
 
 function AdminLoginGate() {
+
+  const { t } = useTranslation();
   const { login, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -83,14 +86,14 @@ function AdminLoginGate() {
             <Shield className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Medagama</h1>
-          <p className="text-purple-300/60 text-xs font-semibold tracking-widest uppercase mt-1">Admin Panel</p>
+          <p className="text-purple-300/60 text-xs font-semibold tracking-widest uppercase mt-1">{t('adminLayout.adminPanel', "Admin Panel")}</p>
         </div>
 
         {/* Login Card */}
         <div className="bg-white/[0.07] backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
           <div className="flex items-center gap-2 mb-6">
             <Lock className="w-4 h-4 text-purple-400" />
-            <h2 className="text-sm font-bold text-white">Administrator Sign In</h2>
+            <h2 className="text-sm font-bold text-white">{t('adminLayout.administratorSignIn', "Administrator Sign In")}</h2>
           </div>
 
           {wrongRole && (
@@ -110,19 +113,19 @@ function AdminLoginGate() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Email</label>
+              <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('adminLayout.email', "Email")}</label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full px-4 py-3 bg-white/[0.06] border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500/50 transition-all"
-                placeholder="admin@medagama.com"
+                placeholder={t('adminLayout.adminMedagamaCom', "admin@medagama.com")}
                 autoFocus
                 required
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Password</label>
+              <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">{t('adminLayout.password', "Password")}</label>
               <div className="relative">
                 <input
                   type={showPass ? 'text' : 'password'}
@@ -295,6 +298,7 @@ const AdminLayout = ({ children }) => {
 
   // ── Sidebar nav item renderer ──
   const NavItem = ({ item }) => {
+    const { t } = useTranslation();
     const hasChildren = item.children?.length > 0;
     const childActive = hasChildren && location.pathname.startsWith('/admin/users');
 
@@ -373,7 +377,7 @@ const AdminLayout = ({ children }) => {
         </div>
         <div>
           <span className="text-base font-bold text-white tracking-tight">Medagama</span>
-          <span className="block text-[10px] text-purple-300/60 font-semibold tracking-widest uppercase">Admin Panel</span>
+          <span className="block text-[10px] text-purple-300/60 font-semibold tracking-widest uppercase">{t('adminLayout.adminPanel', "Admin Panel")}</span>
         </div>
       </NavLink>
 
@@ -402,7 +406,7 @@ const AdminLayout = ({ children }) => {
             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all">
               <Home className="w-4 h-4 text-gray-400 group-hover:text-gray-200" />
             </div>
-            <span className="flex-1">Main Site</span>
+            <span className="flex-1">{t('adminLayout.mainSite', "Main Site")}</span>
             <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-300" />
           </a>
         </div>
@@ -441,7 +445,7 @@ const AdminLayout = ({ children }) => {
               </button>
               <div className="hidden sm:flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-1.5 w-56">
                 <Search className="w-4 h-4 text-gray-400" />
-                <input type="text" placeholder="Search admin..." className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" readOnly />
+                <input type="text" placeholder={t('adminLayout.searchAdmin', "Search admin...")} className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" readOnly />
               </div>
             </div>
             <div className="flex items-center gap-2.5">
@@ -461,7 +465,7 @@ const AdminLayout = ({ children }) => {
                 {alertsOpen && (
                   <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-200/60 z-50 overflow-hidden">
                     <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                      <p className="text-sm font-bold text-gray-900">Admin Alerts</p>
+                      <p className="text-sm font-bold text-gray-900">{t('adminLayout.adminAlerts', "Admin Alerts")}</p>
                       {urgentCount > 0 && <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">{urgentCount} urgent</span>}
                     </div>
                     <div className="max-h-64 overflow-y-auto divide-y divide-gray-50">

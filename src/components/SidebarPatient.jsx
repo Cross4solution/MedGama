@@ -9,7 +9,9 @@ import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, S
 import { useGorunurYoklama } from '../hooks/useGorunurYoklama';
 
 // Custom chat icon using public SVG (accepts className via props)
-const ChatRoundIcon = (props) => (
+const ChatRoundIcon = (props) => {
+  const { t } = useTranslation();
+  return (
   <img
     src="/images/icon/chat-round-line-svgrepo-com.svg"
     alt={t('sidebarPatient.messages', "Messages")}
@@ -18,6 +20,7 @@ const ChatRoundIcon = (props) => (
     {...props}
   />
 );
+};
 
 export default function SidebarPatient() {
   const { user, logout, sidebarMobileOpen, setSidebarMobileOpen, isPro } = useAuth();

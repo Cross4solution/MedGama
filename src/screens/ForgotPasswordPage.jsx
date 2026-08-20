@@ -3,8 +3,11 @@ import { useNavigate, Link } from '@/compat/router';
 import { authAPI } from '../lib/api';
 import { Mail, ArrowRight, ArrowLeft, RefreshCw, CheckCircle2, KeyRound, Eye, EyeOff } from 'lucide-react';
 import SEOHead from '../components/seo/SEOHead';
+import { useTranslation } from 'react-i18next';
 
 export default function ForgotPasswordPage() {
+
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Steps: 1 = enter email, 2 = enter code, 3 = new password, 4 = success
@@ -122,8 +125,8 @@ export default function ForgotPasswordPage() {
           <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-emerald-600" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Password Reset!</h1>
-          <p className="text-sm text-gray-500 mb-6">Your password has been successfully changed.</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">{t('forgotPasswordPage.passwordReset', "Password Reset!")}</h1>
+          <p className="text-sm text-gray-500 mb-6">{t('forgotPasswordPage.yourPasswordHasBeenSuccessfully', "Your password has been successfully changed.")}</p>
           <button
             onClick={() => navigate('/login')}
             className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 transition-all shadow-sm"
@@ -150,13 +153,13 @@ export default function ForgotPasswordPage() {
         {/* Step 1: Enter email */}
         {step === 1 && (
           <>
-            <h1 className="text-xl font-bold text-gray-900 text-center mb-2">Forgot your password?</h1>
+            <h1 className="text-xl font-bold text-gray-900 text-center mb-2">{t('forgotPasswordPage.forgotYourPassword', "Forgot your password?")}</h1>
             <p className="text-sm text-gray-500 text-center mb-6">
               Enter your email and we'll send you a 6-digit reset code.
             </p>
 
             <div className="mb-5">
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">Email address</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">{t('forgotPasswordPage.emailAddress', "Email address")}</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
@@ -164,7 +167,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setError(''); }}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendCode()}
-                  placeholder="you@example.com"
+                  placeholder={t('forgotPasswordPage.youExampleCom', "you@example.com")}
                   className="w-full h-11 pl-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
                   autoFocus
                 />
@@ -178,7 +181,7 @@ export default function ForgotPasswordPage() {
               disabled={loading || !email}
               className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
             >
-              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <>Send Reset Code <ArrowRight className="w-4 h-4" /></>}
+              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <>{t('forgotPasswordPage.sendResetCode', "Send Reset Code")} <ArrowRight className="w-4 h-4" /></>}
             </button>
 
             <div className="text-center mt-5">
@@ -192,7 +195,7 @@ export default function ForgotPasswordPage() {
         {/* Step 2: Enter code */}
         {step === 2 && (
           <>
-            <h1 className="text-xl font-bold text-gray-900 text-center mb-2">Enter reset code</h1>
+            <h1 className="text-xl font-bold text-gray-900 text-center mb-2">{t('forgotPasswordPage.enterResetCode', "Enter reset code")}</h1>
             <p className="text-sm text-gray-500 text-center mb-6">
               We sent a 6-digit code to <span className="font-medium text-gray-700">{maskedEmail}</span>
             </p>
@@ -229,7 +232,7 @@ export default function ForgotPasswordPage() {
             </button>
 
             <div className="text-center mt-5">
-              <p className="text-xs text-gray-400 mb-1">Didn't receive the code?</p>
+              <p className="text-xs text-gray-400 mb-1">{t('forgotPasswordPage.didnTReceiveTheCode', "Didn't receive the code?")}</p>
               <button
                 onClick={handleResend}
                 disabled={loading || resendCooldown > 0}
@@ -250,21 +253,21 @@ export default function ForgotPasswordPage() {
         {/* Step 3: New password */}
         {step === 3 && (
           <>
-            <h1 className="text-xl font-bold text-gray-900 text-center mb-2">Set new password</h1>
+            <h1 className="text-xl font-bold text-gray-900 text-center mb-2">{t('forgotPasswordPage.setNewPassword', "Set new password")}</h1>
             <p className="text-sm text-gray-500 text-center mb-6">
               Choose a strong password for your account.
             </p>
 
             <div className="space-y-4 mb-5">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5">New password</label>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">{t('forgotPasswordPage.newPassword', "New password")}</label>
                 <div className="relative">
                   <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => { setPassword(e.target.value); setError(''); }}
-                    placeholder="Min. 6 characters"
+                    placeholder={t('forgotPasswordPage.min6Characters', "Min. 6 characters")}
                     className="w-full h-11 pl-10 pr-10 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
                     autoFocus
                   />
@@ -279,7 +282,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5">Confirm password</label>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">{t('forgotPasswordPage.confirmPassword', "Confirm password")}</label>
                 <div className="relative">
                   <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -287,7 +290,7 @@ export default function ForgotPasswordPage() {
                     value={confirmPassword}
                     onChange={(e) => { setConfirmPassword(e.target.value); setError(''); }}
                     onKeyDown={(e) => e.key === 'Enter' && handleResetPassword()}
-                    placeholder="Repeat your password"
+                    placeholder={t('forgotPasswordPage.repeatYourPassword', "Repeat your password")}
                     className="w-full h-11 pl-10 pr-4 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/25 focus:border-teal-400 transition-all outline-none"
                   />
                 </div>
@@ -322,7 +325,7 @@ export default function ForgotPasswordPage() {
               disabled={loading || !password || !confirmPassword}
               className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
             >
-              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <>Reset Password <ArrowRight className="w-4 h-4" /></>}
+              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <>{t('forgotPasswordPage.resetPassword', "Reset Password")} <ArrowRight className="w-4 h-4" /></>}
             </button>
 
             <div className="text-center mt-4">

@@ -31,6 +31,7 @@ const getRoleMeta = (roleId) => ROLES.find(r => r.key === roleId) || ROLES[0];
    Password Reset Modal
    ═══════════════════════════════════════════ */
 function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -103,6 +104,7 @@ const DRAWER_TABS = [
 ];
 
 function UserDetailDrawer({ user: u, onClose }) {
+  const { t } = useTranslation();
   const [tab, setTab] = useState('overview');
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(false);

@@ -14,6 +14,7 @@ import GlobalSuggest from '../../components/forms/GlobalSuggest';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import ProTeaser from '../../components/crm/ProTeaser';
+import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
 
 // ─── Medication Templates ───
 const MEDICATION_TEMPLATES = [
@@ -236,7 +237,7 @@ const PrescriptionBuilder = ({ medications, setMedications, t }) => {
   const filteredTemplates = useMemo(() => {
     if (!templateSearch) return MEDICATION_TEMPLATES;
     const q = templateSearch.toLowerCase();
-    return MEDICATION_TEMPLATES.filter((m) => m.name.toLowerCase().includes(q));
+    return MEDICATION_TEMPLATES.filter((m) => aramaIceriyor(m.name, q));
   }, [templateSearch]);
 
   const addMedication = (template = null) => {

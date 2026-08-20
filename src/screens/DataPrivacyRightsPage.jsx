@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { useCookieConsent } from '../context/CookieConsentContext';
+import { useTranslation } from 'react-i18next';
 import {
   Shield, Download, Trash2, Eye, PenLine, Ban, ArrowRightLeft,
   Bell, Settings, FileText, AlertTriangle, CheckCircle, Clock, ExternalLink
@@ -56,6 +57,8 @@ const GDPR_RIGHTS = [
 ];
 
 export default function DataPrivacyRightsPage() {
+
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { openSettings, consent, consentTimestamp, resetConsent } = useCookieConsent();
   const [requestSent, setRequestSent] = useState(null);
@@ -167,12 +170,12 @@ export default function DataPrivacyRightsPage() {
               <Shield className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Your Data Privacy Rights</h1>
-              <p className="text-sm text-gray-500">GDPR Rights Management Center</p>
+              <h1 className="text-2xl font-bold text-gray-900">{t('dataPrivacyRightsPage.yourDataPrivacyRights', "Your Data Privacy Rights")}</h1>
+              <p className="text-sm text-gray-500">{t('dataPrivacyRightsPage.gdprRightsManagementCenter', "GDPR Rights Management Center")}</p>
             </div>
           </div>
           <p className="text-gray-700 leading-relaxed">
-            Under the <strong>General Data Protection Regulation (GDPR)</strong>, you have specific rights regarding 
+            Under the <strong>{t('dataPrivacyRightsPage.generalDataProtectionRegulationGdpr', "General Data Protection Regulation (GDPR)")}</strong>, you have specific rights regarding 
             your personal data. This page allows you to exercise those rights directly. All requests are processed 
             within <strong>30 days</strong> as required by law.
           </p>
@@ -249,7 +252,7 @@ export default function DataPrivacyRightsPage() {
 
         {/* GDPR Rights */}
         <div className="space-y-4 mb-8">
-          <h2 className="text-lg font-semibold text-gray-900">Your Rights</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t('dataPrivacyRightsPage.yourRights', "Your Rights")}</h2>
           {GDPR_RIGHTS.map((right) => {
             const Icon = right.icon;
             return (
@@ -294,7 +297,7 @@ export default function DataPrivacyRightsPage() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-sm font-semibold text-amber-900 mb-1">Right to Lodge a Complaint (Art. 77)</h3>
+              <h3 className="text-sm font-semibold text-amber-900 mb-1">{t('dataPrivacyRightsPage.rightToLodgeAComplaint', "Right to Lodge a Complaint (Art. 77)")}</h3>
               <p className="text-xs text-amber-700 leading-relaxed">
                 If you believe that our processing of your personal data violates the GDPR, you have the right to 
                 lodge a complaint with a supervisory authority, in particular in the EU Member State of your habitual 
@@ -315,8 +318,8 @@ export default function DataPrivacyRightsPage() {
             For any questions or requests regarding your data privacy rights, please contact our DPO:
           </p>
           <div className="text-xs text-gray-700 space-y-0.5">
-            <p>Email: <a href="mailto:dpo@medagama.com" className="text-teal-600 underline underline-offset-2">dpo@medagama.com</a></p>
-            <p>Privacy inquiries: <a href="mailto:privacy@medagama.com" className="text-teal-600 underline underline-offset-2">privacy@medagama.com</a></p>
+            <p>{t('dataPrivacyRightsPage.email', "Email:")} <a href="mailto:dpo@medagama.com" className="text-teal-600 underline underline-offset-2">{t('dataPrivacyRightsPage.dpoMedagamaCom', "dpo@medagama.com")}</a></p>
+            <p>{t('dataPrivacyRightsPage.privacyInquiries', "Privacy inquiries:")} <a href="mailto:privacy@medagama.com" className="text-teal-600 underline underline-offset-2">{t('dataPrivacyRightsPage.privacyMedagamaCom', "privacy@medagama.com")}</a></p>
             <p>Response time: Within 30 days (extendable by 60 days for complex requests)</p>
           </div>
         </div>
@@ -331,13 +334,13 @@ export default function DataPrivacyRightsPage() {
                 <Trash2 className="w-5 h-5 text-rose-600" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-gray-900">Delete Account & Data</h3>
-                <p className="text-xs text-gray-500">This action cannot be undone</p>
+                <h3 className="text-base font-bold text-gray-900">{t('dataPrivacyRightsPage.deleteAccountData', "Delete Account & Data")}</h3>
+                <p className="text-xs text-gray-500">{t('dataPrivacyRightsPage.thisActionCannotBeUndone', "This action cannot be undone")}</p>
               </div>
             </div>
             <div className="bg-rose-50 border border-rose-200 rounded-lg p-3 mb-4">
               <p className="text-sm text-rose-800 leading-relaxed">
-                <strong>Warning:</strong> This will permanently delete all your local data including your profile, 
+                <strong>{t('dataPrivacyRightsPage.warning', "Warning:")}</strong> This will permanently delete all your local data including your profile, 
                 preferences, medical history, and session data. For complete server-side data deletion, our team 
                 will process your request within 30 days.
               </p>

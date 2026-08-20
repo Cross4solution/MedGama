@@ -549,7 +549,9 @@
       "aiTagRevenue": "revenue",
       "aiTagOverview": "overview",
       "nextInsight": "Next insight",
-      "insightN": "Insight {{n}}"
+      "insightN": "Insight {{n}}",
+      "appointmentsTitle": "Appointments",
+      "newPatientsMonth": "New patients this month"
     },
     "appointments": {
       "title": "Appointments",
@@ -624,7 +626,13 @@
       "docSpecialtyCertificate": "Specialty Certificate",
       "docClinicLicense": "Clinic License",
       "docIdCard": "ID Card / Passport",
-      "docOther": "Other"
+      "docOther": "Other",
+      "medicalHistoryAtBooking": "Medical history at booking",
+      "medicalHistoryCurrent": "Current medical history",
+      "reject": "Reject",
+      "rejectWindowNote": "Appointments are confirmed automatically. You can reject until 2 hours before.",
+      "timezoneHint": "Times are in the clinic's timezone ({{tz}}).",
+      "upcomingConfirmed": "Upcoming (confirmed)"
     },
     "calendar": {
       "title": "Smart Calendar",
@@ -693,7 +701,9 @@
       "consentSigned": "Consent Form Signed",
       "consentSignedDesc": "The patient has signed the consent form digitally.",
       "procedure": "Procedure",
-      "newConsent": "New Consent Form"
+      "newConsent": "New Consent Form",
+      "cancelledCount": "Cancelled",
+      "noShowCount": "No-show"
     },
     "patients": {
       "title": "Patients",
@@ -1167,7 +1177,9 @@
       "perMonth": "/mo",
       "nextBilling": "Next billing",
       "expires": "Expires",
-      "paid": "Paid"
+      "paid": "Paid",
+      "clinicBio": "About",
+      "signOutAllHint": "Signing out of all devices ends every session, including this one."
     },
     "leads": {
       "title": "Leads",
@@ -1442,7 +1454,8 @@
     "sendMessage": "Send Message",
     "addedToFavorites": "Added to favorites",
     "removedFromFavorites": "Removed from favorites",
-    "clinic": "Clinic"
+    "clinic": "Clinic",
+    "basedOnReviews": "Based on {{count}} reviews"
   },
   "profile": {
     "title": "Profile",
@@ -1552,7 +1565,8 @@
     "deleteModalTypeSuffix": "to confirm",
     "deleting": "Deleting...",
     "translateContent": "Show posts and messages in my language too",
-    "translateContentDesc": "When off, content stays in the language it was written in. Turn it on and you will not have to translate each item."
+    "translateContentDesc": "When off, content stays in the language it was written in. Turn it on and you will not have to translate each item.",
+    "delete": "DELETE"
   },
   "search": {
     "heroTitle": "Find the Right Doctor for You",
@@ -1909,7 +1923,8 @@
     "specialtiesSubtitle": "Select the departments your clinic offers",
     "searchSpecialties": "Search specialties...",
     "teamTitle": "Team Setup",
-    "teamSubtitle": "Invite doctors to join your clinic"
+    "teamSubtitle": "Invite doctors to join your clinic",
+    "logo": "Logo"
   },
   "admin": {
     "auditLogs": {
@@ -3095,6 +3110,298 @@
     "writeAReply": "Write a reply...",
     "postNotFoundPleaseGo": "Post not found. Please go back and try again.",
     "noMediaAvailable": "No media available",
-    "you": "You"
+    "you": "You",
+    "areYouSureYouWant": "Are you sure you want to delete this comment?",
+    "close": "Close",
+    "next": "Next",
+    "noCommentsYetBeThe": "No comments yet. Be the first!",
+    "previous": "Previous"
+  },
+  "clinicProfileEdit": {
+    "serviceName": "Service name",
+    "department": "Department",
+    "activity": "Activity",
+    "stethoscope": "Stethoscope",
+    "brain": "Brain",
+    "scissors": "Scissors",
+    "minMax": "₺min - ₺max",
+    "durationEG45Min": "Duration (e.g., 45 min)",
+    "shortDescription": "Short description",
+    "addProcedure": "Add procedure",
+    "addTag": "Add tag",
+    "trEn": "TR, EN",
+    "insurance": "Insurance",
+    "cancel": "Cancel",
+    "save": "Save",
+    "editClinicProfile": "Edit Clinic Profile",
+    "manageYourClinicInformationAnd": "Manage your clinic information and services",
+    "logo": "logo",
+    "backgroundImage": "Background Image",
+    "cover": "cover",
+    "aboutClinic": "About Clinic",
+    "aboutTheClinic": "About the clinic",
+    "accreditations": "Accreditations",
+    "services": "Services",
+    "hidden": "Hidden",
+    "edit": "Edit",
+    "remove": "Remove",
+    "noServicesYet": "No services yet.",
+    "noReviewsYet": "No reviews yet.",
+    "gallery": "Gallery",
+    "noImagesYet": "No images yet.",
+    "typeClinicAddressDistrictOr": "Type clinic address, district or city…",
+    "clickOrDragMarkerTo": "Click or drag marker to set location",
+    "clinicMap": "clinic-map",
+    "priceRanges": "Price Ranges",
+    "givePatientsAClearCost": "Give patients a clear cost expectation per service.",
+    "service": "Service",
+    "eGConsultation": "e.g. Consultation",
+    "currency": "Currency",
+    "minPrice": "Min price",
+    "maxPrice": "Max price",
+    "preview": "Preview:",
+    "addItem": "Add Item",
+    "healthTourismPackages": "Health Tourism Packages",
+    "packageNameEGBasic": "Package name (e.g. Basic Package)",
+    "treatment": "Treatment",
+    "eGDentalImplant": "e.g. Dental Implant",
+    "accommodation": "Accommodation",
+    "eG3NightsHotel": "e.g. 3 nights hotel",
+    "transfer": "Transfer",
+    "eGAirportPickup": "e.g. Airport pickup",
+    "totalPrice": "Total price",
+    "total": "Total:",
+    "createPackage": "Create Package"
+  },
+  "telehealthAppointmentPage": {
+    "appointmentConfirmed": "Appointment Confirmed!",
+    "patient": "Patient",
+    "doctor": "Doctor",
+    "dateTime": "Date & Time",
+    "type": "Type",
+    "bookAppointment": "Book Appointment",
+    "oopsNoSpecialtyFound": "Oops! No specialty found",
+    "tryADifferentSearchTerm": "Try a different search term",
+    "clearSearch": "Clear search",
+    "loadingAvailableSlots": "Loading available slots...",
+    "noAvailableSlotsForThis": "No available slots for this date",
+    "trySelectingADifferentDate": "Try selecting a different date",
+    "ddMmYyyy": "dd.mm.yyyy",
+    "pleaseReviewAllDetailsBefore": "Please review all details before confirming",
+    "date": "Date",
+    "time": "Time",
+    "payment": "Payment",
+    "patientInformation": "Patient Information",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "notes": "Notes",
+    "dataProtectionNotice": "Data Protection Notice",
+    "youDoctor": "You (Doctor)",
+    "selectADoctor": "Select a doctor"
+  },
+  "adminSupport": {
+    "ticketNotFound": "Ticket not found",
+    "noMessagesYet": "No messages yet",
+    "typeYourAdminReply": "Type your admin reply...",
+    "manageIncomingSupportTicketsRespond": "Manage incoming support tickets, respond & resolve",
+    "searchTickets": "Search tickets...",
+    "allStatuses": "All Statuses",
+    "allPriorities": "All Priorities",
+    "noTicketsFound": "No tickets found",
+    "adjustYourFiltersOrWait": "Adjust your filters or wait for incoming tickets",
+    "ticketId": "Ticket ID",
+    "user": "User",
+    "subject": "Subject",
+    "category": "Category",
+    "priority": "Priority",
+    "status": "Status",
+    "lastUpdate": "Last Update"
+  },
+  "forgotPasswordPage": {
+    "passwordReset": "Password Reset!",
+    "yourPasswordHasBeenSuccessfully": "Your password has been successfully changed.",
+    "forgotYourPassword": "Forgot your password?",
+    "emailAddress": "Email address",
+    "youExampleCom": "you@example.com",
+    "sendResetCode": "Send Reset Code",
+    "enterResetCode": "Enter reset code",
+    "didnTReceiveTheCode": "Didn't receive the code?",
+    "setNewPassword": "Set new password",
+    "newPassword": "New password",
+    "min6Characters": "Min. 6 characters",
+    "confirmPassword": "Confirm password",
+    "repeatYourPassword": "Repeat your password",
+    "resetPassword": "Reset Password"
+  },
+  "adminFinancials": {
+    "proSubscriptionsRevenueAndBilling": "Pro subscriptions, revenue, and billing overview",
+    "searchByNameOrEmail": "Search by name or email...",
+    "noSubscriptionsFound": "No subscriptions found.",
+    "user": "User",
+    "plan": "Plan",
+    "amount": "Amount",
+    "started": "Started",
+    "nextBilling": "Next Billing",
+    "status": "Status"
+  },
+  "timelineCard": {
+    "delete": "Delete",
+    "reply": "Reply",
+    "writeAReply": "Write a reply...",
+    "post": "Post",
+    "attachment": "Attachment",
+    "downloadFile": "Download file",
+    "openFile": "Open file",
+    "videoProcessing": "Video processing...",
+    "playbackErrorTapToRetry": "Playback error — tap to retry",
+    "video": "Video",
+    "likes": "likes",
+    "comments": "comments"
+  },
+  "dataPrivacyRightsPage": {
+    "yourDataPrivacyRights": "Your Data Privacy Rights",
+    "gdprRightsManagementCenter": "GDPR Rights Management Center",
+    "generalDataProtectionRegulationGdpr": "General Data Protection Regulation (GDPR)",
+    "yourRights": "Your Rights",
+    "rightToLodgeAComplaint": "Right to Lodge a Complaint (Art. 77)",
+    "email": "Email:",
+    "dpoMedagamaCom": "dpo@medagama.com",
+    "privacyInquiries": "Privacy inquiries:",
+    "privacyMedagamaCom": "privacy@medagama.com",
+    "deleteAccountData": "Delete Account & Data",
+    "thisActionCannotBeUndone": "This action cannot be undone",
+    "warning": "Warning:"
+  },
+  "adminLayout": {
+    "adminPanel": "Admin Panel",
+    "administratorSignIn": "Administrator Sign In",
+    "email": "Email",
+    "adminMedagamaCom": "admin@medagama.com",
+    "password": "Password",
+    "mainSite": "Main Site",
+    "searchAdmin": "Search admin...",
+    "adminAlerts": "Admin Alerts"
+  },
+  "termsPopup": {
+    "termsOfUse": "Terms of Use",
+    "termsOfServicePage": "Terms of Service page",
+    "privacyPolicy": "Privacy Policy",
+    "dataRights": "Data Rights",
+    "dpoMedagamaCom": "dpo@medagama.com",
+    "generalInquiries": "General inquiries:",
+    "infoMedagamaCom": "info@medagama.com",
+    "dataProtectionOfficer": "Data Protection Officer:"
+  },
+  "doctorAppointmentManager": {
+    "appointmentRequests": "Appointment Requests",
+    "manageIncomingPatientAppointments": "Manage incoming patient appointments",
+    "loadingAppointments": "Loading appointments...",
+    "noPendingRequests": "No pending requests",
+    "newAppointmentRequestsWillAppear": "New appointment requests will appear here",
+    "noConfirmedAppointments": "No confirmed appointments",
+    "confirmedAppointmentsWillAppearHere": "Confirmed appointments will appear here"
+  },
+  "contactPage": {
+    "hastalar": "Hastalar",
+    "klinikler": "Klinikler",
+    "gizlilikVeVeri": "Gizlilik ve veri",
+    "tedavileriInceleyin": "tedavileri inceleyin",
+    "verilerimleIlgiliTalebimVar": "Verilerimle ilgili talebim var.",
+    "infoMedagamaCom": "info@medagama.com"
+  },
+  "beforeAfterTab": {
+    "beforeAfterPhotos": "Before & After Photos",
+    "before": "Before",
+    "after": "After"
+  },
+  "doctorLocationEditor": {
+    "setYourLocation": "Set your location",
+    "searchAnAddressThenDrag": "Search an address, then drag the pin to fine-tune.",
+    "typeYourAddressDistrictOr": "Type your address, district or city…",
+    "clickOrDragMarkerTo": "Click or drag marker to set location",
+    "doctorMap": "doctor-map"
+  },
+  "cRMSettings": {
+    "openstreetmapPreview": "OpenStreetMap Preview",
+    "https": "https://...",
+    "httpsWwwExampleCom": "https://www.example.com"
+  },
+  "verifyEmailPage": {
+    "emailVerified": "Email Verified!",
+    "redirectingToYourDashboard": "Redirecting to your dashboard...",
+    "verifyYourEmail": "Verify your email",
+    "didnTReceiveTheCode": "Didn't receive the code?"
+  },
+  "postComposer": {
+    "photo": "Photo",
+    "video": "Video",
+    "emoji": "Emoji"
+  },
+  "timelineShareBox": {
+    "image": "Image",
+    "file": "File",
+    "post": "Post"
+  },
+  "googleMapsPreview": {
+    "invalidGoogleMapsUrlPlease": "Invalid Google Maps URL. Please paste a valid link.",
+    "mapLinkDetected": "Map link detected",
+    "googleMapsPreview": "Google Maps Preview"
+  },
+  "authPages": {
+    "welcomeTo": "Welcome to",
+    "sslSecure": "SSL Secure",
+    "gdprCompliant": "GDPR Compliant"
+  },
+  "adminFeatureToggles": {
+    "controlPlatformWideFeaturesAnd": "Control platform-wide features and system settings",
+    "noSettingsFound": "No settings found.",
+    "systemConfiguration": "System Configuration"
+  },
+  "page": {
+    "breadcrumb": "breadcrumb",
+    "anaSayfa": "Ana Sayfa",
+    "tedaviler": "Tedaviler"
+  },
+  "threadsSidebar": {
+    "messages": "Messages",
+    "searchConversations": "Search conversations..."
+  },
+  "countryCombobox": {
+    "searchCountry": "Search country",
+    "noResults": "No results"
+  },
+  "selectCombobox": {
+    "search": "Search...",
+    "noResults": "No results"
+  },
+  "mapboxMap": {
+    "noLocationProvidedYet": "No location provided yet.",
+    "loadingMap": "Loading map..."
+  },
+  "authContext": {
+    "logout": "Logout",
+    "areYouSureYouWant": "Are you sure you want to log out?"
+  },
+  "quickContactCard": {
+    "quickContact": "Quick Contact"
+  },
+  "galleryTab": {
+    "gallery": "Gallery"
+  },
+  "locationTab": {
+    "location": "Location"
+  },
+  "servicesTab": {
+    "ourServices": "Our Services"
+  },
+  "mapboxView": {
+    "location": "Location"
+  },
+  "activeFilterChips": {
+    "clear": "clear"
+  },
+  "doctorOnboarding": {
+    "eGCardiology": "e.g. Cardiology"
   }
 }

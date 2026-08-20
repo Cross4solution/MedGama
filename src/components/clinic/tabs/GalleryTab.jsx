@@ -1,10 +1,13 @@
 import React from 'react';
 import ImageGalleryModal from 'components/clinic/modals/ImageGalleryModal';
+import { useTranslation } from 'react-i18next';
 
 export default function GalleryTab({ gallery, galleryIndex, setGalleryIndex, galleryOpen, setGalleryOpen }) {
+
+  const { t } = useTranslation();
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-bold text-gray-900">Gallery</h3>
+      <h3 className="text-lg font-bold text-gray-900">{t('galleryTab.gallery', "Gallery")}</h3>
       <div className="grid grid-cols-3 md:grid-cols-4 gap-2.5">
         {gallery.map((src, idx) => (
           <button

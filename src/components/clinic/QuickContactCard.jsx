@@ -1,10 +1,13 @@
 import React from 'react';
 import { Phone, Mail, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function QuickContactCard({ phone, email, hours }) {
+
+  const { t } = useTranslation();
   return (
     <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
-      <h3 className="font-semibold mb-4">Quick Contact</h3>
+      <h3 className="font-semibold mb-4">{t('quickContactCard.quickContact', "Quick Contact")}</h3>
       <div className="space-y-3">
         <div className="flex items-center space-x-3">
           <Phone className="w-5 h-5" />

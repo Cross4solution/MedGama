@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { aramaAnahtari } from '../../utils/searchNormalize';
 
 export default function CityCombobox({
   options = [],
@@ -20,7 +21,11 @@ export default function CityCombobox({
   const [visibleCount, setVisibleCount] = useState(PAGE);
   const ref = useRef(null);
 
-  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Ortak normalle\u015ftirici. Buradaki eski s\u00fcr\u00fcm NFD ile aksan ay\u0131kl\u0131yordu, ama
+  // T\u00fcrk\u00e7e noktas\u0131z "\u0131" ayr\u0131\u015fmayan bir taban harf: "Isparta".toLowerCase()
+  // "isparta" veriyordu ve kullan\u0131c\u0131 "\u0131s" yaz\u0131nca e\u015fle\u015fme olmuyordu \u2014 do\u011fru
+  // yazd\u0131\u011f\u0131 h\u00e2lde "Sonu\u00e7 yok" g\u00f6r\u00fcyordu.
+  const normalize = aramaAnahtari;
 
   const sorted = useMemo(() => {
     const q = normalize(query || '');
@@ -120,6 +125,7 @@ export default function CityCombobox({
 
 // Internal helper component to provide smooth and slower wheel scrolling
 function SlowScrollList({ className = '', items = [], onSelect, wheelFactor = 1, hasMore = false, onLoadMore }) {
+  const { t } = useTranslation();
   const listRef = useRef(null);
 
   React.useEffect(() => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 // Reusable select-like combobox with search, outside-click close, and custom left icon
 export default function SelectCombobox({
@@ -16,6 +17,7 @@ export default function SelectCombobox({
   lockBodyScroll = false,
   wheelFactor = 1, // 1 = normal hız, <1 yavaş, >1 hızlı
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const ref = useRef(null);
@@ -131,7 +133,7 @@ export default function SelectCombobox({
             <div className="p-2.5 border-b border-gray-100">
               <input
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all outline-none"
-                placeholder="Search..."
+                placeholder={t('selectCombobox.search', "Search...")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 autoFocus
@@ -166,6 +168,7 @@ export default function SelectCombobox({
 
 // Internal helper component to provide smooth and slower wheel scrolling
 function SlowScrollList({ className = '', items = [], renderItem, getKey, wheelFactor = 1 }) {
+  const { t } = useTranslation();
   const listRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -192,7 +195,7 @@ function SlowScrollList({ className = '', items = [], renderItem, getKey, wheelF
         </li>
       ))}
       {items.length === 0 && (
-        <li className="px-3 py-2 text-gray-500 text-xs">No results</li>
+        <li className="px-3 py-2 text-gray-500 text-xs">{t('selectCombobox.noResults', "No results")}</li>
       )}
     </ul>
   );

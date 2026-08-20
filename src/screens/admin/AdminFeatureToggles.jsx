@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ToggleLeft, ToggleRight, Loader2, Settings2, Blocks, Server, Save, Hash } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 import { blockNonNumericInt } from '../../utils/numericInput';
+import { useTranslation } from 'react-i18next';
 
 const GROUP_META = {
   modules: { label: 'Module Toggles', icon: Blocks, description: 'Enable or disable platform modules globally' },
@@ -60,6 +61,8 @@ function IntegerInput({ value, onChange, loading }) {
 }
 
 export default function AdminFeatureToggles() {
+
+  const { t } = useTranslation();
   const [groups, setGroups] = useState({});
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(null);
@@ -115,11 +118,11 @@ export default function AdminFeatureToggles() {
           <Settings2 className="w-5 h-5 text-purple-600" />
           Feature Toggles
         </h1>
-        <p className="text-sm text-gray-500 mt-0.5">Control platform-wide features and system settings</p>
+        <p className="text-sm text-gray-500 mt-0.5">{t('adminFeatureToggles.controlPlatformWideFeaturesAnd', "Control platform-wide features and system settings")}</p>
       </div>
 
       {groupKeys.length === 0 ? (
-        <div className="text-center py-12 text-gray-400 text-sm">No settings found.</div>
+        <div className="text-center py-12 text-gray-400 text-sm">{t('adminFeatureToggles.noSettingsFound', "No settings found.")}</div>
       ) : (
         groupKeys.map(groupKey => {
           const meta = GROUP_META[groupKey] || { label: groupKey, icon: Settings2, description: '' };
@@ -193,7 +196,7 @@ export default function AdminFeatureToggles() {
         <div className="flex items-start gap-3">
           <Settings2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-purple-800">System Configuration</p>
+            <p className="text-sm font-semibold text-purple-800">{t('adminFeatureToggles.systemConfiguration', "System Configuration")}</p>
             <p className="text-xs text-purple-600 mt-0.5">
               Changes to feature toggles take effect immediately across the entire platform. 
               All changes are recorded in the Audit Logs for compliance tracking.

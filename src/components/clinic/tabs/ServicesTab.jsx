@@ -1,9 +1,12 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ServicesTab({ services }) {
+
+  const { t } = useTranslation();
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-semibold text-gray-900">Our Services</h3>
+      <h3 className="text-xl font-semibold text-gray-900">{t('servicesTab.ourServices', "Our Services")}</h3>
       <div className="space-y-3">
         {services.map((service, idx) => (
           <div

@@ -19,6 +19,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
 
 // ═══════════════════════════════════════════════════
 // Constants & Helpers
@@ -919,7 +920,7 @@ const CRMAppointments = () => {
     if (statusFilter !== 'all') list = list.filter(a => a.status === statusFilter);
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      list = list.filter(a => (a.patient?.fullname || '').toLowerCase().includes(q) || a.title.toLowerCase().includes(q));
+      list = list.filter(a => (a.patient?.fullname || '').toLowerCase().includes(q) || aramaIceriyor(a.title, q));
     }
     return list;
   }, [appointments, statusFilter, searchQuery]);

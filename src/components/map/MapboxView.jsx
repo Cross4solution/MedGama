@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * MapboxView (Spec-compliant premium map)
@@ -12,6 +13,7 @@ export default function MapboxView({
   height = '350px',
   theme = 'streets' 
 }) {
+  const { t } = useTranslation();
   const mapboxToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || '';
 
   const mapData = useMemo(() => {
@@ -39,7 +41,7 @@ export default function MapboxView({
       {/* Map Image / Background */}
       <img
         src={mapData.src}
-        alt="Location"
+        alt={t('mapboxView.location', "Location")}
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         loading="lazy"
       />

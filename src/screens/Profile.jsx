@@ -91,6 +91,7 @@ function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
 }
 
 export default function Profile() {
+
   const { user, country, updateUser, logout, fetchCurrentUser } = useAuth();
   const { openSettings: openCookieSettings, consent, consentTimestamp, resetConsent } = useCookieConsent();
   const { t, i18n } = useTranslation();
@@ -453,6 +454,8 @@ export default function Profile() {
   // Connections removed
 
   const NavItem = ({ id, icon: Icon, title, desc }) => {
+
+    const { t } = useTranslation();
     const isActive = active === id;
     return (
       <button
@@ -1095,7 +1098,7 @@ export default function Profile() {
               type="text"
               value={deleteConfirmText}
               onChange={e => setDeleteConfirmText(e.target.value)}
-              placeholder="DELETE"
+              placeholder={t('profile.delete', "DELETE")}
               className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-center font-mono tracking-widest focus:border-rose-400 focus:ring-2 focus:ring-rose-500/20 outline-none transition-all"
               autoFocus
             />

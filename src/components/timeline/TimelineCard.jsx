@@ -58,6 +58,8 @@ function MediaImg({ src, alt, className, onClick = undefined }) {
 }
 
 function NestedReply({ r, depth, authUser, replyTo, setReplyTo, replyText, setReplyText, submitReply, setDeleteCommentConfirm, topParentId }) {
+
+  const { t } = useTranslation();
   const avatarSize = depth >= 2 ? 'w-5 h-5' : 'w-6 h-6';
   const fontSize = depth >= 2 ? 'text-[11px]' : 'text-[12px]';
   const timeFontSize = depth >= 2 ? 'text-[9px]' : 'text-[10px]';
@@ -76,14 +78,14 @@ function NestedReply({ r, depth, authUser, replyTo, setReplyTo, replyText, setRe
               <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-red-500 hover:underline transition-colors" onClick={(e) => {
                 e.stopPropagation();
                 setDeleteCommentConfirm({ id: r.id, isReply: true, parentId: topParentId });
-              }}>Delete</button>
+              }}>{t('timelineCard.delete', "Delete")}</button>
             )}
             {r.author_id !== authUser?.id && r.user_id !== authUser?.id && (
               <button type="button" className="text-[10px] font-semibold text-gray-500 hover:text-blue-600 hover:underline transition-colors" onClick={(e) => {
                 e.stopPropagation();
                 setReplyTo(p => p === r.id ? '' : r.id);
                 setReplyText('');
-              }}>Reply</button>
+              }}>{t('timelineCard.reply', "Reply")}</button>
             )}
           </div>
           {/* Sub-replies (recursive) */}
@@ -110,8 +112,8 @@ function NestedReply({ r, depth, authUser, replyTo, setReplyTo, replyText, setRe
           {replyTo === r.id && (
             <div className="mt-1.5 ml-1 pl-2.5 border-l-2 border-teal-200">
               <div className="flex items-center gap-2">
-                <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitReply(e); }} placeholder="Write a reply..." className="flex-1 border border-gray-300 rounded-full px-3 py-1 text-[11px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" onClick={(e) => e.stopPropagation()} />
-                <button type="button" className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitReply}>Post</button>
+                <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitReply(e); }} placeholder={t('timelineCard.writeAReply', "Write a reply...")} className="flex-1 border border-gray-300 rounded-full px-3 py-1 text-[11px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" onClick={(e) => e.stopPropagation()} />
+                <button type="button" className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitReply}>{t('timelineCard.post', "Post")}</button>
               </div>
             </div>
           )}
@@ -186,6 +188,8 @@ const EXT_BG_LIGHT = { PDF: 'bg-red-50', DOC: 'bg-blue-50', DOCX: 'bg-blue-50', 
 const EXT_BORDER = { PDF: 'border-red-200', DOC: 'border-blue-200', DOCX: 'border-blue-200', XLS: 'border-green-200', XLSX: 'border-green-200', PPT: 'border-orange-200', PPTX: 'border-orange-200', CSV: 'border-emerald-200' };
 
 function DocumentPreview({ m, className, onClick }) {
+
+  const { t } = useTranslation();
   const ext = getFileExt(m);
   const name = getFileName(m);
   const color = EXT_COLORS[ext] || 'bg-gray-500';
@@ -227,7 +231,7 @@ function DocumentPreview({ m, className, onClick }) {
             <p className="text-sm font-semibold text-gray-800 truncate" title={name}>{name}</p>
             <div className="flex items-center gap-2 mt-1">
               <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${textColor} ${bgLight} border ${borderColor}`}>{ext}</span>
-              <span className="text-[11px] text-gray-400">Attachment</span>
+              <span className="text-[11px] text-gray-400">{t('timelineCard.attachment', "Attachment")}</span>
             </div>
           </div>
           {fileUrl && (
@@ -235,8 +239,8 @@ function DocumentPreview({ m, className, onClick }) {
               type="button"
               onClick={handleDownload}
               className="w-9 h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0 shadow-sm"
-              aria-label="Download file"
-              title="Open file"
+              aria-label={t('timelineCard.downloadFile', "Download file")}
+              title={t('timelineCard.openFile', "Open file")}
             >
               <Download className="w-4 h-4 text-gray-600" />
             </button>
@@ -276,6 +280,8 @@ function formatDuration(seconds) {
 }
 
 function VideoPreview({ m, className }) {
+
+  const { t } = useTranslation();
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState(null);
   const [error, setError] = useState(false);
@@ -352,7 +358,7 @@ function VideoPreview({ m, className }) {
     return (
       <div ref={containerRef} className="relative bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col items-center justify-center aspect-video w-full rounded-lg">
         <Loader2 className="w-8 h-8 text-white/60 animate-spin mb-2" />
-        <p className="text-white/50 text-xs font-medium">Video processing...</p>
+        <p className="text-white/50 text-xs font-medium">{t('timelineCard.videoProcessing', "Video processing...")}</p>
       </div>
     );
   }
@@ -362,7 +368,7 @@ function VideoPreview({ m, className }) {
     return (
       <div ref={containerRef} className="relative bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col items-center justify-center aspect-video w-full rounded-lg cursor-pointer" onClick={() => { setError(false); setPlaying(true); }}>
         <AlertTriangle className="w-8 h-8 text-amber-400/70 mb-2" />
-        <p className="text-white/50 text-xs font-medium">Playback error — tap to retry</p>
+        <p className="text-white/50 text-xs font-medium">{t('timelineCard.playbackErrorTapToRetry', "Playback error — tap to retry")}</p>
       </div>
     );
   }
@@ -381,7 +387,7 @@ function VideoPreview({ m, className }) {
       {hasThumb && !thumbBad ? (
         <img
           src={effectiveThumb}
-          alt="Video"
+          alt={t('timelineCard.video', "Video")}
           loading="lazy"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           onLoad={(e) => { if ((e.target.naturalWidth || 0) <= 120) setThumbBad(true); }}
@@ -432,6 +438,8 @@ function VideoPreview({ m, className }) {
 }
 
 function MediaItem({ m, alt, className, onClick = undefined }) {
+
+  const { t } = useTranslation();
   const type = getMediaType(m);
   if (type === 'document') return <DocumentPreview m={m} className={className} onClick={onClick} />;
   if (type === 'video') return <VideoPreview m={m} className={className} />;
@@ -1438,12 +1446,12 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             <p className={`mt-3 leading-6 text-gray-800 line-clamp-3 ${compact ? 'text-[14px]' : 'text-[15px]'}`}>{item.text}</p>
             <div className="mt-4 flex items-center justify-between">
               <div className="flex items-center gap-3 text-gray-400 text-xs">
-                <span className="inline-flex items-center gap-1.5 font-medium" aria-label="likes">
+                <span className="inline-flex items-center gap-1.5 font-medium" aria-label={t('timelineCard.likes', "likes")}>
                   <span className="inline-flex items-center justify-center w-[16px] h-[16px] rounded-full bg-blue-500 text-white"><ThumbsUp className="w-[9px] h-[9px]" /></span>
                   {item.likes}
                 </span>
                 <span className="inline-block w-0.5 h-0.5 rounded-full bg-gray-300" />
-                <span className="inline-flex items-center gap-1 font-medium" aria-label="comments"><MessageCircle className="w-3.5 h-3.5" />{item.comments}</span>
+                <span className="inline-flex items-center gap-1 font-medium" aria-label={t('timelineCard.comments', "comments")}><MessageCircle className="w-3.5 h-3.5" />{item.comments}</span>
               </div>
               <div className="flex items-center gap-0.5 bg-gray-50 rounded-full p-0.5 shadow-sm">
                 <button type="button" aria-label={t('medstream.like')} className="p-1.5 rounded-full transition text-gray-500 hover:bg-gray-100 hover:text-teal-600" onClick={(e)=>e.stopPropagation()}>

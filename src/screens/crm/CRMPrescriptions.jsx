@@ -8,6 +8,7 @@ import { useNavigate } from '@/compat/router';
 import { useAuth } from '../../context/AuthContext';
 import ProTeaser from '../../components/crm/ProTeaser';
 import { examinationAPI } from '../../lib/api';
+import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
 
 // Normalize a single prescription line from backend (encrypted:array) — fields may vary.
 const normalizeMeds = (prescriptions) => {
@@ -70,7 +71,7 @@ const CRMPrescriptions = () => {
   const filtered = records.filter((p) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
-    return p.patient.toLowerCase().includes(q) || (p.diagnosis || '').toLowerCase().includes(q);
+    return aramaIceriyor(p.patient, q) || (p.diagnosis || '').toLowerCase().includes(q);
   });
 
   const handleDownloadPdf = async (id) => {

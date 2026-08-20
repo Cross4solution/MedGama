@@ -586,7 +586,9 @@
       "upgradeAppointments": "Canlı randevu programınızı görmek için yükseltin",
       "upgradeHint": "Canlı veriyi açmak için Profesyonel'e yükseltin",
       "upgradePatients": "Son hastalarınızı görmek için yükseltin",
-      "upgradeRevenue": "Haftalık gelirinizi takip etmek için yükseltin"
+      "upgradeRevenue": "Haftalık gelirinizi takip etmek için yükseltin",
+      "appointmentsTitle": "Randevular",
+      "newPatientsMonth": "Bu ayki yeni hastalar"
     },
     "appointments": {
       "title": "Randevular",
@@ -662,7 +664,13 @@
       "docClinicLicense": "Klinik Ruhsatı",
       "docIdCard": "Kimlik / Pasaport",
       "docOther": "Diğer",
-      "medicalHistory": "Tıbbi Geçmiş / Anamnez"
+      "medicalHistory": "Tıbbi Geçmiş / Anamnez",
+      "medicalHistoryAtBooking": "Randevu anındaki tıbbi geçmiş",
+      "medicalHistoryCurrent": "Güncel tıbbi geçmiş",
+      "reject": "Reddet",
+      "rejectWindowNote": "Randevular otomatik onaylı. Saatine 2 saat kalana kadar reddedebilirsiniz.",
+      "timezoneHint": "Saatler klinik saat diliminde ({{tz}}).",
+      "upcomingConfirmed": "Yaklaşan (onaylı)"
     },
     "calendar": {
       "title": "Akıllı Takvim",
@@ -766,7 +774,9 @@
       "filterDocument": "Klinik kaydı",
       "filterPatientUpload": "Hasta belgesi",
       "filterInvoice": "Fatura",
-      "filterMessage": "Mesaj"
+      "filterMessage": "Mesaj",
+      "cancelledCount": "İptal edilen",
+      "noShowCount": "Gelmedi"
     },
     "patients": {
       "title": "Hastalar",
@@ -1368,7 +1378,9 @@
       "addConditionPlaceholder": "Durum yazıp Enter’a basın",
       "hoursNote": "Çalışma saatleri randevu widget’ınızla eşitlenir. Hastalar yalnızca açık saatlerde randevu alabilir.",
       "coordsHelper": "Konumunuzun haritada görünmesi için koordinatları girin. openstreetmap.org üzerinden bulabilirsiniz.",
-      "infoRequestedDesc": "Yönetici ekibi ek bilgi talep etti. Lütfen istenen belgeleri aşağıdan yükleyin."
+      "infoRequestedDesc": "Yönetici ekibi ek bilgi talep etti. Lütfen istenen belgeleri aşağıdan yükleyin.",
+      "clinicBio": "Tanıtım",
+      "signOutAllHint": "Tüm cihazlardan çıkış, bu oturum dahil her yerde çıkış yapar."
     },
     "leads": {
       "title": "Potansiyel Müşteriler",
@@ -1797,7 +1809,8 @@
     "reviewGateTitle": "Yalnızca Doğrulanmış Değerlendirmeler",
     "reviewGateDesc": "Yalnızca bu klinikte randevusunu tamamlamış hastalar deneyimlerini paylaşabilir. Randevunuzu tamamlayıp değerlendirme bırakmak için geri dönün.",
     "noReviewsYet": "Henüz değerlendirme yok",
-    "noReviewsHint": "Deneyiminizi ilk paylaşan siz olun."
+    "noReviewsHint": "Deneyiminizi ilk paylaşan siz olun.",
+    "basedOnReviews": "{{count}} değerlendirmeye göre"
   },
   "profile": {
     "title": "Profil",
@@ -1910,7 +1923,8 @@
     "translateContentDesc": "Kapalıyken içerikler yazıldığı dilde kalır. Açtığınızda tek tek çevirmenize gerek kalmaz.",
     "saveFailed": "Kaydedilemedi",
     "passwordUpdatedReloginRequired": "Şifreniz güncellendi. Güvenliğiniz için tüm oturumlar kapatıldı; tekrar giriş yapın.",
-    "medicalShareNotice": "Bu bilgiler, randevu aldığınız doktorla paylaşılacaktır. Doğru ve güvenli tedavi için ilaç, alerji ve tıbbi geçmişinizin eksiksiz olması önemlidir."
+    "medicalShareNotice": "Bu bilgiler, randevu aldığınız doktorla paylaşılacaktır. Doğru ve güvenli tedavi için ilaç, alerji ve tıbbi geçmişinizin eksiksiz olması önemlidir.",
+    "delete": "SİL"
   },
   "search": {
     "heroTitle": "Size Uygun Doktoru Bulun",
@@ -2301,7 +2315,8 @@
     "tempPassword": "Geçici Parola (en az 6)",
     "addDoctorBtn": "Ekibe Ekle",
     "finish": "Kurulumu Tamamla",
-    "skipTeam": "Şimdilik geç, ekip üyelerini sonra eklerim"
+    "skipTeam": "Şimdilik geç, ekip üyelerini sonra eklerim",
+    "logo": "Logo"
   },
   "admin": {
     "auditLogs": {
@@ -3658,6 +3673,298 @@
     "writeAReply": "Bir yanıt yazın...",
     "postNotFoundPleaseGo": "Gönderi bulunamadı. Lütfen geri dönüp tekrar deneyin.",
     "noMediaAvailable": "Medya yok",
-    "you": "Siz"
+    "you": "Siz",
+    "areYouSureYouWant": "Bu yorumu silmek istediğinize emin misiniz?",
+    "close": "Kapat",
+    "next": "Sonraki",
+    "noCommentsYetBeThe": "Henüz yorum yok. İlk yorumu siz yapın!",
+    "previous": "Önceki"
+  },
+  "clinicProfileEdit": {
+    "serviceName": "Hizmet adı",
+    "department": "Bölüm",
+    "activity": "Etkinlik",
+    "stethoscope": "Stetoskop",
+    "brain": "Beyin",
+    "scissors": "Makas",
+    "minMax": "₺en az - ₺en çok",
+    "durationEG45Min": "Süre (ör. 45 dk)",
+    "shortDescription": "Kısa açıklama",
+    "addProcedure": "İşlem ekle",
+    "addTag": "Etiket ekle",
+    "trEn": "TR, EN",
+    "insurance": "Sigorta",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "editClinicProfile": "Klinik Profilini Düzenle",
+    "manageYourClinicInformationAnd": "Klinik bilgilerinizi ve hizmetlerinizi yönetin",
+    "logo": "logo",
+    "backgroundImage": "Arka Plan Görseli",
+    "cover": "kapak",
+    "aboutClinic": "Klinik Hakkında",
+    "aboutTheClinic": "Klinik hakkında",
+    "accreditations": "Akreditasyonlar",
+    "services": "Hizmetler",
+    "hidden": "Gizli",
+    "edit": "Düzenle",
+    "remove": "Kaldır",
+    "noServicesYet": "Henüz hizmet yok.",
+    "noReviewsYet": "Henüz değerlendirme yok.",
+    "gallery": "Galeri",
+    "noImagesYet": "Henüz görsel yok.",
+    "typeClinicAddressDistrictOr": "Klinik adresi, ilçe veya şehir yazın…",
+    "clickOrDragMarkerTo": "Konumu belirlemek için işaretçiye tıklayın veya sürükleyin",
+    "clinicMap": "clinic-map",
+    "priceRanges": "Fiyat Aralıkları",
+    "givePatientsAClearCost": "Hastalara her hizmet için net bir maliyet beklentisi verin.",
+    "service": "Hizmet",
+    "eGConsultation": "ör. Konsültasyon",
+    "currency": "Para Birimi",
+    "minPrice": "En düşük fiyat",
+    "maxPrice": "En yüksek fiyat",
+    "preview": "Önizleme:",
+    "addItem": "Öğe Ekle",
+    "healthTourismPackages": "Sağlık Turizmi Paketleri",
+    "packageNameEGBasic": "Paket adı (ör. Temel Paket)",
+    "treatment": "Tedavi",
+    "eGDentalImplant": "ör. Diş İmplantı",
+    "accommodation": "Konaklama",
+    "eG3NightsHotel": "ör. 3 gece otel",
+    "transfer": "Transfer",
+    "eGAirportPickup": "ör. Havalimanı karşılama",
+    "totalPrice": "Toplam fiyat",
+    "total": "Toplam:",
+    "createPackage": "Paket Oluştur"
+  },
+  "telehealthAppointmentPage": {
+    "appointmentConfirmed": "Randevu Onaylandı!",
+    "patient": "Hasta",
+    "doctor": "Doktor",
+    "dateTime": "Tarih ve Saat",
+    "type": "Tür",
+    "bookAppointment": "Randevu Al",
+    "oopsNoSpecialtyFound": "Uzmanlık bulunamadı",
+    "tryADifferentSearchTerm": "Farklı bir arama terimi deneyin",
+    "clearSearch": "Aramayı temizle",
+    "loadingAvailableSlots": "Uygun saatler yükleniyor...",
+    "noAvailableSlotsForThis": "Bu tarih için uygun saat yok",
+    "trySelectingADifferentDate": "Farklı bir tarih seçmeyi deneyin",
+    "ddMmYyyy": "gg.aa.yyyy",
+    "pleaseReviewAllDetailsBefore": "Onaylamadan önce lütfen tüm bilgileri gözden geçirin",
+    "date": "Tarih",
+    "time": "Saat",
+    "payment": "Ödeme",
+    "patientInformation": "Hasta Bilgileri",
+    "name": "Ad",
+    "email": "E-posta",
+    "phone": "Telefon",
+    "notes": "Notlar",
+    "dataProtectionNotice": "Veri Koruma Bildirimi",
+    "youDoctor": "Siz (Doktor)",
+    "selectADoctor": "Bir doktor seçin"
+  },
+  "adminSupport": {
+    "ticketNotFound": "Talep bulunamadı",
+    "noMessagesYet": "Henüz mesaj yok",
+    "typeYourAdminReply": "Yönetici yanıtınızı yazın...",
+    "manageIncomingSupportTicketsRespond": "Gelen destek taleplerini yönetin, yanıtlayın ve kapatın",
+    "searchTickets": "Taleplerde ara...",
+    "allStatuses": "Tüm Durumlar",
+    "allPriorities": "Tüm Öncelikler",
+    "noTicketsFound": "Talep bulunamadı",
+    "adjustYourFiltersOrWait": "Filtrelerinizi değiştirin veya yeni taleplerin gelmesini bekleyin",
+    "ticketId": "Talep No",
+    "user": "Kullanıcı",
+    "subject": "Konu",
+    "category": "Kategori",
+    "priority": "Öncelik",
+    "status": "Durum",
+    "lastUpdate": "Son Güncelleme"
+  },
+  "forgotPasswordPage": {
+    "passwordReset": "Parola sıfırlandı!",
+    "yourPasswordHasBeenSuccessfully": "Parolanız başarıyla değiştirildi.",
+    "forgotYourPassword": "Parolanızı mı unuttunuz?",
+    "emailAddress": "E-posta adresi",
+    "youExampleCom": "siz@ornek.com",
+    "sendResetCode": "Sıfırlama Kodu Gönder",
+    "enterResetCode": "Sıfırlama kodunu girin",
+    "didnTReceiveTheCode": "Kod gelmedi mi?",
+    "setNewPassword": "Yeni parola belirleyin",
+    "newPassword": "Yeni parola",
+    "min6Characters": "En az 6 karakter",
+    "confirmPassword": "Parolayı doğrulayın",
+    "repeatYourPassword": "Parolanızı tekrar girin",
+    "resetPassword": "Parolayı Sıfırla"
+  },
+  "adminFinancials": {
+    "proSubscriptionsRevenueAndBilling": "Pro abonelikler, gelir ve faturalandırma özeti",
+    "searchByNameOrEmail": "Ada veya e-postaya göre ara...",
+    "noSubscriptionsFound": "Abonelik bulunamadı.",
+    "user": "Kullanıcı",
+    "plan": "Paket",
+    "amount": "Tutar",
+    "started": "Başlangıç",
+    "nextBilling": "Sonraki Fatura",
+    "status": "Durum"
+  },
+  "timelineCard": {
+    "delete": "Sil",
+    "reply": "Yanıtla",
+    "writeAReply": "Bir yanıt yazın...",
+    "post": "Gönder",
+    "attachment": "Ek",
+    "downloadFile": "Dosyayı indir",
+    "openFile": "Dosyayı aç",
+    "videoProcessing": "Video işleniyor...",
+    "playbackErrorTapToRetry": "Oynatma hatası — tekrar denemek için dokunun",
+    "video": "Video",
+    "likes": "beğeni",
+    "comments": "yorum"
+  },
+  "dataPrivacyRightsPage": {
+    "yourDataPrivacyRights": "Veri Gizliliği Haklarınız",
+    "gdprRightsManagementCenter": "GDPR Hak Yönetim Merkezi",
+    "generalDataProtectionRegulationGdpr": "Genel Veri Koruma Tüzüğü (GDPR)",
+    "yourRights": "Haklarınız",
+    "rightToLodgeAComplaint": "Şikâyet Hakkı (Md. 77)",
+    "email": "E-posta:",
+    "dpoMedagamaCom": "dpo@medagama.com",
+    "privacyInquiries": "Gizlilik soruları:",
+    "privacyMedagamaCom": "privacy@medagama.com",
+    "deleteAccountData": "Hesabı ve Verileri Sil",
+    "thisActionCannotBeUndone": "Bu işlem geri alınamaz",
+    "warning": "Uyarı:"
+  },
+  "adminLayout": {
+    "adminPanel": "Yönetim Paneli",
+    "administratorSignIn": "Yönetici Girişi",
+    "email": "E-posta",
+    "adminMedagamaCom": "admin@medagama.com",
+    "password": "Parola",
+    "mainSite": "Ana Site",
+    "searchAdmin": "Yönetimde ara...",
+    "adminAlerts": "Yönetici Uyarıları"
+  },
+  "termsPopup": {
+    "termsOfUse": "Kullanım Şartları",
+    "termsOfServicePage": "Kullanım Şartları sayfası",
+    "privacyPolicy": "Gizlilik Politikası",
+    "dataRights": "Veri Hakları",
+    "dpoMedagamaCom": "dpo@medagama.com",
+    "generalInquiries": "Genel sorular:",
+    "infoMedagamaCom": "info@medagama.com",
+    "dataProtectionOfficer": "Veri Koruma Görevlisi:"
+  },
+  "doctorAppointmentManager": {
+    "appointmentRequests": "Randevu Talepleri",
+    "manageIncomingPatientAppointments": "Gelen hasta randevularını yönetin",
+    "loadingAppointments": "Randevular yükleniyor...",
+    "noPendingRequests": "Bekleyen talep yok",
+    "newAppointmentRequestsWillAppear": "Yeni randevu talepleri burada görünecek",
+    "noConfirmedAppointments": "Onaylanmış randevu yok",
+    "confirmedAppointmentsWillAppearHere": "Onaylanan randevular burada görünecek"
+  },
+  "contactPage": {
+    "hastalar": "Hastalar",
+    "klinikler": "Klinikler",
+    "gizlilikVeVeri": "Gizlilik ve veri",
+    "tedavileriInceleyin": "tedavileri inceleyin",
+    "verilerimleIlgiliTalebimVar": "Verilerimle ilgili talebim var.",
+    "infoMedagamaCom": "info@medagama.com"
+  },
+  "beforeAfterTab": {
+    "beforeAfterPhotos": "Öncesi ve Sonrası Fotoğrafları",
+    "before": "Önce",
+    "after": "Sonra"
+  },
+  "doctorLocationEditor": {
+    "setYourLocation": "Konumunuzu belirleyin",
+    "searchAnAddressThenDrag": "Bir adres arayın, sonra iğneyi sürükleyerek ince ayar yapın.",
+    "typeYourAddressDistrictOr": "Adresinizi, ilçenizi veya şehrinizi yazın…",
+    "clickOrDragMarkerTo": "Konumu belirlemek için işaretçiye tıklayın veya sürükleyin",
+    "doctorMap": "doctor-map"
+  },
+  "cRMSettings": {
+    "openstreetmapPreview": "OpenStreetMap Önizleme",
+    "https": "https://...",
+    "httpsWwwExampleCom": "https://www.ornek.com"
+  },
+  "verifyEmailPage": {
+    "emailVerified": "E-posta Doğrulandı!",
+    "redirectingToYourDashboard": "Panelinize yönlendiriliyorsunuz...",
+    "verifyYourEmail": "E-postanızı doğrulayın",
+    "didnTReceiveTheCode": "Kod gelmedi mi?"
+  },
+  "postComposer": {
+    "photo": "Fotoğraf",
+    "video": "Video",
+    "emoji": "Emoji"
+  },
+  "timelineShareBox": {
+    "image": "Görsel",
+    "file": "Dosya",
+    "post": "Gönder"
+  },
+  "googleMapsPreview": {
+    "invalidGoogleMapsUrlPlease": "Geçersiz Google Haritalar bağlantısı. Lütfen geçerli bir bağlantı yapıştırın.",
+    "mapLinkDetected": "Harita bağlantısı algılandı",
+    "googleMapsPreview": "Google Haritalar Önizleme"
+  },
+  "authPages": {
+    "welcomeTo": "Hoş geldiniz:",
+    "sslSecure": "SSL Güvenli",
+    "gdprCompliant": "GDPR Uyumlu"
+  },
+  "adminFeatureToggles": {
+    "controlPlatformWideFeaturesAnd": "Platform genelindeki özellikleri ve sistem ayarlarını yönetin",
+    "noSettingsFound": "Ayar bulunamadı.",
+    "systemConfiguration": "Sistem Yapılandırması"
+  },
+  "page": {
+    "breadcrumb": "breadcrumb",
+    "anaSayfa": "Ana Sayfa",
+    "tedaviler": "Tedaviler"
+  },
+  "threadsSidebar": {
+    "messages": "Mesajlar",
+    "searchConversations": "Konuşmalarda ara..."
+  },
+  "countryCombobox": {
+    "searchCountry": "Ülke ara",
+    "noResults": "Sonuç yok"
+  },
+  "selectCombobox": {
+    "search": "Ara...",
+    "noResults": "Sonuç yok"
+  },
+  "mapboxMap": {
+    "noLocationProvidedYet": "Henüz konum belirtilmedi.",
+    "loadingMap": "Harita yükleniyor..."
+  },
+  "authContext": {
+    "logout": "Çıkış Yap",
+    "areYouSureYouWant": "Çıkış yapmak istediğinize emin misiniz?"
+  },
+  "quickContactCard": {
+    "quickContact": "Hızlı İletişim"
+  },
+  "galleryTab": {
+    "gallery": "Galeri"
+  },
+  "locationTab": {
+    "location": "Konum"
+  },
+  "servicesTab": {
+    "ourServices": "Hizmetlerimiz"
+  },
+  "mapboxView": {
+    "location": "Konum"
+  },
+  "activeFilterChips": {
+    "clear": "temizle"
+  },
+  "doctorOnboarding": {
+    "eGCardiology": "ör. Kardiyoloji"
   }
 }

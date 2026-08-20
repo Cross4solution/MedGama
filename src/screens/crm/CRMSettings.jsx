@@ -36,6 +36,7 @@ function hasValidCoordinates(coords) {
 }
 
 function OpenStreetMapPreview({ coordinates, height = 200, t }) {
+
   const lat = parseFloat(coordinates?.lat);
   const lng = parseFloat(coordinates?.lng);
   if (isNaN(lat) || isNaN(lng)) {
@@ -49,7 +50,7 @@ function OpenStreetMapPreview({ coordinates, height = 200, t }) {
   return (
     <div className="rounded-xl overflow-hidden border border-gray-200" style={{ height }}>
       <iframe
-        title="OpenStreetMap Preview"
+        title={t('cRMSettings.openstreetmapPreview', "OpenStreetMap Preview")}
         src={embedUrl}
         width="100%"
         height={height}
@@ -107,6 +108,7 @@ const BILDIRIM_AYARLARI = [
 ];
 
 const CRMSettings = ({ standalone = false }) => {
+
   const { t, i18n } = useTranslation();
   const { user, updateUser } = useAuth();
   const location = useLocation();
@@ -697,7 +699,7 @@ const CRMSettings = ({ standalone = false }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1.5">{t('crm.settings.website', 'Website')}</label>
-                        <input type="text" value={doctorWebsite} onChange={(e) => setDoctorWebsite(e.target.value)} placeholder="https://..."
+                        <input type="text" value={doctorWebsite} onChange={(e) => setDoctorWebsite(e.target.value)} placeholder={t('cRMSettings.https', "https://...")}
                           className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                       </div>
                       <label className="flex items-center gap-3 self-end pb-1.5 cursor-pointer">
@@ -1117,7 +1119,7 @@ const CRMSettings = ({ standalone = false }) => {
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1.5 flex items-center gap-1.5"><Globe className="w-3.5 h-3.5 text-gray-400" /> {t('crm.settings.websiteLabel', 'Website')}</label>
-                    <input type="url" value={socialInfo.website} onChange={(e) => updateSocialField('website', e.target.value)} placeholder="https://www.example.com"
+                    <input type="url" value={socialInfo.website} onChange={(e) => updateSocialField('website', e.target.value)} placeholder={t('cRMSettings.httpsWwwExampleCom', "https://www.example.com")}
                       className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent" />
                   </div>
                   {/* ── Location Section ── */}
