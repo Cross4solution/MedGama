@@ -68,7 +68,42 @@
     "learnMore": "اعرف المزيد",
     "saving": "جارٍ الحفظ...",
     "country": "الدولة",
-    "clear": "مسح"
+    "clear": "مسح",
+    "backToHome": "العودة إلى الرئيسية",
+    "cancelled": "ملغى",
+    "clearAll": "مسح الكل",
+    "comment": "تعليق",
+    "comments": "تعليقات",
+    "creating": "جارٍ الإنشاء…",
+    "done": "تم",
+    "filters": "عوامل التصفية",
+    "following": "تتابعه",
+    "like": "إعجاب",
+    "loadError": "حدث خطأ أثناء تحميل المستندات.",
+    "loadMore": "تحميل المزيد",
+    "new": "جديد",
+    "noData": "لا توجد بيانات",
+    "noReviewsYet": "لا توجد تقييمات بعد",
+    "noSavedPosts": "لا توجد منشورات محفوظة بعد",
+    "now": "الآن",
+    "of": "من",
+    "optional": "اختياري",
+    "previous": "السابق",
+    "readMore": "اقرأ المزيد",
+    "ready": "جاهز",
+    "saveChanges": "حفظ التغييرات",
+    "savedPosts": "المنشورات المحفوظة",
+    "share": "مشاركة",
+    "showLess": "عرض أقل",
+    "showing": "المعروض",
+    "signInRequired": "تسجيل الدخول مطلوب",
+    "today": "اليوم",
+    "tomorrow": "غدًا",
+    "upgrade": "الترقية إلى Pro",
+    "uploading": "جارٍ الرفع…",
+    "verified": "موثّق",
+    "viewAll": "عرض الكل",
+    "years": "سنة"
   },
   "nav": {
     "home": "الرئيسية",
@@ -222,7 +257,8 @@
     "passwordsMatch": "كلمتا المرور متطابقتان",
     "selectCountryPlaceholder": "اختر دولة",
     "guardianConsentNotice": "يلزم الحصول على موافقة ولي الأمر للتسجيل إذا كان عمرك أقل من 18 عامًا. يُرجى إدخال البريد الإلكتروني لولي الأمر.",
-    "guardianEmailPlaceholder": "guardian@example.com"
+    "guardianEmailPlaceholder": "guardian@example.com",
+    "signInAsDifferentRole": "تسجيل الدخول بدور آخر"
   },
   "aboutPage": {
     "heroDesc": "سوق للصحة والسياحة العلاجية مستقل عن اللغة والموقع، يجمع المرضى بأطباء خبراء وعيادات/مستشفيات موثّقة على منصة رقمية واحدة.",
@@ -288,7 +324,12 @@
     "contactUs": "تواصل معنا",
     "privacyShort": "الخصوصية",
     "termsShort": "الشروط",
-    "popularTreatments": "العلاجات الشائعة"
+    "popularTreatments": "العلاجات الشائعة",
+    "allTreatments": "جميع العلاجات",
+    "medagamaLogo": "شعار Medagama",
+    "popCardiologyIstanbul": "أمراض القلب — إسطنبول",
+    "popDermatologyIstanbul": "الأمراض الجلدية — إسطنبول",
+    "popOrthopedicsAnkara": "جراحة العظام — أنقرة"
   },
   "crm": {
     "sidebar": {
@@ -1055,7 +1096,12 @@
     "savedPosts": "المنشورات المحفوظة",
     "favoriteClinics": "العيادات المفضلة",
     "medicalArchive": "الأرشيف الطبي",
-    "dashboard": "لوحة التحكم"
+    "dashboard": "لوحة التحكم",
+    "billing": "الفوترة",
+    "clinicProfile": "ملف العيادة",
+    "managementPanel": "لوحة CRM",
+    "myInvoices": "الفواتير",
+    "myTeam": "فريقي"
   },
   "cookie": {
     "title": "تفضيلات ملفات تعريف الارتباط",
@@ -1188,7 +1234,23 @@
     "deleteModalBody": "سيؤدي هذا إلى حذف حسابك وجميع البيانات المرتبطة به نهائيًا، بما في ذلك المنشورات والتعليقات والتاريخ الطبي والمعلومات الشخصية. لا يمكن التراجع عن هذا الإجراء.",
     "deleteModalTypePrefix": "اكتب",
     "deleteModalTypeSuffix": "للتأكيد",
-    "deleting": "جارٍ الحذف..."
+    "deleting": "جارٍ الحذف...",
+    "delete": "حذف",
+    "medicalNotes": "ملاحظات",
+    "medicalNotesDesc": "أي شيء آخر ينبغي أن يعرفه طبيبك.",
+    "medicalNotesPlaceholder": "مثال: عمليات سابقة، تاريخ عائلي، حساسيات…",
+    "medicalShareNotice": "ستُشارَك هذه المعلومات مع الطبيب الذي تحجز موعدًا لديه. لعلاج صحيح وآمن، من المهم أن تكون بيانات الأدوية والحساسية والتاريخ المرضي كاملة.",
+    "medications": "الأدوية",
+    "medicationsDesc": "الأدوية التي تتناولها حاليًا.",
+    "medicationsPlaceholder": "مثال: أسبرين 100 ملغ، ميتفورمين…",
+    "passwordUpdatedReloginRequired": "تم تحديث كلمة المرور. لأمانك أُنهيت جميع الجلسات؛ سجّل الدخول مرة أخرى.",
+    "profileSectionDesc": "الصورة والاسم والدولة واللغة",
+    "saveFailed": "تعذّر الحفظ",
+    "translateContent": "اعرض المنشورات والرسائل بلغتي أيضًا",
+    "translateContentDesc": "عند الإيقاف يبقى المحتوى بلغته الأصلية. فعّله فلن تحتاج إلى ترجمة كل عنصر على حدة.",
+    "vaccinations": "التطعيمات",
+    "vaccinationsDesc": "التطعيمات التي تلقّيتها.",
+    "vaccinationsPlaceholder": "مثال: كوفيد-19، الكزاز، التهاب الكبد B…"
   },
   "search": {
     "heroTitle": "اعثر على الطبيب المناسب لك",
@@ -1406,7 +1468,11 @@
     "catSocial": "اجتماعي",
     "catMessages": "الرسائل",
     "catSystem": "النظام",
-    "unreadLabel": "غير مقروء"
+    "unreadLabel": "غير مقروء",
+    "allClear": "رائع! لا يوجد شيء عاجل حاليًا.",
+    "allClearDesc": "جميع المهام محدّثة. أحسنت!",
+    "taskTracker": "تتبّع ذكي للمهام",
+    "urgentAlerts": "تنبيهات عاجلة"
   },
   "telehealth": {
     "title": "جلسة الرعاية عن بُعد",
@@ -1452,7 +1518,29 @@
     "waiting": "في الانتظار",
     "transcriptHistory": "النص",
     "recording": "تسجيل",
-    "noTranscripts": "ستظهر النصوص هنا عند بدء الجلسة."
+    "noTranscripts": "ستظهر النصوص هنا عند بدء الجلسة.",
+    "camera": "الكاميرا",
+    "captionAccept": "موافقة",
+    "captionAskBody": "يرغب الطرف الآخر في استخدام النص المصاحب. إذا وافقت، سيُحوَّل الكلام إلى نص على خادمنا. لا يُحفظ النص ويُحذف عند انتهاء المكالمة.",
+    "captionAskTitle": "تفعيل النص المصاحب؟",
+    "captionReject": "لا",
+    "captionToggle": "النص المصاحب",
+    "captionUnavailable": "النص المصاحب غير متاح بعد",
+    "captionWaiting": "بانتظار النص المصاحب…",
+    "consentAccept": "موافقة ومتابعة",
+    "consentBody": "المكالمة مشفّرة من طرف إلى طرف ولا تُسجَّل. بالمتابعة، تسمح باستخدام الكاميرا والميكروفون في هذه المكالمة.",
+    "consentTitle": "الانضمام إلى المكالمة",
+    "ended": "انتهت المكالمة",
+    "endedNetwork": "تعذّرت إعادة الاتصال.",
+    "errAccess": "ليس لديك صلاحية الوصول إلى هذه المكالمة.",
+    "errMedia": "تم رفض الوصول إلى الكاميرا أو الميكروفون.",
+    "errSignaling": "تعذّر الوصول إلى خادم المكالمات.",
+    "joinNow": "الانضمام إلى المكالمة",
+    "microphone": "الميكروفون",
+    "prepareBody": "تحقّق من الكاميرا والميكروفون. ينبغي أن يتحرك الشريط عند التحدث.",
+    "prepareTitle": "هل أنت مستعد للانضمام؟",
+    "reconnecting": "جارٍ إعادة الاتصال…",
+    "waitingPeer": "بانتظار الطرف الآخر…"
   },
   "onboarding": {
     "title": "أكمِل ملفك الشخصي",
@@ -1503,7 +1591,11 @@
     "welcomeSubtitle": "اكتمل ملفك الشخصي الآن",
     "welcomeMessage": "تهانينا، {{name}}! تم إعداد ملفك المهني بنجاح.",
     "welcomeHint": "يمكن للمرضى الآن العثور عليك وحجز المواعيد. يمكنك تحديث ملفك الشخصي في أي وقت من لوحة التحكم.",
-    "goToDashboard": "الذهاب إلى لوحة التحكم"
+    "goToDashboard": "الذهاب إلى لوحة التحكم",
+    "avatarFormatError": "يجب أن تكون صورة الملف الشخصي بصيغة JPG أو PNG أو WebP.",
+    "avatarSizeError": "يجب ألّا تتجاوز صورة الملف الشخصي 2 ميغابايت.",
+    "fileTooLarge": "يجب ألّا يتجاوز الملف 10 ميغابايت.",
+    "saveFailed": "تعذّر الحفظ. يُرجى المحاولة مرة أخرى."
   },
   "clinicOnboarding": {
     "profileTitle": "ملف العيادة",
@@ -1841,7 +1933,9 @@
     "failed": "فشل",
     "statusSent": "تم الإرسال",
     "statusDelivered": "تم التسليم",
-    "statusRead": "تمت القراءة"
+    "statusRead": "تمت القراءة",
+    "autoTranslated": "تُرجم تلقائيًا · عرض النص الأصلي",
+    "showTranslation": "عرض الترجمة"
   },
   "medicalArchive": {
     "empty": "لا توجد مستندات بعد",
@@ -1863,7 +1957,17 @@
     "documentDate": "تاريخ المستند",
     "description": "الوصف",
     "descriptionPlaceholder": "ملاحظات اختيارية حول هذا المستند...",
-    "upload": "رفع"
+    "upload": "رفع",
+    "allCategories": "جميع الفئات",
+    "categories": "الفئات",
+    "encrypted": "مشفَّر",
+    "gdprArt9": "المادة 9 من اللائحة",
+    "pdfJpegPngWordExcel": "PDF، JPEG، PNG، Word، Excel · 20 ميغابايت كحد أقصى",
+    "searchPlaceholder": "ابحث في المستندات…",
+    "subtitle": "مستنداتك الطبية محفوظة بأمان",
+    "title": "الأرشيف الطبي",
+    "totalFiles": "إجمالي الملفات",
+    "totalSize": "الحجم الإجمالي"
   },
   "appointment": {
     "selectSpecialty": "اختر التخصص",
@@ -1875,7 +1979,20 @@
     "changeSpecialty": "تغيير التخصص",
     "loadingDoctors": "جارٍ تحميل الأطباء...",
     "noDoctors": "لا يوجد أطباء متاحون لهذا التخصص",
-    "tryDifferent": "يرجى تجربة تخصص مختلف"
+    "tryDifferent": "يرجى تجربة تخصص مختلف",
+    "clearSearch": "مسح البحث",
+    "createNew": "إنشاء موعد جديد",
+    "findDoctor": "ابحث عن طبيب",
+    "findDoctorDesc": "اكتب اسم الطبيب أو التخصص أو العيادة",
+    "findDoctorPlaceholder": "مثال: د. عائشة، طب العيون، Medicana…",
+    "goToVerification": "الانتقال إلى التوثيق",
+    "noTelehealthDoctors": "لا يوجد طبيب يقدّم الاستشارة عن بُعد في هذا التخصص",
+    "orPickSpecialty": "أو اختر تخصصًا من الأسفل",
+    "searchSpecialty": "ابحث عن تخصص…",
+    "verificationMessage": "حفاظًا على سلامة المرضى والثقة بالمنصة، عليك إكمال عملية التوثيق قبل إنشاء المواعيد. يُرجى إرسال مستنداتك المهنية للمراجعة.",
+    "verificationNote": "يستغرق التوثيق عادةً من 24 إلى 48 ساعة بعد إرسال المستندات.",
+    "verificationRequired": "التوثيق مطلوب",
+    "verificationRequiredSubtitle": "يجب توثيق حسابك أولًا"
   },
   "review": {
     "rateExperience": "قيّم تجربتك",
@@ -1905,7 +2022,8 @@
       "telehealthDesc": "أجرِ جلسات الرعاية عن بُعد مع المرضى.",
       "upgradeCta": "الترقية إلى Professional",
       "compareCta": "قارن الخطط",
-      "trustBadge": "إلغاء في أي وقت · بدون التزام · متوافق مع GDPR"
+      "trustBadge": "إلغاء في أي وقت · بدون التزام · متوافق مع GDPR",
+      "professionalBadge": "احترافي"
     },
     "pricing": {
       "title": "قارن الخطط",
@@ -1921,7 +2039,8 @@
       "archive": "أرشيف طبي غير محدود",
       "prioritySupport": "دعم ذو أولوية",
       "maybeLater": "ربما لاحقاً",
-      "upgradePro": "الترقية إلى Professional"
+      "upgradePro": "الترقية إلى Professional",
+      "free": "مجاني"
     }
   },
   "patientDashboard": {
@@ -1953,7 +2072,9 @@
     "closeProfileMenu": "إغلاق قائمة الملف الشخصي",
     "openProfileMenu": "فتح قائمة الملف الشخصي",
     "closeMenu": "إغلاق القائمة",
-    "openMenu": "فتح القائمة"
+    "openMenu": "فتح القائمة",
+    "medagamaLogo": "شعار Medagama",
+    "vascoAi": "Vasco AI"
   },
   "share": {
     "share": "مشاركة",
@@ -2214,7 +2335,21 @@
     "emojiCount": "{{count}} رمز تعبيري",
     "filterCountry": "الدولة: {{country}}",
     "filterSpecialization": "التخصص: {{specialty}}",
-    "filterSearch": "بحث: «{{query}}»"
+    "filterSearch": "بحث: «{{query}}»",
+    "description": "الوصف",
+    "linkCopied": "تم نسخ الرابط إلى الحافظة",
+    "locationHint": "إذن الموقع محظور. فعّله من إعدادات الموقع في متصفحك (رمز القفل في شريط العنوان) ثم حاول مرة أخرى.",
+    "locationHowTo": "للتفعيل، اضغط على رمز القفل في شريط العنوان ← الموقع ← السماح.",
+    "locationManual": "أو اختر الدولة والمدينة يدويًا من الأسفل.",
+    "locationPermissionShort": "إذن الموقع مُعطَّل",
+    "nearbyActive": "عرض الأقرب إليك",
+    "reportDescMin": "اكتب {{min}} حرفًا على الأقل",
+    "reportDescOk": "جيد",
+    "reportFailed": "تعذّر إرسال البلاغ. يُرجى المحاولة مرة أخرى.",
+    "showOriginal": "عرض النص الأصلي",
+    "translate": "ترجمة",
+    "translating": "جارٍ الترجمة…",
+    "verifyToLike": "وثّق حسابك للإعجاب بالمنشورات."
   },
   "subtitles": {
     "button": "الترجمة",
@@ -2228,5 +2363,254 @@
     "editTitle": "تحرير الترجمة",
     "empty": "لا توجد ترجمة قابلة للتحرير في هذا الفيديو.",
     "jump": "الانتقال إلى هذه اللحظة"
+  },
+  "activeFilterChips": {
+    "clear": "مسح"
+  },
+  "authContext": {
+    "areYouSureYouWant": "هل تريد بالتأكيد تسجيل الخروج؟",
+    "logout": "تسجيل الخروج"
+  },
+  "authPages": {
+    "gdprCompliant": "متوافق مع اللائحة العامة لحماية البيانات",
+    "sslSecure": "محمي بـ SSL",
+    "welcomeTo": "مرحبًا بك في"
+  },
+  "browse": {
+    "allClinics": "جميع العيادات",
+    "allSpecialties": "جميع التخصصات",
+    "clinicsForTreatment": "عيادات لـ «{{name}}»",
+    "clinicsInSpecialty": "عيادات {{name}}",
+    "clinicsSubtitle": "اكتشف أفضل العيادات والمستشفيات تقييمًا في جميع التخصصات.",
+    "noClinics": "لم يُعثر على عيادات",
+    "noTagsYet": "لم تُضَف بعد قائمة علاجات لهذا التخصص.",
+    "noTreatments": "لم يُعثر على علاجات",
+    "searchClinics": "ابحث عن عيادة بالاسم أو المدينة أو التخصص…",
+    "searchTreatments": "ابحث عن علاج (مثال: زراعة، مياه بيضاء، أطفال الأنابيب)…",
+    "treatments": "العلاجات",
+    "treatmentsSubtitle": "اعثر على العيادات والمستشفيات حسب نوع العلاج والتخصص.",
+    "tryDifferent": "جرّب كلمة بحث أخرى."
+  },
+  "browseClinics": {
+    "view": "عرض ←"
+  },
+  "browseTreatments": {
+    "view": "عرض ←"
+  },
+  "calendar": {
+    "addApple": "Apple / Outlook (webcal)",
+    "addGoogle": "إضافة إلى تقويم Google",
+    "addToCalendar": "إضافة إلى التقويم",
+    "appleOther": "Apple / .ics",
+    "copied": "تم النسخ",
+    "copy": "نسخ",
+    "regen": "إعادة تعيين الرابط",
+    "regenConfirm": "سيتوقف رابط الاشتراك الحالي عن العمل. هل تريد المتابعة؟",
+    "syncError": "تعذّر تحميل الرابط.",
+    "syncNote": "هذا رابط خاص — لا تشاركه. تطبيقات التقويم تُحدَّث كل بضع دقائق.",
+    "syncSubtitle": "احصل على مواعيدك تلقائيًا في Google أو Apple أو Outlook — أضِفه مرة واحدة.",
+    "syncTitle": "مزامنة التقويم"
+  },
+  "cityCombobox": {
+    "noResults": "لا توجد نتائج"
+  },
+  "countryCombobox": {
+    "noResults": "لا توجد نتائج",
+    "searchCountry": "ابحث عن دولة"
+  },
+  "dateOfBirthPicker": {
+    "dd": "يوم",
+    "mm": "شهر",
+    "yyyy": "سنة"
+  },
+  "exploreTimeline": {
+    "category": "الفئة",
+    "observer": "مراقب"
+  },
+  "forgotPasswordForm": {
+    "nameExampleCom": "name@example.com"
+  },
+  "forgotPasswordPage": {
+    "confirmPassword": "تأكيد كلمة المرور",
+    "didnTReceiveTheCode": "لم يصلك الرمز؟",
+    "emailAddress": "البريد الإلكتروني",
+    "enterResetCode": "أدخل رمز إعادة التعيين",
+    "forgotYourPassword": "هل نسيت كلمة المرور؟",
+    "min6Characters": "6 أحرف على الأقل",
+    "newPassword": "كلمة مرور جديدة",
+    "passwordReset": "تمت إعادة تعيين كلمة المرور!",
+    "repeatYourPassword": "أعد إدخال كلمة المرور",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "sendResetCode": "إرسال الرمز",
+    "setNewPassword": "تعيين كلمة مرور جديدة",
+    "youExampleCom": "you@example.com",
+    "yourPasswordHasBeenSuccessfully": "تم تغيير كلمة المرور بنجاح."
+  },
+  "hospital": {
+    "about": "نبذة",
+    "appointmentNote": "تُدار المواعيد في كل فرع على حدة. يُرجى اختيار فرع للحجز.",
+    "branches": "الفروع",
+    "clinics": "العيادات",
+    "comingSoon": "قريبًا",
+    "director": "المدير الطبي",
+    "doctors": "طبيب",
+    "hospitalInfo": "معلومات المستشفى",
+    "legalName": "الاسم القانوني",
+    "level": "شبكة مستشفيات",
+    "location": "الموقع",
+    "noBio": "لا يوجد وصف.",
+    "noBranches": "لم تُضَف فروع بعد.",
+    "notFound": "لم يُعثر على المستشفى",
+    "notFoundDesc": "ملف هذا المستشفى غير موجود أو لم يعد نشطًا.",
+    "ourBranches": "فروعنا",
+    "selectBranch": "اختر فرعًا من الأسفل",
+    "verified": "موثّق",
+    "viewBranch": "عرض الفرع",
+    "viewMap": "الخريطة"
+  },
+  "invoices": {
+    "discount": "الخصم",
+    "doctor": "الطبيب",
+    "downloadFailed": "تعذّر تنزيل الفاتورة، حاول مرة أخرى.",
+    "downloadPdf": "تنزيل PDF",
+    "dueDate": "تاريخ الاستحقاق",
+    "empty": "لا توجد لديك فواتير بعد.",
+    "issueDate": "تاريخ الإصدار",
+    "loadFailed": "تعذّر تحميل الفواتير.",
+    "paid": "المدفوع",
+    "payAtClinic": "تتولى العيادة تحصيل المدفوعات. تواصل مع عيادتك للسداد.",
+    "status": {
+      "cancelled": "ملغاة",
+      "overdue": "متأخرة",
+      "paid": "مدفوعة",
+      "partial": "مدفوعة جزئيًا",
+      "pending": "بانتظار السداد"
+    },
+    "tax": "ضريبة القيمة المضافة",
+    "title": "فواتيري",
+    "total": "الإجمالي"
+  },
+  "loginForm": {
+    "nameExampleCom": "name@example.com"
+  },
+  "medstreamProfileFeed": {
+    "postMedia": "وسائط المنشور",
+    "videoThumbnail": "صورة مصغّرة للفيديو",
+    "videoUnavailable": "الفيديو غير متاح"
+  },
+  "myAppointments": {
+    "empty": "لا توجد مواعيد.",
+    "subtitle": "أدِر المواعيد الواردة إليك",
+    "title": "مواعيدي"
+  },
+  "page": {
+    "anaSayfa": "الصفحة الرئيسية",
+    "breadcrumb": "breadcrumb",
+    "tedaviler": "العلاجات"
+  },
+  "postComposer": {
+    "emoji": "رمز تعبيري",
+    "photo": "صورة",
+    "video": "فيديو"
+  },
+  "postCreateModal": {
+    "preview": "معاينة"
+  },
+  "postDetail": {
+    "areYouSureYouWant": "هل تريد بالتأكيد حذف هذا التعليق؟",
+    "close": "إغلاق",
+    "delete": "حذف",
+    "next": "التالي",
+    "noCommentsYetBeThe": "لا توجد تعليقات بعد. كن أول المعلّقين!",
+    "noMediaAvailable": "لا توجد وسائط",
+    "postNotFoundPleaseGo": "لم يُعثر على المنشور. عُد وحاول مرة أخرى.",
+    "previous": "السابق",
+    "reply": "رد",
+    "writeAReply": "اكتب ردًا…",
+    "you": "أنت"
+  },
+  "registerForm": {
+    "nameExampleCom": "name@example.com"
+  },
+  "savedClinics": {
+    "favorites": "المفضلة",
+    "noFavoriteClinicsYet": "لا توجد عيادات مفضلة بعد",
+    "noFavoriteDoctorsYet": "لا يوجد أطباء مفضلون بعد",
+    "removeFromFavorites": "إزالة من المفضلة؟",
+    "saveClinicsFromSearchResults": "احفظ العيادات من نتائج البحث أو من ملفات العيادات.",
+    "saveDoctorsFromSearchResults": "احفظ الأطباء من نتائج البحث أو من ملفات الأطباء.",
+    "signInRequired": "تسجيل الدخول مطلوب",
+    "youNeedToSignIn": "عليك تسجيل الدخول لعرض مفضلتك."
+  },
+  "selectCombobox": {
+    "noResults": "لا توجد نتائج",
+    "search": "بحث…"
+  },
+  "sidebarPatient": {
+    "messages": "الرسائل",
+    "vascoAi": "Vasco AI"
+  },
+  "telehealthAppointmentPage": {
+    "appointmentConfirmed": "تم تأكيد الموعد!",
+    "bookAppointment": "حجز موعد",
+    "clearSearch": "مسح البحث",
+    "dataProtectionNotice": "إشعار حماية البيانات",
+    "date": "التاريخ",
+    "dateTime": "التاريخ والوقت",
+    "ddMmYyyy": "يوم.شهر.سنة",
+    "doctor": "الطبيب",
+    "email": "البريد الإلكتروني",
+    "loadingAvailableSlots": "جارٍ تحميل الأوقات المتاحة…",
+    "name": "الاسم",
+    "noAvailableSlotsForThis": "لا توجد أوقات متاحة في هذا التاريخ",
+    "notes": "ملاحظات",
+    "oopsNoSpecialtyFound": "لم يُعثر على تخصص",
+    "patient": "المريض",
+    "patientInformation": "بيانات المريض",
+    "payment": "الدفع",
+    "phone": "الهاتف",
+    "pleaseReviewAllDetailsBefore": "يُرجى مراجعة جميع البيانات قبل التأكيد",
+    "selectADoctor": "اختر طبيبًا",
+    "time": "الوقت",
+    "tryADifferentSearchTerm": "جرّب كلمة بحث أخرى",
+    "trySelectingADifferentDate": "جرّب اختيار تاريخ آخر",
+    "type": "النوع",
+    "youDoctor": "أنت (الطبيب)"
+  },
+  "threadsSidebar": {
+    "messages": "الرسائل",
+    "searchConversations": "ابحث في المحادثات…"
+  },
+  "timelineCard": {
+    "attachment": "مرفق",
+    "comments": "تعليقات",
+    "delete": "حذف",
+    "downloadFile": "تنزيل الملف",
+    "likes": "إعجاب",
+    "openFile": "فتح الملف",
+    "playbackErrorTapToRetry": "خطأ في التشغيل — اضغط لإعادة المحاولة",
+    "post": "نشر",
+    "reply": "رد",
+    "video": "فيديو",
+    "videoProcessing": "جارٍ معالجة الفيديو…",
+    "writeAReply": "اكتب ردًا…"
+  },
+  "timelineFilterSidebar": {
+    "all": "الكل"
+  },
+  "timelinePostCard": {
+    "avatar": "الصورة الرمزية",
+    "postContent": "محتوى المنشور"
+  },
+  "timelineShareBox": {
+    "file": "ملف",
+    "image": "صورة",
+    "post": "نشر"
+  },
+  "verifyEmailPage": {
+    "didnTReceiveTheCode": "لم يصلك الرمز؟",
+    "emailVerified": "تم توثيق البريد الإلكتروني!",
+    "redirectingToYourDashboard": "جارٍ تحويلك إلى لوحتك…",
+    "verifyYourEmail": "وثّق بريدك الإلكتروني"
   }
 }
