@@ -69,6 +69,7 @@ function getFileName(m) {
 const EXT_COLORS = { PDF: 'bg-red-500', DOC: 'bg-blue-500', DOCX: 'bg-blue-500', XLS: 'bg-green-600', XLSX: 'bg-green-600', PPT: 'bg-orange-500', PPTX: 'bg-orange-500', CSV: 'bg-emerald-500' };
 
 function DetailNestedReply({ r, depth, user, replyTo, setReplyTo, replyText, setReplyText, submitDetailReply, setDeleteCommentConfirm, topParentId }) {
+  const { t } = useTranslation();
   const avatarSize = depth >= 2 ? 'w-5 h-5' : 'w-6 h-6';
   const fontSize = depth >= 2 ? 'text-[11px]' : 'text-[12px]';
   const timeFontSize = depth >= 2 ? 'text-[9px]' : 'text-[10px]';
@@ -109,7 +110,7 @@ function DetailNestedReply({ r, depth, user, replyTo, setReplyTo, replyText, set
             <div className="mt-1.5 ml-1 pl-2.5 border-l-2 border-teal-200">
               <div className="flex items-center gap-2">
                 <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder="Write a reply..." className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[11px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
-                <button type="button" className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>Post</button>
+                <button type="button" className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>{t('medstream.submit', 'Post')}</button>
               </div>
             </div>
           )}
@@ -819,7 +820,7 @@ export default function PostDetail() {
                 onClick={handleLike}
               >
                 <ThumbsUp className="w-[16px] h-[16px]" strokeWidth={liked ? 2.4 : 1.7} fill={liked ? 'currentColor' : 'none'} />
-                Like
+                {t('common.like', 'Like')}
               </button>
               <button
                 type="button"
@@ -827,7 +828,7 @@ export default function PostDetail() {
                 onClick={() => setShowComments(v => !v)}
               >
                 <MessageCircle className="w-[16px] h-[16px]" strokeWidth={1.7} />
-                Comment
+                {t('common.comment', 'Comment')}
               </button>
               <button
                 type="button"
@@ -835,9 +836,9 @@ export default function PostDetail() {
                 onClick={handleBookmark}
               >
                 <Bookmark className="w-[16px] h-[16px]" strokeWidth={bookmarked ? 2.4 : 1.7} fill={bookmarked ? 'currentColor' : 'none'} />
-                Save
+                {t('common.save', 'Save')}
               </button>
-              <ShareMenu title="Share" url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-[13px]" />
+              <ShareMenu title={t('common.share', 'Share')} url={shareUrl} showNative={false} buttonClassName="w-full text-gray-600 font-medium text-[13px]" />
             </div>
 
             {/* Comments section */}
@@ -921,7 +922,7 @@ export default function PostDetail() {
                                   <div className="mt-2 ml-2 pl-3 border-l-2 border-teal-200">
                                     <div className="flex items-center gap-2">
                                       <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder="Write a reply..." className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
-                                      <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>Post</button>
+                                      <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>{t('medstream.submit', 'Post')}</button>
                                     </div>
                                   </div>
                                 )}
