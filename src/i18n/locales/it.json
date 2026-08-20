@@ -1616,7 +1616,46 @@
     "startChat": "Avvia chat",
     "askVasco": "Chiedi a Vasco AI...",
     "analyzing": "Analisi in corso...",
-    "disclaimer": "Vasco AI fornisce solo informazioni sanitarie generali. Consulta sempre un professionista sanitario qualificato per consigli medici."
+    "disclaimer": "Vasco AI fornisce solo informazioni sanitarie generali. Consulta sempre un professionista sanitario qualificato per consigli medici.",
+    "a1": "No. Vasco AI non formula diagnosi, non consiglia terapie e non fornisce pareri medici. Ti indirizza soltanto alla specialità e agli specialisti giusti.",
+    "a2": "Consulta gli specialisti della specialità suggerita e",
+    "a2b": "un appuntamento.",
+    "a3": "Sì, Vasco AI è progettato per essere multilingue.",
+    "answerPlaceholder": "Scrivi la tua risposta…",
+    "appointment": "prenota",
+    "ask": "Suggerisci",
+    "askAnother": "↺ Nuovo disturbo",
+    "assistantTitle": "Descrivi il tuo disturbo, troveremo lo specialista giusto",
+    "badge": "Assistente di orientamento IA",
+    "browseDoctors": "Vedi i medici di questa specialità →",
+    "can1": "Suggerisce la specialità probabile per il tuo disturbo",
+    "can2": "Ti indirizza a medici specialisti e cliniche",
+    "can3": "Funziona in molte lingue (adatto al turismo sanitario)",
+    "canTitle": "Cosa fa",
+    "cant1": "Non formula diagnosi",
+    "cant2": "Non consiglia farmaci né terapie",
+    "cant3": "Non sostituisce una visita medica",
+    "cantTitle": "Cosa non fa",
+    "disclaimerShort": "Vasco AI non formula diagnosi: ti indirizza solo allo specialista giusto.",
+    "error": "Si è verificato un errore, riprova.",
+    "faqTitle": "Domande frequenti",
+    "hero": "Descrivi il tuo disturbo; Vasco ti indirizza allo specialista giusto. Non formula diagnosi.",
+    "howTitle": "Come funziona",
+    "importantLabel": "Importante:",
+    "placeholder": "es. Da due giorni ho dolore al petto e palpitazioni…",
+    "q1": "Vasco AI formula diagnosi?",
+    "q2": "Cosa devo fare dopo l'orientamento?",
+    "q3": "Posso usarlo in altre lingue?",
+    "step1Desc": "Scrivi liberamente, nella tua lingua.",
+    "step1Title": "Descrivi il tuo disturbo",
+    "step2Desc": "Vasco individua la specialità medica adatta.",
+    "step2Title": "Specialità suggerita",
+    "step3Desc": "Vedi i medici più adatti e prenota.",
+    "step3Title": "Raggiungi uno specialista",
+    "thinking": "Vasco sta pensando",
+    "trust": "Nessuna diagnosi · Multilingue · Il tuo disturbo resta riservato",
+    "typeExample": "Da due giorni ho un forte mal di denti",
+    "vague": "Puoi descrivere il tuo disturbo con qualche dettaglio in più?"
   },
   "telehealthPage": {
     "title": "Telesalute",
@@ -1703,7 +1742,42 @@
     "sendMessage": "Invia messaggio",
     "addedToFavorites": "Aggiunto ai preferiti",
     "removedFromFavorites": "Rimosso dai preferiti",
-    "clinic": "Clinica"
+    "clinic": "Clinica",
+    "accreditations": "Accreditamenti",
+    "basedOnReviews": "Sulla base di {{count}} recensioni",
+    "book": "Prenota",
+    "certifications": "Certificazioni",
+    "clinicResponse": "Risposta della clinica",
+    "hide": "Nascondi",
+    "noDoctors": "In questa clinica non ci sono ancora medici registrati.",
+    "noDoctorsMatch": "Nessun medico corrisponde alla tua ricerca.",
+    "noReviewsHint": "Sii il primo a condividere la tua esperienza.",
+    "noReviewsYet": "Ancora nessuna recensione",
+    "noTreatmentMatch": "Nessun trattamento corrisponde alla tua ricerca.",
+    "ourDoctors": "I nostri medici",
+    "priceDisclaimer": "* I prezzi possono variare in base alla complessità dell'intervento e alle condizioni del paziente.",
+    "priceRange": "Fascia di prezzo",
+    "priceRangeDisclaimer": "*I prezzi possono variare. Per un preventivo esatto prenota un appuntamento.",
+    "pricing": "Tariffe",
+    "procedure": "Intervento",
+    "reviewAlreadyExists": "Hai già recensito questa clinica.",
+    "reviewFloodLimit": "Devi attendere 24 ore tra una recensione e l'altra.",
+    "reviewGateDesc": "Solo i pazienti che hanno completato un appuntamento in questa clinica possono condividere la propria esperienza. Completa l'appuntamento e torna per lasciare una recensione.",
+    "reviewGateTitle": "Solo recensioni verificate",
+    "reviewMinChars": "Scrivi almeno 10 caratteri.",
+    "reviewNeedAppointment": "Per lasciare una recensione serve un appuntamento completato.",
+    "reviewPlaceholder": "Condividi la tua esperienza (min. 10 caratteri)…",
+    "reviewSubmitError": "Impossibile inviare la recensione. Riprova.",
+    "reviewSuccess": "Grazie per la tua recensione!",
+    "reviewSuccessDesc": "La tua recensione è stata inviata e sarà visibile dopo la moderazione.",
+    "searchDoctor": "Cerca un medico…",
+    "submitReview": "Invia la recensione",
+    "topServices": "Prestazioni più richieste",
+    "treatmentSearchPlaceholder": "Cerca un trattamento o un intervento…",
+    "treatmentTypePlaceholder": "Tipo di trattamento (es. igiene dentale)",
+    "verifiedReview": "Verificata",
+    "viewAllDoctors": "Vedi tutti i {{count}} medici",
+    "writeReview": "Scrivi una recensione"
   },
   "profile": {
     "title": "Profilo",
@@ -1837,7 +1911,8 @@
     "healthTip": "Consiglio sulla salute",
     "healthTipText": "Tieni i tuoi documenti medici organizzati nel tuo Archivio Medico. Condividili con i tuoi medici prima degli appuntamenti per cure migliori.",
     "dataProtection": "Protezione dei dati",
-    "gdprNotice": "I tuoi dati sanitari sono crittografati e archiviati in modo sicuro ai sensi dell'Art. 9 del GDPR. Tu controlli chi può accedere ai tuoi documenti medici."
+    "gdprNotice": "I tuoi dati sanitari sono crittografati e archiviati in modo sicuro ai sensi dell'Art. 9 del GDPR. Tu controlli chi può accedere ai tuoi documenti medici.",
+    "noUpcomingDesc": "Prenota un appuntamento con uno specialista per iniziare il tuo percorso di salute."
   },
   "medicalArchive": {
     "empty": "Nessun documento",
@@ -2619,7 +2694,20 @@
     "editSettings": "Modifica nelle Impostazioni",
     "operatingHours": "Orari di Apertura",
     "galleryComingSoon": "Foto della galleria in arrivo",
-    "galleryComingSoonHint": "Questo medico non ha ancora caricato foto della clinica o dello studio."
+    "galleryComingSoonHint": "Questo medico non ha ancora caricato foto della clinica o dello studio.",
+    "addedToFavorites": "Aggiunto ai preferiti",
+    "appointment": "Appuntamento",
+    "faq": "Domande frequenti",
+    "noFaqs": "Ancora nessuna domanda frequente.",
+    "removedFromFavorites": "Rimosso dai preferiti",
+    "reviewAlreadyExists": "Hai già recensito questo medico.",
+    "reviewFloodLimit": "Devi attendere 24 ore tra una recensione e l'altra.",
+    "reviewGateDesc": "Solo i pazienti che hanno completato un appuntamento con questo medico possono condividere la propria esperienza. Completa l'appuntamento e torna per lasciare una recensione.",
+    "reviewGateTitle": "Solo recensioni verificate",
+    "reviewMinChars": "Scrivi almeno 10 caratteri.",
+    "reviewNeedAppointment": "Per lasciare una recensione serve un appuntamento completato.",
+    "reviewSubmitError": "Impossibile inviare la recensione. Riprova.",
+    "reviewSuccessDesc": "La tua recensione è stata inviata e sarà visibile dopo la moderazione."
   },
   "crmReviews": {
     "title": "Recensioni dei Pazienti",
@@ -2856,7 +2944,23 @@
     "specialtiesSubtitle": "Seleziona i reparti offerti dalla tua clinica",
     "searchSpecialties": "Cerca specializzazioni...",
     "teamTitle": "Configurazione del Team",
-    "teamSubtitle": "Invita i medici a unirsi alla tua clinica"
+    "teamSubtitle": "Invita i medici a unirsi alla tua clinica",
+    "accreditations": "Certificati e accreditamenti",
+    "accreditationsHint": "Seleziona i certificati professionali della tua clinica. Ispirano fiducia ai pazienti.",
+    "addDoctor": "Aggiungi un medico",
+    "addDoctorBtn": "Aggiungi al team",
+    "certificates": "Certificati (con immagine)",
+    "certificatesHint": "Aggiungi il nome del certificato, l'anno e, se vuoi, un'immagine.",
+    "doctorEmail": "Indirizzo e-mail",
+    "doctorName": "Nome completo",
+    "doctorSpecialty": "Specialità (facoltativa)",
+    "finish": "Completa la configurazione",
+    "logo": "Logo",
+    "nameRequired": "Inserisci il nome della clinica.",
+    "skipTeam": "Salta per ora, aggiungerò i membri più tardi",
+    "tempPassword": "Password temporanea (min. 6)",
+    "treatmentsSubtitle": "Seleziona i trattamenti offerti dalla tua clinica: i pazienti ti trovano per trattamento.",
+    "treatmentsTitle": "Trattamenti offerti"
   },
   "appointment": {
     "selectSpecialty": "Seleziona Specializzazione",
@@ -3587,5 +3691,356 @@
     "rotate": "Ruota",
     "zoomIn": "Ingrandisci",
     "zoomOut": "Riduci"
+  },
+  "beforeAfterTab": {
+    "after": "Dopo",
+    "before": "Prima",
+    "beforeAfterPhotos": "Foto prima e dopo"
+  },
+  "cRMAppointments": {
+    "905xxXxxXxxx": "+39 3XX XXX XXXX",
+    "emailExampleCom": "email@esempio.it",
+    "pdfJpgPngMax10": "PDF, JPG, PNG · max 10 MB"
+  },
+  "cRMBranches": {
+    "branchHospitalCom": "sede@clinica.it",
+    "istanbul": "Istanbul",
+    "turkey": "Turchia"
+  },
+  "cRMDocuments": {
+    "pdfDocxXlsxJpgPng": "PDF, DOCX, XLSX, JPG, PNG, DICOM (max 20 MB)"
+  },
+  "cRMExamination": {
+    "after": "Dopo",
+    "before": "Prima",
+    "bp": "PA:",
+    "hr": "FC:",
+    "im": "IM",
+    "inhalation": "Inalatoria",
+    "iv": "EV",
+    "nasal": "Nasale",
+    "oral": "Orale",
+    "rectal": "Rettale",
+    "sc": "SC",
+    "topical": "Topica"
+  },
+  "cRMLayout": {
+    "crmPlatform": "Piattaforma CRM",
+    "goToMedagama": "Vai a Medagama",
+    "loading": "Caricamento…",
+    "searchPatientsAppointments": "Cerca pazienti, appuntamenti…"
+  },
+  "cRMLeads": {
+    "905xxXxxXxxx": "+39 3XX XXX XXXX",
+    "ornekEmailCom": "esempio@email.it",
+    "webReferralManual": "web / passaparola / manuale"
+  },
+  "cRMPatient360": {
+    "backToPatients": "Torna ai pazienti",
+    "icd10": "ICD-10",
+    "medicalSummaryWillPopulateAfter": "Il riepilogo clinico si comporrà con le visite",
+    "noDocumentsYet": "Ancora nessun documento",
+    "noMedicalDataYet": "Ancora nessun dato clinico",
+    "noPatientIdProvided": "Nessun ID paziente indicato",
+    "noTimelineEntriesYet": "Ancora nessuna voce nella cronologia",
+    "noVitalsRecordedYet": "Ancora nessun parametro vitale registrato",
+    "patientNotFound": "Paziente non trovato",
+    "tag": "Etichetta…",
+    "verified": "Verificato"
+  },
+  "cRMReports": {
+    "excelOlarak": "In formato Excel",
+    "hastaDemografisi": "Demografia dei pazienti",
+    "hizmetTedaviAnalizi": "Analisi delle prestazioni / dei trattamenti",
+    "pdfOlarak": "In formato PDF"
+  },
+  "cRMRevenue": {
+    "exportAsExcel": "Esporta in Excel",
+    "exportAsPdf": "Esporta in PDF",
+    "superAdmin": "SUPER AMMINISTRATORE"
+  },
+  "cRMSalespeople": {
+    "905xxXxxXxxx": "+39 3XX XXX XXXX",
+    "mehmetDemir": "Mehmet Demir",
+    "satisciEmailCom": "commerciale@email.it"
+  },
+  "cRMSettings": {
+    "https": "https://…",
+    "httpsWwwExampleCom": "https://www.esempio.it",
+    "openstreetmapPreview": "Anteprima OpenStreetMap"
+  },
+  "cRMStaff": {
+    "5Years": "5 anni",
+    "905xxXxxXxxx": "+39 3XX XXX XXXX",
+    "cardiologyDermatology": "Cardiologia, dermatologia…",
+    "doctorEmailCom": "medico@email.it",
+    "drJohnDoe": "Dott. Mario Rossi",
+    "drProfUzm": "Dott. / Prof. / Specialista",
+    "email": "E-mail",
+    "min6Characters": "Minimo 6 caratteri"
+  },
+  "cRMSupport": {
+    "pngJpgPdfDocMax": "PNG, JPG, PDF, DOC (max 10 MB)"
+  },
+  "clinicDashboard": {
+    "activeDoctors": "Medici attivi",
+    "appointments": "Appuntamenti",
+    "appointmentsDesc": "Consulta e gestisci tutti gli appuntamenti",
+    "clinicProfile": "Profilo della clinica",
+    "clinicProfileDesc": "Modifica il tuo profilo pubblico",
+    "confirmed": "Confermati",
+    "myTeam": "Il mio team",
+    "newAppointment": "Nuovo appuntamento",
+    "pendingRequests": "Richieste in sospeso",
+    "teamDesc": "Aggiungi, modifica o disattiva i medici",
+    "teamManagement": "Gestione del team",
+    "teamOverview": "Panoramica del team",
+    "title": "Dashboard della clinica",
+    "totalAppointments": "Totale appuntamenti"
+  },
+  "clinicHero": {
+    "plus": "Plus"
+  },
+  "clinicLogin": {
+    "clinicExampleCom": "clinica@esempio.it"
+  },
+  "clinicProfileEdit": {
+    "aboutClinic": "Informazioni sulla clinica",
+    "aboutTheClinic": "Informazioni sulla clinica",
+    "accommodation": "Alloggio",
+    "accreditations": "Accreditamenti",
+    "activity": "Attività",
+    "addItem": "Aggiungi elemento",
+    "addProcedure": "Aggiungi intervento",
+    "addTag": "Aggiungi etichetta",
+    "backgroundImage": "Immagine di sfondo",
+    "brain": "Cervello",
+    "cancel": "Annulla",
+    "clickOrDragMarkerTo": "Clicca o trascina l'indicatore per impostare la posizione",
+    "clinicMap": "clinic-map",
+    "cover": "copertina",
+    "createPackage": "Crea pacchetto",
+    "currency": "Valuta",
+    "department": "Reparto",
+    "durationEG45Min": "Durata (es. 45 min)",
+    "eG3NightsHotel": "es. 3 notti in hotel",
+    "eGAirportPickup": "es. Transfer dall'aeroporto",
+    "eGConsultation": "es. Visita",
+    "eGDentalImplant": "es. Impianto dentale",
+    "edit": "Modifica",
+    "editClinicProfile": "Modifica il profilo della clinica",
+    "gallery": "Galleria",
+    "givePatientsAClearCost": "Dai ai pazienti un'idea chiara del costo di ogni prestazione.",
+    "healthTourismPackages": "Pacchetti di turismo sanitario",
+    "hidden": "Nascosto",
+    "insurance": "Assicurazione",
+    "logo": "logo",
+    "manageYourClinicInformationAnd": "Gestisci le informazioni e le prestazioni della tua clinica",
+    "maxPrice": "Prezzo massimo",
+    "minMax": "₺min – ₺max",
+    "minPrice": "Prezzo minimo",
+    "noImagesYet": "Ancora nessuna immagine.",
+    "noReviewsYet": "Ancora nessuna recensione.",
+    "noServicesYet": "Ancora nessuna prestazione.",
+    "packageNameEGBasic": "Nome del pacchetto (es. Pacchetto base)",
+    "preview": "Anteprima:",
+    "priceRanges": "Fasce di prezzo",
+    "remove": "Rimuovi",
+    "save": "Salva",
+    "scissors": "Forbici",
+    "service": "Prestazione",
+    "serviceName": "Nome della prestazione",
+    "services": "Prestazioni",
+    "shortDescription": "Breve descrizione",
+    "stethoscope": "Stetoscopio",
+    "total": "Totale:",
+    "totalPrice": "Prezzo totale",
+    "trEn": "TR, EN",
+    "transfer": "Transfer",
+    "treatment": "Trattamento",
+    "typeClinicAddressDistrictOr": "Digita l'indirizzo della clinica, il quartiere o la città…"
+  },
+  "clinicTeam": {
+    "active": "Attivo",
+    "addDoctor": "Aggiungi un medico",
+    "addDoctorTitle": "Aggiungi un nuovo medico",
+    "addToTeam": "Aggiungi al team",
+    "cardiology": "Cardiologia",
+    "clinicNotFound": "Clinica non trovata. Completa prima la configurazione.",
+    "deactivate": "Disattiva",
+    "doctorExampleCom": "medico@esempio.it",
+    "drJohnSmith": "Dott. Mario Rossi",
+    "email": "E-mail",
+    "emptyDesc": "Aggiungi il tuo primo medico per iniziare.",
+    "emptyTitle": "Ancora nessun membro nel team",
+    "fullName": "Nome completo",
+    "inactive": "Inattivo",
+    "nameEmailRequired": "Nome ed e-mail sono obbligatori.",
+    "phone": "Telefono",
+    "reactivate": "Riattiva",
+    "searchPlaceholder": "Cerca per nome o e-mail…",
+    "specialty": "Specialità",
+    "subtitle": "Gestisci i medici e il personale della tua clinica",
+    "tempPassword": "Password temporanea",
+    "tempPasswordHint": "Minimo 6 caratteri (predefinita: Temp1234!)",
+    "title": "Il mio team"
+  },
+  "contactPage": {
+    "gizlilikVeVeri": "Privacy e dati",
+    "hastalar": "Pazienti",
+    "infoMedagamaCom": "info@medagama.com",
+    "klinikler": "Cliniche",
+    "tedavileriInceleyin": "vedi i trattamenti",
+    "verilerimleIlgiliTalebimVar": "Ho una richiesta relativa ai miei dati."
+  },
+  "dataPrivacyRightsPage": {
+    "deleteAccountData": "Elimina l'account e i dati",
+    "dpoMedagamaCom": "dpo@medagama.com",
+    "email": "E-mail:",
+    "gdprRightsManagementCenter": "Centro di gestione dei diritti GDPR",
+    "generalDataProtectionRegulationGdpr": "Regolamento generale sulla protezione dei dati (GDPR)",
+    "privacyInquiries": "Richieste sulla privacy:",
+    "privacyMedagamaCom": "privacy@medagama.com",
+    "rightToLodgeAComplaint": "Diritto di reclamo (art. 77)",
+    "thisActionCannotBeUndone": "Questa azione non può essere annullata",
+    "warning": "Avviso:",
+    "yourDataPrivacyRights": "I tuoi diritti sulla privacy dei dati",
+    "yourRights": "I tuoi diritti"
+  },
+  "doctorAppointmentManager": {
+    "appointmentRequests": "Richieste di appuntamento",
+    "confirmedAppointmentsWillAppearHere": "Gli appuntamenti confermati appariranno qui",
+    "loadingAppointments": "Caricamento degli appuntamenti…",
+    "manageIncomingPatientAppointments": "Gestisci gli appuntamenti in arrivo dei pazienti",
+    "newAppointmentRequestsWillAppear": "Le nuove richieste di appuntamento appariranno qui",
+    "noConfirmedAppointments": "Nessun appuntamento confermato",
+    "noPendingRequests": "Nessuna richiesta in sospeso"
+  },
+  "doctorChatPage": {
+    "channel": "Canale",
+    "loadingMessages": "Caricamento dei messaggi…"
+  },
+  "doctorDashboard": {
+    "appointments": "Appuntamenti",
+    "billingThisMonth": "Fatturato di questo mese",
+    "bookmarkFailed": "Salvataggio non riuscito.",
+    "crmAccess": "Suite CRM Professional",
+    "crmAccessDesc": "Accedi alla tua dashboard CRM completa con tutti gli strumenti professionali.",
+    "crmDesc": "Agenda intelligente, analisi del fatturato, teleconsulto, gestione dei pazienti e molto altro.",
+    "crmTitle": "Medagama CRM — Suite Professional",
+    "editProfile": "Modifica il profilo",
+    "featureCalendar": "Agenda intelligente",
+    "featurePatients": "CRM pazienti",
+    "featureRevenue": "Analisi del fatturato",
+    "featureTelehealth": "Teleconsulto",
+    "infoRequested": "Sono necessari altri documenti",
+    "infoRequestedDesc": "Il team di amministrazione ha richiesto ulteriori informazioni.",
+    "notifications": "Notifiche",
+    "openCrm": "Apri il CRM",
+    "paidInvoices": "Pagate",
+    "pendingDesc": "Carica i tuoi documenti per essere verificato e iniziare a ricevere appuntamenti.",
+    "pendingPayments": "In sospeso",
+    "pendingVerification": "Verifica in attesa",
+    "quickActions": "Azioni rapide",
+    "rating": "Valutazione",
+    "rejected": "Verifica rifiutata",
+    "rejectedDesc": "La tua verifica non è stata approvata. Ricarica i documenti corretti.",
+    "resubmitDocs": "Invia di nuovo i documenti",
+    "reviews": "recensioni",
+    "settings": "Impostazioni",
+    "subtitle": "Gestisci il tuo profilo Medagama",
+    "totalInvoiced": "Totale fatturato",
+    "underReview": "Documenti in revisione",
+    "underReviewDesc": "Abbiamo ricevuto i tuoi documenti. Il nostro team li sta esaminando (2-5 giorni lavorativi).",
+    "upcomingAppts": "appuntamenti in arrivo",
+    "upcomingTitle": "Prossimi appuntamenti",
+    "updateDocs": "Aggiorna i documenti",
+    "upgradeCta": "Passa a Pro",
+    "uploadDocs": "Carica i documenti",
+    "verified": "Account verificato",
+    "verifiedDesc": "Il tuo account è verificato. I pazienti possono prenotare appuntamenti.",
+    "viewAll": "Vedi tutto",
+    "viewProfile": "Vedi il profilo pubblico",
+    "welcome": "Benvenuto"
+  },
+  "doctorLocationEditor": {
+    "clickOrDragMarkerTo": "Clicca o trascina l'indicatore per impostare la posizione",
+    "doctorMap": "doctor-map",
+    "searchAnAddressThenDrag": "Cerca un indirizzo, poi trascina il segnaposto per regolarlo.",
+    "setYourLocation": "Imposta la tua posizione",
+    "typeYourAddressDistrictOr": "Digita il tuo indirizzo, il quartiere o la città…"
+  },
+  "doctorLogin": {
+    "doctorExampleCom": "medico@esempio.it"
+  },
+  "doctorOnboarding": {
+    "eGCardiology": "es. Cardiologia"
+  },
+  "forClinicsPage": {
+    "arama": "ricerca"
+  },
+  "forPatientsPage": {
+    "arama": "ricerca",
+    "doktorVeKlinikBulun": "Trova medici e cliniche",
+    "klinikMisiniz": "Sei una clinica?",
+    "onlineRandevu": "Appuntamento online",
+    "randevuVeTelehealth": "Appuntamenti e teleconsulto",
+    "tedavileriInceleyin": "vedi i trattamenti"
+  },
+  "galleryTab": {
+    "gallery": "Galleria"
+  },
+  "googleMapsPreview": {
+    "googleMapsPreview": "Anteprima Google Maps",
+    "invalidGoogleMapsUrlPlease": "URL di Google Maps non valido. Incolla un link valido.",
+    "mapLinkDetected": "Link della mappa rilevato"
+  },
+  "kVKKPage": {
+    "dpoMedgamaCom": "dpo@medgama.com",
+    "kvkkMedgamaCom": "kvkk@medgama.com",
+    "veriSorumlusu": "Titolare del trattamento:"
+  },
+  "locationTab": {
+    "location": "Posizione"
+  },
+  "mapboxMap": {
+    "loadingMap": "Caricamento della mappa…",
+    "noLocationProvidedYet": "Nessuna posizione ancora indicata."
+  },
+  "mapboxView": {
+    "location": "Posizione"
+  },
+  "proTeaser": {
+    "apr": "apr",
+    "aug": "ago",
+    "dec": "dic",
+    "feb": "feb",
+    "jan": "gen",
+    "jul": "lug",
+    "jun": "giu",
+    "mar": "mar",
+    "may": "mag",
+    "nov": "nov",
+    "oct": "ott",
+    "sep": "set"
+  },
+  "quickContactCard": {
+    "quickContact": "Contatto rapido"
+  },
+  "servicesTab": {
+    "ourServices": "Le nostre prestazioni"
+  },
+  "termsPopup": {
+    "dataProtectionOfficer": "Responsabile della protezione dei dati:",
+    "dataRights": "Diritti sui dati",
+    "dpoMedagamaCom": "dpo@medagama.com",
+    "generalInquiries": "Richieste generali:",
+    "infoMedagamaCom": "info@medagama.com",
+    "privacyPolicy": "Informativa sulla privacy",
+    "termsOfServicePage": "pagina delle condizioni d'uso",
+    "termsOfUse": "Condizioni d'uso"
+  },
+  "vascoAIPage": {
+    "online": "Online"
   }
 }
