@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
+import { aramaAnahtari } from '../../utils/searchNormalize';
 
 // Reusable select-like combobox with search, outside-click close, and custom left icon
 export default function SelectCombobox({

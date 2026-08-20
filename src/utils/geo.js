@@ -6,6 +6,7 @@ import { loadCities } from '../data/cityLoader';
 import countryCodes from '../data/countryCodes';
 import countryDialCodes from '../data/countryDialCodes';
 import adminDivisions from '../data/adminDivisions';
+import { aramaAnahtari } from './searchNormalize';
 // country-state-city removed for bundle size optimization (was 8.4 MB chunk)
 // All data now comes from local sources: cityLoader, countryCodes, adminDivisions, countryDialCodes
 
