@@ -70,6 +70,9 @@ const StageBadge = ({ stage }) => (
 
 // ─── Add Tag Modal ───────────────────────────────────────────
 const AddTagModal = ({ patientId, patientName, onClose, onAdded, t }) => {
+  // notify yalnızca üst bileşende alınıyordu; burada tanımsızdı ve
+  // catch bloğunda çağrıldığı için hata yakalayıcının kendisi çöküyordu.
+  const { notify } = useToast();
   const [tagValue, setTagValue] = useState('');
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
@@ -116,6 +119,9 @@ const AddTagModal = ({ patientId, patientName, onClose, onAdded, t }) => {
 
 // ─── Set Stage Modal ─────────────────────────────────────────
 const SetStageModal = ({ patientId, patientName, currentStage, onClose, onUpdated, t }) => {
+  // notify yalnızca üst bileşende alınıyordu; burada tanımsızdı ve
+  // catch bloğunda çağrıldığı için hata yakalayıcının kendisi çöküyordu.
+  const { notify } = useToast();
   const [stageValue, setStageValue] = useState(currentStage || '');
   const [loading, setLoading] = useState(false);
 

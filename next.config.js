@@ -82,7 +82,13 @@ const nextConfig = {
     dangerouslyAllowSVG: false,
   },
   eslint: {
-    // Build sırasında lint hatası deploy'u kırmasın (CRA CI=false davranışı)
+    // Derleme lint'e takılmasın: stil uyarısı yüzünden dağıtım durmamalı.
+    //
+    // Bu, çökme denetiminin atlandığı anlamına GELMEZ — o ayrı çalışıyor:
+    //   npm run lint:crash
+    // .eslintrc.json yalnızca çalışma-anı çökmelerini hedefliyor (eksik
+    // import, kapsam dışı değişken, kural dışı hook). Derlemede kapalı
+    // kalması bilinçli; asıl kapı o betik.
     ignoreDuringBuilds: true,
   },
 

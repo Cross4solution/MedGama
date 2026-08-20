@@ -1,0 +1,56 @@
+{
+  "//": [
+    "ÇÖKME DENETİMİ — bu dosya kozmetik kurallar için değil.",
+    "",
+    "Buradaki her kural, derlemenin YAKALAYAMADIĞI bir çalışma-anı çökmesini",
+    "hedefliyor. Eksik bir import derleme hatası değildir; sayfa açılana kadar",
+    "sessiz kalır, sonra ReferenceError ile beyaz ekran verir. Canlıda tam da",
+    "bu oldu: bir toplu düzenleme üç dosyada import eklemeyi atladı ve",
+    "'aramaAnahtari is not defined' dokuz dilin hepsinde sayfayı çökertti.",
+    "",
+    "O sırada hiçbir denetim çalışmıyordu: next.config.js'te lint kapalıydı ve",
+    "eslintConfig hâlâ kaldırılmış CRA kurulumuna işaret ediyordu.",
+    "",
+    "Biçim/stil kuralları bilerek YOK. Amaç, gürültü üretmeden gerçek",
+    "çökmeleri yakalamak; gürültülü bir denetim görmezden gelinir."
+  ],
+  "root": true,
+  "env": { "browser": true, "es2022": true, "node": true },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": { "jsx": true }
+  },
+  "plugins": ["react", "react-hooks"],
+  "settings": { "react": { "version": "detect" } },
+  "globals": {
+    "React": "readonly",
+    "JSX": "readonly",
+    "google": "readonly",
+    "mapboxgl": "readonly",
+    "Pusher": "readonly",
+    "Echo": "readonly",
+    "gtag": "readonly",
+    "dataLayer": "readonly"
+  },
+  "ignorePatterns": ["node_modules/", ".next/", "build/", "backend/", "public/"],
+  "rules": {
+    "no-undef": "error",
+    "react/jsx-no-undef": "error",
+    "react-hooks/rules-of-hooks": "error",
+    "no-dupe-keys": "error",
+    "no-dupe-args": "error",
+    "no-dupe-class-members": "error",
+    "no-const-assign": "error",
+    "no-func-assign": "error",
+    "no-import-assign": "error",
+    "no-obj-calls": "error",
+    "no-setter-return": "error",
+    "no-unsafe-negation": "error",
+    "no-unsafe-optional-chaining": "error",
+    "no-unreachable": "error",
+    "no-cond-assign": "error",
+    "use-isnan": "error",
+    "valid-typeof": "error"
+  }
+}

@@ -48,6 +48,9 @@ const StatCard = ({ label, value, icon: Icon, bg, iconColor, border }) => (
 
 // ─── Create Invoice Modal ────────────────────────────────────
 const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
+  // notify yalnızca üst bileşende alınıyordu; burada tanımsızdı ve
+  // catch bloğunda çağrıldığı için hata yakalayıcının kendisi çöküyordu.
+  const { notify } = useToast();
   const [loading, setLoading] = useState(false);
   const [patients, setPatients] = useState([]);
   const [patientsLoading, setPatientsLoading] = useState(true);
@@ -262,6 +265,9 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
 
 // ─── Record Payment Modal ────────────────────────────────────
 const PaymentModal = ({ invoice, onClose, onUpdated, t }) => {
+  // notify yalnızca üst bileşende alınıyordu; burada tanımsızdı ve
+  // catch bloğunda çağrıldığı için hata yakalayıcının kendisi çöküyordu.
+  const { notify } = useToast();
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState(invoice.payment_method || 'cash');
   const [loading, setLoading] = useState(false);

@@ -217,6 +217,9 @@ const NAV_SECTIONS = [
 ];
 
 const AdminLayout = ({ children }) => {
+  // t iç bileşen NavItem içinde de alınıyor; burada ayrıca gerekiyor çünkü
+  // başlık, arama kutusu ve uyarı paneli bu kapsamda çiziliyor.
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
