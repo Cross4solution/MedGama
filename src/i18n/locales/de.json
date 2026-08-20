@@ -69,7 +69,41 @@
     "saving": "Wird gespeichert …",
     "country": "Land",
     "clear": "Zurücksetzen",
-    "upgrade": "Upgraden"
+    "upgrade": "Upgraden",
+    "backToHome": "Zurück zur Startseite",
+    "cancelled": "Storniert",
+    "clearAll": "Alle zurücksetzen",
+    "comment": "Kommentieren",
+    "comments": "Kommentare",
+    "creating": "Wird erstellt …",
+    "done": "Fertig",
+    "filters": "Filter",
+    "following": "Folgt",
+    "like": "Gefällt mir",
+    "loadError": "Beim Laden der Dokumente ist ein Fehler aufgetreten.",
+    "loadMore": "Mehr laden",
+    "new": "Neu",
+    "noData": "Keine Daten verfügbar",
+    "noReviewsYet": "Noch keine Bewertungen",
+    "noSavedPosts": "Noch keine gespeicherten Beiträge",
+    "now": "Jetzt",
+    "of": "von",
+    "optional": "optional",
+    "previous": "Zurück",
+    "readMore": "Mehr lesen",
+    "ready": "Bereit",
+    "saveChanges": "Änderungen speichern",
+    "savedPosts": "Gespeicherte Beiträge",
+    "share": "Teilen",
+    "showLess": "Weniger anzeigen",
+    "showing": "Angezeigt",
+    "signInRequired": "Anmeldung erforderlich",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "uploading": "Wird hochgeladen …",
+    "verified": "Verifiziert",
+    "viewAll": "Alle anzeigen",
+    "years": "J."
   },
   "nav": {
     "home": "Startseite",
@@ -223,7 +257,8 @@
     "passwordsMatch": "Die Passwörter stimmen überein",
     "selectCountryPlaceholder": "Land auswählen",
     "guardianConsentNotice": "Für die Registrierung ist die Zustimmung der Eltern erforderlich, wenn Sie unter 18 Jahre alt sind. Bitte geben Sie die E-Mail-Adresse des Erziehungsberechtigten ein.",
-    "guardianEmailPlaceholder": "erziehungsberechtigter@beispiel.com"
+    "guardianEmailPlaceholder": "erziehungsberechtigter@beispiel.com",
+    "signInAsDifferentRole": "Mit einer anderen Rolle anmelden"
   },
   "aboutPage": {
     "heroDesc": "Ein sprach- und ortsunabhängiger Marktplatz für Gesundheit und Medizintourismus, der Patienten mit erfahrenen Ärzten und verifizierten Kliniken/Krankenhäusern auf einer Plattform zusammenbringt.",
@@ -289,7 +324,12 @@
     "contactUs": "Kontakt",
     "privacyShort": "Datenschutz",
     "termsShort": "AGB",
-    "popularTreatments": "Beliebte Behandlungen"
+    "popularTreatments": "Beliebte Behandlungen",
+    "allTreatments": "Alle Behandlungen",
+    "medagamaLogo": "Medagama Logo",
+    "popCardiologyIstanbul": "Kardiologie Istanbul",
+    "popDermatologyIstanbul": "Dermatologie Istanbul",
+    "popOrthopedicsAnkara": "Orthopädie Ankara"
   },
   "crm": {
     "sidebar": {
@@ -1056,7 +1096,12 @@
     "savedPosts": "Gespeicherte Beiträge",
     "favoriteClinics": "Lieblingskliniken",
     "medicalArchive": "Medizinisches Archiv",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "billing": "Abrechnung",
+    "clinicProfile": "Klinikprofil",
+    "managementPanel": "CRM-Bereich",
+    "myInvoices": "Rechnungen",
+    "myTeam": "Mein Team"
   },
   "cookie": {
     "title": "Cookie-Einstellungen",
@@ -1189,7 +1234,23 @@
     "deleteModalBody": "Dadurch werden Ihr Konto und alle zugehörigen Daten, einschließlich Beiträge, Kommentare, Krankengeschichte und persönliche Informationen, dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
     "deleteModalTypePrefix": "Geben Sie",
     "deleteModalTypeSuffix": "zur Bestätigung ein",
-    "deleting": "Wird gelöscht …"
+    "deleting": "Wird gelöscht …",
+    "delete": "LÖSCHEN",
+    "medicalNotes": "Notizen",
+    "medicalNotesDesc": "Alles Weitere, was Ihre Ärztin oder Ihr Arzt wissen sollte.",
+    "medicalNotesPlaceholder": "z. B. frühere Operationen, Familienanamnese, Unverträglichkeiten …",
+    "medicalShareNotice": "Diese Angaben werden mit der Ärztin oder dem Arzt geteilt, bei der bzw. dem Sie einen Termin buchen. Für eine sichere und richtige Behandlung ist es wichtig, dass Medikamente, Allergien und Vorerkrankungen vollständig sind.",
+    "medications": "Medikamente",
+    "medicationsDesc": "Medikamente, die Sie derzeit einnehmen.",
+    "medicationsPlaceholder": "z. B. Aspirin 100 mg, Metformin …",
+    "passwordUpdatedReloginRequired": "Ihr Passwort wurde aktualisiert. Aus Sicherheitsgründen wurden alle Sitzungen beendet – bitte melden Sie sich erneut an.",
+    "profileSectionDesc": "Foto, Name, Land und Sprache",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "translateContent": "Beiträge und Nachrichten auch in meiner Sprache anzeigen",
+    "translateContentDesc": "Ist die Option aus, bleiben Inhalte in ihrer Originalsprache. Schalten Sie sie ein, müssen Sie nicht jeden Beitrag einzeln übersetzen.",
+    "vaccinations": "Impfungen",
+    "vaccinationsDesc": "Impfungen, die Sie erhalten haben.",
+    "vaccinationsPlaceholder": "z. B. COVID-19, Tetanus, Hepatitis B …"
   },
   "search": {
     "heroTitle": "Finden Sie den richtigen Arzt für Sie",
@@ -1407,7 +1468,11 @@
     "catSocial": "Soziales",
     "catMessages": "Nachrichten",
     "catSystem": "System",
-    "unreadLabel": "Ungelesen"
+    "unreadLabel": "Ungelesen",
+    "allClear": "Sehr gut! Derzeit liegt nichts Dringendes an.",
+    "allClearDesc": "Alle Aufgaben sind aktuell. Weiter so!",
+    "taskTracker": "Intelligente Aufgabenverfolgung",
+    "urgentAlerts": "Dringende Hinweise"
   },
   "telehealth": {
     "title": "Telemedizin-Sitzung",
@@ -1504,7 +1569,11 @@
     "welcomeSubtitle": "Ihr Profil ist jetzt vollständig",
     "welcomeMessage": "Herzlichen Glückwunsch, {{name}}! Ihr berufliches Profil wurde erfolgreich eingerichtet.",
     "welcomeHint": "Patienten können Sie jetzt finden und Termine buchen. Sie können Ihr Profil jederzeit über Ihr Dashboard aktualisieren.",
-    "goToDashboard": "Zum Dashboard"
+    "goToDashboard": "Zum Dashboard",
+    "avatarFormatError": "Das Profilbild muss im Format JPG, PNG oder WebP vorliegen.",
+    "avatarSizeError": "Das Profilbild darf höchstens 2 MB groß sein.",
+    "fileTooLarge": "Die Datei darf höchstens 10 MB groß sein.",
+    "saveFailed": "Speichern fehlgeschlagen. Bitte versuchen Sie es erneut."
   },
   "clinicOnboarding": {
     "profileTitle": "Klinikprofil",
@@ -1842,7 +1911,9 @@
     "failed": "Fehlgeschlagen",
     "statusSent": "Gesendet",
     "statusDelivered": "Zugestellt",
-    "statusRead": "Gelesen"
+    "statusRead": "Gelesen",
+    "autoTranslated": "Automatisch übersetzt · Original anzeigen",
+    "showTranslation": "Übersetzung anzeigen"
   },
   "medicalArchive": {
     "empty": "Noch keine Dokumente",
@@ -1876,7 +1947,20 @@
     "changeSpecialty": "Fachgebiet ändern",
     "loadingDoctors": "Ärzte werden geladen...",
     "noDoctors": "Keine Ärzte für dieses Fachgebiet verfügbar",
-    "tryDifferent": "Bitte versuchen Sie ein anderes Fachgebiet"
+    "tryDifferent": "Bitte versuchen Sie ein anderes Fachgebiet",
+    "clearSearch": "Suche zurücksetzen",
+    "createNew": "Neuen Termin erstellen",
+    "findDoctor": "Arzt suchen",
+    "findDoctorDesc": "Geben Sie einen Arztnamen, ein Fachgebiet oder eine Klinik ein",
+    "findDoctorPlaceholder": "z. B. Dr. Ayşe, Augenheilkunde, Medicana …",
+    "goToVerification": "Zur Verifizierung",
+    "noTelehealthDoctors": "Für dieses Fachgebiet bietet kein Arzt Videosprechstunden an",
+    "orPickSpecialty": "oder wählen Sie unten ein Fachgebiet",
+    "searchSpecialty": "Fachgebiet suchen …",
+    "verificationMessage": "Zum Schutz der Patienten und zur Sicherung des Vertrauens in die Plattform müssen Sie die Verifizierung abschließen, bevor Sie Termine anlegen können. Bitte reichen Sie Ihre Berufsnachweise zur Prüfung ein.",
+    "verificationNote": "Die Verifizierung dauert nach Einreichung der Unterlagen in der Regel 24–48 Stunden.",
+    "verificationRequired": "Verifizierung erforderlich",
+    "verificationRequiredSubtitle": "Ihr Konto muss zuerst verifiziert werden"
   },
   "review": {
     "rateExperience": "Bewerten Sie Ihre Erfahrung",
@@ -1906,7 +1990,8 @@
       "telehealthDesc": "Führen Sie Telemedizin-Sitzungen mit Patienten durch.",
       "upgradeCta": "Upgrade auf Professional",
       "compareCta": "Pläne vergleichen",
-      "trustBadge": "Jederzeit kündbar · Keine Verpflichtung · DSGVO-konform"
+      "trustBadge": "Jederzeit kündbar · Keine Verpflichtung · DSGVO-konform",
+      "professionalBadge": "Professional"
     },
     "pricing": {
       "title": "Pläne vergleichen",
@@ -1922,7 +2007,8 @@
       "archive": "Unbegrenztes medizinisches Archiv",
       "prioritySupport": "Priorisierter Support",
       "maybeLater": "Vielleicht später",
-      "upgradePro": "Upgrade auf Professional"
+      "upgradePro": "Upgrade auf Professional",
+      "free": "Kostenlos"
     }
   },
   "patientDashboard": {
@@ -1954,7 +2040,9 @@
     "closeProfileMenu": "Profilmenü schließen",
     "openProfileMenu": "Profilmenü öffnen",
     "closeMenu": "Menü schließen",
-    "openMenu": "Menü öffnen"
+    "openMenu": "Menü öffnen",
+    "medagamaLogo": "Medagama Logo",
+    "vascoAi": "Vasco AI"
   },
   "share": {
     "share": "Teilen",
@@ -2215,7 +2303,21 @@
     "emojiCount": "{{count}} Emoji",
     "filterCountry": "Land: {{country}}",
     "filterSpecialization": "Fachgebiet: {{specialty}}",
-    "filterSearch": "Suche: „{{query}}“"
+    "filterSearch": "Suche: „{{query}}“",
+    "description": "Beschreibung",
+    "linkCopied": "Link in die Zwischenablage kopiert",
+    "locationHint": "Die Standortfreigabe ist blockiert. Aktivieren Sie sie in den Website-Einstellungen Ihres Browsers (Schloss-Symbol in der Adressleiste) und versuchen Sie es erneut.",
+    "locationHowTo": "Zum Aktivieren auf das Schloss-Symbol in der Adressleiste klicken → Standort → Zulassen.",
+    "locationManual": "Oder wählen Sie Land und Stadt unten manuell aus.",
+    "locationPermissionShort": "Standortfreigabe deaktiviert",
+    "nearbyActive": "Umgebung wird angezeigt",
+    "reportDescMin": "Bitte schreiben Sie mindestens {{min}} Zeichen",
+    "reportDescOk": "Sieht gut aus",
+    "reportFailed": "Die Meldung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+    "showOriginal": "Original anzeigen",
+    "translate": "Übersetzen",
+    "translating": "Wird übersetzt …",
+    "verifyToLike": "Verifizieren Sie Ihr Konto, um Beiträge zu liken."
   },
   "subtitles": {
     "button": "Untertitel",
@@ -2229,5 +2331,173 @@
     "editTitle": "Untertitel bearbeiten",
     "empty": "Dieses Video hat keine Untertitel zum Bearbeiten.",
     "jump": "Zu dieser Stelle springen"
+  },
+  "activeFilterChips": {
+    "clear": "löschen"
+  },
+  "authContext": {
+    "areYouSureYouWant": "Möchten Sie sich wirklich abmelden?",
+    "logout": "Abmelden"
+  },
+  "authPages": {
+    "gdprCompliant": "DSGVO-konform",
+    "sslSecure": "SSL-gesichert",
+    "welcomeTo": "Willkommen bei"
+  },
+  "browse": {
+    "allClinics": "Alle Kliniken",
+    "allSpecialties": "Alle Fachgebiete",
+    "clinicsForTreatment": "Kliniken für „{{name}}“",
+    "clinicsInSpecialty": "Kliniken für {{name}}",
+    "clinicsSubtitle": "Entdecken Sie bestbewertete Kliniken und Krankenhäuser aus allen Fachgebieten.",
+    "noClinics": "Keine Kliniken gefunden",
+    "noTagsYet": "Für dieses Fachgebiet wurde noch keine Behandlungsliste hinterlegt.",
+    "noTreatments": "Keine Behandlungen gefunden",
+    "searchClinics": "Kliniken nach Name, Stadt oder Fachgebiet suchen …",
+    "searchTreatments": "Behandlung suchen (z. B. Implantat, Katarakt, IVF) …",
+    "treatments": "Behandlungen",
+    "treatmentsSubtitle": "Finden Sie Kliniken und Krankenhäuser nach Behandlungsart und Fachgebiet.",
+    "tryDifferent": "Versuchen Sie einen anderen Suchbegriff."
+  },
+  "browseClinics": {
+    "view": "Ansehen →"
+  },
+  "browseTreatments": {
+    "view": "Ansehen →"
+  },
+  "calendar": {
+    "addApple": "Apple / Outlook (webcal)",
+    "addGoogle": "Zu Google Kalender hinzufügen",
+    "addToCalendar": "Zum Kalender hinzufügen",
+    "appleOther": "Apple / .ics",
+    "copied": "Kopiert",
+    "copy": "Kopieren",
+    "regen": "Link zurücksetzen",
+    "regenConfirm": "Der aktuelle Abonnement-Link wird ungültig. Fortfahren?",
+    "syncError": "Der Link konnte nicht geladen werden.",
+    "syncNote": "Dies ist ein privater Link – bitte nicht weitergeben. Kalender-Apps aktualisieren alle paar Minuten.",
+    "syncSubtitle": "Ihre Termine automatisch in Google, Apple oder Outlook – einmal hinzufügen, fertig.",
+    "syncTitle": "Kalender-Synchronisierung"
+  },
+  "cityCombobox": {
+    "noResults": "Keine Ergebnisse"
+  },
+  "countryCombobox": {
+    "noResults": "Keine Ergebnisse",
+    "searchCountry": "Land suchen"
+  },
+  "dateOfBirthPicker": {
+    "dd": "TT",
+    "mm": "MM",
+    "yyyy": "JJJJ"
+  },
+  "exploreTimeline": {
+    "category": "Kategorie",
+    "observer": "Beobachter"
+  },
+  "forgotPasswordForm": {
+    "nameExampleCom": "name@beispiel.de"
+  },
+  "forgotPasswordPage": {
+    "confirmPassword": "Passwort bestätigen",
+    "didnTReceiveTheCode": "Keinen Code erhalten?",
+    "emailAddress": "E-Mail-Adresse",
+    "enterResetCode": "Zurücksetzungscode eingeben",
+    "forgotYourPassword": "Passwort vergessen?",
+    "min6Characters": "Mind. 6 Zeichen",
+    "newPassword": "Neues Passwort",
+    "passwordReset": "Passwort zurückgesetzt!",
+    "repeatYourPassword": "Passwort wiederholen",
+    "resetPassword": "Passwort zurücksetzen",
+    "sendResetCode": "Code senden",
+    "setNewPassword": "Neues Passwort festlegen",
+    "youExampleCom": "sie@beispiel.de",
+    "yourPasswordHasBeenSuccessfully": "Ihr Passwort wurde erfolgreich geändert."
+  },
+  "loginForm": {
+    "nameExampleCom": "name@beispiel.de"
+  },
+  "medstreamProfileFeed": {
+    "postMedia": "Beitragsmedien",
+    "videoThumbnail": "Video-Vorschaubild",
+    "videoUnavailable": "Video nicht verfügbar"
+  },
+  "myAppointments": {
+    "empty": "Keine Termine.",
+    "subtitle": "Verwalten Sie Ihre eingehenden Termine",
+    "title": "Meine Termine"
+  },
+  "page": {
+    "anaSayfa": "Startseite",
+    "breadcrumb": "breadcrumb",
+    "tedaviler": "Behandlungen"
+  },
+  "postComposer": {
+    "emoji": "Emoji",
+    "photo": "Foto",
+    "video": "Video"
+  },
+  "postCreateModal": {
+    "preview": "Vorschau"
+  },
+  "postDetail": {
+    "areYouSureYouWant": "Möchten Sie diesen Kommentar wirklich löschen?",
+    "close": "Schließen",
+    "delete": "Löschen",
+    "next": "Weiter",
+    "noCommentsYetBeThe": "Noch keine Kommentare. Schreiben Sie den ersten!",
+    "noMediaAvailable": "Keine Medien vorhanden",
+    "postNotFoundPleaseGo": "Beitrag nicht gefunden. Bitte gehen Sie zurück und versuchen Sie es erneut.",
+    "previous": "Zurück",
+    "reply": "Antworten",
+    "writeAReply": "Antwort schreiben …",
+    "you": "Sie"
+  },
+  "registerForm": {
+    "nameExampleCom": "name@beispiel.de"
+  },
+  "selectCombobox": {
+    "noResults": "Keine Ergebnisse",
+    "search": "Suchen …"
+  },
+  "sidebarPatient": {
+    "messages": "Nachrichten",
+    "vascoAi": "Vasco AI"
+  },
+  "threadsSidebar": {
+    "messages": "Nachrichten",
+    "searchConversations": "Unterhaltungen durchsuchen …"
+  },
+  "timelineCard": {
+    "attachment": "Anhang",
+    "comments": "Kommentare",
+    "delete": "Löschen",
+    "downloadFile": "Datei herunterladen",
+    "likes": "Likes",
+    "openFile": "Datei öffnen",
+    "playbackErrorTapToRetry": "Wiedergabefehler – zum Wiederholen tippen",
+    "post": "Posten",
+    "reply": "Antworten",
+    "video": "Video",
+    "videoProcessing": "Video wird verarbeitet …",
+    "writeAReply": "Antwort schreiben …"
+  },
+  "timelineFilterSidebar": {
+    "all": "Alle"
+  },
+  "timelinePostCard": {
+    "avatar": "Avatar",
+    "postContent": "Beitragsinhalt"
+  },
+  "timelineShareBox": {
+    "file": "Datei",
+    "image": "Bild",
+    "post": "Posten"
+  },
+  "verifyEmailPage": {
+    "didnTReceiveTheCode": "Keinen Code erhalten?",
+    "emailVerified": "E-Mail bestätigt!",
+    "redirectingToYourDashboard": "Sie werden zu Ihrem Dashboard weitergeleitet …",
+    "verifyYourEmail": "E-Mail bestätigen"
   }
 }
