@@ -332,7 +332,8 @@ export function getFlagCode(countryName) {
 }
 
 function normalize(s) {
-  return s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Türkçe noktasız ı dahil — ayrıntı: utils/searchNormalize.js
+  return aramaAnahtari(s);
 }
 
 // Parantez içi ibareleri kırpmak için yardımcı (örn: "United States (US)")

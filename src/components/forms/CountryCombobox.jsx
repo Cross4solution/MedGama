@@ -13,7 +13,10 @@ export default function CountryCombobox({ options = [], value, onChange, placeho
   const panelRef = useRef(null);
   const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
 
-  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Ortak arama normalleştiricisi — Türkçe noktalı/noktasız i dahil.
+  // Eski NFD sürümü "ı" harfini katlayamıyordu: kullanıcı "ıs" yazınca
+  // "Isparta" bulunamıyordu (ayrıntı: utils/searchNormalize.js).
+  const normalize = aramaAnahtari;
 
   // Alias eşleştirme: Türkçe veya yaygın kısaltmalar
   const aliases = useMemo(() => ({

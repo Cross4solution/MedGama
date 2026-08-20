@@ -28,7 +28,10 @@ export default function SelectCombobox({
   const toOption = (opt) => (typeof opt === 'string' ? { label: opt, value: opt } : opt);
   const list = useMemo(() => options.map(toOption), [options]);
 
-  const normalize = (s) => s?.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Ortak arama normalleştiricisi — Türkçe noktalı/noktasız i dahil.
+  // Eski NFD sürümü "ı" harfini katlayamıyordu: kullanıcı "ıs" yazınca
+  // "Isparta" bulunamıyordu (ayrıntı: utils/searchNormalize.js).
+  const normalize = aramaAnahtari;
 
   const filtered = useMemo(() => {
     if (!searchable) return list;
