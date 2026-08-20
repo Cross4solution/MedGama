@@ -89,7 +89,9 @@ const nextConfig = {
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",
-      'upgrade-insecure-requests',
+      // upgrade-insecure-requests BİLEREK yok: izleme modunda tarayıcı onu
+      // zaten yok sayıyor ve her sayfada konsola uyarı basıyor. Engelleyici
+      // moda geçerken eklenecek.
       // İhlaller arka uçta toplanıyor (hız sınırlı, kırpılmış).
       'report-uri /api/csp-report',
     ].join('; ');
