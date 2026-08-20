@@ -35,7 +35,7 @@ function VideoPlayer({ src, thumbnail }) {
   if (error) {
     return (
       <div className="relative w-full aspect-video bg-gray-900 rounded-xl flex items-center justify-center">
-        <p className="text-sm text-gray-400">Video unavailable</p>
+        <p className="text-sm text-gray-400">{t('medstreamProfileFeed.videoUnavailable', "Video unavailable")}</p>
       </div>
     );
   }
@@ -48,7 +48,7 @@ function VideoPlayer({ src, thumbnail }) {
         className="relative w-full aspect-video bg-gray-900 rounded-xl overflow-hidden group focus:outline-none"
       >
         {thumbnail ? (
-          <img src={resolveStorageUrl(thumbnail)} alt="Video thumbnail" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={resolveStorageUrl(thumbnail)} alt={t('medstreamProfileFeed.videoThumbnail', "Video thumbnail")} className="absolute inset-0 w-full h-full object-cover" />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900" />
         )}
@@ -125,7 +125,7 @@ function PostCard({ post, onLike, onBookmark, onComment }) {
         <div className="px-4 pb-3">
           <img
             src={resolveStorageUrl(imageMedia?.medium || imageMedia?.original || imageMedia?.url || post.media_url)}
-            alt="Post media"
+            alt={t('medstreamProfileFeed.postMedia', "Post media")}
             className="w-full rounded-xl object-cover max-h-[420px] border border-gray-100"
             loading="lazy"
           />

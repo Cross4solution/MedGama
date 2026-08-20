@@ -190,7 +190,7 @@ const CreateTicketModal = ({ onClose, onCreated, t }) => {
             <p className={`text-xs text-center font-medium ${dragOver ? 'text-[#0A6E6F]' : 'text-gray-400'}`}>
               {t('crm.support.dragDrop', 'Drag & drop files here or click to browse')}
             </p>
-            <p className="text-[10px] text-gray-400">PNG, JPG, PDF, DOC (max 10MB)</p>
+            <p className="text-[10px] text-gray-400">{t('cRMSupport.pngJpgPdfDocMax', "PNG, JPG, PDF, DOC (max 10MB)")}</p>
           </div>
           <input ref={fileRef} type="file" multiple accept="image/*,.pdf,.doc,.docx,.txt" onChange={handleFileChange} className="hidden" />
           {files.length > 0 && (

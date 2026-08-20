@@ -87,12 +87,12 @@ function DetailNestedReply({ r, depth, user, replyTo, setReplyTo, replyText, set
           </div>
           <div className="mt-0.5 flex items-center gap-2 pl-1">
             {r.author_id !== user?.id && r.user_id !== user?.id && (
-              <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === r.id ? '' : r.id); setReplyText(''); }}>Reply</button>
+              <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === r.id ? '' : r.id); setReplyText(''); }}>{t('postDetail.reply', "Reply")}</button>
             )}
             {(r.author_id === user?.id || r.user_id === user?.id) && (
               <button type="button" className="text-[10px] font-semibold text-gray-400 hover:text-red-500 transition-colors" onClick={() => {
                 setDeleteCommentConfirm({ id: r.id, isReply: true, parentId: topParentId });
-              }}>Delete</button>
+              }}>{t('postDetail.delete', "Delete")}</button>
             )}
           </div>
           {Array.isArray(r.replies) && r.replies.length > 0 && (
@@ -109,7 +109,7 @@ function DetailNestedReply({ r, depth, user, replyTo, setReplyTo, replyText, set
           {replyTo === r.id && (
             <div className="mt-1.5 ml-1 pl-2.5 border-l-2 border-teal-200">
               <div className="flex items-center gap-2">
-                <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder="Write a reply..." className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[11px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
+                <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder={t('postDetail.writeAReply', "Write a reply...")} className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[11px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
                 <button type="button" className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>{t('medstream.submit', 'Post')}</button>
               </div>
             </div>
@@ -644,7 +644,7 @@ export default function PostDetail() {
             <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
               <MessageCircle className="w-6 h-6 text-gray-400" />
             </div>
-            <p className="text-gray-500 text-sm">Post not found. Please go back and try again.</p>
+            <p className="text-gray-500 text-sm">{t('postDetail.postNotFoundPleaseGo', "Post not found. Please go back and try again.")}</p>
           </div>
         </div>
       </div>
@@ -661,7 +661,7 @@ export default function PostDetail() {
           )}
 
           {/* Close button */}
-          <button onClick={goBack} className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white/90 hover:text-white flex items-center justify-center transition-all" aria-label="Close">
+          <button onClick={goBack} className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white/90 hover:text-white flex items-center justify-center transition-all" aria-label={t('postDetail.close', "Close")}>
             <X className="w-5 h-5" />
           </button>
 
@@ -675,10 +675,10 @@ export default function PostDetail() {
           {/* Navigation arrows */}
           {mediaList.length > 1 && (
             <>
-              <button type="button" onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-all" aria-label="Previous">
+              <button type="button" onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-all" aria-label={t('postDetail.previous', "Previous")}>
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <button type="button" onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-all" aria-label="Next">
+              <button type="button" onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white/80 hover:text-white flex items-center justify-center transition-all" aria-label={t('postDetail.next', "Next")}>
                 <ChevronRight className="w-5 h-5" />
               </button>
             </>
@@ -757,7 +757,7 @@ export default function PostDetail() {
                   <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                 </svg>
               </div>
-              <p className="text-sm font-medium">No media available</p>
+              <p className="text-sm font-medium">{t('postDetail.noMediaAvailable', "No media available")}</p>
             </div>
           )}
 
@@ -847,7 +847,7 @@ export default function PostDetail() {
 
                 {/* New comment input */}
                 <div className="flex items-start gap-2.5 mb-5">
-                  <img src={user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg'} alt="You" className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200 flex-shrink-0 mt-0.5" />
+                  <img src={user?.avatar || item?.actor?.avatarUrl || '/images/default/default-avatar.svg'} alt={t('postDetail.you', "You")} className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200 flex-shrink-0 mt-0.5" />
                   <div className="flex-1 flex items-center gap-2 border border-gray-200 rounded-full px-4 py-2 bg-gray-50/50 hover:bg-white hover:border-gray-300 focus-within:bg-white focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-500/10 transition-all">
                     <input
                       placeholder={isGuest ? 'Sign in to comment…' : 'Add a comment...'}
@@ -898,12 +898,12 @@ export default function PostDetail() {
                                 </div>
                                 <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400 pl-2">
                                   {c.author_id !== user?.id && c.user_id !== user?.id && (
-                                    <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>Reply</button>
+                                    <button type="button" className="font-semibold hover:text-gray-600 transition-colors" onClick={() => { setReplyTo(p => p === c.id ? '' : c.id); setReplyText(''); }}>{t('postDetail.reply', "Reply")}</button>
                                   )}
                                   {(c.author_id === user?.id || c.user_id === user?.id) && (
                                     <button type="button" className="font-semibold hover:text-red-500 transition-colors" onClick={() => {
                                       setDeleteCommentConfirm({ id: c.id, isReply: false, parentId: null });
-                                    }}>Delete</button>
+                                    }}>{t('postDetail.delete', "Delete")}</button>
                                   )}
                                 </div>
                                 {/* Nested replies — recursive */}
@@ -921,7 +921,7 @@ export default function PostDetail() {
                                 {replyTo === c.id && (
                                   <div className="mt-2 ml-2 pl-3 border-l-2 border-teal-200">
                                     <div className="flex items-center gap-2">
-                                      <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder="Write a reply..." className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
+                                      <input autoFocus value={replyText} onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submitDetailReply(); }} placeholder={t('postDetail.writeAReply', "Write a reply...")} className="flex-1 border border-gray-200 rounded-full px-3.5 py-1.5 text-[12px] outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/20 transition-all" />
                                       <button type="button" className="text-[12px] font-semibold text-teal-600 hover:text-teal-700 px-2" onClick={submitDetailReply}>{t('medstream.submit', 'Post')}</button>
                                     </div>
                                   </div>
@@ -943,14 +943,14 @@ export default function PostDetail() {
                     );
                   })()}
                   {detailCommentsLoaded && apiDetailComments.length === 0 && localDetailComments.length === 0 && (
-                    <p className="py-3 text-center text-xs text-gray-400">No comments yet. Be the first!</p>
+                    <p className="py-3 text-center text-xs text-gray-400">{t('postDetail.noCommentsYetBeThe', "No comments yet. Be the first!")}</p>
                   )}
                 </div>
 
                 {/* Delete Comment Confirmation */}
                 {deleteCommentConfirm && (
                   <div className="mt-3 rounded-xl border border-red-200 bg-red-50/80 p-3">
-                    <p className="text-xs font-semibold text-red-700 mb-2">Are you sure you want to delete this comment?</p>
+                    <p className="text-xs font-semibold text-red-700 mb-2">{t('postDetail.areYouSureYouWant', "Are you sure you want to delete this comment?")}</p>
                     <div className="flex items-center gap-2">
                       <button
                         type="button"

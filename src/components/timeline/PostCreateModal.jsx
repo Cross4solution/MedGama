@@ -497,7 +497,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
               </button>
               <div className="bg-black rounded-2xl overflow-hidden shadow-2xl">
                 {viewer.type === 'photo' ? (
-                  <img src={viewer.url} alt="preview" className="w-full h-auto max-h-[80vh] object-contain" />
+                  <img src={viewer.url} alt={t('postCreateModal.preview', "preview")} className="w-full h-auto max-h-[80vh] object-contain" />
                 ) : (
                   <video src={viewer.url} className="w-full h-auto max-h-[80vh]" controls autoPlay />
                 )}

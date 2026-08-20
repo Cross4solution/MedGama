@@ -382,7 +382,7 @@ export default function AdminReviews() {
         <div className="bg-white border border-amber-200 rounded-2xl px-4 py-3.5 shadow-sm">
           <div className="flex items-center justify-between mb-1">
             <Clock className="w-4 h-4 text-amber-500" />
-            <span className="text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">LIVE</span>
+            <span className="text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">{t('adminReviews.live', "LIVE")}</span>
           </div>
           <p className="text-2xl font-bold text-amber-700">{stats.pending || 0}</p>
           <p className="text-xs font-medium text-amber-600 mt-0.5">{t('common.pending')}</p>

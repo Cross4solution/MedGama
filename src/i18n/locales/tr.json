@@ -328,7 +328,8 @@
     "popCardiologyIstanbul": "İstanbul Kardiyoloji",
     "popOrthopedicsAnkara": "Ankara Ortopedi",
     "popDermatologyIstanbul": "İstanbul Dermatoloji",
-    "allTreatments": "Tüm Tedaviler"
+    "allTreatments": "Tüm Tedaviler",
+    "medagamaLogo": "Medagama Logosu"
   },
   "crm": {
     "gatekeeper": {
@@ -2869,7 +2870,9 @@
     "categories": "Kategoriler",
     "encrypted": "Şifreli",
     "searchPlaceholder": "Belgelerde ara...",
-    "allCategories": "Tüm Kategoriler"
+    "allCategories": "Tüm Kategoriler",
+    "gdprArt9": "GDPR Md. 9",
+    "pdfJpegPngWordExcel": "PDF, JPEG, PNG, Word, Excel · En fazla 20 MB"
   },
   "appointment": {
     "selectSpecialty": "Branş Seçin",
@@ -2954,7 +2957,9 @@
     "closeProfileMenu": "Profil menüsünü kapat",
     "openProfileMenu": "Profil menüsünü aç",
     "closeMenu": "Menüyü kapat",
-    "openMenu": "Menüyü aç"
+    "openMenu": "Menüyü aç",
+    "medagamaLogo": "Medagama Logosu",
+    "vascoAi": "Vasco AI"
   },
   "share": {
     "share": "Paylaş",
@@ -3280,7 +3285,10 @@
     "tempPasswordHint": "En az 6 karakter (varsayılan: Temp1234!)",
     "addToTeam": "Ekibe Ekle",
     "deactivate": "Pasife Al",
-    "reactivate": "Yeniden Aktifleştir"
+    "reactivate": "Yeniden Aktifleştir",
+    "drJohnSmith": "Dr. Ahmet Yılmaz",
+    "doctorExampleCom": "doktor@ornek.com",
+    "cardiology": "Kardiyoloji"
   },
   "doctorDashboard": {
     "welcome": "Hoş geldiniz",
@@ -3385,5 +3393,271 @@
     "paid": "Ödenen",
     "payAtClinic": "Ödemeler klinik tarafından alınır. Ödeme için kliniğinizle iletişime geçin.",
     "downloadPdf": "PDF indir"
+  },
+  "adminUserManagement": {
+    "setANewPasswordFor": "Şu kullanıcı için yeni parola belirleyin:",
+    "newPassword": "Yeni Parola",
+    "min8Characters": "En az 8 karakter...",
+    "cancel": "İptal",
+    "account": "Hesap",
+    "verification": "Doğrulama",
+    "lastLogin": "Son Giriş",
+    "registered": "Kayıt Tarihi",
+    "verificationDocuments": "Doğrulama Belgeleri",
+    "clinicInfo": "Klinik Bilgisi",
+    "noAppointmentsFound": "Randevu bulunamadı",
+    "noAuditLogsFound": "Denetim kaydı bulunamadı",
+    "allStatuses": "Tüm Durumlar",
+    "active": "Aktif",
+    "suspended": "Askıya Alındı",
+    "verified": "Doğrulanmış",
+    "unverified": "Doğrulanmamış",
+    "searchByNameEmailOr": "Ad, e-posta veya telefona göre ara...",
+    "retry": "Tekrar Dene",
+    "user": "Kullanıcı",
+    "email": "E-posta",
+    "role": "Rol",
+    "status": "Durum",
+    "actions": "İşlemler",
+    "current": "mevcut",
+    "viewProfile": "Profili Gör",
+    "resetPassword": "Parolayı Sıfırla",
+    "suspend": "Askıya Al",
+    "reactivate": "Yeniden Aktifleştir",
+    "securityAudit": "Güvenlik ve Denetim"
+  },
+  "adminAuditLogs": {
+    "actionType": "İşlem Türü",
+    "allActions": "Tüm İşlemler",
+    "created": "Oluşturuldu",
+    "updated": "Güncellendi",
+    "deleted": "Silindi",
+    "systemSettings": "Sistem Ayarları",
+    "passwordChange": "Parola Değişikliği",
+    "resourceType": "Kaynak Türü",
+    "allResources": "Tüm Kaynaklar",
+    "user": "Kullanıcı",
+    "nameOrEmail": "Ad veya e-posta...",
+    "timestamp": "Zaman Damgası",
+    "action": "İşlem",
+    "resource": "Kaynak",
+    "ipAddress": "IP Adresi",
+    "details": "Ayrıntılar",
+    "system": "Sistem",
+    "userAgent": "Tarayıcı Bilgisi:"
+  },
+  "cRMExamination": {
+    "oral": "Oral",
+    "iv": "IV",
+    "im": "IM",
+    "sc": "SC",
+    "topical": "Topikal",
+    "inhalation": "İnhalasyon",
+    "nasal": "Nazal",
+    "rectal": "Rektal",
+    "after": "Sonra",
+    "before": "Önce",
+    "bp": "TA:",
+    "hr": "Nabız:"
+  },
+  "proTeaser": {
+    "jan": "Oca",
+    "feb": "Şub",
+    "mar": "Mar",
+    "apr": "Nis",
+    "may": "May",
+    "jun": "Haz",
+    "jul": "Tem",
+    "aug": "Ağu",
+    "sep": "Eyl",
+    "oct": "Eki",
+    "nov": "Kas",
+    "dec": "Ara"
+  },
+  "cRMPatient360": {
+    "icd10": "ICD-10",
+    "noPatientIdProvided": "Hasta kimliği belirtilmedi",
+    "patientNotFound": "Hasta bulunamadı",
+    "backToPatients": "Hastalara dön",
+    "verified": "Doğrulanmış",
+    "tag": "Etiket...",
+    "noTimelineEntriesYet": "Henüz zaman çizelgesi kaydı yok",
+    "noVitalsRecordedYet": "Henüz yaşamsal bulgu kaydedilmedi",
+    "noMedicalDataYet": "Henüz tıbbi veri yok",
+    "medicalSummaryWillPopulateAfter": "Tıbbi özet, muayeneler girildikçe oluşacak",
+    "noDocumentsYet": "Henüz belge yok"
+  },
+  "adminVerificationReview": {
+    "zoomOut": "Uzaklaştır",
+    "zoomIn": "Yakınlaştır",
+    "rotate": "Döndür",
+    "fullscreen": "Tam Ekran",
+    "download": "İndir",
+    "close": "Kapat",
+    "documentPreview": "Belge Önizleme",
+    "previewNotAvailableForThis": "Bu dosya türü için önizleme yok.",
+    "downloadFile": "Dosyayı indir",
+    "doctorSNotes": "Doktorun notları:"
+  },
+  "cRMStaff": {
+    "email": "E-posta",
+    "drJohnDoe": "Dr. Ahmet Yılmaz",
+    "doctorEmailCom": "doktor@eposta.com",
+    "min6Characters": "En az 6 karakter",
+    "905xxXxxXxxx": "+90 5XX XXX XXXX",
+    "drProfUzm": "Dr. / Prof. / Uzm.",
+    "cardiologyDermatology": "Kardiyoloji, Dermatoloji...",
+    "5Years": "5 yıl"
+  },
+  "savedClinics": {
+    "signInRequired": "Giriş yapmanız gerekiyor",
+    "youNeedToSignIn": "Favorilerinizi görmek için giriş yapmalısınız.",
+    "favorites": "Favoriler",
+    "noFavoriteClinicsYet": "Henüz favori klinik yok",
+    "saveClinicsFromSearchResults": "Arama sonuçlarından veya klinik profillerinden klinik kaydedin.",
+    "noFavoriteDoctorsYet": "Henüz favori doktor yok",
+    "saveDoctorsFromSearchResults": "Arama sonuçlarından veya doktor profillerinden doktor kaydedin.",
+    "removeFromFavorites": "Favorilerden çıkarılsın mı?"
+  },
+  "forPatientsPage": {
+    "doktorVeKlinikBulun": "Doktor ve klinik bulun",
+    "randevuVeTelehealth": "Randevu ve görüntülü görüşme",
+    "onlineRandevu": "Online randevu",
+    "tedavileriInceleyin": "tedavileri inceleyin",
+    "arama": "arama",
+    "klinikMisiniz": "Klinik misiniz?"
+  },
+  "adminDashboard": {
+    "cancel": "İptal"
+  },
+  "cRMLayout": {
+    "loading": "Yükleniyor...",
+    "crmPlatform": "CRM Platformu",
+    "goToMedagama": "Medagama'ya git",
+    "searchPatientsAppointments": "Hasta, randevu ara..."
+  },
+  "cRMReports": {
+    "pdfOlarak": "PDF olarak",
+    "excelOlarak": "Excel olarak",
+    "hastaDemografisi": "Hasta Demografisi",
+    "hizmetTedaviAnalizi": "Hizmet / Tedavi Analizi"
+  },
+  "dateOfBirthPicker": {
+    "dd": "GG",
+    "mm": "AA",
+    "yyyy": "YYYY"
+  },
+  "medstreamProfileFeed": {
+    "videoUnavailable": "Video kullanılamıyor",
+    "videoThumbnail": "Video kapak görseli",
+    "postMedia": "Gönderi medyası"
+  },
+  "kVKKPage": {
+    "veriSorumlusu": "Veri Sorumlusu:",
+    "kvkkMedgamaCom": "kvkk@medgama.com",
+    "dpoMedgamaCom": "dpo@medgama.com"
+  },
+  "cRMAppointments": {
+    "pdfJpgPngMax10": "PDF, JPG, PNG · En fazla 10 MB",
+    "emailExampleCom": "ornek@eposta.com",
+    "905xxXxxXxxx": "+90 5XX XXX XXXX"
+  },
+  "cRMBranches": {
+    "istanbul": "İstanbul",
+    "turkey": "Türkiye",
+    "branchHospitalCom": "sube@hastane.com"
+  },
+  "cRMLeads": {
+    "ornekEmailCom": "ornek@eposta.com",
+    "905xxXxxXxxx": "+90 5XX XXX XXXX",
+    "webReferralManual": "web / yönlendirme / elle"
+  },
+  "cRMRevenue": {
+    "exportAsPdf": "PDF olarak dışa aktar",
+    "exportAsExcel": "Excel olarak dışa aktar",
+    "superAdmin": "SÜPER YÖNETİCİ"
+  },
+  "cRMSalespeople": {
+    "mehmetDemir": "Mehmet Demir",
+    "satisciEmailCom": "satisci@eposta.com",
+    "905xxXxxXxxx": "+90 5XX XXX XXXX"
+  },
+  "timelinePostCard": {
+    "avatar": "Avatar",
+    "postContent": "Gönderi içeriği"
+  },
+  "clinicLogin": {
+    "clinicExampleCom": "klinik@ornek.com"
+  },
+  "doctorChatPage": {
+    "loadingMessages": "Mesajlar yükleniyor...",
+    "channel": "Kanal"
+  },
+  "doctorLogin": {
+    "doctorExampleCom": "doktor@ornek.com"
+  },
+  "exploreTimeline": {
+    "observer": "Gözlemci",
+    "category": "Kategori"
+  },
+  "sidebarPatient": {
+    "messages": "Mesajlar",
+    "vascoAi": "Vasco AI"
+  },
+  "forgotPasswordForm": {
+    "nameExampleCom": "ad@ornek.com"
+  },
+  "loginForm": {
+    "nameExampleCom": "ad@ornek.com"
+  },
+  "registerForm": {
+    "nameExampleCom": "ad@ornek.com"
+  },
+  "clinicHero": {
+    "plus": "Plus"
+  },
+  "cityCombobox": {
+    "noResults": "Sonuç yok"
+  },
+  "postCreateModal": {
+    "preview": "önizleme"
+  },
+  "timelineFilterSidebar": {
+    "all": "Tümü"
+  },
+  "browseClinics": {
+    "view": "İncele →"
+  },
+  "browseTreatments": {
+    "view": "İncele →"
+  },
+  "forClinicsPage": {
+    "arama": "arama"
+  },
+  "vascoAIPage": {
+    "online": "Çevrimiçi"
+  },
+  "adminAnnouncements": {
+    "https": "https://..."
+  },
+  "adminModeration": {
+    "live": "CANLI"
+  },
+  "adminReviews": {
+    "live": "CANLI"
+  },
+  "cRMDocuments": {
+    "pdfDocxXlsxJpgPng": "PDF, DOCX, XLSX, JPG, PNG, DICOM (en fazla 20MB)"
+  },
+  "cRMSupport": {
+    "pngJpgPdfDocMax": "PNG, JPG, PDF, DOC (en fazla 10MB)"
+  },
+  "postDetail": {
+    "reply": "Yanıtla",
+    "delete": "Sil",
+    "writeAReply": "Bir yanıt yazın...",
+    "postNotFoundPleaseGo": "Gönderi bulunamadı. Lütfen geri dönüp tekrar deneyin.",
+    "noMediaAvailable": "Medya yok",
+    "you": "Siz"
   }
 }

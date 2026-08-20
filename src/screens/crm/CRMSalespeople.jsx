@@ -108,11 +108,11 @@ const AddSalespersonModal = ({ isOpen, onClose, onCreated }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <ModalLabel required icon={Users}>{t('crm.salespeople.fullname', 'Full Name')}</ModalLabel>
-              <ModalInput value={form.fullname} onChange={(e) => setForm(f => ({ ...f, fullname: e.target.value }))} placeholder="Mehmet Demir" />
+              <ModalInput value={form.fullname} onChange={(e) => setForm(f => ({ ...f, fullname: e.target.value }))} placeholder={t('cRMSalespeople.mehmetDemir', "Mehmet Demir")} />
             </div>
             <div>
               <ModalLabel required icon={Mail}>{t('common.email', 'Email')}</ModalLabel>
-              <ModalInput type="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder="satisci@email.com" />
+              <ModalInput type="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder={t('cRMSalespeople.satisciEmailCom', "satisci@email.com")} />
             </div>
           </div>
           <div>
@@ -129,7 +129,7 @@ const AddSalespersonModal = ({ isOpen, onClose, onCreated }) => {
           </div>
           <div>
             <ModalLabel icon={Phone}>{t('common.phone', 'Phone')} <span className="text-gray-400 font-normal">({t('crm.salespeople.optional', 'optional')})</span></ModalLabel>
-            <ModalInput type="tel" value={form.mobile} onChange={(e) => setForm(f => ({ ...f, mobile: e.target.value }))} placeholder="+90 5XX XXX XXXX" />
+            <ModalInput type="tel" value={form.mobile} onChange={(e) => setForm(f => ({ ...f, mobile: e.target.value }))} placeholder={t('cRMSalespeople.905xxXxxXxxx', "+90 5XX XXX XXXX")} />
           </div>
         </div>
       )}

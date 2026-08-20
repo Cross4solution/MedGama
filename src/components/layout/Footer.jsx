@@ -39,7 +39,7 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <div className="mb-3">
               {/* Negatif (beyaz) logo — koyu teal footer üstünde temiz görünsün */}
-              <Image src="/images/logo/logo.svg" alt="Medagama Logo" width={176} height={40} className="h-9 w-auto object-contain brightness-0 invert opacity-90" />
+              <Image src="/images/logo/logo.svg" alt={t('footer.medagamaLogo', "Medagama Logo")} width={176} height={40} className="h-9 w-auto object-contain brightness-0 invert opacity-90" />
             </div>
             <p className="text-sm leading-relaxed text-white/60">
               {t('footer.brandTagline')}

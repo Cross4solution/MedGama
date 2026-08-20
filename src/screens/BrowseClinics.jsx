@@ -64,7 +64,7 @@ function ClinicCard({ clinic, onClick }) {
         )}
         <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
           <span className="text-[11px] text-gray-400">{reviews > 0 ? `${reviews} ${t('home.reviews', 'Yorum')}` : t('common.noReviewsYet', 'Henüz yorum yok')}</span>
-          <span className="text-xs font-semibold text-teal-600 group-hover:text-teal-700">View →</span>
+          <span className="text-xs font-semibold text-teal-600 group-hover:text-teal-700">{t('browseClinics.view', "View →")}</span>
         </div>
       </div>
     </div>

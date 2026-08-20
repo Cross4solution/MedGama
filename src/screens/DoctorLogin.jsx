@@ -201,7 +201,7 @@ const DoctorLogin = () => {
                   <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.emailAddress')}</label>
                   <input id="email" name="email" type="email" value={formData.email} onChange={handleChange}
                          className="w-full h-10 px-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors text-sm"
-                         placeholder="doctor@example.com" required />
+                         placeholder={t('doctorLogin.doctorExampleCom', "doctor@example.com")} required />
                 </div>
                 <div>
                   <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>

@@ -82,7 +82,7 @@ export default function ClinicHero({
                 </>
               ) : (
                 <>
-                  <img src="/images/icon/plus-svgrepo-com.svg" alt="Plus" className="w-4 h-4 flex-shrink-0 brightness-0 invert" />
+                  <img src="/images/icon/plus-svgrepo-com.svg" alt={t('clinicHero.plus', "Plus")} className="w-4 h-4 flex-shrink-0 brightness-0 invert" />
                   <span>{t('common.follow')}</span>
                 </>
               )}

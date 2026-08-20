@@ -18,7 +18,7 @@ export default function ForPatientsPage() {
           olsun, doğru sağlık profesyoneline ulaşmanız kolaylaşır.
         </p>
 
-        <h2 className="mt-10 text-2xl font-semibold text-gray-900">Doktor ve klinik bulun</h2>
+        <h2 className="mt-10 text-2xl font-semibold text-gray-900">{t('forPatientsPage.doktorVeKlinikBulun', "Doktor ve klinik bulun")}</h2>
         <p className="mt-3">
           Branşa, şehre ve uzmanlığa göre arama yaparak ihtiyacınıza uygun doktor ve
           klinikleri listeleyin. Her profilde uzmanlık alanları, hizmetler ve hasta
@@ -29,11 +29,11 @@ export default function ForPatientsPage() {
           <Link to="/doctors-departments" className="text-teal-600 font-medium hover:underline">branşları keşfedin</Link>.
         </p>
 
-        <h2 className="mt-10 text-2xl font-semibold text-gray-900">Randevu ve telehealth</h2>
+        <h2 className="mt-10 text-2xl font-semibold text-gray-900">{t('forPatientsPage.randevuVeTelehealth', "Randevu ve telehealth")}</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div className="rounded-xl border border-gray-100 p-4">
             <CalendarCheck className="h-6 w-6 text-teal-600" />
-            <h3 className="mt-2 font-semibold text-gray-900">Online randevu</h3>
+            <h3 className="mt-2 font-semibold text-gray-900">{t('forPatientsPage.onlineRandevu', "Online randevu")}</h3>
             <p className="mt-1 text-sm">
               Uygun zaman dilimini seçerek doktorunuzla yüz yüze görüşme için randevu
               oluşturun. Süreç şeffaf ve birkaç adımda tamamlanır.
@@ -70,14 +70,14 @@ export default function ForPatientsPage() {
             Yurt dışından geliyorsanız, çok dilli arayüz sayesinde tedavi öncesi
             araştırmanızı, doktor seçiminizi ve iletişiminizi tek platformda
             yürütebilirsiniz. Sunulan{' '}
-            <Link to="/tedaviler" className="text-teal-600 font-medium hover:underline">tedavileri inceleyin</Link>{' '}
+            <Link to="/tedaviler" className="text-teal-600 font-medium hover:underline">{t('forPatientsPage.tedavileriInceleyin', "tedavileri inceleyin")}</Link>{' '}
             ve uygun klinikleri karşılaştırın.
           </span>
         </p>
 
         <h2 className="mt-10 text-2xl font-semibold text-gray-900">Nasıl başlanır?</h2>
         <ol className="mt-3 space-y-2 list-decimal pl-5">
-          <li>İhtiyacınıza göre branş veya şehir seçerek <Link to="/search" className="text-teal-600 hover:underline">arama</Link> yapın.</li>
+          <li>İhtiyacınıza göre branş veya şehir seçerek <Link to="/search" className="text-teal-600 hover:underline">{t('forPatientsPage.arama', "arama")}</Link> yapın.</li>
           <li>Profilleri ve hasta yorumlarını inceleyin, karşılaştırın.</li>
           <li>Randevu alın ya da telehealth görüşmesi planlayın.</li>
         </ol>
@@ -100,7 +100,7 @@ export default function ForPatientsPage() {
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">Klinik misiniz?</h3>
+            <h3 className="font-semibold text-gray-900">{t('forPatientsPage.klinikMisiniz', "Klinik misiniz?")}</h3>
             <p className="mt-1">
               Platforma katılmak isteyen klinik ve doktorlar{' '}
               <Link to="/for-clinics" className="text-teal-600 hover:underline">Klinikler için</Link>{' '}

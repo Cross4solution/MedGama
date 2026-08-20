@@ -280,7 +280,7 @@ const Header = () => {
               <Link to={logoTo} onClick={closeMenu} className="flex items-center cursor-pointer select-none ml-9 sm:ml-9">
                 <Image
                   src="/images/logo/logo.svg"
-                  alt="Medagama Logo"
+                  alt={t('header.medagamaLogo', "Medagama Logo")}
                   width={176}
                   height={40}
                   priority
@@ -679,7 +679,7 @@ const Header = () => {
               </a>
               <Link to="/vasco-ai" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Cpu className="w-4 h-4" />
-                <span>Vasco AI</span>
+                <span>{t('header.vascoAi', "Vasco AI")}</span>
               </Link>
               <Link to="/about" onClick={closeMenu} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-800 rounded-lg">
                 <Info className="w-4 h-4" />

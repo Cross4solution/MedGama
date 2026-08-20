@@ -134,7 +134,7 @@ const TimelineCard = ({ entry, isLast, t }) => {
               )}
               {entry.icd10_code && (
                 <div>
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">ICD-10</p>
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('cRMPatient360.icd10', "ICD-10")}</p>
                   <span className="text-xs font-mono font-bold text-violet-700 bg-violet-50 px-2 py-1 rounded border border-violet-200">{entry.icd10_code}</span>
                 </div>
               )}
@@ -295,13 +295,13 @@ const CRMPatient360 = () => {
   if (user?.role_id === 'doctor' && !isPro) return <ProTeaser page="patient360" />;
 
   // ── Guards ──
-  if (!patientId) return <div className="flex items-center justify-center h-64"><p className="text-gray-400">No patient ID provided</p></div>;
+  if (!patientId) return <div className="flex items-center justify-center h-64"><p className="text-gray-400">{t('cRMPatient360.noPatientIdProvided', "No patient ID provided")}</p></div>;
   if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="w-6 h-6 animate-spin text-teal-500" /></div>;
   if (!patient) return (
     <div className="flex flex-col items-center justify-center h-64 gap-3">
       <User className="w-10 h-10 text-gray-300" />
-      <p className="text-gray-400">Patient not found</p>
-      <button onClick={() => navigate('/crm/patients')} className="text-sm text-teal-600 hover:underline">Back to patients</button>
+      <p className="text-gray-400">{t('cRMPatient360.patientNotFound', "Patient not found")}</p>
+      <button onClick={() => navigate('/crm/patients')} className="text-sm text-teal-600 hover:underline">{t('cRMPatient360.backToPatients', "Back to patients")}</button>
     </div>
   );
 
@@ -375,7 +375,7 @@ const CRMPatient360 = () => {
                   </p>
                 </div>
                 {patient.is_verified && (
-                  <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Verified</span>
+                  <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">{t('cRMPatient360.verified', "Verified")}</span>
                 )}
               </div>
 
@@ -390,7 +390,7 @@ const CRMPatient360 = () => {
                 {showTagInput ? (
                   <div className="flex items-center gap-1">
                     <input type="text" value={addTagValue} onChange={(e) => setAddTagValue(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleAddTag()} placeholder="Tag..." maxLength={100} autoFocus
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddTag()} placeholder={t('cRMPatient360.tag', "Tag...")} maxLength={100} autoFocus
                       className="w-24 h-6 px-2 text-[10px] border border-gray-200 rounded-full focus:ring-1 focus:ring-teal-400" />
                     <button onClick={handleAddTag} disabled={addingTag || !addTagValue.trim()} className="text-teal-600 disabled:opacity-40">
                       {addingTag ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
@@ -539,7 +539,7 @@ const CRMPatient360 = () => {
                 ) : timeline.length === 0 ? (
                   <div className="text-center py-12">
                     <Clock className="w-8 h-8 text-gray-200 mx-auto mb-2" />
-                    <p className="text-sm text-gray-400">No timeline entries yet</p>
+                    <p className="text-sm text-gray-400">{t('cRMPatient360.noTimelineEntriesYet', "No timeline entries yet")}</p>
                   </div>
                 ) : (
                   <div className="space-y-0">
@@ -574,7 +574,7 @@ const CRMPatient360 = () => {
                           <p className="text-[10px] text-gray-400">Recorded {summary.latest_vitals.date} by {summary.latest_vitals.doctor}</p>
                         </div>
                       ) : (
-                        <p className="text-xs text-gray-400 bg-gray-50 rounded-xl px-4 py-3">No vitals recorded yet</p>
+                        <p className="text-xs text-gray-400 bg-gray-50 rounded-xl px-4 py-3">{t('cRMPatient360.noVitalsRecordedYet', "No vitals recorded yet")}</p>
                       )}
                     </div>
 
@@ -616,8 +616,8 @@ const CRMPatient360 = () => {
                     {!summary.latest_vitals && !summary.recent_diagnoses?.length && !summary.active_prescriptions?.length && (
                       <div className="text-center py-12">
                         <Activity className="w-8 h-8 text-gray-200 mx-auto mb-2" />
-                        <p className="text-sm text-gray-400">No medical data yet</p>
-                        <p className="text-xs text-gray-300 mt-1">Medical summary will populate after examinations</p>
+                        <p className="text-sm text-gray-400">{t('cRMPatient360.noMedicalDataYet', "No medical data yet")}</p>
+                        <p className="text-xs text-gray-300 mt-1">{t('cRMPatient360.medicalSummaryWillPopulateAfter', "Medical summary will populate after examinations")}</p>
                       </div>
                     )}
                   </>
@@ -635,7 +635,7 @@ const CRMPatient360 = () => {
                 {documents.length === 0 ? (
                   <div className="text-center py-12">
                     <FileText className="w-8 h-8 text-gray-200 mx-auto mb-2" />
-                    <p className="text-sm text-gray-400">No documents yet</p>
+                    <p className="text-sm text-gray-400">{t('cRMPatient360.noDocumentsYet', "No documents yet")}</p>
                   </div>
                 ) : (
                   <div className="space-y-2">

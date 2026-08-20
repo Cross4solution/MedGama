@@ -498,7 +498,7 @@ const DoctorChatPage = () => {
       <div className="h-[calc(100vh-4.5rem)] w-full flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-3 border-teal-200 border-t-teal-600 rounded-full animate-spin" />
-          <span className="text-sm text-gray-400 font-medium">Loading messages...</span>
+          <span className="text-sm text-gray-400 font-medium">{t('doctorChatPage.loadingMessages', "Loading messages...")}</span>
         </div>
       </div>
     );
@@ -514,7 +514,7 @@ const DoctorChatPage = () => {
           {!mobileChatOpen ? (
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
               <div className="flex-shrink-0 px-3 pt-2 pb-1">
-                <label className="block text-xs text-gray-500 mb-1">Channel</label>
+                <label className="block text-xs text-gray-500 mb-1">{t('doctorChatPage.channel', "Channel")}</label>
                 <select
                   value={channelFilter}
                   onChange={(e)=>handleChannelChange(e.target.value)}

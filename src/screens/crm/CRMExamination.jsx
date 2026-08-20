@@ -365,14 +365,14 @@ const PrescriptionBuilder = ({ medications, setMedications, t }) => {
                   onChange={(e) => updateMedication(med.id, 'route', e.target.value)}
                   className="w-full h-10 px-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white"
                 >
-                  <option value="Oral">Oral</option>
-                  <option value="IV">IV</option>
-                  <option value="IM">IM</option>
-                  <option value="SC">SC</option>
-                  <option value="Topical">Topical</option>
-                  <option value="Inhalation">Inhalation</option>
-                  <option value="Nasal">Nasal</option>
-                  <option value="Rectal">Rectal</option>
+                  <option value="Oral">{t('cRMExamination.oral', "Oral")}</option>
+                  <option value="IV">{t('cRMExamination.iv', "IV")}</option>
+                  <option value="IM">{t('cRMExamination.im', "IM")}</option>
+                  <option value="SC">{t('cRMExamination.sc', "SC")}</option>
+                  <option value="Topical">{t('cRMExamination.topical', "Topical")}</option>
+                  <option value="Inhalation">{t('cRMExamination.inhalation', "Inhalation")}</option>
+                  <option value="Nasal">{t('cRMExamination.nasal', "Nasal")}</option>
+                  <option value="Rectal">{t('cRMExamination.rectal', "Rectal")}</option>
                 </select>
               </div>
             </div>
@@ -425,11 +425,11 @@ const BeforeAfterSlider = ({ beforeImage, afterImage, t }) => {
       onTouchEnd={handleMouseUp}
     >
       {/* After image (full) */}
-      <img src={afterImage} alt="After" className="absolute inset-0 w-full h-full object-cover" />
+      <img src={afterImage} alt={t('cRMExamination.after', "After")} className="absolute inset-0 w-full h-full object-cover" />
 
       {/* Before image (clipped) */}
       <div className="absolute inset-0 overflow-hidden" style={{ width: `${sliderPos}%` }}>
-        <img src={beforeImage} alt="Before" className="absolute inset-0 w-full h-full object-cover" style={{ width: `${containerRef.current?.offsetWidth || 400}px` }} />
+        <img src={beforeImage} alt={t('cRMExamination.before', "Before")} className="absolute inset-0 w-full h-full object-cover" style={{ width: `${containerRef.current?.offsetWidth || 400}px` }} />
       </div>
 
       {/* Slider line */}
@@ -1197,7 +1197,7 @@ const CRMExamination = () => {
                       <label className="block text-[10px] font-medium text-gray-500 mb-1">{t('crm.examination.before')}</label>
                       <label className="flex flex-col items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-teal-400 hover:bg-teal-50/30 transition-all">
                         {beforeImage ? (
-                          <img src={beforeImage} alt="Before" className="w-full h-full object-cover rounded-xl" />
+                          <img src={beforeImage} alt={t('cRMExamination.before', "Before")} className="w-full h-full object-cover rounded-xl" />
                         ) : (
                           <>
                             <Upload className="w-5 h-5 text-gray-400" />
@@ -1211,7 +1211,7 @@ const CRMExamination = () => {
                       <label className="block text-[10px] font-medium text-gray-500 mb-1">{t('crm.examination.after')}</label>
                       <label className="flex flex-col items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-teal-400 hover:bg-teal-50/30 transition-all">
                         {afterImage ? (
-                          <img src={afterImage} alt="After" className="w-full h-full object-cover rounded-xl" />
+                          <img src={afterImage} alt={t('cRMExamination.after', "After")} className="w-full h-full object-cover rounded-xl" />
                         ) : (
                           <>
                             <Upload className="w-5 h-5 text-gray-400" />
@@ -1371,10 +1371,10 @@ const CRMExamination = () => {
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <div className="text-right hidden sm:block">
                             {vitalsData.systolic && (
-                              <p className="text-[10px] text-gray-400">BP: <span className="font-medium text-gray-600">{vitalsData.systolic}/{vitalsData.diastolic}</span></p>
+                              <p className="text-[10px] text-gray-400">{t('cRMExamination.bp', "BP:")} <span className="font-medium text-gray-600">{vitalsData.systolic}/{vitalsData.diastolic}</span></p>
                             )}
                             {vitalsData.pulse && (
-                              <p className="text-[10px] text-gray-400">HR: <span className="font-medium text-gray-600">{vitalsData.pulse}</span></p>
+                              <p className="text-[10px] text-gray-400">{t('cRMExamination.hr', "HR:")} <span className="font-medium text-gray-600">{vitalsData.pulse}</span></p>
                             )}
                           </div>
                           <Eye className="w-4 h-4 text-gray-300 group-hover:text-teal-500 transition-colors" />

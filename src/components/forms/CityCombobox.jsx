@@ -160,7 +160,7 @@ function SlowScrollList({ className = '', items = [], onSelect, wheelFactor = 1,
         </li>
       ))}
       {items.length === 0 && (
-        <li className="px-3 py-2 text-gray-500 text-xs">No results</li>
+        <li className="px-3 py-2 text-gray-500 text-xs">{t('cityCombobox.noResults', "No results")}</li>
       )}
     </ul>
   );

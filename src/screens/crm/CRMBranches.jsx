@@ -130,7 +130,7 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
           <div>
             <ModalLabel>{t('crm.branches.city', 'City')}</ModalLabel>
             <ModalInput
-              placeholder="Istanbul"
+              placeholder={t('cRMBranches.istanbul', "Istanbul")}
               value={form.city}
               onChange={set('city')}
             />
@@ -138,7 +138,7 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
           <div>
             <ModalLabel>{t('crm.branches.country', 'Country')}</ModalLabel>
             <ModalInput
-              placeholder="Turkey"
+              placeholder={t('cRMBranches.turkey', "Turkey")}
               value={form.country}
               onChange={set('country')}
             />
@@ -158,7 +158,7 @@ const BranchFormModal = ({ isOpen, onClose, onSaved, branch = null }) => {
             <ModalLabel>{t('crm.branches.email', 'Email')}</ModalLabel>
             <ModalInput
               type="email"
-              placeholder="branch@hospital.com"
+              placeholder={t('cRMBranches.branchHospitalCom', "branch@hospital.com")}
               value={form.email}
               onChange={set('email')}
             />

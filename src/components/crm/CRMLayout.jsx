@@ -179,7 +179,7 @@ const PageTransitionLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh] animate-fadeIn">
     <div className="flex flex-col items-center gap-3">
       <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
-      <p className="text-sm text-gray-500 font-medium">Loading...</p>
+      <p className="text-sm text-gray-500 font-medium">{t('cRMLayout.loading', "Loading...")}</p>
     </div>
   </div>
 );
@@ -442,7 +442,7 @@ const CRMLayout = ({ children }) => {
         </div>
         <div>
           <span className="text-base font-bold text-white tracking-tight">Medagama</span>
-          <span className="block text-[10px] text-gray-400 font-medium tracking-wider uppercase">CRM Platform</span>
+          <span className="block text-[10px] text-gray-400 font-medium tracking-wider uppercase">{t('cRMLayout.crmPlatform', "CRM Platform")}</span>
         </div>
       </div>
 
@@ -497,7 +497,7 @@ const CRMLayout = ({ children }) => {
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 group"
         >
           <Home className="w-[18px] h-[18px] flex-shrink-0 text-gray-500 group-hover:text-gray-300" />
-          <span className="flex-1">Go to Medagama</span>
+          <span className="flex-1">{t('cRMLayout.goToMedagama', "Go to Medagama")}</span>
           <ExternalLink className="w-3.5 h-3.5 text-gray-600 group-hover:text-gray-400" />
         </Link>
       </nav>
@@ -544,7 +544,7 @@ const CRMLayout = ({ children }) => {
                 <Search className="w-4 h-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search patients, appointments..."
+                  placeholder={t('cRMLayout.searchPatientsAppointments', "Search patients, appointments...")}
                   className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full"
                 />
               </div>

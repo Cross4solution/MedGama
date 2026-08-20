@@ -138,7 +138,7 @@ function AnnouncementFormModal({ announcement, onClose, onSave, loading }) {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">{t('admin.announcements.linkUrl')}</label>
                 <input type="text" value={form.link_url} onChange={e => handleChange('link_url', e.target.value)}
                   className="w-full border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all"
-                  placeholder="https://..." />
+                  placeholder={t('adminAnnouncements.https', "https://...")} />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">{t('admin.announcements.linkLabel')}</label>

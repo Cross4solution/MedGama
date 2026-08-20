@@ -267,7 +267,7 @@ const GatekeeperModal = ({ isOpen, onClose, user, needsVerification, needsUpgrad
                       <p className="text-xs font-medium text-gray-700">
                         {t('onboarding.dropHere', 'Drop file here or click to browse')}
                       </p>
-                      <p className="text-[10px] text-gray-500 mt-0.5">PDF, JPG, PNG · Max 10 MB</p>
+                      <p className="text-[10px] text-gray-500 mt-0.5">{t('cRMAppointments.pdfJpgPngMax10', "PDF, JPG, PNG · Max 10 MB")}</p>
                     </div>
                   </>
                 )}
@@ -547,7 +547,7 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
                   type="email"
                   value={form.patient_email}
                   onChange={(e) => setForm(f => ({ ...f, patient_email: e.target.value }))}
-                  placeholder="email@example.com"
+                  placeholder={t('cRMAppointments.emailExampleCom', "email@example.com")}
                 />
               </div>
               <div>
@@ -556,7 +556,7 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
                   type="tel"
                   value={form.patient_phone}
                   onChange={(e) => setForm(f => ({ ...f, patient_phone: e.target.value }))}
-                  placeholder="+90 5XX XXX XXXX"
+                  placeholder={t('cRMAppointments.905xxXxxXxxx', "+90 5XX XXX XXXX")}
                 />
               </div>
             </div>

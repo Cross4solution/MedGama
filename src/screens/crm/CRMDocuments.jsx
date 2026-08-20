@@ -300,7 +300,7 @@ const CRMDocuments = () => {
                 ) : (
                   <>
                     <p className="text-sm font-medium text-gray-700">{t('crm.documents.clickToUpload')}</p>
-                    <p className="text-xs text-gray-400 mt-1">PDF, DOCX, XLSX, JPG, PNG, DICOM (maks. 20MB)</p>
+                    <p className="text-xs text-gray-400 mt-1">{t('cRMDocuments.pdfDocxXlsxJpgPng', "PDF, DOCX, XLSX, JPG, PNG, DICOM (maks. 20MB)")}</p>
                   </>
                 )}
               </div>

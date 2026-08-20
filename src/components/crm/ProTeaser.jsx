@@ -172,8 +172,8 @@ const MockDashboardBg = () => (
           ))}
         </div>
         <div className="flex justify-between mt-2 text-[9px] text-gray-400">
-          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-          <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+          <span>{t('proTeaser.jan', "Jan")}</span><span>{t('proTeaser.feb', "Feb")}</span><span>{t('proTeaser.mar', "Mar")}</span><span>{t('proTeaser.apr', "Apr")}</span><span>{t('proTeaser.may', "May")}</span><span>{t('proTeaser.jun', "Jun")}</span>
+          <span>{t('proTeaser.jul', "Jul")}</span><span>{t('proTeaser.aug', "Aug")}</span><span>{t('proTeaser.sep', "Sep")}</span><span>{t('proTeaser.oct', "Oct")}</span><span>{t('proTeaser.nov', "Nov")}</span><span>{t('proTeaser.dec', "Dec")}</span>
         </div>
       </div>
 

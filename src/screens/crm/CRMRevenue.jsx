@@ -283,12 +283,12 @@ const CRMRevenue = () => {
                 <button onClick={handleExportPDF}
                   className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                   <FileText className="w-4 h-4 text-red-500" />
-                  <span className="font-medium">Export as PDF</span>
+                  <span className="font-medium">{t('cRMRevenue.exportAsPdf', "Export as PDF")}</span>
                 </button>
                 <button onClick={handleExportExcel}
                   className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100">
                   <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                  <span className="font-medium">Export as Excel</span>
+                  <span className="font-medium">{t('cRMRevenue.exportAsExcel', "Export as Excel")}</span>
                 </button>
               </div>
             )}
@@ -437,7 +437,7 @@ const CRMRevenue = () => {
           <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100">
             <CreditCard className="w-4 h-4 text-violet-500" />
             <h2 className="text-sm font-bold text-gray-900">{t('crm.revenue.platformOverview', 'Platform Finance Overview')}</h2>
-            <span className="ml-auto text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">SUPER ADMIN</span>
+            <span className="ml-auto text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">{t('cRMRevenue.superAdmin', "SUPER ADMIN")}</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5">
             <div className="bg-white rounded-xl px-4 py-3 border border-gray-200 shadow-sm">

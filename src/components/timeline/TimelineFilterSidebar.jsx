@@ -148,7 +148,7 @@ function TimelineFilterSidebar({
                 options={specialtyOptions}
                 value={initialSpecialty}
                 onChange={handleSpecialtyChange}
-                placeholder="All"
+                placeholder={t('timelineFilterSidebar.all', "All")}
                 hideChevron
                 triggerClassName="w-full h-9 pl-3 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50/50 text-left hover:bg-white hover:border-gray-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
               />

@@ -83,11 +83,11 @@ const NewLeadModal = ({ isOpen, onClose, onCreated, salespeople, isManager }) =>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <ModalLabel icon={Mail}>{t('common.email')}</ModalLabel>
-            <ModalInput type="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder="ornek@email.com" />
+            <ModalInput type="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder={t('cRMLeads.ornekEmailCom', "ornek@email.com")} />
           </div>
           <div>
             <ModalLabel icon={Phone}>{t('common.phone')}</ModalLabel>
-            <ModalInput type="tel" value={form.phone} onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="+90 5XX XXX XXXX" />
+            <ModalInput type="tel" value={form.phone} onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))} placeholder={t('cRMLeads.905xxXxxXxxx', "+90 5XX XXX XXXX")} />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -103,7 +103,7 @@ const NewLeadModal = ({ isOpen, onClose, onCreated, salespeople, isManager }) =>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <ModalLabel icon={Tag}>{t('crm.leads.source')}</ModalLabel>
-            <ModalInput value={form.source} onChange={(e) => setForm(f => ({ ...f, source: e.target.value }))} placeholder="web / referral / manual" />
+            <ModalInput value={form.source} onChange={(e) => setForm(f => ({ ...f, source: e.target.value }))} placeholder={t('cRMLeads.webReferralManual', "web / referral / manual")} />
           </div>
           {isManager && (
             <div>

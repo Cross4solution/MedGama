@@ -59,16 +59,16 @@ function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
             <KeyRound className="w-4 h-4 text-indigo-600" /> Reset Password
           </h3>
-          <p className="text-xs text-gray-500 mt-1">Set a new password for <strong>{targetUser.fullname}</strong></p>
+          <p className="text-xs text-gray-500 mt-1">{t('adminUserManagement.setANewPasswordFor', "Set a new password for")} <strong>{targetUser.fullname}</strong></p>
         </div>
         <form onSubmit={handleSubmit} className="px-5 py-4 space-y-3">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">New Password</label>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminUserManagement.newPassword', "New Password")}</label>
             <input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="Min 8 characters..."
+              placeholder={t('adminUserManagement.min8Characters', "Min 8 characters...")}
               minLength={8}
               className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
               autoFocus
@@ -76,7 +76,7 @@ function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
           </div>
           {error && <p className="text-xs text-red-600">{error}</p>}
           <div className="flex justify-end gap-2 pt-1">
-            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">{t('adminUserManagement.cancel', "Cancel")}</button>
             <button
               type="submit"
               disabled={loading || password.length < 8}
@@ -172,19 +172,19 @@ function UserDetailDrawer({ user: u, onClose }) {
               {/* Status Grid */}
               <div className="grid grid-cols-2 gap-2">
                 <div className={`rounded-xl p-3 border ${u.is_active ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
-                  <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_active ? 'text-emerald-600' : 'text-red-600'}`}>Account</p>
+                  <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_active ? 'text-emerald-600' : 'text-red-600'}`}>{t('adminUserManagement.account', "Account")}</p>
                   <p className={`text-sm font-bold ${u.is_active ? 'text-emerald-800' : 'text-red-800'}`}>{u.is_active ? 'Active' : 'Suspended'}</p>
                 </div>
                 <div className={`rounded-xl p-3 border ${u.is_verified ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
-                  <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_verified ? 'text-emerald-600' : 'text-amber-600'}`}>Verification</p>
+                  <p className={`text-[10px] font-bold uppercase tracking-wide ${u.is_verified ? 'text-emerald-600' : 'text-amber-600'}`}>{t('adminUserManagement.verification', "Verification")}</p>
                   <p className={`text-sm font-bold ${u.is_verified ? 'text-emerald-800' : 'text-amber-800'}`}>{u.is_verified ? 'Verified' : 'Unverified'}</p>
                 </div>
                 <div className="rounded-xl p-3 border border-gray-200 bg-white">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Last Login</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">{t('adminUserManagement.lastLogin', "Last Login")}</p>
                   <p className="text-xs font-semibold text-gray-800 mt-0.5">{u.last_login ? new Date(u.last_login).toLocaleDateString() : 'Never'}</p>
                 </div>
                 <div className="rounded-xl p-3 border border-gray-200 bg-white">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Registered</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">{t('adminUserManagement.registered', "Registered")}</p>
                   <p className="text-xs font-semibold text-gray-800 mt-0.5">{u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</p>
                 </div>
               </div>
@@ -211,7 +211,7 @@ function UserDetailDrawer({ user: u, onClose }) {
               {/* Doctor: Verification Docs */}
               {isDoctor && verificationDocs.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Verification Documents</p>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('adminUserManagement.verificationDocuments', "Verification Documents")}</p>
                   {verificationDocs.map(vr => (
                     <div key={vr.id} className="flex items-center gap-3 p-2.5 rounded-xl border border-gray-200 bg-gray-50/50">
                       <FileText className="w-4 h-4 text-purple-500 shrink-0" />
@@ -232,7 +232,7 @@ function UserDetailDrawer({ user: u, onClose }) {
               {/* Clinic Owner specific */}
               {isClinicOwner && u.clinic && (
                 <div className="space-y-2">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Clinic Info</p>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('adminUserManagement.clinicInfo', "Clinic Info")}</p>
                   <div className="p-3 rounded-xl border border-gray-200 bg-gray-50/50">
                     <p className="text-xs font-semibold text-gray-900">{u.clinic.fullname}</p>
                     <p className="text-[10px] text-gray-400 mt-0.5">{u.clinic.address || 'No address'}</p>
@@ -249,7 +249,7 @@ function UserDetailDrawer({ user: u, onClose }) {
           {!loading && tab === 'appointments' && (
             <>
               {appointments.length === 0 ? (
-                <p className="text-sm text-gray-400 text-center py-6">No appointments found</p>
+                <p className="text-sm text-gray-400 text-center py-6">{t('adminUserManagement.noAppointmentsFound', "No appointments found")}</p>
               ) : (
                 <div className="space-y-2">
                   {appointments.map(apt => (
@@ -285,7 +285,7 @@ function UserDetailDrawer({ user: u, onClose }) {
           {!loading && tab === 'audit' && (
             <>
               {auditLogs.length === 0 ? (
-                <p className="text-sm text-gray-400 text-center py-6">No audit logs found</p>
+                <p className="text-sm text-gray-400 text-center py-6">{t('adminUserManagement.noAuditLogsFound', "No audit logs found")}</p>
               ) : (
                 <div className="space-y-1.5">
                   {auditLogs.map(log => (
@@ -479,11 +479,11 @@ export default function AdminUserManagement() {
           onChange={e => setStatusFilter(e.target.value)}
           className="text-xs border border-gray-200 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-indigo-500/20 min-w-[140px]"
         >
-          <option value="">All Statuses</option>
-          <option value="active">Active</option>
-          <option value="suspended">Suspended</option>
-          <option value="verified">Verified</option>
-          <option value="unverified">Unverified</option>
+          <option value="">{t('adminUserManagement.allStatuses', "All Statuses")}</option>
+          <option value="active">{t('adminUserManagement.active', "Active")}</option>
+          <option value="suspended">{t('adminUserManagement.suspended', "Suspended")}</option>
+          <option value="verified">{t('adminUserManagement.verified', "Verified")}</option>
+          <option value="unverified">{t('adminUserManagement.unverified', "Unverified")}</option>
         </select>
       </div>
 
@@ -492,7 +492,7 @@ export default function AdminUserManagement() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
           type="text"
-          placeholder="Search by name, email or phone..."
+          placeholder={t('adminUserManagement.searchByNameEmailOr', "Search by name, email or phone...")}
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
@@ -506,7 +506,7 @@ export default function AdminUserManagement() {
           <div className="flex-1">
             <p className="text-sm font-medium">{error}</p>
           </div>
-          <button onClick={fetchUsers} className="text-xs font-medium underline hover:text-red-800">Retry</button>
+          <button onClick={fetchUsers} className="text-xs font-medium underline hover:text-red-800">{t('adminUserManagement.retry', "Retry")}</button>
         </div>
       )}
 
@@ -526,13 +526,13 @@ export default function AdminUserManagement() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">User</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Email</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Role</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600">Verified</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600">Status</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Registered</th>
-                  <th className="text-center px-4 py-3 font-semibold text-gray-600 w-[220px]">Actions</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.user', "User")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.email', "Email")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.role', "Role")}</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.verified', "Verified")}</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.status', "Status")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('adminUserManagement.registered', "Registered")}</th>
+                  <th className="text-center px-4 py-3 font-semibold text-gray-600 w-[220px]">{t('adminUserManagement.actions', "Actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -578,7 +578,7 @@ export default function AdminUserManagement() {
                               >
                                 <r.icon className="w-3.5 h-3.5" />
                                 {r.label}
-                                {r.key === u.role_id && <span className="ml-auto text-[9px] text-gray-400">current</span>}
+                                {r.key === u.role_id && <span className="ml-auto text-[9px] text-gray-400">{t('adminUserManagement.current', "current")}</span>}
                               </button>
                             ))}
                           </div>
@@ -599,7 +599,7 @@ export default function AdminUserManagement() {
 
                       <td className="px-4 py-3 text-center">
                         {u.is_active ? (
-                          <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" title="Active" />
+                          <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" title={t('adminUserManagement.active', "Active")} />
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-50 text-red-600 border border-red-200">
                             <Ban className="w-3 h-3" /> Suspended
@@ -621,14 +621,14 @@ export default function AdminUserManagement() {
                               <button
                                 onClick={() => setDetailUser(u)}
                                 className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                                title="View Profile"
+                                title={t('adminUserManagement.viewProfile', "View Profile")}
                               >
                                 <Eye className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => setPasswordModal(u)}
                                 className="p-1.5 rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
-                                title="Reset Password"
+                                title={t('adminUserManagement.resetPassword', "Reset Password")}
                               >
                                 <KeyRound className="w-3.5 h-3.5" />
                               </button>
@@ -636,7 +636,7 @@ export default function AdminUserManagement() {
                                 <button
                                   onClick={() => handleSuspendToggle(u.id, true)}
                                   className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors"
-                                  title="Suspend"
+                                  title={t('adminUserManagement.suspend', "Suspend")}
                                 >
                                   <Ban className="w-3 h-3" /> Block
                                 </button>
@@ -644,7 +644,7 @@ export default function AdminUserManagement() {
                                 <button
                                   onClick={() => handleSuspendToggle(u.id, false)}
                                   className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors"
-                                  title="Reactivate"
+                                  title={t('adminUserManagement.reactivate', "Reactivate")}
                                 >
                                   <RotateCcw className="w-3 h-3" /> Unblock
                                 </button>
@@ -680,7 +680,7 @@ export default function AdminUserManagement() {
         <div className="flex items-start gap-3">
           <Shield className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-indigo-800">Security & Audit</p>
+            <p className="text-sm font-semibold text-indigo-800">{t('adminUserManagement.securityAudit', "Security & Audit")}</p>
             <p className="text-xs text-indigo-600 mt-0.5">
               All role changes, suspensions, and password resets are recorded in Audit Logs. Review regularly for unauthorized changes.
             </p>

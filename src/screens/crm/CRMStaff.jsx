@@ -101,7 +101,7 @@ const AddDoctorModal = ({ isOpen, onClose, onCreated, clinicId }) => {
               <span className="text-sm font-semibold text-gray-900">{generatedCreds.name}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Email</span>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('cRMStaff.email', "Email")}</span>
               <span className="text-sm font-medium text-gray-900">{generatedCreds.email}</span>
             </div>
             <div className="flex items-center justify-between">
@@ -127,16 +127,16 @@ const AddDoctorModal = ({ isOpen, onClose, onCreated, clinicId }) => {
                 type="text"
                 value={form.fullname}
                 onChange={(e) => setForm(f => ({ ...f, fullname: e.target.value }))}
-                placeholder="Dr. John Doe"
+                placeholder={t('cRMStaff.drJohnDoe', "Dr. John Doe")}
               />
             </div>
             <div>
-              <ModalLabel required icon={Mail}>Email</ModalLabel>
+              <ModalLabel required icon={Mail}>{t('cRMStaff.email', "Email")}</ModalLabel>
               <ModalInput
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))}
-                placeholder="doctor@email.com"
+                placeholder={t('cRMStaff.doctorEmailCom', "doctor@email.com")}
               />
             </div>
           </div>
@@ -150,7 +150,7 @@ const AddDoctorModal = ({ isOpen, onClose, onCreated, clinicId }) => {
                   type={showPass ? 'text' : 'password'}
                   value={form.password}
                   onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))}
-                  placeholder="Min 6 characters"
+                  placeholder={t('cRMStaff.min6Characters', "Min 6 characters")}
                   className="pr-10"
                 />
                 <button
@@ -178,7 +178,7 @@ const AddDoctorModal = ({ isOpen, onClose, onCreated, clinicId }) => {
               type="tel"
               value={form.mobile}
               onChange={(e) => setForm(f => ({ ...f, mobile: e.target.value }))}
-              placeholder="+90 5XX XXX XXXX"
+              placeholder={t('cRMStaff.905xxXxxXxxx', "+90 5XX XXX XXXX")}
             />
           </div>
 
@@ -190,7 +190,7 @@ const AddDoctorModal = ({ isOpen, onClose, onCreated, clinicId }) => {
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
-                placeholder="Dr. / Prof. / Uzm."
+                placeholder={t('cRMStaff.drProfUzm', "Dr. / Prof. / Uzm.")}
               />
             </div>
             <div>
@@ -199,7 +199,7 @@ const AddDoctorModal = ({ isOpen, onClose, onCreated, clinicId }) => {
                 type="text"
                 value={form.specialty}
                 onChange={(e) => setForm(f => ({ ...f, specialty: e.target.value }))}
-                placeholder="Cardiology, Dermatology..."
+                placeholder={t('cRMStaff.cardiologyDermatology', "Cardiology, Dermatology...")}
               />
             </div>
           </div>
@@ -211,7 +211,7 @@ const AddDoctorModal = ({ isOpen, onClose, onCreated, clinicId }) => {
               type="text"
               value={form.experience_years}
               onChange={(e) => setForm(f => ({ ...f, experience_years: e.target.value }))}
-              placeholder="5 years"
+              placeholder={t('cRMStaff.5Years', "5 years")}
             />
           </div>
         </div>

@@ -148,7 +148,7 @@ function VascoAssistant() {
                       {d.specialty && <p className="text-xs text-gray-500 truncate">{d.specialty}</p>}
                       <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-400">
                         {d.rating ? (<span className="inline-flex items-center gap-0.5"><Star className="w-3 h-3 fill-amber-400 text-amber-400" />{d.rating}</span>) : null}
-                        {d.online && <span className="inline-flex items-center gap-0.5 text-teal-600"><Video className="w-3 h-3" />Online</span>}
+                        {d.online && <span className="inline-flex items-center gap-0.5 text-teal-600"><Video className="w-3 h-3" />{t('vascoAIPage.online', "Online")}</span>}
                       </div>
                     </div>
                   </button>

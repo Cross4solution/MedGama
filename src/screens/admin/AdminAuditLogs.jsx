@@ -391,35 +391,35 @@ export default function AdminAuditLogs() {
         <div className="flex flex-wrap gap-3 p-4 bg-white rounded-xl border border-gray-200/60 shadow-sm">
           {/* Action Type */}
           <div>
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Action Type</label>
+            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 block">{t('adminAuditLogs.actionType', "Action Type")}</label>
             <select value={actionFilter} onChange={e => setActionFilter(e.target.value)}
               className="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-purple-500/20 outline-none min-w-[160px]">
-              <option value="">All Actions</option>
-              <option value="created">Created</option>
-              <option value="updated">Updated</option>
-              <option value="deleted">Deleted</option>
-              <option value="system_setting">System Settings</option>
-              <option value="password">Password Change</option>
+              <option value="">{t('adminAuditLogs.allActions', "All Actions")}</option>
+              <option value="created">{t('adminAuditLogs.created', "Created")}</option>
+              <option value="updated">{t('adminAuditLogs.updated', "Updated")}</option>
+              <option value="deleted">{t('adminAuditLogs.deleted', "Deleted")}</option>
+              <option value="system_setting">{t('adminAuditLogs.systemSettings', "System Settings")}</option>
+              <option value="password">{t('adminAuditLogs.passwordChange', "Password Change")}</option>
             </select>
           </div>
 
           {/* Resource Type */}
           <div>
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Resource Type</label>
+            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 block">{t('adminAuditLogs.resourceType', "Resource Type")}</label>
             <select value={resourceFilter} onChange={e => setResourceFilter(e.target.value)}
               className="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-purple-500/20 outline-none min-w-[160px]">
-              <option value="">All Resources</option>
+              <option value="">{t('adminAuditLogs.allResources', "All Resources")}</option>
               {RESOURCE_TYPES.map(rt => <option key={rt} value={rt}>{rt}</option>)}
             </select>
           </div>
 
           {/* User Search */}
           <div ref={userSearchRef} className="relative">
-            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 block">User</label>
+            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 block">{t('adminAuditLogs.user', "User")}</label>
             <div className="relative">
               <User className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
               <input type="text" value={userQuery} onChange={e => handleUserSearch(e.target.value)}
-                placeholder="Name or email..."
+                placeholder={t('adminAuditLogs.nameOrEmail', "Name or email...")}
                 className="pl-8 pr-7 py-1.5 border border-gray-200 rounded-lg text-xs focus:ring-2 focus:ring-purple-500/20 outline-none min-w-[180px]" />
               {selectedUserId && (
                 <button onClick={clearUser} className="absolute right-2 top-1/2 -translate-y-1/2">
@@ -464,12 +464,12 @@ export default function AdminAuditLogs() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[160px]">Timestamp</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">User</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Action</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Resource</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[110px]">IP Address</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">Details</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[160px]">{t('adminAuditLogs.timestamp', "Timestamp")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.user', "User")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.action', "Action")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.resource', "Resource")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs w-[110px]">{t('adminAuditLogs.ipAddress', "IP Address")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs">{t('adminAuditLogs.details', "Details")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -507,7 +507,7 @@ export default function AdminAuditLogs() {
                               <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center">
                                 <Settings2 className="w-3.5 h-3.5 text-gray-400" />
                               </div>
-                              <span className="text-xs text-gray-400">System</span>
+                              <span className="text-xs text-gray-400">{t('adminAuditLogs.system', "System")}</span>
                             </div>
                           )}
                         </td>
@@ -579,7 +579,7 @@ export default function AdminAuditLogs() {
                             )}
                             {log.user_agent && (
                               <p className="text-[10px] text-gray-400 mt-3 truncate">
-                                <span className="font-medium">User-Agent:</span> {log.user_agent}
+                                <span className="font-medium">{t('adminAuditLogs.userAgent', "User-Agent:")}</span> {log.user_agent}
                               </p>
                             )}
                           </td>

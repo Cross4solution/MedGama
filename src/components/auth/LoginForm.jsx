@@ -123,7 +123,7 @@ const LoginForm = ({
               className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-sm sm:text-base ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="name@example.com"
+              placeholder={t('loginForm.nameExampleCom', "name@example.com")}
             />
           </div>
           {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1 text-center">{errors.email}</p>}

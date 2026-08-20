@@ -226,10 +226,10 @@ const CRMReports = () => {
             {exportOpen && (
               <div className="absolute right-0 mt-1.5 w-48 bg-white rounded-xl shadow-xl border border-gray-200/60 z-30 overflow-hidden">
                 <button onClick={handleExportPDF} className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <FileText className="w-4 h-4 text-red-500" /><span className="font-medium">PDF olarak</span>
+                  <FileText className="w-4 h-4 text-red-500" /><span className="font-medium">{t('cRMReports.pdfOlarak', "PDF olarak")}</span>
                 </button>
                 <button onClick={handleExportExcel} className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-100">
-                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" /><span className="font-medium">Excel olarak</span>
+                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" /><span className="font-medium">{t('cRMReports.excelOlarak', "Excel olarak")}</span>
                 </button>
               </div>
             )}
@@ -291,7 +291,7 @@ const CRMReports = () => {
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Users className="w-4 h-4 text-gray-400" />
-                <h2 className="text-sm font-bold text-gray-900">Hasta Demografisi</h2>
+                <h2 className="text-sm font-bold text-gray-900">{t('cRMReports.hastaDemografisi', "Hasta Demografisi")}</h2>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {patientKpis.map((k) => (
@@ -363,7 +363,7 @@ const CRMReports = () => {
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
               <div className="flex items-center gap-2 mb-4">
                 <FileText className="w-4 h-4 text-gray-400" />
-                <h2 className="text-sm font-bold text-gray-900">Hizmet / Tedavi Analizi</h2>
+                <h2 className="text-sm font-bold text-gray-900">{t('cRMReports.hizmetTedaviAnalizi', "Hizmet / Tedavi Analizi")}</h2>
               </div>
               {servicesHasData ? (
                 <ResponsiveContainer width="100%" height={280}>

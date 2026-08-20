@@ -179,7 +179,7 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
           ref={dayRef}
           type="text"
           inputMode="numeric"
-          placeholder="DD"
+          placeholder={t('dateOfBirthPicker.dd', "DD")}
           value={dayStr}
           onChange={handleDayChange}
           onKeyDown={handleDayKeyDown}
@@ -192,7 +192,7 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
           ref={monthRef2}
           type="text"
           inputMode="numeric"
-          placeholder="MM"
+          placeholder={t('dateOfBirthPicker.mm', "MM")}
           value={monthStr}
           onChange={handleMonthChange}
           onKeyDown={handleMonthKeyDown}
@@ -205,7 +205,7 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
           ref={yearRef}
           type="text"
           inputMode="numeric"
-          placeholder="YYYY"
+          placeholder={t('dateOfBirthPicker.yyyy', "YYYY")}
           value={yearStr}
           onChange={handleYearChange}
           onKeyDown={handleYearKeyDown}

@@ -316,7 +316,8 @@
     "popCardiologyIstanbul": "Istanbul Cardiology",
     "popOrthopedicsAnkara": "Ankara Orthopedics",
     "popDermatologyIstanbul": "Istanbul Dermatology",
-    "allTreatments": "All Treatments"
+    "allTreatments": "All Treatments",
+    "medagamaLogo": "Medagama Logo"
   },
   "crm": {
     "gatekeeper": {
@@ -2468,7 +2469,9 @@
     "documentDate": "Document Date",
     "description": "Description",
     "descriptionPlaceholder": "Optional notes about this document...",
-    "upload": "Upload"
+    "upload": "Upload",
+    "gdprArt9": "GDPR Art. 9",
+    "pdfJpegPngWordExcel": "PDF, JPEG, PNG, Word, Excel · Max 20 MB"
   },
   "appointment": {
     "selectSpecialty": "Select Specialty",
@@ -2540,7 +2543,9 @@
     "closeProfileMenu": "Close profile menu",
     "openProfileMenu": "Open profile menu",
     "closeMenu": "Close menu",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "medagamaLogo": "Medagama Logo",
+    "vascoAi": "Vasco AI"
   },
   "share": {
     "share": "Share",
@@ -2820,5 +2825,276 @@
     "editTitle": "Edit subtitles",
     "empty": "This video has no subtitles to edit.",
     "jump": "Jump to this moment"
+  },
+  "adminUserManagement": {
+    "setANewPasswordFor": "Set a new password for",
+    "newPassword": "New Password",
+    "min8Characters": "Min 8 characters...",
+    "cancel": "Cancel",
+    "account": "Account",
+    "verification": "Verification",
+    "lastLogin": "Last Login",
+    "registered": "Registered",
+    "verificationDocuments": "Verification Documents",
+    "clinicInfo": "Clinic Info",
+    "noAppointmentsFound": "No appointments found",
+    "noAuditLogsFound": "No audit logs found",
+    "allStatuses": "All Statuses",
+    "active": "Active",
+    "suspended": "Suspended",
+    "verified": "Verified",
+    "unverified": "Unverified",
+    "searchByNameEmailOr": "Search by name, email or phone...",
+    "retry": "Retry",
+    "user": "User",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "actions": "Actions",
+    "current": "current",
+    "viewProfile": "View Profile",
+    "resetPassword": "Reset Password",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "securityAudit": "Security & Audit"
+  },
+  "adminAuditLogs": {
+    "actionType": "Action Type",
+    "allActions": "All Actions",
+    "created": "Created",
+    "updated": "Updated",
+    "deleted": "Deleted",
+    "systemSettings": "System Settings",
+    "passwordChange": "Password Change",
+    "resourceType": "Resource Type",
+    "allResources": "All Resources",
+    "user": "User",
+    "nameOrEmail": "Name or email...",
+    "timestamp": "Timestamp",
+    "action": "Action",
+    "resource": "Resource",
+    "ipAddress": "IP Address",
+    "details": "Details",
+    "system": "System",
+    "userAgent": "User-Agent:"
+  },
+  "cRMExamination": {
+    "oral": "Oral",
+    "iv": "IV",
+    "im": "IM",
+    "sc": "SC",
+    "topical": "Topical",
+    "inhalation": "Inhalation",
+    "nasal": "Nasal",
+    "rectal": "Rectal",
+    "after": "After",
+    "before": "Before",
+    "bp": "BP:",
+    "hr": "HR:"
+  },
+  "proTeaser": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec"
+  },
+  "cRMPatient360": {
+    "icd10": "ICD-10",
+    "noPatientIdProvided": "No patient ID provided",
+    "patientNotFound": "Patient not found",
+    "backToPatients": "Back to patients",
+    "verified": "Verified",
+    "tag": "Tag...",
+    "noTimelineEntriesYet": "No timeline entries yet",
+    "noVitalsRecordedYet": "No vitals recorded yet",
+    "noMedicalDataYet": "No medical data yet",
+    "medicalSummaryWillPopulateAfter": "Medical summary will populate after examinations",
+    "noDocumentsYet": "No documents yet"
+  },
+  "adminVerificationReview": {
+    "zoomOut": "Zoom Out",
+    "zoomIn": "Zoom In",
+    "rotate": "Rotate",
+    "fullscreen": "Fullscreen",
+    "download": "Download",
+    "close": "Close",
+    "documentPreview": "Document Preview",
+    "previewNotAvailableForThis": "Preview not available for this file type.",
+    "downloadFile": "Download file",
+    "doctorSNotes": "Doctor's notes:"
+  },
+  "cRMStaff": {
+    "email": "Email",
+    "drJohnDoe": "Dr. John Doe",
+    "doctorEmailCom": "doctor@email.com",
+    "min6Characters": "Min 6 characters",
+    "905xxXxxXxxx": "+90 5XX XXX XXXX",
+    "drProfUzm": "Dr. / Prof. / Uzm.",
+    "cardiologyDermatology": "Cardiology, Dermatology...",
+    "5Years": "5 years"
+  },
+  "savedClinics": {
+    "signInRequired": "Sign in required",
+    "youNeedToSignIn": "You need to sign in to view your favorites.",
+    "favorites": "Favorites",
+    "noFavoriteClinicsYet": "No favorite clinics yet",
+    "saveClinicsFromSearchResults": "Save clinics from search results or clinic profiles.",
+    "noFavoriteDoctorsYet": "No favorite doctors yet",
+    "saveDoctorsFromSearchResults": "Save doctors from search results or doctor profiles.",
+    "removeFromFavorites": "Remove from Favorites?"
+  },
+  "forPatientsPage": {
+    "doktorVeKlinikBulun": "Doktor ve klinik bulun",
+    "randevuVeTelehealth": "Randevu ve telehealth",
+    "onlineRandevu": "Online randevu",
+    "tedavileriInceleyin": "tedavileri inceleyin",
+    "arama": "arama",
+    "klinikMisiniz": "Klinik misiniz?"
+  },
+  "adminDashboard": {
+    "cancel": "Cancel"
+  },
+  "cRMLayout": {
+    "loading": "Loading...",
+    "crmPlatform": "CRM Platform",
+    "goToMedagama": "Go to Medagama",
+    "searchPatientsAppointments": "Search patients, appointments..."
+  },
+  "cRMReports": {
+    "pdfOlarak": "PDF olarak",
+    "excelOlarak": "Excel olarak",
+    "hastaDemografisi": "Hasta Demografisi",
+    "hizmetTedaviAnalizi": "Hizmet / Tedavi Analizi"
+  },
+  "dateOfBirthPicker": {
+    "dd": "DD",
+    "mm": "MM",
+    "yyyy": "YYYY"
+  },
+  "medstreamProfileFeed": {
+    "videoUnavailable": "Video unavailable",
+    "videoThumbnail": "Video thumbnail",
+    "postMedia": "Post media"
+  },
+  "clinicTeam": {
+    "drJohnSmith": "Dr. John Smith",
+    "doctorExampleCom": "doctor@example.com",
+    "cardiology": "Cardiology"
+  },
+  "kVKKPage": {
+    "veriSorumlusu": "Veri Sorumlusu:",
+    "kvkkMedgamaCom": "kvkk@medgama.com",
+    "dpoMedgamaCom": "dpo@medgama.com"
+  },
+  "cRMAppointments": {
+    "pdfJpgPngMax10": "PDF, JPG, PNG · Max 10 MB",
+    "emailExampleCom": "email@example.com",
+    "905xxXxxXxxx": "+90 5XX XXX XXXX"
+  },
+  "cRMBranches": {
+    "istanbul": "Istanbul",
+    "turkey": "Turkey",
+    "branchHospitalCom": "branch@hospital.com"
+  },
+  "cRMLeads": {
+    "ornekEmailCom": "ornek@email.com",
+    "905xxXxxXxxx": "+90 5XX XXX XXXX",
+    "webReferralManual": "web / referral / manual"
+  },
+  "cRMRevenue": {
+    "exportAsPdf": "Export as PDF",
+    "exportAsExcel": "Export as Excel",
+    "superAdmin": "SUPER ADMIN"
+  },
+  "cRMSalespeople": {
+    "mehmetDemir": "Mehmet Demir",
+    "satisciEmailCom": "satisci@email.com",
+    "905xxXxxXxxx": "+90 5XX XXX XXXX"
+  },
+  "timelinePostCard": {
+    "avatar": "Avatar",
+    "postContent": "Post content"
+  },
+  "clinicLogin": {
+    "clinicExampleCom": "clinic@example.com"
+  },
+  "doctorChatPage": {
+    "loadingMessages": "Loading messages...",
+    "channel": "Channel"
+  },
+  "doctorLogin": {
+    "doctorExampleCom": "doctor@example.com"
+  },
+  "exploreTimeline": {
+    "observer": "Observer",
+    "category": "Category"
+  },
+  "sidebarPatient": {
+    "messages": "Messages",
+    "vascoAi": "Vasco AI"
+  },
+  "forgotPasswordForm": {
+    "nameExampleCom": "name@example.com"
+  },
+  "loginForm": {
+    "nameExampleCom": "name@example.com"
+  },
+  "registerForm": {
+    "nameExampleCom": "name@example.com"
+  },
+  "clinicHero": {
+    "plus": "Plus"
+  },
+  "cityCombobox": {
+    "noResults": "No results"
+  },
+  "postCreateModal": {
+    "preview": "preview"
+  },
+  "timelineFilterSidebar": {
+    "all": "All"
+  },
+  "browseClinics": {
+    "view": "View →"
+  },
+  "browseTreatments": {
+    "view": "View →"
+  },
+  "forClinicsPage": {
+    "arama": "arama"
+  },
+  "vascoAIPage": {
+    "online": "Online"
+  },
+  "adminAnnouncements": {
+    "https": "https://..."
+  },
+  "adminModeration": {
+    "live": "LIVE"
+  },
+  "adminReviews": {
+    "live": "LIVE"
+  },
+  "cRMDocuments": {
+    "pdfDocxXlsxJpgPng": "PDF, DOCX, XLSX, JPG, PNG, DICOM (maks. 20MB)"
+  },
+  "cRMSupport": {
+    "pngJpgPdfDocMax": "PNG, JPG, PDF, DOC (max 10MB)"
+  },
+  "postDetail": {
+    "reply": "Reply",
+    "delete": "Delete",
+    "writeAReply": "Write a reply...",
+    "postNotFoundPleaseGo": "Post not found. Please go back and try again.",
+    "noMediaAvailable": "No media available",
+    "you": "You"
   }
 }

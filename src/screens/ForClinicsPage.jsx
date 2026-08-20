@@ -94,7 +94,7 @@ export default function ForClinicsPage() {
               Doktor veya klinik arıyorsanız{' '}
               <Link to="/for-patients" className="text-teal-600 hover:underline">Hastalar için</Link>{' '}
               sayfasını inceleyin veya doğrudan{' '}
-              <Link to="/search" className="text-teal-600 hover:underline">arama</Link> yapın.
+              <Link to="/search" className="text-teal-600 hover:underline">{t('forClinicsPage.arama', "arama")}</Link> yapın.
             </p>
           </div>
         </div>

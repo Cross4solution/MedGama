@@ -214,20 +214,20 @@ export default function ClinicTeam() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('clinicTeam.fullName', 'Full Name')} *</label>
                   <input value={form.fullname} onChange={e => setForm(p => ({ ...p, fullname: e.target.value }))}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400"
-                    placeholder="Dr. John Smith" />
+                    placeholder={t('clinicTeam.drJohnSmith', "Dr. John Smith")} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('clinicTeam.email', 'Email')} *</label>
                   <input value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} type="email"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400"
-                    placeholder="doctor@example.com" />
+                    placeholder={t('clinicTeam.doctorExampleCom', "doctor@example.com")} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">{t('clinicTeam.specialty', 'Specialty')}</label>
                     <input value={form.specialty} onChange={e => setForm(p => ({ ...p, specialty: e.target.value }))}
                       className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400"
-                      placeholder="Cardiology" />
+                      placeholder={t('clinicTeam.cardiology', "Cardiology")} />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">{t('clinicTeam.phone', 'Phone')}</label>

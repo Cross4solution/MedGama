@@ -94,8 +94,8 @@ export default function SavedClinics() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
           <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Sign in required</h2>
-          <p className="text-gray-500 mb-6">You need to sign in to view your favorites.</p>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">{t('savedClinics.signInRequired', "Sign in required")}</h2>
+          <p className="text-gray-500 mb-6">{t('savedClinics.youNeedToSignIn', "You need to sign in to view your favorites.")}</p>
           <button onClick={() => navigate('/login')} className="px-6 py-2.5 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition-colors">
             Sign In
           </button>
@@ -112,7 +112,7 @@ export default function SavedClinics() {
         <div className="max-w-3xl mx-auto px-4 py-6">
           {/* Header */}
           <div className="mb-6">
-            <h1 className="text-xl font-bold text-gray-900">Favorites</h1>
+            <h1 className="text-xl font-bold text-gray-900">{t('savedClinics.favorites', "Favorites")}</h1>
             <p className="text-sm text-gray-500 mt-0.5">{totalCount} {totalCount === 1 ? 'item' : 'items'} saved</p>
           </div>
 
@@ -161,8 +161,8 @@ export default function SavedClinics() {
             clinics.length === 0 ? (
               <div className="text-center py-20">
                 <Building2 className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">No favorite clinics yet</h3>
-                <p className="text-sm text-gray-400 mb-6">Save clinics from search results or clinic profiles.</p>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('savedClinics.noFavoriteClinicsYet', "No favorite clinics yet")}</h3>
+                <p className="text-sm text-gray-400 mb-6">{t('savedClinics.saveClinicsFromSearchResults', "Save clinics from search results or clinic profiles.")}</p>
                 <button onClick={() => navigate('/home-v2')} className="px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors">
                   Browse Clinics
                 </button>
@@ -228,8 +228,8 @@ export default function SavedClinics() {
             doctors.length === 0 ? (
               <div className="text-center py-20">
                 <User2 className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">No favorite doctors yet</h3>
-                <p className="text-sm text-gray-400 mb-6">Save doctors from search results or doctor profiles.</p>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('savedClinics.noFavoriteDoctorsYet', "No favorite doctors yet")}</h3>
+                <p className="text-sm text-gray-400 mb-6">{t('savedClinics.saveDoctorsFromSearchResults', "Save doctors from search results or doctor profiles.")}</p>
                 <button onClick={() => navigate('/home-v2')} className="px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-sm hover:bg-teal-700 transition-colors">
                   Browse Doctors
                 </button>
@@ -288,7 +288,7 @@ export default function SavedClinics() {
             <div className="mx-auto w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center mb-3">
               <Trash2 className="w-6 h-6 text-rose-500" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-1">Remove from Favorites?</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">{t('savedClinics.removeFromFavorites', "Remove from Favorites?")}</h3>
             <p className="text-sm text-gray-500 mb-5">
               Are you sure you want to remove <strong>{confirmRemove.item.name}</strong> from your favorites?
             </p>

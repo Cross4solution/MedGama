@@ -797,7 +797,7 @@ export default function ExploreTimeline() {
                       {hasMore && (
                         <>
                           <button onClick={() => setPage(p => p + 1)} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white hover:from-teal-700 hover:to-emerald-700 text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200">{t('medstream.loadMore')}</button>
-                          <span ref={loadMoreRef} className="sr-only">Observer</span>
+                          <span ref={loadMoreRef} className="sr-only">{t('exploreTimeline.observer', "Observer")}</span>
                         </>
                       )}
                     </div>
@@ -904,7 +904,7 @@ export default function ExploreTimeline() {
                       <div ref={emojiModalRef} className="mt-3 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl shadow-lg w-full max-h-[300px] overflow-hidden">
                         <div className="flex border-b border-gray-200 bg-white rounded-t-xl">
                           {EMOJI_CATEGORIES.map((cat, idx)=>(
-                            <button key={idx} type="button" onClick={()=>setEmojiCategory(idx)} className={`flex-1 px-2 py-2 text-center transition-all duration-200 ${emojiCategory===idx?'bg-blue-500 text-white border-b-2 border-blue-500':'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}`} title="Category">
+                            <button key={idx} type="button" onClick={()=>setEmojiCategory(idx)} className={`flex-1 px-2 py-2 text-center transition-all duration-200 ${emojiCategory===idx?'bg-blue-500 text-white border-b-2 border-blue-500':'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}`} title={t('exploreTimeline.category', "Category")}>
                               <div className="text-lg">{cat.icon}</div>
                             </button>
                           ))}

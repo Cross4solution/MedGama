@@ -37,7 +37,7 @@ const ForgotPasswordForm = ({
             className={`w-full pl-6 sm:pl-8 pr-4 py-1.5 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-left text-xs sm:text-sm ${
               errors.email ? 'border-red-500' : 'border-gray-300'
             }`}
-            placeholder="name@example.com"
+            placeholder={t('forgotPasswordForm.nameExampleCom', "name@example.com")}
           />
         </div>
         {errors.email && <p className="text-red-500 text-xs mt-1 text-center">{errors.email}</p>}

@@ -149,7 +149,7 @@ export default function AdminDashboard() {
             className="w-full border border-purple-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all resize-none"
           />
           <div className="flex justify-end gap-2 mt-3">
-            <button onClick={() => setAnnouncementOpen(false)} className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button onClick={() => setAnnouncementOpen(false)} className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">{t('adminDashboard.cancel', "Cancel")}</button>
             <button
               onClick={() => { setAnnouncementOpen(false); setAnnouncementText(''); }}
               disabled={!announcementText.trim()}

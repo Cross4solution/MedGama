@@ -266,7 +266,7 @@ const RegisterForm = ({
               className={`w-full h-11 pl-9 pr-4 border rounded-xl focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors text-left text-sm ${
                 (errors.email || localErrors.email) ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="name@example.com"
+              placeholder={t('registerForm.nameExampleCom', "name@example.com")}
             />
           </div>
           {(errors.email || localErrors.email) && <p className="text-red-500 text-xs mt-1 text-center md:text-left">{errors.email || localErrors.email}</p>}

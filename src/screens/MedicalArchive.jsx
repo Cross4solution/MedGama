@@ -218,7 +218,7 @@ const MedicalArchive = () => {
               <Shield className="w-4 h-4 text-emerald-500" />
               <div>
                 <p className="text-[10px] font-semibold text-emerald-600 uppercase">{t('medicalArchive.encrypted', 'Encrypted')}</p>
-                <p className="text-[10px] text-gray-400">GDPR Art. 9</p>
+                <p className="text-[10px] text-gray-400">{t('medicalArchive.gdprArt9', "GDPR Art. 9")}</p>
               </div>
             </div>
           </div>
@@ -416,7 +416,7 @@ const MedicalArchive = () => {
                       <>
                         <Plus className="w-8 h-8 text-gray-300 mx-auto mb-2" />
                         <p className="text-xs text-gray-500">{t('medicalArchive.dragOrClick', 'Click to select file')}</p>
-                        <p className="text-[10px] text-gray-400 mt-1">PDF, JPEG, PNG, Word, Excel · Max 20 MB</p>
+                        <p className="text-[10px] text-gray-400 mt-1">{t('medicalArchive.pdfJpegPngWordExcel', "PDF, JPEG, PNG, Word, Excel · Max 20 MB")}</p>
                       </>
                     )}
                   </div>

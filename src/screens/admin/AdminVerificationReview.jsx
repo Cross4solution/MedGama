@@ -56,27 +56,27 @@ function DocumentViewer({ vr, token, onClose }) {
         <div className="flex items-center gap-1">
           {isImage && (
             <>
-              <button onClick={() => setZoom(z => Math.max(0.25, z - 0.25))} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title="Zoom Out">
+              <button onClick={() => setZoom(z => Math.max(0.25, z - 0.25))} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title={t('adminVerificationReview.zoomOut', "Zoom Out")}>
                 <ZoomOut className="w-4 h-4" />
               </button>
               <span className="text-[10px] text-gray-400 w-10 text-center">{Math.round(zoom * 100)}%</span>
-              <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title="Zoom In">
+              <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title={t('adminVerificationReview.zoomIn', "Zoom In")}>
                 <ZoomIn className="w-4 h-4" />
               </button>
-              <button onClick={() => setRotation(r => (r + 90) % 360)} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title="Rotate">
+              <button onClick={() => setRotation(r => (r + 90) % 360)} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title={t('adminVerificationReview.rotate', "Rotate")}>
                 <RotateCw className="w-4 h-4" />
               </button>
               <div className="w-px h-4 bg-gray-600 mx-1" />
             </>
           )}
-          <button onClick={() => setFullscreen(!fullscreen)} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title="Fullscreen">
+          <button onClick={() => setFullscreen(!fullscreen)} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title={t('adminVerificationReview.fullscreen', "Fullscreen")}>
             <Maximize2 className="w-4 h-4" />
           </button>
-          <a href={url} download className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title="Download">
+          <a href={url} download className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title={t('adminVerificationReview.download', "Download")}>
             <Download className="w-4 h-4" />
           </a>
           {fullscreen && (
-            <button onClick={() => setFullscreen(false)} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors ml-1" title="Close">
+            <button onClick={() => setFullscreen(false)} className="p-1.5 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white transition-colors ml-1" title={t('adminVerificationReview.close', "Close")}>
               <X className="w-4 h-4" />
             </button>
           )}
@@ -86,7 +86,7 @@ function DocumentViewer({ vr, token, onClose }) {
       {/* Preview Area */}
       <div className="flex-1 overflow-auto bg-gray-800 flex items-center justify-center p-4">
         {isPdf ? (
-          <iframe src={url} className="w-full h-full rounded-lg border border-gray-600" style={{ minHeight: fullscreen ? '100%' : '500px' }} title="Document Preview" />
+          <iframe src={url} className="w-full h-full rounded-lg border border-gray-600" style={{ minHeight: fullscreen ? '100%' : '500px' }} title={t('adminVerificationReview.documentPreview', "Document Preview")} />
         ) : isImage ? (
           <div className="overflow-auto max-w-full max-h-full">
             <img
@@ -103,8 +103,8 @@ function DocumentViewer({ vr, token, onClose }) {
         ) : (
           <div className="text-center text-gray-400">
             <FileText className="w-16 h-16 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">Preview not available for this file type.</p>
-            <a href={url} download className="text-teal-400 text-sm underline mt-2 inline-block">Download file</a>
+            <p className="text-sm">{t('adminVerificationReview.previewNotAvailableForThis', "Preview not available for this file type.")}</p>
+            <a href={url} download className="text-teal-400 text-sm underline mt-2 inline-block">{t('adminVerificationReview.downloadFile', "Download file")}</a>
           </div>
         )}
       </div>
@@ -112,7 +112,7 @@ function DocumentViewer({ vr, token, onClose }) {
       {/* Notes */}
       {vr.notes && (
         <div className="px-4 py-2.5 bg-gray-900/80 border-t border-gray-700 flex-shrink-0">
-          <p className="text-xs text-gray-300"><span className="font-semibold text-gray-200">Doctor's notes:</span> {vr.notes}</p>
+          <p className="text-xs text-gray-300"><span className="font-semibold text-gray-200">{t('adminVerificationReview.doctorSNotes', "Doctor's notes:")}</span> {vr.notes}</p>
         </div>
       )}
     </div>
