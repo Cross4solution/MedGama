@@ -826,6 +826,15 @@ class DatabaseSeeder extends Seeder
         $this->call(ReviewSeeder::class);
 
         // ══════════════════════════════════════════════════════════════════
+        //  VİTRİN — 10 klinik + 10 doktor + beş gönderi türünün hepsi
+        // ══════════════════════════════════════════════════════════════════
+        //
+        // Yalnızca ekler; yukarıdaki demo veriye dokunmaz. Ayrı tutulmasının
+        // sebebi `document` ve `mixed` gönderi türlerinin canlıda hiç
+        // bulunmaması — o iki yol üretimde hiç denenmemişti.
+        $this->call(VitrinSeeder::class);
+
+        // ══════════════════════════════════════════════════════════════════
         //  CATALOG DATA
         // ══════════════════════════════════════════════════════════════════
 
