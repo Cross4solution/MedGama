@@ -27,6 +27,9 @@ const CRA_ENV = [
 const nextConfig = {
   reactStrictMode: true,
   env: CRA_ENV,
+  // Hangi teknolojiyi kullandığımızı yanıt başlığında ilan etmeye gerek yok.
+  // Sürüme özgü açıkları arayan otomatik taramaların işini kolaylaştırıyor.
+  poweredByHeader: false,
   // CRA ile aynı backend'e proxy: /api ve /storage Render backend'e gider
   async rewrites() {
     return [

@@ -17,7 +17,7 @@ class ResetPasswordRequest extends FormRequest
         return [
             'email'    => 'required|email',
             'code'     => 'required|string|size:6',
-            'password' => ['required', 'string', Password::min(8)->letters()->numbers()],
+            'password' => ['required', 'string', Password::min(8)->letters()->numbers()->uncompromised()],
         ];
     }
 }

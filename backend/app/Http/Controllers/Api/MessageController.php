@@ -271,7 +271,25 @@ class MessageController extends Controller
             'type' => 'in:text,image,file,video,audio',
             'reply_to_id' => 'nullable|uuid|exists:messages,id',
             'attachments' => 'nullable|array|max:10',
-            'attachments.*' => 'file|max:51200', // 50MB per file
+            // Tür kısıtı: hasta belgelerinde beyaz liste vardı ama sohbette
+            // yoktu — çalıştırılabilir dosya, HTML veya SVG eklenebiliyordu.
+            // Kullanıcılar birbirine dosya gönderebildiği için bu, platformu
+            // zararlı yazılım dağıtım aracına çevirebilirdi.
+            //
+            // `mimetypes` uzantıya değil dosyanın GERÇEK içeriğine bakar,
+            // yeniden adlandırarak atlatılamaz. SVG bilerek yok: betik taşır.
+            'attachments.*' => 'file|max:51200|mimetypes:' . implode(',', [
+                'application/pdf',
+                'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic',
+                'video/mp4', 'video/quicktime', 'video/webm',
+                'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/webm', 'audio/mp4',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/dicom',
+                'text/plain',
+            ]), // 50MB per file
         ]);
 
         $user = $request->user();

@@ -424,12 +424,15 @@ class ClinicManagerService
         $startOfMonth = Carbon::now()->startOfMonth();
 
         $rows = Appointment::whereIn('doctor_id', $doctorIds)
-            ->select(
-                'doctor_id',
-                DB::raw('COUNT(*) as total'),
-                DB::raw("COUNT(*) FILTER (WHERE status = 'completed') as completed"),
-                DB::raw("COUNT(*) FILTER (WHERE appointment_date >= '{$startOfMonth->toDateString()}') as month")
-            )
+            // COUNT(*) FILTER (WHERE ...) PostgreSQL'e özgü; MySQL/TiDB
+            // anlamıyor ve bu uç canlıda düşüyordu. SUM(CASE WHEN ...) üç
+            // sürücüde de aynı çalışır.
+            //
+            // Tarih artık SQL'e gömülmüyor, parametre olarak bağlanıyor.
+            ->select('doctor_id')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw("SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed")
+            ->selectRaw('SUM(CASE WHEN appointment_date >= ? THEN 1 ELSE 0 END) as month', [$startOfMonth->toDateString()])
             ->groupBy('doctor_id')
             ->get();
 

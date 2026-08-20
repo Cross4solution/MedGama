@@ -63,12 +63,23 @@ return [
 
             /*
              * Middleware allows to prevent unexpected access to API documentation
+             *
+             * Üretimde dokümantasyon KAPALI.
+             *
+             * /api/documentation ve /docs canlıda herkese açıktı: tüm uçların,
+             * parametrelerin ve veri yapılarının haritası saldırgana hazır
+             * sunuluyordu. Saldırının ilk adımı keşiftir; onu kolaylaştırmanın
+             * karşılığı yok.
+             *
+             * Yerelde ve staging'de açık kalır — geliştirme için gerekli.
+             * Üretimde gerekirse APP_ENV dışında bir kapı değil, VPN/kimlik
+             * arkasına alınmalı.
              */
             'middleware' => [
-                'api' => [],
-                'asset' => [],
-                'docs' => [],
-                'oauth2_callback' => [],
+                'api' => [\App\Http\Middleware\UretimdeKapat::class],
+                'asset' => [\App\Http\Middleware\UretimdeKapat::class],
+                'docs' => [\App\Http\Middleware\UretimdeKapat::class],
+                'oauth2_callback' => [\App\Http\Middleware\UretimdeKapat::class],
             ],
 
             /*

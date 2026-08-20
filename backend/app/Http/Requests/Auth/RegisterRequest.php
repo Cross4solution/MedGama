@@ -35,7 +35,7 @@ class RegisterRequest extends FormRequest
 
         return [
             'email'         => 'required|email',
-            'password'      => ['required', 'string', Password::min(8)->letters()->numbers()],
+            'password'      => ['required', 'string', Password::min(8)->letters()->numbers()->uncompromised()],
             'fullname'      => 'required|string|max:255',
             // Kullanıcı kendi handle'ını seçer (müşteri kararı). Gönderilmezse
             // geriye uyumluluk için sistem otomatik üretir (Username::generate).

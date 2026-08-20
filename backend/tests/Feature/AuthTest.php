@@ -18,8 +18,8 @@ class AuthTest extends TestCase
         $response = $this->postJson('/api/auth/register', [
             'fullname'              => 'Test Patient',
             'email'                 => 'patient@test.com',
-            'password'              => 'Password123!',
-            'password_confirmation' => 'Password123!',
+            'password'              => 'Kavun7Deniz9Marul',
+            'password_confirmation' => 'Kavun7Deniz9Marul',
             'role_id'               => 'patient',
             // Kayıt artık doğum tarihi ve sağlık verisi açık rızası istiyor
             // (KVKK/GDPR); test bu alanlar eklenmeden önce yazılmıştı.
@@ -51,12 +51,12 @@ class AuthTest extends TestCase
     {
         User::factory()->create([
             'email'    => 'login@test.com',
-            'password' => 'Password123!',
+            'password' => 'Kavun7Deniz9Marul',
         ]);
 
         $response = $this->postJson('/api/auth/login', [
             'email'    => 'login@test.com',
-            'password' => 'Password123!',
+            'password' => 'Kavun7Deniz9Marul',
         ]);
 
         $response->assertOk()
@@ -67,7 +67,7 @@ class AuthTest extends TestCase
     {
         User::factory()->create([
             'email'    => 'wrong@test.com',
-            'password' => 'Password123!',
+            'password' => 'Kavun7Deniz9Marul',
         ]);
 
         $response = $this->postJson('/api/auth/login', [

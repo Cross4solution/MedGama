@@ -26,8 +26,8 @@ class DoctorOnboardingTest extends TestCase
         $response = $this->postJson('/api/auth/register', [
             'fullname'              => 'Dr. Test Doctor',
             'email'                 => 'doctor@onboard.test',
-            'password'              => 'SecurePass123!',
-            'password_confirmation' => 'SecurePass123!',
+            'password'              => 'Zeytin4Bulut8Fener',
+            'password_confirmation' => 'Zeytin4Bulut8Fener',
             'role_id'               => 'doctor',
         ]);
 
@@ -73,12 +73,12 @@ class DoctorOnboardingTest extends TestCase
     {
         User::factory()->doctor()->create([
             'email'    => 'doclogin@test.com',
-            'password' => 'SecurePass123!',
+            'password' => 'Zeytin4Bulut8Fener',
         ]);
 
         $response = $this->postJson('/api/auth/login', [
             'email'    => 'doclogin@test.com',
-            'password' => 'SecurePass123!',
+            'password' => 'Zeytin4Bulut8Fener',
         ]);
 
         $response->assertOk()
