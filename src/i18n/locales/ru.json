@@ -69,7 +69,41 @@
     "saving": "Сохранение...",
     "country": "Страна",
     "clear": "Очистить",
-    "upgrade": "Улучшить"
+    "upgrade": "Улучшить",
+    "backToHome": "На главную",
+    "cancelled": "Отменено",
+    "clearAll": "Очистить всё",
+    "comment": "Комментировать",
+    "comments": "комментариев",
+    "creating": "Создание…",
+    "done": "Готово",
+    "filters": "Фильтры",
+    "following": "Вы подписаны",
+    "like": "Нравится",
+    "loadError": "При загрузке документов произошла ошибка.",
+    "loadMore": "Загрузить ещё",
+    "new": "Новое",
+    "noData": "Нет данных",
+    "noReviewsYet": "Отзывов пока нет",
+    "noSavedPosts": "Сохранённых публикаций пока нет",
+    "now": "Сейчас",
+    "of": "из",
+    "optional": "необязательно",
+    "previous": "Назад",
+    "readMore": "Читать далее",
+    "ready": "Готово",
+    "saveChanges": "Сохранить изменения",
+    "savedPosts": "Сохранённые публикации",
+    "share": "Поделиться",
+    "showLess": "Показать меньше",
+    "showing": "Показано",
+    "signInRequired": "Требуется вход",
+    "today": "Сегодня",
+    "tomorrow": "Завтра",
+    "uploading": "Загрузка…",
+    "verified": "Подтверждено",
+    "viewAll": "Показать всё",
+    "years": "лет"
   },
   "nav": {
     "home": "Главная",
@@ -223,7 +257,8 @@
     "passwordsMatch": "Пароли совпадают",
     "selectCountryPlaceholder": "Выберите страну",
     "guardianConsentNotice": "Если вам менее 18 лет, для регистрации требуется согласие родителей. Пожалуйста, укажите адрес электронной почты законного представителя.",
-    "guardianEmailPlaceholder": "guardian@example.com"
+    "guardianEmailPlaceholder": "guardian@example.com",
+    "signInAsDifferentRole": "Войти с другой ролью"
   },
   "aboutPage": {
     "heroDesc": "Независимая от языка и локации платформа здравоохранения и медицинского туризма, объединяющая пациентов с опытными врачами и проверенными клиниками/больницами.",
@@ -289,7 +324,12 @@
     "contactUs": "Свяжитесь с нами",
     "privacyShort": "Конфиденциальность",
     "termsShort": "Условия",
-    "popularTreatments": "Популярные процедуры"
+    "popularTreatments": "Популярные процедуры",
+    "allTreatments": "Все процедуры",
+    "medagamaLogo": "Логотип Medagama",
+    "popCardiologyIstanbul": "Кардиология, Стамбул",
+    "popDermatologyIstanbul": "Дерматология, Стамбул",
+    "popOrthopedicsAnkara": "Ортопедия, Анкара"
   },
   "crm": {
     "sidebar": {
@@ -1056,7 +1096,12 @@
     "savedPosts": "Сохранённые публикации",
     "favoriteClinics": "Избранные клиники",
     "medicalArchive": "Медицинский архив",
-    "dashboard": "Панель"
+    "dashboard": "Панель",
+    "billing": "Выставление счетов",
+    "clinicProfile": "Профиль клиники",
+    "managementPanel": "Панель CRM",
+    "myInvoices": "Счета",
+    "myTeam": "Моя команда"
   },
   "cookie": {
     "title": "Настройки cookies",
@@ -1189,7 +1234,23 @@
     "deleteModalBody": "Это действие безвозвратно удалит ваш аккаунт и все связанные с ним данные, включая публикации, комментарии, медицинскую историю и личную информацию. Это действие нельзя отменить.",
     "deleteModalTypePrefix": "Введите",
     "deleteModalTypeSuffix": "для подтверждения",
-    "deleting": "Удаление..."
+    "deleting": "Удаление...",
+    "delete": "УДАЛИТЬ",
+    "medicalNotes": "Заметки",
+    "medicalNotesDesc": "Всё остальное, что стоит знать вашему врачу.",
+    "medicalNotesPlaceholder": "напр. перенесённые операции, семейный анамнез, чувствительность…",
+    "medicalShareNotice": "Эти сведения будут переданы врачу, к которому вы записываетесь. Для правильного и безопасного лечения важно, чтобы данные о лекарствах, аллергиях и анамнезе были полными.",
+    "medications": "Лекарства",
+    "medicationsDesc": "Лекарства, которые вы принимаете сейчас.",
+    "medicationsPlaceholder": "напр. аспирин 100 мг, метформин…",
+    "passwordUpdatedReloginRequired": "Ваш пароль обновлён. В целях безопасности все сеансы завершены — войдите снова.",
+    "profileSectionDesc": "Фото, имя, страна и язык",
+    "saveFailed": "Не удалось сохранить",
+    "translateContent": "Показывать публикации и сообщения также на моём языке",
+    "translateContentDesc": "Если выключено, содержимое остаётся на языке оригинала. Включите — и не придётся переводить каждый элемент.",
+    "vaccinations": "Прививки",
+    "vaccinationsDesc": "Прививки, которые вы получили.",
+    "vaccinationsPlaceholder": "напр. COVID-19, столбняк, гепатит B…"
   },
   "search": {
     "heroTitle": "Найдите подходящего врача для вас",
@@ -1407,7 +1468,11 @@
     "catSocial": "Социальные",
     "catMessages": "Сообщения",
     "catSystem": "Система",
-    "unreadLabel": "Непрочитанные"
+    "unreadLabel": "Непрочитанные",
+    "allClear": "Отлично! Сейчас ничего срочного нет.",
+    "allClearDesc": "Все задачи выполнены. Так держать!",
+    "taskTracker": "Умное отслеживание задач",
+    "urgentAlerts": "Срочные уведомления"
   },
   "telehealth": {
     "title": "Сеанс телемедицины",
@@ -1453,7 +1518,29 @@
     "waiting": "Ожидание",
     "transcriptHistory": "Расшифровка",
     "recording": "ЗАП",
-    "noTranscripts": "Расшифровки появятся здесь после начала сеанса."
+    "noTranscripts": "Расшифровки появятся здесь после начала сеанса.",
+    "camera": "Камера",
+    "captionAccept": "Принять",
+    "captionAskBody": "Собеседник хочет включить субтитры. Если вы согласитесь, речь будет расшифровываться на нашем сервере. Текст не сохраняется и удаляется по окончании звонка.",
+    "captionAskTitle": "Включить субтитры?",
+    "captionReject": "Нет",
+    "captionToggle": "Субтитры",
+    "captionUnavailable": "Субтитры пока недоступны",
+    "captionWaiting": "Ожидание субтитров…",
+    "consentAccept": "Принять и продолжить",
+    "consentBody": "Звонок защищён сквозным шифрованием и не записывается. Продолжая, вы разрешаете использовать камеру и микрофон для этого звонка.",
+    "consentTitle": "Присоединиться к звонку",
+    "ended": "Звонок завершён",
+    "endedNetwork": "Не удалось восстановить соединение.",
+    "errAccess": "У вас нет доступа к этому звонку.",
+    "errMedia": "Доступ к камере или микрофону отклонён.",
+    "errSignaling": "Не удалось связаться с сервером звонков.",
+    "joinNow": "Присоединиться к звонку",
+    "microphone": "Микрофон",
+    "prepareBody": "Проверьте камеру и микрофон. Полоска должна двигаться, когда вы говорите.",
+    "prepareTitle": "Готовы присоединиться?",
+    "reconnecting": "Переподключение…",
+    "waitingPeer": "Ожидание собеседника…"
   },
   "onboarding": {
     "title": "Заполните ваш профиль",
@@ -1504,7 +1591,11 @@
     "welcomeSubtitle": "Ваш профиль теперь заполнен",
     "welcomeMessage": "Поздравляем, {{name}}! Ваш профессиональный профиль успешно настроен.",
     "welcomeHint": "Теперь пациенты могут найти вас и записаться на приём. Вы можете обновить профиль в любое время в панели управления.",
-    "goToDashboard": "Перейти в панель управления"
+    "goToDashboard": "Перейти в панель управления",
+    "avatarFormatError": "Фото профиля должно быть в формате JPG, PNG или WebP.",
+    "avatarSizeError": "Фото профиля должно быть не больше 2 МБ.",
+    "fileTooLarge": "Файл должен быть не больше 10 МБ.",
+    "saveFailed": "Не удалось сохранить. Попробуйте ещё раз."
   },
   "clinicOnboarding": {
     "profileTitle": "Профиль клиники",
@@ -1842,7 +1933,9 @@
     "failed": "Ошибка",
     "statusSent": "Отправлено",
     "statusDelivered": "Доставлено",
-    "statusRead": "Прочитано"
+    "statusRead": "Прочитано",
+    "autoTranslated": "Переведено автоматически · показать оригинал",
+    "showTranslation": "Показать перевод"
   },
   "medicalArchive": {
     "empty": "Документов пока нет",
@@ -1864,7 +1957,17 @@
     "documentDate": "Дата документа",
     "description": "Описание",
     "descriptionPlaceholder": "Необязательные заметки об этом документе...",
-    "upload": "Загрузить"
+    "upload": "Загрузить",
+    "allCategories": "Все категории",
+    "categories": "Категории",
+    "encrypted": "Зашифровано",
+    "gdprArt9": "GDPR, ст. 9",
+    "pdfJpegPngWordExcel": "PDF, JPEG, PNG, Word, Excel · до 20 МБ",
+    "searchPlaceholder": "Поиск по документам…",
+    "subtitle": "Ваши медицинские документы под надёжной защитой",
+    "title": "Медицинский архив",
+    "totalFiles": "Всего файлов",
+    "totalSize": "Общий размер"
   },
   "appointment": {
     "selectSpecialty": "Выберите специализацию",
@@ -1876,7 +1979,20 @@
     "changeSpecialty": "Сменить специализацию",
     "loadingDoctors": "Загрузка врачей...",
     "noDoctors": "Нет доступных врачей по этой специализации",
-    "tryDifferent": "Пожалуйста, попробуйте другую специализацию"
+    "tryDifferent": "Пожалуйста, попробуйте другую специализацию",
+    "clearSearch": "Очистить поиск",
+    "createNew": "Создать новую запись",
+    "findDoctor": "Найти врача",
+    "findDoctorDesc": "Введите имя врача, специальность или клинику",
+    "findDoctorPlaceholder": "напр. д-р Айше, офтальмология, Medicana…",
+    "goToVerification": "Перейти к проверке",
+    "noTelehealthDoctors": "По этой специальности ни один врач не проводит онлайн-консультации",
+    "orPickSpecialty": "или выберите специальность ниже",
+    "searchSpecialty": "Поиск специальности…",
+    "verificationMessage": "Ради безопасности пациентов и доверия к платформе перед созданием записей необходимо пройти проверку. Отправьте профессиональные документы на рассмотрение.",
+    "verificationNote": "Проверка обычно занимает 24–48 часов после отправки документов.",
+    "verificationRequired": "Требуется проверка",
+    "verificationRequiredSubtitle": "Сначала нужно подтвердить вашу учётную запись"
   },
   "review": {
     "rateExperience": "Оцените ваш опыт",
@@ -1906,7 +2022,8 @@
       "telehealthDesc": "Проводите сеансы телемедицины с пациентами.",
       "upgradeCta": "Перейти на Professional",
       "compareCta": "Сравнить тарифы",
-      "trustBadge": "Отмена в любое время · Без обязательств · Соответствие GDPR"
+      "trustBadge": "Отмена в любое время · Без обязательств · Соответствие GDPR",
+      "professionalBadge": "Профессиональный"
     },
     "pricing": {
       "title": "Сравнить тарифы",
@@ -1922,7 +2039,8 @@
       "archive": "Безлимитный медицинский архив",
       "prioritySupport": "Приоритетная поддержка",
       "maybeLater": "Может быть позже",
-      "upgradePro": "Перейти на Professional"
+      "upgradePro": "Перейти на Professional",
+      "free": "Бесплатно"
     }
   },
   "patientDashboard": {
@@ -1954,7 +2072,9 @@
     "closeProfileMenu": "Закрыть меню профиля",
     "openProfileMenu": "Открыть меню профиля",
     "closeMenu": "Закрыть меню",
-    "openMenu": "Открыть меню"
+    "openMenu": "Открыть меню",
+    "medagamaLogo": "Логотип Medagama",
+    "vascoAi": "Vasco AI"
   },
   "share": {
     "share": "Поделиться",
@@ -2215,7 +2335,21 @@
     "emojiCount": "{{count}} эмодзи",
     "filterCountry": "Страна: {{country}}",
     "filterSpecialization": "Специализация: {{specialty}}",
-    "filterSearch": "Поиск: «{{query}}»"
+    "filterSearch": "Поиск: «{{query}}»",
+    "description": "Описание",
+    "linkCopied": "Ссылка скопирована в буфер обмена",
+    "locationHint": "Доступ к геолокации заблокирован. Разрешите его в настройках сайта в браузере (значок замка в адресной строке) и попробуйте снова.",
+    "locationHowTo": "Чтобы включить, нажмите на замок в адресной строке → Геолокация → Разрешить.",
+    "locationManual": "Либо выберите страну и город вручную ниже.",
+    "locationPermissionShort": "Геолокация отключена",
+    "nearbyActive": "Показаны ближайшие",
+    "reportDescMin": "Напишите не менее {{min}} символов",
+    "reportDescOk": "Достаточно",
+    "reportFailed": "Не удалось отправить жалобу. Попробуйте ещё раз.",
+    "showOriginal": "Показать оригинал",
+    "translate": "Перевести",
+    "translating": "Перевод…",
+    "verifyToLike": "Подтвердите учётную запись, чтобы ставить отметки «Нравится»."
   },
   "subtitles": {
     "button": "Субтитры",
@@ -2229,5 +2363,254 @@
     "editTitle": "Редактировать субтитры",
     "empty": "В этом видео нет субтитров для редактирования.",
     "jump": "Перейти к этому моменту"
+  },
+  "activeFilterChips": {
+    "clear": "очистить"
+  },
+  "authContext": {
+    "areYouSureYouWant": "Вы действительно хотите выйти?",
+    "logout": "Выйти"
+  },
+  "authPages": {
+    "gdprCompliant": "Соответствует GDPR",
+    "sslSecure": "Защищено SSL",
+    "welcomeTo": "Добро пожаловать в"
+  },
+  "browse": {
+    "allClinics": "Все клиники",
+    "allSpecialties": "Все специальности",
+    "clinicsForTreatment": "Клиники по запросу «{{name}}»",
+    "clinicsInSpecialty": "Клиники: {{name}}",
+    "clinicsSubtitle": "Откройте для себя лучшие клиники и больницы по всем специальностям.",
+    "noClinics": "Клиники не найдены",
+    "noTagsYet": "Для этой специальности список процедур пока не добавлен.",
+    "noTreatments": "Процедуры не найдены",
+    "searchClinics": "Поиск клиник по названию, городу или специальности…",
+    "searchTreatments": "Поиск процедуры (напр. имплант, катаракта, ЭКО)…",
+    "treatments": "Процедуры",
+    "treatmentsSubtitle": "Найдите клиники и больницы по виду лечения и специальности.",
+    "tryDifferent": "Попробуйте другой поисковый запрос."
+  },
+  "browseClinics": {
+    "view": "Смотреть →"
+  },
+  "browseTreatments": {
+    "view": "Смотреть →"
+  },
+  "calendar": {
+    "addApple": "Apple / Outlook (webcal)",
+    "addGoogle": "Добавить в Google Календарь",
+    "addToCalendar": "Добавить в календарь",
+    "appleOther": "Apple / .ics",
+    "copied": "Скопировано",
+    "copy": "Копировать",
+    "regen": "Сбросить ссылку",
+    "regenConfirm": "Текущая ссылка на подписку перестанет работать. Продолжить?",
+    "syncError": "Не удалось загрузить ссылку.",
+    "syncNote": "Это личная ссылка — не делитесь ею. Приложения-календари обновляются каждые несколько минут.",
+    "syncSubtitle": "Получайте свои записи в Google, Apple или Outlook автоматически — добавьте один раз.",
+    "syncTitle": "Синхронизация календаря"
+  },
+  "cityCombobox": {
+    "noResults": "Ничего не найдено"
+  },
+  "countryCombobox": {
+    "noResults": "Ничего не найдено",
+    "searchCountry": "Поиск страны"
+  },
+  "dateOfBirthPicker": {
+    "dd": "ДД",
+    "mm": "ММ",
+    "yyyy": "ГГГГ"
+  },
+  "exploreTimeline": {
+    "category": "Категория",
+    "observer": "Наблюдатель"
+  },
+  "forgotPasswordForm": {
+    "nameExampleCom": "имя@пример.ru"
+  },
+  "forgotPasswordPage": {
+    "confirmPassword": "Подтвердите пароль",
+    "didnTReceiveTheCode": "Не получили код?",
+    "emailAddress": "Адрес электронной почты",
+    "enterResetCode": "Введите код сброса",
+    "forgotYourPassword": "Забыли пароль?",
+    "min6Characters": "Минимум 6 символов",
+    "newPassword": "Новый пароль",
+    "passwordReset": "Пароль сброшен!",
+    "repeatYourPassword": "Повторите пароль",
+    "resetPassword": "Сбросить пароль",
+    "sendResetCode": "Отправить код",
+    "setNewPassword": "Задайте новый пароль",
+    "youExampleCom": "вы@пример.ru",
+    "yourPasswordHasBeenSuccessfully": "Ваш пароль успешно изменён."
+  },
+  "hospital": {
+    "about": "О больнице",
+    "appointmentNote": "Записи ведутся в каждом филиале отдельно. Выберите филиал для записи.",
+    "branches": "Филиалы",
+    "clinics": "Клиники",
+    "comingSoon": "Скоро",
+    "director": "Главный врач",
+    "doctors": "врачей",
+    "hospitalInfo": "Сведения о больнице",
+    "legalName": "Юридическое наименование",
+    "level": "Сеть больниц",
+    "location": "Расположение",
+    "noBio": "Описание отсутствует.",
+    "noBranches": "Филиалы пока не добавлены.",
+    "notFound": "Больница не найдена",
+    "notFoundDesc": "Этот профиль больницы не существует или больше не активен.",
+    "ourBranches": "Наши филиалы",
+    "selectBranch": "Выберите филиал ниже",
+    "verified": "Подтверждена",
+    "viewBranch": "Посмотреть филиал",
+    "viewMap": "Карта"
+  },
+  "invoices": {
+    "discount": "Скидка",
+    "doctor": "Врач",
+    "downloadFailed": "Не удалось скачать счёт, попробуйте ещё раз.",
+    "downloadPdf": "Скачать PDF",
+    "dueDate": "Срок оплаты",
+    "empty": "У вас пока нет счетов.",
+    "issueDate": "Дата выставления",
+    "loadFailed": "Не удалось загрузить счета.",
+    "paid": "Оплачено",
+    "payAtClinic": "Оплату принимает клиника. Свяжитесь со своей клиникой для оплаты.",
+    "status": {
+      "cancelled": "Отменён",
+      "overdue": "Просрочен",
+      "paid": "Оплачен",
+      "partial": "Оплачен частично",
+      "pending": "Ожидает оплаты"
+    },
+    "tax": "НДС",
+    "title": "Мои счета",
+    "total": "Итого"
+  },
+  "loginForm": {
+    "nameExampleCom": "имя@пример.ru"
+  },
+  "medstreamProfileFeed": {
+    "postMedia": "Медиафайл публикации",
+    "videoThumbnail": "Обложка видео",
+    "videoUnavailable": "Видео недоступно"
+  },
+  "myAppointments": {
+    "empty": "Записей нет.",
+    "subtitle": "Управляйте входящими записями",
+    "title": "Мои записи"
+  },
+  "page": {
+    "anaSayfa": "Главная",
+    "breadcrumb": "breadcrumb",
+    "tedaviler": "Процедуры"
+  },
+  "postComposer": {
+    "emoji": "Эмодзи",
+    "photo": "Фото",
+    "video": "Видео"
+  },
+  "postCreateModal": {
+    "preview": "предпросмотр"
+  },
+  "postDetail": {
+    "areYouSureYouWant": "Вы действительно хотите удалить этот комментарий?",
+    "close": "Закрыть",
+    "delete": "Удалить",
+    "next": "Далее",
+    "noCommentsYetBeThe": "Комментариев пока нет. Оставьте первый!",
+    "noMediaAvailable": "Медиафайлов нет",
+    "postNotFoundPleaseGo": "Публикация не найдена. Вернитесь назад и попробуйте снова.",
+    "previous": "Назад",
+    "reply": "Ответить",
+    "writeAReply": "Напишите ответ…",
+    "you": "Вы"
+  },
+  "registerForm": {
+    "nameExampleCom": "имя@пример.ru"
+  },
+  "savedClinics": {
+    "favorites": "Избранное",
+    "noFavoriteClinicsYet": "Избранных клиник пока нет",
+    "noFavoriteDoctorsYet": "Избранных врачей пока нет",
+    "removeFromFavorites": "Убрать из избранного?",
+    "saveClinicsFromSearchResults": "Сохраняйте клиники из результатов поиска или профилей клиник.",
+    "saveDoctorsFromSearchResults": "Сохраняйте врачей из результатов поиска или профилей врачей.",
+    "signInRequired": "Требуется вход",
+    "youNeedToSignIn": "Чтобы увидеть избранное, нужно войти."
+  },
+  "selectCombobox": {
+    "noResults": "Ничего не найдено",
+    "search": "Поиск…"
+  },
+  "sidebarPatient": {
+    "messages": "Сообщения",
+    "vascoAi": "Vasco AI"
+  },
+  "telehealthAppointmentPage": {
+    "appointmentConfirmed": "Запись подтверждена!",
+    "bookAppointment": "Записаться на приём",
+    "clearSearch": "Очистить поиск",
+    "dataProtectionNotice": "Уведомление о защите данных",
+    "date": "Дата",
+    "dateTime": "Дата и время",
+    "ddMmYyyy": "дд.мм.гггг",
+    "doctor": "Врач",
+    "email": "Эл. почта",
+    "loadingAvailableSlots": "Загрузка свободного времени…",
+    "name": "Имя",
+    "noAvailableSlotsForThis": "На эту дату свободного времени нет",
+    "notes": "Заметки",
+    "oopsNoSpecialtyFound": "Специальность не найдена",
+    "patient": "Пациент",
+    "patientInformation": "Данные пациента",
+    "payment": "Оплата",
+    "phone": "Телефон",
+    "pleaseReviewAllDetailsBefore": "Проверьте все данные перед подтверждением",
+    "selectADoctor": "Выберите врача",
+    "time": "Время",
+    "tryADifferentSearchTerm": "Попробуйте другой поисковый запрос",
+    "trySelectingADifferentDate": "Попробуйте выбрать другую дату",
+    "type": "Тип",
+    "youDoctor": "Вы (врач)"
+  },
+  "threadsSidebar": {
+    "messages": "Сообщения",
+    "searchConversations": "Поиск по перепискам…"
+  },
+  "timelineCard": {
+    "attachment": "Вложение",
+    "comments": "комментариев",
+    "delete": "Удалить",
+    "downloadFile": "Скачать файл",
+    "likes": "отметок «Нравится»",
+    "openFile": "Открыть файл",
+    "playbackErrorTapToRetry": "Ошибка воспроизведения — нажмите, чтобы повторить",
+    "post": "Опубликовать",
+    "reply": "Ответить",
+    "video": "Видео",
+    "videoProcessing": "Обработка видео…",
+    "writeAReply": "Напишите ответ…"
+  },
+  "timelineFilterSidebar": {
+    "all": "Все"
+  },
+  "timelinePostCard": {
+    "avatar": "Аватар",
+    "postContent": "Содержимое публикации"
+  },
+  "timelineShareBox": {
+    "file": "Файл",
+    "image": "Изображение",
+    "post": "Опубликовать"
+  },
+  "verifyEmailPage": {
+    "didnTReceiveTheCode": "Не получили код?",
+    "emailVerified": "Почта подтверждена!",
+    "redirectingToYourDashboard": "Переход в вашу панель…",
+    "verifyYourEmail": "Подтвердите электронную почту"
   }
 }
