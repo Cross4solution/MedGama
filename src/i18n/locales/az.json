@@ -69,7 +69,41 @@
     "saving": "Yadda saxlanılır...",
     "country": "Ölkə",
     "clear": "Təmizlə",
-    "upgrade": "Yüksəlt"
+    "upgrade": "Yüksəlt",
+    "backToHome": "Ana səhifəyə qayıt",
+    "cancelled": "Ləğv edildi",
+    "clearAll": "Hamısını təmizlə",
+    "comment": "Şərh",
+    "comments": "şərh",
+    "creating": "Yaradılır...",
+    "done": "Hazır",
+    "filters": "Filtrlər",
+    "following": "İzlənilir",
+    "like": "Bəyən",
+    "loadError": "Sənədlər yüklənərkən xəta baş verdi.",
+    "loadMore": "Daha çox yüklə",
+    "new": "Yeni",
+    "noData": "Məlumat yoxdur",
+    "noReviewsYet": "Hələ rəy yoxdur",
+    "noSavedPosts": "Hələ saxlanılmış paylaşım yoxdur",
+    "now": "İndi",
+    "of": "/",
+    "optional": "istəyə bağlı",
+    "previous": "Əvvəlki",
+    "readMore": "Davamını oxu",
+    "ready": "Hazır",
+    "saveChanges": "Dəyişiklikləri yadda saxla",
+    "savedPosts": "Saxlanılanlar",
+    "share": "Paylaş",
+    "showLess": "Daha az göstər",
+    "showing": "Göstərilir",
+    "signInRequired": "Giriş etməlisiniz",
+    "today": "Bu gün",
+    "tomorrow": "Sabah",
+    "uploading": "Yüklənir...",
+    "verified": "Doğrulanmış",
+    "viewAll": "Hamısına bax",
+    "years": "il"
   },
   "nav": {
     "home": "Ana səhifə",
@@ -223,7 +257,8 @@
     "passwordsMatch": "Şifrələr uyğundur",
     "selectCountryPlaceholder": "Ölkə seçin",
     "guardianConsentNotice": "18 yaşdan kiçiksinizsə, qeydiyyatdan keçmək üçün valideyn razılığı tələb olunur. Zəhmət olmasa qəyyumun e-poçt ünvanını daxil edin.",
-    "guardianEmailPlaceholder": "qeyyum@example.com"
+    "guardianEmailPlaceholder": "qeyyum@example.com",
+    "signInAsDifferentRole": "Fərqli rolla giriş"
   },
   "aboutPage": {
     "heroDesc": "Xəstələri təcrübəli həkimlər və təsdiqlənmiş klinika/xəstəxanalarla eyni rəqəmsal platformada birləşdirən, dil və məkandan asılı olmayan sağlamlıq və tibbi turizm bazarı.",
@@ -289,7 +324,12 @@
     "contactUs": "Bizimlə əlaqə",
     "privacyShort": "Məxfilik",
     "termsShort": "Şərtlər",
-    "popularTreatments": "Populyar müalicələr"
+    "popularTreatments": "Populyar müalicələr",
+    "allTreatments": "Bütün müalicələr",
+    "medagamaLogo": "Medagama loqosu",
+    "popCardiologyIstanbul": "İstanbul Kardiologiya",
+    "popDermatologyIstanbul": "İstanbul Dermatologiya",
+    "popOrthopedicsAnkara": "Ankara Ortopediya"
   },
   "crm": {
     "sidebar": {
@@ -345,7 +385,17 @@
       "aiTagSchedule": "cədvəl",
       "aiTagPatient": "xəstə",
       "aiTagRevenue": "gəlir",
-      "aiTagOverview": "icmal"
+      "aiTagOverview": "icmal",
+      "appointmentsTitle": "Randevular",
+      "insightN": "Təhlil {{n}}",
+      "newPatientsMonth": "Bu ayın yeni xəstələri",
+      "nextInsight": "Növbəti təhlil",
+      "unlockInsights": "Real vaxt təhlillərini aç",
+      "upgradeAlerts": "Real vaxt xəbərdarlıqları üçün yüksəldin",
+      "upgradeAppointments": "Canlı randevu cədvəlinizi görmək üçün yüksəldin",
+      "upgradeHint": "Canlı məlumatı açmaq üçün Peşəkara yüksəldin",
+      "upgradePatients": "Son xəstələrinizi görmək üçün yüksəldin",
+      "upgradeRevenue": "Həftəlik gəlirinizi izləmək üçün yüksəldin"
     },
     "appointments": {
       "title": "Randevular",
@@ -372,7 +422,62 @@
       "selectTime": "Vaxt Seçin",
       "selectPatient": "Xəstə Seçin",
       "selectType": "Növ Seçin",
-      "appointmentNotes": "Randevu Qeydləri"
+      "appointmentNotes": "Randevu Qeydləri",
+      "additionalNotes": "Əlavə qeydlər...",
+      "allStatus": "Bütün statuslar",
+      "awaitingConfirmation": "{{count}} təsdiq gözləyir",
+      "cancelledMsg": "Randevu ləğv edildi.",
+      "complete": "Tamamla",
+      "completedMsg": "Randevu tamamlandı.",
+      "confirm": "Təsdiqlə",
+      "confirmedMsg": "Randevu təsdiqləndi.",
+      "createAppointment": "Randevu yarat",
+      "createError": "Randevu yaradıla bilmədi.",
+      "created": "Randevu uğurla yaradıldı.",
+      "creating": "Yaradılır...",
+      "decline": "Rədd et",
+      "details": "Randevu təfərrüatları",
+      "docClinicLicense": "Klinika lisenziyası",
+      "docDiploma": "Diplom / Tibb diplomu",
+      "docIdCard": "Şəxsiyyət vəsiqəsi / Pasport",
+      "docOther": "Digər",
+      "docSpecialtyCertificate": "İxtisas sənədi",
+      "medicalHistory": "Tibbi tarixçə / Anamnez",
+      "medicalHistoryAtBooking": "Randevu anındakı tibbi tarixçə",
+      "medicalHistoryCurrent": "Cari tibbi tarixçə",
+      "noShowMsg": "Gəlmədi olaraq işarələndi.",
+      "optional": "istəyə bağlı",
+      "patientName": "Xəstənin adı",
+      "patientNamePlaceholder": "Xəstənin adı və soyadı",
+      "pendingRequests": "Gözləyən sorğular",
+      "reject": "Rədd et",
+      "rejectWindowNote": "Randevular avtomatik təsdiqlənir. Saatına 2 saat qalanadək rədd edə bilərsiniz.",
+      "rescheduleError": "Yenidən planlaşdırıla bilmədi.",
+      "rescheduled": "Randevu yenidən planlaşdırıldı.",
+      "searchPatients": "Xəstə axtar...",
+      "self": "Özü",
+      "startExamination": "Müayinəyə başla",
+      "statusCancelled": "Ləğv edildi",
+      "statusCompleted": "Tamamlandı",
+      "statusConfirmed": "Təsdiqləndi",
+      "statusNoShow": "Gəlmədi",
+      "statusPending": "Gözləyir",
+      "stepConfirm": "Təsdiqlə",
+      "stepDateTime": "Tarix və saat",
+      "stepOf": "Addım {{step}}/{{total}} — {{title}}",
+      "stepType": "Randevu növü",
+      "summary": "Randevu xülasəsi",
+      "timezoneHint": "Saatlar klinikanın saat qurşağındadır ({{tz}}).",
+      "typeInPerson": "Üzbəüz",
+      "typeInPersonDesc": "Klinikada üzbəüz müayinə",
+      "typePhone": "Telefon",
+      "typePhoneDesc": "Telefonla məsləhət",
+      "typeVideoCall": "Video görüş",
+      "typeVideoCallDesc": "Təhlükəsiz keçid vasitəsilə video görüş",
+      "upcomingConfirmed": "Yaxınlaşan (təsdiqlənmiş)",
+      "updateError": "Yeniləmə uğursuz oldu.",
+      "updated": "Yeniləndi.",
+      "uploadFailed": "Yükləmə uğursuz oldu."
     },
     "calendar": {
       "title": "Ağıllı Təqvim",
@@ -401,7 +506,23 @@
       "dragHint": "Randevuları yenidən planlamaq üçün sürükləyib buraxın",
       "goToPatient": "Xəstəyə Keç",
       "confirmed": "Təsdiqləndi",
-      "yearsOld": "yaşında"
+      "yearsOld": "yaşında",
+      "availability": "Əlçatanlıq",
+      "breakTime": "Fasilə",
+      "callPatient": "Xəstəyə zəng et",
+      "cancelAppt": "Ləğv et",
+      "closedHours": "Bağlı / İş saatından kənar",
+      "confirmAppt": "Təsdiqlə",
+      "filterByStatus": "Status",
+      "joinTelehealth": "Görüşə qoşul",
+      "lastSync": "Sinxronlaşdırıldı",
+      "openHours": "Açıq saatlar",
+      "quickActions": "Sürətli əməliyyatlar",
+      "startExam": "Müayinəyə başla",
+      "status_confirmed": "Təsdiqləndi",
+      "status_pending": "Gözləyir",
+      "today": "Bu gün",
+      "totalVisible": "Cəmi görünən"
     },
     "patient360": {
       "title": "Xəstə 360",
@@ -550,7 +671,46 @@
       "lastPayment": "Son ödəniş",
       "noPaymentYet": "Hələ ödəniş yoxdur",
       "collectPayment": "Ödəniş Al",
-      "noOutstanding": "Borclu xəstə yoxdur — bütün ödənişlər aktualdır!"
+      "noOutstanding": "Borclu xəstə yoxdur — bütün ödənişlər aktualdır!",
+      "addItem": "Maddə əlavə et",
+      "bankShort": "Bank",
+      "cardShort": "Kart",
+      "createFirstInvoice": "İlk hesabınızı yaradın",
+      "createInvoice": "Hesab yarat",
+      "createInvoiceDesc": "Maddə əlavə edin, qiymət təyin edin və hesab yaradın",
+      "createInvoiceError": "Hesab yaradıla bilmədi.",
+      "currency": "Valyuta",
+      "date": "Tarix",
+      "description": "Təsvir",
+      "descriptionRequired": "Təsvir *",
+      "discount": "Endirim",
+      "downloadPdf": "PDF endir",
+      "due": "Vaxt",
+      "dueDate": "Son ödəniş tarixi",
+      "grandTotal": "Yekun məbləğ",
+      "invoice": "Hesab",
+      "invoiceCount": "{{count}} hesab",
+      "invoices": "Hesablar",
+      "issueDate": "Tərtib tarixi",
+      "loadingPatients": "Xəstələr yüklənir...",
+      "max": "Maks.",
+      "monthlyRevenue": "Aylıq gəlir",
+      "notesPlaceholder": "Hesab üçün əlavə qeydlər...",
+      "overdue": "GECİKMİŞ",
+      "overdueInvoices": "Gecikmiş",
+      "paid": "Ödənilən",
+      "patientsCount": "{{count}} xəstə",
+      "pdfError": "PDF endirilə bilmədi.",
+      "qty": "Say",
+      "receivable": "Debitor borc",
+      "recordPaymentError": "Ödəniş qeyd edilə bilmədi.",
+      "searchInvoices": "Hesab axtar...",
+      "serviceItems": "Xidmət maddələri",
+      "subtotal": "Aralıq cəm",
+      "tax": "Vergi",
+      "taxRate": "Vergi dərəcəsi",
+      "todayRevenue": "Bugünkü gəlir",
+      "totalLabel": "Cəmi"
     },
     "prescriptions": {
       "title": "Reseptlər",
@@ -599,7 +759,15 @@
       "linkToPatient": "Xəstəyə bağla",
       "optional": "istəyə bağlı",
       "searchDocuments": "Sənəd axtar...",
-      "upload": "Yüklə"
+      "upload": "Yüklə",
+      "confirmDelete": "Bu sənədi silmək istədiyinizə əminsiniz?",
+      "documentTitle": "Başlıq",
+      "empty": "Hələ sənəd yoxdur",
+      "fileTooLarge": "Fayl çox böyükdür (maks. 20 MB).",
+      "fileTypeNotAllowed": "İcazə verilməyən fayl növü. PDF, JPEG, PNG, WebP, Word, Excel və ya DICOM yükləyin.",
+      "selectFile": "Zəhmət olmasa fayl seçin.",
+      "titleRequired": "Başlıq mütləqdir.",
+      "uploadFailed": "Yükləmə uğursuz oldu."
     },
     "integrations": {
       "title": "İnteqrasiyalar",
@@ -713,7 +881,32 @@
         "signature": "İmza / Möhür",
         "footer": "Bu hesabat Medagama Səhiyyə Platforması tərəfindən yaradılıb. Suallar üçün support@medgama.com ilə əlaqə saxlayın",
         "confidential": "MƏXFİ — Bu sənəd qorunan səhiyyə məlumatlarını ehtiva edir."
-      }
+      },
+      "alert": "XƏBƏRDARLIQ",
+      "appointmentIdLabel": "Randevu ID",
+      "clinicIdLabel": "Klinika ID",
+      "diagnosisNote": "Diaqnoz qeydi",
+      "diagnosisNotePlaceholder": "Diaqnoza aid qeydlər...",
+      "downloadPrescriptionPdf": "Resept PDF endir",
+      "examCreated": "Müayinə qeydi uğurla yaradıldı",
+      "examinationNote": "Müayinə qeydi",
+      "examinationNotePlaceholder": "Fiziki müayinə tapıntıları, şikayət, plan...",
+      "high": "YÜKSƏK",
+      "low": "AŞAĞI",
+      "normalLabel": "Normal",
+      "optional": "İstəyə bağlı",
+      "patientIdLabel": "Xəstə ID",
+      "patientIdRequired": "Zəhmət olmasa xəstə ID daxil edin.",
+      "patientUuid": "Xəstə UUID",
+      "pdfError": "PDF endirilərkən xəta baş verdi.",
+      "prescriptionPdf": "Resept PDF",
+      "refresh": "Yenilə",
+      "saveError": "Yadda saxlanılarkən xəta baş verdi.",
+      "searchTreatmentTag": "Simptom və ya müalicə axtar...",
+      "symptomsTreatments": "Simptomlar və müalicələr",
+      "treatmentPlanPlaceholder": "Tövsiyə olunan müalicə yanaşması, nəzarət tarixi, həyat tərzi tövsiyələri...",
+      "vitalsAlertDesc": "{{count}} dəyər normal aralıqdan kənardır",
+      "vitalsAlertTitle": "Həyati göstərici xəbərdarlığı"
     },
     "medstream": {
       "newPost": "Yeni Hadisə Paylaşımı",
@@ -874,7 +1067,28 @@
       "deleted": "Filial silindi.",
       "deleteTitle": "Filial silinsin?",
       "deleteConfirm": "Bu əməliyyat geri qaytarıla bilməz.",
-      "fetchError": "Filiallar yüklənə bilmədi."
+      "fetchError": "Filiallar yüklənə bilmədi.",
+      "active": "Aktiv",
+      "addBranch": "Filial əlavə et",
+      "addFirst": "+ İlk filialı əlavə et",
+      "addressPlaceholder": "Tam ünvan",
+      "clinics": "klinika",
+      "coordinates": "Xəritə koordinatları",
+      "createBranch": "Filial yarat",
+      "deleteBranch": "Filialı sil",
+      "deleteError": "Filial silinə bilmədi.",
+      "deleteWarning": "Bu əməliyyat geri qaytarıla bilməz.",
+      "doctors": "həkim",
+      "editBranch": "Filialı redaktə et",
+      "inactive": "Passiv",
+      "loadError": "Filiallar yüklənə bilmədi.",
+      "namePlaceholder": "məs. Mərkəz Klinika",
+      "nameRequired": "Filial adı mütləqdir.",
+      "noResults": "Axtarışınıza uyğun filial yoxdur.",
+      "previewMap": "Xəritədə önizlə",
+      "saveError": "Filial yadda saxlanıla bilmədi.",
+      "searchPlaceholder": "Filialları ada, şəhərə və ya ünvana görə axtar...",
+      "viewMap": "Xəritədə göstər"
     },
     "contactInbox": {
       "title": "Əlaqə Mesajları",
@@ -946,7 +1160,9 @@
       "submittedDocuments": "Təqdim Edilmiş Sənədlər",
       "submittedOn": "Təqdim edilib",
       "invalidFileType": "Yanlış fayl növü. Zəhmət olmasa PDF, JPG, PNG və ya WebP yükləyin.",
-      "fileTooLarge": "Fayl çox böyükdür. Maksimum ölçü 10MB-dır."
+      "fileTooLarge": "Fayl çox böyükdür. Maksimum ölçü 10MB-dır.",
+      "fileHint": "PDF, JPG, PNG — maks. 10 MB",
+      "submissionFailed": "Göndərmə uğursuz oldu"
     },
     "support": {
       "title": "Yardım və Dəstək",
@@ -982,6 +1198,138 @@
       "assignedTo": "Təyin edilib",
       "replyPlaceholder": "Cavabınızı yazın...",
       "notFound": "Müraciət tapılmadı"
+    },
+    "faq": {
+      "add": "SSS əlavə et",
+      "addFirst": "İlk SSS-nizi əlavə edin",
+      "answer": "Cavab",
+      "answerPlaceholder": "Xəstələriniz üçün ətraflı cavab yazın...",
+      "confirmDelete": "Bu SSS silinsin?",
+      "edit": "SSS redaktə et",
+      "emptyDesc": "Xəstələrin randevu almazdan əvvəl iş üsulunuzu tanıması üçün tez-tez verilən sualları əlavə edin.",
+      "emptyTitle": "Hələ SSS yoxdur",
+      "hidden": "Gizli",
+      "hide": "Gizlət",
+      "noMatch": "Axtarışınıza uyğun SSS yoxdur",
+      "question": "Sual",
+      "questionPlaceholder": "məs. Müayinə zamanı nə gözləməliyəm?",
+      "search": "SSS axtar...",
+      "show": "Göstər",
+      "subtitle": "Xəstələrinizin tez-tez verilən suallara sürətli cavab tapmasına kömək edin",
+      "title": "Tez-tez verilən suallar",
+      "visible": "Açıq profildə görünür"
+    },
+    "gatekeeper": {
+      "docsSubmitted": "Sənədləriniz nəzərdən keçirilir. Təsdiqləndikdə sizə bildiriləcək.",
+      "feat1": "Ağıllı təqvim",
+      "feat2": "Video görüş",
+      "feat3": "Tibbi arxiv",
+      "feat4": "Müayinə",
+      "subtitleMulti": "Xəstələrinizə xidmət göstərmək üçün 2 addım qaldı",
+      "subtitleSingle": "Xəstələrinizə xidmət göstərmək üçün son bir addım",
+      "title": "Az qalıb!",
+      "underReview": "Nəzərdən keçirilir",
+      "upgradeCta": "Peşəkara yüksəlt",
+      "upgradeDesc": "Randevu, video görüş və genişləndirilmiş CRM funksiyalarını açın",
+      "upgradeTitle": "Peşəkara yüksəldin",
+      "verifyDesc": "Peşə sənədlərinizi baxış üçün yükləyin",
+      "verifyTitle": "Hesabınızı doğrulayın"
+    },
+    "leads": {
+      "activityCall": "Zəng",
+      "activityError": "Fəaliyyət əlavə edilə bilmədi.",
+      "activityNote": "Qeyd",
+      "addActivity": "Fəaliyyət əlavə et",
+      "allSalespeople": "Bütün satış işçiləri",
+      "assignError": "Təyinat edilə bilmədi.",
+      "assignToSalesperson": "Satış işçisinə təyin et",
+      "assigned": "Təyin edildi",
+      "assignedSalesperson": "Təyin edilmiş satış işçisi",
+      "assignmentUpdated": "Təyinat yeniləndi.",
+      "convertedToPatient": "Xəstəyə çevrildi",
+      "create": "Yarat",
+      "createError": "Lead yaradıla bilmədi.",
+      "created": "Lead yaradıldı.",
+      "deleteConfirm": "Bu lead silinsin?",
+      "deleteError": "Silinə bilmədi.",
+      "deleteLead": "Lead-i sil",
+      "deleted": "Lead silindi.",
+      "descriptionPlaceholder": "Təsvir...",
+      "empty": "Boş",
+      "estimatedValue": "Təxmini dəyər",
+      "fullName": "Ad Soyad",
+      "fullNamePlaceholder": "Əli Məmmədov",
+      "loadError": "Lead-lər yüklənə bilmədi.",
+      "loadOneError": "Lead yüklənə bilmədi.",
+      "lostReasonPrompt": "İtirmə səbəbi (istəyə bağlı):",
+      "nameRequired": "Ad Soyad mütləqdir.",
+      "newLead": "Yeni lead",
+      "newLeadSubtitle": "Satış xəttinə yeni potensial müştəri əlavə edin",
+      "noActivity": "Hələ fəaliyyət yoxdur.",
+      "noTreatment": "Müalicə göstərilməyib",
+      "reason": "Səbəb",
+      "searchPlaceholder": "Ad, telefon, e-poçt və ya müalicə axtar...",
+      "source": "Mənbə",
+      "stage": "Mərhələ",
+      "stageContacted": "Əlaqə saxlanıldı",
+      "stageLost": "İtirildi",
+      "stageNew": "Yeni",
+      "stageProposal": "Təklif",
+      "stageUpdateError": "Mərhələ yenilənə bilmədi.",
+      "stageUpdated": "Mərhələ yeniləndi.",
+      "stageWon": "Qazanıldı",
+      "subtitle": "Satış xətti — potensial müştərilərinizi idarə edin",
+      "timeline": "Zaman cədvəli",
+      "title": "Potensial müştərilər",
+      "treatmentInterest": "Maraqlanılan müalicə",
+      "treatmentInterestPlaceholder": "İmplant, estetika...",
+      "unassigned": "Təyin edilməyib",
+      "wonConverted": "Lead qazanıldı, xəstə qeydi yaradıldı."
+    },
+    "manager": {
+      "actions": "Əməliyyatlar",
+      "appointments": "randevu",
+      "apptBreakdown": "Randevu statusu (bu ay)",
+      "appts": "Randevu",
+      "cancelled": "Ləğv",
+      "commShort": "Kom.",
+      "commission": "Komissiya (${commPct}%)",
+      "completed": "Tamamlandı",
+      "confirmed": "Təsdiqləndi",
+      "doctor": "Həkim",
+      "doctorPerformance": "Həkim performansı",
+      "doctors": "Həkimlər",
+      "gross": "Brutto",
+      "grossRevenue": "Brutto gəlir",
+      "invoiceCount": "Hesablar",
+      "invoices": "hesab",
+      "managedBy": "İdarə edən",
+      "monthAppts": "Bu ay",
+      "monthRevenue": "Aylıq gəlir",
+      "monthlyBreakdown": "Aylıq bölgü",
+      "net": "Netto",
+      "netPayout": "Netto ödəniş",
+      "noData": "Məlumat yoxdur",
+      "noDoctors": "Həkim tapılmadı",
+      "noShow": "Gəlmədi",
+      "occupancy": "Doluluq nisbəti",
+      "operatingHours": "İş saatları",
+      "patients": "Xəstələr",
+      "pending": "Gözləyir",
+      "pendingPayments": "Gözləyən",
+      "pendingStatus": "Gözləyir",
+      "period": "Dövr",
+      "rating": "Reytinq",
+      "recentReviews": "Son rəylər",
+      "revenue": "Gəlir",
+      "revenueByDoctor": "Həkimə görə gəlir",
+      "revenueTrend": "Gəlir trendi (6 ay)",
+      "searchDoctors": "Həkim axtar...",
+      "specialty": "İxtisas",
+      "subtitle": "Klinikanızı, həkimləri və maliyyəni idarə edin",
+      "tabDoctors": "Həkimlər",
+      "tabFinancials": "Maliyyə",
+      "tabOverview": "Ümumi baxış"
     }
   },
   "home": {
@@ -1099,7 +1447,12 @@
     "medicalArchive": "Tibbi Arxiv",
     "savedPosts": "Saxlanmış Paylaşımlar",
     "favoriteClinics": "Sevimli Klinikalar",
-    "myAppointments": "Randevular"
+    "myAppointments": "Randevular",
+    "billing": "Gəlir",
+    "clinicProfile": "Klinika profili",
+    "managementPanel": "CRM paneli",
+    "myInvoices": "Hesablar",
+    "myTeam": "Komandam"
   },
   "cookie": {
     "title": "Çərəz Seçimləri",
@@ -1232,7 +1585,23 @@
     "deleteModalBody": "Bu, hesabınızı və onunla bağlı bütün məlumatları, o cümlədən paylaşımlar, şərhlər, tibbi tarixçə və şəxsi məlumatları birdəfəlik siləcək. Bu əməliyyat geri qaytarıla bilməz.",
     "deleteModalTypePrefix": "Yazın",
     "deleteModalTypeSuffix": "təsdiqləmək üçün",
-    "deleting": "Silinir..."
+    "deleting": "Silinir...",
+    "delete": "SİL",
+    "medicalNotes": "Qeydlər",
+    "medicalNotesDesc": "Həkiminizin bilməli olduğu digər məlumatlar.",
+    "medicalNotesPlaceholder": "məs. keçirilmiş əməliyyatlar, ailə tarixçəsi, həssaslıqlar…",
+    "medicalShareNotice": "Bu məlumatlar randevu aldığınız həkimlə paylaşılacaq. Düzgün və təhlükəsiz müalicə üçün dərman, allergiya və tibbi tarixçənizin tam olması vacibdir.",
+    "medications": "İstifadə edilən dərmanlar",
+    "medicationsDesc": "Hazırda istifadə etdiyiniz dərmanlar.",
+    "medicationsPlaceholder": "məs. Aspirin 100 mq, Metformin…",
+    "passwordUpdatedReloginRequired": "Şifrəniz yeniləndi. Təhlükəsizliyiniz üçün bütün sessiyalar bağlandı; yenidən giriş edin.",
+    "profileSectionDesc": "Şəkil, ad, ölkə və dil",
+    "saveFailed": "Yadda saxlanıla bilmədi",
+    "translateContent": "Paylaşım və mesajlar da mənim dilimdə görünsün",
+    "translateContentDesc": "Bağlı olduqda məzmun yazıldığı dildə qalır. Açdıqda hər birini ayrıca tərcümə etməyə ehtiyac qalmır.",
+    "vaccinations": "Vurulan peyvəndlər",
+    "vaccinationsDesc": "Vurdurduğunuz peyvəndlər.",
+    "vaccinationsPlaceholder": "məs. COVID-19, Tetanoz, Hepatit B…"
   },
   "patientDashboard": {
     "welcome": "Xoş gəlmisiniz",
@@ -1274,7 +1643,17 @@
     "documentDate": "Sənəd Tarixi",
     "description": "Təsvir",
     "descriptionPlaceholder": "Bu sənəd haqqında istəyə bağlı qeydlər...",
-    "upload": "Yüklə"
+    "upload": "Yüklə",
+    "allCategories": "Bütün kateqoriyalar",
+    "categories": "Kateqoriyalar",
+    "encrypted": "Şifrələnmiş",
+    "gdprArt9": "GDPR M. 9",
+    "pdfJpegPngWordExcel": "PDF, JPEG, PNG, Word, Excel · Ən çox 20 MB",
+    "searchPlaceholder": "Sənədlərdə axtar...",
+    "subtitle": "Tibbi sənədləriniz təhlükəsiz saxlanılır",
+    "title": "Tibbi arxiv",
+    "totalFiles": "Cəmi fayl",
+    "totalSize": "Ümumi həcm"
   },
   "admin": {
     "panel": "Admin Paneli",
@@ -1593,7 +1972,9 @@
     "failed": "Alınmadı",
     "statusSent": "Göndərildi",
     "statusDelivered": "Çatdırıldı",
-    "statusRead": "Oxundu"
+    "statusRead": "Oxundu",
+    "autoTranslated": "Avtomatik tərcümə · orijinalı göstər",
+    "showTranslation": "Tərcüməni göstər"
   },
   "review": {
     "rateExperience": "Təcrübənizi qiymətləndirin",
@@ -1825,7 +2206,11 @@
     "catSocial": "Sosial",
     "catMessages": "Mesajlar",
     "catSystem": "Sistem",
-    "unreadLabel": "Oxunmamış"
+    "unreadLabel": "Oxunmamış",
+    "allClear": "Əla! Hazırda təcili bir şey yoxdur.",
+    "allClearDesc": "Bütün tapşırıqlar günceldir. Əla gedirsiniz!",
+    "taskTracker": "Ağıllı tapşırıq izləmə",
+    "urgentAlerts": "Təcili xəbərdarlıqlar"
   },
   "telehealth": {
     "title": "Teletibb Seansı",
@@ -1922,7 +2307,11 @@
     "welcomeSubtitle": "Profiliniz artıq tamamlandı",
     "welcomeMessage": "Təbriklər, {{name}}! Peşəkar profiliniz uğurla quruldu.",
     "welcomeHint": "Pasiyentlər indi sizi tapıb randevu ala bilər. Profilinizi istənilən vaxt idarə panelinizdən yeniləyə bilərsiniz.",
-    "goToDashboard": "İdarə Panelinə Keç"
+    "goToDashboard": "İdarə Panelinə Keç",
+    "avatarFormatError": "Profil şəkli JPG, PNG və ya WebP formatında olmalıdır.",
+    "avatarSizeError": "Profil şəkli 2 MB-dan kiçik olmalıdır.",
+    "fileTooLarge": "Fayl 10 MB-dan kiçik olmalıdır.",
+    "saveFailed": "Yadda saxlanıla bilmədi. Zəhmət olmasa yenidən cəhd edin."
   },
   "clinicOnboarding": {
     "profileTitle": "Klinika Profili",
@@ -1953,7 +2342,20 @@
     "changeSpecialty": "İxtisası dəyiş",
     "loadingDoctors": "Həkimlər yüklənir...",
     "noDoctors": "Bu ixtisas üçün mövcud həkim yoxdur",
-    "tryDifferent": "Zəhmət olmasa fərqli ixtisas sınayın"
+    "tryDifferent": "Zəhmət olmasa fərqli ixtisas sınayın",
+    "clearSearch": "Axtarışı təmizlə",
+    "createNew": "Yeni Randevu Yarat",
+    "findDoctor": "Həkim axtar",
+    "findDoctorDesc": "Həkim adı, ixtisas və ya klinika yazın",
+    "findDoctorPlaceholder": "məs. Dr. Ayşə, Göz, Medicana...",
+    "goToVerification": "Doğrulamaya keç",
+    "noTelehealthDoctors": "Bu ixtisas üzrə video görüş təklif edən həkim yoxdur",
+    "orPickSpecialty": "və ya aşağıdan ixtisas seçin",
+    "searchSpecialty": "İxtisas axtar...",
+    "verificationMessage": "Xəstə təhlükəsizliyi və platformaya etimad üçün randevu yaratmazdan əvvəl doğrulama prosesini tamamlamalısınız. Zəhmət olmasa peşə sənədlərinizi baxılmaq üçün göndərin.",
+    "verificationNote": "Doğrulama, sənədlər göndərildikdən sonra adətən 24-48 saat çəkir.",
+    "verificationRequired": "Doğrulama tələb olunur",
+    "verificationRequiredSubtitle": "Əvvəlcə hesabınız doğrulanmalıdır"
   },
   "pro": {
     "teaser": {
@@ -1969,7 +2371,8 @@
       "telehealthDesc": "Pasiyentlərlə teletibb seansları keçirin.",
       "upgradeCta": "Peşəkara Yüksəlin",
       "compareCta": "Planları Müqayisə Et",
-      "trustBadge": "İstənilən vaxt ləğv edin · Öhdəlik yoxdur · GDPR uyğun"
+      "trustBadge": "İstənilən vaxt ləğv edin · Öhdəlik yoxdur · GDPR uyğun",
+      "professionalBadge": "Peşəkar"
     },
     "pricing": {
       "title": "Planları Müqayisə Et",
@@ -1985,7 +2388,8 @@
       "archive": "Limitsiz Tibbi Arxiv",
       "prioritySupport": "Prioritet Dəstək",
       "maybeLater": "Bəlkə Sonra",
-      "upgradePro": "Peşəkara Yüksəlin"
+      "upgradePro": "Peşəkara Yüksəlin",
+      "free": "Pulsuz"
     }
   },
   "header": {
@@ -1997,7 +2401,9 @@
     "closeProfileMenu": "Profil menyusunu bağla",
     "openProfileMenu": "Profil menyusunu aç",
     "closeMenu": "Menyunu bağla",
-    "openMenu": "Menyunu aç"
+    "openMenu": "Menyunu aç",
+    "medagamaLogo": "Medagama loqosu",
+    "vascoAi": "Vasco AI"
   },
   "share": {
     "share": "Paylaş",
@@ -2258,7 +2664,21 @@
     "emojiCount": "{{count}} emoji",
     "filterCountry": "Ölkə: {{country}}",
     "filterSpecialization": "İxtisas: {{specialty}}",
-    "filterSearch": "Axtarış: “{{query}}”"
+    "filterSearch": "Axtarış: “{{query}}”",
+    "description": "Təsvir",
+    "linkCopied": "Keçid mübadilə buferinə kopyalandı",
+    "locationHint": "Məkan icazəsi bloklanıb. Brauzerin ünvan sətrindəki kilid işarəsindən icazə verib yenidən cəhd edin.",
+    "locationHowTo": "Açmaq üçün ünvan sətrindəki kilid işarəsinə klikləyin → Məkan → İcazə ver.",
+    "locationManual": "Və ya aşağıdan ölkə və şəhəri əl ilə seçin.",
+    "locationPermissionShort": "Məkan icazəsi bağlıdır",
+    "nearbyActive": "Yaxınlıqdakılar göstərilir",
+    "reportDescMin": "Ən azı {{min}} simvol yazın",
+    "reportDescOk": "Kifayətdir",
+    "reportFailed": "Şikayət göndərilə bilmədi. Zəhmət olmasa yenidən cəhd edin.",
+    "showOriginal": "Orijinalı göstər",
+    "translate": "Tərcümə et",
+    "translating": "Tərcümə olunur…",
+    "verifyToLike": "Paylaşımları bəyənmək üçün hesabınızı doğrulayın."
   },
   "subtitles": {
     "button": "Altyazı",
@@ -2272,5 +2692,227 @@
     "editTitle": "Altyazını redaktə et",
     "empty": "Bu videoda redaktə ediləcək altyazı yoxdur.",
     "jump": "Bu ana keç"
+  },
+  "activeFilterChips": {
+    "clear": "təmizlə"
+  },
+  "authContext": {
+    "areYouSureYouWant": "Çıxış etmək istədiyinizə əminsiniz?",
+    "logout": "Çıxış"
+  },
+  "authPages": {
+    "gdprCompliant": "GDPR uyğun",
+    "sslSecure": "SSL təhlükəsiz",
+    "welcomeTo": "Xoş gəlmisiniz:"
+  },
+  "browse": {
+    "allClinics": "Bütün klinikalar",
+    "allSpecialties": "Bütün ixtisaslar",
+    "clinicsForTreatment": "„{{name}}“ üçün klinikalar",
+    "clinicsInSpecialty": "{{name}} klinikaları",
+    "clinicsSubtitle": "Bütün ixtisas sahələri üzrə ən yüksək qiymətləndirilən klinika və xəstəxanaları kəşf edin.",
+    "noClinics": "Klinika tapılmadı",
+    "noTagsYet": "Bu ixtisas üçün müalicə siyahısı hələ əlavə edilməyib.",
+    "noTreatments": "Nəticə tapılmadı",
+    "searchClinics": "Ad, şəhər və ya ixtisasa görə klinika axtar...",
+    "searchTreatments": "Müalicə axtar (məs. implant, katarakt, EKO)...",
+    "treatments": "Müalicələr",
+    "treatmentsSubtitle": "Müalicə növü və ixtisasa görə klinika və xəstəxana tapın.",
+    "tryDifferent": "Fərqli axtarış və ya filtr sınayın."
+  },
+  "browseClinics": {
+    "view": "Bax →"
+  },
+  "browseTreatments": {
+    "view": "Bax →"
+  },
+  "calendar": {
+    "addApple": "Apple / Outlook (webcal)",
+    "addGoogle": "Google Təqvimə əlavə et",
+    "addToCalendar": "Təqvimə əlavə et",
+    "appleOther": "Apple / .ics",
+    "copied": "Kopyalandı",
+    "copy": "Kopyala",
+    "regen": "Keçidi yenilə",
+    "regenConfirm": "Mövcud abunə keçidi etibarsız olacaq. Davam edilsin?",
+    "syncError": "Keçid yüklənə bilmədi.",
+    "syncNote": "Bu şəxsi keçiddir, paylaşmayın. Təqvim tətbiqləri bir neçə dəqiqədən bir yeniləyir.",
+    "syncSubtitle": "Randevularınız Google / Apple / Outlook təqviminizə avtomatik düşsün — bir dəfə əlavə edin.",
+    "syncTitle": "Təqvim sinxronizasiyası"
+  },
+  "cityCombobox": {
+    "noResults": "Nəticə yoxdur"
+  },
+  "countryCombobox": {
+    "noResults": "Nəticə yoxdur",
+    "searchCountry": "Ölkə axtar"
+  },
+  "dateOfBirthPicker": {
+    "dd": "GG",
+    "mm": "AA",
+    "yyyy": "İİİİ"
+  },
+  "exploreTimeline": {
+    "category": "Kateqoriya",
+    "observer": "Müşahidəçi"
+  },
+  "forgotPasswordForm": {
+    "nameExampleCom": "ad@numune.com"
+  },
+  "forgotPasswordPage": {
+    "confirmPassword": "Şifrəni təsdiqləyin",
+    "didnTReceiveTheCode": "Kod gəlmədi?",
+    "emailAddress": "E-poçt ünvanı",
+    "enterResetCode": "Sıfırlama kodunu daxil edin",
+    "forgotYourPassword": "Şifrənizi unutmusunuz?",
+    "min6Characters": "Ən azı 6 simvol",
+    "newPassword": "Yeni şifrə",
+    "passwordReset": "Şifrə sıfırlandı!",
+    "repeatYourPassword": "Şifrənizi təkrar daxil edin",
+    "resetPassword": "Şifrəni sıfırla",
+    "sendResetCode": "Sıfırlama kodu göndər",
+    "setNewPassword": "Yeni şifrə təyin edin",
+    "youExampleCom": "siz@numune.com",
+    "yourPasswordHasBeenSuccessfully": "Şifrəniz uğurla dəyişdirildi."
+  },
+  "hospital": {
+    "about": "Haqqında",
+    "appointmentNote": "Randevular hər filialda ayrıca idarə olunur. Randevu almaq üçün zəhmət olmasa filial seçin.",
+    "branches": "Filiallar",
+    "clinics": "Klinikalar",
+    "comingSoon": "Tezliklə",
+    "director": "Baş həkim",
+    "doctors": "həkim",
+    "hospitalInfo": "Xəstəxana məlumatları",
+    "legalName": "Hüquqi ad",
+    "level": "Xəstəxana şəbəkəsi",
+    "location": "Məkan",
+    "noBio": "Təsvir yoxdur.",
+    "noBranches": "Hələ filial əlavə edilməyib.",
+    "notFound": "Xəstəxana tapılmadı",
+    "notFoundDesc": "Bu xəstəxana profili mövcud deyil və ya artıq aktiv deyil.",
+    "ourBranches": "Filiallarımız",
+    "selectBranch": "Aşağıdan filial seçin",
+    "verified": "Doğrulanmış",
+    "viewBranch": "Filiala bax",
+    "viewMap": "Xəritə"
+  },
+  "invoices": {
+    "discount": "Endirim",
+    "doctor": "Həkim",
+    "downloadFailed": "Hesab endirilə bilmədi, yenidən cəhd edin.",
+    "downloadPdf": "PDF endir",
+    "dueDate": "Son ödəniş",
+    "empty": "Hələ hesabınız yoxdur.",
+    "issueDate": "Tərtib tarixi",
+    "loadFailed": "Hesablar yüklənə bilmədi.",
+    "paid": "Ödənilən",
+    "payAtClinic": "Ödənişlər klinika tərəfindən qəbul edilir. Ödəniş üçün klinikanızla əlaqə saxlayın.",
+    "status": {
+      "cancelled": "Ləğv edildi",
+      "overdue": "Gecikmiş",
+      "paid": "Ödənilib",
+      "partial": "Qismən ödənilib",
+      "pending": "Ödəniş gözlənilir"
+    },
+    "tax": "Vergi",
+    "title": "Hesablarım",
+    "total": "Cəmi"
+  },
+  "loginForm": {
+    "nameExampleCom": "ad@numune.com"
+  },
+  "medstreamProfileFeed": {
+    "postMedia": "Paylaşım medyası",
+    "videoThumbnail": "Video örtük şəkli",
+    "videoUnavailable": "Video əlçatan deyil"
+  },
+  "myAppointments": {
+    "empty": "Randevu yoxdur.",
+    "subtitle": "Gələn randevularınızı idarə edin",
+    "title": "Randevularım"
+  },
+  "page": {
+    "anaSayfa": "Ana səhifə",
+    "breadcrumb": "breadcrumb",
+    "tedaviler": "Müalicələr"
+  },
+  "postComposer": {
+    "emoji": "Emoji",
+    "photo": "Şəkil",
+    "video": "Video"
+  },
+  "postCreateModal": {
+    "preview": "önizləmə"
+  },
+  "postDetail": {
+    "areYouSureYouWant": "Bu şərhi silmək istədiyinizə əminsiniz?",
+    "close": "Bağla",
+    "delete": "Sil",
+    "next": "Növbəti",
+    "noCommentsYetBeThe": "Hələ şərh yoxdur. İlk şərhi siz yazın!",
+    "noMediaAvailable": "Medya yoxdur",
+    "postNotFoundPleaseGo": "Paylaşım tapılmadı. Zəhmət olmasa geri qayıdıb yenidən cəhd edin.",
+    "previous": "Əvvəlki",
+    "reply": "Cavab yaz",
+    "writeAReply": "Cavab yazın...",
+    "you": "Siz"
+  },
+  "registerForm": {
+    "nameExampleCom": "ad@numune.com"
+  },
+  "savedClinics": {
+    "favorites": "Sevimlilər",
+    "noFavoriteClinicsYet": "Hələ sevimli klinika yoxdur",
+    "noFavoriteDoctorsYet": "Hələ sevimli həkim yoxdur",
+    "removeFromFavorites": "Sevimlilərdən çıxarılsın?",
+    "saveClinicsFromSearchResults": "Axtarış nəticələrindən və ya klinika profillərindən klinika saxlayın.",
+    "saveDoctorsFromSearchResults": "Axtarış nəticələrindən və ya həkim profillərindən həkim saxlayın.",
+    "signInRequired": "Giriş etməlisiniz",
+    "youNeedToSignIn": "Sevimlilərinizi görmək üçün giriş etməlisiniz."
+  },
+  "selectCombobox": {
+    "noResults": "Nəticə yoxdur",
+    "search": "Axtar..."
+  },
+  "sidebarPatient": {
+    "messages": "Mesajlar",
+    "vascoAi": "Vasco AI"
+  },
+  "threadsSidebar": {
+    "messages": "Mesajlar",
+    "searchConversations": "Söhbətlərdə axtar..."
+  },
+  "timelineCard": {
+    "attachment": "Əlavə",
+    "comments": "şərh",
+    "delete": "Sil",
+    "downloadFile": "Faylı endir",
+    "likes": "bəyənmə",
+    "openFile": "Faylı aç",
+    "playbackErrorTapToRetry": "Oxutma xətası — yenidən cəhd üçün toxunun",
+    "post": "Göndər",
+    "reply": "Cavab yaz",
+    "video": "Video",
+    "videoProcessing": "Video emal olunur...",
+    "writeAReply": "Cavab yazın..."
+  },
+  "timelineFilterSidebar": {
+    "all": "Hamısı"
+  },
+  "timelinePostCard": {
+    "avatar": "Avatar",
+    "postContent": "Paylaşım məzmunu"
+  },
+  "timelineShareBox": {
+    "file": "Fayl",
+    "image": "Şəkil",
+    "post": "Göndər"
+  },
+  "verifyEmailPage": {
+    "didnTReceiveTheCode": "Kod gəlmədi?",
+    "emailVerified": "E-poçt doğrulandı!",
+    "redirectingToYourDashboard": "Panelinizə yönləndirilirsiniz...",
+    "verifyYourEmail": "E-poçtunuzu doğrulayın"
   }
 }
