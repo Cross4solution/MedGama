@@ -90,6 +90,26 @@ fi
 #       It is destructive when re-run. Run manually for first-time deploy:
 #         First-time deploy: php artisan db:seed --force
 
+# ── 7a-2. Vitrin verisi — YALNIZCA istendiğinde, SEED_VITRIN=1 ile.
+#
+#   Tam tohumlama (db:seed) yukarıda kapalı, çünkü tekrar çalıştırıldığında
+#   yıkıcı. VitrinSeeder öyle değil: hiçbir kaydı silmiyor, her kayıt sabit
+#   bir anahtara bağlı (klinik codename, kullanıcı e-postası, gönderi metni),
+#   yani ikinci çalıştırma kopya üretmiyor — yerelde iki kez çalıştırılıp
+#   sayıların değişmediği doğrulandı.
+#
+#   Bu yüzden açık kalması zarar vermez; yine de varsayılan KAPALI, çünkü her
+#   container açılışında gereksiz yazma yapmasının anlamı yok.
+#
+#   Kullanım: Render ortam değişkenlerine SEED_VITRIN=1 ekle, dağıtımı bekle,
+#   sonra değişkeni kaldır.
+if [ "${SEED_VITRIN:-0}" = "1" ]; then
+    echo ""
+    echo "→ SEED_VITRIN=1 → vitrin verisi ekleniyor (yalnızca ekler, tekrarlanabilir)..."
+    php artisan db:seed --class=VitrinSeeder --force 2>&1 \
+        || echo "⚠ vitrin tohumlaması başarısız — dağıtım sürdürülüyor"
+fi
+
 
 # ── 7b. Yapılandırma / rota / olay / görünüm önbelleği ──
 #       Bunlar alınmadığında her istek tüm config dosyalarını ve 800 satırlık
