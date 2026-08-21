@@ -25,7 +25,17 @@ class StorePostRequest extends FormRequest
             'is_anonymous' => 'sometimes|boolean',
             'gdpr_consent' => 'sometimes|boolean',
             'photos'     => 'sometimes|array',
-            'photos.*'   => 'file|mimes:jpg,jpeg,png,gif,bmp,webp,svg,heic,heif|max:10240',
+            // SVG BİLEREK YOK — betik taşıyabilen tek görsel biçimi.
+            //
+            // Gönderi görselleri "public" diskte tutuluyor ve /storage/... ile
+            // doğrudan sunuluyor; ön yüz de /storage yolunu arka uca
+            // yönlendirdiği için dosya UYGULAMAYLA AYNI KÖKENDEN açılıyor.
+            // Oturum jetonu localStorage'da durduğundan, içine <script> gömülü
+            // bir SVG'yi açan kullanıcının jetonu okunabilirdi.
+            //
+            // Sohbet eklerinde SVG zaten dışlanmıştı (MessageController);
+            // gönderi yüklemesinde atlanmış.
+            'photos.*'   => 'file|mimes:jpg,jpeg,png,gif,bmp,webp,heic,heif|max:10240',
             'videos'     => 'sometimes|array',
             'videos.*'   => 'file|mimetypes:video/mp4,video/quicktime,video/webm,video/avi|max:102400',
             'papers'     => 'sometimes|array',
