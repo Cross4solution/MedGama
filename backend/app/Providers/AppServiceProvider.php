@@ -111,5 +111,28 @@ class AppServiceProvider extends ServiceProvider
                 ], 429, $basliklar);
             });
         });
+
+        // Rate limiter: e-posta doğrulama — kullanıcı başına dakikada 5.
+        //
+        // Doğrulama kodu 6 haneli ve SÜRESİZ. Kendine özel bir sınır yokken
+        // yalnızca genel sınır (dakikada 120) geçerliydi; bu, tüm kod
+        // uzayının birkaç günde taranabilmesi demekti. Doğrulamanın amacı
+        // adresin gerçekten kişiye ait olduğunu göstermek olduğundan,
+        // kodun denenerek bulunabilmesi doğrulamayı anlamsız kılıyordu:
+        // başkasının adresiyle kayıt olup "doğrulanmış" görünmek mümkündü.
+        //
+        // Kullanıcı başına anahtarlanıyor — oturum gerektiren bir uç,
+        // ve paylaşılan IP'deki kullanıcılar birbirini kilitlememeli.
+        RateLimiter::for('auth-verify', function (Request $request) {
+            return Limit::perMinute(5)
+                ->by($request->user()?->id ?: $request->ip())
+                ->response(function ($istek, array $basliklar) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Too many verification attempts. Please try again in a minute.',
+                        'code'    => 'RATE_LIMIT_EXCEEDED',
+                    ], 429, $basliklar);
+                });
+        });
     }
 }

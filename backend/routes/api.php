@@ -221,8 +221,11 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
     Route::put('/profile/medical-history', [AuthController::class, 'updateMedicalHistory']);
     Route::get('/profile/notification-preferences', [AuthController::class, 'getNotificationPrefs']);
     Route::put('/profile/notification-preferences', [AuthController::class, 'updateNotificationPrefs']);
-    Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
-    Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
+    // Kod 6 haneli ve süresiz: sınırsız deneme, doğrulamayı tahmin edilebilir
+    // hale getiriyordu. Yeniden gönderim de sınırlı — aksi hâlde tek hesap
+    // istediği kadar e-posta tetikleyebiliyor.
+    Route::post('/verify-email', [AuthController::class, 'verifyEmail'])->middleware('throttle:auth-verify');
+    Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->middleware('throttle:auth-verify');
     // /verify-mobile kaldırıldı: gönderilen kodu hiç doğrulamadan telefonu
     // "onaylı" işaretliyordu. SMS gönderimi hiç kurulmadığı için doğrulanacak
     // bir kod da yoktu. SMS'e karar verilirse gerçek doğrulama ile yeniden eklenir.
