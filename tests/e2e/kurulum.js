@@ -14,6 +14,22 @@ const HESAPLAR = {
   doktor: { email: 'doctor@demo.com',  sifre: 'doctor123' },
 };
 
+// Yönetici oturumu — ORTAM DEĞİŞKENİNDEN, depodan değil.
+//
+// Yönetim panelinin 13 ekranı test edilemiyordu: şifresiz demo girişi bilerek
+// yalnızca hasta/doktor/klinik için açık (süper yöneticiye şifresiz kapı
+// açmak canlıda kabul edilemez, bu doğru karar). Yetkili oturumu almanın
+// kalıcı kapı açmayan yolu bu:
+//
+//   E2E_ADMIN_EMAIL=...  E2E_ADMIN_PASSWORD=...  npx playwright test
+//
+// Değişkenler tanımlı değilse hiçbir şey yapılmaz; yönetim testleri atlanır.
+// Şifre depoya yazılmaz, oturum dosyası .oturum/ altında ve .gitignore'da.
+const YONETICI = {
+  email: process.env.E2E_ADMIN_EMAIL || '',
+  sifre: process.env.E2E_ADMIN_PASSWORD || '',
+};
+
 const KLASOR = path.join(__dirname, '.oturum');
 
 function oturumDosyasi(rol) {
@@ -26,7 +42,15 @@ module.exports = async function kurulum(config) {
 
   const browser = await chromium.launch();
   try {
-    for (const [rol, { email, sifre }] of Object.entries(HESAPLAR)) {
+    const girisYapilacak = Object.entries(HESAPLAR);
+    if (YONETICI.email && YONETICI.sifre) {
+      girisYapilacak.push(['yonetici', YONETICI]);
+    } else {
+      // Sessizce atlamak, testin neden atlandığını gizliyordu.
+      console.warn('Yönetici oturumu alınmadı: E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD tanımlı değil.');
+    }
+
+    for (const [rol, { email, sifre }] of girisYapilacak) {
       const context = await browser.newContext({ baseURL });
       const page = await context.newPage();
       await page.goto('/tr');

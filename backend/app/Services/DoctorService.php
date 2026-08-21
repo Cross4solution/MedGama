@@ -431,7 +431,10 @@ class DoctorService
         return Appointment::where('patient_id', $patientId)
             ->where('status', 'completed')
             ->whereNotIn('doctor_id', $reviewedDoctorIds)
-            ->with(['doctor:id,fullname,avatar', 'doctor.doctorProfile:user_id,specialty_id', 'doctor.doctorProfile.specialty'])
+            // İlişkinin adı "specialtyRelation" — "specialty" adı zaten metin
+            // sütununda kullanıldığı için model ilişkiyi başka adla tanımlıyor.
+            // Burada "specialty" yazılması ucu tamamen çökertiyordu.
+            ->with(['doctor:id,fullname,avatar', 'doctor.doctorProfile:user_id,specialty_id,specialty', 'doctor.doctorProfile.specialtyRelation:id,name'])
             ->orderByDesc('appointment_date')
             ->limit(5)
             ->get()
@@ -440,7 +443,9 @@ class DoctorService
                 'doctor_id'        => $appt->doctor_id,
                 'doctor_name'      => $appt->doctor?->fullname,
                 'doctor_avatar'    => $appt->doctor?->avatar,
-                'specialty'        => $appt->doctor?->doctorProfile?->specialty?->getTranslation('name', app()->getLocale()),
+                // Uzmanlık kaydı yoksa profildeki serbest metin alanına düşülür.
+                'specialty'        => $appt->doctor?->doctorProfile?->specialtyRelation?->getTranslation('name', app()->getLocale())
+                    ?? $appt->doctor?->doctorProfile?->specialty,
                 'appointment_date' => $appt->appointment_date,
                 'appointment_type' => $appt->appointment_type,
                 // Onaylı Review Sistemi — frontend treatment_type field için

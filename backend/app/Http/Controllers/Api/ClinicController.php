@@ -265,7 +265,15 @@ class ClinicController extends Controller
                   ->orWhereHas('clinics', fn ($c) => $c->where('clinics.id', $clinic->id));
             })
             ->with('doctorProfile:id,user_id,title,specialty,experience_years,onboarding_completed')
-            ->select('id', 'fullname', 'email', 'avatar', 'role_id', 'is_verified', 'clinic_id', 'codename', 'created_at')
+            // "codename" users tablosunda YOK — clinics ve hospitals tablolarında
+            // var. Sorguya girdiği için personel listesi her çağrıda SQL hatası
+            // veriyor, ekran boş kalıyordu.
+            //
+            // Not: paginate() önce COUNT çalıştırıyor ve sonuç sıfırsa asıl
+            // SELECT hiç koşmuyor. Bu yüzden hata yalnızca kliniğin GERÇEKTEN
+            // personeli varken ortaya çıkıyordu — boş kurulumda uç sağlam
+            // görünüyordu.
+            ->select('id', 'fullname', 'email', 'avatar', 'role_id', 'is_verified', 'clinic_id', 'created_at')
             ->paginate($request->per_page ?? 50);
 
         return response()->json($staff);

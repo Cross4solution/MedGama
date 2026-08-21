@@ -118,19 +118,28 @@ test.describe('Hata yolu uyarıları', () => {
     // Sayfa başlığındaki düğme kutucuğu açar; alttaki aynı adlı düğme gönderir.
     await page.getByRole('button', { name: /^Fatura$|^Create Invoice$/ }).first().click();
 
-    const hastaSecici = page.locator('select').first();
+    // Kutucukta iki açılır liste var: hasta ve para birimi. Sırayla seçmek
+    // ikisini karıştırıyordu (para birimi de birden çok seçenek taşıdığı için
+    // sayı denetimi boşuna geçiyordu). Liste, içindeki yer tutucu seçenekten
+    // tanınıyor.
+    const hastaSecici = page
+      .locator('select')
+      .filter({ has: page.locator('option', { hasText: /Hasta seçin|Select patient/i }) })
+      .first();
     await expect(hastaSecici).toBeVisible();
 
     // Seçici bir dönem hep boştu (sayfalı yanıt bir kat fazla açılıyordu).
-    // Seçenek gelmezse bu satır düşer — gerileme buradan yakalanır.
+    // Yer tutucu dışında seçenek gelmezse bu satır düşer — gerileme burada.
     await expect
       .poll(() => hastaSecici.locator('option').count(), {
-        message: 'Hasta seçicide seçenek yok — sayfalı yanıt yine yanlış açılıyor olabilir',
+        message: 'Hasta seçicide hasta yok — sayfalı yanıt yine yanlış açılıyor olabilir',
         timeout: 20_000,
       })
       .toBeGreaterThan(1);
 
     await hastaSecici.selectOption({ index: 1 });
+    // Seçim gerçekten hastaya gitti mi (yer tutucu boş değer taşıyor).
+    await expect(hastaSecici).not.toHaveValue('');
     await page.getByPlaceholder('Açıklama *').first().fill('Otomatik test kalemi');
     await page.locator('input[placeholder="0.00"]').first().fill('100');
 

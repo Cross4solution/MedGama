@@ -40,3 +40,6 @@ next-env.d.ts
 /blob-report/
 # Test oturumları: içinde geçerli giriş anahtarı var, depoya girmemeli.
 /tests/e2e/.oturum/
+
+# Tarama raporları: üretilen çıktı, depoya girmez.
+/tests/e2e/rapor/
