@@ -260,7 +260,10 @@ const CRMPatient360 = () => {
     if (!patientId) return;
     try {
       const res = await patientAPI.documents(patientId, { per_page: 50 });
-      setDocuments((res?.data || res).data || []);
+      // Sayfalı yanıt: `res.data` zaten BELGE DİZİSİ. Bir kat daha derine
+      // bakmak her zaman undefined veriyordu, yani belge sekmesi hasta
+      // dosyasında belge olsa bile boş görünüyordu.
+      setDocuments(Array.isArray(res?.data) ? res.data : (res?.data?.data ?? []));
     } catch (err) { console.error('Documents error:', err); }
   }, [patientId]);
 

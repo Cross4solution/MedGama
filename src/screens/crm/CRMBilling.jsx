@@ -70,8 +70,11 @@ const CreateInvoiceModal = ({ onClose, onCreated, t }) => {
     setPatientsLoading(true);
     patientAPI.list({ per_page: 200 })
       .then(res => {
-        const data = res?.data || res;
-        setPatients(data.data || []);
+        // İstemci zaten response.data'yı açıyor; sayfalı yanıtta `res.data`
+        // HASTA DİZİSİ. Bir kat daha derine bakınca undefined dönüyordu:
+        // hasta seçici hep boş kalıyor, bu yüzden ekrandan fatura kesilemiyordu.
+        // Aynı hata CRMPatients'ta da vardı, orada düzeltilmişti.
+        setPatients(Array.isArray(res?.data) ? res.data : (res?.data?.data ?? []));
       })
       .catch(() => {})
       .finally(() => setPatientsLoading(false));
