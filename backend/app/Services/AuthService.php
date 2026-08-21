@@ -438,11 +438,14 @@ class AuthService
     {
         $user = User::where('email', $email)->where('is_active', true)->first();
 
-        if (!$user) {
-            throw ValidationException::withMessages(['email' => ['User not found.']]);
-        }
-
-        if (!$user->password_reset_code || $user->password_reset_code !== $code) {
+        // Bilinmeyen adres ile yanlış kod AYNI yanıtı vermeli.
+        //
+        // forgotPassword adres sayımını önlemek için bilerek sessiz kalıyor;
+        // burada "User not found." demek o özeni boşa çıkarıyordu: saldırgan
+        // uydurma bir kodla sırayla adres deneyip hangilerinin kayıtlı
+        // olduğunu ayırt edebiliyordu ("User not found." / "Invalid reset
+        // code."). İki durum artık tek ve aynı mesajı döndürüyor.
+        if (!$user || !$user->password_reset_code || $user->password_reset_code !== $code) {
             throw ValidationException::withMessages(['code' => ['Invalid reset code.']]);
         }
 
@@ -455,6 +458,12 @@ class AuthService
             'password_reset_code'       => null,
             'password_reset_expires_at' => null,
         ]);
+
+        // Sıfırlama, oturumu ele geçirilmiş hesabı kurtarmak için var. Mevcut
+        // jetonlar ayakta kalırsa saldırgan şifre değişse de içeride kalıyor
+        // — yani sıfırlama kendi amacını karşılamıyordu. changePassword bunu
+        // zaten yapıyordu; sıfırlama yolu atlanmıştı.
+        $user->tokens()->delete();
     }
 
     // ── GDPR ──

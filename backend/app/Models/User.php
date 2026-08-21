@@ -65,6 +65,10 @@ class User extends Authenticatable
             'mobile_verified'          => 'boolean',
             'email_verified'           => 'boolean',
             'email_verified_at'        => 'datetime',
+            // Diğer tüm zaman damgaları dönüştürülmüşken bu atlanmıştı; düz
+            // metin olarak geldiği için tarih karşılaştırmaları Carbon'un
+            // metin çözümlemesine kalıyordu.
+            'password_reset_expires_at' => 'datetime',
             'is_verified'              => 'boolean',
             'is_active'                => 'boolean',
             'date_of_birth'            => 'date',
