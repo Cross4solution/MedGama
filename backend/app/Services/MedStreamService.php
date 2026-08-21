@@ -48,7 +48,7 @@ class MedStreamService
 
         $query = MedStreamPost::query()
             ->with([
-                'author:id,fullname,avatar,role_id',
+                'author:id,fullname,username,avatar,role_id',
                 'clinic:id,fullname,avatar',
                 'hospital:id,name,avatar',
                 'specialty:id,code,name',
@@ -214,14 +214,14 @@ class MedStreamService
             'likes as real_like_count' => fn($q) => $q->where('is_active', true),
         ]);
         $post->load([
-            'author:id,fullname,avatar,role_id',
+            'author:id,fullname,username,avatar,role_id',
             'clinic:id,fullname,avatar',
             'hospital:id,name,avatar',
             'specialty:id,code,name',
             'engagementCounter',
             'comments' => fn($q) => $q->where('is_hidden', false)
                 ->whereNull('parent_id')
-                ->with(['author:id,fullname,avatar', 'allReplies'])
+                ->with(['author:id,fullname,username,avatar', 'allReplies'])
                 ->latest()
                 ->limit(20),
         ]);
@@ -287,7 +287,7 @@ class MedStreamService
             );
         }
 
-        $post->load('author:id,fullname,avatar');
+        $post->load('author:id,fullname,username,avatar');
 
         // Audit log — media upload tracking
         $mediaTypes = collect($mediaResult['uploaded_files'] ?? [])->pluck('type')->unique()->values()->toArray();
@@ -363,7 +363,7 @@ class MedStreamService
             ->where('is_hidden', false)
             ->whereNull('parent_id')
             ->with([
-                'author:id,fullname,avatar',
+                'author:id,fullname,username,avatar',
                 'allReplies',
             ])
             ->orderByDesc('created_at')
@@ -393,7 +393,7 @@ class MedStreamService
         // Notification (outside transaction — fire-and-forget)
         $this->notifyPostAuthor($post, $comment, $author);
 
-        return $comment->load('author:id,fullname,avatar');
+        return $comment->load('author:id,fullname,username,avatar');
     }
 
     /**
@@ -403,7 +403,7 @@ class MedStreamService
     {
         $comment->update($data);
 
-        return $comment->refresh()->load('author:id,fullname,avatar');
+        return $comment->refresh()->load('author:id,fullname,username,avatar');
     }
 
     /**
@@ -522,7 +522,7 @@ class MedStreamService
 
         if ($postIds->isNotEmpty()) {
             $posts = MedStreamPost::whereIn('id', $postIds)
-                ->with(['author:id,fullname,avatar,role_id', 'clinic:id,fullname,avatar', 'hospital:id,name,avatar', 'engagementCounter'])
+                ->with(['author:id,fullname,username,avatar,role_id', 'clinic:id,fullname,avatar', 'hospital:id,name,avatar', 'engagementCounter'])
                 ->withCount([
                     'comments as real_comment_count' => fn($q) => $q->where('is_hidden', false),
                     'likes as real_like_count' => fn($q) => $q->where('is_active', true),
@@ -608,7 +608,7 @@ class MedStreamService
         return MedStreamReport::active()
             ->with([
                 'post:id,content,author_id,is_hidden',
-                'post.author:id,fullname,avatar',
+                'post.author:id,fullname,username,avatar',
                 'reporter:id,fullname',
                 'resolver:id,fullname',
             ])
@@ -705,7 +705,7 @@ class MedStreamService
 
         $baseQuery = MedStreamPost::query()
             ->with([
-                'author:id,fullname,avatar,role_id',
+                'author:id,fullname,username,avatar,role_id',
                 'clinic:id,fullname,avatar',
                 'hospital:id,name,avatar',
                 'specialty:id,code,name',
@@ -1008,7 +1008,7 @@ class MedStreamService
     private function notifyPostAuthorAboutLike(string $likerId, string $postId): void
     {
         try {
-            $post = MedStreamPost::with('author:id,fullname,avatar')->find($postId);
+            $post = MedStreamPost::with('author:id,fullname,username,avatar')->find($postId);
             $liker = User::find($likerId);
 
             if ($post && $liker && $post->author && $post->author_id !== $likerId) {

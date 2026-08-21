@@ -33,7 +33,7 @@ class MedStreamComment extends Model
      */
     public function allReplies()
     {
-        return $this->replies()->with(['author:id,fullname,avatar', 'allReplies'])->orderBy('created_at');
+        return $this->replies()->with(['author:id,fullname,username,avatar', 'allReplies'])->orderBy('created_at');
     }
 
     protected function casts(): array
