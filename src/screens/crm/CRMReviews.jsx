@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { doctorAPI } from 'lib/api';
 
 const STATUS_CONFIG = {
-  approved: { label: 'Approved', icon: CheckCircle, color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
-  pending:  { label: 'Pending',  icon: Clock,       color: 'text-amber-600 bg-amber-50 border-amber-200' },
-  rejected: { label: 'Rejected', icon: XCircle,     color: 'text-red-600 bg-red-50 border-red-200' },
+  approved: { labelKey: 'status.approved', icon: CheckCircle, color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
+  pending:  { labelKey: 'status.pending',  icon: Clock,       color: 'text-amber-600 bg-amber-50 border-amber-200' },
+  rejected: { labelKey: 'status.rejected', icon: XCircle,     color: 'text-red-600 bg-red-50 border-red-200' },
   hidden:   { label: 'Hidden',   icon: EyeOff,      color: 'text-gray-600 bg-gray-50 border-gray-200' },
 };
 
@@ -128,7 +128,7 @@ export default function CRMReviews() {
 
                   <div className="flex flex-col items-end gap-2 flex-shrink-0">
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${statusCfg.color}`}>
-                      <StatusIcon className="w-3 h-3" /> {statusCfg.label}
+                      <StatusIcon className="w-3 h-3" /> {t(statusCfg.labelKey)}
                     </span>
                   </div>
                 </div>

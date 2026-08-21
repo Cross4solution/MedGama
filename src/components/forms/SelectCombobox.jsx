@@ -8,7 +8,7 @@ export default function SelectCombobox({
   options = [], // string[] | {label, value}[]
   value,
   onChange,
-  placeholder = 'Select',
+  placeholder,   // verilmezse bileşen kendi çevirisini kullanır
   leftIcon = null,
   searchable = true,
   dropUp = false,
@@ -109,7 +109,7 @@ export default function SelectCombobox({
         }
         onClick={() => setOpen((o) => !o)}
       >
-        {selectedLabel || placeholder}
+        {selectedLabel || placeholder || t('forms.select', 'Seçin')}
       </button>
 
       {/* Right arrow */}

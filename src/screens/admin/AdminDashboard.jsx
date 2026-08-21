@@ -165,8 +165,8 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard icon={DollarSign} label="Revenue" value={data?.revenue?.total || '—'} color="emerald" sub="All time" highlight to="/admin/financials" />
         <StatCard icon={Crown} label="Active Pro" value={data?.revenue?.active_pro || u.doctors || '—'} color="purple" sub="Subscriptions" highlight to="/admin/financials" />
-        <StatCard icon={ShieldAlert} label="Pending Docs" value={u.unverified_doctors || 0} color="amber" sub="Awaiting review" to="/admin/verification" />
-        <StatCard icon={Calendar} label="Today's Appts" value={a.today || a.completed || 0} color="indigo" sub="Completed today" />
+        <StatCard icon={ShieldAlert} label={t("admin.stat.pendingDocs", "Pending Docs")} value={u.unverified_doctors || 0} color="amber" sub="Awaiting review" to="/admin/verification" />
+        <StatCard icon={Calendar} label={t("admin.stat.todayAppts", "Today's Appts")} value={a.today || a.completed || 0} color="indigo" sub="Completed today" />
       </div>
 
       {/* Secondary Stats Row */}

@@ -2372,7 +2372,8 @@
     "tempPassword": "Temp Password (min 6)",
     "addDoctorBtn": "Add to Team",
     "finish": "Finish Setup",
-    "skipTeam": "Skip for now, I\\'ll add team members later"
+    "skipTeam": "Skip for now, I\\'ll add team members later",
+    "stepProfile": "Clinic Profile"
   },
   "admin": {
     "auditLogs": {
@@ -2881,7 +2882,18 @@
       "total": "Total",
       "admins": "Admins",
       "suspended": "Suspended",
-      "unverified": "Unverified"
+      "unverified": "Unverified",
+      "pendingDocs": "Pending Docs",
+      "todayAppts": "Today's Appts"
+    },
+    "featureToggles": {
+      "modules": "Module Toggles",
+      "modulesDesc": "Enable or disable platform modules globally",
+      "platform": "Platform Settings",
+      "platformDesc": "Core platform configuration"
+    },
+    "filter": {
+      "all": "All"
     }
   },
   "errors": {
@@ -2987,7 +2999,19 @@
     "categories": "Categories",
     "encrypted": "Encrypted",
     "searchPlaceholder": "Search documents...",
-    "allCategories": "All Categories"
+    "allCategories": "All Categories",
+    "cat": {
+      "lab_result": "Lab Result",
+      "radiology": "Radiology",
+      "epicrisis": "Epicrisis",
+      "prescription": "Prescription",
+      "pathology": "Pathology",
+      "surgery": "Surgery Report",
+      "vaccination": "Vaccination",
+      "allergy": "Allergy Test",
+      "insurance": "Insurance",
+      "other": "Other"
+    }
   },
   "appointment": {
     "selectSpecialty": "Select Specialty",
@@ -3935,7 +3959,8 @@
   "googleMapsPreview": {
     "invalidGoogleMapsUrlPlease": "Invalid Google Maps URL. Please paste a valid link.",
     "mapLinkDetected": "Map link detected",
-    "googleMapsPreview": "Google Maps Preview"
+    "googleMapsPreview": "Google Maps Preview",
+    "shortLinkNotice": "Short links can't be previewed. Use a full Google Maps URL for preview."
   },
   "authPages": {
     "welcomeTo": "Welcome to",
@@ -4132,5 +4157,34 @@
     "paid": "Ödenen",
     "payAtClinic": "Payments are collected by the clinic. Please contact your clinic to pay.",
     "downloadPdf": "PDF indir"
+  },
+  "status": {
+    "open": "Open",
+    "inProgress": "In Progress",
+    "resolved": "Resolved",
+    "closed": "Closed",
+    "pending": "Pending",
+    "pendingReview": "Pending Review",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "forms": {
+    "selectCity": "Select City",
+    "select": "Select",
+    "searchAddress": "Search for an address..."
+  },
+  "verification": {
+    "approvedTitle": "Account Verified!",
+    "approvedMessage": "Congratulations! Your professional verification has been approved.",
+    "rejectedTitle": "Verification Rejected",
+    "rejectedMessage": "Your verification was not approved. Please re-upload correct documents.",
+    "infoRequestedTitle": "Additional Documents Needed",
+    "infoRequestedMessage": "The admin team has requested additional information."
   }
 }

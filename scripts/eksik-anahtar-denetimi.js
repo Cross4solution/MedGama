@@ -64,6 +64,29 @@ for (const dosya of dosyalar(KOK)) {
     if (cozumle(anahtar) !== undefined) continue;
     yedeksiz.push({ goreli, anahtar });
   }
+
+  // Şablon dizesiyle kurulan anahtar:  t(`bolum.alt.${degisken}`, yedek)
+  //
+  // İlk sürüm bunları hiç görmüyordu ve gerçek bir boşluğu gizledi: tıbbi
+  // arşivdeki on kategori etiketi bu biçimde çağrılıyor ve hiçbirinin
+  // Türkçesi yoktu, hepsi İngilizce yedeğe düşüyordu. Değişkenin alacağı
+  // değerler bilinemediği için ÖN EK sınanıyor: "bolum.alt" altında hiç
+  // anahtar yoksa çağrının tamamı boşa düşüyor demektir.
+  // Ayraç nokta ya da alt çizgi olabiliyor: `crm.support.status_${s}` gibi
+  // yazımlar ilk sürümde gözden kaçıyordu.
+  for (const m of metin.matchAll(/\bt\(\s*`([a-zA-Z0-9_.]*?[a-zA-Z0-9])[._]\$\{[^}]+\}`\s*(,)?/g)) {
+    const [, onEkHam, virgul] = m;
+    // Alt çizgili biçimde ön ek son parçayı içermiyor; sondaki parçayı at.
+    const onEk = onEkHam.includes('.') ? onEkHam.replace(/\.[^.]*$/, '') || onEkHam : onEkHam;
+    let c = tr;
+    let bulundu = true;
+    for (const p of onEk.split('.')) {
+      if (c === null || typeof c !== 'object' || !(p in c)) { bulundu = false; break; }
+      c = c[p];
+    }
+    if (bulundu && c && typeof c === 'object' && Object.keys(c).length) continue;
+    (virgul ? yedekli : yedeksiz).push({ goreli, anahtar: onEk + '.*' });
+  }
 }
 
 const benzersiz = (l) => [...new Map(l.map((x) => [x.anahtar + x.goreli, x])).values()];

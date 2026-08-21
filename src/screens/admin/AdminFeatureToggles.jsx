@@ -5,8 +5,8 @@ import { blockNonNumericInt } from '../../utils/numericInput';
 import { useTranslation } from 'react-i18next';
 
 const GROUP_META = {
-  modules: { label: 'Module Toggles', icon: Blocks, description: 'Enable or disable platform modules globally' },
-  platform: { label: 'Platform Settings', icon: Server, description: 'Core platform configuration' },
+  modules: { labelKey: 'admin.featureToggles.modules', icon: Blocks, descriptionKey: 'admin.featureToggles.modulesDesc' },
+  platform: { labelKey: 'admin.featureToggles.platform', icon: Server, descriptionKey: 'admin.featureToggles.platformDesc' },
 };
 
 function ToggleSwitch({ enabled, onChange, loading }) {
@@ -138,8 +138,8 @@ export default function AdminFeatureToggles() {
                     <GroupIcon className="w-4 h-4 text-purple-600" />
                   </div>
                   <div>
-                    <h2 className="text-sm font-bold text-gray-900">{meta.label}</h2>
-                    {meta.description && <p className="text-xs text-gray-500">{meta.description}</p>}
+                    <h2 className="text-sm font-bold text-gray-900">{t(meta.labelKey)}</h2>
+                    {meta.descriptionKey && <p className="text-xs text-gray-500">{t(meta.descriptionKey)}</p>}
                   </div>
                 </div>
               </div>

@@ -2385,7 +2385,8 @@
     "addDoctorBtn": "Ekibe Ekle",
     "finish": "Kurulumu Tamamla",
     "skipTeam": "Şimdilik geç, ekip üyelerini sonra eklerim",
-    "logo": "Logo"
+    "logo": "Logo",
+    "stepProfile": "Klinik Profili"
   },
   "admin": {
     "auditLogs": {
@@ -2894,7 +2895,18 @@
       "total": "Toplam",
       "admins": "Yönetici",
       "suspended": "Askıya Alınan",
-      "unverified": "Doğrulanmamış"
+      "unverified": "Doğrulanmamış",
+      "pendingDocs": "Bekleyen Belge",
+      "todayAppts": "Bugünkü Randevu"
+    },
+    "featureToggles": {
+      "modules": "Modül Anahtarları",
+      "modulesDesc": "Platform modüllerini genel olarak açıp kapatın",
+      "platform": "Platform Ayarları",
+      "platformDesc": "Temel platform yapılandırması"
+    },
+    "filter": {
+      "all": "Tümü"
     }
   },
   "errors": {
@@ -3000,7 +3012,19 @@
     "searchPlaceholder": "Belgelerde ara...",
     "allCategories": "Tüm Kategoriler",
     "gdprArt9": "GDPR Md. 9",
-    "pdfJpegPngWordExcel": "PDF, JPEG, PNG, Word, Excel · En fazla 20 MB"
+    "pdfJpegPngWordExcel": "PDF, JPEG, PNG, Word, Excel · En fazla 20 MB",
+    "cat": {
+      "lab_result": "Laboratuvar Sonucu",
+      "radiology": "Radyoloji",
+      "epicrisis": "Epikriz",
+      "prescription": "Reçete",
+      "pathology": "Patoloji",
+      "surgery": "Ameliyat Raporu",
+      "vaccination": "Aşı",
+      "allergy": "Alerji Testi",
+      "insurance": "Sigorta",
+      "other": "Diğer"
+    }
   },
   "appointment": {
     "selectSpecialty": "Branş Seçin",
@@ -4073,7 +4097,8 @@
   "googleMapsPreview": {
     "invalidGoogleMapsUrlPlease": "Geçersiz Google Haritalar bağlantısı. Lütfen geçerli bir bağlantı yapıştırın.",
     "mapLinkDetected": "Harita bağlantısı algılandı",
-    "googleMapsPreview": "Google Haritalar Önizleme"
+    "googleMapsPreview": "Google Haritalar Önizleme",
+    "shortLinkNotice": "Kısa bağlantılar önizlenemiyor. Önizleme için tam Google Haritalar adresini kullanın."
   },
   "authPages": {
     "welcomeTo": "Hoş geldiniz:",
@@ -4130,5 +4155,34 @@
   },
   "doctorOnboarding": {
     "eGCardiology": "ör. Kardiyoloji"
+  },
+  "status": {
+    "open": "Açık",
+    "inProgress": "Devam Ediyor",
+    "resolved": "Çözüldü",
+    "closed": "Kapandı",
+    "pending": "Beklemede",
+    "pendingReview": "İnceleme Bekliyor",
+    "approved": "Onaylandı",
+    "rejected": "Reddedildi"
+  },
+  "priority": {
+    "low": "Düşük",
+    "medium": "Orta",
+    "high": "Yüksek",
+    "urgent": "Acil"
+  },
+  "forms": {
+    "selectCity": "Şehir seçin",
+    "select": "Seçin",
+    "searchAddress": "Adres arayın..."
+  },
+  "verification": {
+    "approvedTitle": "Hesabınız Doğrulandı!",
+    "approvedMessage": "Tebrikler! Mesleki doğrulamanız onaylandı.",
+    "rejectedTitle": "Doğrulama Reddedildi",
+    "rejectedMessage": "Doğrulamanız onaylanmadı. Lütfen doğru belgeleri yeniden yükleyin.",
+    "infoRequestedTitle": "Ek Belge Gerekiyor",
+    "infoRequestedMessage": "Yönetim ekibi ek bilgi talep etti."
   }
 }

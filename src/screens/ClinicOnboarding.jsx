@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 const STEPS = [
-  { key: 'profile', icon: Building2, label: 'Clinic Profile' },
+  { key: 'profile', icon: Building2, labelKey: 'clinicOnboarding.stepProfile' },
   { key: 'specialties', icon: Stethoscope, label: 'Specialties' },
   { key: 'team', icon: Users, label: 'Team Setup' },
 ];
@@ -248,7 +248,7 @@ export default function ClinicOnboarding() {
                     {done ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
                   </div>
                   <span className={`text-[10px] font-semibold ${active ? 'text-teal-700' : done ? 'text-teal-600' : 'text-gray-400'}`}>
-                    {s.label}
+                    {t(s.labelKey)}
                   </span>
                 </div>
               </React.Fragment>

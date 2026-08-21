@@ -2026,7 +2026,19 @@
     "subtitle": "Tibbi sənədləriniz təhlükəsiz saxlanılır",
     "title": "Tibbi arxiv",
     "totalFiles": "Cəmi fayl",
-    "totalSize": "Ümumi həcm"
+    "totalSize": "Ümumi həcm",
+    "cat": {
+      "lab_result": "Laboratoriya Nəticəsi",
+      "radiology": "Radiologiya",
+      "epicrisis": "Epikriz",
+      "prescription": "Resept",
+      "pathology": "Patologiya",
+      "surgery": "Əməliyyat Hesabatı",
+      "vaccination": "Peyvənd",
+      "allergy": "Allergiya Testi",
+      "insurance": "Sığorta",
+      "other": "Digər"
+    }
   },
   "admin": {
     "panel": "Admin Paneli",
@@ -2216,10 +2228,10 @@
     "featureToggles": {
       "title": "Xüsusiyyət Ayarları",
       "subtitle": "Platforma genelində xüsusiyyətləri və sistem ayarlarını idarə edin",
-      "modules": "Modul Ayarları",
-      "modulesDesc": "Platforma modullarını qlobal olaraq aktivləşdirin və ya deaktiv edin",
+      "modules": "Modul Açarları",
+      "modulesDesc": "Platforma modullarını aktiv/deaktiv edin",
       "platform": "Platforma Ayarları",
-      "platformDesc": "Əsas platforma konfiqurasiyası",
+      "platformDesc": "Əsas konfiqurasiya",
       "enabled": "Aktiv",
       "disabled": "Deaktiv",
       "save": "Saxla",
@@ -2605,7 +2617,12 @@
       "total": "Ümumi",
       "admins": "Adminlər",
       "suspended": "Dayandırılan",
-      "unverified": "Təsdiqlənməmiş"
+      "unverified": "Təsdiqlənməmiş",
+      "pendingDocs": "Gözləyən Sənəd",
+      "todayAppts": "Bugünkü Randevu"
+    },
+    "filter": {
+      "all": "Hamısı"
     }
   },
   "errors": {
@@ -3113,7 +3130,8 @@
     "skipTeam": "Hələlik keç, komanda üzvlərini sonra əlavə edərəm",
     "tempPassword": "Müvəqqəti şifrə (ən azı 6)",
     "treatmentsSubtitle": "Klinikanızın təqdim etdiyi müalicələri seçin — xəstələr sizi müalicəyə görə tapır.",
-    "treatmentsTitle": "Təqdim olunan müalicələr"
+    "treatmentsTitle": "Təqdim olunan müalicələr",
+    "stepProfile": "Klinika Profili"
   },
   "appointment": {
     "selectSpecialty": "İxtisas Seçin",
@@ -4137,7 +4155,8 @@
   "googleMapsPreview": {
     "googleMapsPreview": "Google Xəritələr önizləməsi",
     "invalidGoogleMapsUrlPlease": "Yanlış Google Xəritələr keçidi. Zəhmət olmasa etibarlı keçid yapışdırın.",
-    "mapLinkDetected": "Xəritə keçidi aşkarlandı"
+    "mapLinkDetected": "Xəritə keçidi aşkarlandı",
+    "shortLinkNotice": "Qısa linklər önizlənə bilmir. Tam Google Xəritələr ünvanı istifadə edin."
   },
   "kVKKPage": {
     "dpoMedgamaCom": "dpo@medgama.com",
@@ -4246,5 +4265,34 @@
   },
   "vascoAIPage": {
     "online": "Onlayn"
+  },
+  "status": {
+    "open": "Açıq",
+    "inProgress": "Davam Edir",
+    "resolved": "Həll Edildi",
+    "closed": "Bağlandı",
+    "pending": "Gözləyir",
+    "pendingReview": "Yoxlama Gözləyir",
+    "approved": "Təsdiqləndi",
+    "rejected": "Rədd Edildi"
+  },
+  "priority": {
+    "low": "Aşağı",
+    "medium": "Orta",
+    "high": "Yüksək",
+    "urgent": "Təcili"
+  },
+  "forms": {
+    "selectCity": "Şəhər seçin",
+    "select": "Seçin",
+    "searchAddress": "Ünvan axtarın…"
+  },
+  "verification": {
+    "approvedTitle": "Hesabınız Təsdiqləndi!",
+    "approvedMessage": "Təbriklər! Peşəkar təsdiqləməniz qəbul edildi.",
+    "rejectedTitle": "Təsdiqləmə Rədd Edildi",
+    "rejectedMessage": "Təsdiqləməniz qəbul edilmədi. Düzgün sənədləri yenidən yükləyin.",
+    "infoRequestedTitle": "Əlavə Sənəd Lazımdır",
+    "infoRequestedMessage": "İdarə komandası əlavə məlumat tələb etdi."
   }
 }

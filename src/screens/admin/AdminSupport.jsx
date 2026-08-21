@@ -10,34 +10,37 @@ import { useTranslation } from 'react-i18next';
 
 // ─── Config ──────────────────────────────────────────────────
 const STATUS_CFG = {
-  open:        { label: 'Open',        bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: Circle },
-  in_progress: { label: 'In Progress', bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200',  icon: Clock },
-  resolved:    { label: 'Resolved',    bg: 'bg-blue-50',    text: 'text-blue-700',    border: 'border-blue-200',   icon: CheckCircle2 },
-  closed:      { label: 'Closed',      bg: 'bg-gray-50',    text: 'text-gray-500',    border: 'border-gray-200',   icon: XCircle },
+  open:        { labelKey: 'status.open',        bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: Circle },
+  in_progress: { labelKey: 'status.inProgress', bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200',  icon: Clock },
+  resolved:    { labelKey: 'status.resolved',    bg: 'bg-blue-50',    text: 'text-blue-700',    border: 'border-blue-200',   icon: CheckCircle2 },
+  closed:      { labelKey: 'status.closed',      bg: 'bg-gray-50',    text: 'text-gray-500',    border: 'border-gray-200',   icon: XCircle },
 };
 
 const PRIORITY_CFG = {
-  low:    { label: 'Low',    bg: 'bg-blue-50',   text: 'text-blue-600',   border: 'border-blue-200' },
-  medium: { label: 'Medium', bg: 'bg-gray-50',   text: 'text-gray-600',   border: 'border-gray-200' },
-  high:   { label: 'High',   bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200' },
-  urgent: { label: 'Urgent', bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200' },
+  low:    { labelKey: 'priority.low',    bg: 'bg-blue-50',   text: 'text-blue-600',   border: 'border-blue-200' },
+  medium: { labelKey: 'priority.medium', bg: 'bg-gray-50',   text: 'text-gray-600',   border: 'border-gray-200' },
+  high:   { labelKey: 'priority.high',   bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200' },
+  urgent: { labelKey: 'priority.urgent', bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200' },
 };
 
 const StatusBadge = ({ status }) => {
+  // Alt bileşen: t üst kapsamda, burada kendi kancası gerekiyor.
+  const { t } = useTranslation();
   const c = STATUS_CFG[status] || STATUS_CFG.open;
   const Icon = c.icon;
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${c.bg} ${c.text} ${c.border}`}>
-      <Icon className="w-3 h-3" /> {c.label}
+      <Icon className="w-3 h-3" /> {t(c.labelKey)}
     </span>
   );
 };
 
 const PriorityBadge = ({ priority }) => {
+  const { t } = useTranslation();
   const c = PRIORITY_CFG[priority] || PRIORITY_CFG.medium;
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${c.bg} ${c.text} ${c.border}`}>
-      {c.label}
+      {t(c.labelKey)}
     </span>
   );
 };
@@ -135,7 +138,7 @@ function TicketDrawer({ ticketId, onClose }) {
                 className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-600 disabled:opacity-50 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 outline-none"
               >
                 {['open', 'in_progress', 'resolved', 'closed'].map(s => (
-                  <option key={s} value={s}>{STATUS_CFG[s]?.label}</option>
+                  <option key={s} value={s}>{STATUS_CFG[s] ? t(STATUS_CFG[s].labelKey) : s}</option>
                 ))}
               </select>
             )}
@@ -292,16 +295,18 @@ export default function AdminSupport() {
   const handleExport = () => {
     if (tickets.length === 0) return;
     const headers = ['Ticket ID', 'User', 'Email', 'Subject', 'Category', 'Priority', 'Status', 'Created', 'Last Update'];
-    const rows = tickets.map(t => [
-      t.ticket_number || t.id,
-      t.user?.fullname || '—',
-      t.user?.email || '—',
-      t.subject,
-      typeof t.category?.name === 'string' ? t.category.name : (t.category?.name_translations?.en || t.category?.slug || '—'),
-      (PRIORITY_CFG[t.priority]?.label || t.priority),
-      (STATUS_CFG[t.status]?.label || t.status),
-      t.created_at ? new Date(t.created_at).toLocaleDateString() : '—',
-      t.updated_at ? new Date(t.updated_at).toLocaleDateString() : '—',
+    // Döngü değişkeni "t" idi ve çeviri fonksiyonunu gölgeliyordu; bu yüzden
+    // dışa aktarılan dosyaya çevrilmiş metin yerine ham anahtar yazılıyordu.
+    const rows = tickets.map(bilet => [
+      bilet.ticket_number || bilet.id,
+      bilet.user?.fullname || '—',
+      bilet.user?.email || '—',
+      bilet.subject,
+      typeof bilet.category?.name === 'string' ? bilet.category.name : (bilet.category?.name_translations?.en || bilet.category?.slug || '—'),
+      PRIORITY_CFG[bilet.priority] ? t(PRIORITY_CFG[bilet.priority].labelKey) : bilet.priority,
+      STATUS_CFG[bilet.status] ? t(STATUS_CFG[bilet.status].labelKey) : bilet.status,
+      bilet.created_at ? new Date(bilet.created_at).toLocaleDateString() : '—',
+      bilet.updated_at ? new Date(bilet.updated_at).toLocaleDateString() : '—',
     ]);
     const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -344,11 +349,11 @@ export default function AdminSupport() {
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           {[
-            { label: 'Total',       value: stats.total,       icon: LifeBuoy,      bg: 'bg-gray-50',    ic: 'text-gray-500',    bd: 'border-gray-200' },
-            { label: 'Open',        value: stats.open,        icon: Circle,        bg: 'bg-emerald-50', ic: 'text-emerald-500', bd: 'border-emerald-200' },
-            { label: 'In Progress', value: stats.in_progress, icon: Clock,         bg: 'bg-amber-50',   ic: 'text-amber-500',   bd: 'border-amber-200' },
-            { label: 'Resolved',    value: stats.resolved,    icon: CheckCircle2,  bg: 'bg-blue-50',    ic: 'text-blue-500',    bd: 'border-blue-200' },
-            { label: 'Closed',      value: stats.closed,      icon: XCircle,       bg: 'bg-gray-50',    ic: 'text-gray-400',    bd: 'border-gray-200' },
+            { label: t('admin.stat.total'),      value: stats.total,       icon: LifeBuoy,      bg: 'bg-gray-50',    ic: 'text-gray-500',    bd: 'border-gray-200' },
+            { label: t('status.open'),           value: stats.open,        icon: Circle,        bg: 'bg-emerald-50', ic: 'text-emerald-500', bd: 'border-emerald-200' },
+            { label: t('status.inProgress'),     value: stats.in_progress, icon: Clock,         bg: 'bg-amber-50',   ic: 'text-amber-500',   bd: 'border-amber-200' },
+            { label: t('status.resolved'),       value: stats.resolved,    icon: CheckCircle2,  bg: 'bg-blue-50',    ic: 'text-blue-500',    bd: 'border-blue-200' },
+            { label: t('status.closed'),         value: stats.closed,      icon: XCircle,       bg: 'bg-gray-50',    ic: 'text-gray-400',    bd: 'border-gray-200' },
             { label: 'Urgent',      value: stats.urgent,      icon: AlertTriangle, bg: 'bg-red-50',     ic: 'text-red-500',     bd: 'border-red-200' },
             { label: 'Unassigned',  value: stats.unassigned,  icon: Users,         bg: 'bg-purple-50',  ic: 'text-purple-500',  bd: 'border-purple-200' },
           ].map(s => (
@@ -387,7 +392,7 @@ export default function AdminSupport() {
         >
           <option value="">{t('adminSupport.allStatuses', "All Statuses")}</option>
           {['open', 'in_progress', 'resolved', 'closed'].map(s => (
-            <option key={s} value={s}>{STATUS_CFG[s]?.label}</option>
+            <option key={s} value={s}>{STATUS_CFG[s] ? t(STATUS_CFG[s].labelKey) : s}</option>
           ))}
         </select>
         <select

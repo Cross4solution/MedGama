@@ -6,7 +6,7 @@ export default function CityCombobox({
   options = [],
   value,
   onChange,
-  placeholder = 'Select City',
+  placeholder,   // verilmezse bileşen kendi çevirisini kullanır
   disabled = false,
   loading = false,
   wheelFactor = 1, // 1 = normal hız, <1 yavaş, >1 hızlı
@@ -96,7 +96,7 @@ export default function CityCombobox({
         disabled={disabled}
         aria-disabled={disabled}
       >
-        {loading ? 'Loading…' : (selectedLabel || placeholder)}
+        {loading ? t('common.loading', 'Yükleniyor…') : (selectedLabel || placeholder || t('forms.selectCity', 'Şehir seçin'))}
       </button>
       {open && !disabled && (
         <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">

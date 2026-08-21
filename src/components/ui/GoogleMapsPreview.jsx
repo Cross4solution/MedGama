@@ -154,7 +154,7 @@ export default function GoogleMapsPreview({ url, height = 220, className = '', c
         <MapPin className="w-4 h-4 text-blue-500 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-xs text-blue-700 font-medium">{t('googleMapsPreview.mapLinkDetected', "Map link detected")}</p>
-          <p className="text-[11px] text-blue-500 mt-0.5">Short links can't be previewed. Use a full Google Maps URL for preview.</p>
+          <p className="text-[11px] text-blue-500 mt-0.5">{t('googleMapsPreview.shortLinkNotice', "Short links can't be previewed. Use a full Google Maps URL for preview.")}</p>
         </div>
         <a href={url} target="_blank" rel="noopener noreferrer"
           className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 flex-shrink-0">

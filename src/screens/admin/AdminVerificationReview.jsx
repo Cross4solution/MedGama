@@ -20,8 +20,8 @@ const DOC_TYPE_LABELS = {
 };
 
 const STATUS_CONFIG = {
-  pending:  { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', icon: Clock, label: 'Pending Review' },
-  approved: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: CheckCircle, label: 'Approved' },
+  pending:  { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', icon: Clock, labelKey: 'status.pendingReview' },
+  approved: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: CheckCircle, labelKey: 'status.approved' },
   rejected: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', icon: XCircle, label: 'Rejected' },
 };
 

@@ -1986,7 +1986,19 @@
     "subtitle": "Vos documents médicaux, conservés en toute sécurité",
     "title": "Archive médicale",
     "totalFiles": "Fichiers au total",
-    "totalSize": "Taille totale"
+    "totalSize": "Taille totale",
+    "cat": {
+      "lab_result": "Résultat de laboratoire",
+      "radiology": "Radiologie",
+      "epicrisis": "Épicrise",
+      "prescription": "Ordonnance",
+      "pathology": "Pathologie",
+      "surgery": "Compte rendu opératoire",
+      "vaccination": "Vaccination",
+      "allergy": "Test d'allergie",
+      "insurance": "Assurance",
+      "other": "Autre"
+    }
   },
   "admin": {
     "panel": "Panneau d'administration",
@@ -2176,10 +2188,10 @@
     "featureToggles": {
       "title": "Paramètres des fonctionnalités",
       "subtitle": "Contrôler les fonctionnalités et les paramètres système de la plateforme",
-      "modules": "Paramètres des modules",
-      "modulesDesc": "Activer ou désactiver les modules de la plateforme globalement",
+      "modules": "Bascules de modules",
+      "modulesDesc": "Activer ou désactiver les modules de la plateforme",
       "platform": "Paramètres de la plateforme",
-      "platformDesc": "Configuration de base de la plateforme",
+      "platformDesc": "Configuration principale",
       "enabled": "Activé",
       "disabled": "Désactivé",
       "save": "Enregistrer",
@@ -2565,7 +2577,12 @@
       "total": "Total",
       "admins": "Administrateurs",
       "suspended": "Suspendus",
-      "unverified": "Non vérifiés"
+      "unverified": "Non vérifiés",
+      "pendingDocs": "Documents en attente",
+      "todayAppts": "RDV du jour"
+    },
+    "filter": {
+      "all": "Tout"
     }
   },
   "errors": {
@@ -3073,7 +3090,8 @@
     "skipTeam": "Passer pour l'instant, j'ajouterai les membres plus tard",
     "tempPassword": "Mot de passe temporaire (6 min.)",
     "treatmentsSubtitle": "Sélectionnez les traitements proposés par votre clinique — les patients vous trouvent par traitement.",
-    "treatmentsTitle": "Traitements proposés"
+    "treatmentsTitle": "Traitements proposés",
+    "stepProfile": "Profil de la clinique"
   },
   "appointment": {
     "selectSpecialty": "Sélectionner une spécialité",
@@ -4157,7 +4175,8 @@
   "googleMapsPreview": {
     "googleMapsPreview": "Aperçu Google Maps",
     "invalidGoogleMapsUrlPlease": "URL Google Maps invalide. Veuillez coller un lien valide.",
-    "mapLinkDetected": "Lien de carte détecté"
+    "mapLinkDetected": "Lien de carte détecté",
+    "shortLinkNotice": "Les liens courts ne peuvent pas être prévisualisés. Utilisez une URL Google Maps complète."
   },
   "kVKKPage": {
     "dpoMedgamaCom": "dpo@medgama.com",
@@ -4206,5 +4225,34 @@
   },
   "vascoAIPage": {
     "online": "En ligne"
+  },
+  "status": {
+    "open": "Ouvert",
+    "inProgress": "En cours",
+    "resolved": "Résolu",
+    "closed": "Fermé",
+    "pending": "En attente",
+    "pendingReview": "En attente d'examen",
+    "approved": "Approuvé",
+    "rejected": "Refusé"
+  },
+  "priority": {
+    "low": "Faible",
+    "medium": "Moyenne",
+    "high": "Élevée",
+    "urgent": "Urgente"
+  },
+  "forms": {
+    "selectCity": "Choisir une ville",
+    "select": "Sélectionner",
+    "searchAddress": "Rechercher une adresse…"
+  },
+  "verification": {
+    "approvedTitle": "Compte vérifié !",
+    "approvedMessage": "Félicitations ! Votre vérification professionnelle a été approuvée.",
+    "rejectedTitle": "Vérification refusée",
+    "rejectedMessage": "Votre vérification n'a pas été approuvée. Veuillez renvoyer des documents corrects.",
+    "infoRequestedTitle": "Documents supplémentaires requis",
+    "infoRequestedMessage": "L'équipe d'administration a demandé des informations supplémentaires."
   }
 }

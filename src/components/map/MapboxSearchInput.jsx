@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Search, Loader2, X, AlertCircle } from 'lucide-react';
 import { searchPlaces, MAPBOX_CONFIG } from '../../config/mapbox';
+import { useTranslation } from 'react-i18next';
 
 /**
  * MapboxSearchInput - Autocomplete address search with geocoding
@@ -16,12 +17,13 @@ import { searchPlaces, MAPBOX_CONFIG } from '../../config/mapbox';
 export default function MapboxSearchInput({
   value = '',
   onChange,
-  placeholder = 'Search for an address...',
+  placeholder = '',   // verilmezse aşağıda çevrilmiş metin kullanılır
   label = 'Address',
   hint = '',
   required = false,
   error = '',
 }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState(value);
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -186,7 +188,7 @@ export default function MapboxSearchInput({
               setShowDropdown(true);
             }
           }}
-          placeholder={placeholder}
+          placeholder={placeholder || t('forms.searchAddress', 'Adres arayın...')}
           className={`w-full h-11 pl-10 pr-10 border rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
             error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white'
           }`}

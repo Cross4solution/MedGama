@@ -2353,7 +2353,8 @@
     "skipTeam": "Vorerst überspringen, Teammitglieder später hinzufügen",
     "tempPassword": "Vorläufiges Passwort (mind. 6)",
     "treatmentsSubtitle": "Wählen Sie die Behandlungen Ihrer Klinik aus — Patienten finden Sie über die Behandlung.",
-    "treatmentsTitle": "Angebotene Behandlungen"
+    "treatmentsTitle": "Angebotene Behandlungen",
+    "stepProfile": "Klinikprofil"
   },
   "admin": {
     "auditLogs": {
@@ -2716,10 +2717,10 @@
     "featureToggles": {
       "title": "Funktionseinstellungen",
       "subtitle": "Plattformweite Funktionen und Systemeinstellungen steuern",
-      "modules": "Moduleinstellungen",
+      "modules": "Modulschalter",
       "modulesDesc": "Plattformmodule global aktivieren oder deaktivieren",
       "platform": "Plattformeinstellungen",
-      "platformDesc": "Grundlegende Plattformkonfiguration",
+      "platformDesc": "Kernkonfiguration der Plattform",
       "enabled": "Aktiviert",
       "disabled": "Deaktiviert",
       "save": "Speichern",
@@ -2932,7 +2933,12 @@
       "total": "Gesamt",
       "admins": "Administratoren",
       "suspended": "Gesperrt",
-      "unverified": "Nicht verifiziert"
+      "unverified": "Nicht verifiziert",
+      "pendingDocs": "Offene Dokumente",
+      "todayAppts": "Termine heute"
+    },
+    "filter": {
+      "all": "Alle"
     }
   },
   "errors": {
@@ -3038,7 +3044,19 @@
     "subtitle": "Ihre medizinischen Unterlagen, sicher verwahrt",
     "title": "Medizinisches Archiv",
     "totalFiles": "Dateien gesamt",
-    "totalSize": "Gesamtgröße"
+    "totalSize": "Gesamtgröße",
+    "cat": {
+      "lab_result": "Laborbefund",
+      "radiology": "Radiologie",
+      "epicrisis": "Epikrise",
+      "prescription": "Rezept",
+      "pathology": "Pathologie",
+      "surgery": "OP-Bericht",
+      "vaccination": "Impfung",
+      "allergy": "Allergietest",
+      "insurance": "Versicherung",
+      "other": "Sonstiges"
+    }
   },
   "appointment": {
     "selectSpecialty": "Fachgebiet auswählen",
@@ -4038,7 +4056,8 @@
   "googleMapsPreview": {
     "googleMapsPreview": "Google-Maps-Vorschau",
     "invalidGoogleMapsUrlPlease": "Ungültige Google-Maps-URL. Bitte fügen Sie einen gültigen Link ein.",
-    "mapLinkDetected": "Kartenlink erkannt"
+    "mapLinkDetected": "Kartenlink erkannt",
+    "shortLinkNotice": "Kurzlinks können nicht angezeigt werden. Bitte vollständige Google-Maps-URL verwenden."
   },
   "hospital": {
     "about": "Über uns",
@@ -4206,5 +4225,34 @@
   },
   "vascoAIPage": {
     "online": "Online"
+  },
+  "status": {
+    "open": "Offen",
+    "inProgress": "In Bearbeitung",
+    "resolved": "Gelöst",
+    "closed": "Geschlossen",
+    "pending": "Ausstehend",
+    "pendingReview": "Prüfung ausstehend",
+    "approved": "Genehmigt",
+    "rejected": "Abgelehnt"
+  },
+  "priority": {
+    "low": "Niedrig",
+    "medium": "Mittel",
+    "high": "Hoch",
+    "urgent": "Dringend"
+  },
+  "forms": {
+    "selectCity": "Stadt wählen",
+    "select": "Auswählen",
+    "searchAddress": "Adresse suchen …"
+  },
+  "verification": {
+    "approvedTitle": "Konto verifiziert!",
+    "approvedMessage": "Glückwunsch! Ihre berufliche Verifizierung wurde bestätigt.",
+    "rejectedTitle": "Verifizierung abgelehnt",
+    "rejectedMessage": "Ihre Verifizierung wurde nicht bestätigt. Bitte laden Sie korrekte Unterlagen erneut hoch.",
+    "infoRequestedTitle": "Weitere Unterlagen erforderlich",
+    "infoRequestedMessage": "Das Admin-Team hat zusätzliche Informationen angefordert."
   }
 }

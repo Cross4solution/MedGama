@@ -155,7 +155,7 @@ export default function AdminFinancials() {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
           {[
-            { key: 'all', label: 'All', count: subscriptions.length },
+            { key: 'all', label: t('admin.filter.all', 'All'), count: subscriptions.length },
             { key: 'active', label: 'Active', count: subscriptions.filter(s => s.status === 'active').length },
             { key: 'past_due', label: 'Past Due', count: subscriptions.filter(s => s.status === 'past_due').length },
             { key: 'cancelled', label: 'Cancelled', count: subscriptions.filter(s => s.status === 'cancelled').length },

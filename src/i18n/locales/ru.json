@@ -2353,7 +2353,8 @@
     "skipTeam": "Пропустить, добавлю участников позже",
     "tempPassword": "Временный пароль (мин. 6)",
     "treatmentsSubtitle": "Выберите процедуры, которые оказывает ваша клиника, — пациенты находят вас по процедуре.",
-    "treatmentsTitle": "Оказываемые процедуры"
+    "treatmentsTitle": "Оказываемые процедуры",
+    "stepProfile": "Профиль клиники"
   },
   "admin": {
     "auditLogs": {
@@ -2716,10 +2717,10 @@
     "featureToggles": {
       "title": "Настройки функций",
       "subtitle": "Управление функциями платформы и системными настройками",
-      "modules": "Настройки модулей",
-      "modulesDesc": "Включение и отключение модулей платформы глобально",
+      "modules": "Переключатели модулей",
+      "modulesDesc": "Включение и отключение модулей платформы",
       "platform": "Настройки платформы",
-      "platformDesc": "Основная конфигурация платформы",
+      "platformDesc": "Основная конфигурация",
       "enabled": "Включено",
       "disabled": "Отключено",
       "save": "Сохранить",
@@ -2932,7 +2933,12 @@
       "total": "Всего",
       "admins": "Администраторы",
       "suspended": "Заблокированы",
-      "unverified": "Не подтверждены"
+      "unverified": "Не подтверждены",
+      "pendingDocs": "Документы в ожидании",
+      "todayAppts": "Приёмы сегодня"
+    },
+    "filter": {
+      "all": "Все"
     }
   },
   "errors": {
@@ -3038,7 +3044,19 @@
     "subtitle": "Ваши медицинские документы под надёжной защитой",
     "title": "Медицинский архив",
     "totalFiles": "Всего файлов",
-    "totalSize": "Общий размер"
+    "totalSize": "Общий размер",
+    "cat": {
+      "lab_result": "Результат анализа",
+      "radiology": "Радиология",
+      "epicrisis": "Эпикриз",
+      "prescription": "Рецепт",
+      "pathology": "Патология",
+      "surgery": "Отчёт об операции",
+      "vaccination": "Вакцинация",
+      "allergy": "Тест на аллергию",
+      "insurance": "Страховка",
+      "other": "Другое"
+    }
   },
   "appointment": {
     "selectSpecialty": "Выберите специализацию",
@@ -4157,7 +4175,8 @@
   "googleMapsPreview": {
     "googleMapsPreview": "Предпросмотр Google Карт",
     "invalidGoogleMapsUrlPlease": "Неверная ссылка Google Карт. Вставьте действительную ссылку.",
-    "mapLinkDetected": "Обнаружена ссылка на карту"
+    "mapLinkDetected": "Обнаружена ссылка на карту",
+    "shortLinkNotice": "Короткие ссылки нельзя предпросмотреть. Используйте полный адрес Google Maps."
   },
   "kVKKPage": {
     "dpoMedgamaCom": "dpo@medgama.com",
@@ -4206,5 +4225,34 @@
   },
   "vascoAIPage": {
     "online": "В сети"
+  },
+  "status": {
+    "open": "Открыт",
+    "inProgress": "В работе",
+    "resolved": "Решён",
+    "closed": "Закрыт",
+    "pending": "Ожидает",
+    "pendingReview": "Ожидает проверки",
+    "approved": "Одобрен",
+    "rejected": "Отклонён"
+  },
+  "priority": {
+    "low": "Низкий",
+    "medium": "Средний",
+    "high": "Высокий",
+    "urgent": "Срочный"
+  },
+  "forms": {
+    "selectCity": "Выберите город",
+    "select": "Выбрать",
+    "searchAddress": "Поиск адреса…"
+  },
+  "verification": {
+    "approvedTitle": "Аккаунт подтверждён!",
+    "approvedMessage": "Поздравляем! Ваша профессиональная проверка одобрена.",
+    "rejectedTitle": "Проверка отклонена",
+    "rejectedMessage": "Проверка не одобрена. Загрузите корректные документы заново.",
+    "infoRequestedTitle": "Нужны дополнительные документы",
+    "infoRequestedMessage": "Администрация запросила дополнительную информацию."
   }
 }

@@ -2353,7 +2353,8 @@
     "skipTeam": "تخطّي الآن، سأضيف أعضاء الفريق لاحقًا",
     "tempPassword": "كلمة مرور مؤقتة (6 أحرف على الأقل)",
     "treatmentsSubtitle": "اختر العلاجات التي تقدّمها عيادتك — يجدك المرضى حسب العلاج.",
-    "treatmentsTitle": "العلاجات المقدَّمة"
+    "treatmentsTitle": "العلاجات المقدَّمة",
+    "stepProfile": "ملف العيادة"
   },
   "admin": {
     "auditLogs": {
@@ -2716,10 +2717,10 @@
     "featureToggles": {
       "title": "إعدادات الميزات",
       "subtitle": "التحكم في ميزات المنصة وإعدادات النظام",
-      "modules": "إعدادات الوحدات",
-      "modulesDesc": "تفعيل أو تعطيل وحدات المنصة بشكل عام",
+      "modules": "مفاتيح الوحدات",
+      "modulesDesc": "تفعيل أو تعطيل وحدات المنصة",
       "platform": "إعدادات المنصة",
-      "platformDesc": "التكوين الأساسي للمنصة",
+      "platformDesc": "التهيئة الأساسية",
       "enabled": "مفعّل",
       "disabled": "معطّل",
       "save": "حفظ",
@@ -2932,7 +2933,12 @@
       "total": "الإجمالي",
       "admins": "المشرفون",
       "suspended": "موقوفون",
-      "unverified": "غير موثّقين"
+      "unverified": "غير موثّقين",
+      "pendingDocs": "مستندات معلّقة",
+      "todayAppts": "مواعيد اليوم"
+    },
+    "filter": {
+      "all": "الكل"
     }
   },
   "errors": {
@@ -3038,7 +3044,19 @@
     "subtitle": "مستنداتك الطبية محفوظة بأمان",
     "title": "الأرشيف الطبي",
     "totalFiles": "إجمالي الملفات",
-    "totalSize": "الحجم الإجمالي"
+    "totalSize": "الحجم الإجمالي",
+    "cat": {
+      "lab_result": "نتيجة مختبر",
+      "radiology": "أشعة",
+      "epicrisis": "تقرير خروج",
+      "prescription": "وصفة",
+      "pathology": "علم الأمراض",
+      "surgery": "تقرير جراحة",
+      "vaccination": "تطعيم",
+      "allergy": "اختبار حساسية",
+      "insurance": "تأمين",
+      "other": "أخرى"
+    }
   },
   "appointment": {
     "selectSpecialty": "اختر التخصص",
@@ -4157,7 +4175,8 @@
   "googleMapsPreview": {
     "googleMapsPreview": "معاينة خرائط Google",
     "invalidGoogleMapsUrlPlease": "رابط خرائط Google غير صالح. يُرجى لصق رابط صحيح.",
-    "mapLinkDetected": "تم اكتشاف رابط خريطة"
+    "mapLinkDetected": "تم اكتشاف رابط خريطة",
+    "shortLinkNotice": "لا يمكن معاينة الروابط المختصرة. استخدم رابط خرائط Google الكامل."
   },
   "kVKKPage": {
     "dpoMedgamaCom": "dpo@medgama.com",
@@ -4206,5 +4225,34 @@
   },
   "vascoAIPage": {
     "online": "متصل"
+  },
+  "status": {
+    "open": "مفتوح",
+    "inProgress": "قيد المعالجة",
+    "resolved": "تم الحل",
+    "closed": "مغلق",
+    "pending": "معلّق",
+    "pendingReview": "بانتظار المراجعة",
+    "approved": "موافَق عليه",
+    "rejected": "مرفوض"
+  },
+  "priority": {
+    "low": "منخفض",
+    "medium": "متوسط",
+    "high": "مرتفع",
+    "urgent": "عاجل"
+  },
+  "forms": {
+    "selectCity": "اختر المدينة",
+    "select": "اختر",
+    "searchAddress": "ابحث عن عنوان…"
+  },
+  "verification": {
+    "approvedTitle": "تم توثيق الحساب!",
+    "approvedMessage": "تهانينا! تمت الموافقة على توثيقك المهني.",
+    "rejectedTitle": "تم رفض التوثيق",
+    "rejectedMessage": "لم تتم الموافقة على توثيقك. يُرجى رفع مستندات صحيحة.",
+    "infoRequestedTitle": "مطلوب مستندات إضافية",
+    "infoRequestedMessage": "طلب فريق الإدارة معلومات إضافية."
   }
 }
