@@ -261,7 +261,9 @@
     "signInAsDifferentRole": "Mit einer anderen Rolle anmelden",
     "benefitExpertTeam": "Ärzteteam mit geprüften Qualifikationen",
     "benefitSecure": "Sicher, verschlüsselt und DSGVO-konform",
-    "benefitSupport": "Patientensupport rund um die Uhr und Videosprechstunde"
+    "benefitSupport": "Patientensupport rund um die Uhr und Videosprechstunde",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort verbergen"
   },
   "aboutPage": {
     "heroDesc": "Ein sprach- und ortsunabhängiger Marktplatz für Gesundheit und Medizintourismus, der Patienten mit erfahrenen Ärzten und verifizierten Kliniken/Krankenhäusern auf einer Plattform zusammenbringt.",

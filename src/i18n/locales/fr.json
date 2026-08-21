@@ -261,7 +261,9 @@
     "signInAsDifferentRole": "Se connecter avec un autre rôle",
     "benefitExpertTeam": "Équipe médicale aux diplômes vérifiés",
     "benefitSecure": "Sécurisé, chiffré et conforme au RGPD",
-    "benefitSupport": "Assistance 24/7 et téléconsultation"
+    "benefitSupport": "Assistance 24/7 et téléconsultation",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
   },
   "aboutPage": {
     "heroDesc": "Une place de marché santé et tourisme médical, indépendante de la langue et du lieu, qui réunit patients, médecins experts et cliniques/hôpitaux vérifiés sur une même plateforme.",

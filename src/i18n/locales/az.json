@@ -261,7 +261,9 @@
     "signInAsDifferentRole": "Fərqli rolla giriş",
     "benefitExpertTeam": "Diplomu təsdiqlənmiş həkim heyəti",
     "benefitSecure": "Təhlükəsiz, şifrəli və GDPR uyğun",
-    "benefitSupport": "7/24 xəstə dəstəyi və video görüş"
+    "benefitSupport": "7/24 xəstə dəstəyi və video görüş",
+    "showPassword": "Şifrəni göstər",
+    "hidePassword": "Şifrəni gizlət"
   },
   "aboutPage": {
     "heroDesc": "Xəstələri təcrübəli həkimlər və təsdiqlənmiş klinika/xəstəxanalarla eyni rəqəmsal platformada birləşdirən, dil və məkandan asılı olmayan sağlamlıq və tibbi turizm bazarı.",

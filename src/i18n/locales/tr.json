@@ -261,7 +261,9 @@
     "guardianEmailPlaceholder": "veli@example.com",
     "benefitExpertTeam": "Diploması doğrulanmış uzman hekim kadrosu",
     "benefitSecure": "Güvenli, şifreli ve GDPR uyumlu",
-    "benefitSupport": "7/24 hasta desteği ve görüntülü görüşme"
+    "benefitSupport": "7/24 hasta desteği ve görüntülü görüşme",
+    "showPassword": "Şifreyi göster",
+    "hidePassword": "Şifreyi gizle"
   },
   "aboutPage": {
     "heroDesc": "Hastaları uzman doktorlar ve onaylı klinik/hastanelerle aynı dijital platformda buluşturan, dil ve lokasyon bağımsız sağlık ve sağlık turizmi pazar yeri.",

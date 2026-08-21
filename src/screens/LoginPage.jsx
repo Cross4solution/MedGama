@@ -422,8 +422,8 @@ const LoginPage = ({ role = 'patient' }) => {
               placeholder="••••••••" required
             />
             <button type="button" onClick={() => setShowPassword(s => !s)}
-              className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}>
+              className="absolute right-0 sm:right-1 top-1/2 transform -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600"
+              aria-label={showPassword ? t('auth.hidePassword', 'Hide password') : t('auth.showPassword', 'Show password')}>
               {showPassword ? <Eye className="w-4 h-4 sm:w-5 sm:h-5" /> : <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>
           </div>

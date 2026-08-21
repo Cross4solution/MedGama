@@ -280,7 +280,9 @@
     "guardianEmailPlaceholder": "guardian@example.com",
     "benefitExpertTeam": "Expert medical team with verified credentials",
     "benefitSecure": "Secure, encrypted & GDPR-compliant",
-    "benefitSupport": "24/7 patient support & telehealth"
+    "benefitSupport": "24/7 patient support & telehealth",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "aboutPage": {
     "heroDesc": "A language- and location-independent health and medical-tourism marketplace that brings patients together with expert doctors and verified clinics/hospitals on one digital platform.",
