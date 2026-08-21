@@ -94,9 +94,25 @@ const CRMReports = () => {
     setLoading(true);
     setError(null);
     try {
-      // doctorBillingAPI.stats has no CRM gate (all authenticated doctors); revenue-chart is CRM-gated → optional.
-      const statsRes = await doctorBillingAPI.stats();
-      setStats(statsRes?.data ?? null);
+      // /doctor/billing/stats YALNIZCA doctor rolüne açık. Klinik sahibi bu
+      // ekranı menüsünde görüyor ama ilk çağrı 403 dönüyordu; hata bloğu tüm
+      // ekranı silip "veriler yüklenemedi" bırakıyordu. Yani klinik için
+      // Raporlar ekranı hiç çalışmıyordu.
+      //
+      // İki uç da aynı controller metoduna gidiyor (BillingController::stats),
+      // yanıt aynı; tek fark yetki kapısı.
+      const statsCagrisi = user?.role_id === 'doctor'
+        ? doctorBillingAPI.stats()
+        : billingAPI.stats();
+
+      // Tek bir başarısız çağrı ekranın tamamını götürmemeli: randevu/hasta
+      // /hizmet raporları kendi başlarına gelebiliyor.
+      try {
+        const statsRes = await statsCagrisi;
+        setStats(statsRes?.data ?? null);
+      } catch {
+        setStats(null);
+      }
 
       try {
         const chartRes = await billingAPI.revenueChart({ period });
@@ -128,7 +144,7 @@ const CRMReports = () => {
     } finally {
       setLoading(false);
     }
-  }, [period, t]);
+  }, [period, t, user?.role_id]);
 
   useEffect(() => {
     if (user?.role_id === 'doctor' && !isPro) return;

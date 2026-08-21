@@ -164,8 +164,12 @@ function taramaTesti(baslik, rotalar, diller, oturum) {
     const dosya = path.join(RAPOR_KLASOR, `${baslik.replace(/\W+/g, '-')}.json`);
     fs.writeFileSync(dosya, JSON.stringify(sonuclar, null, 2));
 
+    // Konsol hataları da özete GİRMELİ. İlk sürümde toplanıyor ama
+    // yazılmıyordu; 12 sayfada hata varken rapor "0 sorunlu" diyordu.
+    // Raporlar ekranının klinik rolünde tamamen kırık olduğu tam böyle
+    // gözden kaçtı: ekran açılıyor, arkada 403 düşüyordu.
     const sorunlu = sonuclar.filter(
-      (s) => s.durum !== 'tamam' || s.sunucuHatalari.length || s.hamAnahtar.length,
+      (s) => s.durum !== 'tamam' || s.sunucuHatalari.length || s.hamAnahtar.length || s.konsolHatalari.length,
     );
     console.log(`\n=== ${baslik}: ${sonuclar.length} sayfa, ${sorunlu.length} sorunlu ===`);
     for (const s of sorunlu) {
@@ -175,6 +179,9 @@ function taramaTesti(baslik, rotalar, diller, oturum) {
           (s.cokmeler.length ? ` | ÇÖKME: ${s.cokmeler[0]}` : '') +
           (s.hamAnahtar.length ? ` | ham anahtar: ${s.hamAnahtar.slice(0, 4).join(', ')}` : ''),
       );
+      for (const h of [...new Set(s.konsolHatalari)].slice(0, 3)) {
+        console.log(`        konsol: ${h.slice(0, 140)}`);
+      }
     }
 
     // Tarama bir rapor aracı; tek gerçek kapı çökmeler. Boş ekran ve çeviri

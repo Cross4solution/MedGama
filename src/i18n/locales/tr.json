@@ -103,7 +103,7 @@
     "savedPosts": "Kaydedilenler",
     "noSavedPosts": "Henüz kaydedilmiş gönderi yok",
     "done": "Tamam",
-    "loadError": "Dokümanlar yüklenirken bir hata oluştu."
+    "loadError": "Veriler yüklenirken bir hata oluştu."
   },
   "nav": {
     "home": "Ana Sayfa",
@@ -2303,7 +2303,7 @@
     "teamSubtitle": "Doktorları kliniğinize davet edin",
     "nameRequired": "Lütfen klinik adını girin.",
     "accreditations": "Sertifikalar & Akreditasyonlar",
-    "accreditationsHint": "Klinağinizin sahip olduğu profesyonel sertifikaları seçin. Hastalara güven aşılar.",
+    "accreditationsHint": "Kliniğinizin sahip olduğu profesyonel sertifikaları seçin. Hastalara güven aşılar.",
     "certificates": "Sertifikalar (görselli)",
     "certificatesHint": "Sertifika adı, yıl ve isterseniz belge görseli ekleyin.",
     "treatmentsTitle": "Sunulan Tedaviler",
