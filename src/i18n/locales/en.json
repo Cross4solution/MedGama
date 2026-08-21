@@ -277,7 +277,10 @@
     "passwordsMatch": "Passwords match",
     "selectCountryPlaceholder": "Select a country",
     "guardianConsentNotice": "Parental consent is required to register if you are under 18. Please enter the guardian's email address.",
-    "guardianEmailPlaceholder": "guardian@example.com"
+    "guardianEmailPlaceholder": "guardian@example.com",
+    "benefitExpertTeam": "Expert medical team with verified credentials",
+    "benefitSecure": "Secure, encrypted & GDPR-compliant",
+    "benefitSupport": "24/7 patient support & telehealth"
   },
   "aboutPage": {
     "heroDesc": "A language- and location-independent health and medical-tourism marketplace that brings patients together with expert doctors and verified clinics/hospitals on one digital platform.",
@@ -945,7 +948,11 @@
       "totalCommission": "Platform Commission",
       "totalInvoices": "Total Invoices",
       "totalPlatformRevenue": "Total Platform Revenue",
-      "payoutSummary": "Payout Summary"
+      "payoutSummary": "Payout Summary",
+      "thisMonth": "This Month",
+      "pending": "Pending",
+      "recentInvoices": "Recent Invoices",
+      "reportTitle": "Revenue & Finance Report"
     },
     "billing": {
       "title": "Billing & Finance",
@@ -1586,6 +1593,12 @@
     "upgradeBtn": "CRM\\'e Geç →",
     "medstream": {
       "sortRecent": "Most Recent"
+    },
+    "proTeaser": {
+      "totalPatients": "Total Patients",
+      "monthlyRevenue": "Monthly Revenue",
+      "todayAppointments": "Today's Appointments",
+      "satisfactionRate": "Satisfaction Rate"
     }
   },
   "home": {
@@ -3705,7 +3718,11 @@
     "payTransfer": "Bank Transfer",
     "payTransferDesc": "Direct transfer",
     "payBeforeSession": "Before Session",
-    "payBeforeSessionDesc": "Pay before start"
+    "payBeforeSessionDesc": "Pay before start",
+    "metricTotal": "Total Appointments",
+    "metricPending": "Pending Requests",
+    "metricConfirmed": "Confirmed",
+    "metricCompleted": "Completed"
   },
   "adminSupport": {
     "ticketNotFound": "Ticket not found",

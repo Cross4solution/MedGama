@@ -140,10 +140,10 @@ const MockDashboardBg = () => {
     {/* Stats Row */}
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
       {[
-        { label: 'Total Patients', value: '1,248', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-        { label: 'Monthly Revenue', value: '₺47,320', icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-        { label: "Today's Appointments", value: '12', icon: Stethoscope, color: 'text-violet-600', bg: 'bg-violet-50' },
-        { label: 'Satisfaction Rate', value: '96%', icon: HeartPulse, color: 'text-rose-600', bg: 'bg-rose-50' },
+        { label: t('crm.proTeaser.totalPatients', 'Total Patients'), value: '1,248', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { label: t('crm.proTeaser.monthlyRevenue', 'Monthly Revenue'), value: '₺47,320', icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+        { label: t('crm.proTeaser.todayAppointments', "Today's Appointments"), value: '12', icon: Stethoscope, color: 'text-violet-600', bg: 'bg-violet-50' },
+        { label: t('crm.proTeaser.satisfactionRate', 'Satisfaction Rate'), value: '96%', icon: HeartPulse, color: 'text-rose-600', bg: 'bg-rose-50' },
       ].map((s) => (
         <div key={s.label} className="bg-white rounded-2xl border border-gray-200 p-5">
           <div className="flex items-center justify-between mb-3">

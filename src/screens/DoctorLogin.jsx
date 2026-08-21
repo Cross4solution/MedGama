@@ -145,9 +145,9 @@ const DoctorLogin = () => {
   ];
 
   const stats = [
-    { value: '500+', label: 'Clinics' },
-    { value: '50K+', label: 'Patients' },
-    { value: '98%', label: 'Satisfaction' },
+    { value: '500+', label: t('auth.statClinics', 'Clinics') },
+    { value: '50K+', label: t('auth.statPatients', 'Patients') },
+    { value: '98%', label: t('auth.statSatisfaction', 'Satisfaction') },
   ];
 
   return (

@@ -258,7 +258,10 @@
     "passwordsMatch": "Şifreler eşleşiyor",
     "selectCountryPlaceholder": "Bir ülke seçin",
     "guardianConsentNotice": "18 yaş altı kayıt için veli onayı gereklidir. Lütfen veli e-posta adresini giriniz.",
-    "guardianEmailPlaceholder": "veli@example.com"
+    "guardianEmailPlaceholder": "veli@example.com",
+    "benefitExpertTeam": "Diploması doğrulanmış uzman hekim kadrosu",
+    "benefitSecure": "Güvenli, şifreli ve GDPR uyumlu",
+    "benefitSupport": "7/24 hasta desteği ve görüntülü görüşme"
   },
   "aboutPage": {
     "heroDesc": "Hastaları uzman doktorlar ve onaylı klinik/hastanelerle aynı dijital platformda buluşturan, dil ve lokasyon bağımsız sağlık ve sağlık turizmi pazar yeri.",
@@ -926,7 +929,11 @@
       "totalCommission": "Platform Komisyonu",
       "totalInvoices": "Toplam Fatura",
       "totalPlatformRevenue": "Toplam Platform Geliri",
-      "payoutSummary": "Payout Summary (Hakediş)"
+      "payoutSummary": "Payout Summary (Hakediş)",
+      "thisMonth": "Bu Ay",
+      "pending": "Bekleyen",
+      "recentInvoices": "Son Faturalar",
+      "reportTitle": "Gelir ve Finans Raporu"
     },
     "billing": {
       "title": "Tahsilat & Finans",
@@ -1567,7 +1574,13 @@
     },
     "upgradeTitle": "CRM Paketine Geçin",
     "upgradeDesc": "Randevu yönetimi, hasta takibi, gelir raporları ve daha fazlası için CRM paketini aktif edin.",
-    "upgradeBtn": "CRM\\'e Geç →"
+    "upgradeBtn": "CRM\\'e Geç →",
+    "proTeaser": {
+      "totalPatients": "Toplam Hasta",
+      "monthlyRevenue": "Aylık Gelir",
+      "todayAppointments": "Bugünkü Randevular",
+      "satisfactionRate": "Memnuniyet Oranı"
+    }
   },
   "home": {
     "heroTitle": "Dünyanın #1 Sağlık Portalı",
@@ -3838,7 +3851,11 @@
     "payTransfer": "Banka Havalesi",
     "payTransferDesc": "Doğrudan havale",
     "payBeforeSession": "Görüşme Öncesi",
-    "payBeforeSessionDesc": "Başlamadan önce ödeyin"
+    "payBeforeSessionDesc": "Başlamadan önce ödeyin",
+    "metricTotal": "Toplam Randevu",
+    "metricPending": "Bekleyen Talepler",
+    "metricConfirmed": "Onaylanan",
+    "metricCompleted": "Tamamlanan"
   },
   "adminSupport": {
     "ticketNotFound": "Talep bulunamadı",

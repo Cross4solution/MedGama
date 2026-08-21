@@ -17,6 +17,8 @@ import { formatLocalDate } from '../utils/dates';
 
 // ─── Doctor Appointment Dashboard (metrics + big requests) ───
 function DoctorAppointmentDashboard() {
+  // Kendi kancası: t alttaki ana bileşende tanımlı, burada kapsam dışı.
+  const { t } = useTranslation();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,10 +34,10 @@ function DoctorAppointmentDashboard() {
   const total = appointments.length;
 
   const metrics = [
-    { label: 'Total Appointments', value: total, icon: ClipboardList, color: 'from-blue-500 to-indigo-600', bg: 'bg-blue-50', text: 'text-blue-600' },
-    { label: 'Pending Requests', value: pending.length, icon: Clock, color: 'from-amber-500 to-orange-600', bg: 'bg-amber-50', text: 'text-amber-600' },
-    { label: 'Confirmed', value: confirmed.length, icon: CheckCircle2, color: 'from-teal-500 to-emerald-600', bg: 'bg-teal-50', text: 'text-teal-600' },
-    { label: 'Completed', value: completed.length, icon: TrendingUp, color: 'from-emerald-500 to-green-600', bg: 'bg-emerald-50', text: 'text-emerald-600' },
+    { label: t('telehealthAppointmentPage.metricTotal', 'Total Appointments'), value: total, icon: ClipboardList, color: 'from-blue-500 to-indigo-600', bg: 'bg-blue-50', text: 'text-blue-600' },
+    { label: t('telehealthAppointmentPage.metricPending', 'Pending Requests'), value: pending.length, icon: Clock, color: 'from-amber-500 to-orange-600', bg: 'bg-amber-50', text: 'text-amber-600' },
+    { label: t('telehealthAppointmentPage.metricConfirmed', 'Confirmed'), value: confirmed.length, icon: CheckCircle2, color: 'from-teal-500 to-emerald-600', bg: 'bg-teal-50', text: 'text-teal-600' },
+    { label: t('telehealthAppointmentPage.metricCompleted', 'Completed'), value: completed.length, icon: TrendingUp, color: 'from-emerald-500 to-green-600', bg: 'bg-emerald-50', text: 'text-emerald-600' },
   ];
 
   return (

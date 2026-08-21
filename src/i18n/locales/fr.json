@@ -221,7 +221,7 @@
     "metaDoctorLoginDesc": "Connectez-vous au portail médecin Medagama. Gérez vos patients, suivez les rendez-vous, utilisez les outils de télésanté.",
     "metaClinicLogin": "Connexion Clinique — Medagama | Portail de gestion de clinique",
     "metaClinicLoginDesc": "Connectez-vous au portail clinique Medagama. Gérez les opérations de votre clinique, coordonnez les équipes.",
-    "gdprCompliant": "Conforme RGPD",
+    "gdprCompliant": "Conforme au RGPD",
     "statClinics": "Cliniques",
     "statPatients": "Patients",
     "statSatisfaction": "Satisfaction",
@@ -258,7 +258,10 @@
     "selectCountryPlaceholder": "Sélectionnez un pays",
     "guardianConsentNotice": "Le consentement parental est requis pour l'inscription si vous avez moins de 18 ans. Veuillez saisir l'adresse e-mail du tuteur.",
     "guardianEmailPlaceholder": "tuteur@exemple.com",
-    "signInAsDifferentRole": "Se connecter avec un autre rôle"
+    "signInAsDifferentRole": "Se connecter avec un autre rôle",
+    "benefitExpertTeam": "Équipe médicale aux diplômes vérifiés",
+    "benefitSecure": "Sécurisé, chiffré et conforme au RGPD",
+    "benefitSupport": "Assistance 24/7 et téléconsultation"
   },
   "aboutPage": {
     "heroDesc": "Une place de marché santé et tourisme médical, indépendante de la langue et du lieu, qui réunit patients, médecins experts et cliniques/hôpitaux vérifiés sur une même plateforme.",
@@ -700,7 +703,7 @@
     "revenue": {
       "title": "Revenus & Finances",
       "subtitle": "Suivre les revenus, paiements et rapports financiers",
-      "totalRevenue": "Revenus totaux",
+      "totalRevenue": "Revenu total",
       "collected": "Encaissé",
       "overdue": "En retard",
       "monthlyRevenue": "Revenus mensuels",
@@ -731,12 +734,16 @@
       "pendingPayments": "Paiements en attente",
       "period": "Période",
       "platformOverview": "Vue financière de la plateforme",
-      "receivable": "Créance",
+      "receivable": "Créances",
       "topDoctors": "Médecins générant le plus de revenus",
       "topServices": "Prestations les plus demandées",
       "totalCommission": "Commission de la plateforme",
       "totalInvoices": "Total des factures",
-      "totalPlatformRevenue": "Chiffre d'affaires total de la plateforme"
+      "totalPlatformRevenue": "Chiffre d'affaires total de la plateforme",
+      "thisMonth": "Ce mois-ci",
+      "pending": "En attente",
+      "recentInvoices": "Factures récentes",
+      "reportTitle": "Rapport de revenus et finances"
     },
     "billing": {
       "title": "Facturation & Finances",
@@ -1567,6 +1574,12 @@
     "upgradeTitle": "Passez à la formule CRM",
     "verification": {
       "docUploaded": "Document envoyé avec succès. En cours d'examen."
+    },
+    "proTeaser": {
+      "totalPatients": "Total des patients",
+      "monthlyRevenue": "Revenu mensuel",
+      "todayAppointments": "Rendez-vous du jour",
+      "satisfactionRate": "Taux de satisfaction"
     }
   },
   "home": {
@@ -3611,7 +3624,11 @@
     "payTransfer": "Virement bancaire",
     "payTransferDesc": "Virement direct",
     "payBeforeSession": "Avant la consultation",
-    "payBeforeSessionDesc": "Payer avant le début"
+    "payBeforeSessionDesc": "Payer avant le début",
+    "metricTotal": "Total des rendez-vous",
+    "metricPending": "Demandes en attente",
+    "metricConfirmed": "Confirmés",
+    "metricCompleted": "Terminés"
   },
   "threadsSidebar": {
     "messages": "Messages",

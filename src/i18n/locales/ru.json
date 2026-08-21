@@ -234,9 +234,9 @@
     "featureHospitalStaff": "Координация врачей и персонала",
     "featureHospitalSchedule": "Расширенное планирование и управление записями",
     "hospitalAccountInfo": "Учётные записи больниц создаются администраторами Medagama.",
-    "gdprCompliant": "Соответствие GDPR",
-    "statClinics": "Клиники",
-    "statPatients": "Пациенты",
+    "gdprCompliant": "Соответствует GDPR",
+    "statClinics": "Клиник",
+    "statPatients": "Пациентов",
     "statSatisfaction": "Удовлетворённость",
     "passwordPlaceholder": "Введите пароль",
     "signInDifferentRole": "Войти под другой ролью",
@@ -258,7 +258,10 @@
     "selectCountryPlaceholder": "Выберите страну",
     "guardianConsentNotice": "Если вам менее 18 лет, для регистрации требуется согласие родителей. Пожалуйста, укажите адрес электронной почты законного представителя.",
     "guardianEmailPlaceholder": "guardian@example.com",
-    "signInAsDifferentRole": "Войти с другой ролью"
+    "signInAsDifferentRole": "Войти с другой ролью",
+    "benefitExpertTeam": "Врачи с подтверждённой квалификацией",
+    "benefitSecure": "Безопасно, с шифрованием, по GDPR",
+    "benefitSupport": "Поддержка 24/7 и видеоприём"
   },
   "aboutPage": {
     "heroDesc": "Независимая от языка и локации платформа здравоохранения и медицинского туризма, объединяющая пациентов с опытными врачами и проверенными клиниками/больницами.",
@@ -910,7 +913,11 @@
       "topServices": "Самые востребованные услуги",
       "totalCommission": "Комиссия платформы",
       "totalInvoices": "Всего счетов",
-      "totalPlatformRevenue": "Общая выручка платформы"
+      "totalPlatformRevenue": "Общая выручка платформы",
+      "thisMonth": "Этот месяц",
+      "pending": "Ожидает",
+      "recentInvoices": "Последние счета",
+      "reportTitle": "Отчёт по доходам и финансам"
     },
     "billing": {
       "title": "Выставление счетов и финансы",
@@ -1567,6 +1574,12 @@
     "upgradeTitle": "Подключите пакет CRM",
     "verification": {
       "docUploaded": "Документ успешно загружен. На рассмотрении."
+    },
+    "proTeaser": {
+      "totalPatients": "Всего пациентов",
+      "monthlyRevenue": "Доход за месяц",
+      "todayAppointments": "Приёмы сегодня",
+      "satisfactionRate": "Уровень удовлетворённости"
     }
   },
   "home": {
@@ -3611,7 +3624,11 @@
     "payTransfer": "Банковский перевод",
     "payTransferDesc": "Прямой перевод",
     "payBeforeSession": "До приёма",
-    "payBeforeSessionDesc": "Оплата до начала"
+    "payBeforeSessionDesc": "Оплата до начала",
+    "metricTotal": "Всего приёмов",
+    "metricPending": "Ожидают подтверждения",
+    "metricConfirmed": "Подтверждены",
+    "metricCompleted": "Завершены"
   },
   "threadsSidebar": {
     "messages": "Сообщения",

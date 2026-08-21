@@ -24,14 +24,14 @@ const calcAge = (dob) => {
 
 // ─── Config ──────────────────────────────────────────────────
 const TIMELINE_CFG = {
-  appointment: { color: '#3B82F6', bg: 'bg-blue-50', border: 'border-blue-200', icon: Calendar, label: 'Appointment' },
-  examination: { color: '#8B5CF6', bg: 'bg-violet-50', border: 'border-violet-200', icon: Stethoscope, label: 'Examination' },
-  document:    { color: '#10B981', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: FileText, label: 'Document' },
+  appointment: { color: '#3B82F6', bg: 'bg-blue-50', border: 'border-blue-200', icon: Calendar, labelKey: 'crm.patient360.timeline.appointment' },
+  examination: { color: '#8B5CF6', bg: 'bg-violet-50', border: 'border-violet-200', icon: Stethoscope, labelKey: 'crm.patient360.timeline.examination' },
+  document:    { color: '#10B981', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: FileText, labelKey: 'crm.patient360.timeline.document' },
   // Hastanın kendi yüklediği belge klinik kaydından ayrı renkte: doktorun
   // "bunu hasta gönderdi" bilgisini bir bakışta görmesi gerekiyor.
-  patient_document: { color: '#F59E0B', bg: 'bg-amber-50', border: 'border-amber-200', icon: Upload, label: 'Patient upload' },
-  invoice:     { color: '#0EA5E9', bg: 'bg-sky-50', border: 'border-sky-200', icon: Receipt, label: 'Invoice' },
-  message:     { color: '#64748B', bg: 'bg-slate-50', border: 'border-slate-200', icon: MessageCircle, label: 'Message' },
+  patient_document: { color: '#F59E0B', bg: 'bg-amber-50', border: 'border-amber-200', icon: Upload, labelKey: 'crm.patient360.timeline.patientUpload' },
+  invoice:     { color: '#0EA5E9', bg: 'bg-sky-50', border: 'border-sky-200', icon: Receipt, labelKey: 'crm.patient360.timeline.invoice' },
+  message:     { color: '#64748B', bg: 'bg-slate-50', border: 'border-slate-200', icon: MessageCircle, labelKey: 'crm.patient360.timeline.message' },
 };
 const FILE_CFG = {
   labResult: { icon: Activity, color: 'text-violet-600', bg: 'bg-violet-50' },
@@ -91,7 +91,7 @@ const TimelineCard = ({ entry, isLast, t }) => {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-bold text-gray-900">{entry.title}</span>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${cfg.bg} ${cfg.border} border`} style={{ color: cfg.color }}>{cfg.label}</span>
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${cfg.bg} ${cfg.border} border`} style={{ color: cfg.color }}>{t(cfg.labelKey)}</span>
                 {entry.status && (
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border capitalize ${STATUS_COLORS[entry.status] || ''}`}>
                     {entry.status.replace('_', ' ')}

@@ -258,7 +258,10 @@
     "selectCountryPlaceholder": "Ölkə seçin",
     "guardianConsentNotice": "18 yaşdan kiçiksinizsə, qeydiyyatdan keçmək üçün valideyn razılığı tələb olunur. Zəhmət olmasa qəyyumun e-poçt ünvanını daxil edin.",
     "guardianEmailPlaceholder": "qeyyum@example.com",
-    "signInAsDifferentRole": "Fərqli rolla giriş"
+    "signInAsDifferentRole": "Fərqli rolla giriş",
+    "benefitExpertTeam": "Diplomu təsdiqlənmiş həkim heyəti",
+    "benefitSecure": "Təhlükəsiz, şifrəli və GDPR uyğun",
+    "benefitSupport": "7/24 xəstə dəstəyi və video görüş"
   },
   "aboutPage": {
     "heroDesc": "Xəstələri təcrübəli həkimlər və təsdiqlənmiş klinika/xəstəxanalarla eyni rəqəmsal platformada birləşdirən, dil və məkandan asılı olmayan sağlamlıq və tibbi turizm bazarı.",
@@ -731,12 +734,16 @@
       "pendingPayments": "Gözləyən ödənişlər",
       "period": "Dövr",
       "platformOverview": "Platforma maliyyə xülasəsi",
-      "receivable": "Debitor borc",
+      "receivable": "Alacaq",
       "topDoctors": "Ən çox gəlir gətirən həkimlər",
       "topServices": "Ən çox istifadə olunan xidmətlər",
       "totalCommission": "Platforma komissiyası",
       "totalInvoices": "Cəmi hesab",
-      "totalPlatformRevenue": "Platformanın ümumi gəliri"
+      "totalPlatformRevenue": "Platformanın ümumi gəliri",
+      "thisMonth": "Bu Ay",
+      "pending": "Gözləyən",
+      "recentInvoices": "Son Fakturalar",
+      "reportTitle": "Gəlir və Maliyyə Hesabatı"
     },
     "billing": {
       "title": "Hesablaşma və Maliyyə",
@@ -1607,6 +1614,12 @@
     "upgradeTitle": "CRM paketinə keçin",
     "verification": {
       "docUploaded": "Sənəd uğurla yükləndi. Nəzərdən keçirilir."
+    },
+    "proTeaser": {
+      "totalPatients": "Ümumi Xəstə",
+      "monthlyRevenue": "Aylıq Gəlir",
+      "todayAppointments": "Bugünkü Randevular",
+      "satisfactionRate": "Məmnuniyyət Nisbəti"
     }
   },
   "home": {
@@ -4145,7 +4158,11 @@
     "payTransfer": "Bank Köçürməsi",
     "payTransferDesc": "Birbaşa köçürmə",
     "payBeforeSession": "Görüşdən Əvvəl",
-    "payBeforeSessionDesc": "Başlamazdan əvvəl ödəyin"
+    "payBeforeSessionDesc": "Başlamazdan əvvəl ödəyin",
+    "metricTotal": "Ümumi Randevu",
+    "metricPending": "Gözləyən Sorğular",
+    "metricConfirmed": "Təsdiqlənən",
+    "metricCompleted": "Tamamlanan"
   },
   "termsPopup": {
     "dataProtectionOfficer": "Məlumatların qorunması üzrə məsul şəxs:",

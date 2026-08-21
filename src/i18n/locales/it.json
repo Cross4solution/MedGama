@@ -221,7 +221,7 @@
     "metaDoctorLoginDesc": "Accedi al portale medici Medagama. Gestisci pazienti, monitora appuntamenti, usa strumenti di telesalute.",
     "metaClinicLogin": "Accesso Clinica — Medagama | Portale Gestione Clinica",
     "metaClinicLoginDesc": "Accedi al portale cliniche Medagama. Gestisci le operazioni della clinica, coordina i team.",
-    "gdprCompliant": "Conforme GDPR",
+    "gdprCompliant": "Conforme al GDPR",
     "statClinics": "Cliniche",
     "statPatients": "Pazienti",
     "statSatisfaction": "Soddisfazione",
@@ -258,7 +258,10 @@
     "selectCountryPlaceholder": "Seleziona un paese",
     "guardianConsentNotice": "Per registrarti è necessario il consenso dei genitori se hai meno di 18 anni. Inserisci l'indirizzo email del tutore.",
     "guardianEmailPlaceholder": "tutore@esempio.com",
-    "signInAsDifferentRole": "Accedi con un altro ruolo"
+    "signInAsDifferentRole": "Accedi con un altro ruolo",
+    "benefitExpertTeam": "Équipe medica con credenziali verificate",
+    "benefitSecure": "Sicuro, cifrato e conforme al GDPR",
+    "benefitSupport": "Assistenza 24/7 e teleconsulto"
   },
   "aboutPage": {
     "heroDesc": "Un marketplace di salute e turismo medico, indipendente da lingua e posizione, che unisce pazienti, medici esperti e cliniche/ospedali verificati su un'unica piattaforma digitale.",
@@ -731,12 +734,16 @@
       "pendingPayments": "Pagamenti in sospeso",
       "period": "Periodo",
       "platformOverview": "Panoramica finanziaria della piattaforma",
-      "receivable": "Credito",
+      "receivable": "Da incassare",
       "topDoctors": "Medici con il fatturato più alto",
       "topServices": "Prestazioni più richieste",
       "totalCommission": "Commissione della piattaforma",
       "totalInvoices": "Totale fatture",
-      "totalPlatformRevenue": "Fatturato totale della piattaforma"
+      "totalPlatformRevenue": "Fatturato totale della piattaforma",
+      "thisMonth": "Questo mese",
+      "pending": "In attesa",
+      "recentInvoices": "Fatture recenti",
+      "reportTitle": "Report ricavi e finanze"
     },
     "billing": {
       "title": "Fatturazione e Finanze",
@@ -1567,6 +1574,12 @@
     "upgradeTitle": "Passa al pacchetto CRM",
     "verification": {
       "docUploaded": "Documento caricato correttamente. In revisione."
+    },
+    "proTeaser": {
+      "totalPatients": "Pazienti totali",
+      "monthlyRevenue": "Ricavi mensili",
+      "todayAppointments": "Appuntamenti di oggi",
+      "satisfactionRate": "Tasso di soddisfazione"
     }
   },
   "home": {
@@ -3611,7 +3624,11 @@
     "payTransfer": "Bonifico bancario",
     "payTransferDesc": "Bonifico diretto",
     "payBeforeSession": "Prima della seduta",
-    "payBeforeSessionDesc": "Paga prima dell'inizio"
+    "payBeforeSessionDesc": "Paga prima dell'inizio",
+    "metricTotal": "Appuntamenti totali",
+    "metricPending": "Richieste in attesa",
+    "metricConfirmed": "Confermati",
+    "metricCompleted": "Completati"
   },
   "threadsSidebar": {
     "messages": "Messaggi",

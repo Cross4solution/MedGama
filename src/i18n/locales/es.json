@@ -221,7 +221,7 @@
     "metaDoctorLoginDesc": "Inicia sesión en el portal médico Medagama. Gestiona pacientes, rastrea citas, usa herramientas de telesalud.",
     "metaClinicLogin": "Acceso Clínica — Medagama | Portal de Gestión de Clínica",
     "metaClinicLoginDesc": "Inicia sesión en el portal de clínica Medagama. Gestiona operaciones de tu clínica, coordina equipos.",
-    "gdprCompliant": "Compatible con RGPD",
+    "gdprCompliant": "Conforme al RGPD",
     "statClinics": "Clínicas",
     "statPatients": "Pacientes",
     "statSatisfaction": "Satisfacción",
@@ -258,7 +258,10 @@
     "selectCountryPlaceholder": "Selecciona un país",
     "guardianConsentNotice": "Se requiere el consentimiento de un tutor para registrarse si eres menor de 18 años. Introduce la dirección de correo electrónico del tutor.",
     "guardianEmailPlaceholder": "tutor@ejemplo.com",
-    "signInAsDifferentRole": "Iniciar sesión con otro rol"
+    "signInAsDifferentRole": "Iniciar sesión con otro rol",
+    "benefitExpertTeam": "Equipo médico con credenciales verificadas",
+    "benefitSecure": "Seguro, cifrado y conforme al RGPD",
+    "benefitSupport": "Soporte 24/7 y teleconsulta"
   },
   "aboutPage": {
     "heroDesc": "Un mercado de salud y turismo médico, independiente del idioma y la ubicación, que reúne a pacientes con médicos expertos y clínicas/hospitales verificados en una sola plataforma digital.",
@@ -736,7 +739,11 @@
       "topServices": "Servicios más solicitados",
       "totalCommission": "Comisión de la plataforma",
       "totalInvoices": "Total de facturas",
-      "totalPlatformRevenue": "Ingresos totales de la plataforma"
+      "totalPlatformRevenue": "Ingresos totales de la plataforma",
+      "thisMonth": "Este mes",
+      "pending": "Pendiente",
+      "recentInvoices": "Facturas recientes",
+      "reportTitle": "Informe de ingresos y finanzas"
     },
     "billing": {
       "title": "Facturación y Finanzas",
@@ -1567,6 +1574,12 @@
     "upgradeTitle": "Cambie al paquete CRM",
     "verification": {
       "docUploaded": "Documento subido correctamente. En revisión."
+    },
+    "proTeaser": {
+      "totalPatients": "Pacientes totales",
+      "monthlyRevenue": "Ingresos mensuales",
+      "todayAppointments": "Citas de hoy",
+      "satisfactionRate": "Índice de satisfacción"
     }
   },
   "home": {
@@ -3611,7 +3624,11 @@
     "payTransfer": "Transferencia bancaria",
     "payTransferDesc": "Transferencia directa",
     "payBeforeSession": "Antes de la sesión",
-    "payBeforeSessionDesc": "Paga antes de empezar"
+    "payBeforeSessionDesc": "Paga antes de empezar",
+    "metricTotal": "Citas totales",
+    "metricPending": "Solicitudes pendientes",
+    "metricConfirmed": "Confirmadas",
+    "metricCompleted": "Completadas"
   },
   "threadsSidebar": {
     "messages": "Mensajes",

@@ -236,7 +236,7 @@
     "hospitalAccountInfo": "Krankenhauskonten werden von Medagama-Administratoren erstellt.",
     "gdprCompliant": "DSGVO-konform",
     "statClinics": "Kliniken",
-    "statPatients": "Patienten",
+    "statPatients": "Patientinnen und Patienten",
     "statSatisfaction": "Zufriedenheit",
     "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
     "signInDifferentRole": "Mit einer anderen Rolle anmelden",
@@ -258,7 +258,10 @@
     "selectCountryPlaceholder": "Land auswählen",
     "guardianConsentNotice": "Für die Registrierung ist die Zustimmung der Eltern erforderlich, wenn Sie unter 18 Jahre alt sind. Bitte geben Sie die E-Mail-Adresse des Erziehungsberechtigten ein.",
     "guardianEmailPlaceholder": "erziehungsberechtigter@beispiel.com",
-    "signInAsDifferentRole": "Mit einer anderen Rolle anmelden"
+    "signInAsDifferentRole": "Mit einer anderen Rolle anmelden",
+    "benefitExpertTeam": "Ärzteteam mit geprüften Qualifikationen",
+    "benefitSecure": "Sicher, verschlüsselt und DSGVO-konform",
+    "benefitSupport": "Patientensupport rund um die Uhr und Videosprechstunde"
   },
   "aboutPage": {
     "heroDesc": "Ein sprach- und ortsunabhängiger Marktplatz für Gesundheit und Medizintourismus, der Patienten mit erfahrenen Ärzten und verifizierten Kliniken/Krankenhäusern auf einer Plattform zusammenbringt.",
@@ -905,12 +908,16 @@
       "pendingPayments": "Ausstehende Zahlungen",
       "period": "Zeitraum",
       "platformOverview": "Finanzübersicht der Plattform",
-      "receivable": "Forderung",
+      "receivable": "Forderungen",
       "topDoctors": "Ärzte mit dem höchsten Umsatz",
       "topServices": "Meistgenutzte Leistungen",
       "totalCommission": "Plattformprovision",
       "totalInvoices": "Rechnungen gesamt",
-      "totalPlatformRevenue": "Gesamtumsatz der Plattform"
+      "totalPlatformRevenue": "Gesamtumsatz der Plattform",
+      "thisMonth": "Dieser Monat",
+      "pending": "Ausstehend",
+      "recentInvoices": "Letzte Rechnungen",
+      "reportTitle": "Umsatz- und Finanzbericht"
     },
     "billing": {
       "title": "Abrechnung & Finanzen",
@@ -1567,6 +1574,12 @@
     "upgradeTitle": "Wechseln Sie zum CRM-Paket",
     "verification": {
       "docUploaded": "Dokument erfolgreich hochgeladen. Es wird geprüft."
+    },
+    "proTeaser": {
+      "totalPatients": "Patienten gesamt",
+      "monthlyRevenue": "Monatsumsatz",
+      "todayAppointments": "Termine heute",
+      "satisfactionRate": "Zufriedenheitsrate"
     }
   },
   "home": {
@@ -4105,7 +4118,11 @@
     "payTransfer": "Banküberweisung",
     "payTransferDesc": "Direktüberweisung",
     "payBeforeSession": "Vor dem Termin",
-    "payBeforeSessionDesc": "Vor Beginn bezahlen"
+    "payBeforeSessionDesc": "Vor Beginn bezahlen",
+    "metricTotal": "Termine gesamt",
+    "metricPending": "Offene Anfragen",
+    "metricConfirmed": "Bestätigt",
+    "metricCompleted": "Abgeschlossen"
   },
   "termsPopup": {
     "dataProtectionOfficer": "Datenschutzbeauftragter:",

@@ -134,10 +134,10 @@ const CRMRevenue = () => {
   const buildExportData = () => {
     const sym = CURRENCY_SYMBOLS[currency] || currency;
     const summaryCards = [
-      { label: 'Total Revenue', value: `${sym}${Number(stats?.total_revenue || 0).toLocaleString()}` },
-      { label: 'This Month', value: `${sym}${Number(stats?.monthly_revenue || 0).toLocaleString()}` },
-      { label: 'Pending', value: fmt(stats?.pending_amount || 0, currency) },
-      { label: 'Receivable', value: fmt(stats?.receivable_amount || 0, currency) },
+      { label: t('crm.revenue.totalRevenue', 'Total Revenue'), value: `${sym}${Number(stats?.total_revenue || 0).toLocaleString()}` },
+      { label: t('crm.revenue.thisMonth', 'This Month'), value: `${sym}${Number(stats?.monthly_revenue || 0).toLocaleString()}` },
+      { label: t('crm.revenue.pending', 'Pending'), value: fmt(stats?.pending_amount || 0, currency) },
+      { label: t('crm.revenue.receivable', 'Receivable'), value: fmt(stats?.receivable_amount || 0, currency) },
     ];
 
     const tables = [];
@@ -163,7 +163,7 @@ const CRMRevenue = () => {
     // Payout breakdown
     if (payout?.monthly?.length > 0) {
       tables.push({
-        title: 'Payout Summary',
+        title: t('crm.revenue.payoutSummary', 'Payout Summary'),
         headers: ['Period', 'Gross', 'Commission', 'Net', 'Invoices'],
         rows: payout.monthly.map(m => [m.period, fmt(m.gross, currency), fmt(m.commission, currency), fmt(m.net, currency), String(m.invoice_count || 0)]),
       });
@@ -172,7 +172,7 @@ const CRMRevenue = () => {
     // Recent Invoices table
     if (invoices.length > 0) {
       tables.push({
-        title: 'Recent Invoices',
+        title: t('crm.revenue.recentInvoices', 'Recent Invoices'),
         headers: ['Invoice #', 'Patient', 'Date', 'Amount', 'Paid', 'Status'],
         rows: invoices.map(inv => [
           inv.invoice_number || '',
@@ -194,7 +194,7 @@ const CRMRevenue = () => {
     try {
       const { summaryCards, tables } = buildExportData();
       exportPDF({
-        title: 'Revenue & Finance Report',
+        title: t('crm.revenue.reportTitle', 'Revenue & Finance Report'),
         subtitle: `Currency: ${currency} — Period: ${period} — ${new Date().toLocaleDateString()}`,
         summary: summaryCards,
         tables,

@@ -276,7 +276,7 @@ const AuthPages = () => {
             <div className="w-full px-2 mt-4 mb-4">
               <div className="flex items-center gap-6 justify-center text-white/70 text-xs">
                 <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> SSL Secure</span>
-                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5" /> GDPR Compliant</span>
+                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5" /> {t('auth.gdprCompliant', 'GDPR Compliant')}</span>
               </div>
             </div>
           </div>
@@ -295,9 +295,9 @@ const AuthPages = () => {
                 {/* Features */}
                 <div className="space-y-5">
                   {[
-                    { icon: CheckCircle, text: 'Expert medical team with verified credentials' },
-                    { icon: Shield, text: 'Secure, encrypted & GDPR-compliant' },
-                    { icon: Heart, text: '24/7 patient support & telehealth' },
+                    { icon: CheckCircle, text: t('auth.benefitExpertTeam', 'Expert medical team with verified credentials') },
+                    { icon: Shield, text: t('auth.benefitSecure', 'Secure, encrypted & GDPR-compliant') },
+                    { icon: Heart, text: t('auth.benefitSupport', '24/7 patient support & telehealth') },
                   ].map((f, i) => (
                     <div key={i} className="flex items-center gap-4">
                       <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/10 flex-shrink-0">
@@ -310,7 +310,7 @@ const AuthPages = () => {
 
                 {/* Stats */}
                 <div className="flex gap-8 mt-10 pt-8 border-t border-white/10">
-                  {[{value:'500+',label:'Clinics'},{value:'50K+',label:'Patients'},{value:'98%',label:'Satisfaction'}].map((s, i) => (
+                  {[{value:'500+',label:t('auth.statClinics','Clinics')},{value:'50K+',label:t('auth.statPatients','Patients')},{value:'98%',label:t('auth.statSatisfaction','Satisfaction')}].map((s, i) => (
                     <div key={i}>
                       <div className="text-2xl font-bold text-white">{s.value}</div>
                       <div className="text-teal-200/70 text-xs mt-0.5">{s.label}</div>
