@@ -66,12 +66,14 @@ const formatDate = (d) => d.toLocaleDateString('en-US', { weekday: 'long', month
 // ─── Sub-components ──────────────────────────────────────────
 
 const StatusBadge = ({ status }) => {
+  // Kendi kancası şart: t üst bileşende tanımlı, burada kapsam dışı.
+  const { t } = useTranslation();
   const config = {
-    completed: { label: 'Completed', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    'in-progress': { label: 'In Progress', className: 'bg-blue-50 text-blue-700 border-blue-200 animate-pulse' },
-    upcoming: { label: 'Upcoming', className: 'bg-gray-50 text-gray-600 border-gray-200' },
-    cancelled: { label: 'Cancelled', className: 'bg-red-50 text-red-600 border-red-200 line-through' },
-    'no-show': { label: 'No Show', className: 'bg-orange-50 text-orange-600 border-orange-200' },
+    completed: { label: t('crm.dashboard.status.completed', 'Completed'), className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+    'in-progress': { label: t('crm.dashboard.status.inProgress', 'In Progress'), className: 'bg-blue-50 text-blue-700 border-blue-200 animate-pulse' },
+    upcoming: { label: t('crm.dashboard.status.upcoming', 'Upcoming'), className: 'bg-gray-50 text-gray-600 border-gray-200' },
+    cancelled: { label: t('crm.dashboard.status.cancelled', 'Cancelled'), className: 'bg-red-50 text-red-600 border-red-200 line-through' },
+    'no-show': { label: t('crm.dashboard.status.noShow', 'No Show'), className: 'bg-orange-50 text-orange-600 border-orange-200' },
   };
   const c = config[status] || config.upcoming;
   return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${c.className}`}>{c.label}</span>;
@@ -512,10 +514,10 @@ const CRMDashboard = () => {
             </div>
             <div className="flex items-center gap-1.5 overflow-x-auto">
               {[
-                { key: 'all', label: 'All' },
-                { key: 'upcoming', label: 'Upcoming' },
-                { key: 'in-progress', label: 'Active' },
-                { key: 'completed', label: 'Done' },
+                { key: 'all', label: t('crm.dashboard.filter.all', 'All') },
+                { key: 'upcoming', label: t('crm.dashboard.filter.upcoming', 'Upcoming') },
+                { key: 'in-progress', label: t('crm.dashboard.filter.active', 'Active') },
+                { key: 'completed', label: t('crm.dashboard.filter.done', 'Done') },
                 { key: 'cancelled', label: 'Cancelled' },
               ].map((f) => (
                 <button
@@ -630,12 +632,12 @@ const CRMDashboard = () => {
             <h2 className="text-sm font-bold text-gray-900 mb-3">{t('crm.dashboard.quickActions')}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
               {[
-                { label: 'New Patient', icon: UserPlus, color: 'bg-blue-50 text-blue-600 hover:bg-blue-100', path: '/crm/patients' },
-                { label: 'Write Prescription', icon: ClipboardCheck, color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100', path: '/crm/prescriptions' },
-                { label: 'Start Video Call', icon: Video, color: 'bg-sky-50 text-sky-600 hover:bg-sky-100', path: '/crm/appointments' },
-                { label: 'View Reports', icon: FileText, color: 'bg-violet-50 text-violet-600 hover:bg-violet-100', path: '/crm/reports' },
-                { label: 'Send Message', icon: MessageSquare, color: 'bg-amber-50 text-amber-600 hover:bg-amber-100', path: '/crm/messages' },
-                { label: 'Revenue Report', icon: DollarSign, color: 'bg-pink-50 text-pink-600 hover:bg-pink-100', path: '/crm/revenue' },
+                { label: t('crm.dashboard.action.newPatient', 'New Patient'), icon: UserPlus, color: 'bg-blue-50 text-blue-600 hover:bg-blue-100', path: '/crm/patients' },
+                { label: t('crm.dashboard.action.writePrescription', 'Write Prescription'), icon: ClipboardCheck, color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100', path: '/crm/prescriptions' },
+                { label: t('crm.dashboard.action.startVideoCall', 'Start Video Call'), icon: Video, color: 'bg-sky-50 text-sky-600 hover:bg-sky-100', path: '/crm/appointments' },
+                { label: t('crm.dashboard.action.viewReports', 'View Reports'), icon: FileText, color: 'bg-violet-50 text-violet-600 hover:bg-violet-100', path: '/crm/reports' },
+                { label: t('crm.dashboard.action.sendMessage', 'Send Message'), icon: MessageSquare, color: 'bg-amber-50 text-amber-600 hover:bg-amber-100', path: '/crm/messages' },
+                { label: t('crm.dashboard.action.revenueReport', 'Revenue Report'), icon: DollarSign, color: 'bg-pink-50 text-pink-600 hover:bg-pink-100', path: '/crm/revenue' },
               ].map((action) => (
                 <Link
                   key={action.label}

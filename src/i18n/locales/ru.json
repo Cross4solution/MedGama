@@ -572,7 +572,28 @@
       "upgradeAppointments": "Перейдите на платный тариф, чтобы видеть расписание в реальном времени",
       "upgradeHint": "Перейдите на «Профессиональный», чтобы открыть данные в реальном времени",
       "upgradePatients": "Перейдите на платный тариф, чтобы видеть последних пациентов",
-      "upgradeRevenue": "Перейдите на платный тариф, чтобы отслеживать недельную выручку"
+      "upgradeRevenue": "Перейдите на платный тариф, чтобы отслеживать недельную выручку",
+      "status": {
+        "completed": "Завершён",
+        "inProgress": "Идёт",
+        "upcoming": "Предстоящий",
+        "cancelled": "Отменён",
+        "noShow": "Не явился"
+      },
+      "filter": {
+        "all": "Все",
+        "upcoming": "Предстоящие",
+        "active": "Активные",
+        "done": "Завершённые"
+      },
+      "action": {
+        "newPatient": "Новый пациент",
+        "writePrescription": "Выписать рецепт",
+        "startVideoCall": "Начать видеозвонок",
+        "viewReports": "Открыть отчёты",
+        "sendMessage": "Отправить сообщение",
+        "revenueReport": "Отчёт по доходам"
+      }
     },
     "appointments": {
       "title": "Записи",
@@ -2126,7 +2147,34 @@
     "allClear": "Отлично! Сейчас ничего срочного нет.",
     "allClearDesc": "Все задачи выполнены. Так держать!",
     "taskTracker": "Умное отслеживание задач",
-    "urgentAlerts": "Срочные уведомления"
+    "urgentAlerts": "Срочные уведомления",
+    "type": {
+      "appointment_booked": "Приём записан",
+      "appointment_confirmed": "Приём подтверждён",
+      "appointment_cancelled": "Приём отменён",
+      "appointment_reminder": "Напоминание о приёме",
+      "new_review": "Новый отзыв",
+      "review_response": "Ответ врача",
+      "review_approved": "Отзыв одобрен",
+      "review_rejected": "Отзыв отклонён",
+      "review_hidden": "Отзыв скрыт",
+      "verification_approved": "Проверка пройдена",
+      "verification_info_requested": "Запрошены документы",
+      "verification_rejected": "Проверка отклонена",
+      "post_liked": "Понравился пост",
+      "post_commented": "Комментарий к посту",
+      "new_chat_message": "Новое сообщение",
+      "ticket_received": "Обращение в поддержку",
+      "default": "Уведомление"
+    },
+    "category": {
+      "all": "Все",
+      "appointment": "Приёмы",
+      "review": "Отзывы",
+      "social": "Соцлента",
+      "message": "Сообщения",
+      "system": "Система"
+    }
   },
   "telehealth": {
     "title": "Сеанс телемедицины",

@@ -572,7 +572,28 @@
       "upgradeAppointments": "Upgraden Sie, um Ihren Terminplan live zu sehen",
       "upgradeHint": "Upgraden Sie auf Professional, um Live-Daten freizuschalten",
       "upgradePatients": "Upgraden Sie, um Ihre letzten Patienten zu sehen",
-      "upgradeRevenue": "Upgraden Sie, um Ihren Wochenumsatz zu verfolgen"
+      "upgradeRevenue": "Upgraden Sie, um Ihren Wochenumsatz zu verfolgen",
+      "status": {
+        "completed": "Abgeschlossen",
+        "inProgress": "Läuft",
+        "upcoming": "Bevorstehend",
+        "cancelled": "Abgesagt",
+        "noShow": "Nicht erschienen"
+      },
+      "filter": {
+        "all": "Alle",
+        "upcoming": "Bevorstehend",
+        "active": "Aktiv",
+        "done": "Erledigt"
+      },
+      "action": {
+        "newPatient": "Neue Patientin/Patient",
+        "writePrescription": "Rezept ausstellen",
+        "startVideoCall": "Videoanruf starten",
+        "viewReports": "Berichte ansehen",
+        "sendMessage": "Nachricht senden",
+        "revenueReport": "Umsatzbericht"
+      }
     },
     "appointments": {
       "title": "Termine",
@@ -2126,7 +2147,34 @@
     "allClear": "Sehr gut! Derzeit liegt nichts Dringendes an.",
     "allClearDesc": "Alle Aufgaben sind aktuell. Weiter so!",
     "taskTracker": "Intelligente Aufgabenverfolgung",
-    "urgentAlerts": "Dringende Hinweise"
+    "urgentAlerts": "Dringende Hinweise",
+    "type": {
+      "appointment_booked": "Termin gebucht",
+      "appointment_confirmed": "Termin bestätigt",
+      "appointment_cancelled": "Termin abgesagt",
+      "appointment_reminder": "Terminerinnerung",
+      "new_review": "Neue Bewertung",
+      "review_response": "Antwort der Praxis",
+      "review_approved": "Bewertung freigegeben",
+      "review_rejected": "Bewertung abgelehnt",
+      "review_hidden": "Bewertung ausgeblendet",
+      "verification_approved": "Verifizierung bestätigt",
+      "verification_info_requested": "Unterlagen angefordert",
+      "verification_rejected": "Verifizierung abgelehnt",
+      "post_liked": "Beitrag gefällt",
+      "post_commented": "Kommentar zum Beitrag",
+      "new_chat_message": "Neue Nachricht",
+      "ticket_received": "Support-Anfrage",
+      "default": "Benachrichtigung"
+    },
+    "category": {
+      "all": "Alle",
+      "appointment": "Termine",
+      "review": "Bewertungen",
+      "social": "Soziales",
+      "message": "Nachrichten",
+      "system": "System"
+    }
   },
   "telehealth": {
     "title": "Telemedizin-Sitzung",

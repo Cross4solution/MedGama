@@ -398,7 +398,28 @@
       "upgradeAppointments": "Canlı randevu cədvəlinizi görmək üçün yüksəldin",
       "upgradeHint": "Canlı məlumatı açmaq üçün Peşəkara yüksəldin",
       "upgradePatients": "Son xəstələrinizi görmək üçün yüksəldin",
-      "upgradeRevenue": "Həftəlik gəlirinizi izləmək üçün yüksəldin"
+      "upgradeRevenue": "Həftəlik gəlirinizi izləmək üçün yüksəldin",
+      "status": {
+        "completed": "Tamamlandı",
+        "inProgress": "Davam Edir",
+        "upcoming": "Yaxınlaşan",
+        "cancelled": "Ləğv Edildi",
+        "noShow": "Gəlmədi"
+      },
+      "filter": {
+        "all": "Hamısı",
+        "upcoming": "Yaxınlaşan",
+        "active": "Aktiv",
+        "done": "Bitən"
+      },
+      "action": {
+        "newPatient": "Yeni Xəstə",
+        "writePrescription": "Resept Yaz",
+        "startVideoCall": "Video Görüşü Başlat",
+        "viewReports": "Hesabatlara Bax",
+        "sendMessage": "Mesaj Göndər",
+        "revenueReport": "Gəlir Hesabatı"
+      }
     },
     "appointments": {
       "title": "Randevular",
@@ -2842,7 +2863,34 @@
     "allClear": "Əla! Hazırda təcili bir şey yoxdur.",
     "allClearDesc": "Bütün tapşırıqlar günceldir. Əla gedirsiniz!",
     "taskTracker": "Ağıllı tapşırıq izləmə",
-    "urgentAlerts": "Təcili xəbərdarlıqlar"
+    "urgentAlerts": "Təcili xəbərdarlıqlar",
+    "type": {
+      "appointment_booked": "Randevu Alındı",
+      "appointment_confirmed": "Randevu Təsdiqləndi",
+      "appointment_cancelled": "Randevu Ləğv Edildi",
+      "appointment_reminder": "Randevu Xatırlatması",
+      "new_review": "Yeni Rəy",
+      "review_response": "Həkim Cavabı",
+      "review_approved": "Rəy Təsdiqləndi",
+      "review_rejected": "Rəy Rədd Edildi",
+      "review_hidden": "Rəy Gizlədildi",
+      "verification_approved": "Təsdiqləmə Qəbul Edildi",
+      "verification_info_requested": "Sənəd Tələb Edildi",
+      "verification_rejected": "Təsdiqləmə Rədd Edildi",
+      "post_liked": "Paylaşım Bəyənildi",
+      "post_commented": "Paylaşım Şərhi",
+      "new_chat_message": "Yeni Mesaj",
+      "ticket_received": "Dəstək Müraciəti",
+      "default": "Bildiriş"
+    },
+    "category": {
+      "all": "Hamısı",
+      "appointment": "Randevular",
+      "review": "Rəylər",
+      "social": "Sosial",
+      "message": "Mesajlar",
+      "system": "Sistem"
+    }
   },
   "telehealth": {
     "title": "Teletibb Seansı",

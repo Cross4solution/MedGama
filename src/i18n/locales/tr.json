@@ -588,7 +588,28 @@
       "upgradePatients": "Son hastalarınızı görmek için yükseltin",
       "upgradeRevenue": "Haftalık gelirinizi takip etmek için yükseltin",
       "appointmentsTitle": "Randevular",
-      "newPatientsMonth": "Bu ayki yeni hastalar"
+      "newPatientsMonth": "Bu ayki yeni hastalar",
+      "status": {
+        "completed": "Tamamlandı",
+        "inProgress": "Devam Ediyor",
+        "upcoming": "Yaklaşan",
+        "cancelled": "İptal Edildi",
+        "noShow": "Gelmedi"
+      },
+      "filter": {
+        "all": "Tümü",
+        "upcoming": "Yaklaşan",
+        "active": "Aktif",
+        "done": "Biten"
+      },
+      "action": {
+        "newPatient": "Yeni Hasta",
+        "writePrescription": "Reçete Yaz",
+        "startVideoCall": "Görüşme Başlat",
+        "viewReports": "Raporları Gör",
+        "sendMessage": "Mesaj Gönder",
+        "revenueReport": "Gelir Raporu"
+      }
     },
     "appointments": {
       "title": "Randevular",
@@ -2158,7 +2179,34 @@
     "allClearDesc": "Tüm görevler güncel. Harika gidiyorsunuz!",
     "taskTracker": "Akıllı görev takibi",
     "urgentAlerts": "Acil Uyarılar",
-    "allClear": "Harika! Şu an acil bir durum yok."
+    "allClear": "Harika! Şu an acil bir durum yok.",
+    "type": {
+      "appointment_booked": "Randevu Alındı",
+      "appointment_confirmed": "Randevu Onaylandı",
+      "appointment_cancelled": "Randevu İptal Edildi",
+      "appointment_reminder": "Randevu Hatırlatması",
+      "new_review": "Yeni Yorum",
+      "review_response": "Doktor Yanıtı",
+      "review_approved": "Yorum Onaylandı",
+      "review_rejected": "Yorum Reddedildi",
+      "review_hidden": "Yorum Gizlendi",
+      "verification_approved": "Doğrulama Onaylandı",
+      "verification_info_requested": "Belge İstendi",
+      "verification_rejected": "Doğrulama Reddedildi",
+      "post_liked": "Gönderi Beğenildi",
+      "post_commented": "Gönderi Yorumu",
+      "new_chat_message": "Yeni Mesaj",
+      "ticket_received": "Destek Talebi",
+      "default": "Bildirim"
+    },
+    "category": {
+      "all": "Tümü",
+      "appointment": "Randevular",
+      "review": "Yorumlar",
+      "social": "Sosyal",
+      "message": "Mesajlar",
+      "system": "Sistem"
+    }
   },
   "telehealth": {
     "title": "Telehealth Oturumu",

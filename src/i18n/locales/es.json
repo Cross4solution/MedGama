@@ -398,7 +398,28 @@
       "upgradeAppointments": "Mejore el plan para ver su agenda de citas en directo",
       "upgradeHint": "Cambie a Profesional para desbloquear los datos en directo",
       "upgradePatients": "Mejore el plan para ver sus últimos pacientes",
-      "upgradeRevenue": "Mejore el plan para seguir sus ingresos semanales"
+      "upgradeRevenue": "Mejore el plan para seguir sus ingresos semanales",
+      "status": {
+        "completed": "Completada",
+        "inProgress": "En curso",
+        "upcoming": "Próxima",
+        "cancelled": "Cancelada",
+        "noShow": "No se presentó"
+      },
+      "filter": {
+        "all": "Todo",
+        "upcoming": "Próximas",
+        "active": "Activas",
+        "done": "Hechas"
+      },
+      "action": {
+        "newPatient": "Nuevo paciente",
+        "writePrescription": "Escribir receta",
+        "startVideoCall": "Iniciar videollamada",
+        "viewReports": "Ver informes",
+        "sendMessage": "Enviar mensaje",
+        "revenueReport": "Informe de ingresos"
+      }
     },
     "appointments": {
       "title": "Citas",
@@ -2802,7 +2823,34 @@
     "allClear": "¡Estupendo! Ahora mismo no hay nada urgente.",
     "allClearDesc": "Todas las tareas están al día. ¡Buen trabajo!",
     "taskTracker": "Seguimiento inteligente de tareas",
-    "urgentAlerts": "Alertas urgentes"
+    "urgentAlerts": "Alertas urgentes",
+    "type": {
+      "appointment_booked": "Cita reservada",
+      "appointment_confirmed": "Cita confirmada",
+      "appointment_cancelled": "Cita cancelada",
+      "appointment_reminder": "Recordatorio de cita",
+      "new_review": "Nueva reseña",
+      "review_response": "Respuesta del médico",
+      "review_approved": "Reseña aprobada",
+      "review_rejected": "Reseña rechazada",
+      "review_hidden": "Reseña oculta",
+      "verification_approved": "Verificación aprobada",
+      "verification_info_requested": "Documentos solicitados",
+      "verification_rejected": "Verificación rechazada",
+      "post_liked": "Publicación con me gusta",
+      "post_commented": "Comentario en la publicación",
+      "new_chat_message": "Nuevo mensaje",
+      "ticket_received": "Ticket de soporte",
+      "default": "Notificación"
+    },
+    "category": {
+      "all": "Todo",
+      "appointment": "Citas",
+      "review": "Reseñas",
+      "social": "Social",
+      "message": "Mensajes",
+      "system": "Sistema"
+    }
   },
   "telehealth": {
     "title": "Sesión de telemedicina",

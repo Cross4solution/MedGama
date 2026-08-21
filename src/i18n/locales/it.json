@@ -398,7 +398,28 @@
       "upgradeAppointments": "Passa a un piano superiore per vedere l'agenda in diretta",
       "upgradeHint": "Passa a Professional per sbloccare i dati in diretta",
       "upgradePatients": "Passa a un piano superiore per vedere i tuoi ultimi pazienti",
-      "upgradeRevenue": "Passa a un piano superiore per monitorare il fatturato settimanale"
+      "upgradeRevenue": "Passa a un piano superiore per monitorare il fatturato settimanale",
+      "status": {
+        "completed": "Completato",
+        "inProgress": "In corso",
+        "upcoming": "In arrivo",
+        "cancelled": "Annullato",
+        "noShow": "Non presentato"
+      },
+      "filter": {
+        "all": "Tutti",
+        "upcoming": "In arrivo",
+        "active": "Attivi",
+        "done": "Conclusi"
+      },
+      "action": {
+        "newPatient": "Nuovo paziente",
+        "writePrescription": "Scrivi ricetta",
+        "startVideoCall": "Avvia videochiamata",
+        "viewReports": "Vedi report",
+        "sendMessage": "Invia messaggio",
+        "revenueReport": "Report ricavi"
+      }
     },
     "appointments": {
       "title": "Appuntamenti",
@@ -2802,7 +2823,34 @@
     "allClear": "Ottimo! Al momento non c'è nulla di urgente.",
     "allClearDesc": "Tutte le attività sono aggiornate. Continua così!",
     "taskTracker": "Monitoraggio intelligente delle attività",
-    "urgentAlerts": "Avvisi urgenti"
+    "urgentAlerts": "Avvisi urgenti",
+    "type": {
+      "appointment_booked": "Appuntamento prenotato",
+      "appointment_confirmed": "Appuntamento confermato",
+      "appointment_cancelled": "Appuntamento annullato",
+      "appointment_reminder": "Promemoria appuntamento",
+      "new_review": "Nuova recensione",
+      "review_response": "Risposta del medico",
+      "review_approved": "Recensione approvata",
+      "review_rejected": "Recensione rifiutata",
+      "review_hidden": "Recensione nascosta",
+      "verification_approved": "Verifica approvata",
+      "verification_info_requested": "Documenti richiesti",
+      "verification_rejected": "Verifica rifiutata",
+      "post_liked": "Post apprezzato",
+      "post_commented": "Commento al post",
+      "new_chat_message": "Nuovo messaggio",
+      "ticket_received": "Richiesta di assistenza",
+      "default": "Notifica"
+    },
+    "category": {
+      "all": "Tutti",
+      "appointment": "Appuntamenti",
+      "review": "Recensioni",
+      "social": "Social",
+      "message": "Messaggi",
+      "system": "Sistema"
+    }
   },
   "telehealth": {
     "title": "Sessione di Telemedicina",

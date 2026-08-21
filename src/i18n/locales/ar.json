@@ -572,7 +572,28 @@
       "upgradeAppointments": "ارتقِ بالباقة لعرض جدول مواعيدك مباشرةً",
       "upgradeHint": "انتقل إلى الباقة الاحترافية لفتح البيانات الفورية",
       "upgradePatients": "ارتقِ بالباقة لعرض أحدث مرضاك",
-      "upgradeRevenue": "ارتقِ بالباقة لتتبّع إيراداتك الأسبوعية"
+      "upgradeRevenue": "ارتقِ بالباقة لتتبّع إيراداتك الأسبوعية",
+      "status": {
+        "completed": "مكتمل",
+        "inProgress": "جارٍ",
+        "upcoming": "قادم",
+        "cancelled": "ملغى",
+        "noShow": "لم يحضر"
+      },
+      "filter": {
+        "all": "الكل",
+        "upcoming": "القادمة",
+        "active": "النشطة",
+        "done": "المنتهية"
+      },
+      "action": {
+        "newPatient": "مريض جديد",
+        "writePrescription": "كتابة وصفة",
+        "startVideoCall": "بدء مكالمة فيديو",
+        "viewReports": "عرض التقارير",
+        "sendMessage": "إرسال رسالة",
+        "revenueReport": "تقرير الإيرادات"
+      }
     },
     "appointments": {
       "title": "المواعيد",
@@ -2126,7 +2147,34 @@
     "allClear": "رائع! لا يوجد شيء عاجل حاليًا.",
     "allClearDesc": "جميع المهام محدّثة. أحسنت!",
     "taskTracker": "تتبّع ذكي للمهام",
-    "urgentAlerts": "تنبيهات عاجلة"
+    "urgentAlerts": "تنبيهات عاجلة",
+    "type": {
+      "appointment_booked": "تم حجز الموعد",
+      "appointment_confirmed": "تم تأكيد الموعد",
+      "appointment_cancelled": "تم إلغاء الموعد",
+      "appointment_reminder": "تذكير بالموعد",
+      "new_review": "تقييم جديد",
+      "review_response": "رد الطبيب",
+      "review_approved": "تمت الموافقة على التقييم",
+      "review_rejected": "تم رفض التقييم",
+      "review_hidden": "تم إخفاء التقييم",
+      "verification_approved": "تمت الموافقة على التوثيق",
+      "verification_info_requested": "طُلبت المستندات",
+      "verification_rejected": "تم رفض التوثيق",
+      "post_liked": "أعجب بمنشورك",
+      "post_commented": "تعليق على المنشور",
+      "new_chat_message": "رسالة جديدة",
+      "ticket_received": "طلب دعم",
+      "default": "إشعار"
+    },
+    "category": {
+      "all": "الكل",
+      "appointment": "المواعيد",
+      "review": "التقييمات",
+      "social": "اجتماعي",
+      "message": "الرسائل",
+      "system": "النظام"
+    }
   },
   "telehealth": {
     "title": "جلسة الرعاية عن بُعد",

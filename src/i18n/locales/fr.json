@@ -398,7 +398,28 @@
       "upgradeAppointments": "Passez à l'offre supérieure pour voir votre planning en direct",
       "upgradeHint": "Passez à Professionnel pour débloquer les données en direct",
       "upgradePatients": "Passez à l'offre supérieure pour voir vos derniers patients",
-      "upgradeRevenue": "Passez à l'offre supérieure pour suivre votre chiffre d'affaires hebdomadaire"
+      "upgradeRevenue": "Passez à l'offre supérieure pour suivre votre chiffre d'affaires hebdomadaire",
+      "status": {
+        "completed": "Terminé",
+        "inProgress": "En cours",
+        "upcoming": "À venir",
+        "cancelled": "Annulé",
+        "noShow": "Absent"
+      },
+      "filter": {
+        "all": "Tout",
+        "upcoming": "À venir",
+        "active": "En cours",
+        "done": "Terminés"
+      },
+      "action": {
+        "newPatient": "Nouveau patient",
+        "writePrescription": "Rédiger une ordonnance",
+        "startVideoCall": "Démarrer la visio",
+        "viewReports": "Voir les rapports",
+        "sendMessage": "Envoyer un message",
+        "revenueReport": "Rapport de revenus"
+      }
     },
     "appointments": {
       "title": "Rendez-vous",
@@ -2802,7 +2823,34 @@
     "allClear": "Parfait ! Rien d'urgent pour le moment.",
     "allClearDesc": "Toutes les tâches sont à jour. Continuez comme ça !",
     "taskTracker": "Suivi intelligent des tâches",
-    "urgentAlerts": "Alertes urgentes"
+    "urgentAlerts": "Alertes urgentes",
+    "type": {
+      "appointment_booked": "Rendez-vous réservé",
+      "appointment_confirmed": "Rendez-vous confirmé",
+      "appointment_cancelled": "Rendez-vous annulé",
+      "appointment_reminder": "Rappel de rendez-vous",
+      "new_review": "Nouvel avis",
+      "review_response": "Réponse du médecin",
+      "review_approved": "Avis approuvé",
+      "review_rejected": "Avis refusé",
+      "review_hidden": "Avis masqué",
+      "verification_approved": "Vérification approuvée",
+      "verification_info_requested": "Documents demandés",
+      "verification_rejected": "Vérification refusée",
+      "post_liked": "Publication aimée",
+      "post_commented": "Commentaire sur la publication",
+      "new_chat_message": "Nouveau message",
+      "ticket_received": "Demande d'assistance",
+      "default": "Notification"
+    },
+    "category": {
+      "all": "Tout",
+      "appointment": "Rendez-vous",
+      "review": "Avis",
+      "social": "Social",
+      "message": "Messages",
+      "system": "Système"
+    }
   },
   "telehealth": {
     "title": "Séance de télémédecine",

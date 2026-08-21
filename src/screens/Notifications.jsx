@@ -23,33 +23,33 @@ import { useTranslation } from 'react-i18next';
 import { useGorunurYoklama } from '../hooks/useGorunurYoklama';
 
 const TYPE_META = {
-  appointment_booked:    { label: 'Appointment Booked', icon: CalendarClock, color: 'text-blue-600', bg: 'bg-blue-100/80', category: 'appointment' },
-  appointment_confirmed: { label: 'Appointment Confirmed', icon: Check, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'appointment' },
-  appointment_cancelled: { label: 'Appointment Cancelled', icon: X, color: 'text-red-600', bg: 'bg-red-100/80', category: 'appointment' },
-  appointment_reminder:  { label: 'Appointment Reminder', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-100/80', category: 'appointment' },
-  new_review:            { label: 'New Review', icon: Star, color: 'text-amber-600', bg: 'bg-amber-100/80', category: 'review' },
-  review_response:       { label: 'Doctor Response', icon: Star, color: 'text-teal-600', bg: 'bg-teal-100/80', category: 'review' },
-  review_approved:       { label: 'Review Approved', icon: Star, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'review' },
-  review_rejected:       { label: 'Review Rejected', icon: Star, color: 'text-red-600', bg: 'bg-red-100/80', category: 'review' },
-  review_hidden:         { label: 'Review Hidden', icon: Star, color: 'text-gray-600', bg: 'bg-gray-100', category: 'review' },
-  verification_approved:      { label: 'Verification Approved', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'system' },
-  verification_info_requested:{ label: 'Documents Requested', icon: Shield, color: 'text-orange-600', bg: 'bg-orange-100/80', category: 'system' },
-  verification_rejected:      { label: 'Verification Rejected', icon: Shield, color: 'text-red-600', bg: 'bg-red-100/80', category: 'system' },
-  post_liked:            { label: 'Post Liked', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-100/80', category: 'social' },
-  post_commented:        { label: 'Post Comment', icon: MessageCircle, color: 'text-teal-600', bg: 'bg-teal-100/80', category: 'social' },
-  new_chat_message:      { label: 'New Message', icon: MessageCircle, color: 'text-blue-600', bg: 'bg-blue-100/80', category: 'message' },
-  ticket_received:       { label: 'Support Ticket', icon: MessageCircle, color: 'text-purple-600', bg: 'bg-purple-100/80', category: 'support' },
+  appointment_booked:    { labelKey: 'notifications.type.appointment_booked', icon: CalendarClock, color: 'text-blue-600', bg: 'bg-blue-100/80', category: 'appointment' },
+  appointment_confirmed: { labelKey: 'notifications.type.appointment_confirmed', icon: Check, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'appointment' },
+  appointment_cancelled: { labelKey: 'notifications.type.appointment_cancelled', icon: X, color: 'text-red-600', bg: 'bg-red-100/80', category: 'appointment' },
+  appointment_reminder:  { labelKey: 'notifications.type.appointment_reminder', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-100/80', category: 'appointment' },
+  new_review:            { labelKey: 'notifications.type.new_review', icon: Star, color: 'text-amber-600', bg: 'bg-amber-100/80', category: 'review' },
+  review_response:       { labelKey: 'notifications.type.review_response', icon: Star, color: 'text-teal-600', bg: 'bg-teal-100/80', category: 'review' },
+  review_approved:       { labelKey: 'notifications.type.review_approved', icon: Star, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'review' },
+  review_rejected:       { labelKey: 'notifications.type.review_rejected', icon: Star, color: 'text-red-600', bg: 'bg-red-100/80', category: 'review' },
+  review_hidden:         { labelKey: 'notifications.type.review_hidden', icon: Star, color: 'text-gray-600', bg: 'bg-gray-100', category: 'review' },
+  verification_approved:      { labelKey: 'notifications.type.verification_approved', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100/80', category: 'system' },
+  verification_info_requested:{ labelKey: 'notifications.type.verification_info_requested', icon: Shield, color: 'text-orange-600', bg: 'bg-orange-100/80', category: 'system' },
+  verification_rejected:      { labelKey: 'notifications.type.verification_rejected', icon: Shield, color: 'text-red-600', bg: 'bg-red-100/80', category: 'system' },
+  post_liked:            { labelKey: 'notifications.type.post_liked', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-100/80', category: 'social' },
+  post_commented:        { labelKey: 'notifications.type.post_commented', icon: MessageCircle, color: 'text-teal-600', bg: 'bg-teal-100/80', category: 'social' },
+  new_chat_message:      { labelKey: 'notifications.type.new_chat_message', icon: MessageCircle, color: 'text-blue-600', bg: 'bg-blue-100/80', category: 'message' },
+  ticket_received:       { labelKey: 'notifications.type.ticket_received', icon: MessageCircle, color: 'text-purple-600', bg: 'bg-purple-100/80', category: 'support' },
 };
 
-const DEFAULT_META = { label: 'Notification', icon: Bell, color: 'text-gray-600', bg: 'bg-gray-100', category: 'system' };
+const DEFAULT_META = { labelKey: 'notifications.type.default', icon: Bell, color: 'text-gray-600', bg: 'bg-gray-100', category: 'system' };
 
 const CATEGORIES = [
-  { id: 'all', label: 'All', icon: Bell },
-  { id: 'appointment', label: 'Appointments', icon: CalendarClock },
-  { id: 'review', label: 'Reviews', icon: Star },
-  { id: 'social', label: 'Social', icon: Heart },
-  { id: 'message', label: 'Messages', icon: MessageCircle },
-  { id: 'system', label: 'System', icon: Shield },
+  { id: 'all', labelKey: 'notifications.category.all', icon: Bell },
+  { id: 'appointment', labelKey: 'notifications.category.appointment', icon: CalendarClock },
+  { id: 'review', labelKey: 'notifications.category.review', icon: Star },
+  { id: 'social', labelKey: 'notifications.category.social', icon: Heart },
+  { id: 'message', labelKey: 'notifications.category.message', icon: MessageCircle },
+  { id: 'system', labelKey: 'notifications.category.system', icon: Shield },
 ];
 
 const timeAgo = (dateStr) => {
@@ -200,7 +200,7 @@ export default function Notifications() {
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 ${active ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50' : 'bg-white text-gray-600 border border-gray-200/80 hover:border-gray-300'}`}
                 >
                   <Icon className="w-3.5 h-3.5" />
-                  {c.label}
+                  {t(c.labelKey)}
                   {categoryCounts[c.id] > 0 && <span className={`ml-0.5 text-[10px] ${active ? 'text-white/80' : 'text-gray-400'}`}>{categoryCounts[c.id]}</span>}
                 </button>
               );
@@ -228,7 +228,7 @@ export default function Notifications() {
                       <span className={`flex items-center justify-center w-7 h-7 rounded-lg ${active ? 'bg-teal-100/80' : 'bg-gray-100/80'} transition-colors`}>
                         <Icon className={`w-3.5 h-3.5 ${active ? 'text-teal-600' : 'text-gray-500'}`} />
                       </span>
-                      <span className="flex-1 text-left">{c.label}</span>
+                      <span className="flex-1 text-left">{t(c.labelKey)}</span>
                       <span className={`text-[11px] font-semibold min-w-[20px] text-center ${active ? 'text-teal-600' : 'text-gray-400'}`}>{categoryCounts[c.id]}</span>
                     </button>
                   );
@@ -276,7 +276,7 @@ export default function Notifications() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                              <div className={`text-sm font-semibold ${isUnread ? 'text-gray-900' : 'text-gray-800'}`}>{data.title || meta.label}</div>
+                              <div className={`text-sm font-semibold ${isUnread ? 'text-gray-900' : 'text-gray-800'}`}>{data.title || t(meta.labelKey)}</div>
                               {data.message && <div className="text-sm text-gray-500 mt-0.5 leading-relaxed">{data.message}</div>}
                             </div>
                             <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">

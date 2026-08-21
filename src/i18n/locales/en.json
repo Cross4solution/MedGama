@@ -607,7 +607,28 @@
       "upgradeHint": "Upgrade to Professional to unlock live data",
       "upgradePatients": "Upgrade to see your recent patients",
       "upgradeRevenue": "Upgrade to track your weekly revenue",
-      "upgradeAlerts": "Upgrade for real-time alerts"
+      "upgradeAlerts": "Upgrade for real-time alerts",
+      "status": {
+        "completed": "Completed",
+        "inProgress": "In Progress",
+        "upcoming": "Upcoming",
+        "cancelled": "Cancelled",
+        "noShow": "No Show"
+      },
+      "filter": {
+        "all": "All",
+        "upcoming": "Upcoming",
+        "active": "Active",
+        "done": "Done"
+      },
+      "action": {
+        "newPatient": "New Patient",
+        "writePrescription": "Write Prescription",
+        "startVideoCall": "Start Video Call",
+        "viewReports": "View Reports",
+        "sendMessage": "Send Message",
+        "revenueReport": "Revenue Report"
+      }
     },
     "appointments": {
       "title": "Appointments",
@@ -2145,7 +2166,34 @@
     "allClearDesc": "All tasks are up to date. You\\'re doing great!",
     "taskTracker": "Smart task tracking",
     "urgentAlerts": "Urgent Alerts",
-    "allClear": "All clear! Nothing needs your attention right now."
+    "allClear": "All clear! Nothing needs your attention right now.",
+    "type": {
+      "appointment_booked": "Appointment Booked",
+      "appointment_confirmed": "Appointment Confirmed",
+      "appointment_cancelled": "Appointment Cancelled",
+      "appointment_reminder": "Appointment Reminder",
+      "new_review": "New Review",
+      "review_response": "Doctor Response",
+      "review_approved": "Review Approved",
+      "review_rejected": "Review Rejected",
+      "review_hidden": "Review Hidden",
+      "verification_approved": "Verification Approved",
+      "verification_info_requested": "Documents Requested",
+      "verification_rejected": "Verification Rejected",
+      "post_liked": "Post Liked",
+      "post_commented": "Post Comment",
+      "new_chat_message": "New Message",
+      "ticket_received": "Support Ticket",
+      "default": "Notification"
+    },
+    "category": {
+      "all": "All",
+      "appointment": "Appointments",
+      "review": "Reviews",
+      "social": "Social",
+      "message": "Messages",
+      "system": "System"
+    }
   },
   "telehealth": {
     "title": "Telehealth Session",
