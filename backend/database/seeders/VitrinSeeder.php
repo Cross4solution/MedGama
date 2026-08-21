@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Appointment;
 use App\Models\Clinic;
 use App\Models\DoctorProfile;
+use App\Models\DoctorReview;
 use App\Models\MedStreamPost;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -39,16 +41,82 @@ class VitrinSeeder extends Seeder
         $klinikler = $this->klinikleriEkle();
         $doktorlar = $this->doktorlariEkle($klinikler);
         $this->gonderileriEkle($klinikler, $doktorlar);
+        $this->degerlendirilecekRandevulariEkle($doktorlar);
 
         $this->command->info(sprintf(
-            'Vitrin: %d klinik, %d doktor, %d gönderi (eklendi/tazelendi).',
+            'Vitrin: %d klinik, %d doktor, %d gönderi, %d değerlendirme daveti (eklendi/tazelendi).',
             count($klinikler),
             count($doktorlar),
             $this->gonderiSayisi,
+            $this->davetSayisi,
         ));
     }
 
     private int $gonderiSayisi = 0;
+    private int $davetSayisi = 0;
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  DEĞERLENDİRME DAVETLERİ
+    // ══════════════════════════════════════════════════════════════════════
+
+    /**
+     * Demo hastasına "Deneyiminizi Puanlayın" kartları üretir.
+     *
+     * Panel bu bölümü yalnızca değerlendirilebilir randevu varken gösteriyor.
+     * Liste DOKTOR bazlı süzülüyor: hasta bir doktoru bir kez puanladığında o
+     * doktorla olan bütün randevuları listeden düşüyor. Demo hastasının
+     * tamamlanmış randevularının hepsi tek doktorla olduğu için, demo sırasında
+     * atılan tek bir puan bölümü tamamen boşaltıyordu.
+     *
+     * Çözüm veri tarafında: hastaya BİRDEN ÇOK doktorla tamamlanmış geçmiş
+     * randevu veriliyor. Böylece biri puanlansa da bölüm ayakta kalıyor.
+     *
+     * Yalnızca ekler; var olan yorum ya da randevu silinmez. Tekrar
+     * çalıştırılabilir — aynı doktor için ikinci kayıt açılmaz.
+     */
+    private function degerlendirilecekRandevulariEkle(array $doktorlar): void
+    {
+        $hasta = User::where('email', 'patient@demo.com')->first();
+        if (!$hasta || empty($doktorlar)) {
+            return;
+        }
+
+        // Hastanın zaten puanladığı doktorlar listede görünmeyeceği için
+        // onlara randevu açmak boşa olurdu.
+        $puanlanan = DoctorReview::where('patient_id', $hasta->id)
+            ->pluck('doctor_id')
+            ->all();
+
+        $gun = 3;
+        foreach (array_slice($doktorlar, 0, 4) as $doktor) {
+            if (in_array($doktor->id, $puanlanan, true)) {
+                continue;
+            }
+
+            $an = now()->subDays($gun++)->setTime(10, 0);
+
+            Appointment::updateOrCreate(
+                [
+                    'patient_id' => $hasta->id,
+                    'doctor_id'  => $doktor->id,
+                    'starts_at'  => $an,
+                ],
+                [
+                    'clinic_id'        => $doktor->clinic_id,
+                    'appointment_type' => 'inPerson',
+                    'appointment_date' => $an->toDateString(),
+                    'appointment_time' => $an->format('H:i'),
+                    'timezone'         => 'Europe/Istanbul',
+                    'status'           => 'completed',
+                    'is_active'        => true,
+                    // NOT NULL: randevuyu hasta kendisi almış sayılıyor.
+                    'created_by'       => $hasta->id,
+                ],
+            );
+
+            $this->davetSayisi++;
+        }
+    }
 
     // ══════════════════════════════════════════════════════════════════════
     //  KLİNİKLER
