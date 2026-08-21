@@ -35,6 +35,7 @@ const YOK_SAY = [
   // çeviriyi başka satırda yapıyor — bunlar zaten çeviriden geçiyor.
   /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9_]+)+$/,
   /^[./#]/,                       // yol, css sınıfı
+  /@/,                            // e-posta örneği (ör. doctor@example.com)
 ];
 
 /** İngilizce olduğuna işaret eden yaygın kelimeler. */
@@ -92,6 +93,9 @@ for (const dosya of jsxDosyalari(KOK)) {
   satirlar.forEach((satir, i) => {
     // t() geçen satır zaten çeviriden geçiyor (yedek metni İngilizce olabilir).
     if (/\bt\(/.test(satir)) return;
+    // labelKey/titleKey taşıyan satırdaki "label" alanı YEDEK metindir; çeviri
+    // anahtar üzerinden yapılıyor. Bunu bulgu saymak gürültü üretiyordu.
+    if (/\b(labelKey|titleKey)\s*:/.test(satir)) return;
     // Yorum satırları
     if (/^\s*(\/\/|\*|\/\*|\{\/\*)/.test(satir)) return;
     // import / export / console

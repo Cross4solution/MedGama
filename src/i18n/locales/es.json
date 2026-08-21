@@ -4009,7 +4009,20 @@
     "trEn": "TR, EN",
     "transfer": "Traslado",
     "treatment": "Tratamiento",
-    "typeClinicAddressDistrictOr": "Escriba la dirección de la clínica, el barrio o la ciudad…"
+    "typeClinicAddressDistrictOr": "Escriba la dirección de la clínica, el barrio o la ciudad…",
+    "tabOverview": "Resumen",
+    "tabServices": "Servicios",
+    "tabReviews": "Reseñas",
+    "tabGallery": "Galería",
+    "tabLocation": "Ubicación",
+    "tabPricing": "Precios",
+    "tabPackages": "Paquetes",
+    "addService": "Añadir servicio",
+    "addImages": "Añadir imágenes",
+    "findYourAddress": "Encuentra tu dirección",
+    "packagesHint": "Paquetes todo incluido (tratamiento + estancia + traslado) para pacientes internacionales.",
+    "savedSuccessfully": "Perfil guardado.",
+    "anonymousPatient": "Paciente"
   },
   "clinicTeam": {
     "active": "Activo",

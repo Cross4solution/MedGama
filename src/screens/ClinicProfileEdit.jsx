@@ -141,10 +141,9 @@ export default function ClinicProfileEdit() {
     // Optional brand visuals
     logo: '',
   });
-  const [services, setServices] = useState([
-    { id: 's1', name: 'Cardiac Surgery Consultation', department: 'Cardiology', icon: 'Activity', description: 'Initial consultation with cardiac surgeon.', procedures: ['Bypass Evaluation','Valve Assessment'], priceRange: '₺2000 - ₺5000', duration: '45 min', availability: ['Onsite'], tags: ['adult','pre-op'], languages: ['TR','EN'], insurance: ['SGK'], visibility: true, order: 1 },
-    { id: 's2', name: 'Oncology Consultation', department: 'Oncology', icon: 'Stethoscope', description: 'Cancer diagnosis, chemo plan.', procedures: ['Chemo Plan'], priceRange: '₺1500 - ₺4000', duration: '30 min', availability: ['Onsite','Telehealth'], tags: ['adult'], languages: ['TR','EN'], insurance: ['Private'], visibility: true, order: 2 },
-  ]);
+  // Örnek hizmetler kaldırıldı: kliniğin kaydı varsa aşağıda yükleniyor,
+  // yoksa boş liste doğru olan — uydurma hizmet göstermek değil.
+  const [services, setServices] = useState([]);
   const [serviceModalOpen, setServiceModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [doctorsText, setDoctorsText] = useState('Our expert doctors provide comprehensive care across multiple specialties, focusing on patient safety and outcomes.');
@@ -164,11 +163,11 @@ export default function ClinicProfileEdit() {
   const [heroFile, setHeroFile] = useState(null);
   const [logoUrl, setLogoUrl] = useState('');
   const [logoFile, setLogoFile] = useState(null);
-  const [reviews, setReviews] = useState([
-    { id: 'r1', user: 'Verified Patient', rating: 5, text: 'Excellent care and professional staff.', date: '2025-09-01' },
-    { id: 'r2', user: 'Anonymous', rating: 4, text: 'Quick appointment and clear explanations.', date: '2025-08-22' },
-    { id: 'r3', user: 'Verified Patient', rating: 3, text: 'Waiting time was a bit long, but overall fine.', date: '2025-07-10' }
-  ]);
+  // Sabit örnek yorumlar kaldırıldı: burada uydurma üç yorum duruyordu ve
+  // hiçbir zaman gerçek veriyle değiştirilmiyordu (setReviews çağrılmıyordu).
+  // Kliniğin kendi profilinde, kendisine ait olmayan hasta yorumları
+  // görünüyordu. Artık kliniğin gerçek yorumları çekiliyor.
+  const [reviews, setReviews] = useState([]);
   const heroInputRef = useRef(null);
   const logoInputRef = useRef(null);
   const galleryInputRef = useRef(null);
@@ -289,7 +288,21 @@ export default function ClinicProfileEdit() {
         }
       }
     }).catch(() => {});
-  }, [user?.clinic_id]);
+
+    // Kliniğin GERÇEK yorumları. Bu çağrı hiç yapılmıyordu; ekrandaki üç
+    // yorum koda gömülü örnek metinlerdi.
+    clinicAPI.reviews(user.clinic_id, { per_page: 20 }).then(res => {
+      const govde = res?.data ?? res;
+      const liste = Array.isArray(govde) ? govde : (govde?.data ?? []);
+      setReviews(liste.map((r, i) => ({
+        id: r.id || `r${i}`,
+        user: r.patient?.fullname || r.patient_name || t('clinicProfileEdit.anonymousPatient', 'Hasta'),
+        rating: r.rating,
+        text: r.comment || r.text || '',
+        date: (r.created_at || '').slice(0, 10),
+      })));
+    }).catch(() => setReviews([]));
+  }, [user?.clinic_id, t]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -384,15 +397,16 @@ export default function ClinicProfileEdit() {
         <div className="mb-4 border-b border-gray-100">
           <nav className="flex overflow-x-auto gap-1 scrollbar-hide -mb-px">
             {[
-              { id: 'overview', label: 'Overview' },
-              { id: 'services', label: 'Services' },
-              { id: 'reviews', label: 'Reviews' },
-              { id: 'gallery', label: 'Gallery' },
-              { id: 'location', label: 'Location' },
-              { id: 'pricing', label: 'Pricing' },
-              { id: 'packages', label: 'Packages' },
-            ].map(t => (
-              <button key={t.id} onClick={()=>setTab(t.id)} type="button" className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all duration-200 ${tab===t.id ? 'text-teal-700 border-teal-600' : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'}`}>{t.label}</button>
+              { id: 'overview', labelKey: 'clinicProfileEdit.tabOverview' },
+              { id: 'services', labelKey: 'clinicProfileEdit.tabServices' },
+              { id: 'reviews', labelKey: 'clinicProfileEdit.tabReviews' },
+              { id: 'gallery', labelKey: 'clinicProfileEdit.tabGallery' },
+              { id: 'location', labelKey: 'clinicProfileEdit.tabLocation' },
+              { id: 'pricing', labelKey: 'clinicProfileEdit.tabPricing' },
+              { id: 'packages', labelKey: 'clinicProfileEdit.tabPackages' },
+              // Döngü değişkeni "t" idi ve çeviri fonksiyonunu gölgeliyordu.
+            ].map(sekme => (
+              <button key={sekme.id} onClick={()=>setTab(sekme.id)} type="button" className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all duration-200 ${tab===sekme.id ? 'text-teal-700 border-teal-600' : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'}`}>{t(sekme.labelKey)}</button>
             ))}
           </nav>
         </div>
@@ -470,7 +484,7 @@ export default function ClinicProfileEdit() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-base font-semibold text-gray-900">{t('clinicProfileEdit.services', "Services")}</h2>
-                  <button type="button" onClick={()=> { setEditingService(null); setServiceModalOpen(true); }} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Plus className="w-4 h-4"/> Add Service</button>
+                  <button type="button" onClick={()=> { setEditingService(null); setServiceModalOpen(true); }} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Plus className="w-4 h-4"/> {t('clinicProfileEdit.addService', 'Add Service')}</button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {services.map((s, idx) => (
@@ -549,7 +563,7 @@ export default function ClinicProfileEdit() {
                   <h2 className="text-base font-semibold text-gray-900">{t('clinicProfileEdit.gallery', "Gallery")}</h2>
                   <div>
                     <input ref={galleryInputRef} onChange={addGalleryImages} type="file" accept="image/*" multiple className="hidden" />
-                    <button type="button" onClick={()=>galleryInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Images className="w-4 h-4"/> Add Images</button>
+                    <button type="button" onClick={()=>galleryInputRef.current?.click()} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 text-sm"><Images className="w-4 h-4"/> {t('clinicProfileEdit.addImages', 'Add Images')}</button>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -570,7 +584,7 @@ export default function ClinicProfileEdit() {
                 {/* Adres arama — haritadan pinlemek zor; yazıp seçince işaret oraya gider */}
                 <MapboxSearchInput
                   value={address}
-                  label="Find your address"
+                  label={t('clinicProfileEdit.findYourAddress', 'Find your address')}
                   placeholder={t('clinicProfileEdit.typeClinicAddressDistrictOr', "Type clinic address, district or city…")}
                   hint="Pick a suggestion to drop the pin automatically — then fine-tune on the map."
                   onChange={(addr, coords) => {
@@ -662,7 +676,7 @@ export default function ClinicProfileEdit() {
                     <h2 className="text-base font-semibold text-gray-900">{t('clinicProfileEdit.priceRanges', "Price Ranges")}</h2>
                     <p className="text-xs text-gray-500 mt-0.5">{t('clinicProfileEdit.givePatientsAClearCost', "Give patients a clear cost expectation per service.")}</p>
                   </div>
-                  <button type="button" onClick={()=> setPricing((p)=> [...p, { id: `pr${Date.now()}`, service: '', min: '', max: '', currency: '₺' }]) } className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm font-semibold shadow-sm transition-colors flex-shrink-0"><Plus className="w-4 h-4"/> Add Item</button>
+                  <button type="button" onClick={()=> setPricing((p)=> [...p, { id: `pr${Date.now()}`, service: '', min: '', max: '', currency: '₺' }]) } className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm font-semibold shadow-sm transition-colors flex-shrink-0"><Plus className="w-4 h-4"/> {t('clinicProfileEdit.addItem', 'Add Item')}</button>
                 </div>
                 <div className="space-y-3">
                   {pricing.map((it, idx) => {
@@ -692,7 +706,7 @@ export default function ClinicProfileEdit() {
                       </div>
                       <div className="mt-3 flex items-center justify-between">
                         <span className="text-xs text-gray-500">{t('clinicProfileEdit.preview', "Preview:")} <span className="font-semibold text-gray-800">{it.currency}{fmt(it.min)} – {it.currency}{fmt(it.max)}</span></span>
-                        <button type="button" onClick={()=> setPricing((arr)=> arr.filter((_,i)=> i!==idx))} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 hover:bg-red-50 transition-colors"><X className="w-3.5 h-3.5"/> Remove</button>
+                        <button type="button" onClick={()=> setPricing((arr)=> arr.filter((_,i)=> i!==idx))} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 hover:bg-red-50 transition-colors"><X className="w-3.5 h-3.5"/> {t('clinicProfileEdit.remove', 'Remove')}</button>
                       </div>
                     </div>
                     );
@@ -712,7 +726,7 @@ export default function ClinicProfileEdit() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h2 className="text-base font-semibold text-gray-900">{t('clinicProfileEdit.healthTourismPackages', "Health Tourism Packages")}</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">All-inclusive bundles (treatment + stay + transfer) for international patients.</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{t('clinicProfileEdit.packagesHint', 'All-inclusive bundles (treatment + stay + transfer) for international patients.')}</p>
                   </div>
                   <button type="button" onClick={addPackage} className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 text-sm font-semibold shadow-sm transition-colors flex-shrink-0"><Plus className="w-4 h-4"/> Create Package</button>
                 </div>
@@ -748,7 +762,7 @@ export default function ClinicProfileEdit() {
                       </div>
                       <div className="mt-3 flex items-center justify-between">
                         <span className="text-xs text-gray-500">{p.price ? <>{t('clinicProfileEdit.total', "Total:")} <span className="font-semibold text-gray-800">{p.currency || '₺'}{Number(p.price).toLocaleString('tr-TR')}</span></> : 'Set a total price'}</span>
-                        <button type="button" onClick={()=>removePackage(p.id)} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 hover:bg-red-50 transition-colors"><X className="w-3.5 h-3.5"/> Remove</button>
+                        <button type="button" onClick={()=>removePackage(p.id)} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-red-500 hover:bg-red-50 transition-colors"><X className="w-3.5 h-3.5"/> {t('clinicProfileEdit.remove', 'Remove')}</button>
                       </div>
                     </div>
                   ))}
@@ -764,7 +778,7 @@ export default function ClinicProfileEdit() {
             {tab !== 'reviews' && (
               <div className="space-y-3">
                 {saveError && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-xl text-sm">{saveError}</div>}
-                {saveSuccess && <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-2.5 rounded-xl text-sm inline-flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Profile saved successfully!</div>}
+                {saveSuccess && <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-2.5 rounded-xl text-sm inline-flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> {t('clinicProfileEdit.savedSuccessfully', 'Profile saved successfully!')}</div>}
                 <div className="flex justify-end">
                   <button type="submit" disabled={saving} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-md shadow-teal-200/50 hover:shadow-lg transition-all duration-200 disabled:opacity-60">
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {saving ? 'Saving...' : 'Save'}

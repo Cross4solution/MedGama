@@ -4009,7 +4009,20 @@
     "trEn": "TR, EN",
     "transfer": "التنقّل",
     "treatment": "العلاج",
-    "typeClinicAddressDistrictOr": "اكتب عنوان العيادة أو الحي أو المدينة…"
+    "typeClinicAddressDistrictOr": "اكتب عنوان العيادة أو الحي أو المدينة…",
+    "tabOverview": "نظرة عامة",
+    "tabServices": "الخدمات",
+    "tabReviews": "التقييمات",
+    "tabGallery": "المعرض",
+    "tabLocation": "الموقع",
+    "tabPricing": "الأسعار",
+    "tabPackages": "الباقات",
+    "addService": "إضافة خدمة",
+    "addImages": "إضافة صور",
+    "findYourAddress": "ابحث عن عنوانك",
+    "packagesHint": "باقات شاملة (علاج + إقامة + انتقالات) للمرضى الدوليين.",
+    "savedSuccessfully": "تم حفظ الملف الشخصي.",
+    "anonymousPatient": "مريض"
   },
   "clinicTeam": {
     "active": "نشط",

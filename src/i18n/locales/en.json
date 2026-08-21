@@ -3714,7 +3714,20 @@
     "eGAirportPickup": "e.g. Airport pickup",
     "totalPrice": "Total price",
     "total": "Total:",
-    "createPackage": "Create Package"
+    "createPackage": "Create Package",
+    "tabOverview": "Overview",
+    "tabServices": "Services",
+    "tabReviews": "Reviews",
+    "tabGallery": "Gallery",
+    "tabLocation": "Location",
+    "tabPricing": "Pricing",
+    "tabPackages": "Packages",
+    "addService": "Add Service",
+    "addImages": "Add Images",
+    "findYourAddress": "Find your address",
+    "packagesHint": "All-inclusive bundles (treatment + stay + transfer) for international patients.",
+    "savedSuccessfully": "Profile saved successfully!",
+    "anonymousPatient": "Patient"
   },
   "telehealthAppointmentPage": {
     "appointmentConfirmed": "Appointment Confirmed!",
