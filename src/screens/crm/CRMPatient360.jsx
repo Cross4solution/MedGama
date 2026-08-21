@@ -24,14 +24,14 @@ const calcAge = (dob) => {
 
 // ─── Config ──────────────────────────────────────────────────
 const TIMELINE_CFG = {
-  appointment: { color: '#3B82F6', bg: 'bg-blue-50', border: 'border-blue-200', icon: Calendar, labelKey: 'crm.patient360.timeline.appointment' },
-  examination: { color: '#8B5CF6', bg: 'bg-violet-50', border: 'border-violet-200', icon: Stethoscope, labelKey: 'crm.patient360.timeline.examination' },
-  document:    { color: '#10B981', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: FileText, labelKey: 'crm.patient360.timeline.document' },
+  appointment: { color: '#3B82F6', bg: 'bg-blue-50', border: 'border-blue-200', icon: Calendar, labelKey: 'crm.patient360.timelineType.appointment' },
+  examination: { color: '#8B5CF6', bg: 'bg-violet-50', border: 'border-violet-200', icon: Stethoscope, labelKey: 'crm.patient360.timelineType.examination' },
+  document:    { color: '#10B981', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: FileText, labelKey: 'crm.patient360.timelineType.document' },
   // Hastanın kendi yüklediği belge klinik kaydından ayrı renkte: doktorun
   // "bunu hasta gönderdi" bilgisini bir bakışta görmesi gerekiyor.
-  patient_document: { color: '#F59E0B', bg: 'bg-amber-50', border: 'border-amber-200', icon: Upload, labelKey: 'crm.patient360.timeline.patientUpload' },
-  invoice:     { color: '#0EA5E9', bg: 'bg-sky-50', border: 'border-sky-200', icon: Receipt, labelKey: 'crm.patient360.timeline.invoice' },
-  message:     { color: '#64748B', bg: 'bg-slate-50', border: 'border-slate-200', icon: MessageCircle, labelKey: 'crm.patient360.timeline.message' },
+  patient_document: { color: '#F59E0B', bg: 'bg-amber-50', border: 'border-amber-200', icon: Upload, labelKey: 'crm.patient360.timelineType.patientUpload' },
+  invoice:     { color: '#0EA5E9', bg: 'bg-sky-50', border: 'border-sky-200', icon: Receipt, labelKey: 'crm.patient360.timelineType.invoice' },
+  message:     { color: '#64748B', bg: 'bg-slate-50', border: 'border-slate-200', icon: MessageCircle, labelKey: 'crm.patient360.timelineType.message' },
 };
 const FILE_CFG = {
   labResult: { icon: Activity, color: 'text-violet-600', bg: 'bg-violet-50' },

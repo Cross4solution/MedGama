@@ -800,7 +800,15 @@
       "filterInvoice": "Fatura",
       "filterMessage": "Mesaj",
       "cancelledCount": "İptal edilen",
-      "noShowCount": "Gelmedi"
+      "noShowCount": "Gelmedi",
+      "timelineType": {
+        "appointment": "Randevu",
+        "examination": "Muayene",
+        "document": "Belge",
+        "patientUpload": "Hasta yüklemesi",
+        "invoice": "Fatura",
+        "message": "Mesaj"
+      }
     },
     "patients": {
       "title": "Hastalar",
@@ -2843,6 +2851,50 @@
       "auditTitle": "Değerlendirme İşlemleri Kayıt Altına Alınır",
       "auditDescPart1": "Her değerlendirme kararı kaydedilir: \"Yönetici [Ad], #ID değerlendirmesini onayladı/reddetti\" zaman damgası ve gerekçesiyle birlikte. Değerlendirmeler ilk olarak",
       "auditDescPart2": "durumunda başlar ve onaylanana kadar doktor profillerinde görünmez."
+    },
+    "nav": {
+      "sectionOverview": "Genel Bakış",
+      "sectionOperations": "Operasyon",
+      "sectionModeration": "Moderasyon",
+      "sectionSystem": "Sistem",
+      "dashboard": "Kontrol Paneli",
+      "verificationHub": "Doğrulama Merkezi",
+      "userManagement": "Kullanıcı Yönetimi",
+      "allUsers": "Tüm Kullanıcılar",
+      "doctors": "Doktorlar",
+      "patients": "Hastalar",
+      "clinics": "Klinikler",
+      "financials": "Finans",
+      "reviewModeration": "Yorum Moderasyonu",
+      "contentModeration": "İçerik Moderasyonu",
+      "catalogManagement": "Katalog Yönetimi",
+      "systemSettings": "Sistem Ayarları",
+      "auditLogs": "Denetim Kayıtları",
+      "supportTickets": "Destek Talepleri",
+      "announcements": "Duyurular",
+      "noUrgentAlerts": "Acil uyarı yok",
+      "alertsLoadFailed": "Uyarılar yüklenemedi"
+    },
+    "role": {
+      "patient": "Hasta",
+      "doctor": "Doktor",
+      "clinicOwner": "Klinik Sahibi",
+      "superAdmin": "Süper Yönetici"
+    },
+    "drawer": {
+      "overview": "Genel Bakış",
+      "appointments": "Randevular",
+      "auditTrail": "Denetim İzi"
+    },
+    "stat": {
+      "reviews": "Yorum",
+      "appts": "Randevu",
+      "posts": "Gönderi",
+      "logs": "Kayıt",
+      "total": "Toplam",
+      "admins": "Yönetici",
+      "suspended": "Askıya Alınan",
+      "unverified": "Doğrulanmamış"
     }
   },
   "errors": {
@@ -3429,7 +3481,12 @@
     "appointmentNote": "Randevular her şubede ayrı yönetilir. Randevu almak için lütfen bir şube seçin.",
     "selectBranch": "Aşağıdan bir şube seçin",
     "notFound": "Hastane bulunamadı",
-    "notFoundDesc": "Bu hastane profili mevcut değil veya artık aktif değil."
+    "notFoundDesc": "Bu hastane profili mevcut değil veya artık aktif değil.",
+    "stats": {
+      "totalBranches": "Toplam Şube",
+      "linkedClinics": "Bağlı Klinik",
+      "activeDoctors": "Aktif Doktor"
+    }
   },
   "patientDashboard": {
     "upcomingAppointments": "Yaklaşan",

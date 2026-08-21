@@ -784,7 +784,15 @@
       "statCompleted": "Завершённые",
       "statExams": "Приёмы",
       "statTotal": "Всего записей",
-      "statUpcoming": "Предстоящие"
+      "statUpcoming": "Предстоящие",
+      "timelineType": {
+        "appointment": "Приём",
+        "examination": "Осмотр",
+        "document": "Документ",
+        "patientUpload": "Загрузка пациента",
+        "invoice": "Счёт",
+        "message": "Сообщение"
+      }
     },
     "patients": {
       "title": "Пациенты",
@@ -2881,6 +2889,50 @@
       "toastHidden": "Отзыв скрыт",
       "toastRejected": "Отзыв отклонён",
       "tryDifferentSearch": "Попробуйте другой поисковый запрос"
+    },
+    "nav": {
+      "sectionOverview": "Обзор",
+      "sectionOperations": "Операции",
+      "sectionModeration": "Модерация",
+      "sectionSystem": "Система",
+      "dashboard": "Панель",
+      "verificationHub": "Центр проверки",
+      "userManagement": "Управление пользователями",
+      "allUsers": "Все пользователи",
+      "doctors": "Врачи",
+      "patients": "Пациенты",
+      "clinics": "Клиники",
+      "financials": "Финансы",
+      "reviewModeration": "Модерация отзывов",
+      "contentModeration": "Модерация контента",
+      "catalogManagement": "Управление каталогом",
+      "systemSettings": "Настройки системы",
+      "auditLogs": "Журналы аудита",
+      "supportTickets": "Обращения в поддержку",
+      "announcements": "Объявления",
+      "noUrgentAlerts": "Срочных уведомлений нет",
+      "alertsLoadFailed": "Не удалось загрузить уведомления"
+    },
+    "role": {
+      "patient": "Пациент",
+      "doctor": "Врач",
+      "clinicOwner": "Владелец клиники",
+      "superAdmin": "Суперадминистратор"
+    },
+    "drawer": {
+      "overview": "Обзор",
+      "appointments": "Приёмы",
+      "auditTrail": "Аудиторский след"
+    },
+    "stat": {
+      "reviews": "Отзывы",
+      "appts": "Приёмы",
+      "posts": "Посты",
+      "logs": "Записи",
+      "total": "Всего",
+      "admins": "Администраторы",
+      "suspended": "Заблокированы",
+      "unverified": "Не подтверждены"
     }
   },
   "errors": {
@@ -3486,7 +3538,12 @@
     "selectBranch": "Выберите филиал ниже",
     "verified": "Подтверждена",
     "viewBranch": "Посмотреть филиал",
-    "viewMap": "Карта"
+    "viewMap": "Карта",
+    "stats": {
+      "totalBranches": "Всего филиалов",
+      "linkedClinics": "Связанные клиники",
+      "activeDoctors": "Активные врачи"
+    }
   },
   "invoices": {
     "discount": "Скидка",

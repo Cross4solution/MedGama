@@ -12,17 +12,17 @@ import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import StatusBadge from '../../components/ui/StatusBadge';
 
 const ROLES = [
-  { key: 'patient',     label: 'Patient',      icon: Users,       color: 'bg-blue-50 text-blue-600 border-blue-200' },
-  { key: 'doctor',      label: 'Doctor',        icon: Stethoscope, color: 'bg-teal-50 text-teal-600 border-teal-200' },
-  { key: 'clinicOwner', label: 'Clinic Owner',  icon: Building2,   color: 'bg-purple-50 text-purple-600 border-purple-200' },
-  { key: 'superAdmin',  label: 'Super Admin',   icon: Crown,       color: 'bg-amber-50 text-amber-600 border-amber-200' },
+  { key: 'patient',     labelKey: 'admin.role.patient',      icon: Users,       color: 'bg-blue-50 text-blue-600 border-blue-200' },
+  { key: 'doctor',      labelKey: 'admin.role.doctor',        icon: Stethoscope, color: 'bg-teal-50 text-teal-600 border-teal-200' },
+  { key: 'clinicOwner', labelKey: 'admin.role.clinicOwner',  icon: Building2,   color: 'bg-purple-50 text-purple-600 border-purple-200' },
+  { key: 'superAdmin',  labelKey: 'admin.role.superAdmin',   icon: Crown,       color: 'bg-amber-50 text-amber-600 border-amber-200' },
 ];
 
 const TABS = [
-  { key: '',            label: 'All Users',  icon: Users },
-  { key: 'doctor',      label: 'Doctors',    icon: Stethoscope },
-  { key: 'patient',     label: 'Patients',   icon: UserPlus },
-  { key: 'clinicOwner', label: 'Clinics',    icon: Building2 },
+  { key: '',            labelKey: 'admin.nav.allUsers',  icon: Users },
+  { key: 'doctor',      labelKey: 'admin.nav.doctors',    icon: Stethoscope },
+  { key: 'patient',     labelKey: 'admin.nav.patients',   icon: UserPlus },
+  { key: 'clinicOwner', labelKey: 'admin.nav.clinics',    icon: Building2 },
 ];
 
 const getRoleMeta = (roleId) => ROLES.find(r => r.key === roleId) || ROLES[0];
@@ -98,9 +98,9 @@ function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
    Fetches detailed data from /admin/users/{id}
    ═══════════════════════════════════════════ */
 const DRAWER_TABS = [
-  { key: 'overview', label: 'Overview', icon: Eye },
-  { key: 'appointments', label: 'Appointments', icon: Calendar },
-  { key: 'audit', label: 'Audit Trail', icon: Activity },
+  { key: 'overview', labelKey: 'admin.drawer.overview', icon: Eye },
+  { key: 'appointments', labelKey: 'admin.drawer.appointments', icon: Calendar },
+  { key: 'audit', labelKey: 'admin.drawer.auditTrail', icon: Activity },
 ];
 
 function UserDetailDrawer({ user: u, onClose }) {
@@ -142,7 +142,7 @@ function UserDetailDrawer({ user: u, onClose }) {
           <img src={resolveStorageUrl(u.avatar) || '/images/default/default-avatar.svg'} alt="" className="w-16 h-16 rounded-2xl object-cover mx-auto border-2 border-gray-100 shadow-sm" />
           <h4 className="text-base font-bold text-gray-900 mt-2">{u.fullname}</h4>
           <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${roleMeta.color} mt-1`}>
-            <RoleIcon className="w-3 h-3" /> {roleMeta.label}
+            <RoleIcon className="w-3 h-3" /> {t(roleMeta.labelKey)}
           </span>
           <div className="flex items-center justify-center gap-4 mt-3 text-[11px] text-gray-500">
             <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {u.email}</span>
@@ -152,14 +152,16 @@ function UserDetailDrawer({ user: u, onClose }) {
 
         {/* Tabs */}
         <div className="flex border-b border-gray-100 px-5">
-          {DRAWER_TABS.map(t => {
-            const Icon = t.icon;
+          {/* Döngü değişkeni "t" idi ve çeviri fonksiyonunu gölgeliyordu;
+              bu kapsamda t() çağrılamıyordu. Adı değiştirildi. */}
+          {DRAWER_TABS.map(sekme => {
+            const Icon = sekme.icon;
             return (
-              <button key={t.key} onClick={() => setTab(t.key)}
+              <button key={sekme.key} onClick={() => setTab(sekme.key)}
                 className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
-                  tab === t.key ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-400 hover:text-gray-600'
+                  tab === sekme.key ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-400 hover:text-gray-600'
                 }`}>
-                <Icon className="w-3.5 h-3.5" /> {t.label}
+                <Icon className="w-3.5 h-3.5" /> {t(sekme.labelKey)}
               </button>
             );
           })}
@@ -194,10 +196,10 @@ function UserDetailDrawer({ user: u, onClose }) {
               {/* Activity Counts */}
               <div className="grid grid-cols-4 gap-2">
                 {[
-                  { label: 'Appts', value: counts.appointments, icon: Calendar, color: 'text-indigo-500' },
-                  { label: 'Posts', value: counts.posts, icon: MessageSquare, color: 'text-teal-500' },
-                  { label: 'Reviews', value: counts.reviews, icon: Activity, color: 'text-amber-500' },
-                  { label: 'Logs', value: counts.audit_logs, icon: FileText, color: 'text-gray-400' },
+                  { label: t('admin.stat.appts', 'Appts'), value: counts.appointments, icon: Calendar, color: 'text-indigo-500' },
+                  { label: t('admin.stat.posts', 'Posts'), value: counts.posts, icon: MessageSquare, color: 'text-teal-500' },
+                  { label: t('admin.stat.reviews', 'Reviews'), value: counts.reviews, icon: Activity, color: 'text-amber-500' },
+                  { label: t('admin.stat.logs', 'Logs'), value: counts.audit_logs, icon: FileText, color: 'text-gray-400' },
                 ].map(c => {
                   const CIcon = c.icon;
                   return (
@@ -434,13 +436,13 @@ export default function AdminUserManagement() {
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           {[
-            { label: 'Total', value: stats.total, icon: Users, color: 'text-gray-600', bg: 'bg-gray-50' },
-            { label: 'Doctors', value: stats.doctors, icon: Stethoscope, color: 'text-teal-600', bg: 'bg-teal-50' },
-            { label: 'Patients', value: stats.patients, icon: UserPlus, color: 'text-blue-600', bg: 'bg-blue-50' },
-            { label: 'Clinics', value: stats.clinic_owners, icon: Building2, color: 'text-purple-600', bg: 'bg-purple-50' },
-            { label: 'Admins', value: stats.admins, icon: Crown, color: 'text-amber-600', bg: 'bg-amber-50' },
-            { label: 'Suspended', value: stats.suspended, icon: Ban, color: 'text-red-600', bg: 'bg-red-50' },
-            { label: 'Unverified', value: stats.unverified_doctors, icon: ShieldX, color: 'text-orange-600', bg: 'bg-orange-50' },
+            { label: t('admin.stat.total', 'Total'), value: stats.total, icon: Users, color: 'text-gray-600', bg: 'bg-gray-50' },
+            { label: t('admin.nav.doctors'), value: stats.doctors, icon: Stethoscope, color: 'text-teal-600', bg: 'bg-teal-50' },
+            { label: t('admin.nav.patients'), value: stats.patients, icon: UserPlus, color: 'text-blue-600', bg: 'bg-blue-50' },
+            { label: t('admin.nav.clinics'), value: stats.clinic_owners, icon: Building2, color: 'text-purple-600', bg: 'bg-purple-50' },
+            { label: t('admin.stat.admins', 'Admins'), value: stats.admins, icon: Crown, color: 'text-amber-600', bg: 'bg-amber-50' },
+            { label: t('admin.stat.suspended', 'Suspended'), value: stats.suspended, icon: Ban, color: 'text-red-600', bg: 'bg-red-50' },
+            { label: t('admin.stat.unverified', 'Unverified'), value: stats.unverified_doctors, icon: ShieldX, color: 'text-orange-600', bg: 'bg-orange-50' },
           ].map((s, i) => (
             <div key={i} className="bg-white rounded-2xl border border-gray-200/60 p-3.5">
               <div className="flex items-center gap-1.5 mb-1">
@@ -469,7 +471,7 @@ export default function AdminUserManagement() {
                 }`}
               >
                 <TabIcon className="w-3.5 h-3.5" />
-                {tab.label}
+                {t(tab.labelKey)}
               </button>
             );
           })}
@@ -564,7 +566,7 @@ export default function AdminUserManagement() {
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${roleMeta.color} hover:opacity-80 transition-opacity`}
                         >
                           <RoleIcon className="w-3 h-3" />
-                          {roleMeta.label}
+                          {t(roleMeta.labelKey)}
                           <ChevronDown className="w-3 h-3 opacity-50" />
                         </button>
                         {roleDropdown === u.id && (
@@ -579,7 +581,7 @@ export default function AdminUserManagement() {
                                 } disabled:opacity-50`}
                               >
                                 <r.icon className="w-3.5 h-3.5" />
-                                {r.label}
+                                {t(r.labelKey)}
                                 {r.key === u.role_id && <span className="ml-auto text-[9px] text-gray-400">{t('adminUserManagement.current', "current")}</span>}
                               </button>
                             ))}

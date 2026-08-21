@@ -784,7 +784,15 @@
       "statCompleted": "المنتهية",
       "statExams": "الكشوفات",
       "statTotal": "إجمالي المواعيد",
-      "statUpcoming": "القادمة"
+      "statUpcoming": "القادمة",
+      "timelineType": {
+        "appointment": "موعد",
+        "examination": "فحص",
+        "document": "مستند",
+        "patientUpload": "رفع من المريض",
+        "invoice": "فاتورة",
+        "message": "رسالة"
+      }
     },
     "patients": {
       "title": "المرضى",
@@ -2881,6 +2889,50 @@
       "toastHidden": "تم إخفاء التقييم",
       "toastRejected": "تم رفض التقييم",
       "tryDifferentSearch": "جرّب كلمة بحث أخرى"
+    },
+    "nav": {
+      "sectionOverview": "نظرة عامة",
+      "sectionOperations": "العمليات",
+      "sectionModeration": "الإشراف",
+      "sectionSystem": "النظام",
+      "dashboard": "لوحة التحكم",
+      "verificationHub": "مركز التوثيق",
+      "userManagement": "إدارة المستخدمين",
+      "allUsers": "كل المستخدمين",
+      "doctors": "الأطباء",
+      "patients": "المرضى",
+      "clinics": "العيادات",
+      "financials": "المالية",
+      "reviewModeration": "إشراف التقييمات",
+      "contentModeration": "إشراف المحتوى",
+      "catalogManagement": "إدارة الكتالوج",
+      "systemSettings": "إعدادات النظام",
+      "auditLogs": "سجلات التدقيق",
+      "supportTickets": "طلبات الدعم",
+      "announcements": "الإعلانات",
+      "noUrgentAlerts": "لا توجد تنبيهات عاجلة",
+      "alertsLoadFailed": "تعذّر تحميل التنبيهات"
+    },
+    "role": {
+      "patient": "مريض",
+      "doctor": "طبيب",
+      "clinicOwner": "مالك العيادة",
+      "superAdmin": "مشرف عام"
+    },
+    "drawer": {
+      "overview": "نظرة عامة",
+      "appointments": "المواعيد",
+      "auditTrail": "سجل التدقيق"
+    },
+    "stat": {
+      "reviews": "التقييمات",
+      "appts": "مواعيد",
+      "posts": "منشورات",
+      "logs": "سجلات",
+      "total": "الإجمالي",
+      "admins": "المشرفون",
+      "suspended": "موقوفون",
+      "unverified": "غير موثّقين"
     }
   },
   "errors": {
@@ -3486,7 +3538,12 @@
     "selectBranch": "اختر فرعًا من الأسفل",
     "verified": "موثّق",
     "viewBranch": "عرض الفرع",
-    "viewMap": "الخريطة"
+    "viewMap": "الخريطة",
+    "stats": {
+      "totalBranches": "إجمالي الفروع",
+      "linkedClinics": "العيادات المرتبطة",
+      "activeDoctors": "الأطباء النشطون"
+    }
   },
   "invoices": {
     "discount": "الخصم",

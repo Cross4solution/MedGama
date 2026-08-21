@@ -176,42 +176,42 @@ function AdminLoginGate() {
 // ── Navigation sections ──
 const NAV_SECTIONS = [
   {
-    title: 'Overview',
+    titleKey: 'admin.nav.sectionOverview',
     items: [
-      { label: 'Dashboard', icon: LayoutDashboard, path: '/admin', end: true },
+      { labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, path: '/admin', end: true },
     ],
   },
   {
-    title: 'Operations',
+    titleKey: 'admin.nav.sectionOperations',
     items: [
-      { label: 'Verification Hub', icon: ShieldCheck, path: '/admin/verification' },
+      { labelKey: 'admin.nav.verificationHub', icon: ShieldCheck, path: '/admin/verification' },
       {
-        label: 'User Management', icon: Users, path: '/admin/users',
+        labelKey: 'admin.nav.userManagement', icon: Users, path: '/admin/users',
         children: [
-          { label: 'All Users', icon: Users, path: '/admin/users' },
-          { label: 'Doctors', icon: Stethoscope, path: '/admin/users?tab=doctor' },
-          { label: 'Patients', icon: UserPlus, path: '/admin/users?tab=patient' },
-          { label: 'Clinics', icon: Building2, path: '/admin/users?tab=clinicOwner' },
+          { labelKey: 'admin.nav.allUsers', icon: Users, path: '/admin/users' },
+          { labelKey: 'admin.nav.doctors', icon: Stethoscope, path: '/admin/users?tab=doctor' },
+          { labelKey: 'admin.nav.patients', icon: UserPlus, path: '/admin/users?tab=patient' },
+          { labelKey: 'admin.nav.clinics', icon: Building2, path: '/admin/users?tab=clinicOwner' },
         ],
       },
-      { label: 'Financials', icon: CreditCard, path: '/admin/financials' },
+      { labelKey: 'admin.nav.financials', icon: CreditCard, path: '/admin/financials' },
     ],
   },
   {
-    title: 'Moderation',
+    titleKey: 'admin.nav.sectionModeration',
     items: [
-      { label: 'Review Moderation', icon: Star, path: '/admin/reviews' },
-      { label: 'Content Moderation', icon: AlertTriangle, path: '/admin/moderation' },
+      { labelKey: 'admin.nav.reviewModeration', icon: Star, path: '/admin/reviews' },
+      { labelKey: 'admin.nav.contentModeration', icon: AlertTriangle, path: '/admin/moderation' },
     ],
   },
   {
-    title: 'System',
+    titleKey: 'admin.nav.sectionSystem',
     items: [
-      { label: 'Catalog Management', icon: BookOpen, path: '/admin/catalog' },
-      { label: 'System Settings', icon: Settings2, path: '/admin/settings' },
-      { label: 'Audit Logs', icon: ScrollText, path: '/admin/audit-logs' },
-      { label: 'Support Tickets', icon: LifeBuoy, path: '/admin/support' },
-      { label: 'Announcements', icon: Megaphone, path: '/admin/announcements' },
+      { labelKey: 'admin.nav.catalogManagement', icon: BookOpen, path: '/admin/catalog' },
+      { labelKey: 'admin.nav.systemSettings', icon: Settings2, path: '/admin/settings' },
+      { labelKey: 'admin.nav.auditLogs', icon: ScrollText, path: '/admin/audit-logs' },
+      { labelKey: 'admin.nav.supportTickets', icon: LifeBuoy, path: '/admin/support' },
+      { labelKey: 'admin.nav.announcements', icon: Megaphone, path: '/admin/announcements' },
     ],
   },
 ];
@@ -251,7 +251,7 @@ const AdminLayout = ({ children }) => {
       if (reports > 0) items.push({ id: 'rp', label: `${reports} flagged content report(s)`, severity: 'critical', path: '/admin/moderation' });
       const openTickets = sStats?.open || sStats?.pending || 0;
       if (openTickets > 0) items.push({ id: 'st', label: `${openTickets} open support ticket(s)`, severity: 'warning', path: '/admin/support' });
-      if (items.length === 0) items.push({ id: 'ok', label: 'No urgent alerts', severity: 'info' });
+      if (items.length === 0) items.push({ id: 'ok', label: t('admin.nav.noUrgentAlerts', 'No urgent alerts'), severity: 'info' });
       setAlerts(items);
       setBadgeCounts({
         '/admin/verification': pendingVr,
@@ -259,7 +259,7 @@ const AdminLayout = ({ children }) => {
         '/admin/support': openTickets,
       });
     } catch {
-      setAlerts([{ id: 'err', label: 'Failed to load alerts', severity: 'info' }]);
+      setAlerts([{ id: 'err', label: t('admin.nav.alertsLoadFailed', 'Failed to load alerts'), severity: 'info' }]);
     }
   }, [isAdmin]);
 
@@ -315,7 +315,7 @@ const AdminLayout = ({ children }) => {
             <div className={iconBoxCls(childActive)}>
               <item.icon className={iconCls(childActive)} />
             </div>
-            <span className="flex-1 text-left">{item.label}</span>
+            <span className="flex-1 text-left">{t(item.labelKey)}</span>
             <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''} ${childActive ? 'text-purple-400' : 'text-gray-400'}`} />
           </button>
           {userMenuOpen && (
@@ -335,7 +335,7 @@ const AdminLayout = ({ children }) => {
                     }`}
                   >
                     <child.icon className={`w-3.5 h-3.5 ${cActive ? 'text-purple-400' : 'text-gray-400'}`} />
-                    {child.label}
+                    {t(child.labelKey)}
                   </NavLink>
                 );
               })}
@@ -359,7 +359,7 @@ const AdminLayout = ({ children }) => {
             <div className={iconBoxCls(isActive)}>
               <item.icon className={iconCls(isActive)} />
             </div>
-            <span className="flex-1">{item.label}</span>
+            <span className="flex-1">{t(item.labelKey)}</span>
             {count > 0 && (
               <span className="min-w-[18px] h-[18px] rounded-full bg-red-500/90 text-white text-[9px] font-bold flex items-center justify-center px-1 shadow-sm shadow-red-500/30">
                 {count > 99 ? '99+' : count}
@@ -387,8 +387,8 @@ const AdminLayout = ({ children }) => {
       {/* Navigation — flex-1 but no overflow scroll; items fit naturally */}
       <nav className="flex-1 px-3 pt-3 pb-1 space-y-4 min-h-0">
         {NAV_SECTIONS.map((section) => (
-          <div key={section.title}>
-            <p className="px-3 mb-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">{section.title}</p>
+          <div key={section.titleKey}>
+            <p className="px-3 mb-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t(section.titleKey)}</p>
             <div className="space-y-0.5">
               {section.items.map((item) => <NavItem key={item.path} item={item} />)}
             </div>

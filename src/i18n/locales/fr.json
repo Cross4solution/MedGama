@@ -610,7 +610,15 @@
       "statCompleted": "Terminés",
       "statExams": "Consultations",
       "statTotal": "Total des rendez-vous",
-      "statUpcoming": "À venir"
+      "statUpcoming": "À venir",
+      "timelineType": {
+        "appointment": "Rendez-vous",
+        "examination": "Examen",
+        "document": "Document",
+        "patientUpload": "Envoi du patient",
+        "invoice": "Facture",
+        "message": "Message"
+      }
     },
     "patients": {
       "title": "Patients",
@@ -2514,6 +2522,50 @@
       "toastHidden": "Avis masqué",
       "toastRejected": "Avis refusé",
       "tryDifferentSearch": "Essayez un autre terme de recherche"
+    },
+    "nav": {
+      "sectionOverview": "Vue d'ensemble",
+      "sectionOperations": "Opérations",
+      "sectionModeration": "Modération",
+      "sectionSystem": "Système",
+      "dashboard": "Tableau de bord",
+      "verificationHub": "Centre de vérification",
+      "userManagement": "Gestion des utilisateurs",
+      "allUsers": "Tous les utilisateurs",
+      "doctors": "Médecins",
+      "patients": "Patients",
+      "clinics": "Cliniques",
+      "financials": "Finances",
+      "reviewModeration": "Modération des avis",
+      "contentModeration": "Modération du contenu",
+      "catalogManagement": "Gestion du catalogue",
+      "systemSettings": "Paramètres système",
+      "auditLogs": "Journaux d'audit",
+      "supportTickets": "Demandes d'assistance",
+      "announcements": "Annonces",
+      "noUrgentAlerts": "Aucune alerte urgente",
+      "alertsLoadFailed": "Impossible de charger les alertes"
+    },
+    "role": {
+      "patient": "Patient",
+      "doctor": "Médecin",
+      "clinicOwner": "Propriétaire de clinique",
+      "superAdmin": "Super administrateur"
+    },
+    "drawer": {
+      "overview": "Vue d'ensemble",
+      "appointments": "Rendez-vous",
+      "auditTrail": "Piste d'audit"
+    },
+    "stat": {
+      "reviews": "Avis",
+      "appts": "RDV",
+      "posts": "Publications",
+      "logs": "Journaux",
+      "total": "Total",
+      "admins": "Administrateurs",
+      "suspended": "Suspendus",
+      "unverified": "Non vérifiés"
     }
   },
   "errors": {
@@ -3486,7 +3538,12 @@
     "selectBranch": "Sélectionnez un établissement ci-dessous",
     "verified": "Vérifié",
     "viewBranch": "Voir l'établissement",
-    "viewMap": "Carte"
+    "viewMap": "Carte",
+    "stats": {
+      "totalBranches": "Total des sites",
+      "linkedClinics": "Cliniques rattachées",
+      "activeDoctors": "Médecins actifs"
+    }
   },
   "invoices": {
     "discount": "Remise",

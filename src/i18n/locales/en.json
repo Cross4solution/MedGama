@@ -819,7 +819,15 @@
       "filterDocument": "Clinical record",
       "filterPatientUpload": "Hasta belgesi",
       "filterInvoice": "Fatura",
-      "filterMessage": "Mesaj"
+      "filterMessage": "Mesaj",
+      "timelineType": {
+        "appointment": "Appointment",
+        "examination": "Examination",
+        "document": "Document",
+        "patientUpload": "Patient upload",
+        "invoice": "Invoice",
+        "message": "Message"
+      }
     },
     "patients": {
       "title": "Patients",
@@ -2830,6 +2838,50 @@
       "auditTitle": "Review Actions Are Audited",
       "auditDescPart1": "Every review decision is logged: \"Admin [Name] approved/rejected Review #ID\" with timestamp and reason. Reviews start as",
       "auditDescPart2": "and are invisible on doctor profiles until approved."
+    },
+    "nav": {
+      "sectionOverview": "Overview",
+      "sectionOperations": "Operations",
+      "sectionModeration": "Moderation",
+      "sectionSystem": "System",
+      "dashboard": "Dashboard",
+      "verificationHub": "Verification Hub",
+      "userManagement": "User Management",
+      "allUsers": "All Users",
+      "doctors": "Doctors",
+      "patients": "Patients",
+      "clinics": "Clinics",
+      "financials": "Financials",
+      "reviewModeration": "Review Moderation",
+      "contentModeration": "Content Moderation",
+      "catalogManagement": "Catalog Management",
+      "systemSettings": "System Settings",
+      "auditLogs": "Audit Logs",
+      "supportTickets": "Support Tickets",
+      "announcements": "Announcements",
+      "noUrgentAlerts": "No urgent alerts",
+      "alertsLoadFailed": "Failed to load alerts"
+    },
+    "role": {
+      "patient": "Patient",
+      "doctor": "Doctor",
+      "clinicOwner": "Clinic Owner",
+      "superAdmin": "Super Admin"
+    },
+    "drawer": {
+      "overview": "Overview",
+      "appointments": "Appointments",
+      "auditTrail": "Audit Trail"
+    },
+    "stat": {
+      "reviews": "Reviews",
+      "appts": "Appts",
+      "posts": "Posts",
+      "logs": "Logs",
+      "total": "Total",
+      "admins": "Admins",
+      "suspended": "Suspended",
+      "unverified": "Unverified"
     }
   },
   "errors": {
@@ -4022,7 +4074,12 @@
     "appointmentNote": "Appointments are managed at each branch. Please select a branch to book.",
     "selectBranch": "Select a branch below",
     "notFound": "Hospital not found",
-    "notFoundDesc": "This hospital profile does not exist or is no longer active."
+    "notFoundDesc": "This hospital profile does not exist or is no longer active.",
+    "stats": {
+      "totalBranches": "Total Branches",
+      "linkedClinics": "Linked Clinics",
+      "activeDoctors": "Active Doctors"
+    }
   },
   "patientDashboard": {
     "upcomingAppointments": "Upcoming",

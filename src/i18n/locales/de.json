@@ -784,7 +784,15 @@
       "statCompleted": "Abgeschlossen",
       "statExams": "Untersuchungen",
       "statTotal": "Termine gesamt",
-      "statUpcoming": "Bevorstehend"
+      "statUpcoming": "Bevorstehend",
+      "timelineType": {
+        "appointment": "Termin",
+        "examination": "Untersuchung",
+        "document": "Dokument",
+        "patientUpload": "Upload der Patientin/des Patienten",
+        "invoice": "Rechnung",
+        "message": "Nachricht"
+      }
     },
     "patients": {
       "title": "Patienten",
@@ -2881,6 +2889,50 @@
       "toastHidden": "Bewertung ausgeblendet",
       "toastRejected": "Bewertung abgelehnt",
       "tryDifferentSearch": "Versuchen Sie einen anderen Suchbegriff"
+    },
+    "nav": {
+      "sectionOverview": "Überblick",
+      "sectionOperations": "Betrieb",
+      "sectionModeration": "Moderation",
+      "sectionSystem": "System",
+      "dashboard": "Übersicht",
+      "verificationHub": "Verifizierungszentrale",
+      "userManagement": "Benutzerverwaltung",
+      "allUsers": "Alle Benutzer",
+      "doctors": "Ärztinnen und Ärzte",
+      "patients": "Patientinnen und Patienten",
+      "clinics": "Kliniken",
+      "financials": "Finanzen",
+      "reviewModeration": "Bewertungsmoderation",
+      "contentModeration": "Inhaltsmoderation",
+      "catalogManagement": "Katalogverwaltung",
+      "systemSettings": "Systemeinstellungen",
+      "auditLogs": "Prüfprotokolle",
+      "supportTickets": "Support-Anfragen",
+      "announcements": "Ankündigungen",
+      "noUrgentAlerts": "Keine dringenden Hinweise",
+      "alertsLoadFailed": "Hinweise konnten nicht geladen werden"
+    },
+    "role": {
+      "patient": "Patientin/Patient",
+      "doctor": "Ärztin/Arzt",
+      "clinicOwner": "Klinikinhaberin/Klinikinhaber",
+      "superAdmin": "Super-Administrator"
+    },
+    "drawer": {
+      "overview": "Überblick",
+      "appointments": "Termine",
+      "auditTrail": "Prüfpfad"
+    },
+    "stat": {
+      "reviews": "Bewertungen",
+      "appts": "Termine",
+      "posts": "Beiträge",
+      "logs": "Protokolle",
+      "total": "Gesamt",
+      "admins": "Administratoren",
+      "suspended": "Gesperrt",
+      "unverified": "Nicht verifiziert"
     }
   },
   "errors": {
@@ -3995,7 +4047,12 @@
     "selectBranch": "Wählen Sie unten einen Standort",
     "verified": "Verifiziert",
     "viewBranch": "Standort ansehen",
-    "viewMap": "Karte"
+    "viewMap": "Karte",
+    "stats": {
+      "totalBranches": "Filialen gesamt",
+      "linkedClinics": "Verknüpfte Kliniken",
+      "activeDoctors": "Aktive Ärztinnen und Ärzte"
+    }
   },
   "invoices": {
     "discount": "Rabatt",

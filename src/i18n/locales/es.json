@@ -610,7 +610,15 @@
       "statCompleted": "Finalizadas",
       "statExams": "Consultas",
       "statTotal": "Total de citas",
-      "statUpcoming": "Próximas"
+      "statUpcoming": "Próximas",
+      "timelineType": {
+        "appointment": "Cita",
+        "examination": "Consulta",
+        "document": "Documento",
+        "patientUpload": "Subida del paciente",
+        "invoice": "Factura",
+        "message": "Mensaje"
+      }
     },
     "patients": {
       "title": "Pacientes",
@@ -2514,6 +2522,50 @@
       "toastHidden": "Reseña ocultada",
       "toastRejected": "Reseña rechazada",
       "tryDifferentSearch": "Pruebe con otro término de búsqueda"
+    },
+    "nav": {
+      "sectionOverview": "Resumen",
+      "sectionOperations": "Operaciones",
+      "sectionModeration": "Moderación",
+      "sectionSystem": "Sistema",
+      "dashboard": "Panel",
+      "verificationHub": "Centro de verificación",
+      "userManagement": "Gestión de usuarios",
+      "allUsers": "Todos los usuarios",
+      "doctors": "Médicos",
+      "patients": "Pacientes",
+      "clinics": "Clínicas",
+      "financials": "Finanzas",
+      "reviewModeration": "Moderación de reseñas",
+      "contentModeration": "Moderación de contenido",
+      "catalogManagement": "Gestión del catálogo",
+      "systemSettings": "Ajustes del sistema",
+      "auditLogs": "Registros de auditoría",
+      "supportTickets": "Tickets de soporte",
+      "announcements": "Anuncios",
+      "noUrgentAlerts": "Sin alertas urgentes",
+      "alertsLoadFailed": "No se pudieron cargar las alertas"
+    },
+    "role": {
+      "patient": "Paciente",
+      "doctor": "Médico",
+      "clinicOwner": "Propietario de clínica",
+      "superAdmin": "Superadministrador"
+    },
+    "drawer": {
+      "overview": "Resumen",
+      "appointments": "Citas",
+      "auditTrail": "Rastro de auditoría"
+    },
+    "stat": {
+      "reviews": "Reseñas",
+      "appts": "Citas",
+      "posts": "Publicaciones",
+      "logs": "Registros",
+      "total": "Total",
+      "admins": "Administradores",
+      "suspended": "Suspendidos",
+      "unverified": "Sin verificar"
     }
   },
   "errors": {
@@ -3486,7 +3538,12 @@
     "selectBranch": "Seleccione un centro abajo",
     "verified": "Verificado",
     "viewBranch": "Ver el centro",
-    "viewMap": "Mapa"
+    "viewMap": "Mapa",
+    "stats": {
+      "totalBranches": "Sucursales totales",
+      "linkedClinics": "Clínicas vinculadas",
+      "activeDoctors": "Médicos activos"
+    }
   },
   "invoices": {
     "discount": "Descuento",

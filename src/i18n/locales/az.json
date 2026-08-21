@@ -610,7 +610,15 @@
       "statCompleted": "Tamamlanan",
       "statExams": "Müayinə",
       "statTotal": "Cəmi randevu",
-      "statUpcoming": "Yaxınlaşan"
+      "statUpcoming": "Yaxınlaşan",
+      "timelineType": {
+        "appointment": "Randevu",
+        "examination": "Müayinə",
+        "document": "Sənəd",
+        "patientUpload": "Xəstə yükləməsi",
+        "invoice": "Faktura",
+        "message": "Mesaj"
+      }
     },
     "patients": {
       "title": "Xəstələr",
@@ -2554,6 +2562,50 @@
       "toastHidden": "Rəy gizlədildi",
       "toastRejected": "Rəy rədd edildi",
       "tryDifferentSearch": "Fərqli axtarış termini sınayın"
+    },
+    "nav": {
+      "sectionOverview": "Ümumi Baxış",
+      "sectionOperations": "Əməliyyatlar",
+      "sectionModeration": "Moderasiya",
+      "sectionSystem": "Sistem",
+      "dashboard": "İdarə Paneli",
+      "verificationHub": "Təsdiqləmə Mərkəzi",
+      "userManagement": "İstifadəçi İdarəsi",
+      "allUsers": "Bütün İstifadəçilər",
+      "doctors": "Həkimlər",
+      "patients": "Xəstələr",
+      "clinics": "Klinikalar",
+      "financials": "Maliyyə",
+      "reviewModeration": "Rəy Moderasiyası",
+      "contentModeration": "Məzmun Moderasiyası",
+      "catalogManagement": "Kataloq İdarəsi",
+      "systemSettings": "Sistem Ayarları",
+      "auditLogs": "Audit Qeydləri",
+      "supportTickets": "Dəstək Müraciətləri",
+      "announcements": "Elanlar",
+      "noUrgentAlerts": "Təcili xəbərdarlıq yoxdur",
+      "alertsLoadFailed": "Xəbərdarlıqlar yüklənmədi"
+    },
+    "role": {
+      "patient": "Xəstə",
+      "doctor": "Həkim",
+      "clinicOwner": "Klinika Sahibi",
+      "superAdmin": "Super Admin"
+    },
+    "drawer": {
+      "overview": "Ümumi Baxış",
+      "appointments": "Randevular",
+      "auditTrail": "Audit İzi"
+    },
+    "stat": {
+      "reviews": "Rəylər",
+      "appts": "Randevu",
+      "posts": "Paylaşım",
+      "logs": "Qeydlər",
+      "total": "Ümumi",
+      "admins": "Adminlər",
+      "suspended": "Dayandırılan",
+      "unverified": "Təsdiqlənməmiş"
     }
   },
   "errors": {
@@ -3526,7 +3578,12 @@
     "selectBranch": "Aşağıdan filial seçin",
     "verified": "Doğrulanmış",
     "viewBranch": "Filiala bax",
-    "viewMap": "Xəritə"
+    "viewMap": "Xəritə",
+    "stats": {
+      "totalBranches": "Ümumi Filial",
+      "linkedClinics": "Bağlı Klinika",
+      "activeDoctors": "Aktiv Həkim"
+    }
   },
   "invoices": {
     "discount": "Endirim",
