@@ -17,8 +17,6 @@ const fs = require('fs');
 const path = require('path');
 
 const TABAN = process.env.E2E_BASE_URL || 'https://med-gama.vercel.app';
-const email = process.env.E2E_ADMIN_EMAIL || '';
-const sifre = process.env.E2E_ADMIN_PASSWORD || '';
 
 const KLASOR = path.join(__dirname, '.oturum');
 fs.mkdirSync(KLASOR, { recursive: true });
@@ -31,6 +29,9 @@ const yaz = (satirlar) => {
 };
 
 (async () => {
+  const email = process.env.E2E_ADMIN_EMAIL || '';
+  const sifre = process.env.E2E_ADMIN_PASSWORD || '';
+
   const rapor = [];
   rapor.push(`taban adres      : ${TABAN}`);
   rapor.push(`e-posta verildi  : ${email ? 'evet (' + email.replace(/^(.).*(@.*)$/, '$1***$2') + ')' : 'HAYIR'}`);
