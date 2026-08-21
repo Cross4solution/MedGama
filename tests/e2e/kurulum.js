@@ -75,6 +75,20 @@ module.exports = async function kurulum(config) {
       }, { email, sifre });
 
       if (!sonuc.ok) {
+        await context.close();
+
+        // Yönetici hesabı İSTEĞE BAĞLI: yanlış parola ya da kapalı hesap
+        // yüzünden bütün paketin durması doğru değil. Oturum dosyası
+        // yazılmayınca yönetim testleri zaten kendiliğinden atlanıyor.
+        if (rol === 'yonetici') {
+          console.warn(
+            `\n⚠  Yönetici girişi başarısız (HTTP ${sonuc.status}). Yönetim paneli testleri ATLANACAK.\n` +
+            '   422 = e-posta/parola hatalı · 429 = çok fazla deneme, bir dakika bekleyin\n' +
+            '   502/503 = arka uç uyanıyor, tekrar deneyin\n',
+          );
+          continue;
+        }
+
         throw new Error(`Kurulumda giriş başarısız (${rol}): ${sonuc.status}`);
       }
 
