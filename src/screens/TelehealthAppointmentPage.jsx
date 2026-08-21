@@ -62,17 +62,21 @@ function DoctorAppointmentDashboard() {
   );
 }
 
+// Adım başlıkları modül düzeyinde tanımlı olduğu için burada t() çağrılamaz
+// (kanca yalnızca bileşen içinde çalışır). Bu yüzden ANAHTAR tutuluyor,
+// çeviri ekrana basılırken yapılıyor. Önceden düz İngilizce metin vardı ve
+// dil Türkçe seçiliyken bile İngilizce görünüyordu.
 const STEPS_PATIENT = [
-  { key: 'doctor', label: 'Doctor', icon: Stethoscope },
-  { key: 'datetime', label: 'Date & Time', icon: CalendarDays },
-  { key: 'info', label: 'Your Info', icon: User },
-  { key: 'review', label: 'Confirm', icon: CheckCircle2 },
+  { key: 'doctor', labelKey: 'telehealthAppointmentPage.stepDoctor', icon: Stethoscope },
+  { key: 'datetime', labelKey: 'telehealthAppointmentPage.dateTime', icon: CalendarDays },
+  { key: 'info', labelKey: 'telehealthAppointmentPage.stepYourInfo', icon: User },
+  { key: 'review', labelKey: 'telehealthAppointmentPage.stepConfirm', icon: CheckCircle2 },
 ];
 
 const STEPS_DOCTOR = [
-  { key: 'datetime', label: 'Date & Time', icon: CalendarDays },
-  { key: 'info', label: 'Patient Info', icon: User },
-  { key: 'review', label: 'Confirm', icon: CheckCircle2 },
+  { key: 'datetime', labelKey: 'telehealthAppointmentPage.dateTime', icon: CalendarDays },
+  { key: 'info', labelKey: 'telehealthAppointmentPage.patientInformation', icon: User },
+  { key: 'review', labelKey: 'telehealthAppointmentPage.stepConfirm', icon: CheckCircle2 },
 ];
 
 export default function TelehealthAppointmentPage() {
@@ -450,7 +454,7 @@ export default function TelehealthAppointmentPage() {
               </div>
               <div>
                 <p className="text-xs text-gray-400 font-medium">{t('telehealthAppointmentPage.type', "Type")}</p>
-                <p className="text-sm font-semibold text-gray-900">{appointmentType === 'online' ? 'Online Telehealth' : 'In-Person Visit'}</p>
+                <p className="text-sm font-semibold text-gray-900">{appointmentType === 'online' ? t('telehealthAppointmentPage.onlineTelehealth', 'Online Telehealth') : t('telehealthAppointmentPage.typeInPerson', 'In-Person Visit')}</p>
               </div>
             </div>
           </div>
@@ -615,7 +619,7 @@ export default function TelehealthAppointmentPage() {
                     <span className={`hidden sm:block text-[13px] ${
                       isActive ? 'text-gray-900 font-semibold' : isDone ? 'text-gray-600' : 'text-gray-400'
                     }`}>
-                      {s.label}
+                      {t(s.labelKey)}
                     </span>
                   </button>
                   {i < STEPS.length - 1 && (
@@ -638,12 +642,12 @@ export default function TelehealthAppointmentPage() {
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                     <Video className="w-4 h-4 text-teal-600" />
-                    Appointment Type
+                    {t('telehealthAppointmentPage.appointmentTypeTitle', 'Appointment Type')}
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { key: 'online', label: 'Telehealth', desc: 'Video consultation from home', icon: Video, color: '#2D8CFF' },
-                      { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic directly', icon: Building2, color: '#10B981' },
+                      { key: 'online', label: t('telehealthAppointmentPage.typeTelehealth', 'Telehealth'), desc: t('telehealthAppointmentPage.typeTelehealthDesc', 'Video consultation from home'), icon: Video, color: '#2D8CFF' },
+                      { key: 'inPerson', label: t('telehealthAppointmentPage.typeInPerson', 'In-Person Visit'), desc: t('telehealthAppointmentPage.typeInPersonDesc', 'Visit the clinic directly'), icon: Building2, color: '#10B981' },
                     ].map(opt => (
                       <button
                         key={opt.key}
@@ -891,12 +895,12 @@ export default function TelehealthAppointmentPage() {
                   <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                     <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                       <Video className="w-4 h-4 text-teal-600" />
-                      Appointment Type
+                      {t('telehealthAppointmentPage.appointmentTypeTitle', 'Appointment Type')}
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { key: 'online', label: 'Telehealth', desc: 'Video consultation', icon: Video, color: '#2D8CFF' },
-                        { key: 'inPerson', label: 'In-Person Visit', desc: 'Visit the clinic', icon: Building2, color: '#10B981' },
+                        { key: 'online', label: t('telehealthAppointmentPage.typeTelehealth', 'Telehealth'), desc: t('telehealthAppointmentPage.typeTelehealthDescShort', 'Video consultation'), icon: Video, color: '#2D8CFF' },
+                        { key: 'inPerson', label: t('telehealthAppointmentPage.typeInPerson', 'In-Person Visit'), desc: t('telehealthAppointmentPage.typeInPersonDescShort', 'Visit the clinic'), icon: Building2, color: '#10B981' },
                       ].map(opt => (
                         <button
                           key={opt.key}
@@ -1148,13 +1152,13 @@ export default function TelehealthAppointmentPage() {
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-teal-600" />
-                    Payment Method
+                    {t('telehealthAppointmentPage.paymentMethod', 'Payment Method')}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {[
-                      { key: 'credit', label: 'Credit Card', desc: 'Visa, Mastercard', icon: CreditCard },
-                      { key: 'transfer', label: 'Bank Transfer', desc: 'Direct transfer', icon: Building2 },
-                      { key: 'onarrival', label: 'Before Session', desc: 'Pay before start', icon: Clock },
+                      { key: 'credit', label: t('telehealthAppointmentPage.payCard', 'Credit Card'), desc: t('telehealthAppointmentPage.payCardDesc', 'Visa, Mastercard'), icon: CreditCard },
+                      { key: 'transfer', label: t('telehealthAppointmentPage.payTransfer', 'Bank Transfer'), desc: t('telehealthAppointmentPage.payTransferDesc', 'Direct transfer'), icon: Building2 },
+                      { key: 'onarrival', label: t('telehealthAppointmentPage.payBeforeSession', 'Before Session'), desc: t('telehealthAppointmentPage.payBeforeSessionDesc', 'Pay before start'), icon: Clock },
                     ].map((opt) => (
                       <button
                         key={opt.key}
@@ -1229,7 +1233,7 @@ export default function TelehealthAppointmentPage() {
                           <Video className="w-4 h-4 text-teal-500" />
                           <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t('telehealthAppointmentPage.type', "Type")}</p>
                         </div>
-                        <p className="text-sm font-bold text-gray-900">{appointmentType === 'online' ? 'Online Telehealth' : 'In-Person Visit'}</p>
+                        <p className="text-sm font-bold text-gray-900">{appointmentType === 'online' ? t('telehealthAppointmentPage.onlineTelehealth', 'Online Telehealth') : t('telehealthAppointmentPage.typeInPerson', 'In-Person Visit')}</p>
                       </div>
                       <div className="p-3.5 bg-gray-50 rounded-xl">
                         <div className="flex items-center gap-2 mb-1.5">
@@ -1331,7 +1335,7 @@ export default function TelehealthAppointmentPage() {
               <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                 <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                   <FileText className="w-4 h-4 text-teal-600" />
-                  Booking Summary
+                  {t('telehealthAppointmentPage.bookingSummary', 'Booking Summary')}
                 </h3>
               </div>
               <div className="p-5 space-y-4">
@@ -1394,7 +1398,7 @@ export default function TelehealthAppointmentPage() {
                         ? 'bg-teal-50 text-teal-700 border border-teal-200'
                         : 'bg-blue-50 text-blue-700 border border-blue-200'
                     }`}>
-                      {appointmentType === 'online' ? 'Online' : 'In-Person'}
+                      {appointmentType === 'online' ? t('telehealthAppointmentPage.badgeOnline', 'Online') : t('telehealthAppointmentPage.badgeInPerson', 'In-Person')}
                     </span>
                   </div>
                   {patientInfo.fullName && (
@@ -1412,7 +1416,7 @@ export default function TelehealthAppointmentPage() {
               <div className="px-5 py-3 bg-gradient-to-r from-teal-50 to-emerald-50 border-t border-teal-100">
                 <p className="text-[11px] text-teal-700 flex items-center gap-1.5 leading-relaxed">
                   <Heart className="w-3.5 h-3.5 flex-shrink-0 text-teal-500" />
-                  {isDoctor ? 'A confirmation will be sent to the patient\'s email.' : 'Session link will be sent to your email before the appointment.'}
+                  {isDoctor ? t('telehealthAppointmentPage.doctorConfirmationNotice', "A confirmation will be sent to the patient's email.") : t('telehealthAppointmentPage.sessionLinkNotice', 'Session link will be sent to your email before the appointment.')}
                 </p>
               </div>
             </div>
@@ -1421,9 +1425,9 @@ export default function TelehealthAppointmentPage() {
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-4">
               <div className="space-y-2.5">
                 {[
-                  { icon: Shield, label: 'GDPR Compliant', desc: 'Data protection guaranteed' },
-                  { icon: Video, label: 'HD Video Quality', desc: 'Crystal clear consultations' },
-                  { icon: BadgeCheck, label: 'Verified Doctors', desc: 'Licensed professionals' },
+                  { icon: Shield, label: t('telehealthAppointmentPage.trustGdpr', 'GDPR Compliant'), desc: t('telehealthAppointmentPage.trustGdprDesc', 'Data protection guaranteed') },
+                  { icon: Video, label: t('telehealthAppointmentPage.trustHd', 'HD Video Quality'), desc: t('telehealthAppointmentPage.trustHdDesc', 'Crystal clear consultations') },
+                  { icon: BadgeCheck, label: t('telehealthAppointmentPage.trustVerified', 'Verified Doctors'), desc: t('telehealthAppointmentPage.trustVerifiedDesc', 'Licensed professionals') },
                 ].map((badge, i) => (
                   <div key={i} className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
