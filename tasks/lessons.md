@@ -51,3 +51,33 @@ UUID gibi ASCII değerlerde dizge araması güvenli.
 "katılımcı kendi mesajını BULABİLİYOR". Onsuz "yabancı bulamadı" sonucu,
 aramanın hiç çalışmamasıyla ayırt edilemez. Bu tuzağı bana yine pozitif
 kontrol yakalattı.
+
+## Yerel sürücü, canlıdaki sözdizimi hatasını gösteremez
+
+**Olay:** Aramadaki joker karakter açığını `ESCAPE '\'` ekleyerek kapattım.
+MySQL/TiDB dizge içinde ters bölüyü kaçış sayıyor → literal kapanmıyor →
+`/api/search/live` canlıda HER terim için 500 verdi. SQLite ters bölüyü düz
+karakter saydığı için 557 testin hepsi yeşildi.
+
+**Kural:** Ham SQL'e (whereRaw, ESCAPE, TRANSLATE, ::cast, REGEXP) dokunan
+her değişiklikte, yerel testin yeşil olması KANIT DEĞİL. En az bir kez
+canlı uca istek at ya da üretilen SQL'i doğrula.
+
+**İkinci kural:** Sürücü farkını yakalayamayan durumlarda davranış yerine
+ÜRETİLEN SQL'i test et (`$query->toSql()`).
+
+## "0 sonuç" düzeltmenin kanıtı değil
+
+Canlıda `q=%` için 0 doktor gördüm ve "düzeltme canlıda" dedim. Oysa 0
+sonuç 500 hatasından geliyordu. HTTP kodunu okumadan sonuç sayısına bakmak
+yanlış çıkarım üretti.
+
+**Kural:** Canlı ölçümde önce durum kodu, sonra gövde.
+
+## git checkout işlenmemiş düzeltmeyi siler
+
+Kanıt döngüsünde `git checkout --` ile geri alırken, henüz işlemediğim
+düzeltmeyi de sildim ve farkında olmadan hatalı sürüme döndüm.
+
+**Kural:** Kanıt döngüsünden ÖNCE düzeltmeyi işle, ya da yedek kopya (cp)
+kullan — checkout committed hâle döner, yazdığın koda değil.
