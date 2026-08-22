@@ -225,12 +225,12 @@ class ChatController extends Controller
 
         $user = $request->user();
 
-        broadcast(new UserTyping(
+        \App\Support\Yayin::guvenli(fn () => broadcast(new UserTyping(
             conversationId: $conversation->id,
             userId: $user->id,
             userName: $user->fullname ?? '',
             isTyping: (bool) $request->input('is_typing', true),
-        ))->toOthers();
+        ))->toOthers(), 'yaziyor bilgisi');
 
         return response()->json(['status' => 'ok']);
     }

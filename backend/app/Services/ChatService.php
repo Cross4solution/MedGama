@@ -187,7 +187,7 @@ class ChatService
         $message->load('sender:id,fullname,avatar');
 
         // Broadcast to the private channel (real-time WebSocket)
-        broadcast(new MessageSent($message))->toOthers();
+        \App\Support\Yayin::guvenli(fn () => broadcast(new MessageSent($message))->toOthers(), 'sohbet mesaji');
 
         // Push notification to the recipient (queued — FCM / database)
         $this->notifyRecipient($conversation, $sender, $message);
@@ -206,11 +206,11 @@ class ChatService
             ->update(['read_at' => now()]);
 
         if ($count > 0) {
-            broadcast(new MessageRead(
+            \App\Support\Yayin::guvenli(fn () => broadcast(new MessageRead(
                 conversationId: $conversation->id,
                 readByUserId: $userId,
                 readCount: $count,
-            ))->toOthers();
+            ))->toOthers(), 'okundu bilgisi');
         }
 
         return $count;

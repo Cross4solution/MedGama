@@ -25,9 +25,9 @@ trait BroadcastsNotification
      */
     public static function broadcastStored(object $notifiable, array $data): void
     {
-        broadcast(new NewNotification(
+        \App\Support\Yayin::guvenli(fn () => broadcast(new NewNotification(
             userId: $notifiable->id,
             notification: $data,
-        ));
+        )), 'bildirim');
     }
 }

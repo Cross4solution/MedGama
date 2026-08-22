@@ -207,7 +207,7 @@ class AppointmentService
         // 6. Notifications (outside transaction — non-critical)
         $this->sendBookedNotifications($appointment);
 
-        event(new AppointmentChanged($appointment, 'created'));
+        \App\Support\Yayin::guvenli(fn () => event(new AppointmentChanged($appointment, 'created')), 'randevu');
 
         return $appointment;
     }
@@ -237,7 +237,7 @@ class AppointmentService
             $this->sendStatusChangeNotifications($appointment, $newStatus, $updatedBy);
         }
 
-        event(new AppointmentChanged($appointment, $newStatus === 'cancelled' ? 'cancelled' : 'updated'));
+        \App\Support\Yayin::guvenli(fn () => event(new AppointmentChanged($appointment, $newStatus === 'cancelled' ? 'cancelled' : 'updated')), 'randevu');
 
         return $appointment;
     }
@@ -263,7 +263,7 @@ class AppointmentService
         // İptal bildirimleri (transaction dışında, kritik değil)
         $this->sendStatusChangeNotifications($appointment, 'cancelled', $cancelledBy);
 
-        event(new AppointmentChanged($appointment, 'cancelled'));
+        \App\Support\Yayin::guvenli(fn () => event(new AppointmentChanged($appointment, 'cancelled')), 'randevu');
 
         return $appointment;
     }
@@ -306,7 +306,7 @@ class AppointmentService
             $appointment->delete();
         });
 
-        event(new AppointmentChanged($appointment, 'deleted'));
+        \App\Support\Yayin::guvenli(fn () => event(new AppointmentChanged($appointment, 'deleted')), 'randevu');
     }
 
     /**
@@ -438,7 +438,7 @@ class AppointmentService
 
         $appointment->refresh()->load(['patient:id,fullname,avatar,email,mobile', 'doctor:id,fullname,avatar', 'clinic:id,fullname']);
 
-        event(new AppointmentChanged($appointment, 'rescheduled'));
+        \App\Support\Yayin::guvenli(fn () => event(new AppointmentChanged($appointment, 'rescheduled')), 'randevu');
 
         $this->sendRescheduledNotifications($appointment, $eskiTarih, $eskiSaat);
 

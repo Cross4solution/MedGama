@@ -36,9 +36,9 @@ class BroadcastNotificationCreated
             'created_at' => $dbNotif?->created_at?->toISOString() ?? now()->toISOString(),
         ];
 
-        broadcast(new NewNotification(
+        \App\Support\Yayin::guvenli(fn () => broadcast(new NewNotification(
             userId: $notifiable->id,
             notification: $payload,
-        ));
+        )), 'bildirim');
     }
 }
