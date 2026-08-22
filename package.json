@@ -38,7 +38,8 @@
     "start": "next start",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "lint:crash": "eslint --ext .js,.jsx src app"
+    "lint:crash": "eslint --ext .js,.jsx src app",
+    "test:unit": "node --test \"src/**/__tests__/*.test.mjs\""
   },
   "browserslist": {
     "production": [
