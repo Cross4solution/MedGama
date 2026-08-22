@@ -18,6 +18,68 @@ use Illuminate\Validation\ValidationException;
 class AppointmentService
 {
     /**
+     * Randevu sorgusunu kullanıcının rolüne göre kapsar — VARSAYILAN REDDET.
+     *
+     * Önceki hâlinde zincir yalnız doctor/patient/clinicOwner'ı kapsıyordu ve
+     * eşleşmeyen roller HİÇBİR kapsama girmiyordu: hastane ve satış temsilcisi
+     * hesapları, hiçbir bağı olmayan randevuları hastanın e-posta adresiyle
+     * birlikte görüyordu (ilişki listesi `email` yüklüyor). `patient_id`
+     * süzgeci istekten geldiği için belirli bir kişi de hedeflenebiliyordu.
+     *
+     * Artık her rol açıkça yazılıyor; tanınmayan rol hiçbir şey görmüyor.
+     * Yeni bir rol eklendiğinde sessizce her şeye açılmak yerine boş liste
+     * döner — fark edilebilir bir hata.
+     *
+     * Kural TEK yerde: listeleme ile takvim aynı kapsamı kullanıyor. İkisi
+     * ayrı yazıldığında birinin düzeltilip öbürünün unutulması işten değil.
+     */
+    private function roleKapsamiUygula($query, User $user): void
+    {
+        if ($user->isAdmin()) {
+            return; // Platform yöneticisi: kapsam yok.
+        }
+
+        if ($user->isDoctor()) {
+            $query->where('doctor_id', $user->id);
+            return;
+        }
+
+        if ($user->isPatient()) {
+            $query->where('patient_id', $user->id);
+            return;
+        }
+
+        // Satış temsilcisi kliniğinin kapsamını devralıyor — CRM aboneliğinde
+        // olduğu gibi. clinic_id boşsa hiçbir şey eşleşmemeli.
+        if ($user->isClinicOwner() || $user->isSalesperson()) {
+            $klinik = $user->clinic_id;
+            $klinik ? $query->where('clinic_id', $klinik) : $query->whereRaw('1 = 0');
+            return;
+        }
+
+        if ($user->isHospital()) {
+            // Randevuda hastane sütunu yok; bağ doktor üzerinden kuruluyor.
+            // `hospital_id` KULLANICIYI değil `hospitals` tablosundaki kaydı
+            // gösteriyor; hastane yöneticisinin kendi kaydı da bu sütunla
+            // bağlanmış durumda. Bağ kurulmamışsa hiçbir şey görünmemeli —
+            // yarım kalmış bir hesabın her randevuyu görmesindense boş liste.
+            $hastaneId = $user->hospital_id;
+
+            if (!$hastaneId) {
+                $query->whereRaw('1 = 0');
+                return;
+            }
+
+            $query->whereIn('doctor_id', function ($q) use ($hastaneId) {
+                $q->select('id')->from('users')->where('hospital_id', $hastaneId);
+            });
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
+    }
+
+    /**
      * List appointments scoped by the authenticated user's role.
      */
     public function list(User $user, array $filters): LengthAwarePaginator
@@ -25,14 +87,7 @@ class AppointmentService
         $query = Appointment::query()
             ->with(['patient:id,fullname,avatar,email', 'doctor:id,fullname,avatar', 'clinic:id,fullname']);
 
-        // Scope by role
-        if ($user->isDoctor()) {
-            $query->where('doctor_id', $user->id);
-        } elseif ($user->isPatient()) {
-            $query->where('patient_id', $user->id);
-        } elseif ($user->isClinicOwner()) {
-            $query->where('clinic_id', $user->clinic_id);
-        }
+        $this->roleKapsamiUygula($query, $user);
 
         // Filters
         $query->when($filters['status'] ?? null, fn($q, $v) => $q->where('status', $v))
@@ -263,14 +318,7 @@ class AppointmentService
         $query = Appointment::query()
             ->with(['patient:id,fullname,avatar,email,mobile', 'doctor:id,fullname,avatar', 'clinic:id,fullname']);
 
-        // Scope by role
-        if ($user->isDoctor()) {
-            $query->where('doctor_id', $user->id);
-        } elseif ($user->isPatient()) {
-            $query->where('patient_id', $user->id);
-        } elseif ($user->isClinicOwner()) {
-            $query->where('clinic_id', $user->clinic_id);
-        }
+        $this->roleKapsamiUygula($query, $user);
 
         // Date range filter (required for calendar view)
         $query->when($filters['start'] ?? null, fn($q, $v) => $q->whereDate('appointment_date', '>=', $v))
