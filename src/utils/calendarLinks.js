@@ -98,7 +98,16 @@ export function outlookCalendarUrl(appt) {
 export function icsDataUri(appt) {
   const p = calendarParts(appt);
   if (!p.valid) return '';
-  const esc = (s) => String(s).replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n');
+  // RFC 5545: satırlar CRLF ile ayrılıyor, dolayısıyla değerin İÇİNDE ham
+  // CR ya da LF kalamaz. Önceki hâli yalnızca \n'i kaçırıyordu; "\r\n" içeren
+  // bir başlıkta \r olduğu gibi kalıyor ve dosyayı bozuyordu (bazı takvim
+  // uygulamaları tek başına CR'yi de satır sonu sayıyor).
+  // Sıra önemli: ters bölü önce kaçmalı, yoksa sonradan eklenen kaçışlar
+  // ikinci kez kaçırılır.
+  const esc = (s) => String(s)
+    .replace(/\\/g, '\\\\')
+    .replace(/([,;])/g, '\\$1')
+    .replace(/\r\n|\r|\n/g, '\\n');
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
