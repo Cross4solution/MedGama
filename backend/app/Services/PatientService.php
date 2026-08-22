@@ -34,15 +34,7 @@ class PatientService
             ->where('is_active', true);
 
         // Scope: only patients who have appointments with this doctor/clinic
-        if ($user->isDoctor()) {
-            $query->whereHas('patientAppointments', function ($q) use ($user) {
-                $q->where('doctor_id', $user->id);
-            });
-        } elseif ($user->isClinicOwner()) {
-            $query->whereHas('patientAppointments', function ($q) use ($user) {
-                $q->where('clinic_id', $user->clinic_id);
-            });
-        }
+        $this->kapsamUygulaRandevuUzerinden($query, $user);
 
         // Search filter
         if (!empty($filters['search'])) {
@@ -59,11 +51,7 @@ class PatientService
             $tag = $filters['tag'];
             $query->whereHas('crmTags', function ($q) use ($tag, $user) {
                 $q->active()->where('tag', $tag);
-                if ($user->isDoctor()) {
-                    $q->where('doctor_id', $user->id);
-                } elseif ($user->isClinicOwner()) {
-                    $q->where('clinic_id', $user->clinic_id);
-                }
+                $this->kapsamUygula($q, $user);
             });
         }
 
@@ -72,11 +60,7 @@ class PatientService
             $stage = $filters['stage'];
             $query->whereHas('crmProcessStages', function ($q) use ($stage, $user) {
                 $q->active()->where('stage', $stage);
-                if ($user->isDoctor()) {
-                    $q->where('doctor_id', $user->id);
-                } elseif ($user->isClinicOwner()) {
-                    $q->where('clinic_id', $user->clinic_id);
-                }
+                $this->kapsamUygula($q, $user);
             });
         }
 
@@ -126,11 +110,7 @@ class PatientService
     {
         $query = CrmTag::active()->select('tag')->distinct();
 
-        if ($user->isDoctor()) {
-            $query->where('doctor_id', $user->id);
-        } elseif ($user->isClinicOwner()) {
-            $query->where('clinic_id', $user->clinic_id);
-        }
+        $this->kapsamUygula($query, $user);
 
         return $query->orderBy('tag')->pluck('tag');
     }
@@ -142,11 +122,7 @@ class PatientService
     {
         $query = CrmProcessStage::active()->select('stage')->distinct();
 
-        if ($user->isDoctor()) {
-            $query->where('doctor_id', $user->id);
-        } elseif ($user->isClinicOwner()) {
-            $query->where('clinic_id', $user->clinic_id);
-        }
+        $this->kapsamUygula($query, $user);
 
         return $query->orderBy('stage')->pluck('stage');
     }
@@ -160,11 +136,7 @@ class PatientService
             ->where('role_id', 'patient')
             ->where('is_active', true);
 
-        if ($user->isDoctor()) {
-            $baseQuery->whereHas('patientAppointments', fn($q) => $q->where('doctor_id', $user->id));
-        } elseif ($user->isClinicOwner()) {
-            $baseQuery->whereHas('patientAppointments', fn($q) => $q->where('clinic_id', $user->clinic_id));
-        }
+        $this->kapsamUygulaRandevuUzerinden($baseQuery, $user);
 
         $total = (clone $baseQuery)->count();
 
@@ -555,11 +527,7 @@ class PatientService
             ->where('record_type', '!=', 'examination')
             ->with(['doctor:id,fullname,avatar']);
 
-        if ($accessor->isDoctor()) {
-            $query->where('doctor_id', $accessor->id);
-        } elseif ($accessor->isClinicOwner()) {
-            $query->where('clinic_id', $accessor->clinic_id);
-        }
+        $this->kapsamUygula($query, $accessor);
 
         if (!empty($filters['record_type'])) {
             $query->where('record_type', $filters['record_type']);
@@ -600,11 +568,7 @@ class PatientService
     public function removeTag(string $tagId, User $user): void
     {
         $query = CrmTag::active();
-        if ($user->isDoctor()) {
-            $query->where('doctor_id', $user->id);
-        } elseif ($user->isClinicOwner()) {
-            $query->where('clinic_id', $user->clinic_id);
-        }
+        $this->kapsamUygula($query, $user);
 
         $query->findOrFail($tagId)->update(['is_active' => false]);
     }
@@ -790,4 +754,60 @@ class PatientService
                 : 0,
         ];
     }
+
+    /**
+     * Sorguyu kullanıcının rolüne göre kapsar — VARSAYILAN REDDET.
+     *
+     * Bu zincir serviste sekiz kez tekrarlıyordu ve hepsinde aynı iki kusur
+     * vardı:
+     *
+     *   1. `else` yoktu: doctor/clinicOwner dışındaki roller HİÇ kapsanmıyordu.
+     *      Ölçüldü — hastane hesabı /api/crm/patients ucunda bağımsız bir
+     *      doktorun hastasını adı ve e-postasıyla görüyordu.
+     *   2. `clinic_id` boşken `where('clinic_id', null)` Laravel tarafından
+     *      `IS NULL`'a çevriliyor ve kliniğe bağlı OLMAYAN bütün kayıtları
+     *      eşliyor — "hiçbir şey" değil, "hepsi".
+     *
+     * Kural tek yerde: sekiz çağrı noktasından birinin düzeltilip
+     * öbürlerinin unutulması bu serviste kaçınılmazdı.
+     */
+    private function kapsamUygula($query, User $user): void
+    {
+        if ($user->isAdmin()) {
+            return;
+        }
+
+        if ($user->isDoctor()) {
+            $query->where('doctor_id', $user->id);
+            return;
+        }
+
+        if ($user->isClinicOwner() || $user->isSalesperson()) {
+            $user->clinic_id
+                ? $query->where('clinic_id', $user->clinic_id)
+                : $query->whereRaw('1 = 0');
+            return;
+        }
+
+        if ($user->isHospital()) {
+            $kimlikler = \App\Support\HastaneKapsami::klinikKimlikleri($user);
+            $kimlikler->isEmpty()
+                ? $query->whereRaw('1 = 0')
+                : $query->whereIn('clinic_id', $kimlikler);
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
+    }
+
+    /** Hastayı randevuları üzerinden kapsar (hasta tablosunda klinik sütunu yok). */
+    private function kapsamUygulaRandevuUzerinden($query, User $user): void
+    {
+        if ($user->isAdmin()) {
+            return;
+        }
+
+        $query->whereHas('patientAppointments', fn ($q) => $this->kapsamUygula($q, $user));
+    }
+
 }
