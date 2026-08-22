@@ -41,7 +41,9 @@ class ClinicManagerService
             return $id ? [$id] : [];
         }
         if ($user->role_id === 'hospital') {
-            return Clinic::where('hospital_id', $user->hospital_id)->pluck('id')->toArray();
+            // Aynı kusurun üçüncü kopyasıydı: hastane bağı boşken bütün
+            // bağımsız klinikler kapsama giriyordu.
+            return \App\Support\HastaneKapsami::klinikKimlikleri($user)->toArray();
         }
         return [];
     }

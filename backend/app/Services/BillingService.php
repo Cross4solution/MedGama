@@ -706,7 +706,9 @@ HTML;
             }
         } elseif ($role === 'hospital') {
             // Hospital admin sees all clinic invoices under their hospital
-            $clinicIds = \App\Models\Clinic::where('hospital_id', $user->hospital_id)->pluck('id');
+            // Boş hastane bağı ile TÜM bağımsız klinikleri eşleyen sorgu
+            // ortak yardımcıya taşındı; orada boş bağ = hiçbir şey.
+            $clinicIds = \App\Support\HastaneKapsami::klinikKimlikleri($user);
             $query->whereIn('clinic_id', $clinicIds);
         } else {
             // Doctor sees own invoices

@@ -346,7 +346,9 @@ class FinanceService
                 $query->where('doctor_id', $user->id);
             }
         } elseif ($role === 'hospital') {
-            $clinicIds = \App\Models\Clinic::where('hospital_id', $user->hospital_id)->pluck('id');
+            // Boş hastane bağı ile TÜM bağımsız klinikleri eşleyen sorgu
+            // ortak yardımcıya taşındı; orada boş bağ = hiçbir şey.
+            $clinicIds = \App\Support\HastaneKapsami::klinikKimlikleri($user);
             $query->whereIn('clinic_id', $clinicIds);
         } else {
             $query->where('doctor_id', $user->id);
