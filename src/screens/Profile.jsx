@@ -15,6 +15,7 @@ import LangFlag from '../components/ui/LangFlag';
 // Only the officially supported, fully-translated languages (same set as the header switcher)
 const SUPPORTED_LANGUAGES = LANGUAGES.filter((l) => LOCALES.includes(l.code));
 import { useCookieConsent } from '../context/CookieConsentContext';
+import { useContentTranslation } from '../context/ContentTranslationContext';
 import { Link, useSearchParams } from '@/compat/router';
 import GlobalSuggest from '../components/forms/GlobalSuggest';
 import LocationPicker from '../components/location/LocationPicker';
@@ -93,6 +94,7 @@ function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
 export default function Profile() {
 
   const { user, country, updateUser, logout, fetchCurrentUser } = useAuth();
+  const ceviriBaglami = useContentTranslation();
   const { openSettings: openCookieSettings, consent, consentTimestamp, resetConsent } = useCookieConsent();
   const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -142,6 +144,11 @@ export default function Profile() {
     setTranslateSaving(true);
     try {
       await authAPI.updateNotificationPrefs({ translate_content: yeni });
+      // Çeviri bağlamı durumu kullanıcı başına YALNIZCA BİR KEZ okuyor.
+      // Tazelenmezse ayar sunucuya yazılıyor ama akış çevrilmemiş kalıyor;
+      // kullanıcıya anahtar hiç çalışmıyormuş gibi görünüyordu. Ancak sayfa
+      // tamamen yenilenince düzeliyordu.
+      await ceviriBaglami.yenile();
     } catch {
       setTranslateContent(!yeni);       // kaydedilemediyse geri al
     } finally {

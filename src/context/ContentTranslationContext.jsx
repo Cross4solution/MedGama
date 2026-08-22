@@ -52,6 +52,25 @@ export function ContentTranslationProvider({ children }) {
     return () => { iptal = true; };
   }, [hydrated, user?.id]);
 
+  /**
+   * Durumu sunucudan yeniden okur.
+   *
+   * Gerekli, çünkü yukarıdaki efekt kullanıcı başına YALNIZCA BİR KEZ
+   * çalışıyor (aynı uca beş çağrı gitmesini önlemek için). Kullanıcı
+   * profilden "gönderileri dilimde göster" anahtarını açtığında sunucuya
+   * kaydediliyor ama buradaki kopya eski kalıyordu: akış çevrilmemiş
+   * görünüyor, ayarın hiçbir etkisi yokmuş gibi duruyordu. Ancak sayfa
+   * tamamen yenilenince düzeliyordu.
+   */
+  const yenile = useCallback(async () => {
+    try {
+      const r = await contentTranslationAPI.status();
+      setDurum(r?.data || r);
+    } catch {
+      // Sessiz: ayar zaten kaydedildi, yalnızca yerel kopya tazelenemedi.
+    }
+  }, []);
+
   const acik = Boolean(durum?.available && durum?.enabled);
 
   /**
@@ -103,9 +122,10 @@ export function ContentTranslationProvider({ children }) {
     acik,
     durum,
     metin,
+    yenile,
     dil: durum?.language || 'en',
     mesajlarCevrilebilir: Boolean(durum?.messages_allowed),
-  }), [acik, durum, metin]);
+  }), [acik, durum, metin, yenile]);
 
   return <Ctx.Provider value={deger}>{children}</Ctx.Provider>;
 }
@@ -115,6 +135,7 @@ export function useContentTranslation() {
     acik: false,
     durum: null,
     metin: (_k, m) => ({ text: m, translated: false }),
+    yenile: () => {},
     dil: 'en',
     mesajlarCevrilebilir: false,
   };
