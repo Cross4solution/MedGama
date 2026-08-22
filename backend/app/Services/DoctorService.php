@@ -297,7 +297,11 @@ class DoctorService
         $startDate = $date ?: now()->toDateString();
         $endDate   = now()->parse($startDate)->addDays(30)->toDateString();
 
+        // `is_active` denetimi EKSİKTİ: hekim slotu kaldırdıktan sonra da
+        // herkese açık müsaitlik listesinde görünmeye devam ediyordu. Hasta
+        // artık var olmayan bir saati seçiyordu ve hekim bunu göremiyordu.
         $slots = CalendarSlot::where('doctor_id', $doctorId)
+            ->where('is_active', true)
             ->where('is_available', true)
             ->whereBetween('slot_date', [$startDate, $endDate])
             ->orderBy('slot_date')
