@@ -81,3 +81,30 @@ düzeltmeyi de sildim ve farkında olmadan hatalı sürüme döndüm.
 
 **Kural:** Kanıt döngüsünden ÖNCE düzeltmeyi işle, ya da yedek kopya (cp)
 kullan — checkout committed hâle döner, yazdığın koda değil.
+
+## "Yerelde bozuk" ile "üretimde bozuk" ayrımı
+
+**Olay:** Yerel e2e'de sayfalar "Internal Server Error" bastı, günlükte SSR
+sırasında `JSON.parse` hatası vardı. Uygulama hatası gibi görünüyordu; kod
+okuyup `PatientInvoices.jsx`'te sahte bir hata bile "buldum" (`??` zinciri
+sanki diziyi kaçırıyor sandım).
+
+Kesici `response.data` döndürdüğü için o kod DOĞRUYDU. Asıl ayrımı canlı
+ölçüm verdi: aynı sayfalar canlıda 200. Sebep bayat `.next` önbelleğiydi.
+
+**Kural:** Yerelde çıkan bir hatayı üretim hatası ilan etmeden önce AYNI
+şeyi canlıda ölç. İki ortam arasındaki fark, hatanın hangisine ait olduğunu
+söyler — kod okuyarak tahmin etme.
+
+**İkinci kural:** `rm -rf .next` yerel açıklanamayan 500'lerde ilk denenecek
+şey.
+
+## E2E kırıklarını sınıflandırmadan rapor etme
+
+23 kırıktan 16'sı `ERR_CONNECTION_REFUSED`'dı — 4 işçi altında Next'in
+yetişememesi. Ortamsal. Gerçek olan 2 taneydi ve biri ciddi bir üretim
+hatasına (yayın kesintisi randevuyu öldürüyor) çıktı.
+
+**Kural:** Kırık sayısını değil, kırık SINIFINI raporla. Önce hata
+mesajlarına göre grupla, sonra her grup için "bu ortam mı uygulama mı"
+sorusunu ölç.
