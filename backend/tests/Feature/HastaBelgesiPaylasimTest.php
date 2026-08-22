@@ -42,7 +42,7 @@ class HastaBelgesiPaylasimTest extends TestCase
             'patient_id'  => $this->hasta->id,
             'uploaded_by' => $this->hasta->id,
             'title'       => 'Kan tahlili',
-            'category'    => 'lab',
+            'category'    => 'lab_result',
             'file_path'   => app(EncryptedFileStorage::class)
                 ->putContents('hasta-belgeleri/tahlil-paylasim.pdf', 'HEMOGRAM SONUCU'),
             'file_name'   => 'tahlil.pdf',

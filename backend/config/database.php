@@ -60,6 +60,22 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => (function () {
+                    // 0) Açık devre dışı bırakma — YALNIZ yerel test için.
+                    //
+                    // Canlıda TiDB SSL istiyor ve macOS'ta 2. adım her zaman
+                    // bir CA bulduğu için bağlantı SSL'e zorlanıyor. Yerel
+                    // MySQL kendi imzaladığı sertifikayı kullandığından sürücü
+                    // bağlanamıyor — bu da test paketinin ÜRETİM SÜRÜCÜSÜNE
+                    // karşı hiç çalıştırılamaması demekti. Paket SQLite'ta
+                    // yeşilken canlıda 500 veren bir SQL hatası tam olarak bu
+                    // yüzden gözden kaçtı.
+                    //
+                    // Varsayılan davranış değişmiyor: anahtar kurulmadıkça
+                    // eskisi gibi çalışıyor.
+                    if (env('DB_SSL_DISABLED')) {
+                        return null;
+                    }
+
                     // 1) Explicit env override (e.g. Railway / Render secret)
                     if ($ca = env('MYSQL_ATTR_SSL_CA')) {
                         return $ca;

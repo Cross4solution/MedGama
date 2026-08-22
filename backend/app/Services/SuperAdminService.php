@@ -355,7 +355,12 @@ class SuperAdminService
             ->with(['doctor:id,fullname,avatar', 'patient:id,fullname,avatar'])
             ->orderByDesc('appointment_date')
             ->limit(10)
-            ->get(['id', 'doctor_id', 'patient_id', 'appointment_date', 'start_time', 'end_time', 'status', 'appointment_type']);
+            // `start_time` ve `end_time` diye SÜTUN YOK; tabloda
+            // `appointment_time` var. SQLite var olmayan sütunu sessizce
+            // tolere ettiği için test paketi yeşil kalıyordu, MySQL/TiDB ise
+            // sert hata veriyor: bu uç canlıda her çağrıda 500 dönüyordu ve
+            // yönetici hiçbir kullanıcının detayını açamıyordu.
+            ->get(['id', 'doctor_id', 'patient_id', 'appointment_date', 'appointment_time', 'status', 'appointment_type']);
 
         // Verification documents (doctors only)
         $verificationDocs = [];

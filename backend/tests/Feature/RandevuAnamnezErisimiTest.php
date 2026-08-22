@@ -60,7 +60,7 @@ class RandevuAnamnezErisimiTest extends TestCase
             'patient_id'  => $this->hasta->id,
             'uploaded_by' => $this->hasta->id,
             'title'       => 'Kan tahlili',
-            'category'    => 'lab',
+            'category'    => 'lab_result',
             'file_path'   => app(EncryptedFileStorage::class)
                 ->putContents('hasta-belgeleri/tahlil.pdf', 'HEMOGRAM SONUCU'),
             'file_name'   => 'tahlil.pdf',
@@ -152,7 +152,7 @@ class RandevuAnamnezErisimiTest extends TestCase
             'patient_id'  => $baskaHasta->id,
             'uploaded_by' => $baskaHasta->id,
             'title'       => 'Baska tahlil',
-            'category'    => 'lab',
+            'category'    => 'lab_result',
             'file_path'   => app(EncryptedFileStorage::class)
                 ->putContents('hasta-belgeleri/baska.pdf', 'BASKA HASTANIN SONUCU'),
             'file_name'   => 'baska.pdf',
