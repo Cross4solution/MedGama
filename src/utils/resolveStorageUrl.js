@@ -1,4 +1,7 @@
-import { API_BASE_URL } from '../config/apiBase';
+// Uzantı bilerek yazılı: Node'un ESM çözümleyicisi uzantısız yolu bulamıyor,
+// dolayısıyla bu dosya birim testinden geçemiyordu. Paketleyici her iki biçimi
+// de çözdüğü için derlemeye etkisi yok.
+import { API_BASE_URL } from '../config/apiBase.js';
 
 /**
  * Extract the backend origin from API_BASE_URL.
