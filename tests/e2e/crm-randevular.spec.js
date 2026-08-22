@@ -63,8 +63,17 @@ test.describe('CRM randevuları — başka saat diliminden', () => {
     test.skip(!(await crmAcikMi(page)), 'Hesapta CRM aboneliği yok — ekran kilitli');
 
     const { govde } = await apiIstek(page, '/api/appointments?per_page=50');
-    const uygun = (govde?.data || []).find((a) => a.doctor_can_reject && a.starts_at && a.timezone);
-    test.skip(!uygun, 'Reddedilebilir randevu yok — kural sınanamıyor');
+    const govdeMetniOn = await page.locator('body').innerText();
+
+    // Randevu EKRANDA GÖRÜNENLER arasından seçiliyor. Önceki hâli API
+    // listesinden herhangi birini alıyordu; CRM ekranı farklı bir alt küme
+    // (yaklaşanlar) gösterdiği için seçilen kayıt çoğu zaman sayfada
+    // olmuyordu ve test, çalışan bir özelliği kırık gösteriyordu.
+    const uygun = (govde?.data || []).find(
+      (a) => a.doctor_can_reject && a.starts_at && a.timezone
+        && govdeMetniOn.includes(String(a.id).slice(0, 8)),
+    );
+    test.skip(!uygun, 'Ekranda görünen reddedilebilir randevu yok — kural sınanamıyor');
 
     const saat = (tz) => new Intl.DateTimeFormat('tr-TR', {
       hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz,
