@@ -35,3 +35,19 @@ test geçer. Ara katmanı kanıtlamak için gerçek `Authorization: Bearer` şar
 
 **PHP tuzağı:** `AYARLAR + ['k' => true]` SOLDAKİ anahtarı korur, ezmez.
 Varsayılanı geçersiz kılmak için `array_merge`.
+
+## JSON yanıtında ham metin araması sessizce boşa çıkıyor
+
+**Olay:** Sohbet sızıntı testlerinde `assertStringNotContainsString('göğsümde
+baskı', $yanit->getContent())` yazdım. Laravel JSON'u `ö` biçiminde
+kaçırdığı için ham gövde o baytları HİÇBİR ZAMAN içermiyor — doğrulama her
+koşulda geçiyordu. Aramanın tek dayanağı buydu; test hiçbir şey ölçmüyordu.
+
+**Kural:** Yanıt gövdesinde sızıntı ararken ASCII dışı metin kullanma.
+`$yanit->json()` ile çözülmüş yapıya bak, alanları toplayıp karşılaştır.
+UUID gibi ASCII değerlerde dizge araması güvenli.
+
+**Genel kural:** Her negatif doğrulamanın yanına pozitif kontrol koy —
+"katılımcı kendi mesajını BULABİLİYOR". Onsuz "yabancı bulamadı" sonucu,
+aramanın hiç çalışmamasıyla ayırt edilemez. Bu tuzağı bana yine pozitif
+kontrol yakalattı.
