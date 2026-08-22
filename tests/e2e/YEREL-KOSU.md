@@ -71,6 +71,27 @@ ile giriş hiç denenmez — yerel tohumda `@demo.com` adresleri yok.
 cd backend && cp .env.canli.yedek .env && php artisan config:clear
 ```
 
+## CORS — bu ayar olmadan hiçbir kimlikli istek geçmez
+
+Ön yüz API'yi doğrudan `http://127.0.0.1:8001` üzerinden çağırıyor. Arka
+ucun izinli kökenlerinde yerel adres yoksa TARAYICI tüm XHR'leri engelliyor
+ve testler "sunucuya kaydedilmedi" ya da zaman aşımı olarak kırılıyor —
+uygulama hatası gibi görünür, değildir.
+
+`.env.e2e` içinde:
+
+```
+CORS_ALLOWED_ORIGINS=http://127.0.0.1:3100,http://localhost:3100,http://localhost:3000
+FRONTEND_URL=http://127.0.0.1:3100
+```
+
+Bu tek ayar, yerel koşudaki kırıkların çoğunu ortadan kaldırdı: fatura,
+profil ve bildirim testleri bundan sonra geçti. Belirti çok yanıltıcıydı —
+"Ad sunucuya kaydedilmedi" mesajı kaydetme mantığını suçluyor gibi
+duruyordu; asıl neden tarayıcı konsolundaki CORS engeliydi.
+
+**Teşhis:** Kırıkta önce TARAYICI KONSOLUNU okuyun, ekran görüntüsünü değil.
+
 ## Bilinen tuzaklar
 
 **Bayat `.next` önbelleği 500 üretiyor.** Sayfalar SSR sırasında

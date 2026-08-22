@@ -108,3 +108,16 @@ hatasına (yayın kesintisi randevuyu öldürüyor) çıktı.
 **Kural:** Kırık sayısını değil, kırık SINIFINI raporla. Önce hata
 mesajlarına göre grupla, sonra her grup için "bu ortam mı uygulama mı"
 sorusunu ölç.
+
+## "Sunucuya kaydedilmedi" demek sunucunun suçu demek değil
+
+Yerel e2e'de profil ve bildirim testleri "Ad sunucuya kaydedilmedi" diye
+kırılıyordu. Kaydetme mantığını incelemeye başlamıştım. Gerçek sebep
+tarayıcı konsolundaydı: CORS engeli. Ön yüz 3100'den API'yi 8001'de
+çağırıyor, izinli köken listesinde yok, tüm kimlikli XHR'ler ERR_FAILED.
+
+Tek satırlık ayar, 14 zaman aşımının çoğunu ortadan kaldırdı.
+
+**Kural:** Ön yüz testinde "kaydedilmedi / yüklenmedi" belirtisi görünce
+ilk bakılacak yer AĞ ve KONSOL; uygulama mantığı sonra. Belirti hep
+uygulamayı işaret ediyormuş gibi okunur.
