@@ -113,3 +113,29 @@ daha uygun — bu bir iş kararı.
 
 Bilerek dokunulmadı: sözleşme metnini çevirmek hukuki sonuç doğurur, yazılım
 kararı değil. Metinlerin sahibinden onay gelmeden çevrilmemeli.
+
+---
+
+## 7. İletişim mesajı ekleri herkese açık diskte — KOD DEĞİŞİKLİĞİ GEREKİYOR
+
+`ContactMessageController::store` ekleri `public` diskine yazıyor:
+
+```php
+$file->storeAs('contact-messages/' . $message->id, $filename, 'public');
+```
+
+Yani dosya `/storage/contact-messages/<mesaj-id>/<uuid>.<uzantı>` adresinden
+**oturum olmadan** doğrudan indirilebiliyor. İndirme ucuna yetkilendirme
+eklendi (bkz. IletisimMesajiErisimTest) ama bu, dosyanın kendi adresini
+kapatmıyor: adres bir kez sızarsa (paylaşılan bağlantı, tarayıcı geçmişi,
+sunucu günlüğü) kalıcı olarak açık kalır.
+
+Yol iki UUID içerdiği için tahmin edilemez; risk tahminde değil, sızmada.
+
+Sohbet ekleri aynı sebeple daha önce özel diske + şifreli saklamaya taşınmıştı
+([[phi-file-storage-security]]); iletişim mesajı ekleri o geçişte atlanmış.
+
+**Yapılacak:** ekleri `local` (özel) diske taşı, `EncryptedFileStorage` ile
+sakla ve yalnızca yetkilendirilmiş uçtan sun. Mevcut dosyalar için taşıma
+göçü gerekir — bu yüzden tek başına küçük bir düzeltme değil, planlanması
+gereken bir iş.

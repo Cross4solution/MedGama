@@ -151,9 +151,39 @@ class ContactMessageController extends Controller
      * GET /api/contact-messages/{id}
      * Show single message + mark as read.
      */
-    public function show(Request $request, string $id): JsonResponse
+    /**
+     * Mesaja erişebilecek kişi: gönderen ya da alıcı.
+     *
+     * inbox() rolüne göre süzülüyordu ama show/destroy/downloadAttachment
+     * hiçbir kontrol yapmıyordu: kimliği bilen HERHANGİ bir oturumlu kullanıcı
+     * başka kliniğe gelen mesajı okuyabiliyor, ekini indirebiliyor ve kalıcı
+     * olarak silebiliyordu. Listeyi süzmek tek başına erişim kontrolü değil.
+     */
+    private function erisebilirMesaj(Request $request, string $id): ContactMessage
     {
         $message = ContactMessage::with(['sender:id,fullname,avatar,email', 'attachments'])->findOrFail($id);
+        $user = $request->user();
+
+        if ($user->id === $message->sender_id) {
+            return $message;
+        }
+
+        $alici = match ($message->receiver_type) {
+            'doctor' => $user->id === $message->receiver_id,
+            'clinic' => Clinic::where('id', $message->receiver_id)
+                ->where('owner_id', $user->id)
+                ->exists(),
+            default  => false,
+        };
+
+        abort_unless($alici || $user->isAdmin(), 403, 'Bu mesaja erişim yetkiniz yok.');
+
+        return $message;
+    }
+
+    public function show(Request $request, string $id): JsonResponse
+    {
+        $message = $this->erisebilirMesaj($request, $id);
 
         // Mark as read
         if (!$message->is_read) {
@@ -168,7 +198,7 @@ class ContactMessageController extends Controller
      */
     public function destroy(Request $request, string $id): JsonResponse
     {
-        $message = ContactMessage::findOrFail($id);
+        $message = $this->erisebilirMesaj($request, $id);
 
         // Delete attachment files
         foreach ($message->attachments as $att) {
@@ -186,7 +216,7 @@ class ContactMessageController extends Controller
      */
     public function downloadAttachment(Request $request, string $id, string $attachmentId)
     {
-        $message    = ContactMessage::findOrFail($id);
+        $message    = $this->erisebilirMesaj($request, $id);
         $attachment = ContactMessageAttachment::where('contact_message_id', $message->id)->findOrFail($attachmentId);
 
         $disk = Storage::disk('public');
