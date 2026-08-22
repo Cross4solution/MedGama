@@ -182,9 +182,17 @@ class PatientService
             return;
         }
 
+        // Klinik sahibinin bağı boşsa hiçbir randevu eşleşmemeli.
+        // `where('clinic_id', null)` Laravel'de `IS NULL`'a dönüşüp kliniğe
+        // bağlı OLMAYAN randevuları eşliyor; aşağıdaki `abort` yalnız ROLE
+        // baktığı için bu, bağımsız bir doktorun hastasına erişim demek
+        // olurdu. Bugün CRM abonelik kapısı bu hesabı zaten kesiyor (ölçüldü:
+        // 403), yani gizil kusur — kapı gevşerse canlı sızıntıya döner.
         $iliski = Appointment::where('patient_id', $patientId)
             ->when($accessor->isDoctor(), fn ($q) => $q->where('doctor_id', $accessor->id))
-            ->when($accessor->isClinicOwner(), fn ($q) => $q->where('clinic_id', $accessor->clinic_id))
+            ->when($accessor->isClinicOwner(), fn ($q) => $accessor->clinic_id
+                ? $q->where('clinic_id', $accessor->clinic_id)
+                : $q->whereRaw('1 = 0'))
             ->exists();
 
         // Ne doktor ne klinik sahibi olan bir rol buraya hiç gelmemeli.
@@ -584,7 +592,11 @@ class PatientService
         CrmProcessStage::active()
             ->where('patient_id', $patientId)
             ->when($user->isDoctor(), fn($q) => $q->where('doctor_id', $user->id))
-            ->when($user->isClinicOwner(), fn($q) => $q->where('clinic_id', $user->clinic_id))
+            // Aynı boş-bağ kusuru YAZMA tarafında: bağı olmayan bir klinik
+            // sahibi, bağımsız doktorların aşama kayıtlarını pasife çekerdi.
+            ->when($user->isClinicOwner(), fn($q) => $user->clinic_id
+                ? $q->where('clinic_id', $user->clinic_id)
+                : $q->whereRaw('1 = 0'))
             ->update(['is_active' => false]);
 
         return CrmProcessStage::create([
