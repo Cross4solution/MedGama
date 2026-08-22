@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Clinic;
 use App\Models\User;
 use App\Models\DoctorProfile;
 use Illuminate\Support\Facades\Cache;
@@ -55,8 +56,13 @@ class SitemapController extends Controller
         }
 
         // ── Doctor profiles ──
+        // "is_suspended" diye bir sütun YOK — ne göçlerde ne modelde; kodda
+        // yalnızca burada geçiyordu. Bu yüzden /sitemap.xml canlıda her
+        // istekte SQL hatası verip 500 dönüyordu. Doğru süzgeç is_active:
+        // hesabını silen kullanıcı is_active=false oluyor ve haritada
+        // kalmamalı.
         $doctors = User::where('role_id', 'doctor')
-            ->where('is_suspended', false)
+            ->where('is_active', true)
             ->whereNotNull('fullname')
             ->select('id', 'updated_at')
             ->limit(5000)
@@ -72,9 +78,12 @@ class SitemapController extends Controller
         }
 
         // ── Clinic profiles ──
-        $clinics = User::where('role_id', 'clinicOwner')
-            ->where('is_suspended', false)
-            ->whereNotNull('fullname')
+        // Klinikler users tablosundan çekiliyordu ve oradan "codename"
+        // seçiliyordu — o sütun users'ta YOK, clinics'te var. İkinci bir
+        // hayalet sütun; uç zaten çalışmadığı için fark edilmemiş.
+        // Doğrusu doğrudan clinics tablosu.
+        $clinics = Clinic::where('is_active', true)
+            ->whereNotNull('codename')
             ->select('id', 'codename', 'updated_at')
             ->limit(5000)
             ->get();
