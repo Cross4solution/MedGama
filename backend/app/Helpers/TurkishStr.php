@@ -37,21 +37,40 @@ class TurkishStr
      * Usage:
      *   TurkishStr::addNormalizedSearch($query, 'users.fullname', $term);
      */
+    /**
+     * LIKE kalıbındaki özel karakterleri etkisizleştirir.
+     *
+     * Parametre bağlama SQL enjeksiyonunu durduruyor ama `%` ve `_` yine de
+     * KALIP olarak yorumlanıyor: kullanıcı tek karakter `%` yazdığında desen
+     * "%%%" oluyor ve her kayda uyuyor. Açık otomatik tamamlamada bu, ad
+     * bilmeden liste çekmek demekti.
+     *
+     * Ters bölü önce kaçmalı, yoksa sonradan eklenen kaçışlar ikinci kez
+     * kaçırılır.
+     */
+    private static function likeKacir(string $term): string
+    {
+        return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $term);
+    }
+
     public static function addNormalizedSearch($query, string $column, string $term, string $boolean = 'or'): void
     {
-        $lowerTerm      = mb_strtolower($term);
-        $normalizedTerm = mb_strtolower(self::normalize($term));
+        $lowerTerm      = self::likeKacir(mb_strtolower($term));
+        $normalizedTerm = self::likeKacir(mb_strtolower(self::normalize($term)));
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
 
         $query->where(function ($q) use ($column, $lowerTerm, $normalizedTerm, $driver) {
+            // ESCAPE açıkça yazılıyor: MySQL ve Postgres ters bölüyü zaten
+            // varsayıyor, SQLite varsaymıyor — belirtmezsek kaçışlar sürücüye
+            // göre farklı davranır.
             // 1) Original term against original column (case-insensitive)
-            $q->whereRaw("LOWER({$column}) LIKE ?", ["%{$lowerTerm}%"]);
+            $q->whereRaw("LOWER({$column}) LIKE ? ESCAPE '\\'", ["%{$lowerTerm}%"]);
 
             // 2) Normalized column LIKE normalized term. TRANSLATE() is Postgres-only;
             //    MySQL/TiDB/SQLite have no TRANSLATE → use a chained REPLACE() instead.
             if ($driver === 'pgsql') {
                 $q->orWhereRaw(
-                    "LOWER(TRANSLATE({$column}, ?, ?)) LIKE ?",
+                    "LOWER(TRANSLATE({$column}, ?, ?)) LIKE ? ESCAPE '\\'",
                     [self::$trFrom, self::$trTo, "%{$normalizedTerm}%"]
                 );
             } else {
@@ -59,7 +78,7 @@ class TurkishStr
                 foreach (self::$map as $tr => $ascii) {
                     $expr = "REPLACE({$expr}, '" . mb_strtolower($tr) . "', '" . mb_strtolower($ascii) . "')";
                 }
-                $q->orWhereRaw("{$expr} LIKE ?", ["%{$normalizedTerm}%"]);
+                $q->orWhereRaw("{$expr} LIKE ? ESCAPE '\\'", ["%{$normalizedTerm}%"]);
             }
         }, boolean: $boolean);
     }
