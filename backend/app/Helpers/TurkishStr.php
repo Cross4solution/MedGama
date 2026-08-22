@@ -45,12 +45,19 @@ class TurkishStr
      * "%%%" oluyor ve her kayda uyuyor. Açık otomatik tamamlamada bu, ad
      * bilmeden liste çekmek demekti.
      *
-     * Ters bölü önce kaçmalı, yoksa sonradan eklenen kaçışlar ikinci kez
-     * kaçırılır.
+     * Kaçış karakterinin kendisi de önce kaçmalı, yoksa sonradan eklenen
+     * kaçışlar ikinci kez kaçırılır.
      */
+    /** LIKE kaçış karakteri. Ters bölü OLAMAZ — MySQL'de dizgeyi bozar. */
+    private const LIKE_KACIS = '!';
+
     private static function likeKacir(string $term): string
     {
-        return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $term);
+        return str_replace(
+            [self::LIKE_KACIS, '%', '_'],
+            [self::LIKE_KACIS . self::LIKE_KACIS, self::LIKE_KACIS . '%', self::LIKE_KACIS . '_'],
+            $term,
+        );
     }
 
     public static function addNormalizedSearch($query, string $column, string $term, string $boolean = 'or'): void
@@ -63,14 +70,20 @@ class TurkishStr
             // ESCAPE açıkça yazılıyor: MySQL ve Postgres ters bölüyü zaten
             // varsayıyor, SQLite varsaymıyor — belirtmezsek kaçışlar sürücüye
             // göre farklı davranır.
+            //
+            // Kaçış karakteri TERS BÖLÜ OLAMAZ. MySQL/TiDB dizge içinde ters
+            // bölüyü kaçış sayıyor, dolayısıyla `ESCAPE '\'` kapanmamış bir
+            // dizge oluyor ve sorgu sözdizimi hatasıyla düşüyor: canlıda arama
+            // ucu 500 verdi, yerelde bütün testler yeşildi. SQLite ters bölüyü
+            // düz karakter sayıyor. '!' üç sürücüde de özel değil.
             // 1) Original term against original column (case-insensitive)
-            $q->whereRaw("LOWER({$column}) LIKE ? ESCAPE '\\'", ["%{$lowerTerm}%"]);
+            $q->whereRaw("LOWER({$column}) LIKE ? ESCAPE '" . self::LIKE_KACIS . "'", ["%{$lowerTerm}%"]);
 
             // 2) Normalized column LIKE normalized term. TRANSLATE() is Postgres-only;
             //    MySQL/TiDB/SQLite have no TRANSLATE → use a chained REPLACE() instead.
             if ($driver === 'pgsql') {
                 $q->orWhereRaw(
-                    "LOWER(TRANSLATE({$column}, ?, ?)) LIKE ? ESCAPE '\\'",
+                    "LOWER(TRANSLATE({$column}, ?, ?)) LIKE ? ESCAPE '" . self::LIKE_KACIS . "'",
                     [self::$trFrom, self::$trTo, "%{$normalizedTerm}%"]
                 );
             } else {
@@ -78,7 +91,7 @@ class TurkishStr
                 foreach (self::$map as $tr => $ascii) {
                     $expr = "REPLACE({$expr}, '" . mb_strtolower($tr) . "', '" . mb_strtolower($ascii) . "')";
                 }
-                $q->orWhereRaw("{$expr} LIKE ? ESCAPE '\\'", ["%{$normalizedTerm}%"]);
+                $q->orWhereRaw("{$expr} LIKE ? ESCAPE '" . self::LIKE_KACIS . "'", ["%{$normalizedTerm}%"]);
             }
         }, boolean: $boolean);
     }

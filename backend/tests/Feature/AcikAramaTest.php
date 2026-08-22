@@ -248,6 +248,29 @@ class AcikAramaTest extends TestCase
         $this->assertNotContains('Gizlenecek Doktor', $this->isimler($this->ara('%')));
     }
 
+    public function test_like_kacis_karakteri_ters_bolu_degil(): void
+    {
+        // CANLIDA ÇIKAN ARIZA: `ESCAPE '\\'` yazılmıştı. MySQL/TiDB dizge
+        // içinde ters bölüyü kaçış sayıyor, dolayısıyla o literal kapanmıyor
+        // ve sorgu sözdizimi hatasıyla düşüyor — arama ucu 500 verdi. SQLite
+        // ters bölüyü düz karakter saydığı için buradaki testlerin HEPSİ
+        // yeşildi.
+        //
+        // Yerel sürücü bu sınıfı hiçbir zaman gösteremeyeceği için davranış
+        // değil ÜRETİLEN SQL denetleniyor.
+        $sorgu = \App\Models\User::query();
+        \App\Helpers\TurkishStr::addNormalizedSearch($sorgu, 'fullname', 'deneme');
+
+        $sql = $sorgu->toSql();
+
+        $this->assertStringNotContainsString(
+            "ESCAPE '\\'",
+            $sql,
+            'LIKE kaçış karakteri ters bölü — MySQL/TiDB bu sorguyu çalıştıramaz',
+        );
+        $this->assertStringContainsString('ESCAPE', $sql, 'ESCAPE yan tümcesi hiç üretilmemiş');
+    }
+
     public function test_sonuc_sayisi_sinirli(): void
     {
         // Sınır kalkarsa tek istekle tüm doktor listesi dışarı çıkar.
