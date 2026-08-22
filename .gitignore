@@ -43,3 +43,8 @@ next-env.d.ts
 
 # Tarama raporları: üretilen çıktı, depoya girmez.
 /tests/e2e/rapor/
+
+# Yerel e2e/MySQL kosusu icin turetilen ortam dosyalari.
+# `.env.canli.yedek` CANLI GIZLI ANAHTARLARI tasiyor: asla islenmemeli.
+.env.*yedek
+.env.e2e
