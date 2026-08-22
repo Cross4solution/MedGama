@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CalendarSlot;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -25,6 +26,41 @@ class CalendarSlotService
             ->orderBy('slot_date')
             ->orderBy('start_time')
             ->paginate($filters['per_page'] ?? 50);
+    }
+
+    /**
+     * Takvimi yönetme yetkisi — hekimin kendisi, kliniği ya da yönetici.
+     *
+     * Bu denetim HİÇ YOKTU. Sonuçları uçtan ölçüldü: bir hekim başka bir
+     * hekimin adına slot açabiliyor (201) ve mevcut slotlarını müsait
+     * olmaktan çıkarabiliyordu (200). İkincisi rakibin takvimini dolu
+     * göstermek demek — hasta o hekimden randevu alamaz ve kimse bir şeyin
+     * yanlış olduğunu görmez.
+     *
+     * `doctor_id` istekten geldiği için doğrulama tek başına yetmiyor:
+     * geçerli bir kimlik olması, ÇAĞIRANIN o takvime yetkili olduğu
+     * anlamına gelmiyor.
+     */
+    public function yetkiliMi(User $aktor, string $doctorId): bool
+    {
+        if ($aktor->isAdmin() || $aktor->id === $doctorId) {
+            return true;
+        }
+
+        // Klinik sahibi kendi kliniğine bağlı hekimlerin takvimini yönetebilir.
+        if ($aktor->isClinicOwner() && $aktor->clinic_id) {
+            return User::where('id', $doctorId)
+                ->where('clinic_id', $aktor->clinic_id)
+                ->exists();
+        }
+
+        return false;
+    }
+
+    /** Yetki yoksa isteği keser. */
+    public function yetkiZorunlu(User $aktor, string $doctorId): void
+    {
+        abort_unless($this->yetkiliMi($aktor, $doctorId), 403, 'Bu takvimi yönetme yetkiniz yok.');
     }
 
     /**
@@ -67,9 +103,11 @@ class CalendarSlotService
     /**
      * Update a calendar slot.
      */
-    public function update(string $id, array $data): CalendarSlot
+    public function update(string $id, array $data, User $aktor): CalendarSlot
     {
         $slot = CalendarSlot::active()->findOrFail($id);
+        $this->yetkiZorunlu($aktor, $slot->doctor_id);
+
         $slot->update($data);
 
         return $slot->refresh();
@@ -78,9 +116,14 @@ class CalendarSlotService
     /**
      * Soft-delete a calendar slot.
      */
-    public function destroy(string $id): void
+    public function destroy(string $id, User $aktor): void
     {
         $slot = CalendarSlot::active()->findOrFail($id);
-        $slot->update(['is_active' => false]);
+        $this->yetkiZorunlu($aktor, $slot->doctor_id);
+
+        // `is_active` $fillable İÇİNDE DEĞİL, dolayısıyla update() onu sessizce
+        // eliyordu: uç 200 dönüyor ama slot silinmiyordu. forceFill toplu
+        // atama korumasını bozmadan bu tek alanı yazıyor.
+        $slot->forceFill(['is_active' => false])->save();
     }
 }

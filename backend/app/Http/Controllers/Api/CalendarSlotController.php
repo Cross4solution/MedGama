@@ -35,6 +35,9 @@ class CalendarSlotController extends Controller
      */
     public function store(StoreCalendarSlotRequest $request): JsonResponse
     {
+        // doctor_id istekten geliyor; doğrulanmış olması yetkili olmak demek değil.
+        $this->calendarSlotService->yetkiZorunlu($request->user(), $request->validated()['doctor_id']);
+
         $slot = $this->calendarSlotService->store($request->validated());
 
         return (new CalendarSlotResource($slot))
@@ -47,6 +50,8 @@ class CalendarSlotController extends Controller
      */
     public function bulkStore(BulkStoreCalendarSlotRequest $request): JsonResponse
     {
+        $this->calendarSlotService->yetkiZorunlu($request->user(), $request->validated()['doctor_id']);
+
         $result = $this->calendarSlotService->bulkStore($request->validated());
 
         return response()->json([
@@ -60,7 +65,7 @@ class CalendarSlotController extends Controller
      */
     public function update(UpdateCalendarSlotRequest $request, string $id): JsonResponse
     {
-        $slot = $this->calendarSlotService->update($id, $request->validated());
+        $slot = $this->calendarSlotService->update($id, $request->validated(), $request->user());
 
         return (new CalendarSlotResource($slot))->response();
     }
@@ -68,9 +73,9 @@ class CalendarSlotController extends Controller
     /**
      * DELETE /api/calendar-slots/{id}
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, Request $request): JsonResponse
     {
-        $this->calendarSlotService->destroy($id);
+        $this->calendarSlotService->destroy($id, $request->user());
 
         return response()->json(['message' => 'Slot deleted.']);
     }
