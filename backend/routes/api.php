@@ -984,9 +984,16 @@ Route::prefix('support')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/stats', [TicketController::class, 'stats']);
 
     // Category management (admin)
-    Route::post('/categories', [TicketController::class, 'storeCategory']);
-    Route::put('/categories/{id}', [TicketController::class, 'updateCategory']);
-    Route::delete('/categories/{id}', [TicketController::class, 'destroyCategory']);
+    //
+    // Rol ara katmanı EKSİKTİ: yorum "admin" diyordu ama grup yalnız
+    // auth:sanctum taşıyordu ve denetleyicide de rol denetimi yoktu.
+    // Ölçüldü — bir HASTA hesabı destek kategorisini yeniden adlandırdı (200)
+    // ve sildi (200). Silinen kategori ona bağlı bütün talepleri etkiliyor.
+    Route::middleware('role:superAdmin,saasAdmin')->group(function () {
+        Route::post('/categories', [TicketController::class, 'storeCategory']);
+        Route::put('/categories/{id}', [TicketController::class, 'updateCategory']);
+        Route::delete('/categories/{id}', [TicketController::class, 'destroyCategory']);
+    });
 });
 
 /*
