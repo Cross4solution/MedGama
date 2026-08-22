@@ -164,6 +164,11 @@ export default function Profile() {
     try { localStorage.setItem('preferred_language', lang); } catch {}
     try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
     try { await authAPI.updateProfile({ preferred_language: lang }); } catch {}
+
+    // Çeviri hedefi de bu tercihten geliyor. Tazelenmezse bağlam eski dili
+    // tutuyor ve içerik ÖNCEKİ dile çevrilmeye devam ediyor — anahtarı açıp
+    // kapatmakla aynı sorunun ikinci tetikleyicisi.
+    await ceviriBaglami.yenile();
   };
 
   // Mock preferences (persist localStorage)

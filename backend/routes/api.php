@@ -345,7 +345,13 @@ Route::put('/medstream/posts/{post}/subtitles/{lang}', [\App\Http\Controllers\Ap
 
 // İçerik çevirisi. Durum sorgusu herkese açık (giriş yapmamış kullanıcı da
 // düğmenin durumunu görebilmeli); çeviri isteği oturum gerektirir.
-Route::get('/translation/status', [\App\Http\Controllers\Api\TranslationController::class, 'status']);
+//
+// `optional.auth` ŞART: rota düz açık bırakıldığında jeton gönderilse bile
+// $request->user() null geliyordu, denetim `: false`'a düşüyor ve uç GİRİŞ
+// YAPMIŞ HERKESE `enabled: false` diyordu. Tercih doğru kaydediliyor, ön yüz
+// durumu buradan okuduğu için içerik hiç çevrilmiyordu.
+Route::get('/translation/status', [\App\Http\Controllers\Api\TranslationController::class, 'status'])
+    ->middleware('optional.auth');
 Route::post('/translation/batch', [\App\Http\Controllers\Api\TranslationController::class, 'batch'])
     ->middleware('auth:sanctum');
 // Ters-geocode sunucu tarafında: hasta tarayıcısı 3. taraf servise bağlanmaz
