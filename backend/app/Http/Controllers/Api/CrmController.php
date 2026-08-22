@@ -17,11 +17,7 @@ class CrmController extends Controller
         $user = $request->user();
         $query = CrmTag::active();
 
-        if ($user->isDoctor()) {
-            $query->where('doctor_id', $user->id);
-        } elseif ($user->isClinicOwner()) {
-            $query->where('clinic_id', $user->clinic_id);
-        }
+        $this->kapsamUygula($query, $user);
 
         $query->when($request->patient_id, fn($q, $v) => $q->where('patient_id', $v));
 
@@ -59,11 +55,7 @@ class CrmController extends Controller
         $user = $request->user();
         $query = CrmProcessStage::active();
 
-        if ($user->isDoctor()) {
-            $query->where('doctor_id', $user->id);
-        } elseif ($user->isClinicOwner()) {
-            $query->where('clinic_id', $user->clinic_id);
-        }
+        $this->kapsamUygula($query, $user);
 
         $query->when($request->patient_id, fn($q, $v) => $q->where('patient_id', $v));
 
@@ -112,9 +104,7 @@ class CrmController extends Controller
         $user = $request->user();
         $query = ArchivedClinicRecord::active()->with(['formerDoctor:id,fullname', 'archivedPatient:id,fullname']);
 
-        if ($user->isClinicOwner()) {
-            $query->where('clinic_id', $user->clinic_id);
-        }
+        $this->kapsamUygula($query, $user, doktorSutunu: false);
 
         return response()->json($query->orderByDesc('archived_at')->paginate($request->per_page ?? 20));
     }
@@ -137,4 +127,48 @@ class CrmController extends Controller
 
         return response()->json(['record' => $record], 201);
     }
+
+    /**
+     * CRM sorgusunu rolüne göre kapsar — VARSAYILAN REDDET.
+     *
+     * Buradaki zincirler iki kusuru birden taşıyordu:
+     *
+     *   1. `else` yoktu; doctor/clinicOwner dışındaki roller hiç
+     *      kapsanmıyordu. Arşiv kayıtlarında yalnız clinicOwner ele
+     *      alınmıştı, yani bir doktor bütün kliniklerin arşivini görüyordu.
+     *   2. `where('clinic_id', null)` Laravel'de `IS NULL`'a dönüşüp
+     *      kliniğe bağlı OLMAYAN her kaydı eşliyor — boş kapsam değeri
+     *      "hiçbir şey" değil "hepsi" anlamına geliyordu.
+     *
+     * @param bool $doktorSutunu Tabloda doctor_id var mı (arşiv kayıtlarında yok).
+     */
+    private function kapsamUygula($query, $user, bool $doktorSutunu = true): void
+    {
+        if ($user->isAdmin()) {
+            return;
+        }
+
+        if ($doktorSutunu && $user->isDoctor()) {
+            $query->where('doctor_id', $user->id);
+            return;
+        }
+
+        if ($user->isClinicOwner() || $user->isSalesperson()) {
+            $user->clinic_id
+                ? $query->where('clinic_id', $user->clinic_id)
+                : $query->whereRaw('1 = 0');
+            return;
+        }
+
+        if ($user->isHospital()) {
+            $kimlikler = \App\Support\HastaneKapsami::klinikKimlikleri($user);
+            $kimlikler->isEmpty()
+                ? $query->whereRaw('1 = 0')
+                : $query->whereIn('clinic_id', $kimlikler);
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
+    }
+
 }

@@ -20,7 +20,14 @@ class PatientRecordController extends Controller
         } elseif ($user->isPatient()) {
             $query->where('patient_id', $user->id);
         } elseif ($user->isClinicOwner()) {
-            $query->where('clinic_id', $user->clinic_id);
+            // Boş klinik bağı "hiçbir şey" demek. `where('clinic_id', null)`
+            // Laravel tarafından `IS NULL`'a çevriliyor ve KLİNİĞE BAĞLI
+            // OLMAYAN bütün kayıtları eşliyor — yani bağımsız doktorların
+            // tahlil, tanı ve reçete kayıtları. Ölçüldü: kliniği olmayan bir
+            // klinik sahibi hesabı bu uçtan başkasının kaydını görüyordu.
+            $user->clinic_id
+                ? $query->where('clinic_id', $user->clinic_id)
+                : $query->whereRaw('1 = 0');
         } elseif (!$user->isAdmin()) {
             // Unknown / unprivileged role — never expose other patients' records.
             abort(403, 'Bu kayda erişim yetkiniz yok.');
