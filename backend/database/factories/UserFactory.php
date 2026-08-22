@@ -70,4 +70,16 @@ class UserFactory extends Factory
     {
         return $this->rol('superAdmin');
     }
+
+    /**
+     * Satış temsilcisi.
+     *
+     * Rolün kendi rotaları ve kendine özgü kapsam kuralı var (yalnızca
+     * kendisine atanan adayları görür) ama fabrikada karşılığı yoktu, bu
+     * yüzden hiç test edilememişti.
+     */
+    public function salesperson(): static
+    {
+        return $this->rol('salesperson');
+    }
 }
