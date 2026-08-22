@@ -557,8 +557,9 @@ class AuthService
         ];
         $user->update(['medical_history' => json_encode($new)]);
 
+        // Aynı ölümcül adlandırılmış argüman: anamnez KAYDEDİLİYOR ama
+        // hemen ardından bu çağrı patlıyor ve hasta 500 görüyordu.
         \App\Models\AuditLog::log(
-            user: $user,
             action: 'medical_history_updated',
             resourceType: 'user',
             resourceId: $user->id,

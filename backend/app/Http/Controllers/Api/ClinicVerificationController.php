@@ -121,8 +121,11 @@ class ClinicVerificationController extends Controller
         $path = $verification->{$field};
         abort_unless($path && Storage::disk('local')->exists($path), 404);
 
+        // `user:` diye bir parametre YOK — AuditLog::log() kullanıcıyı
+        // auth()->id() üzerinden alıyor. Adlandırılmış argüman ölümcül bir
+        // hata veriyordu: bu uç her çağrıda 500 dönüyordu, yöneticide de
+        // klinik sahibinde de. Yani ruhsat belgeleri hiç görüntülenemiyordu.
         AuditLog::log(
-            user: $user,
             action: 'verification_document_viewed',
             resourceType: 'clinic_verification',
             resourceId: $verification->id,

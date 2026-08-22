@@ -67,9 +67,10 @@ class BreachNotificationService
 
         // 3. Audit log entry (regulator-facing evidence trail).
         try {
-            $reporterUser = is_numeric($payload['reporter']) ? User::find((int) $payload['reporter']) : null;
+            // Aynı hata burada try/catch içindeydi: istisna yutuluyor ve
+            // denetim kaydı SESSİZCE hiç yazılmıyordu — düzenleyiciye
+            // sunulacak kanıt izi tam da bu.
             AuditLog::log(
-                user: $reporterUser,
                 action: 'security.breach_reported',
                 resourceType: 'security_incident',
                 resourceId: 0,
