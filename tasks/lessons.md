@@ -13,3 +13,25 @@
 ## PHP heredoc kuralı
 - Heredoc içinde SADECE değişken interpolation çalışır. Ternary/method-chain/fonksiyon çağrısı parse error verir.
 - Çözüm: değeri heredoc öncesi bir değişkene hesapla, heredoc'ta `{$var}` kullan.
+
+## Bir ayar "çalışmıyor" derken yazma yoluna kilitlenme
+
+**Olay:** İçerik çevirisi anahtarı. İlk teşhisim yalnızca ön yüzdeki bayat
+durumdu (58456f0) — gerçek hata sunucudaydı: ayarı OKUYAN uç
+(`/api/translation/status`) auth'suz açık rotaydı, `$request->user()` null
+geliyor ve giriş yapmış herkese `enabled: false` diyordu (7cb7672).
+
+**Kural:** Bir tercih kaydedilip de etkisiz görünüyorsa, yazma ucuyla OKUMA
+ucunu ayrı ayrı ölç. İkisi çelişiyorsa hata okuma tarafındadır. Burada
+`notification-preferences` `true`, `translation/status` `false` diyordu —
+çelişki teşhisi tek başına verdi.
+
+**İkinci kural:** Rotanın "herkese açık" olması ile "jeton gelirse kullanıcıyı
+çözmesi" farklı şeyler. Açık rotada kullanıcıya bakan her uç `optional.auth`
+ister.
+
+**Test tuzağı:** `actingAs` muhafazayı doğrudan kurar; ara katman silinse bile
+test geçer. Ara katmanı kanıtlamak için gerçek `Authorization: Bearer` şart.
+
+**PHP tuzağı:** `AYARLAR + ['k' => true]` SOLDAKİ anahtarı korur, ezmez.
+Varsayılanı geçersiz kılmak için `array_merge`.
