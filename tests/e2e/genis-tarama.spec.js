@@ -34,6 +34,9 @@ const HERKESE_ACIK = [
   '/kvkk', '/login', '/medstream', '/privacy', '/privacy-policy', '/register',
   '/search', '/tedaviler', '/telehealth', '/terms', '/terms-of-service',
   '/vasco-ai', '/clinic-login', '/doctor-login', '/hospital-login',
+  // Hata sayfasının KENDİSİ hata vermemeli: bir şey ters gittiğinde
+  // kullanıcının gördüğü son ekran burası.
+  '/server-error',
 ];
 
 const HASTA_ROTALARI = [
@@ -49,11 +52,16 @@ const KLINIK_ROTALARI = [
   '/crm/messages', '/crm/patients', '/crm/prescriptions', '/crm/reports',
   '/crm/revenue', '/crm/reviews', '/crm/salespeople', '/crm/settings',
   '/crm/staff', '/crm/support', '/crm/telehealth',
+  // Taramada eksik kalmışlardı; ölçülerek eklendi.
+  // `/crm/upgrade` ödeme yolunun ucu — bir süre 404 veriyordu.
+  '/crm/patient-360', '/crm/upgrade',
   '/clinic', '/clinic-edit', '/clinic/dashboard', '/clinic/team',
+  '/clinic/onboarding',
 ];
 
 const DOKTOR_ROTALARI = [
   '/doctor/dashboard', '/doctor/appointments', '/doctor/billing', '/doctor-chat',
+  '/onboarding',
 ];
 
 const YONETICI_ROTALARI = [
