@@ -125,7 +125,7 @@ module.exports = async function kurulum(config) {
     if (!apiKok) {
       console.warn(
         'Demo oturumları alınmadı: E2E_API_ORIGIN tanımlı değil.\n' +
-        '  Doğrulanmış hekim/klinik testleri ATLANACAK. Yerel yığın için MYSQL-TEST.md ve E2E.md.',
+        '  Doğrulanmış hekim/klinik testleri ATLANACAK. Yerel yığın için docs/YEREL-TEST.md.',
       );
     } else {
       // Yerel kipte `hasta` ve `doktor` adları da buradan doluyor: mevcut
