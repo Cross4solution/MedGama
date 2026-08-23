@@ -2189,7 +2189,14 @@
       "post_commented": "Комментарий к посту",
       "new_chat_message": "Новое сообщение",
       "ticket_received": "Обращение в поддержку",
-      "default": "Уведомление"
+      "default": "Уведомление",
+      "appointment_rescheduled": "Приём перенесён",
+      "invoice_issued": "Счёт выставлен",
+      "password_changed": "Пароль изменён",
+      "video_call_starting": "Видеозвонок начинается",
+      "welcome": "Добро пожаловать",
+      "ticket_reply": "Ответ поддержки",
+      "new_ticket_admin": "Новое обращение в поддержку"
     },
     "category": {
       "all": "Все",

@@ -2189,7 +2189,14 @@
       "post_commented": "تعليق على المنشور",
       "new_chat_message": "رسالة جديدة",
       "ticket_received": "طلب دعم",
-      "default": "إشعار"
+      "default": "إشعار",
+      "appointment_rescheduled": "تم تغيير موعد الحجز",
+      "invoice_issued": "تم إصدار الفاتورة",
+      "password_changed": "تم تغيير كلمة المرور",
+      "video_call_starting": "مكالمة الفيديو تبدأ",
+      "welcome": "مرحبًا بك",
+      "ticket_reply": "رد الدعم",
+      "new_ticket_admin": "طلب دعم جديد"
     },
     "category": {
       "all": "الكل",

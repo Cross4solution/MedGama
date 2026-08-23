@@ -2926,7 +2926,14 @@
       "post_commented": "Comentario en la publicación",
       "new_chat_message": "Nuevo mensaje",
       "ticket_received": "Ticket de soporte",
-      "default": "Notificación"
+      "default": "Notificación",
+      "appointment_rescheduled": "Cita reprogramada",
+      "invoice_issued": "Factura emitida",
+      "password_changed": "Contraseña cambiada",
+      "video_call_starting": "La videollamada va a empezar",
+      "welcome": "Bienvenido",
+      "ticket_reply": "Respuesta de soporte",
+      "new_ticket_admin": "Nueva solicitud de soporte"
     },
     "category": {
       "all": "Todo",

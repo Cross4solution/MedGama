@@ -2966,7 +2966,14 @@
       "post_commented": "Paylaşım Şərhi",
       "new_chat_message": "Yeni Mesaj",
       "ticket_received": "Dəstək Müraciəti",
-      "default": "Bildiriş"
+      "default": "Bildiriş",
+      "appointment_rescheduled": "Görüş təxirə salındı",
+      "invoice_issued": "Faktura kəsildi",
+      "password_changed": "Parol dəyişdirildi",
+      "video_call_starting": "Video zəng başlayır",
+      "welcome": "Xoş gəlmisiniz",
+      "ticket_reply": "Dəstək cavabı",
+      "new_ticket_admin": "Yeni dəstək müraciəti"
     },
     "category": {
       "all": "Hamısı",

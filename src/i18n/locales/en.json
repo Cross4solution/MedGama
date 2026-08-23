@@ -2208,7 +2208,14 @@
       "post_commented": "Post Comment",
       "new_chat_message": "New Message",
       "ticket_received": "Support Ticket",
-      "default": "Notification"
+      "default": "Notification",
+      "appointment_rescheduled": "Appointment Rescheduled",
+      "invoice_issued": "Invoice Issued",
+      "password_changed": "Password Changed",
+      "video_call_starting": "Video Call Starting",
+      "welcome": "Welcome",
+      "ticket_reply": "Support Reply",
+      "new_ticket_admin": "New Support Ticket"
     },
     "category": {
       "all": "All",

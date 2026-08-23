@@ -39,6 +39,18 @@ export const NOTIFICATION_TYPES = [
   'post_commented',
   'new_chat_message',
   'ticket_received',
+
+  // Arka uç bu türleri de üretiyordu ama liste onları tanımıyordu: tanınmayan
+  // tür sunucunun SABİT İNGİLİZCE başlığına düşüyor. Yani Türk kullanıcı
+  // "Password Changed", "Invoice Issued", "Video Call Starting" görüyordu —
+  // arayüzün geri kalanı Türkçeyken. Yedek çalıştığı için bozuk görünmüyordu.
+  'appointment_rescheduled',
+  'invoice_issued',
+  'password_changed',
+  'video_call_starting',
+  'welcome',
+  'ticket_reply',
+  'new_ticket_admin',
 ];
 
 export const DEFAULT_TITLE_KEY = 'notifications.type.default';

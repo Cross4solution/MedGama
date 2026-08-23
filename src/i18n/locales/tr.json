@@ -2221,7 +2221,14 @@
       "post_commented": "Gönderi Yorumu",
       "new_chat_message": "Yeni Mesaj",
       "ticket_received": "Destek Talebi",
-      "default": "Bildirim"
+      "default": "Bildirim",
+      "appointment_rescheduled": "Randevu Ertelendi",
+      "invoice_issued": "Fatura Kesildi",
+      "password_changed": "Parola Değiştirildi",
+      "video_call_starting": "Görüşme Başlıyor",
+      "welcome": "Hoş Geldiniz",
+      "ticket_reply": "Destek Yanıtı",
+      "new_ticket_admin": "Yeni Destek Talebi"
     },
     "category": {
       "all": "Tümü",

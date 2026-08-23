@@ -2189,7 +2189,14 @@
       "post_commented": "Kommentar zum Beitrag",
       "new_chat_message": "Neue Nachricht",
       "ticket_received": "Support-Anfrage",
-      "default": "Benachrichtigung"
+      "default": "Benachrichtigung",
+      "appointment_rescheduled": "Termin verschoben",
+      "invoice_issued": "Rechnung erstellt",
+      "password_changed": "Passwort geändert",
+      "video_call_starting": "Videoanruf beginnt",
+      "welcome": "Willkommen",
+      "ticket_reply": "Antwort vom Support",
+      "new_ticket_admin": "Neue Support-Anfrage"
     },
     "category": {
       "all": "Alle",

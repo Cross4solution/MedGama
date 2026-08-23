@@ -2926,7 +2926,14 @@
       "post_commented": "Commentaire sur la publication",
       "new_chat_message": "Nouveau message",
       "ticket_received": "Demande d'assistance",
-      "default": "Notification"
+      "default": "Notification",
+      "appointment_rescheduled": "Rendez-vous reporté",
+      "invoice_issued": "Facture émise",
+      "password_changed": "Mot de passe modifié",
+      "video_call_starting": "L’appel vidéo commence",
+      "welcome": "Bienvenue",
+      "ticket_reply": "Réponse du support",
+      "new_ticket_admin": "Nouvelle demande d’assistance"
     },
     "category": {
       "all": "Tout",
