@@ -37,7 +37,9 @@ class BillingService
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
-                $likeOp = \DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+                // Sürücü denetimi TEK yerde: Sorgu::benzer(). Aynı satırın elle
+        // tekrarlanması, sürücü kuralı değiştiğinde birinin unutulması demek.
+        $likeOp = \App\Support\Sorgu::benzer();
                 $q->where('invoice_number', $likeOp, "%{$search}%")
                   ->orWhereHas('patient', fn($pq) => $pq->where('fullname', $likeOp, "%{$search}%"));
             });

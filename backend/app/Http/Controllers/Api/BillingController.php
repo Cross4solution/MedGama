@@ -131,7 +131,9 @@ class BillingController extends Controller
     public function patientSearch(Request $request): JsonResponse
     {
         $q = trim($request->input('q', ''));
-        $likeOp = \DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+        // Sürücü denetimi TEK yerde: Sorgu::benzer(). Aynı satırın elle
+        // tekrarlanması, sürücü kuralı değiştiğinde birinin unutulması demek.
+        $likeOp = \App\Support\Sorgu::benzer();
 
         $patients = \App\Models\User::where('role_id', 'patient')
             ->where(function ($query) use ($q, $likeOp) {
