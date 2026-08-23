@@ -105,9 +105,15 @@ class YazmaUcuYetkiTaramasiTest extends TestCase
 
             $tarananSayisi++;
 
-            // Rol ya da CRM ara katmanı taşıyan uçlar yapısal olarak korunuyor.
+            // Rol ara katmanı taşıyan uçlar yapısal olarak korunuyor.
+            //
+            // `crm.access` BURADA SAYILMIYOR — ve bu, taramanın ilk hâlindeki
+            // hataydı. O ara katman ABONELİK kanıtlar, SAHİPLİK değil: CRM'i
+            // olan her klinik onu geçer. Sayıldığı için sekiz CRM ucu
+            // atlanmıştı ve içlerinden ikisi gerçekten açıktı — bir klinik,
+            // başka bir kliniğin hastasının süreç aşamasını değiştirebiliyordu.
             $ara = implode(' ', $rota->gatherMiddleware());
-            if (str_contains($ara, 'role:') || str_contains($ara, 'crm.access')) {
+            if (str_contains($ara, 'role:')) {
                 continue;
             }
 

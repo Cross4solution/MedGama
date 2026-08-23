@@ -42,9 +42,23 @@ class CrmController extends Controller
         return response()->json(['tag' => $tag], 201);
     }
 
-    public function destroyTag(string $id)
+    public function destroyTag(Request $request, string $id)
     {
-        CrmTag::active()->findOrFail($id)->update(['is_active' => false]);
+        // Kapsam SORGUYA uygulanıyor: kapsam dışı bir kayıt 404 döner, yani
+        // varlığı da ele verilmez.
+        //
+        // Eskiden yalnızca `findOrFail` vardı: bir klinik, kimliğini bildiği
+        // BAŞKA bir kliniğin etiketini silebiliyordu. Okuma tarafı zaten
+        // varsayılan-ret ile kapsanmıştı, yazma tarafı kapsanmamıştı.
+        $query = CrmTag::active();
+        $this->kapsamUygula($query, $request->user());
+
+        $etiket = $query->findOrFail($id);
+
+        // `is_active` FILLABLE DEĞİL: `update(['is_active' => false])` sessizce
+        // düşüyordu. Uç "Tag deleted." diyor, kayıt duruyordu — ölçüldü.
+        $etiket->forceFill(['is_active' => false])->save();
+
         return response()->json(['message' => 'Tag deleted.']);
     }
 
@@ -83,7 +97,12 @@ class CrmController extends Controller
 
     public function updateStage(Request $request, string $id)
     {
-        $stage = CrmProcessStage::active()->findOrFail($id);
+        // Kapsam olmadan bir klinik, başka bir kliniğin hastasının süreç
+        // aşamasını değiştirebiliyordu. Ölçüldü: 200 döndü ve değer değişti.
+        $query = CrmProcessStage::active();
+        $this->kapsamUygula($query, $request->user());
+
+        $stage = $query->findOrFail($id);
 
         $validated = $request->validate([
             'stage' => 'required|string|max:100',
