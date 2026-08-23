@@ -22,18 +22,26 @@ class HizSiniriYanitiTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** Testin kendi sınırı — ortam değişkenine bağlı kalmamak için. */
+    private const SINIR = 20;
+
     protected function setUp(): void
     {
         parent::setUp();
         RateLimiter::clear('api');
+
+        // Sınır artık yapılandırılabilir (config/app.php) ve yerel .env onu
+        // e2e koşusu için yükseltebiliyor. Test ortamdan gelen değere
+        // güvenirse orada sessizce düşer — kendi değerini koyuyor.
+        config(['app.api_rate_limit' => self::SINIR]);
     }
 
     public function test_sinir_asilinca_500_degil_429_donuyor(): void
     {
-        // Sınır dakikada 120; onu aşana kadar aynı ucu çağır.
+        // Sınırı aşana kadar aynı ucu çağır.
         $sonKod = null;
 
-        for ($i = 0; $i < 130; $i++) {
+        for ($i = 0; $i < self::SINIR + 10; $i++) {
             $sonKod = $this->getJson('/api/health')->getStatusCode();
 
             if ($sonKod === 429) {
@@ -52,7 +60,7 @@ class HizSiniriYanitiTest extends TestCase
     {
         $yanit = null;
 
-        for ($i = 0; $i < 130; $i++) {
+        for ($i = 0; $i < self::SINIR + 10; $i++) {
             $yanit = $this->getJson('/api/health');
 
             if ($yanit->getStatusCode() === 429) {

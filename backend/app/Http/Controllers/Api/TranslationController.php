@@ -83,8 +83,20 @@ class TranslationController extends Controller
         $hedef = $veri['target'] ?? $request->user()?->preferred_language ?? 'en';
         $dısServis = config('translation.provider') !== 'libretranslate';
 
+        // Duvar-saati bütçesi: bkz. config/translation.php. Bütçe dolduğunda
+        // kalanlar çevrilmeden dönüyor — içerik özgün dilinde kalır ama akış
+        // ayakta kalır. Alternatifi, bir işçiyi dakikalarca tutup sayfanın
+        // tamamını düşürmek.
+        $butce = (float) config('translation.batch_budget', 6.0);
+        $baslangic = microtime(true);
+
         $sonuc = [];
         foreach ($veri['items'] as $k) {
+            if (microtime(true) - $baslangic >= $butce) {
+                $sonuc[$k['key']] = ['text' => $k['text'], 'translated' => false, 'reason' => 'budget'];
+                continue;
+            }
+
             // Hasta mesajı dışarıdaki bir servise gönderilmez.
             if ($dısServis && ($k['kind'] ?? 'post') === 'message') {
                 $sonuc[$k['key']] = ['text' => $k['text'], 'translated' => false, 'reason' => 'private'];
