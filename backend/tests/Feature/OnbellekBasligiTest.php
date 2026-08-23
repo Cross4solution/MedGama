@@ -62,4 +62,37 @@ class OnbellekBasligiTest extends TestCase
 
         $this->assertStringContainsString('no-store', $yanit->headers->get('Cache-Control'));
     }
+
+    public function test_herkese_acik_yanit_dile_gore_ayristiriliyor(): void
+    {
+        // Yanıt gövdesi `Accept-Language`'e göre GERÇEKTEN değişiyor: göreli
+        // zamanlar ve uzmanlık adları kullanıcının dilinde dönüyor. Ölçüldü —
+        // aynı adres, tr: "1 gün önce", de: "vor 1 Tag".
+        //
+        // `Vary` bunu söylemiyordu. Bugün zararsız, çünkü CDN bu yanıtları
+        // hiç tutmuyor (canlıda ölçüldü: `cf-cache-status: DYNAMIC`). Ama
+        // önbellek açıldığı an — gecikmeyi düşürmek için yapılacak ilk şey —
+        // bir dilin yanıtı başka dildeki kullanıcıya servis edilir.
+        $yanit = $this->getJson('/api/catalog/specialties')->assertOk();
+
+        $vary = $yanit->headers->get('Vary');
+
+        $this->assertNotNull($vary, 'herkese açık yanıtta Vary başlığı yok');
+        $this->assertStringContainsStringIgnoringCase(
+            'Accept-Language',
+            $vary,
+            "Yanıt dile göre değişiyor ama Vary bunu bildirmiyor: {$vary}",
+        );
+    }
+
+    public function test_ozel_yanitta_gereksiz_vary_eklenmiyor(): void
+    {
+        // Ters uç: `no-store` yanıtlar zaten paylaşılan önbelleğe girmiyor;
+        // oraya Vary eklemek anlamsız gürültü olurdu.
+        $kullanici = \App\Models\User::factory()->patient()->create();
+
+        $yanit = $this->actingAs($kullanici, 'sanctum')->getJson('/api/auth/me')->assertOk();
+
+        $this->assertStringContainsString('no-store', (string) $yanit->headers->get('Cache-Control'));
+    }
 }

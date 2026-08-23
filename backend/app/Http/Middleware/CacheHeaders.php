@@ -54,6 +54,7 @@ class CacheHeaders
                 'Cache-Control',
                 "public, max-age={$tarayici}, s-maxage={$cdn}, stale-while-revalidate=600"
             );
+            $this->dileGoreAyristir($response);
         } elseif ($tur === 'static') {
             $tarayici = (int) ($ayarlar['max_age'] ?? 3600);
             $response->headers->set(
@@ -65,6 +66,42 @@ class CacheHeaders
         }
 
         return $response;
+    }
+
+    /**
+     * Paylaşılan önbelleğe "bu yanıt DİLE göre değişir" der.
+     *
+     * Yanıt gövdesi `Accept-Language`'e göre gerçekten değişiyor: göreli
+     * zamanlar ve uzmanlık adları kullanıcının dilinde dönüyor. Ölçüldü —
+     * aynı uç, aynı adres:
+     *
+     *     Accept-Language: tr → "1 gün önce"
+     *     Accept-Language: de → "vor 1 Tag"
+     *
+     * `Vary` başlığı bunu söylemiyordu (yalnız `Accept-Encoding, Origin`).
+     * Bugün zararı yok çünkü CDN bu yanıtları hiç önbelleklemiyor (ölçüldü:
+     * `cf-cache-status: DYNAMIC` — Cloudflare API JSON'unu varsayılan olarak
+     * tutmuyor). Ama önbellek AÇILDIĞI an — ki gecikmeyi düşürmek için
+     * yapılacak ilk şey o — Türk kullanıcının yanıtı Alman kullanıcıya
+     * servis edilir. Yanlış dil, uçtan, herkese.
+     *
+     * Önbellek açılmadan ÖNCE söylenmeli; sonra söylemek geç kalır.
+     */
+    private function dileGoreAyristir(Response $response): void
+    {
+        $mevcut = array_filter(array_map(
+            'trim',
+            explode(',', (string) $response->headers->get('Vary', ''))
+        ));
+
+        foreach ($mevcut as $deger) {
+            if (strcasecmp($deger, 'Accept-Language') === 0) {
+                return;
+            }
+        }
+
+        $mevcut[] = 'Accept-Language';
+        $response->headers->set('Vary', implode(', ', $mevcut));
     }
 
     /**
