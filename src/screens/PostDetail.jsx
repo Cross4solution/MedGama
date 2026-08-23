@@ -970,14 +970,14 @@ export default function PostDetail() {
                           setDeleteCommentConfirm(null);
                         }}
                       >
-                        Delete
+                        {t('common.delete', 'Sil')}
                       </button>
                       <button
                         type="button"
                         className="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors"
                         onClick={() => setDeleteCommentConfirm(null)}
                       >
-                        Cancel
+                        {t('common.cancel', 'İptal')}
                       </button>
                     </div>
                   </div>

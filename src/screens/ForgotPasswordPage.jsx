@@ -131,7 +131,7 @@ export default function ForgotPasswordPage() {
             onClick={() => navigate('/login')}
             className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-teal-700 transition-all shadow-sm"
           >
-            Go to Login
+            {t('auth.backToLogin', 'Girişe dön')}
           </button>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function ForgotPasswordPage() {
 
             <div className="text-center mt-5">
               <Link to="/login" className="text-sm font-medium text-teal-600 hover:text-teal-700 inline-flex items-center gap-1">
-                <ArrowLeft className="w-3.5 h-3.5" /> Back to Login
+                <ArrowLeft className="w-3.5 h-3.5" /> {t('auth.backToLogin', 'Girişe dön')}
               </Link>
             </div>
           </>

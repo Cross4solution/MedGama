@@ -716,7 +716,7 @@ const CRMLayout = ({ children }) => {
                       </div>
                       <Link to="/crm/settings" onClick={() => setProfileOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <Settings className="w-4 h-4 text-gray-400" />
-                        Settings
+                        {t('common.settings', 'Ayarlar')}
                       </Link>
                       <Link to="/crm" onClick={() => setProfileOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <Shield className="w-4 h-4 text-gray-400" />
@@ -725,7 +725,7 @@ const CRMLayout = ({ children }) => {
                       <div className="border-t border-gray-100 mt-1 pt-1">
                         <button onClick={handleLogout} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left">
                           <LogOut className="w-4 h-4" />
-                          Sign Out
+                          {t('common.logout', 'Çıkış Yap')}
                         </button>
                       </div>
                     </div>

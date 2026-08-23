@@ -97,7 +97,7 @@ export default function SavedClinics() {
           <h2 className="text-xl font-bold text-gray-800 mb-2">{t('savedClinics.signInRequired', "Sign in required")}</h2>
           <p className="text-gray-500 mb-6">{t('savedClinics.youNeedToSignIn', "You need to sign in to view your favorites.")}</p>
           <button onClick={() => navigate('/login')} className="px-6 py-2.5 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition-colors">
-            Sign In
+            {t('nav.signIn', 'Giriş Yap')}
           </button>
         </div>
       </div>
@@ -297,7 +297,7 @@ export default function SavedClinics() {
                 onClick={() => setConfirmRemove(null)}
                 className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
               >
-                Cancel
+                {t('common.cancel', 'İptal')}
               </button>
               <button
                 onClick={() => handleRemove(confirmRemove.item, confirmRemove.type)}

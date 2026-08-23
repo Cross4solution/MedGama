@@ -593,7 +593,7 @@ export default function TelehealthAppointmentPage() {
               className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Appointments
+              {t('common.back', 'Geri')}
             </button>
           </div>
         )}
@@ -870,7 +870,7 @@ export default function TelehealthAppointmentPage() {
                                 <div className="flex items-center gap-2 mt-2">
                                   {doctor.is_verified && (
                                     <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100">
-                                      <BadgeCheck className="w-3 h-3" /> Verified
+                                      <BadgeCheck className="w-3 h-3" /> {t('common.verified', 'Doğrulanmış')}
                                     </span>
                                   )}
                                   <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-100">
@@ -933,7 +933,7 @@ export default function TelehealthAppointmentPage() {
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-teal-600" />
-                    Select Date
+                    {t('booking.selectDate', 'Bir tarih seçin')}
                   </h3>
                   {/* Month Nav */}
                   <div className="flex items-center justify-between mb-4">
@@ -993,7 +993,7 @@ export default function TelehealthAppointmentPage() {
                 <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5">
                   <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Clock className="w-4 h-4 text-teal-600" />
-                    Select Time
+                    {t('crm.appointments.selectTime', 'Saat seçin')}
                   </h3>
                   {loadingSlots ? (
                     <div className="flex items-center justify-center py-8">
@@ -1406,7 +1406,7 @@ export default function TelehealthAppointmentPage() {
                   {patientInfo.fullName && (
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] text-gray-400 font-medium flex items-center gap-1.5">
-                        <User className="w-3.5 h-3.5" /> Patient
+                        <User className="w-3.5 h-3.5" /> {t('common.patient', 'Hasta')}
                       </span>
                       <span className="text-xs font-semibold text-gray-900 truncate max-w-[140px]">{patientInfo.fullName}</span>
                     </div>
