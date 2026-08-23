@@ -21,7 +21,14 @@ export default function useAppointmentSync(onChange) {
 
     const handler = (e) => { try { cbRef.current?.(e); } catch {} };
     const channels = [`user.${user.id}`];
-    if (user.clinic_id) channels.push(`clinic.${user.clinic_id}`);
+    // Klinik kanalı PERSONEL kanalı: kliniğin bütün randevu trafiğini taşıyor.
+    // Yalnız `clinic_id` bakmak yetmiyordu — CRM'de müşteri adayından hastaya
+    // çevrilen kişiye de kliniğin kimliği yazılıyor, dolayısıyla o hastanın
+    // tarayıcısı kliniğin tüm randevu olaylarına abone oluyordu. Sunucu
+    // tarafındaki kanal yetkisi de düzeltildi; bu, aynı hatanın ikinci kapısı.
+    if (user.clinic_id && user.role_id !== 'patient') {
+      channels.push(`clinic.${user.clinic_id}`);
+    }
 
     const subscribed = [];
     channels.forEach((name) => {
@@ -37,5 +44,5 @@ export default function useAppointmentSync(onChange) {
         try { ch.stopListening('.appointment.changed', handler); } catch {}
       });
     };
-  }, [user?.id, user?.clinic_id]);
+  }, [user?.id, user?.clinic_id, user?.role_id]);
 }

@@ -135,6 +135,72 @@ class KanalYetkilendirmeTest extends TestCase
         );
     }
 
+    public function test_klinige_bagli_hasta_klinik_kanalina_giremiyor(): void
+    {
+        // BULUNAN SIZINTI. Klinik kanalı `AppointmentChanged` taşıyor: o
+        // kliniğin BÜTÜN randevuları — hasta kimliği, doktor kimliği, tarih,
+        // saat. Personel verisi.
+        //
+        // CRM'de müşteri adayından hastaya çevrilen kişiye kliniğin kimliği
+        // yazılıyor (LeadController). Eski denetim yalnız `clinic_id`
+        // karşılaştırdığı için o hasta kanala girebiliyordu. Ölçüldü: izin
+        // VERİLİYORDU. Ön yüz de `clinic_id` gören herkesi abone ediyordu,
+        // yani sızıntı canlıda işliyordu.
+        $klinik = Clinic::factory()->create();
+
+        $hasta = User::factory()->patient()->create([
+            'clinic_id'       => $klinik->id,
+            'added_by_clinic' => true,
+        ]);
+
+        $this->assertFalse(
+            $this->kanalIzniVar('clinic.{clinicId}', $hasta, [$klinik->id]),
+            'Kliniğe bağlı hasta, kliniğin tüm randevu trafiğini dinleyebiliyor',
+        );
+    }
+
+    public function test_klinik_personeli_kendi_kanalina_girebiliyor(): void
+    {
+        // Ters uç: rol listesi fazla dar olursa CRM'in canlı takvimi sessizce
+        // ölür ve bunu yalnız ret testleriyle fark edemezdik.
+        $klinik = Clinic::factory()->create();
+
+        foreach (['doctor', 'salesperson'] as $rol) {
+            $personel = User::factory()->create([
+                'role_id'   => $rol,
+                'clinic_id' => $klinik->id,
+            ]);
+
+            $this->assertTrue(
+                $this->kanalIzniVar('clinic.{clinicId}', $personel, [$klinik->id]),
+                "{$rol} kendi kliniğinin kanalına giremiyor",
+            );
+        }
+    }
+
+    public function test_klinik_sahibi_clinic_id_olmadan_da_girebiliyor(): void
+    {
+        // Sahibin kendi `clinic_id` alanı boş olabiliyor; sahiplik ayrı yoldan
+        // doğrulanıyor ve bu yol kaybolursa sahip kendi kliniğini göremez.
+        $sahip = User::factory()->create(['role_id' => 'clinicOwner', 'clinic_id' => null]);
+        $klinik = Clinic::factory()->create(['owner_id' => $sahip->id]);
+
+        $this->assertTrue($this->kanalIzniVar('clinic.{clinicId}', $sahip, [$klinik->id]));
+    }
+
+    public function test_clinic_id_bos_olan_kullanici_hicbir_klinige_giremiyor(): void
+    {
+        // Tekrar eden hata sınıfı: boş kapsam değeri "hepsi" gibi davranıyor.
+        // Bu projede aynı hata beş ayrı yerde çıktı.
+        $klinik = Clinic::factory()->create();
+        $bagimsizDoktor = User::factory()->doctor()->create(['clinic_id' => null]);
+
+        $this->assertFalse(
+            $this->kanalIzniVar('clinic.{clinicId}', $bagimsizDoktor, [$klinik->id]),
+            'Kliniği olmayan hekim rastgele bir kliniğin kanalına girebiliyor',
+        );
+    }
+
     /** @return array{0: Appointment, 1: User, 2: User} */
     private function randevuKur(): array
     {
