@@ -368,11 +368,32 @@ class FinanceService
         }
     }
 
+    /**
+     * CSV hücresi — hem biçim hem FORMÜL güvenliği.
+     *
+     * Virgül/tırnak/satır sonu zaten kaçırılıyordu. Eksik olan, elektronik
+     * tablo programlarının `=`, `+`, `-`, `@`, sekme ve satır başı ile
+     * başlayan hücreleri FORMÜL sayması.
+     *
+     * Buradaki alanların bir kısmını hasta kendisi yazıyor (adı soyadı).
+     * Adını `=HYPERLINK("http://kotu.site","Fatura")` yapan biri, kliniğin
+     * dosyayı açmasını bekler; eski Excel sürümlerinde DDE ile komut
+     * çalıştırmaya kadar gider. Kurban, dışa aktarmayı yapan klinik.
+     *
+     * Çözüm tek tırnak öneki: elektronik tablo bunu "sonrası metindir" diye
+     * okur ve hücrede GÖSTERMEZ, yani çıktının okunuşu değişmez.
+     */
     private function csvEscape(string $value): string
     {
-        if (str_contains($value, ',') || str_contains($value, '"') || str_contains($value, "\n")) {
+        if ($value !== '' && str_contains("=+-@\t\r", $value[0])) {
+            $value = "'" . $value;
+        }
+
+        if (str_contains($value, ',') || str_contains($value, '"')
+            || str_contains($value, "\n") || str_contains($value, "\r")) {
             return '"' . str_replace('"', '""', $value) . '"';
         }
+
         return $value;
     }
 }
