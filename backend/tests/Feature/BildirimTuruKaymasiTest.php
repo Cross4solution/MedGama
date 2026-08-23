@@ -105,4 +105,41 @@ class BildirimTuruKaymasiTest extends TestCase
             $this->assertSame([], $eksik, "{$dil}.json içinde eksik bildirim türü: " . implode(', ', $eksik));
         }
     }
+
+    public function test_onemli_ses_tipleri_gercekten_uretiliyor(): void
+    {
+        // `notificationSound.js` dört tipi "kaçırılamaz" sayıp yükselen üçlü
+        // çalıyor: görüşme başlıyor, randevu iptali, randevu ertelemesi,
+        // parola değişikliği.
+        //
+        // Bu tiplerden biri arka uçta yeniden adlandırılırsa ses katmanı onu
+        // artık tanımaz ve SESSİZCE sıradan bildirime düşer — kullanıcı
+        // yumuşak çanı duyar ya da sekme öndeyse hiç duymaz. Kaçırılan sesin
+        // karşılığı kaçırılan bir muayene.
+        $dosya = base_path('../src/utils/notificationSound.js');
+
+        if (!is_file($dosya)) {
+            $this->markTestSkipped('notificationSound.js bulunamadı.');
+        }
+
+        $metin = file_get_contents($dosya);
+        $govde = explode('ONEMLI_TIPLER = new Set([', $metin)[1] ?? '';
+        $govde = explode(']);', $govde)[0];
+
+        preg_match_all("/'([a-z_]+)'/", $govde, $eslesme);
+        $onemli = $eslesme[1];
+
+        $this->assertGreaterThan(2, count($onemli), 'önemli tip taraması çalışmıyor');
+
+        $arka = array_values(array_diff($this->arkaUcTurleri(), ['review_']));
+        $olmayan = array_values(array_diff($onemli, $arka));
+
+        $this->assertSame(
+            [],
+            $olmayan,
+            "`notificationSound.js` arka ucun ÜRETMEDİĞİ tipleri önemli sayıyor:\n  "
+            . implode("\n  ", $olmayan)
+            . "\n\nO bildirimler sessizce sıradan sese düşer.",
+        );
+    }
 }
