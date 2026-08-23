@@ -3,7 +3,11 @@
 // Schema builders mirror the logic in src/components/seo/SEOHead.jsx but are
 // framework-agnostic so generateMetadata + server JSON-LD can use them.
 
-import { LOCALES, DEFAULT_LOCALE } from './locales';
+// Uzantı AÇIK yazılıyor: paketleyici uzantısız çözüyor ama Node'un ESM
+// yükleyicisi çözmüyor, dolayısıyla bu modül birim testinden içe
+// aktarılamıyordu. jsonLdString uygulamadaki tek XSS yüzeyi; test
+// edilebilir olması gerekiyor.
+import { LOCALES, DEFAULT_LOCALE } from './locales.js';
 
 export const API_ORIGIN =
   process.env.NEXT_PUBLIC_API_ORIGIN || 'https://medagama-backend.onrender.com';
