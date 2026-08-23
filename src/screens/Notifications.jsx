@@ -1,3 +1,4 @@
+import { notificationTitle } from '../utils/notificationTitle';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from '@/compat/router';
 import {
@@ -155,6 +156,8 @@ export default function Notifications() {
     return TYPE_META[type] || DEFAULT_META;
   };
 
+
+
   const filtered = tab === 'all' ? items : items.filter(n => getMeta(n).category === tab);
 
   const categoryCounts = CATEGORIES.reduce((acc, cat) => {
@@ -276,7 +279,7 @@ export default function Notifications() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                              <div className={`text-sm font-semibold ${isUnread ? 'text-gray-900' : 'text-gray-800'}`}>{data.title || t(meta.labelKey)}</div>
+                              <div className={`text-sm font-semibold ${isUnread ? 'text-gray-900' : 'text-gray-800'}`}>{notificationTitle(data, t)}</div>
                               {data.message && <div className="text-sm text-gray-500 mt-0.5 leading-relaxed">{data.message}</div>}
                             </div>
                             <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">

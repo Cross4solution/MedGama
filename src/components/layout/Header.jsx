@@ -1,3 +1,4 @@
+import { notificationTitle } from '../../utils/notificationTitle';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { Link, useNavigate, useLocation } from '@/compat/router';
@@ -122,7 +123,7 @@ const Header = () => {
         : 'info';
       showToast({
         type: toastType,
-        title: data.title || 'New notification',
+        title: notificationTitle(data, t),
         message: data.message || '',
         timeout: 0, // persist until the user clicks/closes (no auto-dismiss)
         actionUrl: data.action_url || data.link || null,
@@ -455,7 +456,7 @@ const Header = () => {
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <p className={`text-[13px] leading-snug ${isUnread ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
-                                      {data.title || data.message || notif.type?.split('\\').pop()?.replace('Notification', '') || 'Notification'}
+                                      {notificationTitle(data, t)}
                                     </p>
                                     {data.body && (
                                       <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-2">{data.body}</p>

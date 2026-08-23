@@ -1,3 +1,4 @@
+import { notificationTitle } from '../../utils/notificationTitle';
 import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { Link, useLocation, useNavigate } from '@/compat/router';
 import {
@@ -343,7 +344,7 @@ const CRMLayout = ({ children }) => {
         : 'info';
       showToast({
         type: toastType,
-        title: data.title || 'New notification',
+        title: notificationTitle(data, t),
         message: data.message || '',
         timeout: 5000,
         actionUrl: data.action_url || data.link || null,
@@ -657,7 +658,7 @@ const CRMLayout = ({ children }) => {
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-0.5">
                                   <p className={`text-xs leading-relaxed flex-1 ${isUnread ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
-                                    {data.title || data.message || 'Notification'}
+                                    {notificationTitle(data, t)}
                                   </p>
                                   <span className={`inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${sevCfg.iconBg} ${sevCfg.iconColor}`}>
                                     {sevCfg.label}
