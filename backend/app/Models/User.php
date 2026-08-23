@@ -369,6 +369,38 @@ class User extends Authenticatable
         return $this->role_id === 'hospital';
     }
 
+    /**
+     * Rol → yetki seviyesi. TEK KAYNAK.
+     *
+     * Bu eşleme kayıt sırasında AuthService içinde ayrı bir dizi olarak
+     * duruyordu ve rol değiştiren yönetici ucu `user_level` sütununa hiç
+     * dokunmuyordu. Ölçülen sonuç:
+     *
+     *     superAdmin → patient  :  role_id=patient  ama user_level=5
+     *     doctor     → superAdmin: role_id=superAdmin ama user_level=2
+     *
+     * İki ara katman ham `user_level` okuyor (EnsureDoctorVerified seviye
+     * 5'te doğrulamayı tamamen atlıyor, EnsureCanPublishMedStream yayın
+     * hakkı veriyor). Yani yetkisi alınan bir yönetici o yetkileri
+     * kullanmaya devam ediyordu — ve yeni atanan yönetici hekim yolundan
+     * geçtiği için engelleniyordu.
+     */
+    public const SEVIYELER = [
+        'patient'     => 1,
+        'doctor'      => 2,
+        'clinicOwner' => 3,
+        'clinic'      => 3,
+        'salesperson' => 2,
+        'hospital'    => 4,
+        'superAdmin'  => 5,
+        'saasAdmin'   => 5,
+    ];
+
+    public static function seviyeIcin(?string $rol): int
+    {
+        return self::SEVIYELER[$rol] ?? 1;
+    }
+
     public function isClinicLevel(): bool
     {
         return (int) $this->user_level === 3;

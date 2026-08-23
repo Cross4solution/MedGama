@@ -260,6 +260,13 @@ class SuperAdminController extends Controller
         $user = \App\Models\User::findOrFail($id);
         $user->update(['password' => bcrypt($request->input('password'))]);
 
+        // Bir yöneticinin parola sıfırlamasının SEBEBİ genellikle hesabın ele
+        // geçirilmiş olmasıdır. Oturumlar kapatılmazsa saldırganın jetonu
+        // yaşamaya devam eder ve hem yönetici hem kullanıcı sorunun
+        // çözüldüğünü sanır. Kullanıcının kendi parola değişimi bunu zaten
+        // yapıyordu; yönetici yolu yapmıyordu.
+        $user->tokens()->delete();
+
         \App\Models\AuditLog::log(
             action: 'user.password_reset',
             resourceType: 'User',

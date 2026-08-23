@@ -290,7 +290,17 @@ class SuperAdminService
         $user = User::findOrFail($userId);
         $oldRole = $user->role_id;
 
-        $user->update(['role_id' => $newRole]);
+        // Seviye de birlikte güncelleniyor: iki ara katman ham `user_level`
+        // okuyor ve sütun geride kalırsa yetkisi alınan yönetici yetkilerini
+        // korurdu.
+        $user->update([
+            'role_id'    => $newRole,
+            'user_level' => User::seviyeIcin($newRole),
+        ]);
+
+        // Rol değişimi yetki değişimidir: eldeki oturumlar eski role göre
+        // açılmıştı, kapatılıyor.
+        $user->tokens()->delete();
 
         AuditLog::log(
             action: 'user.role_changed',

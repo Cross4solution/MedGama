@@ -46,15 +46,8 @@ class AuthService
         $user = DB::transaction(function () use ($data, $clinicId, $verificationCode) {
             // Determine user_level from role_id
             $roleId = $data['role_id'] ?? 'patient';
-            $levelMap = [
-                'patient'     => 1,
-                'doctor'      => 2,
-                'clinicOwner' => 3,
-                'clinic'      => 3,
-                'hospital'    => 4,
-                'superAdmin'  => 5,
-                'saasAdmin'   => 5,
-            ];
+            // Rol → seviye eşlemesi User::SEVIYELER içinde; iki kopya
+            // birbirinden ayrı düşüp yetkileri kaydırmıştı.
 
             $user = User::create([
                 'email'                   => $data['email'],
@@ -71,7 +64,7 @@ class AuthService
                     ),
                 'mobile'                  => $data['mobile'] ?? null,
                 'role_id'                 => $roleId,
-                'user_level'              => $levelMap[$roleId] ?? 1,
+                'user_level'              => User::seviyeIcin($roleId),
                 'city_id'                 => $data['city_id'] ?? null,
                 'country_id'              => $data['country_id'] ?? null,
                 'date_of_birth'           => $data['date_of_birth'] ?? null,
