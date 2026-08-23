@@ -66,13 +66,41 @@ export function vttCozumle(vtt) {
     // aktif yoksa satır bir sıra numarasıdır; yok say.
   }
 
-  return sonuc.filter((s) => s.text.trim() !== '');
+  return sonuc
+    .filter((s) => s.text.trim() !== '')
+    .map((s) => ({ ...s, text: metniCoz(s.text) }));
+}
+
+/**
+ * Alt yazı metnini WebVTT gövdesine yazılabilir hâle getirir.
+ *
+ * `-->` zaman satırının AYRACI. Metnin içinde geçerse dosya yeniden
+ * okunduğunda o satır zaman satırı sanılıyor ve cümle KAYBOLUYOR. Ölçüldü:
+ * "Ağrı sırttan --> bacağa yayılıyor" içeren bir alt yazı, bir gidiş-dönüşten
+ * sonra hiç kalmıyordu — 1 satır yerine 0.
+ *
+ * Hekimin ok işareti kullanması olağan bir şey; kayıp sessiz.
+ *
+ * WebVTT `&gt;` kaçışını tanıyor, o yüzden ok işareti kaçırılıyor. `&`
+ * önce kaçırılıyor ki çözme işlemi tersine çevrilebilsin.
+ */
+function metniKacir(metin) {
+  return String(metin ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/-->/g, '--&gt;');
+}
+
+/** `metniKacir` işleminin tersi. */
+function metniCoz(metin) {
+  return String(metin ?? '')
+    .replace(/--&gt;/g, '-->')
+    .replace(/&amp;/g, '&');
 }
 
 /** Satır listesinden WebVTT üretir. */
 export function vttUret(parcalar) {
   const govde = (parcalar || [])
-    .map((p) => `${saniyeyiZamanaCevir(p.start)} --> ${saniyeyiZamanaCevir(p.end)}\n${p.text}`)
+    .map((p) => `${saniyeyiZamanaCevir(p.start)} --> ${saniyeyiZamanaCevir(p.end)}\n${metniKacir(p.text)}`)
     .join('\n\n');
   return `WEBVTT\n\n${govde}\n`;
 }
