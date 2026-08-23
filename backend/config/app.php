@@ -13,6 +13,23 @@ return [
     |
     */
 
+        /*
+    |--------------------------------------------------------------------------
+    | Genel API hız sınırı (istek/dakika)
+    |--------------------------------------------------------------------------
+    |
+    | `env()` DOĞRUDAN çağrılamaz: yapılandırma önbelleğe alındığında (canlıda
+    | `config:cache` çalışıyor) config/ dışındaki env() çağrıları null döner.
+    | Sınır 0 olur ve HER istek engellenirdi. Bu yüzden burada.
+    |
+    | Yapılandırılabilir olmasının tek sebebi E2E paketi: tam koşuda 120/dk
+    | sınırına takılıp testler 429 alıyordu ve bu, gerçek hata sanılan bir
+    | gürültü üretiyordu.
+    |
+    */
+
+    'api_rate_limit' => (int) env('API_RATE_LIMIT', 120),
+
     'name' => env('APP_NAME', 'Medagama'),
 
     /*

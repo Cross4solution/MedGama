@@ -76,7 +76,15 @@ test.describe('Dinamik sayfalar', () => {
     // bağlantı üretmiyor (kısa ad zorunlu ve benzersiz).
     ekle('klinik sayfası', klinik?.codename, (v) => `/tr/clinic/${v}`);
     ekle('gönderi detayı', gonderi?.id, (v) => `/tr/post/${v}`);
-    ekle('kullanıcı profili', doktor?.codename || doktor?.username, (v) => `/tr/${v}`);
+    // Handle, hekim LİSTESİNDE yok — o kaynak `username` alanını hiç
+    // döndürmüyor, dolayısıyla bu hedef sessizce atlanıyordu ve kullanıcı
+    // profili sayfası hiç sınanmıyordu. Uygulamanın kendisi de handle'ı
+    // buradan alıyor: MedStream gönderisi yazarını `@username` ile gösteriyor.
+    ekle(
+      'kullanıcı profili',
+      gonderi?.author?.username || doktor?.codename || doktor?.username,
+      (v) => `/tr/${v}`,
+    );
     ekle('tedavi/uzmanlık', uzmanlik?.slug || uzmanlik?.code, (v) => `/tr/tedaviler/${v}`);
     ekle('tedavi/uzmanlık/şehir', uzmanlik?.slug || uzmanlik?.code, (v) => `/tr/tedaviler/${v}/istanbul`);
 

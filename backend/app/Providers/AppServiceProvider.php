@@ -58,8 +58,12 @@ class AppServiceProvider extends ServiceProvider
         // Authenticated → keyed by user id; anonymous → keyed by IP.
         // Generous enough for normal use + parallel frontend requests,
         // tight enough to deter scraping / DoS. Auth throttles below stay stricter.
+        //
+        // Sayı `config/app.php` üzerinden yapılandırılabilir — env() BURADA
+        // çağrılamaz, yapılandırma önbelleğe alındığında null döner ve sınır
+        // 0 olurdu (yani her istek engellenirdi). Varsayılan yine 120.
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(120)
+            return Limit::perMinute((int) config('app.api_rate_limit', 120))
                 ->by($request->user()?->id ?: $request->ip())
                 ->response(function ($istek, array $basliklar) {
                     return response()->json([
