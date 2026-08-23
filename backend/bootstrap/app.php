@@ -38,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'medstream.publish' => \App\Http\Middleware\EnsureCanPublishMedStream::class,
             'medstream.comment' => \App\Http\Middleware\EnsureCanCommentMedStream::class,
             'set.locale'    => \App\Http\Middleware\SetLocale::class,
+            'health.consent' => \App\Http\Middleware\EnsureHealthDataConsent::class,
             'cache.headers' => \App\Http\Middleware\CacheHeaders::class,
         ]);
 

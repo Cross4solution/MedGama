@@ -49,9 +49,13 @@ class ConsentController extends Controller
     /** DELETE /consents/{type} — onayı geri al (yalnız geri alınabilir tipler). */
     public function revoke(string $type, Request $request): JsonResponse
     {
-        $ok = $this->consents->revoke($request->user(), $type);
+        $durum = $this->consents->revoke($request->user(), $type);
 
-        if (!$ok) {
+        if ($durum === 'unknown') {
+            return response()->json(['message' => 'Unknown consent type.'], 422);
+        }
+
+        if ($durum === 'not_revocable') {
             return response()->json([
                 'message' => 'This consent cannot be withdrawn here. It is required to provide the service; use your data rights to close your account.',
             ], 422);

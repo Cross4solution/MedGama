@@ -217,8 +217,11 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
     Route::put('/profile/password', [AuthController::class, 'changePassword']);
     Route::delete('/profile', [AuthController::class, 'deleteAccount']);
     Route::get('/profile/data-export', [AuthController::class, 'dataExport']);
-    Route::get('/profile/medical-history', [AuthController::class, 'getMedicalHistory']);
-    Route::put('/profile/medical-history', [AuthController::class, 'updateMedicalHistory']);
+    // Sağlık verisi rızası geri çekildiyse bu uçlar kapanır (KVKK/GDPR md.7(3)).
+    Route::middleware('health.consent')->group(function () {
+        Route::get('/profile/medical-history', [AuthController::class, 'getMedicalHistory']);
+        Route::put('/profile/medical-history', [AuthController::class, 'updateMedicalHistory']);
+    });
     Route::get('/profile/notification-preferences', [AuthController::class, 'getNotificationPrefs']);
     Route::put('/profile/notification-preferences', [AuthController::class, 'updateNotificationPrefs']);
     // Kod 6 haneli ve süresiz: sınırsız deneme, doğrulamayı tahmin edilebilir
@@ -496,7 +499,7 @@ Route::middleware('auth:sanctum')->group(function () {
 | Patient Documents — Medical Wallet (Bölüm 7.4)
 |--------------------------------------------------------------------------
 */
-Route::prefix('patient-documents')->middleware('auth:sanctum')->group(function () {
+Route::prefix('patient-documents')->middleware(['auth:sanctum', 'health.consent'])->group(function () {
     Route::get('/stats', [PatientDocumentController::class, 'stats']);
     Route::get('/', [PatientDocumentController::class, 'index']);
     Route::post('/', [PatientDocumentController::class, 'store']);

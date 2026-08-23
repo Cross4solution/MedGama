@@ -55,12 +55,27 @@ class ConsentService
         return $record;
     }
 
-    /** Onayı geri alır. Zorunlu (revocable=false) tipler geri alınamaz. */
-    public function revoke(User $user, string $type): bool
+    /**
+     * Onayı geri alır.
+     *
+     * Dönüş bir DURUM, çünkü üç farklı sonuç vardı ve üçü de tek bir `false`
+     * olarak dışarı çıkıyordu. Kullanıcı, aktif kaydı olmadığı için geri
+     * alınamayan bir onayda "bu onay hizmetin verilebilmesi için zorunludur"
+     * mesajını görüyordu — geri alınabilir bir onay, geri alınamaz gibi
+     * gösteriliyordu. Yanlış bilgi, üstelik hukuki bir konuda.
+     *
+     * @return 'unknown'|'not_revocable'|'ok'
+     */
+    public function revoke(User $user, string $type): string
     {
         $config = $this->typeConfig($type);
-        if (!$config || !($config['revocable'] ?? false)) {
-            return false;
+
+        if (!$config) {
+            return 'unknown';
+        }
+
+        if (!($config['revocable'] ?? false)) {
+            return 'not_revocable';
         }
 
         $updated = ConsentRecord::where('user_id', $user->id)
@@ -71,7 +86,9 @@ class ConsentService
             $this->audit($user, $type, 'consent_revoked');
         }
 
-        return $updated > 0;
+        // Kayıt yoksa da sonuç kullanıcının istediği durum: onay aktif değil.
+        // Hata döndürmek, geri alınabilir bir onayı geri alınamaz göstermek olurdu.
+        return 'ok';
     }
 
     /** Kullanıcının tüm rıza tiplerindeki güncel durumu (ekranda gösterim için). */
