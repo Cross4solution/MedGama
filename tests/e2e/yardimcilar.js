@@ -11,9 +11,34 @@ async function cerezBandiniKapat(page) {
 }
 
 /** Oturum sahibinin API çağrısı yapmasını sağlar (token localStorage'da). */
+/**
+ * Doğrulama isteği — HANGİ arka uca gittiği önemli.
+ *
+ * Yol göreliydi (`/api/...`), yani tarayıcı isteği ön yüz kökenine atıyordu.
+ * Orada Next'in `rewrites` kuralı var ve hedefi:
+ *
+ *     const BACKEND = process.env.NEXT_PUBLIC_API_ORIGIN
+ *         || 'https://medagama-backend.onrender.com';
+ *
+ * Yerel koşuda o değişken tanımlı olmadığı için `/api/*` CANLIYA gidiyordu:
+ * testler yerel yığını sürüyor ama doğrulamalarını canlıdan okuyordu. Ölçüldü —
+ * aynı yerel jetonla doğrudan arka uç `language:"de"`, ön yüz kökeni `"en"`
+ * (yani canlının kimliksiz yanıtı) döndü. Sessiz ve yanıltıcı: test kırmızı
+ * yanıyor ama gösterdiği hata yerelde yok.
+ *
+ * Daha kötüsü, durum DEĞİŞTİREN bir yardımcı çağrısı canlıya yazardı.
+ *
+ * `E2E_API_ORIGIN` verildiyse istek doğrudan o arka uca gider.
+ */
 async function apiIstek(page, yol, ayar = {}) {
+  const kok = process.env.E2E_API_ORIGIN || '';
+  const tamYol = kok && yol.startsWith('/api') ? kok.replace(/\/+$/, '') + yol : yol;
+
   return page.evaluate(async ({ yol, ayar }) => {
-    const t = JSON.parse(localStorage.getItem('auth_state') || '{}').token;
+    // Jeton üç ayrı anahtarda olabiliyor; uygulamanın kendi önceliğiyle aynı.
+    const t = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('access_token'))
+      || localStorage.getItem('access_token')
+      || JSON.parse(localStorage.getItem('auth_state') || '{}').token;
     const r = await fetch(yol, {
       ...ayar,
       headers: {
@@ -26,7 +51,7 @@ async function apiIstek(page, yol, ayar = {}) {
     let govde = null;
     try { govde = await r.json(); } catch {}
     return { http: r.status, govde };
-  }, { yol, ayar });
+  }, { yol: tamYol, ayar });
 }
 
 module.exports = { HESAPLAR, oturumDosyasi, cerezBandiniKapat, apiIstek };

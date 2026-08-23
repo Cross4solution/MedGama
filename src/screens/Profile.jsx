@@ -138,7 +138,21 @@ export default function Profile() {
     return () => { iptal = true; };
   }, []);
 
+  // Uçuştaki kayıt varken ikinci tıklama yutulur.
+  //
+  // `disabled={translateSaving}` bunu yapmaya çalışıyordu ama işe yaramıyor:
+  // React durum güncellemelerini toplu uyguladığı için aynı anda gelen ikinci
+  // tıklama `translateSaving`'i hâlâ `false` görüyor. Ölçüldü — art arda iki
+  // tıklamada düğme ikinci tıklama sırasında disabled DEĞİL, ve iki tıklama da
+  // hedef değeri AYNI eski `translateContent` değerinden hesaplıyor. Sonuç:
+  // iki tıklama tek değişiklik üretiyor, kullanıcı "açtım, kendi kendine
+  // kapandı" görüyor. Ref senkron çalışır, bu yüzden burada ref var.
+  const ceviriKaydiUcusta = useRef(false);
+
   const handleTranslateToggle = async () => {
+    if (ceviriKaydiUcusta.current) return;
+    ceviriKaydiUcusta.current = true;
+
     const yeni = !translateContent;
     setTranslateContent(yeni);          // önce ekranda göster
     setTranslateSaving(true);
@@ -152,6 +166,7 @@ export default function Profile() {
     } catch {
       setTranslateContent(!yeni);       // kaydedilemediyse geri al
     } finally {
+      ceviriKaydiUcusta.current = false;
       setTranslateSaving(false);
     }
   };
