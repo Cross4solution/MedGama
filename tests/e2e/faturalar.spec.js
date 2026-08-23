@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { oturumDosyasi, cerezBandiniKapat, apiIstek } = require('./yardimcilar');
+const { oturumDosyasi, cerezBandiniKapat, apiIstek, apiKok } = require('./yardimcilar');
 
 /**
  * Hastanın kendi faturaları.
@@ -60,13 +60,13 @@ test.describe('Hasta faturaları', () => {
     const fatura = govde?.data?.[0];
     test.skip(!fatura, 'Demo hesapta fatura yok');
 
-    const sonuc = await page.evaluate(async (id) => {
+    const sonuc = await page.evaluate(async ({ id, kok }) => {
       const t = JSON.parse(localStorage.getItem('auth_state') || '{}').token;
-      const r = await fetch(`/api/patient/billing/invoices/${id}/pdf`, {
+      const r = await fetch(`${kok}/api/patient/billing/invoices/${id}/pdf`, {
         headers: { Authorization: 'Bearer ' + t },
       });
       return { http: r.status, tur: r.headers.get('content-type') };
-    }, fatura.id);
+    }, { id: fatura.id, kok: apiKok() });
 
     expect(sonuc.http).toBe(200);
     expect(sonuc.tur).toContain('pdf');

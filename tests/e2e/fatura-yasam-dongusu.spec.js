@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { oturumDosyasi, cerezBandiniKapat, apiIstek } = require('./yardimcilar');
+const { oturumDosyasi, cerezBandiniKapat, apiIstek, apiKok } = require('./yardimcilar');
 
 /**
  * Faturanın yaşam döngüsü: klinik keser → hasta görür → PDF iner → kapatılır.
@@ -82,13 +82,13 @@ test.describe('Fatura yaşam döngüsü', () => {
       // Ekranda da görünmeli: sunucuda olup ekranda olmayan kayıt işe yaramaz.
       await expect(page.getByText(faturaNo).first()).toBeVisible({ timeout: 15_000 });
 
-      const pdf = await page.evaluate(async (id) => {
+      const pdf = await page.evaluate(async ({ id, kok }) => {
         const t = JSON.parse(localStorage.getItem('auth_state') || '{}').token;
-        const r = await fetch(`/api/patient/billing/invoices/${id}/pdf`, {
+        const r = await fetch(`${kok}/api/patient/billing/invoices/${id}/pdf`, {
           headers: { Authorization: 'Bearer ' + t },
         });
         return { http: r.status, tur: r.headers.get('content-type') };
-      }, faturaId);
+      }, { id: faturaId, kok: apiKok() });
 
       expect(pdf.http).toBe(200);
       expect(pdf.tur).toContain('pdf');

@@ -2,6 +2,15 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "next-yerel",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start:yerel"
+      ],
+      "port": 3000
+    },
+    {
       "name": "next-start",
       "runtimeExecutable": "npm",
       "runtimeArgs": [

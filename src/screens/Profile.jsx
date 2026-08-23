@@ -163,8 +163,13 @@ export default function Profile() {
       // kullanıcıya anahtar hiç çalışmıyormuş gibi görünüyordu. Ancak sayfa
       // tamamen yenilenince düzeliyordu.
       await ceviriBaglami.yenile();
-    } catch {
-      setTranslateContent(!yeni);       // kaydedilemediyse geri al
+    } catch (hata) {
+      // Geri almak TEK BAŞINA yetmiyor: kullanıcı anahtarın kendi kendine
+      // kapandığını görüyor ve sebebini bilmiyor. Hız sınırı (429) ya da
+      // kopan bağlantı tam olarak böyle görünüyordu. API katmanı zaten
+      // okunabilir bir mesaj üretiyor; onu göstermemek için sebep yok.
+      setTranslateContent(!yeni);
+      showToast(hata?.message || t('profile.savePrefsError', 'Tercih kaydedilemedi'), 'error');
     } finally {
       ceviriKaydiUcusta.current = false;
       setTranslateSaving(false);
@@ -178,7 +183,14 @@ export default function Profile() {
     document.documentElement.dir = langObj?.dir === 'rtl' ? 'rtl' : 'ltr';
     try { localStorage.setItem('preferred_language', lang); } catch {}
     try { localStorage.setItem('preferred_language_manual', '1'); } catch {}
-    try { await authAPI.updateProfile({ preferred_language: lang }); } catch {}
+    try {
+      await authAPI.updateProfile({ preferred_language: lang });
+    } catch (hata) {
+      // Dil değişimi sunucuya yazılamazsa arayüz yeni dilde, sunucu eski
+      // dilde kalıyor: e-posta ve bildirimler eski dilde gelmeye devam eder.
+      // Sessiz kalmak kullanıcıya "kaydedildi" izlenimi veriyordu.
+      showToast(hata?.message || t('profile.savePrefsError', 'Tercih kaydedilemedi'), 'error');
+    }
 
     // Çeviri hedefi de bu tercihten geliyor. Tazelenmezse bağlam eski dili
     // tutuyor ve içerik ÖNCEKİ dile çevrilmeye devam ediyor — anahtarı açıp

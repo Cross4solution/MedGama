@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { oturumDosyasi, cerezBandiniKapat, apiIstek } = require('./yardimcilar');
+const { oturumDosyasi, cerezBandiniKapat, apiIstek, apiKok } = require('./yardimcilar');
 
 /**
  * Muayene/reçete ve destek talepleri.
@@ -70,13 +70,13 @@ test.describe('Muayene ve reçete', () => {
 
     const sonuc = await rolIle(browser, 'demoDoktor', async (page) => {
       await page.goto('/tr/crm/examination');
-      return page.evaluate(async (id) => {
+      return page.evaluate(async ({ id, kok }) => {
         const t = JSON.parse(localStorage.getItem('auth_state') || '{}').token;
-        const r = await fetch(`/api/crm/examinations/${id}/prescription-pdf`, {
+        const r = await fetch(`${kok}/api/crm/examinations/${id}/prescription-pdf`, {
           headers: { Authorization: 'Bearer ' + t },
         });
         return { http: r.status, tur: r.headers.get('content-type') };
-      }, muayeneId);
+      }, { id: muayeneId, kok: apiKok() });
     });
 
     // Reçetesiz muayenede sunucu üretmeyi reddedebilir; ürettiyse gerçekten

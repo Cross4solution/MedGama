@@ -9,9 +9,27 @@ const { chromium } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Giriş FORMUNU sınayan testlerin kullandığı hesaplar.
+ *
+ * Kipe göre değişiyor, çünkü iki yığındaki tohum farklı: canlıda
+ * `patient@demo.com`, yerelde `hasta@yerel.test`. Sabit tek liste yerelde
+ * "Giriş sonrası oturum kurulmadı" diye düşüyordu — hata girişte değil,
+ * var olmayan bir hesapla denenmesindeydi.
+ *
+ * Ortam değişkeni verilirse o kazanır; farklı bir tohumla koşmak için.
+ */
+const YEREL = Boolean(process.env.E2E_API_ORIGIN);
+
 const HESAPLAR = {
-  hasta:  { email: 'patient@demo.com', sifre: 'patient123' },
-  doktor: { email: 'doctor@demo.com',  sifre: 'doctor123' },
+  hasta: {
+    email: process.env.E2E_PATIENT_EMAIL || (YEREL ? 'hasta@yerel.test' : 'patient@demo.com'),
+    sifre: process.env.E2E_PATIENT_PASSWORD || (YEREL ? 'Password123!' : 'patient123'),
+  },
+  doktor: {
+    email: process.env.E2E_DOCTOR_EMAIL || (YEREL ? 'nazli-cetin@medagama.com' : 'doctor@demo.com'),
+    sifre: process.env.E2E_DOCTOR_PASSWORD || (YEREL ? 'Password123!' : 'doctor123'),
+  },
 };
 
 // Yönetici oturumu — ORTAM DEĞİŞKENİNDEN, depodan değil.

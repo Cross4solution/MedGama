@@ -39,7 +39,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "lint:crash": "eslint --ext .js,.jsx src app",
-    "test:unit": "node --test \"src/**/__tests__/*.test.mjs\""
+    "test:unit": "node --test \"src/**/__tests__/*.test.mjs\"",
+    "start:yerel": "NEXT_PUBLIC_API_ORIGIN=http://127.0.0.1:8001 next start"
   },
   "browserslist": {
     "production": [

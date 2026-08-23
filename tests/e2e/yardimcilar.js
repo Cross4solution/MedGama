@@ -30,9 +30,27 @@ async function cerezBandiniKapat(page) {
  *
  * `E2E_API_ORIGIN` verildiyse istek doğrudan o arka uca gider.
  */
+/**
+ * İsteklerin gideceği arka uç kökü.
+ *
+ * Göreli `/api` yolu ön yüz kökenine gider; orada Next'in `rewrites` kuralı
+ * var ve YEREL koşuda iki ayrı şekilde yanlış sonuç veriyor:
+ *
+ *  • `NEXT_PUBLIC_API_ORIGIN` tanımlı değilse hedef CANLI arka uç olur —
+ *    testler yerel yığını sürüp doğrulamalarını canlıdan okur.
+ *  • Tanımlı olsa bile Bearer kimliği geçmez: `sanctum.stateful` listesinde
+ *    `localhost:3000` var, yani proxy'lenen istek çerez oturumu sanılıp
+ *    jeton yok sayılıyor. Ölçüldü: aynı jeton doğrudan 200, proxy'den 401.
+ *
+ * Bu yüzden testler arka uca DOĞRUDAN gider.
+ */
+function apiKok() {
+  return (process.env.E2E_API_ORIGIN || '').replace(/\/+$/, '');
+}
+
 async function apiIstek(page, yol, ayar = {}) {
-  const kok = process.env.E2E_API_ORIGIN || '';
-  const tamYol = kok && yol.startsWith('/api') ? kok.replace(/\/+$/, '') + yol : yol;
+  const kok = apiKok();
+  const tamYol = kok && yol.startsWith('/api') ? kok + yol : yol;
 
   return page.evaluate(async ({ yol, ayar }) => {
     // Jeton üç ayrı anahtarda olabiliyor; uygulamanın kendi önceliğiyle aynı.
@@ -54,4 +72,4 @@ async function apiIstek(page, yol, ayar = {}) {
   }, { yol: tamYol, ayar });
 }
 
-module.exports = { HESAPLAR, oturumDosyasi, cerezBandiniKapat, apiIstek };
+module.exports = { HESAPLAR, oturumDosyasi, cerezBandiniKapat, apiIstek, apiKok };
