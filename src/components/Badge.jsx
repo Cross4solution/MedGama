@@ -1,5 +1,4 @@
 import React from 'react';
-import { translateSpecialty as translateSpecialtyHelper } from '../utils/i18n';
 
 // Reusable Badge component
 // Props:
@@ -7,7 +6,6 @@ import { translateSpecialty as translateSpecialtyHelper } from '../utils/i18n';
 // - variant: 'teal' | 'blue' | 'purple' | 'amber' | 'gray' | 'green' | 'red' (default: 'gray')
 // - size: 'sm' | 'md' (default: 'sm')
 // - icon: optional React node placed before the label
-// - translateSpecialty: boolean (default: true) -> if true, translate known Turkish specialties to English
 // - className: extra classes
 // - rounded: 'md' | 'full' (default: 'md')
 
@@ -31,7 +29,6 @@ export default function Badge({
   variant = 'gray',
   size = 'sm',
   icon = null,
-  translateSpecialty = true,
   className = '',
   rounded = 'md',
   ...rest
@@ -40,10 +37,14 @@ export default function Badge({
   const vCls = variantClasses[variant] || variantClasses.gray;
   const sCls = sizeClasses[size] || sizeClasses.sm;
 
-  let finalLabel = label;
-  if (translateSpecialty) {
-    finalLabel = translateSpecialtyHelper(label);
-  }
+  // Etiket OLDUĞU GİBİ basılıyor.
+  //
+  // Burada sabit bir Türkçe→İngilizce uzmanlık haritası uygulanıyordu ve
+  // varsayılan olarak AÇIKTI. Arka uç uzmanlık adını zaten kullanıcının
+  // dilinde gönderiyor (ölçüldü: tr → "Kardiyoloji", en → "Cardiology"),
+  // dolayısıyla bu dönüşüm İngilizce/Almanca için gereksiz, Türkçe için
+  // YANLIŞTI: doğru gelen "Kardiyoloji" etiketini "Cardiology" yapıyordu.
+  const finalLabel = label;
 
   return (
     <span

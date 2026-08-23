@@ -1,6 +1,5 @@
 import React from 'react';
 import { CheckCircle, Star } from 'lucide-react';
-import { toEnglishTimestamp } from 'utils/i18n';
 
 export default function ReviewItem({ review }) {
   return (
@@ -28,7 +27,7 @@ export default function ReviewItem({ review }) {
           {review.service && (
             <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">{review.service}</span>
           )}
-          <span className="text-[11px] text-gray-400">{toEnglishTimestamp(review.date) || 'Just now'}</span>
+          <span className="text-[11px] text-gray-400">{review.date || ''}</span>
         </div>
       </div>
       <p className="text-sm text-gray-600 leading-relaxed">{review.comment}</p>

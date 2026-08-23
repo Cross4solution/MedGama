@@ -4,7 +4,6 @@ import { Link, useNavigate } from '@/compat/router';
 import { Heart, MessageCircle, MapPin, Share2, MoreHorizontal, X, Send, ThumbsUp, AlertTriangle, CheckCircle, ImageOff, FileText, Play, Download, Trash2, Bookmark, Loader2, Volume2, Film } from 'lucide-react';
 import ShareMenu from '../ShareMenu';
 import EmojiPicker from '../EmojiPicker';
-import { toEnglishTimestamp } from '../../utils/i18n';
 import { useContentTranslation } from '../../context/ContentTranslationContext';
 import Modal from '../common/Modal';
 import VideoSubtitles from '../video/VideoSubtitles';
@@ -662,7 +661,15 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
   const actorTitle = item?.actor?.title || item?.subtitle || 'Healthcare';
   const actorAvatar = item?.actor?.avatarUrl || avatarUrl;
   const timeAgo = item?.timeAgo || '1 gün';
-  const timeLabel = toEnglishTimestamp(timeAgo);
+  // Göreli zamanı arka uç ZATEN kullanıcının dilinde gönderiyor: Carbon'un
+  // `diffForHumans()` çıktısı `Accept-Language`'e göre yerelleşiyor. Ölçüldü —
+  // tr: "4 gün önce", de: "vor 4 Tagen", en: "4 days ago".
+  //
+  // Burada `toEnglishTimestamp()` çağrılıyordu ve KOŞULSUZ İngilizceye
+  // çeviriyordu. Almanca metni tanımadığı için ona dokunmuyor, ama Türkçeyi
+  // tanıyıp çeviriyordu: Türk kullanıcı akıştaki her kartta "4 days ago"
+  // görüyordu. Arayüzün geri kalanı Türkçeyken.
+  const timeLabel = timeAgo;
   const socialContext = item?.socialContext || (item?.likes ? `${Math.max(1, item.likes % 7)} kişi beğendi` : '');
   // Videoların alt yazısı gönderiye ve medyanın sırasına bağlı. Bu bilgiyi
   // her MediaItem çağrısına ayrı ayrı geçirmek yerine bir kez medyaya

@@ -3,7 +3,6 @@ import { Heart, MessageCircle, Share2, Clock } from 'lucide-react';
 import TimelineActionsRow from './TimelineActionsRow';
 import TimelineButton from './TimelineButton';
 import Badge from '../Badge';
-import { toEnglishTimestamp } from '../../utils/i18n';
 import { useAuth } from '../../context/AuthContext';
 import useAuthGuard from '../../hooks/useAuthGuard';
 import ShareMenu from '../ShareMenu';
@@ -30,7 +29,7 @@ export default function TimelinePostCard({ post }) {
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <Clock className="w-3 h-3 text-gray-500" />
-                <span>{toEnglishTimestamp(post.timestamp)}</span>
+                <span>{post.timestamp}</span>
               </div>
             </div>
           </div>
