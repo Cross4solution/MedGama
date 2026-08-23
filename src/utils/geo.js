@@ -1,12 +1,27 @@
 // Utilities to manage countries and their administrative divisions or cities
 // Sources: local data files under src/data and remote fallback APIs (encapsulated here)
 
-import countriesEurope from '../data/countriesEurope';
-import { loadCities } from '../data/cityLoader';
-import countryCodes from '../data/countryCodes';
-import countryDialCodes from '../data/countryDialCodes';
-import adminDivisions from '../data/adminDivisions';
-import { aramaAnahtari } from './searchNormalize';
+import countriesEurope from '../data/countriesEurope.js';
+import countryCodes from '../data/countryCodes.js';
+import countryDialCodes from '../data/countryDialCodes.js';
+import adminDivisions from '../data/adminDivisions.js';
+import { aramaAnahtari } from './searchNormalize.js';
+
+/**
+ * Şehir verisi TEMBEL yükleniyor.
+ *
+ * `cityLoader` bir JSON dizinini modül düzeyinde içeri alıyor ve bu dosyayı
+ * kullanan her ekran onu da yüklüyordu — oysa şehir listesi yalnızca ülke
+ * seçildikten sonra gerekiyor. Ülke listesi ve bayrak kodu isteyen ekranlar
+ * (kayıt formu, telefon girişi, profil) o veriyi hiç kullanmıyor.
+ *
+ * Yan etkisi, bu modülün artık tek başına içe aktarılabilmesi: eskiden
+ * zincirin ucundaki JSON içe aktarımı yüzünden test edilemiyordu.
+ */
+async function loadCities(...args) {
+  const { loadCities: yukle } = await import('../data/cityLoader.js');
+  return yukle(...args);
+}
 // country-state-city removed for bundle size optimization (was 8.4 MB chunk)
 // All data now comes from local sources: cityLoader, countryCodes, adminDivisions, countryDialCodes
 
@@ -317,7 +332,10 @@ export function getFlagCode(countryName) {
     const nInput = normalize(countryName || '');
     const keys = Object.keys(countryCodes);
     for (let i = 0; i < keys.length; i++) {
+      // Anahtarın kendisinde de parantez olabiliyor
+      // ("Cote D'Ivoire (Ivory Coast)"); yalnız girdiyi kırpmak yetmiyordu.
       if (normalize(keys[i]) === nInput) return countryCodes[keys[i]];
+      if (normalize(stripParen(keys[i])) === nInput) return countryCodes[keys[i]];
     }
   } catch {}
   const variants = getCountryVariants(countryName);
@@ -351,6 +369,13 @@ function getCountryVariants(name) {
     'United States': ['USA','U.S.A','US','America','United States of America','ABD','Amerika'],
     'United Kingdom': ['UK','U.K','Britain','England','Great Britain'],
     'Turkey': ['Türkiye','Turkiye','Republic of Turkey'],
+    // Ülke listesi bu adları kullanıyor, bayrak eşlemesi başka adlarla
+    // tutuyordu. Ölçüldü: dört ülke listede görünüyor ama bayrağı boş
+    // çıkıyordu — kullanıcıya hiçbir hata gösterilmeden.
+    'The Bahamas': ['Bahamas'],
+    'The Gambia': ['Gambia'],
+    // Swaziland 2018'de Eswatini oldu; eşleme eski adda kalmış.
+    'Swaziland': ['Eswatini', 'Kingdom of Eswatini'],
     'Côte d’Ivoire': ['Ivory Coast','Cote d Ivoire','Cote d\'Ivoire','Cote D Ivoire','Cote D\'Ivoire','Cote dIvoire','Cote DIvoire','Cote Divoire','Cote-d\'Ivoire','Côte d\'Ivoire','Cote Dlvoire','Cote Dlvoreie','Cote de Ivoire','Cote dIvore'],
   };
   Object.entries(aliases).forEach(([k, arr]) => {
