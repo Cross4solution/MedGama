@@ -242,6 +242,13 @@ class SuperAdminService
         $user->is_active = !$suspend;
         $user->save();
 
+        // Askıya alma anında dışarı: 401 alan arayüz oturumu kendiliğinden
+        // kapatıyor. Asıl kapı istek başına yapılan `is_active` denetimi
+        // (Authenticate middleware); bu, jetonun ortalıkta kalmamasını sağlıyor.
+        if ($suspend) {
+            $user->tokens()->delete();
+        }
+
         AuditLog::log(
             action: $suspend ? 'user.suspended' : 'user.reactivated',
             resourceType: 'User',
