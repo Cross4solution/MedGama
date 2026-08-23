@@ -74,6 +74,7 @@ function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
                   type="button"
                   role="switch"
                   aria-checked={!!prefs[item.key]}
+                  aria-label={item.label}
                   onClick={() => setPrefs(p => ({ ...p, [item.key]: !p[item.key] }))}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${prefs[item.key] ? 'bg-teal-500' : 'bg-gray-200'}`}
                 >
@@ -584,6 +585,7 @@ export default function Profile() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
+                      aria-label={t('profile.changePhoto', 'Profil fotoğrafını değiştir')}
                       className="absolute inset-0 rounded-xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                     >
                       <Camera className="w-5 h-5 text-white" />
@@ -704,6 +706,7 @@ export default function Profile() {
                       onClick={handleTranslateToggle}
                       disabled={translateSaving}
                       aria-pressed={translateContent}
+                      aria-label={t('profile.translateContent', 'Gönderi ve mesajlar da benim dilimde görünsün')}
                       className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
                         translateContent ? 'bg-teal-600' : 'bg-gray-300'
                       }`}
