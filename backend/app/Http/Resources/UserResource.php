@@ -62,7 +62,10 @@ class UserResource extends JsonResource
             // Ses tercihi açılışta gerekiyor: kapalıysa ilk bildirimin sesi
             // çıkmadan bilinmeli. Tüm tercihleri değil yalnızca bunu
             // taşıyoruz — gerisi ayarlar ekranı açılınca ayrıca çekiliyor.
-            'notification_sound' => (bool) (($this->notification_preferences['sound_enabled'] ?? true)),
+            // Doğrudan okunamaz: sütun `encrypted:array` ve çözülemeyen bir
+            // değer istisna atıyor — bu kaynak `/auth/me` yanıtında olduğu
+            // için tek bir bozuk kayıt hesabı tamamen açılmaz hâle getiriyordu.
+            'notification_sound' => \App\Support\NotificationPreferences::ister($this->resource, 'sound_enabled'),
             'date_of_birth'      => $this->date_of_birth?->toDateString(),
             'gender'             => $this->gender,
             'last_login'         => $this->last_login?->toISOString(),

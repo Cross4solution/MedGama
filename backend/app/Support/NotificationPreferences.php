@@ -73,13 +73,46 @@ class NotificationPreferences
      */
     public static function oku(User $user): array
     {
-        $ham = $user->notification_preferences;
+        return array_merge(self::AYARLAR, self::hamOku($user));
+    }
 
-        if (is_string($ham)) {
-            $ham = json_decode($ham, true) ?: []; // eski kayıtlar için tolerans
+    /**
+     * Sütunun okunabilen kısmı; okunamıyorsa boş dizi.
+     *
+     * Sütun `encrypted:array` cast'li ve cast ÇÖZÜLEMEYEN bir değerde
+     * istisna atıyor. Ölçüldü: sütunda düz JSON, boş dizge ya da bozuk bir
+     * şifre metni olan bir kullanıcıda
+     *
+     *     GET  /api/auth/profile/notification-preferences  → 500
+     *     PUT  /api/auth/profile/notification-preferences  → 500
+     *     GET  /api/auth/me                                → 500
+     *     GET  /api/translation/status                     → 500
+     *
+     * Yani hesap kullanılamaz hâle geliyor: `/auth/me` düştüğü için uygulama
+     * açılmıyor bile. Böyle bir değer cast eklenmeden önce yazılmış her
+     * kayıtta ya da APP_KEY değişmiş bir kurulumda bulunabilir.
+     *
+     * Eskiden burada `is_string($ham)` toleransı vardı ama hiç çalışmıyordu:
+     * istisna, o satıra gelinmeden ÖNCE atılıyor. Ham değere cast'i atlayarak
+     * bakmak gerekiyor.
+     *
+     * Tercihler kaybolursa kullanıcı varsayılanlara döner — sinir bozucu ama
+     * hesabın açılmamasının yanında önemsiz.
+     */
+    private static function hamOku(User $user): array
+    {
+        try {
+            $ham = $user->notification_preferences;
+        } catch (\Throwable) {
+            // Cast'i atla: değer şifresiz yazılmış eski bir JSON olabilir.
+            $ham = $user->getRawOriginal('notification_preferences');
         }
 
-        return array_merge(self::AYARLAR, is_array($ham) ? $ham : []);
+        if (is_string($ham)) {
+            $ham = json_decode($ham, true) ?: [];
+        }
+
+        return is_array($ham) ? $ham : [];
     }
 
     /**
@@ -96,7 +129,20 @@ class NotificationPreferences
         }
 
         $yeni = array_merge(self::oku($user), $temiz);
-        $user->update(['notification_preferences' => $yeni]);
+
+        // Kaydetmeden önce sütunun ESKİ değeri unutuluyor.
+        //
+        // Eloquent, hangi alanların değiştiğini bulurken eski değeri de
+        // cast'ten geçiriyor; çözülemeyen bir değerde bu istisna atıyor ve
+        // yazma isteği 500 veriyordu — okuma düzeltilse bile. Eskisini null
+        // sayarak hem karşılaştırma güvenli oluyor hem de kayıt, geçerli ve
+        // şifreli bir değerle onarılıyor.
+        $nitelikler = $user->getAttributes();
+        $nitelikler['notification_preferences'] = null;
+        $user->setRawAttributes($nitelikler, true);
+
+        $user->notification_preferences = $yeni;
+        $user->save();
 
         return $yeni;
     }
