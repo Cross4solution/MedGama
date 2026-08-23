@@ -111,16 +111,42 @@ export const DOCUMENT_TYPES = Object.freeze({
 // ══════════════════════════════════════════════
 //  USER ROLES
 // ══════════════════════════════════════════════
+/**
+ * Arka uçtaki rol kimlikleri.
+ *
+ * Bu liste `hospital` ve `salesperson` rollerini TAŞIMIYORDU — arka uç
+ * (`User::SEVIYELER`) sekiz rol tanımlıyor, buradaki beş taneydi. Bugün
+ * kimse kırılmadı çünkü bu dosyadan yalnız `getStatusBadge` içe aktarılıyor
+ * ve rol listeleri üç ayrı ekranda tekrar tanımlanmış.
+ *
+ * Ama adı "constants" olan dosyada eksik bir rol listesi tuzak: buradan
+ * `CRM_ROLES` içe aktaran biri, hastane ve satış temsilcisi hesaplarını
+ * CRM'den sessizce kilitler. Liste arka uçla eşitlendi ve bir test iki
+ * tarafı karşılaştırıyor.
+ */
 export const ROLES = Object.freeze({
   PATIENT:      'patient',
   DOCTOR:       'doctor',
   CLINIC_OWNER: 'clinicOwner',
+  CLINIC:       'clinic',
+  SALESPERSON:  'salesperson',
+  HOSPITAL:     'hospital',
   SUPER_ADMIN:  'superAdmin',
   SAAS_ADMIN:   'saasAdmin',
 });
 
 export const ADMIN_ROLES = [ROLES.SUPER_ADMIN, ROLES.SAAS_ADMIN];
-export const CRM_ROLES   = [ROLES.DOCTOR, ROLES.CLINIC_OWNER, ...ADMIN_ROLES];
+
+/**
+ * CRM'e girebilen roller.
+ *
+ * `components/crm/CRMPage.jsx` içindeki liste ile AYNI olmalı; yönlendirmeyi
+ * fiilen o yapıyor. İkisi ayrışırsa buradan okuyan kod, gerçekte girebilen
+ * bir rolü dışarıda bırakır.
+ */
+export const CRM_ROLES = [
+  ROLES.DOCTOR, ROLES.CLINIC, ROLES.CLINIC_OWNER, ROLES.HOSPITAL, ROLES.SALESPERSON,
+];
 
 // ══════════════════════════════════════════════
 //  MODAL CENTERING UTILITY
