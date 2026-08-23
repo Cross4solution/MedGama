@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '../../i18n';
+import { authAPI, getStoredToken } from '../../lib/api';
 import LangFlag from './LangFlag';
 import { LOCALES, DEFAULT_LOCALE, getLocaleFromPath, stripLocale, withLocale } from '../../lib/locales';
 
@@ -33,6 +34,18 @@ export default function LanguageSwitcher({ compact = false }) {
     try { document.cookie = `i18next=${code}; path=/; max-age=31536000; samesite=lax`; } catch {}
     // 2) UI dilini değiştir
     try { i18n.changeLanguage(code); } catch {}
+    // 2b) Giriş yapmış kullanıcıda sunucudaki dili de güncelle.
+    //     Bu seçici o sütunu hiç yazmıyordu; yalnız profil ve CRM ayarları
+    //     yazıyordu. Sonuç: kullanıcı başlıktan Almancaya geçiyor, sunucudaki
+    //     dil `tr` kalıyor ve e-posta/bildirim eski dilde gidiyor.
+    try {
+      localStorage.setItem('preferred_language', code);
+      localStorage.setItem('preferred_language_manual', '1');
+    } catch {}
+    if (getStoredToken()) {
+      // Sessiz ve beklemeden: dil değişimi kullanıcıyı bekletmemeli.
+      authAPI.updateProfile({ preferred_language: code }).catch(() => {});
+    }
     // 3) Aynı sayfada kal, sadece locale prefix'ini değiştir — query string'i
     //    (ör. ?standalone=1) koru, yoksa standalone medstream ana siteye düşer.
     const rest = stripLocale(pathname);

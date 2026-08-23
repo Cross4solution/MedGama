@@ -1,5 +1,6 @@
 'use client';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { contentTranslationAPI } from '../lib/api';
 import { useAuth } from './AuthContext';
 
@@ -21,6 +22,7 @@ const Ctx = createContext(null);
 
 export function ContentTranslationProvider({ children }) {
   const { user, hydrated } = useAuth();
+  const { i18n } = useTranslation();
   const [durum, setDurum] = useState(null);      // {available, enabled, language, messages_allowed}
   const [ceviriler, setCeviriler] = useState({}); // key → {text, translated}
 
@@ -74,6 +76,28 @@ export function ContentTranslationProvider({ children }) {
   const acik = Boolean(durum?.available && durum?.enabled);
 
   /**
+   * Çevirinin HEDEF dili — kullanıcının o an OKUDUĞU dil.
+   *
+   * Eskiden sunucudaki `preferred_language` kopyası kullanılıyordu. Başlıktaki
+   * dil seçici o sütunu yazmıyor (yalnız profil ve CRM ayarları yazıyor), yani
+   * Almancaya geçen bir kullanıcının sunucudaki dili `tr` kalıyordu. Hedef `tr`
+   * olunca Türkçe gönderi Türkçeye "çevriliyor" ve metin AYNEN dönüyordu:
+   * arayüz Almanca, gönderiler Türkçe. Ölçüldü —
+   *   hedef tr → "Robotik kalp cerrahisinde yeni bir çağ başlıyor" (değişmedi)
+   *   hedef de → "Eine neue Ära in der robotergestützten Herzchirurgie beginnt"
+   * Hata sessizdi: istek başarılı, çeviri "yapıldı", sonuç aynı metin.
+   */
+  const hedefDil = ((i18n?.language || durum?.language || 'en').split('-')[0]);
+
+  // Dil değişince eldeki çeviriler başka bir dile ait: temizlenmezse kullanıcı
+  // Fransızcaya geçtiğinde ekranda Almanca metin kalır.
+  useEffect(() => {
+    setCeviriler({});
+    istenenler.current = new Set();
+    kuyruk.current = [];
+  }, [hedefDil]);
+
+  /**
    * Kuyruğu boşaltır. Kısa bir gecikmeyle çalışır ki aynı anda görünen
    * kayıtlar tek istekte toplansın.
    */
@@ -89,7 +113,7 @@ export function ContentTranslationProvider({ children }) {
       if (!gonderilecek.length) return;
 
       try {
-        const r = await contentTranslationAPI.batch(gonderilecek, durum?.language);
+        const r = await contentTranslationAPI.batch(gonderilecek, hedefDil);
         const gelen = (r?.data || r)?.items || {};
         setCeviriler((onceki) => ({ ...onceki, ...gelen }));
       } catch {
@@ -97,7 +121,7 @@ export function ContentTranslationProvider({ children }) {
         gonderilecek.forEach((k) => istenenler.current.delete(k.key));
       }
     }, 120);
-  }, [acik, durum?.language]);
+  }, [acik, hedefDil]);
 
   /**
    * Bir metnin gösterilecek hâli.
@@ -123,9 +147,9 @@ export function ContentTranslationProvider({ children }) {
     durum,
     metin,
     yenile,
-    dil: durum?.language || 'en',
+    dil: hedefDil,
     mesajlarCevrilebilir: Boolean(durum?.messages_allowed),
-  }), [acik, durum, metin, yenile]);
+  }), [acik, durum, hedefDil, metin, yenile]);
 
   return <Ctx.Provider value={deger}>{children}</Ctx.Provider>;
 }
