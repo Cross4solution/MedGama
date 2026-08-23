@@ -80,8 +80,29 @@ test.describe('Sohbet ve canlı bildirim', () => {
   test('okundu işaretleyince sayaç düşüyor', async ({ browser }) => {
     test.skip(!sohbetId, 'Sohbet açılmadı');
 
+    // TAZE mesaj: bu testten hemen önce gönderiliyor.
+    //
+    // Eskiden bir önceki testin gönderdiği mesaja güveniyordu, ama o test
+    // hastayı `/tr/doctor-chat` sayfasına götürüyor ve ekran sohbeti açılışta
+    // okundu sayıyor. Sıra buraya geldiğinde işaretlenecek bir şey kalmıyordu:
+    // ölçüldü, okundu ucu `count: 0` dönüyordu. Test kırmızı yanıyordu ama
+    // arka uçta hata yoktu — sayaç doğru çalışıyor (2 → mesajla 3 → okundu
+    // ile 2).
+    await rolIle(browser, 'demoDoktor', async (page) => {
+      await page.goto('/tr/crm/messages');
+      await cerezBandiniKapat(page);
+
+      const gonderim = await apiIstek(page, `/api/chat/conversations/${sohbetId}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({ content: 'Sayaç ölçümü için mesaj', message_type: 'text' }),
+      });
+      expect(gonderim.http).toBe(201);
+    });
+
     await rolIle(browser, 'hasta', async (page) => {
-      await page.goto('/tr/doctor-chat');
+      // Sohbet EKRANINA girilmiyor: ekran açılışta okundu işaretliyor ve
+      // ölçmek istediğimiz şeyi ölçülemez hâle getiriyor.
+      await page.goto('/tr');
       await cerezBandiniKapat(page);
 
       const once = await apiIstek(page, '/api/chat/unread-count');
@@ -90,12 +111,25 @@ test.describe('Sohbet ve canlı bildirim', () => {
       const okundu = await apiIstek(page, `/api/chat/conversations/${sohbetId}/read`, { method: 'POST' });
       expect([200, 204]).toContain(okundu.http);
 
+      // Ölçüt, küresel sayacın "azalması" DEĞİL, tam olarak işaretlenen kadar
+      // azalması.
+      //
+      // Önceki hâli `toBeLessThan(oncekiSayi)` idi ve kırılgandı: sayaç bu
+      // hesabın BÜTÜN sohbetlerini topluyor, önceki koşulardan kalan
+      // okunmamışlar da içinde. Test kendi açtığı sohbeti değil, paylaşılan
+      // bir toplamı ölçüyordu. Arka uç ölçüldü ve doğru çalışıyor
+      // (2 → mesajla 3 → okundu ile 2); düşen test bu kirlenmeydi.
+      //
+      // Uç kaç mesaj işaretlediğini söylüyor; kesin ölçüt o.
+      const isaretlenen = Number(okundu.govde?.count ?? 0);
+      expect(isaretlenen, 'okundu ucu hiçbir mesajı işaretlemedi').toBeGreaterThan(0);
+
       await expect
         .poll(async () => {
           const { govde } = await apiIstek(page, '/api/chat/unread-count');
           return Number(govde?.unread_count ?? 0);
-        }, { message: 'Okundu işaretlemesi sayacı düşürmedi', timeout: 20_000 })
-        .toBeLessThan(oncekiSayi);
+        }, { message: 'Okundu işaretlemesi sayacı işaretlenen kadar düşürmedi', timeout: 20_000 })
+        .toBe(oncekiSayi - isaretlenen);
     });
   });
 
@@ -108,6 +142,22 @@ test.describe('Sohbet ve canlı bildirim', () => {
     try {
       await hastaSayfa.goto('/tr/medstream');
       await cerezBandiniKapat(hastaSayfa);
+
+      // Yayın sunucusu YAPILANDIRILMAMIŞSA bu test geçemez ve geçmemesi de
+      // bir hata değildir. Yerel yığında `REVERB_APP_KEY` boş, yani Echo hiç
+      // kurulmuyor; test kırmızı yanıyor ama gösterdiği şey ortamın eksikliği.
+      //
+      // Ayrım ÖNEMLİ: "anahtar yok" ile "anahtar var ama abonelik tamamlanmadı"
+      // farklı şeyler. İkincisi tam olarak bu dosyanın yakalamak için yazıldığı
+      // sessiz kırılma, o yüzden orada atlamıyoruz — düşüyoruz.
+      // Ölçüt kütüphanenin varlığı DEĞİL — o pakete her hâlükârda giriyor.
+      // Ölçüt bir Pusher ÖRNEĞİNİN oluşmuş olması: Echo yalnızca anahtar
+      // yapılandırılmışsa örnek yaratıyor. Ölçüldü: yerelde
+      // `Pusher` tanımlı ama `Pusher.instances.length === 0`.
+      const yayinKurulu = await hastaSayfa.evaluate(
+        () => (window.Pusher?.instances?.length ?? 0) > 0,
+      );
+      test.skip(!yayinKurulu, 'Yayın sunucusu yapılandırılmamış (REVERB/PUSHER anahtarı yok)');
 
       // Soket bağlanana ve özel kanala abonelik TAMAMLANANA kadar bekle.
       // Eski hatada tam burası sessizce false kalıyordu.

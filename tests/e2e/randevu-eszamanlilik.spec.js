@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { oturumDosyasi, cerezBandiniKapat, apiIstek } = require('./yardimcilar');
+const { oturumDosyasi, cerezBandiniKapat, apiIstek, apiKok } = require('./yardimcilar');
 
 /**
  * Aynı saate eşzamanlı randevu.
@@ -49,10 +49,10 @@ test.describe('Eşzamanlı randevu', () => {
     // Beklemeden, hepsi birden gönderiliyor: sıraya girerlerse yarış hiç
     // oluşmaz ve test bir şey ölçmemiş olur.
     const sonuclar = await page.evaluate(
-      async ({ adet, hastaId, doktorId, tarih, saat }) => {
+      async ({ adet, hastaId, doktorId, tarih, saat, kok }) => {
         const t = JSON.parse(localStorage.getItem('auth_state') || '{}').token;
         const istek = () =>
-          fetch('/api/appointments', {
+          fetch(`${kok}/api/appointments`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
@@ -70,7 +70,7 @@ test.describe('Eşzamanlı randevu', () => {
 
         return Promise.all(Array.from({ length: adet }, istek));
       },
-      { adet: ADET, hastaId, doktorId, tarih, saat },
+      { adet: ADET, hastaId, doktorId, tarih, saat, kok: apiKok() },
     );
 
     for (const s of sonuclar) {
