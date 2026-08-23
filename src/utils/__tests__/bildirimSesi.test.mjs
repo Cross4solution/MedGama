@@ -31,10 +31,39 @@ class SahteKazanc {
   connect() { return this; }
 }
 
+class SahteTampon {
+  constructor(uzunluk) { this._veri = new Float32Array(uzunluk); }
+  getChannelData() { return this._veri; }
+}
+
+class SahteKaynak {
+  constructor() { this.buffer = null; }
+  connect() { return this; }
+  start() { calinanNotalar++; }
+  stop() {}
+}
+
+class SahteSuzgec {
+  constructor() {
+    this.type = '';
+    this.frequency = { setValueAtTime() {} };
+    this.Q = { setValueAtTime() {} };
+  }
+  connect() { return this; }
+}
+
 class SahteAudioContext {
-  constructor() { this.state = 'running'; this.currentTime = 0; this.destination = {}; }
+  constructor() {
+    this.state = 'running';
+    this.currentTime = 0;
+    this.sampleRate = 44100;
+    this.destination = {};
+  }
   createOscillator() { return new SahteOsilator(); }
   createGain() { return new SahteKazanc(); }
+  createBuffer(_k, uzunluk) { return new SahteTampon(uzunluk); }
+  createBufferSource() { return new SahteKaynak(); }
+  createBiquadFilter() { return new SahteSuzgec(); }
   resume() { return Promise.resolve(); }
 }
 
@@ -189,14 +218,15 @@ test('gönderme tıkı gelen mesaj sesinden kısa', () => {
   // hangisinin ne olduğu ayırt edilemezdi.
   setNotificationSoundEnabled(true);
 
-  // Sayaç OSİLATÖR sayıyor, nota değil: her nota temel sesi ve hafif bir
-  // ikinci harmoniği birlikte açıyor, yani bir nota = iki osilatör.
-  const gondermeOsc = gonder();
-  const gelenOsc = cal('new_chat_message', { gorunur: true, yol: '/tr/dashboard' });
+  // Sayaç ses KAYNAĞI sayıyor. Gelen mesaj sesi saf sinüs notalarından
+  // kurulu (her nota = temel + harmonik, 2 osilatör). Gönderme sesi ise
+  // vurmalı: bir düşen sinüs gövdesi + bir gürültü atağı = 2 kaynak.
+  const gondermeKaynak = gonder();
+  const gelenKaynak = cal('new_chat_message', { gorunur: true, yol: '/tr/dashboard' });
 
-  assert.equal(gondermeOsc, 2, 'gönderme TEK nota olmalı (2 osilatör)');
-  assert.equal(gelenOsc, 4, 'gelen mesaj İKİ nota (4 osilatör)');
-  assert.ok(gelenOsc > gondermeOsc, 'gelen mesaj sesi daha zengin olmalı');
+  assert.equal(gondermeKaynak, 2, 'gönderme sesi: gövde + atak');
+  assert.equal(gelenKaynak, 4, 'gelen mesaj: iki nota (4 osilatör)');
+  assert.ok(gelenKaynak > gondermeKaynak, 'gelen mesaj sesi daha zengin olmalı');
 });
 
 test('ses aygıtı yokken mesaj göndermek bozulmuyor', () => {

@@ -75,15 +75,67 @@ function yumusakCan(ctx) {
 }
 
 /**
- * Gönderme tıkı — tek, kısa, kuru nota.
+ * Gönderme tıkı — yuvarlak, yumuşak bir "pop".
  *
- * Gelen mesaj sesinden bilerek daha alçak, daha kısa ve daha sessiz:
- * gönderdiğinizi zaten biliyorsunuz, ses yalnızca "gitti" diyor. Gelen mesaj
- * ise dikkat istiyor. İkisi eşit yükseklikte olsaydı yoğun bir sohbette
- * hangisinin ne olduğu ayırt edilemezdi.
+ * Bildirim sesleri saf sinüs; kulakta elektronik duruluyor. Gönderme sesi
+ * ise günde onlarca kez duyuluyor, o yüzden DOĞAL bir vurmalı ses gibi
+ * kurulmuş. Doğal tık seslerinde üç şey var ve üçü de burada:
+ *
+ *   • gürültüden kısa bir atak (parmağın yüzeye değme anı)
+ *   • frekansı hızla düşen bir gövde (cismin titreşimi sönerken alçalır)
+ *   • üstel sönüm (hiçbir doğal ses düz kesilmez)
+ *
+ * Gelen mesaj sesinden bilerek daha alçak ve daha kısa: gönderdiğinizi zaten
+ * biliyorsunuz, ses yalnızca "gitti" diyor. Gelen mesaj dikkat istiyor.
+ * İkisi eşit olsaydı yoğun bir sohbette hangisinin ne olduğu ayırt edilemezdi.
  */
 function gondermeTiki(ctx) {
-  nota(ctx, 520.0, ctx.currentTime, 0.08, 0.05);
+  const t = ctx.currentTime;
+  const sure = 0.12;
+
+  // ── Gövde: 520 → 260 Hz düşen sinüs ──
+  const govde = ctx.createOscillator();
+  const govdeKazanc = ctx.createGain();
+
+  govde.type = 'sine';
+  govde.frequency.setValueAtTime(520, t);
+  govde.frequency.exponentialRampToValueAtTime(260, t + sure);
+
+  govdeKazanc.gain.setValueAtTime(0.0001, t);
+  govdeKazanc.gain.exponentialRampToValueAtTime(0.045, t + 0.006);
+  govdeKazanc.gain.exponentialRampToValueAtTime(0.0001, t + sure);
+
+  govde.connect(govdeKazanc);
+  govdeKazanc.connect(ctx.destination);
+  govde.start(t);
+  govde.stop(t + sure + 0.02);
+
+  // ── Atak: çok kısa gürültü, dar bir bandtan geçiyor ──
+  // Sesi "doğal" yapan asıl şey bu: saf sinüste değme anı yok.
+  const ornek = Math.floor(ctx.sampleRate * 0.02);
+  const tampon = ctx.createBuffer(1, ornek, ctx.sampleRate);
+  const veri = tampon.getChannelData(0);
+  for (let i = 0; i < ornek; i++) {
+    veri[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.0025));
+  }
+
+  const kaynak = ctx.createBufferSource();
+  const suzgec = ctx.createBiquadFilter();
+  const atakKazanc = ctx.createGain();
+
+  kaynak.buffer = tampon;
+  suzgec.type = 'bandpass';
+  suzgec.frequency.setValueAtTime(1800, t);
+  suzgec.Q.setValueAtTime(8, t);
+
+  atakKazanc.gain.setValueAtTime(0.012, t);
+  atakKazanc.gain.exponentialRampToValueAtTime(0.0001, t + 0.02);
+
+  kaynak.connect(suzgec);
+  suzgec.connect(atakKazanc);
+  atakKazanc.connect(ctx.destination);
+  kaynak.start(t);
+  kaynak.stop(t + 0.03);
 }
 
 /** Yükselen üçlü — üç artan nota. */
