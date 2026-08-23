@@ -116,6 +116,9 @@ test.describe('Erişilebilirlik — ziyaretçi sayfaları', () => {
     for (const yol of ['/tr', '/tr/login', '/tr/about']) {
       await page.goto(yol);
       await cerezBandiniKapat(page);
+      // `denetle()` ile aynı bekleme: sayfa yerleşmeden ölçmek "hiçbir öğe
+      // bulamadım" sonucunu veriyor ve ölçüm boşa geçiyordu.
+      await page.waitForTimeout(1200);
       const s = await olc(page);
       expect(s.olculen, `${yol} — sayfa yerleşmemiş`).toBeGreaterThan(5);
       expect(s.h1, `${yol} — h1 sayısı`).toBe(1);
