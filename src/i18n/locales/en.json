@@ -1954,7 +1954,8 @@
     "delete": "DELETE",
     "saveFailed": "Kaydedilemedi",
     "passwordUpdatedReloginRequired": "Your password has been updated. For your security all sessions were closed; please sign in again.",
-    "medicalShareNotice": "This information will be shared with the doctor you book an appointment with. Complete medication, allergy and medical history details matter for correct and safe treatment."
+    "medicalShareNotice": "This information will be shared with the doctor you book an appointment with. Complete medication, allergy and medical history details matter for correct and safe treatment.",
+    "changePhoto": "Change profile photo"
   },
   "search": {
     "heroTitle": "Find the Right Doctor for You",

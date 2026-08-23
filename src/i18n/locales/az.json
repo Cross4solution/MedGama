@@ -1975,7 +1975,8 @@
     "translateContentDesc": "Bağlı olduqda məzmun yazıldığı dildə qalır. Açdıqda hər birini ayrıca tərcümə etməyə ehtiyac qalmır.",
     "vaccinations": "Vurulan peyvəndlər",
     "vaccinationsDesc": "Vurdurduğunuz peyvəndlər.",
-    "vaccinationsPlaceholder": "məs. COVID-19, Tetanoz, Hepatit B…"
+    "vaccinationsPlaceholder": "məs. COVID-19, Tetanoz, Hepatit B…",
+    "changePhoto": "Profil şəklini dəyişdir"
   },
   "patientDashboard": {
     "welcome": "Xoş gəlmisiniz",

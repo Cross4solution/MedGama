@@ -1935,7 +1935,8 @@
     "translateContentDesc": "Désactivée, cette option laisse le contenu dans sa langue d'origine. Activez-la et vous n'aurez plus à traduire chaque élément.",
     "vaccinations": "Vaccinations",
     "vaccinationsDesc": "Les vaccins que vous avez reçus.",
-    "vaccinationsPlaceholder": "ex. COVID-19, tétanos, hépatite B…"
+    "vaccinationsPlaceholder": "ex. COVID-19, tétanos, hépatite B…",
+    "changePhoto": "Changer la photo de profil"
   },
   "patientDashboard": {
     "welcome": "Bienvenue",

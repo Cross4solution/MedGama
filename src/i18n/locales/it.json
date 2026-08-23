@@ -1935,7 +1935,8 @@
     "translateContentDesc": "Se disattivata, i contenuti restano nella lingua originale. Attivandola non dovrai tradurre ogni elemento.",
     "vaccinations": "Vaccinazioni",
     "vaccinationsDesc": "I vaccini che hai ricevuto.",
-    "vaccinationsPlaceholder": "es. COVID-19, tetano, epatite B…"
+    "vaccinationsPlaceholder": "es. COVID-19, tetano, epatite B…",
+    "changePhoto": "Cambia foto profilo"
   },
   "patientDashboard": {
     "welcome": "Benvenuto",

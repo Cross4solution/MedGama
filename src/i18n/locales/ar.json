@@ -1935,7 +1935,8 @@
     "translateContentDesc": "عند الإيقاف يبقى المحتوى بلغته الأصلية. فعّله فلن تحتاج إلى ترجمة كل عنصر على حدة.",
     "vaccinations": "التطعيمات",
     "vaccinationsDesc": "التطعيمات التي تلقّيتها.",
-    "vaccinationsPlaceholder": "مثال: كوفيد-19، الكزاز، التهاب الكبد B…"
+    "vaccinationsPlaceholder": "مثال: كوفيد-19، الكزاز، التهاب الكبد B…",
+    "changePhoto": "تغيير صورة الملف الشخصي"
   },
   "search": {
     "heroTitle": "اعثر على الطبيب المناسب لك",

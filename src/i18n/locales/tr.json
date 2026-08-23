@@ -1968,7 +1968,8 @@
     "saveFailed": "Kaydedilemedi",
     "passwordUpdatedReloginRequired": "Şifreniz güncellendi. Güvenliğiniz için tüm oturumlar kapatıldı; tekrar giriş yapın.",
     "medicalShareNotice": "Bu bilgiler, randevu aldığınız doktorla paylaşılacaktır. Doğru ve güvenli tedavi için ilaç, alerji ve tıbbi geçmişinizin eksiksiz olması önemlidir.",
-    "delete": "SİL"
+    "delete": "SİL",
+    "changePhoto": "Profil fotoğrafını değiştir"
   },
   "search": {
     "heroTitle": "Size Uygun Doktoru Bulun",
