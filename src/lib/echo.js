@@ -1,6 +1,6 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
-import { API_BASE_URL } from '../config/apiBase';
+import { API_BASE_URL } from '../config/apiBase.js';
 
 // Make Pusher available globally (required by laravel-echo)
 // SSR guard: bu modül Next prerender sırasında import edilebilir; window orada yok.

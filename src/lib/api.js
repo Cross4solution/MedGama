@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../config/apiBase';
+import { API_BASE_URL } from '../config/apiBase.js';
 
 const BASE_URL = API_BASE_URL;
 
