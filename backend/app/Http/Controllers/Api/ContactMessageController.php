@@ -69,7 +69,7 @@ class ContactMessageController extends Controller
                     continue; // skip disallowed types silently
                 }
 
-                $ext      = $file->getClientOriginalExtension() ?: 'bin';
+                $ext      = \App\Support\DosyaUzantisi::guvenli($file, 'bin');
                 $filename = Str::uuid() . '.' . $ext;
                 $path     = $file->storeAs('contact-messages/' . $message->id, $filename, 'public');
 

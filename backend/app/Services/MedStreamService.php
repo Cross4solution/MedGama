@@ -895,7 +895,7 @@ class MedStreamService
             // original tmp path after move, causing getSize()/getClientOriginalName() to throw.
             $originalName = $file->getClientOriginalName();
             $originalSize = $file->getSize();
-            $originalExt  = $file->getClientOriginalExtension() ?: 'mp4';
+            $originalExt  = \App\Support\DosyaUzantisi::guvenli($file, 'mp4');
 
             $tempName = Str::uuid() . '.' . $originalExt;
             $tempPath = storage_path('app/temp/' . $tempName);

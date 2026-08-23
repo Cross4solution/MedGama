@@ -26,7 +26,7 @@ class EncryptedFileStorage
     /** Yüklenen dosyayı şifreleyip kaydeder, göreli yolu döner. */
     public function storeUploaded(UploadedFile $file, string $directory): string
     {
-        $ext = $file->getClientOriginalExtension() ?: 'bin';
+        $ext = \App\Support\DosyaUzantisi::guvenli($file, 'bin');
         $path = rtrim($directory, '/') . '/' . Str::uuid() . '.' . $ext;
 
         $plain = file_get_contents($file->getRealPath());

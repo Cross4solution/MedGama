@@ -155,7 +155,7 @@ class ChatService
             if ($messageType === 'image') {
                 $attachmentUrl = $this->optimizeAndStoreImage($attachment, $folder);
             } else {
-                $filename = Str::uuid() . '.' . ($attachment->getClientOriginalExtension() ?: 'bin');
+                $filename = Str::uuid() . '.' . \App\Support\DosyaUzantisi::guvenli($attachment, 'bin');
                 $attachment->storeAs($folder, $filename, 'public');
                 $attachmentUrl = '/storage/' . $folder . '/' . $filename;
             }
@@ -266,7 +266,7 @@ class ChatService
         $image = @imagecreatefromstring(file_get_contents($file->getRealPath()));
         if (!$image) {
             // GD can't process — store as-is
-            $filename = Str::uuid() . '.' . ($file->getClientOriginalExtension() ?: 'bin');
+            $filename = Str::uuid() . '.' . \App\Support\DosyaUzantisi::guvenli($file, 'bin');
             $file->storeAs($folder, $filename, 'public');
             return '/storage/' . $folder . '/' . $filename;
         }

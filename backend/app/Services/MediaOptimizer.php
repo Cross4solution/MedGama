@@ -112,7 +112,7 @@ class MediaOptimizer
     public static function processVideo(UploadedFile $file, string $folder = 'medstream/videos'): array
     {
         $id = Str::uuid()->toString();
-        $ext = $file->getClientOriginalExtension() ?: 'mp4';
+        $ext = \App\Support\DosyaUzantisi::guvenli($file, 'mp4');
         $filename = "{$id}.{$ext}";
         $path = "{$folder}/{$filename}";
 
@@ -270,7 +270,7 @@ class MediaOptimizer
     public static function processDocument(UploadedFile $file, string $folder = 'medstream/papers'): array
     {
         $id = Str::uuid()->toString();
-        $ext = $file->getClientOriginalExtension() ?: 'pdf';
+        $ext = \App\Support\DosyaUzantisi::guvenli($file, 'pdf');
         $filename = "{$id}.{$ext}";
         $file->storeAs($folder, $filename, 'public');
 
