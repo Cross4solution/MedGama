@@ -14,6 +14,17 @@ use Tests\TestCase;
 /**
  * Gönderi videolarının alt yazıları. Motor yerine sahte bir çevirici
  * bağlanıyor — sınanan şey saklama, çeviri ve düzeltme kuralları.
+ *
+ * ÇEVİRİ SERVİSİ DE SAHTE. Eskiden gerçek sağlayıcıya (MyMemory) çıkıyordu
+ * ve iki test bir gün sebepsizce kırmızı yandı: sağlayıcının ücretsiz
+ * kotası tükenmişti, çeviri `ok: false` dönüyordu, uygulama da başarısız
+ * çeviriyi doğru şekilde KAYDETMİYORDU. Yani uygulamada hata yoktu —
+ * testler başkasının kotasına bağlıydı.
+ *
+ * Ölçüldü: `translate('...', 'de', 'tr')` → metin değişmeden, `ok: false`.
+ *
+ * Dış servise çıkan test, sonucu bizim denetimimizde olmayan bir teste
+ * dönüşüyor; ne yeşili ne kırmızısı bilgi taşıyor.
  */
 class VideoSubtitleTest extends TestCase
 {
@@ -28,6 +39,23 @@ class VideoSubtitleTest extends TestCase
 
         $this->doctor = User::factory()->doctor()->create();
         $this->post = MedStreamPost::factory()->create(['author_id' => $this->doctor->id]);
+
+        $this->app->instance(\App\Services\TranslationService::class, new class extends \App\Services\TranslationService {
+            public function __construct()
+            {
+            }
+
+            public function translate(string $text, string $target, ?string $source = null): array
+            {
+                return [
+                    'translated_text' => "[{$target}] {$text}",
+                    'source_lang'     => $source ?? 'tr',
+                    'provider'        => 'sahte',
+                    'cached'          => false,
+                    'ok'              => true,
+                ];
+            }
+        });
     }
 
     private function servis(): VideoSubtitleService
