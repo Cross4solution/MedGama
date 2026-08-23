@@ -50,6 +50,9 @@ return Application::configure(basePath: dirname(__DIR__))
             ],
             append: [
                 \App\Http\Middleware\SetLocale::class,
+                // `per_page` üst sınırı. Uçlara tek tek yazılmıyor: unutulan
+                // bir uç sessizce açık kalır ve yeni uçlar da korunmalı.
+                \App\Http\Middleware\SayfaBoyutunuSinirla::class,
                 // Geçici teşhis — TIMING_HEADER olmadan kapalı, teslimden önce kaldırılacak.
                 \App\Http\Middleware\SureOlcer::class,
                 // Varsayılan: hiçbir API yanıtı önbelleğe yazılmaz. Hasta
