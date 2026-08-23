@@ -100,7 +100,7 @@ class FinanceController extends Controller
 
         return response($csv, 200, [
             'Content-Type'        => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Content-Disposition' => \App\Support\DosyaBasligi::uret('attachment', $filename),
         ]);
     }
 }

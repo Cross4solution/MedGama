@@ -595,7 +595,7 @@ class MessageController extends Controller
         return response($content, 200, [
             'Content-Type'        => $mime ?: ($attachment->file_type ?: 'application/octet-stream'),
             // Görseller sohbette gömülü gösterilir; indirme zorlanmaz
-            'Content-Disposition' => 'inline; filename="' . addslashes($name) . '"',
+            'Content-Disposition' => \App\Support\DosyaBasligi::uret('inline', $name),
             'Content-Length'      => (string) strlen($content),
             'Cache-Control'       => 'no-store, private',
         ]);

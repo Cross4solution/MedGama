@@ -99,7 +99,7 @@ class EncryptedFileStorage
 
         return response($content, 200, array_filter([
             'Content-Type'        => $mime ?: 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename="' . addslashes($filename) . '"',
+            'Content-Disposition' => \App\Support\DosyaBasligi::uret('attachment', $filename),
             'Content-Length'      => (string) strlen($content),
             // Şifre çözülmüş sağlık verisi ara katmanlarda önbelleğe alınmasın
             'Cache-Control'       => 'no-store, private',
