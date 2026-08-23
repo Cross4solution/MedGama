@@ -92,7 +92,11 @@ class DeepgramService
         }
 
         try {
-            $response = \Illuminate\Support\Facades\Http::withHeaders([
+            // Zaman aşımı AÇIKÇA veriliyor. Varsayılan 30 saniye ve bu çağrı
+            // istek yolunda: dış servis yanıt vermezse bir PHP-FPM işçisi 30
+            // saniye dolu kalır. Aynı sınıf hata toplu çeviride ölçüldü ve
+            // akışı düşürüyordu.
+            $response = \Illuminate\Support\Facades\Http::timeout(8)->withHeaders([
                 'Authorization' => "Token {$this->apiKey}",
                 'Content-Type'  => 'application/json',
             ])->post("{$this->baseUrl}/keys", [
