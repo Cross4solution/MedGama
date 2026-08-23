@@ -62,11 +62,18 @@ class Username
         $candidate = $base;
         $i = 1;
 
-        while (
-            User::where('username', $candidate)
+        // Rezerve liste OTOMATİK ÜRETİMDE DE geçerli. Eskiden yalnız çakışmaya
+        // bakılıyordu: adı "Admin" olan bir hasta @admin, adı "Medagama" olan
+        // bir klinik @medagama alıyordu — elle seçilmesi engellenen, akışta
+        // resmî hesap gibi okunan handle'lar. Hekimler `dr_` öneki yüzünden
+        // kazara korunuyordu, hasta ve klinikler korunmuyordu.
+        $cakisiyorMu = fn (string $aday): bool =>
+            in_array($aday, self::RESERVED, true)
+            || User::where('username', $aday)
                 ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
-                ->exists()
-        ) {
+                ->exists();
+
+        while ($cakisiyorMu($candidate)) {
             $i++;
             $candidate = $base . '_' . $i;
         }
