@@ -29,6 +29,8 @@ export function ContentTranslationProvider({ children }) {
   // Aynı metni iki kez istemeyi önler (bir gönderi listede birden fazla yerde olabilir).
   const istenenler = useRef(new Set());
   const kuyruk = useRef([]);
+  // Bütçe yüzünden atlanan kayıtların deneme sayısı (sonsuz döngü koruması).
+  const denemeler = useRef(new Map());
   const zamanlayici = useRef(null);
 
   // Durumun en son hangi kullanıcı için sorulduğu.
@@ -95,6 +97,7 @@ export function ContentTranslationProvider({ children }) {
     setCeviriler({});
     istenenler.current = new Set();
     kuyruk.current = [];
+    denemeler.current = new Map();
   }, [hedefDil]);
 
   /**
@@ -102,9 +105,14 @@ export function ContentTranslationProvider({ children }) {
    * kayıtlar tek istekte toplansın.
    */
   const kuyrugaEkle = useCallback((kayit) => {
-    if (!acik || istenenler.current.has(kayit.key)) return;
-    istenenler.current.add(kayit.key);
-    kuyruk.current.push(kayit);
+    if (!acik) return;
+
+    // `null` = "yeni kayıt yok, yalnızca bekleyen kuyruğu boşalt".
+    if (kayit) {
+      if (istenenler.current.has(kayit.key)) return;
+      istenenler.current.add(kayit.key);
+      kuyruk.current.push(kayit);
+    }
 
     if (zamanlayici.current) return;
     zamanlayici.current = setTimeout(async () => {
@@ -115,13 +123,57 @@ export function ContentTranslationProvider({ children }) {
       try {
         const r = await contentTranslationAPI.batch(gonderilecek, hedefDil);
         const gelen = (r?.data || r)?.items || {};
-        setCeviriler((onceki) => ({ ...onceki, ...gelen }));
+
+        // Sunucunun SÜRE BÜTÇESİ dolduğunda kalan kayıtlar çevrilmeden,
+        // `reason: "budget"` ile dönüyor. Onları önbelleğe yazmak, bir daha
+        // hiç istenmemeleri demek olurdu: kullanıcı sayfayı yenileyene kadar
+        // yarı çevrilmiş bir akışla kalırdı. Yazmıyoruz ve işaretini
+        // kaldırıyoruz ki sonraki turda yeniden sıraya girsinler.
+        const saklanacak = {};
+        const yenidenDenenecek = [];
+
+        for (const kayit of gonderilecek) {
+          const sonuc = gelen[kayit.key];
+          if (!sonuc) continue;
+
+          if (sonuc.reason === 'budget') {
+            yenidenDenenecek.push(kayit);
+            continue;
+          }
+
+          saklanacak[kayit.key] = sonuc;
+        }
+
+        if (Object.keys(saklanacak).length) {
+          setCeviriler((onceki) => ({ ...onceki, ...saklanacak }));
+        }
+
+        // Sonsuz döngü olmasın: sunucu sürekli yavaşsa birkaç denemeden
+        // sonra bırakılıyor ve içerik özgün dilinde kalıyor.
+        for (const kayit of yenidenDenenecek) {
+          const deneme = (denemeler.current.get(kayit.key) || 0) + 1;
+          denemeler.current.set(kayit.key, deneme);
+
+          if (deneme < 3) {
+            istenenler.current.delete(kayit.key);
+          }
+        }
       } catch {
         // Çeviri bir kolaylık; başarısızlığı içeriği gizlemeye dönüşmemeli.
         gonderilecek.forEach((k) => istenenler.current.delete(k.key));
       }
+
+      // Bir turda en fazla 50 kayıt gidiyor; artanlar için yeni tur planla.
+      // Yoksa 50'den fazla kayıtta kalanlar kuyrukta sonsuza kadar beklerdi.
+      if (kuyruk.current.length && !zamanlayici.current) {
+        kuyrugaEkleRef.current?.(null);
+      }
     }, 120);
   }, [acik, hedefDil]);
+
+  // Kendini yeniden tetikleyebilmesi için (yukarıdaki artan-kuyruk turu).
+  const kuyrugaEkleRef = useRef(null);
+  kuyrugaEkleRef.current = kuyrugaEkle;
 
   /**
    * Bir metnin gösterilecek hâli.
