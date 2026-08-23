@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { playMessageSentSound } from '../../utils/notificationSound';
 import {
   MessageSquare, Search, Plus, Send, Paperclip, Image, Smile,
   X, Check, CheckCheck, Clock, Circle, ChevronLeft, Star,
@@ -207,6 +208,10 @@ const CRMMessages = () => {
     try {
       const res = await messageAPI.sendMessage(activeConversation, { body, type: 'text' });
       const newMsg = res?.data?.message ?? res?.data ?? null;
+      // Ses SUNUCU ONAYINDAN SONRA: tık "gitti" demek. Tuşa basar basmaz
+      // çalsaydı, istek başarısız olduğunda gitmemiş bir mesaj için
+      // gitmiş sesi duyulurdu.
+      if (newMsg) playMessageSentSound();
       if (newMsg) {
         setMessages((prev) => [...prev, newMsg]);
         // Konuşma listesinde son mesajı güncelle

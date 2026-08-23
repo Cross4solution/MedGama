@@ -74,6 +74,18 @@ function yumusakCan(ctx) {
   nota(ctx, 1318.5, t + 0.09, 0.50, 0.07);
 }
 
+/**
+ * Gönderme tıkı — tek, kısa, kuru nota.
+ *
+ * Gelen mesaj sesinden bilerek daha alçak, daha kısa ve daha sessiz:
+ * gönderdiğinizi zaten biliyorsunuz, ses yalnızca "gitti" diyor. Gelen mesaj
+ * ise dikkat istiyor. İkisi eşit yükseklikte olsaydı yoğun bir sohbette
+ * hangisinin ne olduğu ayırt edilemezdi.
+ */
+function gondermeTiki(ctx) {
+  nota(ctx, 520.0, ctx.currentTime, 0.08, 0.05);
+}
+
 /** Yükselen üçlü — üç artan nota. */
 function yukselenUclu(ctx) {
   const t = ctx.currentTime;
@@ -129,6 +141,27 @@ export function playNotificationSound(tip = '') {
     else yumusakCan(ctx);
   } catch {
     // Ses hiçbir zaman akışı bozmamalı.
+  }
+}
+
+/**
+ * Mesaj gönderildiğinde çalar.
+ *
+ * Gelen bildirimlerden farklı olarak sekme durumuna ve açık ekrana BAKMAZ:
+ * bu ses kullanıcının kendi eyleminin karşılığı, her zaman o an oradadır.
+ * Tek koşul, kullanıcının sesi açık bırakmış olması — klinikte hasta
+ * karşısındayken susturma anahtarı bunu da kapatır.
+ */
+export function playMessageSentSound() {
+  try {
+    if (!sesAcik) return;
+
+    const ctx = ctxAl();
+    if (!ctx) return;
+
+    gondermeTiki(ctx);
+  } catch {
+    // Ses hiçbir zaman mesaj göndermeyi bozmamalı.
   }
 }
 

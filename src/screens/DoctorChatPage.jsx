@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import { playMessageSentSound } from '../utils/notificationSound';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from '@/compat/router';
@@ -418,6 +419,8 @@ const DoctorChatPage = () => {
           attachment: hasFiles ? attachments[0] : undefined,
         });
         const msgData = res?.data || res;
+        // Ses sunucu onayından SONRA — bkz. CRMMessages'taki aynı karar.
+        playMessageSentSound();
         const real = apiMsgToLocal(msgData, currentUserId);
         // Revoke blob URLs from optimistic attachments
         optAttachments.forEach(a => { if (a.url?.startsWith('blob:')) URL.revokeObjectURL(a.url); });

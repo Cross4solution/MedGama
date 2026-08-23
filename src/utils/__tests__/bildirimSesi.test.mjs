@@ -47,7 +47,7 @@ globalThis.localStorage = {
   removeItem(k) { delete this._v[k]; },
 };
 
-const { playNotificationSound, setNotificationSoundEnabled, ONEMLI_TIPLER } =
+const { playNotificationSound, playMessageSentSound, setNotificationSoundEnabled, ONEMLI_TIPLER } =
   await import('../notificationSound.js');
 
 /** Sesi çalıp kaç nota üretildiğini döndürür. */
@@ -140,6 +140,71 @@ test('ses üretimi başarısız olsa da akış bozulmuyor', () => {
   window.AudioContext = function () { throw new Error('ses aygıtı yok'); };
 
   assert.doesNotThrow(() => playNotificationSound('video_call_starting'));
+
+  window.AudioContext = eski;
+});
+
+// ── Gönderme tıkı ──
+
+/** Gönderme sesini çalıp kaç nota üretildiğini döndürür. */
+function gonder({ gorunur = true, yol = '/tr/doctor-chat' } = {}) {
+  document.visibilityState = gorunur ? 'visible' : 'hidden';
+  window.location.pathname = yol;
+  calinanNotalar = 0;
+  playMessageSentSound();
+  return calinanNotalar;
+}
+
+test('mesaj gönderilince tık çalıyor', () => {
+  setNotificationSoundEnabled(true);
+
+  assert.ok(gonder() > 0, 'gönderme sesi hiç çalmadı');
+});
+
+test('gönderme tıkı sohbet ekranında da çalıyor', () => {
+  // Gelen mesaj sesinden ayrılan yer burası: gelen mesaj sohbet ekranı
+  // açıkken susuyor, çünkü mesaj zaten gözünüzün önüne düşüyor. Gönderme
+  // sesi ise KENDİ eyleminizin karşılığı — mesajı gönderdiğiniz yer her
+  // zaman sohbet ekranıdır, orada susarsa hiç duyulmaz.
+  setNotificationSoundEnabled(true);
+
+  for (const yol of ['/tr/doctor-chat', '/tr/crm/messages']) {
+    assert.ok(gonder({ gorunur: true, yol }) > 0, `sohbet ekranında susuyor: ${yol}`);
+    assert.equal(cal('new_chat_message', { gorunur: true, yol }), 0,
+      `gelen mesaj sohbet ekranında susmalıydı: ${yol}`);
+  }
+});
+
+test('ses kapalıyken gönderme tıkı da susuyor', () => {
+  setNotificationSoundEnabled(false);
+
+  assert.equal(gonder(), 0, 'susturma anahtarı gönderme sesini kapatmıyor');
+
+  setNotificationSoundEnabled(true);
+});
+
+test('gönderme tıkı gelen mesaj sesinden kısa', () => {
+  // Tasarım kuralı: gönderdiğinizi zaten biliyorsunuz, ses yalnızca "gitti"
+  // diyor. Gelen mesaj dikkat istiyor. İkisi eşit olsaydı yoğun bir sohbette
+  // hangisinin ne olduğu ayırt edilemezdi.
+  setNotificationSoundEnabled(true);
+
+  // Sayaç OSİLATÖR sayıyor, nota değil: her nota temel sesi ve hafif bir
+  // ikinci harmoniği birlikte açıyor, yani bir nota = iki osilatör.
+  const gondermeOsc = gonder();
+  const gelenOsc = cal('new_chat_message', { gorunur: true, yol: '/tr/dashboard' });
+
+  assert.equal(gondermeOsc, 2, 'gönderme TEK nota olmalı (2 osilatör)');
+  assert.equal(gelenOsc, 4, 'gelen mesaj İKİ nota (4 osilatör)');
+  assert.ok(gelenOsc > gondermeOsc, 'gelen mesaj sesi daha zengin olmalı');
+});
+
+test('ses aygıtı yokken mesaj göndermek bozulmuyor', () => {
+  setNotificationSoundEnabled(true);
+  const eski = window.AudioContext;
+  window.AudioContext = function () { throw new Error('ses aygıtı yok'); };
+
+  assert.doesNotThrow(() => playMessageSentSound());
 
   window.AudioContext = eski;
 });
