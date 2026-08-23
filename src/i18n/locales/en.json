@@ -282,7 +282,10 @@
     "benefitSecure": "Secure, encrypted & GDPR-compliant",
     "benefitSupport": "24/7 patient support & telehealth",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "changeEmail": "Change email",
+    "chooseStrongPassword": "Choose a strong password for your account.",
+    "backToCode": "Back to code"
   },
   "aboutPage": {
     "heroDesc": "A language- and location-independent health and medical-tourism marketplace that brings patients together with expert doctors and verified clinics/hospitals on one digital platform.",
@@ -1609,7 +1612,8 @@
       "monthlyRevenue": "Monthly Revenue",
       "todayAppointments": "Today's Appointments",
       "satisfactionRate": "Satisfaction Rate"
-    }
+    },
+    "tooLateToReject": "Too late to reject"
   },
   "home": {
     "heroTitle": "#1 Health Portal in the World",
@@ -2145,7 +2149,8 @@
     "createFailed": "Could not create appointment. Please try again.",
     "depositInfo": "Deposit: {{amount}} TRY (payment step coming soon)",
     "noteOptional": "Note (optional)",
-    "notePlaceholder": "Describe your symptoms or add a note..."
+    "notePlaceholder": "Describe your symptoms or add a note...",
+    "reviewYourAppointment": "Review your appointment"
   },
   "notifications": {
     "title": "Notifications",
@@ -3353,7 +3358,7 @@
     "locationPermission": "Location permission blocked — allow it in your browser",
     "viewAllUpdates": "View All Updates",
     "noPostsYet": "No posts yet",
-    "beFirstToShare": "Be the first to share on MedStream!",
+    "beFirstToShare": "Be the first to share something!",
     "locationHint": "Location permission is blocked. Enable it from your browser’s site settings (address bar lock icon) and try again.",
     "linkCopied": "Link copied to clipboard",
     "recentShort": "Recent",

@@ -263,7 +263,10 @@
     "benefitSecure": "Sicher, verschlüsselt und DSGVO-konform",
     "benefitSupport": "Patientensupport rund um die Uhr und Videosprechstunde",
     "showPassword": "Passwort anzeigen",
-    "hidePassword": "Passwort verbergen"
+    "hidePassword": "Passwort verbergen",
+    "changeEmail": "E-Mail ändern",
+    "chooseStrongPassword": "Wählen Sie ein sicheres Passwort für Ihr Konto.",
+    "backToCode": "Zurück zum Code"
   },
   "aboutPage": {
     "heroDesc": "Ein sprach- und ortsunabhängiger Marktplatz für Gesundheit und Medizintourismus, der Patienten mit erfahrenen Ärzten und verifizierten Kliniken/Krankenhäusern auf einer Plattform zusammenbringt.",
@@ -1590,7 +1593,8 @@
       "monthlyRevenue": "Monatsumsatz",
       "todayAppointments": "Termine heute",
       "satisfactionRate": "Zufriedenheitsrate"
-    }
+    },
+    "tooLateToReject": "Zu spät zum Ablehnen"
   },
   "home": {
     "heroTitle": "#1 Gesundheitsportal der Welt",
@@ -2126,7 +2130,8 @@
     "createFailed": "Termin konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
     "depositInfo": "Anzahlung: {{amount}} TRY (Zahlungsschritt folgt in Kürze)",
     "noteOptional": "Anmerkung (optional)",
-    "notePlaceholder": "Beschreiben Sie Ihre Symptome oder fügen Sie eine Anmerkung hinzu …"
+    "notePlaceholder": "Beschreiben Sie Ihre Symptome oder fügen Sie eine Anmerkung hinzu …",
+    "reviewYourAppointment": "Überprüfen Sie Ihren Termin"
   },
   "notifications": {
     "title": "Benachrichtigungen",
@@ -3416,7 +3421,7 @@
     "locationPermission": "Standortzugriff blockiert — im Browser erlauben",
     "viewAllUpdates": "Alle Updates ansehen",
     "noPostsYet": "Noch keine Beiträge",
-    "beFirstToShare": "Teilen Sie als Erster auf MedStream!",
+    "beFirstToShare": "Teilen Sie als Erste etwas!",
     "recentShort": "Neueste",
     "topShort": "Top",
     "locationShort": "Standort",

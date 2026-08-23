@@ -242,7 +242,7 @@ export default function DoctorAppointmentManager() {
                       </button>
                     ) : (
                       <span className="inline-flex items-center px-3 py-2 text-[11px] text-gray-400">
-                        Too late to reject
+                        {t('crm.tooLateToReject', 'Reddetmek için çok geç')}
                       </span>
                     )}
                   </div>

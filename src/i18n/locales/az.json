@@ -263,7 +263,10 @@
     "benefitSecure": "Təhlükəsiz, şifrəli və GDPR uyğun",
     "benefitSupport": "7/24 xəstə dəstəyi və video görüş",
     "showPassword": "Şifrəni göstər",
-    "hidePassword": "Şifrəni gizlət"
+    "hidePassword": "Şifrəni gizlət",
+    "changeEmail": "E-poçtu dəyiş",
+    "chooseStrongPassword": "Hesabınız üçün güclü parol seçin.",
+    "backToCode": "Koda qayıt"
   },
   "aboutPage": {
     "heroDesc": "Xəstələri təcrübəli həkimlər və təsdiqlənmiş klinika/xəstəxanalarla eyni rəqəmsal platformada birləşdirən, dil və məkandan asılı olmayan sağlamlıq və tibbi turizm bazarı.",
@@ -1630,7 +1633,8 @@
       "monthlyRevenue": "Aylıq Gəlir",
       "todayAppointments": "Bugünkü Randevular",
       "satisfactionRate": "Məmnuniyyət Nisbəti"
-    }
+    },
+    "tooLateToReject": "İmtina üçün gec"
   },
   "home": {
     "heroTitle": "Dünyada #1 Sağlamlıq Portalı",
@@ -2903,7 +2907,8 @@
     "createFailed": "Randevu yaratmaq alınmadı. Zəhmət olmasa yenidən cəhd edin.",
     "depositInfo": "Depozit: {{amount}} TRY (ödəniş mərhələsi tezliklə əlavə olunacaq)",
     "noteOptional": "Qeyd (istəyə bağlı)",
-    "notePlaceholder": "Simptomlarınızı təsvir edin və ya qeyd əlavə edin..."
+    "notePlaceholder": "Simptomlarınızı təsvir edin və ya qeyd əlavə edin...",
+    "reviewYourAppointment": "Görüşünüzü nəzərdən keçirin"
   },
   "notifications": {
     "title": "Bildirişlər",
@@ -3456,7 +3461,7 @@
     "locationPermission": "Məkan icazəsi bloklanıb — brauzerdən icazə verin",
     "viewAllUpdates": "Bütün yenilikləri gör",
     "noPostsYet": "Hələ paylaşım yoxdur",
-    "beFirstToShare": "MedStream-də ilk paylaşımı sən et!",
+    "beFirstToShare": "İlk paylaşan siz olun!",
     "recentShort": "Yeni",
     "topShort": "Seçilmiş",
     "locationShort": "Məkan",

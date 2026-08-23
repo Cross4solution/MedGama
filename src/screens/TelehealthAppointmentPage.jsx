@@ -475,7 +475,7 @@ export default function TelehealthAppointmentPage() {
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:from-teal-700 hover:to-emerald-700 transition-all shadow-md shadow-teal-200/50"
               >
                 <Video className="w-4 h-4" />
-                Join Telehealth Room
+                {t('crm.calendar.joinTelehealth', 'Görüşmeye katıl')}
               </button>
             )}
             <div className="flex gap-3">
@@ -1188,7 +1188,7 @@ export default function TelehealthAppointmentPage() {
                   <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-teal-50/50 to-emerald-50/30">
                     <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-teal-600" />
-                      Review Your Appointment
+                      {t('booking.reviewYourAppointment', 'Randevunuzu gözden geçirin')}
                     </h3>
                     <p className="text-[11px] text-gray-400 mt-0.5">{t('telehealthAppointmentPage.pleaseReviewAllDetailsBefore', "Please review all details before confirming")}</p>
                   </div>

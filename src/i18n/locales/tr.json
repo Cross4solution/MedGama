@@ -263,7 +263,10 @@
     "benefitSecure": "Güvenli, şifreli ve GDPR uyumlu",
     "benefitSupport": "7/24 hasta desteği ve görüntülü görüşme",
     "showPassword": "Şifreyi göster",
-    "hidePassword": "Şifreyi gizle"
+    "hidePassword": "Şifreyi gizle",
+    "changeEmail": "E-postayı değiştir",
+    "chooseStrongPassword": "Hesabınız için güçlü bir parola seçin.",
+    "backToCode": "Koda dön"
   },
   "aboutPage": {
     "heroDesc": "Hastaları uzman doktorlar ve onaylı klinik/hastanelerle aynı dijital platformda buluşturan, dil ve lokasyon bağımsız sağlık ve sağlık turizmi pazar yeri.",
@@ -1590,7 +1593,8 @@
       "monthlyRevenue": "Aylık Gelir",
       "todayAppointments": "Bugünkü Randevular",
       "satisfactionRate": "Memnuniyet Oranı"
-    }
+    },
+    "tooLateToReject": "Reddetmek için çok geç"
   },
   "home": {
     "heroTitle": "Dünyanın #1 Sağlık Portalı",
@@ -2158,7 +2162,8 @@
     "createFailed": "Randevu oluşturulamadı. Lütfen tekrar deneyin.",
     "depositInfo": "Kapora: {{amount}} TL (ödeme adımı yakında)",
     "noteOptional": "Not (isteğe bağlı)",
-    "notePlaceholder": "Şikayetinizi veya notunuzu yazın..."
+    "notePlaceholder": "Şikayetinizi veya notunuzu yazın...",
+    "reviewYourAppointment": "Randevunuzu gözden geçirin"
   },
   "notifications": {
     "title": "Bildirimler",
@@ -3375,7 +3380,7 @@
     "locationPermission": "Konum izni engellenmiş — tarayıcınızdan izin verin",
     "viewAllUpdates": "Tüm Güncellemeleri Gör",
     "noPostsYet": "Henüz gönderi yok",
-    "beFirstToShare": "MedStream'de ilk paylaşımı sen yap!",
+    "beFirstToShare": "İlk paylaşan siz olun!",
     "locationHint": "Konum izni engellenmiş. Tarayıcı adres çubuğundaki kilit simgesinden izin verip tekrar deneyin.",
     "linkCopied": "Link panoya kopyalandı",
     "recentShort": "Yeni",

@@ -244,7 +244,7 @@ export default function ForgotPasswordPage() {
 
             <div className="text-center mt-3">
               <button onClick={() => { setStep(1); setError(''); }} className="text-xs text-gray-400 hover:text-gray-600 inline-flex items-center gap-1">
-                <ArrowLeft className="w-3 h-3" /> Change email
+                <ArrowLeft className="w-3 h-3" /> {t('auth.changeEmail', 'E-postayı değiştir')}
               </button>
             </div>
           </>
@@ -255,7 +255,7 @@ export default function ForgotPasswordPage() {
           <>
             <h1 className="text-xl font-bold text-gray-900 text-center mb-2">{t('forgotPasswordPage.setNewPassword', "Set new password")}</h1>
             <p className="text-sm text-gray-500 text-center mb-6">
-              Choose a strong password for your account.
+              {t('auth.chooseStrongPassword', 'Hesabınız için güçlü bir parola seçin.')}
             </p>
 
             <div className="space-y-4 mb-5">
@@ -331,7 +331,7 @@ export default function ForgotPasswordPage() {
 
             <div className="text-center mt-4">
               <button onClick={() => { setStep(2); setError(''); }} className="text-xs text-gray-400 hover:text-gray-600 inline-flex items-center gap-1">
-                <ArrowLeft className="w-3 h-3" /> Back to code
+                <ArrowLeft className="w-3 h-3" /> {t('auth.backToCode', 'Koda dön')}
               </button>
             </div>
           </>

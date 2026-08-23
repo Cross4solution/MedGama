@@ -500,7 +500,7 @@ export function AuthProvider({ children }) {
                 onClick={() => logoutCallback?.(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg"
               >
-                Cancel
+                {t('common.cancel', 'İptal')}
               </button>
               <button
                 onClick={() => logoutCallback?.(true)}

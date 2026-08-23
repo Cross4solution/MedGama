@@ -174,7 +174,7 @@ export default function VerifyEmailPage() {
             <RefreshCw className="w-4 h-4 animate-spin" />
           ) : (
             <>
-              Verify Email
+              {t('verifyEmailPage.verifyYourEmail', 'E-postanızı doğrulayın')}
               <ArrowRight className="w-4 h-4" />
             </>
           )}

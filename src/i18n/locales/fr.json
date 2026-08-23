@@ -263,7 +263,10 @@
     "benefitSecure": "Sécurisé, chiffré et conforme au RGPD",
     "benefitSupport": "Assistance 24/7 et téléconsultation",
     "showPassword": "Afficher le mot de passe",
-    "hidePassword": "Masquer le mot de passe"
+    "hidePassword": "Masquer le mot de passe",
+    "changeEmail": "Changer d’e-mail",
+    "chooseStrongPassword": "Choisissez un mot de passe fort pour votre compte.",
+    "backToCode": "Retour au code"
   },
   "aboutPage": {
     "heroDesc": "Une place de marché santé et tourisme médical, indépendante de la langue et du lieu, qui réunit patients, médecins experts et cliniques/hôpitaux vérifiés sur une même plateforme.",
@@ -1590,7 +1593,8 @@
       "monthlyRevenue": "Revenu mensuel",
       "todayAppointments": "Rendez-vous du jour",
       "satisfactionRate": "Taux de satisfaction"
-    }
+    },
+    "tooLateToReject": "Trop tard pour refuser"
   },
   "home": {
     "heroTitle": "Portail Santé #1 au Monde",
@@ -2863,7 +2867,8 @@
     "createFailed": "Impossible de créer le rendez-vous. Veuillez réessayer.",
     "depositInfo": "Acompte : {{amount}} TRY (étape de paiement bientôt disponible)",
     "noteOptional": "Note (facultatif)",
-    "notePlaceholder": "Décrivez vos symptômes ou ajoutez une note..."
+    "notePlaceholder": "Décrivez vos symptômes ou ajoutez une note...",
+    "reviewYourAppointment": "Vérifiez votre rendez-vous"
   },
   "notifications": {
     "title": "Notifications",
@@ -3416,7 +3421,7 @@
     "locationPermission": "Accès à la position bloqué — autorisez-le dans le navigateur",
     "viewAllUpdates": "Voir toutes les mises à jour",
     "noPostsYet": "Aucune publication pour l'instant",
-    "beFirstToShare": "Soyez le premier à publier sur MedStream !",
+    "beFirstToShare": "Soyez le premier à partager !",
     "recentShort": "Récents",
     "topShort": "Top",
     "locationShort": "Position",

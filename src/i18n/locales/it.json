@@ -263,7 +263,10 @@
     "benefitSecure": "Sicuro, cifrato e conforme al GDPR",
     "benefitSupport": "Assistenza 24/7 e teleconsulto",
     "showPassword": "Mostra password",
-    "hidePassword": "Nascondi password"
+    "hidePassword": "Nascondi password",
+    "changeEmail": "Cambia e-mail",
+    "chooseStrongPassword": "Scegli una password sicura per il tuo account.",
+    "backToCode": "Torna al codice"
   },
   "aboutPage": {
     "heroDesc": "Un marketplace di salute e turismo medico, indipendente da lingua e posizione, che unisce pazienti, medici esperti e cliniche/ospedali verificati su un'unica piattaforma digitale.",
@@ -1590,7 +1593,8 @@
       "monthlyRevenue": "Ricavi mensili",
       "todayAppointments": "Appuntamenti di oggi",
       "satisfactionRate": "Tasso di soddisfazione"
-    }
+    },
+    "tooLateToReject": "Troppo tardi per rifiutare"
   },
   "home": {
     "heroTitle": "Portale Salute #1 al Mondo",
@@ -2863,7 +2867,8 @@
     "createFailed": "Impossibile creare l'appuntamento. Riprova.",
     "depositInfo": "Acconto: {{amount}} TRY (la fase di pagamento sarà disponibile a breve)",
     "noteOptional": "Nota (facoltativo)",
-    "notePlaceholder": "Descrivi i tuoi sintomi o aggiungi una nota..."
+    "notePlaceholder": "Descrivi i tuoi sintomi o aggiungi una nota...",
+    "reviewYourAppointment": "Controlla il tuo appuntamento"
   },
   "notifications": {
     "title": "Notifiche",
@@ -3416,7 +3421,7 @@
     "locationPermission": "Permesso di posizione bloccato — consentilo nel browser",
     "viewAllUpdates": "Vedi tutti gli aggiornamenti",
     "noPostsYet": "Ancora nessun post",
-    "beFirstToShare": "Sii il primo a pubblicare su MedStream!",
+    "beFirstToShare": "Sii il primo a condividere!",
     "recentShort": "Recenti",
     "topShort": "Top",
     "locationShort": "Posizione",

@@ -3,11 +3,13 @@ import TimelineShareBox from './TimelineShareBox';
 import TimelineCard from 'components/timeline/TimelineCard';
 import { medStreamAPI } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 // This component renders ONLY the main timeline content (share box + posts + professional review)
 // It is reused in both the full Timeline page and the PatientHome preview.
 export default function TimelineFeed() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -73,7 +75,7 @@ export default function TimelineFeed() {
   if (!posts.length) {
     return (
       <div className="text-center py-12 text-gray-400 text-sm">
-        No posts yet. Be the first to share something!
+        {t('medstreamProfile.noPostsYet', 'Henüz gönderi yok')} {t('medstream.beFirstToShare', 'İlk paylaşan siz olun!')}
       </div>
     );
   }
