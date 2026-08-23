@@ -12,8 +12,9 @@
 //      * city match via clinic.address containing the city name (+aliases)
 //    This is robust to the missing/partial backend filters.
 
-import { fetchJson } from '@/lib/seo-server';
-import { slugify, trName } from '@/lib/slug';
+import { fetchJson } from './seo-server.js';
+import { slugify, trName } from './slug.js';
+import { aramaAnahtari } from '../utils/searchNormalize.js';
 
 const REVALIDATE = 3600;
 
@@ -46,11 +47,18 @@ export async function getAllClinics() {
   return asList(json);
 }
 
-/** City-name aliases used to match against free-text clinic addresses. */
+/**
+ * City-name aliases used to match against free-text clinic addresses.
+ *
+ * `aramaAnahtari` ile normalleştiriliyor. Sebebi ölçüldü: adresler serbest
+ * metin ve bir kısmı aksansız yazılıyor ("Levent, Istanbul"). Ham
+ * `toLowerCase()` ile "İstanbul" ile "Istanbul" EŞLEŞMİYORDU — o klinikler
+ * kendi şehirlerinin sayfasında hiç görünmüyordu.
+ */
 function cityNeedles(city) {
   const names = new Set();
   const push = (v) => {
-    const s = String(v || '').trim().toLowerCase();
+    const s = aramaAnahtari(String(v || '').trim());
     if (s) names.add(s);
   };
   push(trName(city));
@@ -59,11 +67,32 @@ function cityNeedles(city) {
   return [...names];
 }
 
-/** Does a free-text address mention this city? */
+/** Regex için kaçış. */
+function kacir(metin) {
+  return metin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Does a free-text address mention this city?
+ *
+ * Eşleşme KELİME SINIRINDA. Ham alt dize araması yanlış sonuç veriyordu ve
+ * bu ölçüldü:
+ *
+ *   şehir "Van"  ← "Divan Yolu Cad., Fatih, İstanbul"
+ *   şehir "Bolu" ← "Bolulu Mah., Düzce"
+ *
+ * Yani İstanbul'daki bir hekim, Van'ın tedavi sayfasında listeleniyordu.
+ * Bu sayfalar hasta çekmek için var; yanlış şehirde çıkan hekim hem hastayı
+ * yanıltıyor hem sayfanın güvenilirliğini düşürüyor.
+ */
 function addressInCity(address, needles) {
-  const a = String(address || '').toLowerCase();
+  const a = aramaAnahtari(String(address || ''));
   if (!a) return false;
-  return needles.some((n) => a.includes(n));
+
+  return needles.some((n) => {
+    if (!n) return false;
+    return new RegExp(`(^|[^a-z0-9])${kacir(n)}([^a-z0-9]|$)`).test(a);
+  });
 }
 
 /**
