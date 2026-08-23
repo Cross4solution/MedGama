@@ -257,6 +257,16 @@ class SocialController extends Controller
             ];
         });
 
+        // Çözülemeyen kayıtlar listeden düşürülüyor.
+        //
+        // Favorilenen klinik/hekim sonradan silinirse (yumuşak silme dahil)
+        // yukarıdaki eşleme `null` üretiyordu ve bu `null`'lar yanıttaki
+        // `data` dizisine giriyordu. Bugünkü arayüz `f?.type` ile onları
+        // eliyor, yani çökme yok — ama sayfa "50 favori" deyip daha azını
+        // gösteriyor ve `null` içeren bir dizi, bu ucu sonradan tüketecek
+        // her yer için tuzak.
+        $data->setCollection($data->getCollection()->filter()->values());
+
         return response()->json($data);
     }
 
