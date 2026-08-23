@@ -146,19 +146,59 @@ class BillingService
                 $invoice->recalculate();
             }
 
-            // Auto-determine status from paid_amount
-            if (isset($data['paid_amount']) && !isset($data['status'])) {
-                $paidAmount = (float) $data['paid_amount'];
-                if ($paidAmount >= (float) $invoice->grand_total) {
-                    $invoice->update(['status' => 'paid', 'paid_at' => now()]);
-                } elseif ($paidAmount > 0) {
-                    $invoice->update(['status' => 'partial']);
-                }
-            }
+            // Durum EN SON, güncel toplam üzerinden belirleniyor.
+            //
+            // Eskiden durum, tutar yeniden hesaplanmadan ÖNCE yazılıyordu.
+            // Ölçülen sonuç: 1000 TL'lik fatura "ödendi" işaretleniyor, sonra
+            // %20 KDV ekleniyor, toplam 1200 oluyor — ödenen 1000 kalıyor ama
+            // durum `paid` kalıyordu. Fatura 200 TL alacakla birlikte
+            // "ödenmiş" görünüyor ve `getOutstandingBalances` yalnız
+            // `pending`/`partial` baktığı için alacak listesinden de düşüyordu.
+            // Klinik parayı sessizce kaybediyordu. Aynı şey tek bir istekte
+            // `status=paid` ile `tax_rate` birlikte gönderilince de oluyordu.
+            $this->durumuTazele($invoice, isset($data['status']) ? $data['status'] : null);
 
             $invoice->load('items', 'patient:id,fullname,email,mobile', 'doctor:id,fullname');
             return $invoice;
         });
+    }
+
+    /**
+     * Ödeme durumunu güncel toplam ile ödenen tutardan türetir.
+     *
+     * `cancelled` gibi elle verilen ve ödemeyle ilgisi olmayan durumlar
+     * korunuyor — onları tutar belirlemez.
+     */
+    private function durumuTazele(Invoice $invoice, ?string $elleVerilenDurum): void
+    {
+        if (in_array($elleVerilenDurum, ['cancelled', 'draft', 'refunded'], true)) {
+            return;
+        }
+
+        $odenen = (float) $invoice->paid_amount;
+        $toplam = (float) $invoice->grand_total;
+
+        // Kuruş karşılaştırması: kayan noktada 1199.9999... >= 1200 yanlış
+        // çıkar ve fatura bir kuruş yüzünden ödenmemiş sayılırdı.
+        $durum = match (true) {
+            round($odenen, 2) >= round($toplam, 2) && $toplam > 0 => 'paid',
+            $odenen > 0                                           => 'partial',
+            default                                               => 'pending',
+        };
+
+        $degisiklik = ['status' => $durum];
+
+        if ($durum === 'paid' && !$invoice->paid_at) {
+            $degisiklik['paid_at'] = now();
+        }
+
+        // Tutar arttığı için ödenmiş sayılmayan fatura, ödeme tarihini de
+        // taşımamalı; aksi hâlde raporlar onu tahsil edilmiş gibi sayar.
+        if ($durum !== 'paid') {
+            $degisiklik['paid_at'] = null;
+        }
+
+        $invoice->update($degisiklik);
     }
 
     /**
