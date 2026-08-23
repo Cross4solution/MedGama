@@ -474,14 +474,41 @@ class AuthService
     public function deleteAccount(User $user): void
     {
         DB::transaction(function () use ($user) {
+            // Anonimleştirme KİŞİSEL VERİYİ de kapsamalı. Önceki hâli yalnız
+            // e-posta, ad, avatar ve telefonu temizliyordu; silme talebinden
+            // sonra şunlar duruyordu (ölçüldü):
+            //
+            //   medical_history  → tanılar, ilaçlar, notlar (ÖZEL NİTELİKLİ)
+            //   date_of_birth    → kimlik belirleyici
+            //   username         → herkese açık handle, kişiyi işaret ediyor
+            //   bio              → kullanıcının kendi yazdığı serbest metin
+            //   latitude/longitude → ev konumu
+            //
+            // Buradaki `medical_history` HASTANIN KENDİ BEYANI; sağlayıcının
+            // tuttuğu klinik kayıtlar (PatientRecord, muayeneler) yasal
+            // saklama süresine tabi ve BİLEREK dokunulmuyor.
+            //
+            // Handle boşaltılmıyor, anonim bir değerle DEĞİŞTİRİLİYOR: null
+            // bırakmak onu yeniden alınabilir yapardı ve eski bağlantılar
+            // başka bir kişiyi gösterirdi.
             $user->update([
                 'is_active'      => false,
                 'email'          => 'deleted_' . $user->id . '@removed.medagama.com',
                 'fullname'       => 'Deleted User',
+                'username'       => 'silinmis_' . substr(str_replace('-', '', (string) $user->id), 0, 16),
                 'avatar'         => null,
+                'profile_image'  => null,
+                'cover_image'    => null,
+                'bio'            => null,
                 'mobile'         => null,
                 'mobile_verified' => false,
                 'email_verified'  => false,
+                'medical_history' => null,
+                'date_of_birth'   => null,
+                'gender'          => null,
+                'latitude'        => null,
+                'longitude'       => null,
+                'location_updated_at' => null,
             ]);
 
             $user->tokens()->delete();

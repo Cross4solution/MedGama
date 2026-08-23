@@ -165,4 +165,52 @@ class KvkkHaklariTest extends TestCase
             'Hesabı silinen kullanıcının gönderisi akışta duruyor',
         );
     }
+
+    public function test_silme_saglik_verisini_de_temizliyor(): void
+    {
+        // Silme talebinden sonra ÖZEL NİTELİKLİ veri kalmamalı. Önceki hâli
+        // yalnız e-posta/ad/avatar/telefon temizliyordu; tanılar, ilaçlar,
+        // doğum tarihi, handle, biyografi ve konum duruyordu.
+        //
+        // Buradaki anamnez HASTANIN KENDİ BEYANI. Sağlayıcının tuttuğu klinik
+        // kayıtlar yasal saklama süresine tabi ve bilerek kapsam dışı.
+        $kullanici = User::factory()->patient()->create([
+            'medical_history' => json_encode([
+                'conditions'  => ['Tip 2 diyabet'],
+                'medications' => ['Metformin'],
+                'notes'       => 'Aile oykusunde kalp hastaligi',
+            ]),
+            'date_of_birth' => '1985-04-12',
+            'username'      => 'silinecek_kisi',
+            'bio'           => 'Kisisel notum',
+            'latitude'      => 41.0082,
+            'longitude'     => 28.9784,
+        ]);
+
+        app(\App\Services\AuthService::class)->deleteAccount($kullanici);
+
+        $silinmis = $kullanici->fresh();
+
+        $this->assertNull($silinmis->medical_history, 'silme sonrası sağlık verisi duruyor');
+        $this->assertNull($silinmis->date_of_birth, 'doğum tarihi duruyor');
+        $this->assertNull($silinmis->bio, 'biyografi duruyor');
+        $this->assertNull($silinmis->latitude, 'konum duruyor');
+        $this->assertNull($silinmis->longitude, 'konum duruyor');
+    }
+
+    public function test_silinen_hesabin_handleI_kisiyi_isaret_etmiyor(): void
+    {
+        // Handle herkese açık. Kaldığında @eski_kullanici hâlâ o kişiyi
+        // gösterir. Boşaltılmıyor da: null bırakmak handle'ı yeniden
+        // alınabilir yapar ve eski bağlantılar BAŞKA birine açılırdı.
+        $kullanici = User::factory()->patient()->create(['username' => 'taninan_kisi']);
+
+        app(\App\Services\AuthService::class)->deleteAccount($kullanici);
+
+        $yeni = $kullanici->fresh()->username;
+
+        $this->assertNotSame('taninan_kisi', $yeni, 'silinen hesabın handle\'ı kişiyi işaret etmeye devam ediyor');
+        $this->assertNotNull($yeni, 'handle boşaltıldı — başkası alıp eski bağlantıları devralabilir');
+    }
+
 }
