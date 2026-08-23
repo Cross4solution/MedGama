@@ -33,6 +33,18 @@ class OnYuzApiYollariTest extends TestCase
     private const YAZILMAMIS = [
         'branches/X/assign-clinic',
         'branches/X/assign-doctor',
+
+        // Google ile giriş: ön yüzde üç ekranda kablolanmış (LoginPage,
+        // DoctorLogin, LoginForm) ama arka uçta rota YOK — ölçüldü.
+        //
+        // Bugün UYKUDA: `REACT_APP_GOOGLE_CLIENT_ID` tanımsız ve kod
+        // `if (!clientId) return;` ile çıkıyor, düğme hiç kurulmuyor. O
+        // değişken tanımlandığı an akış açılıyor ve `if (!resp.ok) return;`
+        // yüzünden SESSİZCE başarısız oluyor: kullanıcı Google penceresini
+        // tamamlıyor, sonra hiçbir şey olmuyor — hata bile görmüyor.
+        //
+        // Ya uç yazılmalı ya arayüz kaldırılmalı; anahtar tanımlanmadan ÖNCE.
+        'login/google',
     ];
 
     /** `api.js` içindeki çağrı yollarını çıkarır. */
@@ -50,10 +62,29 @@ class OnYuzApiYollariTest extends TestCase
             $eslesme,
         );
 
+        $hamYollar = $eslesme[1];
+
+        // Ekranlardaki HAM `fetch` çağrıları da taranıyor.
+        //
+        // İlk hâli yalnız `api.js` içindeki `api.get/post/...` çağrılarına
+        // bakıyordu ve Google giriş ucunu KAÇIRDI: o çağrı bir ekranda,
+        // `fetch(API_BASE + '/api/login/google')` biçiminde duruyor.
+        foreach (['screens/*.jsx', 'components/auth/*.jsx'] as $desen) {
+            foreach (glob(base_path('../src/' . $desen)) as $ekran) {
+                preg_match_all(
+                    '#[\'"](/api/[a-zA-Z0-9\-_/]+)[\'"]#',
+                    file_get_contents($ekran),
+                    $ekranEslesme,
+                );
+                $hamYollar = array_merge($hamYollar, $ekranEslesme[1]);
+            }
+        }
+
         $yollar = [];
 
-        foreach ($eslesme[1] as $ham) {
+        foreach ($hamYollar as $ham) {
             $yol = ltrim(explode('?', $ham)[0], '/');
+            $yol = preg_replace('#^api/#', '', $yol);
             // Şablon değişkeni: `/doctors/${id}/reviews` → `doctors/X/reviews`
             $yol = preg_replace('/\$\{[^}]*\}/', 'X', $yol);
 
