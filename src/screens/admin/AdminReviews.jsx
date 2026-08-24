@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ─── Rejection reasons dropdown options ──────────────────────
 const REJECTION_REASONS = [
@@ -70,6 +71,10 @@ function StarDisplay({ rating, size = 'sm' }) {
 
 // ─── Detail "Judge View" Modal (sidebar-centered) ────────────
 function JudgeModal({ review, loading, onClose, onApprove, onReject, onHide }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Bayrak gerçek koşul: pencere yokken odak tuzağı kurulmamalı.
+  const kokRef = useModalDavranisi(!!review, onClose);
+
   const { t } = useTranslation();
   const [rejectReason, setRejectReason] = useState('');
   const [rejectNote, setRejectNote] = useState('');
@@ -92,7 +97,13 @@ function JudgeModal({ review, loading, onClose, onApprove, onReject, onHide }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div
+          ref={kokRef}
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+          onClick={e => e.stopPropagation()}
+        >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50/40 rounded-t-2xl">
             <div className="flex items-center gap-2.5">

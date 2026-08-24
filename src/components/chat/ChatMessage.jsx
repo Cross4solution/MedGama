@@ -4,6 +4,7 @@ import { FileText, Film, Music, File, Download, X, ExternalLink, Languages } fro
 import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import { useContentTranslation } from '../../context/ContentTranslationContext';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 function formatSize(bytes) {
   if (!bytes) return '';
@@ -31,20 +32,12 @@ function getAttachmentColor(type) {
 
 function ImageLightbox({ src, alt, onClose }) {
   const { t } = useTranslation();
-  // Prevent body scroll while lightbox is open
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, []);
 
-  // Close on Escape key
-  useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
-
+  // Escape ve kaydırma kilidi buradaydı; odak tarafı yoktu. Kanca dördünü
+  // birlikte veriyor: Escape, odağın içeri girmesi, sekmenin içeride dönmesi
+  // ve kapanışta odağın görseli AÇAN öğeye dönmesi. Sonuncusu sohbette
+  // özellikle önemli: dönmezse kullanıcı konuşmanın en başına savruluyor.
+  const kokRef = useModalDavranisi(true, onClose);
   const handleBackdropClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -52,7 +45,14 @@ function ImageLightbox({ src, alt, onClose }) {
   };
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={handleBackdropClick}>
+    <div
+      ref={kokRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={alt || t('chat.image', 'Görsel')}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      onClick={handleBackdropClick}
+    >
       <button
         onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClose(); }}
         className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-10"

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 import LangFlag from '../../components/ui/LangFlag';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ─── Supported languages ─────────────────────────────────────
 const LANGS = [
@@ -120,6 +121,9 @@ function MultiLangInput({ value, onChange, label }) {
 
 // ─── Create / Edit modal (sidebar-centered) ──────────────────
 function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kokRef = useModalDavranisi(true, onClose);
+
   const { t } = useTranslation();
   const isEdit = !!item;
   const isTreatment = type === 'treatments';
@@ -195,7 +199,13 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div
+          ref={kokRef}
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+          onClick={e => e.stopPropagation()}
+        >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50/40 rounded-t-2xl">
             <div className="flex items-center gap-2.5">

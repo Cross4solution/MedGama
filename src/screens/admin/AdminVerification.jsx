@@ -8,6 +8,7 @@ import {
 import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import StatusBadge from '../../components/ui/StatusBadge';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 const DOC_TYPE_KEYS = {
   diploma: 'admin.verification.docType.diploma',
@@ -22,6 +23,10 @@ const docTypeLabel = (t, type) => DOC_TYPE_KEYS[type] ? t(DOC_TYPE_KEYS[type]) :
    Document Preview Modal
    ═══════════════════════════════════════════ */
 function DocumentPreviewModal({ vr, onClose, token }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Bayrak gerçek koşul: pencere yokken odak tuzağı kurulmamalı.
+  const kokRef = useModalDavranisi(!!vr, onClose);
+
   const { t } = useTranslation();
   if (!vr) return null;
   const url = `${adminAPI.verificationDocumentUrl(vr.id)}?token=${token}`;
@@ -31,7 +36,13 @@ function DocumentPreviewModal({ vr, onClose, token }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div
+          ref={kokRef}
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden"
+          onClick={e => e.stopPropagation()}
+        >
           <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
             <div>
               <h3 className="text-sm font-bold text-gray-900">{vr.document_label || vr.file_name}</h3>
@@ -74,12 +85,21 @@ function DocumentPreviewModal({ vr, onClose, token }) {
    Confirm Action Modal (Approve / Reject / Undo)
    ═══════════════════════════════════════════ */
 function ConfirmModal({ open, title, description, icon: Icon, iconColor, confirmLabel, confirmColor, onClose, onConfirm, loading, children }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kokRef2 = useModalDavranisi(open, onClose);
+
   const { t } = useTranslation();
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div
+          ref={kokRef2}
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+          onClick={e => e.stopPropagation()}
+        >
           <div className="px-5 py-4 border-b border-gray-100">
             <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
               {Icon && <Icon className={`w-4 h-4 ${iconColor || 'text-gray-500'}`} />} {title}

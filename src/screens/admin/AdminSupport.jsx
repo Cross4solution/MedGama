@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { supportAPI } from '../../lib/api';
 import { useTranslation } from 'react-i18next';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ─── Config ──────────────────────────────────────────────────
 const STATUS_CFG = {
@@ -59,6 +60,9 @@ const timeAgo = (date) => {
 
 // ─── Ticket Detail Drawer (sidebar-aware) ────────────────────
 function TicketDrawer({ ticketId, onClose }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kokRef = useModalDavranisi(true, onClose);
+
   const { t } = useTranslation();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -108,7 +112,13 @@ function TicketDrawer({ ticketId, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex justify-end h-full">
-      <div className="w-full max-w-xl bg-white h-full shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+      <div
+        ref={kokRef}
+        role="dialog"
+        aria-modal="true"
+        className="w-full max-w-xl bg-white h-full shadow-2xl flex flex-col"
+        onClick={e => e.stopPropagation()}
+      >
         {/* Drawer Header */}
         <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between z-10 flex-shrink-0">
           <div className="flex-1 min-w-0 pr-4">

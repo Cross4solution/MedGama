@@ -2663,7 +2663,8 @@
     "statusDelivered": "Distribué",
     "statusRead": "Lu",
     "autoTranslated": "Traduit automatiquement · afficher l'original",
-    "showTranslation": "Afficher la traduction"
+    "showTranslation": "Afficher la traduction",
+    "image": "Image"
   },
   "review": {
     "rateExperience": "Évaluez votre expérience",

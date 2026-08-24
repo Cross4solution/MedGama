@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import useModalDavranisi from '../../../hooks/useModalDavranisi';
 
 export default function ImageGalleryModal({ images, currentIndex, isOpen, onClose, onPrev, onNext }) {
   const { t } = useTranslation();
@@ -26,12 +27,23 @@ export default function ImageGalleryModal({ images, currentIndex, isOpen, onClos
     return () => document.body.classList.remove('modal-open');
   }, [isOpen]);
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi.
+  // Kanca erken çıkışın ÜSTÜNDE: React kancaları koşullu çağrılamaz.
+  // Kaydırma kilidi burada `modal-open` sınıfıyla yapılıyor, kancanınkiyle
+  // çakışmıyor: biri sınıf, öteki satır içi biçim.
+  const kokRef = useModalDavranisi(isOpen, onClose);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center">
       <div className="fixed inset-0 z-0 bg-black/70 backdrop-blur-lg" onClick={onClose} />
-      <div className="relative z-[101] flex items-center justify-center">
+      <div
+        ref={kokRef}
+        role="dialog"
+        aria-modal="true"
+        className="relative z-[101] flex items-center justify-center"
+      >
         {/* Image box */}
         <div className="relative w-[88vw] h-[88vw] md:w-[70vh] md:h-[70vh] max-w-[1100px] max-h-[1100px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/20 flex items-center justify-center">
           <img

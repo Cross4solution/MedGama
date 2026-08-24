@@ -3027,7 +3027,8 @@
     "statusDelivered": "Zugestellt",
     "statusRead": "Gelesen",
     "autoTranslated": "Automatisch übersetzt · Original anzeigen",
-    "showTranslation": "Übersetzung anzeigen"
+    "showTranslation": "Übersetzung anzeigen",
+    "image": "Bild"
   },
   "medicalArchive": {
     "empty": "Noch keine Dokumente",

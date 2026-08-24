@@ -10,6 +10,7 @@ import {
 import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import StatusBadge from '../../components/ui/StatusBadge';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 const ROLES = [
   { key: 'patient',     labelKey: 'admin.role.patient',      icon: Users,       color: 'bg-blue-50 text-blue-600 border-blue-200' },
@@ -31,6 +32,10 @@ const getRoleMeta = (roleId) => ROLES.find(r => r.key === roleId) || ROLES[0];
    Password Reset Modal
    ═══════════════════════════════════════════ */
 function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Bayrak gerçek koşul: pencere yokken odak tuzağı kurulmamalı.
+  const kokRef = useModalDavranisi(!!targetUser, onClose);
+
   const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,7 +60,13 @@ function PasswordResetModal({ user: targetUser, onClose, onSuccess }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
+      <div
+        ref={kokRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
             <KeyRound className="w-4 h-4 text-indigo-600" /> Reset Password
@@ -104,6 +115,10 @@ const DRAWER_TABS = [
 ];
 
 function UserDetailDrawer({ user: u, onClose }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Bayrak gerçek koşul: pencere yokken odak tuzağı kurulmamalı.
+  const kokRef2 = useModalDavranisi(!!u, onClose);
+
   const { t } = useTranslation();
   const [tab, setTab] = useState('overview');
   const [detail, setDetail] = useState(null);
@@ -131,7 +146,13 @@ function UserDetailDrawer({ user: u, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex justify-end h-full">
-      <div className="w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto" onClick={e => e.stopPropagation()}>
+      <div
+        ref={kokRef2}
+        role="dialog"
+        aria-modal="true"
+        className="w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between z-10">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2"><Eye className="w-4 h-4 text-purple-600" /> User 360</h3>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"><X className="w-4 h-4 text-gray-500" /></button>

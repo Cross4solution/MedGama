@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ─── Success Toast ───────────────────────────────────────────
 function SuccessToast({ message, show, onClose }) {
@@ -45,6 +46,10 @@ function StatusBadge({ status }) {
 
 // ─── Detail Inspection Modal (sidebar-centered) ──────────────
 function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Bayrak gerçek koşul: pencere yokken odak tuzağı kurulmamalı.
+  const kokRef = useModalDavranisi(!!report, onClose);
+
   const { t } = useTranslation();
   if (!report) return null;
   const r = report;
@@ -54,7 +59,13 @@ function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div
+          ref={kokRef}
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+          onClick={e => e.stopPropagation()}
+        >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50/40 rounded-t-2xl">
             <div className="flex items-center gap-2.5">
@@ -171,12 +182,21 @@ function DetailModal({ report, loading, onClose, onDismiss, onHide, onBan }) {
 
 // ─── Confirm Action Modal ────────────────────────────────────
 function ConfirmModal({ open, title, message, confirmLabel, danger, loading, onConfirm, onCancel }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kokRef2 = useModalDavranisi(open, onCancel);
+
   const { t } = useTranslation();
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onCancel}>
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div
+          ref={kokRef2}
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
+          onClick={e => e.stopPropagation()}
+        >
           <div className="px-5 py-4 border-b border-gray-100">
             <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
               <AlertTriangle className={`w-4 h-4 ${danger ? 'text-red-500' : 'text-amber-500'}`} />

@@ -3027,7 +3027,8 @@
     "statusDelivered": "تم التسليم",
     "statusRead": "تمت القراءة",
     "autoTranslated": "تُرجم تلقائيًا · عرض النص الأصلي",
-    "showTranslation": "عرض الترجمة"
+    "showTranslation": "عرض الترجمة",
+    "image": "صورة"
   },
   "medicalArchive": {
     "empty": "لا توجد مستندات بعد",

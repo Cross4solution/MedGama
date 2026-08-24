@@ -2995,7 +2995,8 @@
     "statusDelivered": "İletildi",
     "statusRead": "Okundu",
     "autoTranslated": "Otomatik çeviri · özgününü göster",
-    "showTranslation": "Çeviriyi göster"
+    "showTranslation": "Çeviriyi göster",
+    "image": "Görsel"
   },
   "medicalArchive": {
     "empty": "Henüz belge yok",

@@ -3027,7 +3027,8 @@
     "statusDelivered": "Доставлено",
     "statusRead": "Прочитано",
     "autoTranslated": "Переведено автоматически · показать оригинал",
-    "showTranslation": "Показать перевод"
+    "showTranslation": "Показать перевод",
+    "image": "Изображение"
   },
   "medicalArchive": {
     "empty": "Документов пока нет",

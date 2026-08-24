@@ -5,6 +5,7 @@ import {
   AlertTriangle, Info, CheckCircle, AlertCircle, X, Eye, EyeOff, Link2, Calendar,
 } from 'lucide-react';
 import { adminAPI } from '../../lib/api';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 const TYPE_CONFIG = {
   info:    { bg: 'bg-blue-50',    text: 'text-blue-700',    border: 'border-blue-200',    icon: Info,         labelKey: 'admin.announcements.typeInfo' },
@@ -25,6 +26,9 @@ const ROLE_OPTIONS = [
    Announcement Form Modal
    ═══════════════════════════════════════════ */
 function AnnouncementFormModal({ announcement, onClose, onSave, loading }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kokRef = useModalDavranisi(true, onClose);
+
   const { t } = useTranslation();
   const isEdit = !!announcement?.id;
   const [form, setForm] = useState({
@@ -64,7 +68,13 @@ function AnnouncementFormModal({ announcement, onClose, onSave, loading }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div
+          ref={kokRef}
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden"
+          onClick={e => e.stopPropagation()}
+        >
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
               <Megaphone className="w-4 h-4 text-purple-600" />
@@ -186,12 +196,22 @@ function AnnouncementFormModal({ announcement, onClose, onSave, loading }) {
    Delete Confirm Modal
    ═══════════════════════════════════════════ */
 function DeleteConfirmModal({ announcement, onClose, onConfirm, loading }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Bayrak gerçek koşul: pencere yokken odak tuzağı kurulmamalı.
+  const kokRef2 = useModalDavranisi(!!announcement, onClose);
+
   const { t } = useTranslation();
   if (!announcement) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div
+          ref={kokRef2}
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
+          onClick={e => e.stopPropagation()}
+        >
           <div className="px-5 py-4 border-b border-gray-100">
             <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-red-500" /> {t('admin.announcements.deleteTitle')}

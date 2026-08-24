@@ -10,6 +10,7 @@ import {
 import { adminAPI } from '../../lib/api';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import StatusBadge from '../../components/ui/StatusBadge';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 const DOC_TYPE_LABELS = {
   diploma: 'Diploma',
@@ -124,6 +125,10 @@ function DocumentViewer({ vr, token, onClose }) {
    Reject Reason Modal
    ═══════════════════════════════════════════ */
 function RejectModal({ vr, onClose, onConfirm, loading }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Bayrak gerçek koşul: pencere yokken odak tuzağı kurulmamalı.
+  const kokRef = useModalDavranisi(!!vr, onClose);
+
   const { t } = useTranslation();
   const [reason, setReason] = useState('');
   if (!vr) return null;
@@ -131,7 +136,13 @@ function RejectModal({ vr, onClose, onConfirm, loading }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
       <div className="lg:pl-64 w-full flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
+      <div
+        ref={kokRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-red-500" />

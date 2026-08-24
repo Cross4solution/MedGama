@@ -67,6 +67,18 @@ const KANCAYI_KULLANANLAR = [
   'screens/SavedClinics.jsx',
   'screens/SavedPosts.jsx',
   'screens/DoctorProfile.jsx',
+  'components/chat/ChatMessage.jsx',
+  'components/clinic/modals/ImageGalleryModal.jsx',
+
+  // Beşinci parti: yönetim ekranları.
+  'screens/admin/AdminAnnouncements.jsx',
+  'screens/admin/AdminCatalog.jsx',
+  'screens/admin/AdminModeration.jsx',
+  'screens/admin/AdminReviews.jsx',
+  'screens/admin/AdminSupport.jsx',
+  'screens/admin/AdminUserManagement.jsx',
+  'screens/admin/AdminVerification.jsx',
+  'screens/admin/AdminVerificationReview.jsx',
 ];
 
 /**

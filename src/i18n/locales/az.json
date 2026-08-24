@@ -2703,7 +2703,8 @@
     "statusDelivered": "Çatdırıldı",
     "statusRead": "Oxundu",
     "autoTranslated": "Avtomatik tərcümə · orijinalı göstər",
-    "showTranslation": "Tərcüməni göstər"
+    "showTranslation": "Tərcüməni göstər",
+    "image": "Şəkil"
   },
   "review": {
     "rateExperience": "Təcrübənizi qiymətləndirin",
