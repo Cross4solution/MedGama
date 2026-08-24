@@ -5,6 +5,7 @@ import { Search, Star, MapPin, Loader2, Stethoscope, ChevronRight, X } from 'luc
 import { clinicAPI, catalogAPI } from '../lib/api';
 import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
+import sabitSecim from '../utils/sabitSecim';
 
 const FALLBACK_IMAGES = [
   '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
@@ -15,7 +16,10 @@ const FALLBACK_IMAGES = [
 
 function TreatmentCard({ clinic, onClick }) {
   const { t } = useTranslation();
-  const img = clinic.avatar ? resolveStorageUrl(clinic.avatar) : FALLBACK_IMAGES[Math.floor(Math.random() * FALLBACK_IMAGES.length)];
+  // Yedek fotoğraf kliniğin kimliğinden seçiliyor (bkz. `utils/sabitSecim.js`).
+  const img = clinic.avatar
+    ? resolveStorageUrl(clinic.avatar)
+    : sabitSecim(clinic.id || clinic.codename || clinic.name, FALLBACK_IMAGES);
   const rating = resolveClinicRating(clinic);
   const reviews = resolveClinicReviewCount(clinic);
 

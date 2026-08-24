@@ -1,4 +1,5 @@
 import useModalDavranisi from '../../hooks/useModalDavranisi';
+import sabitSecim from '../../utils/sabitSecim';
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -195,7 +196,9 @@ const MockDashboardBg = () => {
         </div>
         <div className="grid grid-cols-7 gap-1 h-32">
           {Array.from({ length: 35 }).map((_, i) => {
-            const intensity = [0.2, 0.4, 0.6, 0.8, 1][Math.floor(Math.random() * 5)];
+            // Kutunun tonu sırasından türüyor: rastgele olduğunda ısı haritası
+            // her yeniden çizimde titriyordu.
+            const intensity = sabitSecim(i, [0.2, 0.4, 0.6, 0.8, 1]);
             return (
               <div
                 key={i}

@@ -487,9 +487,12 @@ export default function AdminVerification() {
             </div>
           ) : (
             <div className="space-y-3">
-              {groupedByDoctor.map(({ doctor, documents }) => (
+              {groupedByDoctor.map(({ doctor, documents }, sira) => (
                 <DoctorDocumentsPanel
-                  key={doctor?.id || Math.random()}
+                  // Rastgele anahtar her çizimde YENİ bir öge demek: React eskisini
+                  // söküp yenisini kuruyor, panelin açık/kapalı durumu ve odak
+                  // kayboluyor. Kimliği olmayan kayıt için sıra numarası kararlı.
+                  key={doctor?.id || `sira-${sira}`}
                   doctor={doctor}
                   documents={documents}
                   token={token}
