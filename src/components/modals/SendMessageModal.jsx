@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { X, Send, Loader2, CheckCircle2, Paperclip, Image as ImageIcon, FileText, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 import { contactMessageAPI } from '../../lib/api';
 import { useToast } from '../../context/ToastContext';
 
@@ -88,6 +89,10 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
     onClose();
   };
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Kanca erken çıkıştan ÖNCE: React kancaları koşullu çağrılamaz.
+  const kokRef = useModalDavranisi(open, handleClose);
+
   if (!open) return null;
 
   // Dış katman ekranın tamamını kaplar ve pencereyi ekrana göre ortalar.
@@ -98,7 +103,12 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md z-10">
+      <div
+        ref={kokRef}
+        role="dialog"
+        aria-modal="true"
+        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md z-10"
+      >
         {/* Hidden file inputs */}
         <input ref={fileInputRef} type="file" multiple accept={ALLOWED_DOC} className="hidden"
           onChange={e => { addFiles(e.target.files); e.target.value = ''; }} />

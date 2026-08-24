@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 /**
  * CRMModal — Unified modal wrapper for all CRM modals.
@@ -35,13 +36,9 @@ const CRMModal = ({
   footer,
   hideHeader = false,
 }) => {
-  // Lock body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = ''; };
-    }
-  }, [isOpen]);
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi ve gövde kaydırma kilidi —
+  // dördü de aynı yaşam döngüsüne bağlı olduğu için tek kancada.
+  const kokRef = useModalDavranisi(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -62,6 +59,10 @@ const CRMModal = ({
         className="fixed inset-0 z-[1001] flex items-center justify-center p-4 lg:pl-[224px] pointer-events-none"
       >
         <div
+          ref={kokRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={typeof title === 'string' ? title : undefined}
           className={`relative bg-white rounded-2xl ${maxWidth} w-full shadow-2xl flex flex-col overflow-hidden animate-fadeIn pointer-events-auto`}
           style={{ maxHeight: 'min(90vh, 800px)' }}
           onClick={(e) => e.stopPropagation()}

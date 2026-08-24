@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Video, Clock, Shield, CheckCircle2, Loader2, Wifi, Monitor, Mic } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 export default function OnlineConsultationModal({ open, onClose, targetId, targetName, targetType = 'doctor' }) {
   const { i18n } = useTranslation();
@@ -39,12 +40,21 @@ export default function OnlineConsultationModal({ open, onClose, targetId, targe
     onClose();
   };
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Kanca erken çıkıştan ÖNCE: React kancaları koşullu çağrılamaz.
+  const kokRef = useModalDavranisi(open, handleClose);
+
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md z-10">
+      <div
+        ref={kokRef}
+        role="dialog"
+        aria-modal="true"
+        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md z-10"
+      >
         {/* Header */}
         <div className="border-b border-gray-100 px-5 py-4 rounded-t-2xl flex items-center justify-between">
           <div className="flex items-center gap-3">

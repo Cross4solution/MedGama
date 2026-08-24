@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { X, Calendar, Clock, Video, MapPin, CheckCircle2, ChevronLeft, ChevronRight, Loader2, User, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 import { useAuth } from '../../context/AuthContext';
 import { doctorAPI, appointmentAPI } from '../../lib/api';
 
@@ -162,13 +163,15 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
     onClose();
   };
 
-  // Lock body scroll while open
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [open]);
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Kanca erken çıkıştan ÖNCE: React kancaları koşullu çağrılamaz.
+  //
+  // Buradaki ayrı kaydırma kilidi kaldırıldı. İkisi birlikte çalışırken kilit
+  // AÇILMIYORDU: alttaki etki 'hidden'ı kurduktan sonra kanca eski değer diye
+  // 'hidden'ı saklıyor, kapanışta da temizlikler tanımlanma sırasında çalışıp
+  // önce boşa çekiyor, sonra 'hidden'a geri koyuyordu. Sayfa bir daha
+  // kaydırılamıyordu — ölçüldü.
+  const kokRef = useModalDavranisi(open, handleClose);
 
   if (!open) return null;
 
@@ -177,7 +180,12 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto z-10">
+      <div
+        ref={kokRef}
+        role="dialog"
+        aria-modal="true"
+        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto z-10"
+      >
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 rounded-t-2xl flex items-center justify-between z-10">
           <div>

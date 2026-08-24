@@ -1,5 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 /**
  * @param {{
@@ -11,11 +12,20 @@ import { X } from 'lucide-react';
  * }} props
  */
 export default function Modal({ open, onClose, title, children, footer = null }) {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kokRef = useModalDavranisi(open, onClose);
+
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
-      <div className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl border border-gray-200 animate-in">
+      <div
+        ref={kokRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={typeof title === 'string' ? title : undefined}
+        className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl border border-gray-200 animate-in"
+      >
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-base font-bold text-gray-900">{title}</h3>
           <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">

@@ -1,0 +1,92 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+/**
+ * Modalların klavye davranışı tek yerden gelmeli.
+ *
+ * Ölçüldü: yüzeydeki 61 modalın 5'i Escape'i dinliyor, 3'ü odağı yönetiyordu.
+ * Faresiz kullanıcı için modal bir kapan: odak arkadaki sayfada kalıyor, sekme
+ * modalın ALTINDAKİ bağlantılarda dolaşıyor, kapatma düğmesine ulaşmak için
+ * önce arkadaki onlarca öğeyi geçmek gerekiyor.
+ *
+ * `useModalDavranisi` dördünü birlikte yapıyor: Escape, odağın içeri girmesi,
+ * sekmenin içeride dönmesi, kapanışta odağın AÇAN öğeye dönmesi. Gövde
+ * kaydırma kilidi de aynı yaşam döngüsüne bağlı olduğu için orada.
+ *
+ * Kilidin orada olması bir kural doğuruyor ve testin asıl konusu o: kancayı
+ * kullanan dosya kilidi AYRICA kurmamalı. İkisi birlikte çalışırken kilit hiç
+ * açılmıyordu — alttaki etki `hidden`ı kuruyor, kanca eski değer diye `hidden`ı
+ * saklıyor, kapanışta temizlikler tanımlanma sırasında çalışıp önce boşaltıyor,
+ * sonra `hidden`a geri koyuyordu. Sonuç: modal kapanıyor ama sayfa bir daha
+ * kaydırılamıyor. Hiçbir hata çıkmıyor, iki dosyada birden ölçüldü.
+ */
+
+const buDosya = fileURLToPath(import.meta.url);
+const kaynakKok = path.resolve(path.dirname(buDosya), '../..');
+
+/** Kancayı kullanan, ölçülmüş dosyalar. */
+const KANCAYI_KULLANANLAR = [
+  'components/common/Modal.jsx',
+  'components/crm/CRMModal.jsx',
+  'components/modals/BookAppointmentModal.jsx',
+  'components/modals/DoctorBookingModal.jsx',
+  'components/modals/OnlineConsultationModal.jsx',
+  'components/modals/SendMessageModal.jsx',
+];
+
+const oku = (goreli) => readFileSync(path.join(kaynakKok, goreli), 'utf8');
+
+test('modallar klavye davranışını kancadan alıyor', () => {
+  for (const yol of KANCAYI_KULLANANLAR) {
+    const metin = oku(yol);
+
+    assert.match(metin, /useModalDavranisi\(/, `${yol} kancayı çağırmıyor: Escape ve odak tuzağı kaybolur`);
+    assert.match(metin, /ref=\{kokRef\}/, `${yol} kancanın ref'ini bağlamıyor: odak tuzağı hiçbir şey bulamaz`);
+  }
+});
+
+test('kancayı kullanan dosya kaydırma kilidini AYRICA kurmuyor', () => {
+  // Bu testin sebebi yukarıda yazılı: iki kilit birlikte, kilidi hiç
+  // açılmayan bir sayfa üretiyor.
+  const kusurlu = KANCAYI_KULLANANLAR.filter((yol) => /body\.style\.overflow/.test(oku(yol)));
+
+  assert.deepEqual(
+    kusurlu,
+    [],
+    'Kanca kaydırma kilidini zaten kuruyor. İkinci bir kilit, kapanışta\n'
+      + 'kilidin AÇILMAMASINA yol açar; sayfa bir daha kaydırılamaz:\n  '
+      + kusurlu.join('\n  '),
+  );
+});
+
+test('modallar ekran okuyucuya diyalog olduklarını söylüyor', () => {
+  for (const yol of KANCAYI_KULLANANLAR) {
+    const metin = oku(yol);
+
+    assert.match(metin, /role="dialog"/, `${yol} role="dialog" taşımıyor`);
+    assert.match(metin, /aria-modal="true"/, `${yol} aria-modal taşımıyor`);
+  }
+});
+
+test('kanca kapatma işlevini etkiye bağlamıyor', () => {
+  // `handleClose` çoğu çağrı yerinde her renderda yeniden kuruluyor. Etkiye
+  // doğrudan bağlansaydı etki her renderda sökülüp yeniden kurulur, odak da
+  // her seferinde ilk alana atlardı: kullanıcı forma yazarken imleç kaçardı.
+  const kanca = oku('hooks/useModalDavranisi.js');
+
+  assert.match(kanca, /kapatRef\.current = kapat/, 'kapatma işlevi ref\'e alınmıyor');
+  assert.match(kanca, /\}, \[acik\]\);/, 'etki `kapat`a bağlı: her renderda odak ilk alana atlar');
+});
+
+test('kanca odağı açan öğeye geri veriyor', () => {
+  // Dönmezse kullanıcı sayfanın başına savrulur ve kaldığı yeri kaybeder —
+  // uzun bir klinik sayfasında bu, aşağı kaydırdığı her şeyi yeniden bulmak
+  // demek.
+  const kanca = oku('hooks/useModalDavranisi.js');
+
+  assert.match(kanca, /oncekiOdakRef\.current = document\.activeElement/, 'açan öğe saklanmıyor');
+  assert.match(kanca, /document\.contains\(onceki\)/, 'öğe hâlâ ekranda mı diye bakılmıyor');
+});
