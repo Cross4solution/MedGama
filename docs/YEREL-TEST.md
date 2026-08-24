@@ -110,6 +110,22 @@ sürüyor. Kırıkların çoğu "hata" değil, derleme beklemesiydi.
 `JSON.parse` hatası veriyor. Canlıda aynı sayfalar 200 dönüyordu — yani
 uygulama hatası değil. Çözüm: `rm -rf .next`.
 
+Bunun daha sinsi hâli: **sunucu ayaktayken altından `next build` yapmak.**
+Sunucu eski dosya adlarını sunmaya devam ediyor, tarayıcı var olmayan
+yığınları isteyip 400 alıyor ve sayfa BOMBOŞ geliyor. Tek bir oturumda altı
+kez uygulama hatası sanıldı ("Arapça kayıt sayfası çöküyor", "404 sayfası
+boş"). En kötüsü, portu önizleme yöneticisinin tuttuğu ve `pkill -f "next
+start"` komutunun ona hiç ulaşmadığı durum.
+
+Şüphelendiğiniz an sorun:
+
+```bash
+npm run sunucu:tazelik
+```
+
+Sayfanın istediği her varlığın diskte olup olmadığına bakıyor. `✗ BAYAT
+SUNUCU` diyorsa aradığınız hata orada değil.
+
 **CORS listesine yerel kökeni eklemeyi unutma.** Eksikse kimlikli her istek
 tarayıcıda engelleniyor ve testler "öge bulunamadı" diye kırılıyor; sebep
 hiçbir yerde yazmıyor.
