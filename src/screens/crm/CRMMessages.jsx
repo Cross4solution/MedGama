@@ -8,6 +8,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { messageAPI, patientAPI } from '../../lib/api';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ─── Helpers ─────────────────────────────────────────────────
 const getInitials = (name) => {
@@ -152,6 +153,10 @@ const CRMMessages = () => {
   // Düğme buradaydı ama hiçbir şeye bağlı değildi: CRM'den konuşma
   // başlatılamıyor, yalnızca gelen yanıtlanabiliyordu.
   const [yeniAcik, setYeniAcik] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const yeniKonusmayiKapat = useCallback(() => setYeniAcik(false), []);
+  const yeniKonusmaKokRef = useModalDavranisi(yeniAcik, yeniKonusmayiKapat);
   const [hastalar, setHastalar] = useState(null);
   const [hastaArama, setHastaArama] = useState('');
   const [baslatiliyor, setBaslatiliyor] = useState(null);
@@ -261,7 +266,12 @@ const CRMMessages = () => {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 lg:pl-[calc(14rem+1rem)]"
           onClick={(e) => e.target === e.currentTarget && setYeniAcik(false)}
         >
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col max-h-[70vh]">
+          <div
+            ref={yeniKonusmaKokRef}
+            role="dialog"
+            aria-modal="true"
+            className="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col max-h-[70vh]"
+          >
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
               <h2 className="text-sm font-bold text-gray-900">
                 {t('crm.messages.newMessage')}

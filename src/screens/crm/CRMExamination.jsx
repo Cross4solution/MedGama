@@ -15,6 +15,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import ProTeaser from '../../components/crm/ProTeaser';
 import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ─── Medication Templates ───
 const MEDICATION_TEMPLATES = [
@@ -779,6 +780,12 @@ const CRMExamination = () => {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historySearch, setHistorySearch] = useState('');
   const [selectedExam, setSelectedExam] = useState(null);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Kapatma düğmesiyle aynı şeyi yapıyor: detay da temizleniyor. Yalnız seçimi
+  // sıfırlasaydı pencere kapanır ama önceki muayenenin detayı bellekte kalırdı.
+  const muayeneyiKapat = useCallback(() => { setSelectedExam(null); setSelectedExamDetail(null); }, []);
+  const muayeneKokRef = useModalDavranisi(!!selectedExam, muayeneyiKapat);
   const [selectedExamDetail, setSelectedExamDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -1391,7 +1398,12 @@ const CRMExamination = () => {
           {/* Exam Detail Modal */}
           {selectedExam && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+              <div
+                ref={muayeneKokRef}
+                role="dialog"
+                aria-modal="true"
+                className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+              >
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                   <h2 className="text-base font-bold text-gray-900">{t('crm.examination.examDetails')}</h2>
                   <button

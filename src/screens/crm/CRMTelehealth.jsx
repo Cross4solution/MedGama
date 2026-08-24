@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 import { useSearchParams, useNavigate } from '@/compat/router';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +34,12 @@ function CRMTelehealth() {
   const [fullscreen, setFullscreen] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Escape onayı KAPATIYOR, görüşmeyi bitirmiyor: kaçış tuşu vazgeçmektir,
+  // onaylamak değil.
+  const bitirmeOnayiniKapat = useCallback(() => setShowEndConfirm(false), []);
+  const bitirmeOnayiKokRef = useModalDavranisi(showEndConfirm, bitirmeOnayiniKapat);
 
   // Scroll transcript to bottom
   const transcriptRef = React.useRef(null);
@@ -482,7 +489,12 @@ function CRMTelehealth() {
       {/* End Call Confirmation Modal */}
       {showEndConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl">
+          <div
+            ref={bitirmeOnayiKokRef}
+            role="dialog"
+            aria-modal="true"
+            className="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl"
+          >
             <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
               <PhoneOff className="w-7 h-7 text-red-500" />
             </div>

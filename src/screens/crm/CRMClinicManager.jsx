@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { clinicManagerAPI } from '../../lib/api';
 import ProTeaser from '../../components/crm/ProTeaser';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ─── Helpers ─────────────────────────────────────────────────
 const fmt = (v) => {
@@ -148,6 +149,11 @@ const DoctorDetailModal = ({ doctorId, onClose, t }) => {
       .finally(() => setLoading(false));
   }, [doctorId]);
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Erken çıkışların ÜSTÜNDE: React kancaları koşullu çağrılamaz. Bu pencere
+  // yalnız açıkken render ediliyor, kanca sabit `true` alıyor.
+  const performansKokRef = useModalDavranisi(true, onClose);
+
   if (loading) return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
@@ -160,7 +166,12 @@ const DoctorDetailModal = ({ doctorId, onClose, t }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div
+        ref={performansKokRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+      >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-base font-bold text-gray-900">{t('crm.manager.doctorPerformance', 'Doctor Performance')}</h2>
           <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center"><X className="w-4 h-4 text-gray-500" /></button>

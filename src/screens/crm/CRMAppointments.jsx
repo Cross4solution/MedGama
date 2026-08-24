@@ -20,6 +20,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ═══════════════════════════════════════════════════
 // Constants & Helpers
@@ -175,11 +176,20 @@ const GatekeeperModal = ({ isOpen, onClose, user, needsVerification, needsUpgrad
     if (files.length) uploadDocument(files[0]);
   };
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Kanca erken çıkışın ÜSTÜNDE: React kancaları koşullu çağrılamaz.
+  const tamamlaKokRef = useModalDavranisi(isOpen, onClose);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 lg:pl-[calc(14rem+1rem)]" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+      <div
+        ref={tamamlaKokRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+      >
         {/* Encouraging Header */}
         <div className="bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500 px-6 py-6 text-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
@@ -617,6 +627,10 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
   const { t, i18n } = useTranslation();
   const isTr = i18n.language?.startsWith('tr');
   const navigate = useNavigate();
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Kanca erken çıkışın ÜSTÜNDE: React kancaları koşullu çağrılamaz.
+  const detayKokRef = useModalDavranisi(!!appointment, onClose);
+
   if (!appointment) return null;
   const a = appointment;
   const typeCfg = TYPE_CONFIG[a.appointment_type] || TYPE_CONFIG.inPerson;
@@ -624,7 +638,12 @@ const DetailModal = ({ appointment, onClose, onStatusChange, updating }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 lg:pl-[calc(14rem+1rem)]" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
+      <div
+        ref={detayKokRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden"
+      >
         {/* Header with type color */}
         <div className="px-6 py-4 border-b border-gray-100" style={{ background: `linear-gradient(135deg, ${typeCfg.color}10, white)` }}>
           <div className="flex items-center justify-between">

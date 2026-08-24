@@ -51,6 +51,13 @@ const KANCAYI_KULLANANLAR = [
   'screens/crm/CRMFaq.jsx',
   'screens/crm/CRMPrescriptions.jsx',
   'screens/crm/CRMDocuments.jsx',
+  'screens/crm/CRMAppointments.jsx',
+  'screens/crm/CRMBilling.jsx',
+  'screens/crm/CRMClinicManager.jsx',
+  'screens/crm/CRMSmartCalendar.jsx',
+  'screens/crm/CRMTelehealth.jsx',
+  'screens/crm/CRMExamination.jsx',
+  'screens/crm/CRMMessages.jsx',
 ];
 
 /**

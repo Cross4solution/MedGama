@@ -18,6 +18,7 @@ import useAppointmentSync from '../../hooks/useAppointmentSync';
 import ProTeaser from '../../components/crm/ProTeaser';
 import { appointmentTimeDisplay, formatDateInZone, viewerTimezone } from '../../utils/dates';
 import { useGorunurYoklama } from '../../hooks/useGorunurYoklama';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 const POLL_INTERVAL = 30000; // 30s
 
@@ -55,6 +56,10 @@ const CRMSmartCalendar = () => {
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const hizliIslemiKapat = useCallback(() => setShowModal(false), []);
+  const hizliIslemKokRef = useModalDavranisi(showModal, hizliIslemiKapat);
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentView, setCurrentView] = useState('timeGridWeek');
   const [dateRange, setDateRange] = useState({ start: null, end: null });
@@ -453,7 +458,13 @@ const CRMSmartCalendar = () => {
       {/* ═══════════ Quick Action Modal ═══════════ */}
       {showModal && selectedEvent && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            ref={hizliIslemKokRef}
+            role="dialog"
+            aria-modal="true"
+            className="bg-white rounded-2xl max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header */}
             <div className="rounded-t-2xl px-6 py-4 flex items-center justify-between bg-gradient-to-r from-teal-50 to-emerald-50 border-b border-teal-100">
               <div className="flex items-center gap-3">

@@ -13,6 +13,7 @@ import { billingAPI, patientAPI } from '../../lib/api';
 import ProTeaser from '../../components/crm/ProTeaser';
 import { blockNonNumeric } from '../../utils/numericInput';
 import CRMModal, { ModalLabel, ModalInput, ModalSelect, ModalTextarea, ModalPrimaryButton, ModalCancelButton } from '../../components/crm/CRMModal';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ─── Helpers ─────────────────────────────────────────────────
 const fmt = (v, currency = 'EUR') => {
@@ -297,9 +298,18 @@ const PaymentModal = ({ invoice, onClose, onUpdated, t }) => {
     }
   };
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const odemeKokRef = useModalDavranisi(true, onClose);
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div
+        ref={odemeKokRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl max-w-sm w-full shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900">{t('crm.billing.recordPayment', 'Record Payment')}</h3>
           <button onClick={onClose} className="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400"><X className="w-4 h-4" /></button>
