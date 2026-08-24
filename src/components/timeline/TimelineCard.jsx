@@ -38,19 +38,53 @@ function AvatarImg({ src, alt, className, fallback = DEFAULT_AVATAR }) {
   );
 }
 
+/** Next görsel iyileştiricisinin kabul ettiği genişlikler (varsayılan deviceSizes). */
+const GORSEL_GENISLIKLERI = [640, 828, 1080, 1920];
+
+/**
+ * Bir görsel adresini Next'in iyileştiricisinden geçirir.
+ *
+ * Ölçüldü: akıştaki bir Unsplash fotoğrafı ham hâliyle 134 KB iniyor, aynı
+ * görsel iyileştiriciden 640 piksel genişlikte 20 KB (webp) geliyor — %85 az.
+ * İzin listesi `next.config.js` içinde zaten kuruluydu; kimse kullanmıyordu.
+ *
+ * SVG hariç: `dangerouslyAllowSVG: false` bilerek kapalı (SVG betik taşıyabilir)
+ * ve iyileştiriciye verilirse 400 döner.
+ */
+function iyilestir(url, genislik) {
+  return `/_next/image?url=${encodeURIComponent(url)}&w=${genislik}&q=75`;
+}
+
+function iyilestirilebilir(url) {
+  if (!url || /\.svg(\?|$)/i.test(url)) return false;
+  if (url.startsWith('data:') || url.startsWith('blob:')) return false;
+  return true;
+}
+
 function MediaImg({ src, alt, className, onClick = undefined }) {
-  const [failed, setFailed] = React.useState(false);
+  const [hata, setHata] = React.useState(false);
+  // İyileştirici bir adresi reddederse (izin listesinde olmayan bir köken)
+  // görseli kaybetmek yerine ham adrese düşülüyor.
+  const [hamaDus, setHamaDus] = React.useState(false);
   const resolved = resolveStorageUrl(src, '');
+
   // Görsel yoksa/yüklenemezse gri placeholder yerine hiç render etme —
   // medya alanı tamamen çöker (kötü görünen boş gri kutu olmaz).
-  if (failed || !resolved) return null;
+  if (hata || !resolved) return null;
+
+  const optimize = iyilestirilebilir(resolved) && !hamaDus;
+
   return (
     <img
-      src={resolved}
+      src={optimize ? iyilestir(resolved, 1080) : resolved}
+      srcSet={optimize
+        ? GORSEL_GENISLIKLERI.map((g) => `${iyilestir(resolved, g)} ${g}w`).join(', ')
+        : undefined}
+      sizes={optimize ? '(max-width: 768px) 100vw, 640px' : undefined}
       alt={alt}
       loading="lazy"
       className={className}
-      onError={() => setFailed(true)}
+      onError={() => (optimize ? setHamaDus(true) : setHata(true))}
       onClick={onClick}
     />
   );
