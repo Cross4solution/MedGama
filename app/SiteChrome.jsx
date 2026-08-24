@@ -293,7 +293,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
               kalıyordu — ekran okuyucu içeriğin başından değil, menüden okumaya
               devam ediyordu. Odaklanabilir olması gerekiyor. */}
           <main id="icerik" tabIndex={-1} className="min-h-[70vh] focus:outline-none">
-            <Suspense fallback={null}>{children}</Suspense>
+            {children}
           </main>
           <Suspense fallback={null}>
             <OnboardingGate />
@@ -324,9 +324,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
             yukarı zıplamasını ve layout shift'i önler — içerik alanı yer ayırır.
             İçerik kendi Suspense sınırında: useSearchParams kullanan sayfalar burada
             CSR bailout yapar; kullanmayanlar SSR'da gerçek içerikle gelir. */}
-        <Suspense fallback={null}>
-          {children}
-        </Suspense>
+        {children}
       </main>
       <Suspense fallback={null}>
         {showFooter && <Footer />}
