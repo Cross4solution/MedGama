@@ -34,8 +34,12 @@ module.exports = defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'off',
-    // Kamera/mikrofon izni: görüşme hazırlık ekranı bunu istiyor.
-    permissions: ['camera', 'microphone'],
+    // Kamera/mikrofon izni burada DEĞİL, chromium projesinde.
+    //
+    // Firefox `camera` iznini tanımıyor ve genel `use` içinde durduğunda her
+    // firefox testi daha bağlam açılırken düşüyor: "Unknown permission: camera".
+    // Ölçüldü — beş testin beşi de bu yüzden kırmızıydı, tarayıcı uyumsuzluğu
+    // sanılabilirdi.
   },
 
   projects: [
@@ -43,6 +47,9 @@ module.exports = defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        // Görüşme hazırlık ekranı kamera/mikrofon istiyor; yalnız bu motorda
+        // gerekiyor çünkü oturum gerektiren testler burada koşuyor.
+        permissions: ['camera', 'microphone'],
         launchOptions: {
           args: [
             // Gerçek donanım yerine sahte kamera/mikrofon: görüşme ekranı
@@ -52,6 +59,26 @@ module.exports = defineConfig({
           ],
         },
       },
+    },
+
+    // Safari ve Firefox: YALNIZ herkese açık sayfalar.
+    //
+    // Oturum kurulumu (`kurulum.js`) parolayla giriş yapıyor ve her motor için
+    // ayrı bir giriş turu, arka ucun hız sınırını tetikliyor — ölçüldü, 429.
+    // Bu yüzden bu iki motor `genel-*.spec.js` dosyalarıyla sınırlı; oturum
+    // gerektiren her şey chromium'da koşuyor.
+    //
+    // Kamera/mikrofon bayrağı yok: ikisinde de karşılığı yok, görüşme ekranı
+    // zaten oturum arkasında.
+    {
+      name: 'webkit',
+      testMatch: /genel-.*\.spec\.js/,
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'firefox',
+      testMatch: /genel-.*\.spec\.js/,
+      use: { ...devices['Desktop Firefox'] },
     },
   ],
 });
