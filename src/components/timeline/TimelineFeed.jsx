@@ -34,6 +34,7 @@ export default function TimelineFeed() {
           actor: {
             id: p.author_id,
             role: authorRole,
+            username: p.author?.username || null,
             name: p.author?.fullname || 'Doctor',
             title: p.clinic?.fullname || '',
             avatarUrl: p.author?.avatar || '/images/default/default-avatar.svg',

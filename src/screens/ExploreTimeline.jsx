@@ -354,6 +354,7 @@ export default function ExploreTimeline() {
           actor: {
             id: p.author_id || user?.id,
             role: p.author?.role_id || user?.role || 'doctor',
+            username: p.author?.username || user?.username || null,
             name: p.author?.fullname || user?.name || 'Doctor',
             title: clinicName || '',
             avatarUrl: resolveStorageUrl(p.author?.avatar),

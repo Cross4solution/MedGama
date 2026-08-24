@@ -247,6 +247,7 @@ export default function PostDetail() {
           actor: {
             id: p.author_id,
             role: p.author?.role_id || 'doctor',
+            username: p.author?.username || null,
             name: p.author?.fullname || 'Doctor',
             title: '',
             avatarUrl: resolveStorageUrl(p.author?.avatar),

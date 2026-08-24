@@ -92,10 +92,15 @@ export default async function sitemap() {
       .filter((d) => d && d.id)
       .flatMap((d) => localizeEntries(`/doctor/${d.id}`, { priority: 0.8, lastModified: now }));
 
+    // Klinik rotası KİMLİK değil, `codename` alıyor: `/clinic/<uuid>` 404 döner
+    // (ölçüldü). Eski hâli `c.codename || c.id` yazıyordu, yani codename'i
+    // olmayan bir klinik site haritasına 404 veren bir adres olarak giriyordu.
+    // Bugünkü veride öyle bir klinik yok, ama site haritası arama motoruna
+    // giden bir söz: eksik bir kayıt, kırık bir kayıttan iyidir.
     const clinicUrls = clinics
-      .filter((c) => c && (c.codename || c.id))
+      .filter((c) => c && c.codename)
       .flatMap((c) =>
-        localizeEntries(`/clinic/${c.codename || c.id}`, { priority: 0.8, lastModified: now })
+        localizeEntries(`/clinic/${c.codename}`, { priority: 0.8, lastModified: now })
       );
 
     dynamicUrls = [...doctorUrls, ...clinicUrls];

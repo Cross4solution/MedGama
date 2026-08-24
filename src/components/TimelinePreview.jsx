@@ -40,6 +40,7 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
             actor: {
               id: p.author_id,
               role: p.author?.role_id || 'doctor',
+              username: p.author?.username || null,
               name: p.author?.fullname || 'Doctor',
               title: '',
               avatarUrl: p.author?.avatar || '/images/default/default-avatar.svg',

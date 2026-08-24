@@ -50,6 +50,7 @@ export default function SavedPosts() {
             actor: {
               id: p.author_id,
               role: authorRole,
+              username: p.author?.username || null,
               name: p.author?.fullname || 'Doctor',
               title: clinicName || (authorRole === 'doctor' ? 'Doctor' : ''),
               avatarUrl: p.author?.avatar || '/images/default/default-avatar.svg',
