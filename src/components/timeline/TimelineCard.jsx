@@ -445,6 +445,39 @@ function MediaItem({ m, alt, className, onClick = undefined }) {
   return <MediaImg src={resolveMediaUrl(m)} alt={alt} className={className} onClick={onClick} />;
 }
 
+/**
+ * Medyayı tıklanabilir sarmalıyla birlikte çizer.
+ *
+ * Sarmal YALNIZ görsellerde `<button>`. Belge kartı kendi indirme düğmesini
+ * taşıyor ve HTML `<button>` içine `<button>` koymayı yasaklıyor: tarayıcı bunu
+ * sessizce düzeltmiyor, iç düğmeyi dışarı taşıyor. Sunucudan gelen HTML ile
+ * tarayıcının kurduğu ağaç ayrışıyor, React o dalı baştan çiziyor.
+ *
+ * Ana sayfada ölçüldü (React #418). Görünürde bir şey bozulmuyor — asıl bedel
+ * gizli: React sunucudan gelen HTML'i atıp yeniden çizdiği için akış bir an
+ * boşalıyor ve o dala bağlı olay dinleyicileri yeniden kuruluyor.
+ *
+ * Belge yine tıklanınca gönderiye gidiyor; tıklama sarmal yerine kartın kendi
+ * kökünden geçiyor. Videoya tıklama verilmiyor, o kendi oynatıcısının.
+ */
+function MedyaKaresi({ m, alt, className, onAc }) {
+  const tur = getMediaType(m);
+
+  if (tur === 'image') {
+    return (
+      <button type="button" onClick={onAc} className="block w-full text-left">
+        <MediaItem m={m} alt={alt} className={className} />
+      </button>
+    );
+  }
+
+  return (
+    <div className="block w-full">
+      <MediaItem m={m} alt={alt} className={className} onClick={tur === 'document' ? onAc : undefined} />
+    </div>
+  );
+}
+
 function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {}, compact = false }) {
   const avatarUrl = resolveStorageUrl(item.avatar || item.actor?.avatarUrl);
   const navigate = useNavigate();
@@ -930,72 +963,22 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             <div className="mt-2.5">
               {media.length === 1 && (
                 <div className="relative">
-                  {getMediaType(media[0]) === 'video' ? (
-                    <div className="block w-full">
-                      <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={(e) => goToPost(e, 0)}
-                      className="block w-full text-left"
-                    >
-                      <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} />
-                    </button>
-                  )}
+                  <MedyaKaresi m={media[0]} alt={media[0].alt || actorName} className={`w-full ${singleImgMaxH} object-cover rounded-b-none`} onAc={(e) => goToPost(e, 0)} />
                 </div>
               )}
               {media.length === 2 && (
                 <div className="grid grid-cols-2 gap-2">
                   {media.slice(0,2).map((m, i) => (
-                    getMediaType(m) === 'video' ? (
-                      <div key={i} className="block w-full">
-                        <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid2H} object-cover`} />
-                      </div>
-                    ) : (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={(e) => goToPost(e, i)}
-                        className="block w-full text-left"
-                      >
-                        <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid2H} object-cover`} />
-                      </button>
-                    )
+                    <MedyaKaresi key={i} m={m} alt={m.alt || actorName} className={`w-full ${grid2H} object-cover`} onAc={(e) => goToPost(e, i)} />
                   ))}
                 </div>
               )}
               {media.length === 3 && (
                 <div className="grid grid-cols-2 gap-2">
-                  {getMediaType(media[0]) === 'video' ? (
-                    <div className="block w-full">
-                      <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${grid3LeftH} object-cover col-span-1`} />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={(e) => goToPost(e, 0)}
-                      className="block w-full text-left"
-                    >
-                      <MediaItem m={media[0]} alt={media[0].alt || actorName} className={`w-full ${grid3LeftH} object-cover col-span-1`} />
-                    </button>
-                  )}
+                  <MedyaKaresi m={media[0]} alt={media[0].alt || actorName} className={`w-full ${grid3LeftH} object-cover col-span-1`} onAc={(e) => goToPost(e, 0)} />
                   <div className="grid grid-rows-2 gap-2">
                     {media.slice(1,3).map((m, i) => (
-                      getMediaType(m) === 'video' ? (
-                        <div key={i} className="block w-full">
-                          <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid3SmallH} object-cover`} />
-                        </div>
-                      ) : (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={(e) => goToPost(e, i + 1)}
-                          className="block w-full text-left"
-                        >
-                          <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid3SmallH} object-cover`} />
-                        </button>
-                      )
+                      <MedyaKaresi key={i} m={m} alt={m.alt || actorName} className={`w-full ${grid3SmallH} object-cover`} onAc={(e) => goToPost(e, i + 1)} />
                     ))}
                   </div>
                 </div>
@@ -1004,19 +987,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 <div className="grid grid-cols-2 gap-2">
                   {media.slice(0,4).map((m, i) => (
                     <div key={i} className="relative">
-                      {getMediaType(m) === 'video' ? (
-                        <div className="block w-full">
-                          <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid4H} object-cover`} />
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={(e) => goToPost(e, i)}
-                          className="block w-full text-left"
-                        >
-                          <MediaItem m={m} alt={m.alt || actorName} className={`w-full ${grid4H} object-cover`} />
-                        </button>
-                      )}
+                      <MedyaKaresi m={m} alt={m.alt || actorName} className={`w-full ${grid4H} object-cover`} onAc={(e) => goToPost(e, i)} />
                       {i === 3 && media.length > 4 && (
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                           <span className="text-white text-2xl font-semibold">+{media.length - 3}</span>
