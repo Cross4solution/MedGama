@@ -103,7 +103,9 @@
     "uploading": "Subiendo…",
     "verified": "Verificado",
     "viewAll": "Ver todo",
-    "years": "años"
+    "years": "años",
+    "loadFailedTitle": "No se pudo cargar",
+    "loadFailedHint": "No se pudo contactar con el servidor. Esto no significa que no tengas registros: comprueba tu conexión e inténtalo de nuevo."
   },
   "nav": {
     "home": "Inicio",

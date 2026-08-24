@@ -103,7 +103,9 @@
     "uploading": "Wird hochgeladen …",
     "verified": "Verifiziert",
     "viewAll": "Alle anzeigen",
-    "years": "J."
+    "years": "J.",
+    "loadFailedTitle": "Konnte nicht geladen werden",
+    "loadFailedHint": "Der Server ist nicht erreichbar. Das heißt nicht, dass keine Einträge vorhanden sind — prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
   },
   "nav": {
     "home": "Startseite",

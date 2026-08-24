@@ -20,13 +20,20 @@ export default function DoctorAppointments() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('upcoming');
   const [busyId, setBusyId] = useState(null);
+  // "Randevu bulunmuyor" ile "liste yüklenemedi" ayrı şeyler. İkisi aynı ekranda
+  // gösterilince hekim, dolu bir günü boş sanabiliyor.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
 
   const fetchAppointments = useCallback(async () => {
     setLoading(true);
+    setYuklemeHatasi(false);
     try {
       const res = await appointmentAPI.list({ per_page: 200 });
       setAppointments(res?.data || []);
-    } catch { setAppointments([]); }
+    } catch {
+      setAppointments([]);
+      setYuklemeHatasi(true);
+    }
     finally { setLoading(false); }
   }, []);
 
@@ -115,6 +122,18 @@ export default function DoctorAppointments() {
 
         {loading ? (
           <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-teal-500" /></div>
+        ) : yuklemeHatasi ? (
+          <div className="text-center py-20">
+            <p className="text-base font-bold text-gray-700 mb-1">{t('common.loadFailedTitle')}</p>
+            <p className="text-sm text-gray-500 mb-4 max-w-md mx-auto">{t('common.loadFailedHint')}</p>
+            <button
+              type="button"
+              onClick={fetchAppointments}
+              className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+            >
+              {t('common.retry')}
+            </button>
+          </div>
         ) : list.length === 0 ? (
           <div className="text-center py-20 text-gray-400">
             <CalendarClock className="w-10 h-10 mx-auto mb-3 text-gray-300" />

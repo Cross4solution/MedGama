@@ -103,7 +103,9 @@
     "uploading": "Envoi en cours…",
     "verified": "Vérifié",
     "viewAll": "Tout afficher",
-    "years": "ans"
+    "years": "ans",
+    "loadFailedTitle": "Chargement impossible",
+    "loadFailedHint": "Le serveur est injoignable. Cela ne signifie pas que vous n'avez aucun élément — vérifiez votre connexion et réessayez."
   },
   "nav": {
     "home": "Accueil",

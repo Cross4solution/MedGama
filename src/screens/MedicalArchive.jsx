@@ -35,6 +35,9 @@ const MedicalArchive = () => {
 
   // ── State ──
   const [documents, setDocuments] = useState([]);
+  // "Kaydınız yok" ile "yükleyemedik" ayrı şeyler. Tıbbi arşivde ikisini aynı
+  // ekranda göstermek, kayıtları duran hastaya kasasının boş olduğunu söylüyor.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -71,12 +74,14 @@ const MedicalArchive = () => {
       if (search) params.search = search;
       if (categoryFilter) params.category = categoryFilter;
 
+      setYuklemeHatasi(false);
       const res = await patientDocumentAPI.list(params);
       const data = res?.data || res;
       setDocuments(data?.data || data || []);
       setTotalPages(data?.last_page || 1);
     } catch {
       setDocuments([]);
+      setYuklemeHatasi(true);
     }
     setLoading(false);
   }, [page, search, categoryFilter]);
@@ -266,6 +271,21 @@ const MedicalArchive = () => {
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
+          </div>
+        ) : yuklemeHatasi ? (
+          /* Sunucuya ulaşılamadı — "belge yok" DEĞİL. Aşağıdaki boş durum
+             hastayı ilk belgesini yüklemeye çağırıyor; kayıtları duran biri
+             için yanlış ve tedirgin edici bir cümle. */
+          <div className="rounded-2xl border border-gray-200/60 bg-white p-10 text-center">
+            <h3 className="text-lg font-bold text-gray-700 mb-1">{t('common.loadFailedTitle')}</h3>
+            <p className="text-sm text-gray-500 mb-4 max-w-md mx-auto">{t('common.loadFailedHint')}</p>
+            <button
+              type="button"
+              onClick={fetchDocuments}
+              className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+            >
+              {t('common.retry')}
+            </button>
           </div>
         ) : documents.length === 0 ? (
           <div className="rounded-2xl border border-gray-200/60 bg-white">

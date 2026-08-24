@@ -103,7 +103,9 @@
     "savedPosts": "Kaydedilenler",
     "noSavedPosts": "Henüz kaydedilmiş gönderi yok",
     "done": "Tamam",
-    "loadError": "Veriler yüklenirken bir hata oluştu."
+    "loadError": "Veriler yüklenirken bir hata oluştu.",
+    "loadFailedTitle": "İçerik yüklenemedi",
+    "loadFailedHint": "Sunucuya ulaşılamadı. Bu, kaydınızın olmadığı anlamına gelmez — bağlantınızı kontrol edip tekrar deneyin."
   },
   "nav": {
     "home": "Ana Sayfa",

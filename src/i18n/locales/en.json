@@ -122,7 +122,9 @@
     "savedPosts": "Saved Posts",
     "noSavedPosts": "No saved posts yet",
     "done": "Tamam",
-    "loadError": "Something went wrong while loading the data."
+    "loadError": "Something went wrong while loading the data.",
+    "loadFailedTitle": "Could not load",
+    "loadFailedHint": "The server could not be reached. This does not mean you have no records — check your connection and try again."
   },
   "nav": {
     "home": "Home",

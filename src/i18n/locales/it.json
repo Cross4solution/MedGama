@@ -103,7 +103,9 @@
     "uploading": "Caricamento…",
     "verified": "Verificato",
     "viewAll": "Vedi tutto",
-    "years": "anni"
+    "years": "anni",
+    "loadFailedTitle": "Caricamento non riuscito",
+    "loadFailedHint": "Server non raggiungibile. Non significa che non ci siano voci — controlla la connessione e riprova."
   },
   "nav": {
     "home": "Home",

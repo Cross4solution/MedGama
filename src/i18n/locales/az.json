@@ -103,7 +103,9 @@
     "uploading": "Yüklənir...",
     "verified": "Doğrulanmış",
     "viewAll": "Hamısına bax",
-    "years": "il"
+    "years": "il",
+    "loadFailedTitle": "Yüklənə bilmədi",
+    "loadFailedHint": "Serverə çıxmaq mümkün olmadı. Bu, qeydinizin olmadığı demək deyil — bağlantınızı yoxlayıb yenidən cəhd edin."
   },
   "nav": {
     "home": "Ana səhifə",
