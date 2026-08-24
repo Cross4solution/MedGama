@@ -9,6 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { leadAPI } from '../../lib/api';
 import CRMModal, { ModalLabel, ModalInput, ModalPrimaryButton, ModalCancelButton } from '../../components/crm/CRMModal';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ── Pipeline definition (fixed) ──
 const STAGES = [
@@ -218,10 +219,14 @@ const LeadDrawer = ({ leadId, onClose, onChanged, salespeople, isManager }) => {
     note: MessageSquare, call: PhoneCall, email: Mail, stage_change: ArrowRight, assignment: UserCheck,
   }[type] || Activity);
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Yan çekmece de bir diyalog: dışarısı erişilemez, kaçış yolu Escape.
+  const adayKokRef = useModalDavranisi(true, onClose);
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto animate-slideInRight">
+      <div ref={adayKokRef} role="dialog" aria-modal="true" className="relative w-full max-w-md bg-white h-full shadow-2xl overflow-y-auto animate-slideInRight">
         {loading || !lead ? (
           <div className="flex items-center justify-center h-full"><Loader2 className="w-6 h-6 animate-spin text-teal-500" /></div>
         ) : (

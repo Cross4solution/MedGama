@@ -83,6 +83,18 @@ const KANCAYI_KULLANANLAR = [
   // Altıncı parti: bölüm/doktor yönetimi ve tıbbi arşiv.
   'screens/DoctorsDepartments.jsx',
   'screens/MedicalArchive.jsx',
+
+  // Yedinci parti: kalan hasta/klinik pencereleri, çıkış onayları ve çekmece.
+  'components/SidebarPatient.jsx',
+  'components/layout/Header.jsx',
+  'components/timeline/PostCreateModal.jsx',
+  'context/AuthContext.jsx',
+  'screens/DataPrivacyRightsPage.jsx',
+  'screens/ExploreTimeline.jsx',
+  'screens/ClinicTeam.jsx',
+  'screens/ClinicProfileEdit.jsx',
+  'screens/DoctorBilling.jsx',
+  'screens/crm/CRMLeads.jsx',
 ];
 
 /**

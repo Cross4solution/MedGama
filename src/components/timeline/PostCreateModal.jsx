@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Image, Video, Smile, X, FileText, Send, Loader2 } from 'lucide-react';
 import { medStreamAPI } from '../../lib/api';
 import { useTranslation } from 'react-i18next';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 export default function PostCreateModal({ open, onClose, user, onPost, initialAction = undefined, onResetInitialAction = undefined }) {
   const { t } = useTranslation();
@@ -12,7 +13,6 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
   const [papers, setPapers] = useState([]);
   const [photoUrls, setPhotoUrls] = useState([]);
   const [videoUrls, setVideoUrls] = useState([]);
-  const dialogRef = useRef(null);
   const photoRef = useRef(null);
   const videoRef = useRef(null);
   const paperRef = useRef(null);
@@ -29,20 +29,10 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
 
   const [selectedCategory, setSelectedCategory] = useState('Yüz İfadeleri');
 
+  // Odağı içeri alma `useModalDavranisi` içinde; buradaki dal yalnız pencere
+  // KAPANIRKEN formu temizliyor.
   useEffect(() => {
-    function onKey(e) {
-      if (e.key === 'Escape') onClose?.();
-    }
-    if (open) {
-      document.addEventListener('keydown', onKey);
-    }
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
-
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => dialogRef.current?.focus(), 0);
-    } else {
+    if (!open) {
       setText('');
       setShowEmoji(false);
       setPhotos([]);
@@ -104,6 +94,16 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
 
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState('');
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Kanca erken çıkışın ÜSTÜNDE: React kancaları koşullu çağrılamaz.
+  const yaziciKokRef = useModalDavranisi(open, onClose);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Önizleyici yazıcının ÜSTÜNE açılıyor. İkinci tuzak birincinin içine
+  // kuruluyor ve önizleyici kapanınca odak yazıcıya dönüyor — kullanıcı
+  // fotoğrafa baktıktan sonra kaldığı yere geri geliyor.
+  const onizlemeKokRef = useModalDavranisi(!!viewer, () => setViewer(null));
 
   if (!open) return null;
 
@@ -175,10 +175,10 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
       {/* Modal */}
       <div className="absolute inset-0 flex items-start justify-center p-4 sm:p-6 md:p-8">
         <div
+          ref={yaziciKokRef}
           role="dialog"
           aria-modal="true"
           aria-label={t('medstream.createPostAria')}
-          ref={dialogRef}
           tabIndex={-1}
           className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden mt-4 sm:mt-8"
         >
@@ -491,7 +491,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
         <div className="fixed inset-0 z-[110]">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setViewer(null)} />
           <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="relative max-w-3xl w-full">
+            <div ref={onizlemeKokRef} role="dialog" aria-modal="true" className="relative max-w-3xl w-full">
               <button type="button" onClick={() => setViewer(null)} className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors z-10" aria-label={t('medstream.closePreview')}>
                 <X className="w-4 h-4 text-gray-700" />
               </button>

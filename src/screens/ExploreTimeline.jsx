@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useIsMedstream } from '../context/BrandContext';
 import { Search } from 'lucide-react';
 import { SelectCombobox } from 'components/forms';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 
 // Removed EN-only datasets for procedure/symptom autocomplete (panel dropped)
 
@@ -206,6 +207,12 @@ export default function ExploreTimeline() {
 
   // Composer state
   const [isComposerOpen, setIsComposerOpen] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // İşaretleme (role, aria-modal, tabIndex) zaten vardı; eksik olan davranıştı.
+  // Ekran okuyucuya "bu bir diyalog" demek, klavyeyle içine girilebildiği
+  // anlamına gelmiyor.
+  const yaziciKokRef = useModalDavranisi(isComposerOpen, () => setIsComposerOpen(false));
   const [composerText, setComposerText] = useState('');
   const [composerPhotos, setComposerPhotos] = useState([]);
   const [composerVideos, setComposerVideos] = useState([]);
@@ -812,7 +819,7 @@ export default function ExploreTimeline() {
         {isComposerOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
             <div className="absolute inset-0 bg-black/50" onClick={()=>setIsComposerOpen(false)}></div>
-            <div role="dialog" aria-modal="true" aria-label={t('medstream.createPostAria')} tabIndex={-1} className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-visible animate-in fade-in zoom-in-95">
+            <div ref={yaziciKokRef} role="dialog" aria-modal="true" aria-label={t('medstream.createPostAria')} tabIndex={-1} className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-visible animate-in fade-in zoom-in-95">
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
                 <h3 className="text-lg font-bold text-gray-900">{t('medstream.createPost')}</h3>
                 <button className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors" aria-label={t('medstream.close')} onClick={()=>setIsComposerOpen(false)}>

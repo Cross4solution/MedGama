@@ -79,7 +79,7 @@ i18n
 if (typeof window === 'undefined') {
   for (const dil of SUPPORTED_LANGS) {
     if (dil === 'en') continue;
-    // eslint-disable-next-line global-require, import/no-dynamic-require
+    // eslint-disable-next-line global-require
     i18n.addResourceBundle(dil, 'translation', require(`./locales/${dil}.json`), true, true);
   }
 }

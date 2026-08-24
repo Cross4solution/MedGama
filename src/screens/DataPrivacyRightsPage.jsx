@@ -4,6 +4,7 @@ import { Link } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { useTranslation } from 'react-i18next';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 import {
   Shield, Download, Trash2, Eye, PenLine, Ban, ArrowRightLeft,
   Bell, Settings, FileText, AlertTriangle, CheckCircle, Clock, ExternalLink
@@ -63,6 +64,9 @@ export default function DataPrivacyRightsPage() {
   const { openSettings, consent, consentTimestamp, resetConsent } = useCookieConsent();
   const [requestSent, setRequestSent] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const silmeOnayiKokRef = useModalDavranisi(showDeleteConfirm, () => setShowDeleteConfirm(false));
 
   const handleAction = (action) => {
     if (action === 'rectify') return; // handled by link
@@ -328,7 +332,7 @@ export default function DataPrivacyRightsPage() {
       {/* Delete Account Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+          <div ref={silmeOnayiKokRef} role="dialog" aria-modal="true" className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center">
                 <Trash2 className="w-5 h-5 text-rose-600" />

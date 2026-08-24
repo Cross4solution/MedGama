@@ -13,6 +13,7 @@ import resolveStorageUrl from '../../utils/resolveStorageUrl';
 import { playNotificationSound } from '../../utils/notificationSound';
 import { useGorunurYoklama } from '../../hooks/useGorunurYoklama';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // MedStream is a standalone, Twitter-like destination. When NEXT_PUBLIC_MEDSTREAM_URL
 // is set (e.g. https://medstream.co) the nav link opens that separate site in a new
@@ -31,6 +32,9 @@ const Header = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const cikisOnayiKokRef = useModalDavranisi(confirmLogoutOpen, () => setConfirmLogoutOpen(false));
   const [mobileLoginExpanded, setMobileLoginExpanded] = useState(false);
   const { pathname } = useLocation();
 
@@ -619,7 +623,7 @@ const Header = () => {
     {confirmLogoutOpen && (
       <div className="fixed inset-0 z-[60] flex items-center justify-center">
         <div className="absolute inset-0 bg-black/40" onClick={()=>setConfirmLogoutOpen(false)} />
-        <div role="dialog" aria-modal="true" className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-sm w-[90%] p-5">
+        <div ref={cikisOnayiKokRef} role="dialog" aria-modal="true" className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-sm w-[90%] p-5">
           <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('common.logout')}?</h3>
           <p className="text-sm text-gray-600 mb-4">{t('header.logoutConfirm')}</p>
           <div className="flex justify-end gap-2">

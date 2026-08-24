@@ -3,6 +3,7 @@ import { endpoints, authAPI, getStoredToken } from '../lib/api';
 import { API_BASE_URL } from '../config/apiBase';
 import { setNotificationSoundEnabled } from '../utils/notificationSound';
 import { useTranslation } from 'react-i18next';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 
 // Very light mock auth just for frontend flows
 const AuthContext = createContext(null);
@@ -364,6 +365,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Escape ÇIKMIYOR, soruyu geri alıyor: `false` ile çağırmak "vazgeçtim"
+  // demek. Kaçış tuşu bir soruya cevap vermez.
+  const cikisOnayiKokRef = useModalDavranisi(showLogoutConfirm, () => logoutCallback?.(false));
   const [logoutCallback, setLogoutCallback] = useState(null);
 
   const clearLocalAuth = useCallback(() => {
@@ -492,7 +498,7 @@ export function AuthProvider({ children }) {
       {children}
       {showLogoutConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm mx-4">
+          <div ref={cikisOnayiKokRef} role="dialog" aria-modal="true" className="bg-white rounded-xl p-6 w-full max-w-sm mx-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('authContext.logout', "Logout")}</h3>
             <p className="text-gray-600 mb-6">{t('authContext.areYouSureYouWant', "Are you sure you want to log out?")}</p>
             <div className="flex justify-end space-x-3">

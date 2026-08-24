@@ -7,6 +7,7 @@ import { useNotifications } from '../context/NotificationsContext';
 import { chatAPI } from '../lib/api';
 import { Home, LayoutDashboard, Newspaper, CalendarClock, Building2, Bookmark, Settings, LogOut, Bell, Video, User, Monitor, ChevronRight, Heart, FolderHeart, Activity, Lock, X, Sparkles, Receipt } from 'lucide-react';
 import { useGorunurYoklama } from '../hooks/useGorunurYoklama';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 
 // Custom chat icon using public SVG (accepts className via props)
 const ChatRoundIcon = (props) => {
@@ -30,6 +31,9 @@ export default function SidebarPatient() {
   const { t } = useTranslation();
   const { unreadCount: notifCount } = useNotifications();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const yukseltmeKokRef = useModalDavranisi(showUpgradeModal, () => setShowUpgradeModal(false));
 
   // Sohbetteki okunmamış mesaj sayısı. Canlı bildirim geldiğinde de tazelenir;
   // ekranı açık unutan kullanıcı sayının arttığını görür.
@@ -222,6 +226,9 @@ export default function SidebarPatient() {
           onClick={() => setShowUpgradeModal(false)}
         >
           <div
+            ref={yukseltmeKokRef}
+            role="dialog"
+            aria-modal="true"
             className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 relative"
             onClick={e => e.stopPropagation()}
           >

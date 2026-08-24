@@ -3,6 +3,7 @@ import { useNavigate } from '@/compat/router';
 import { useAuth } from '../context/AuthContext';
 import { doctorBillingAPI } from '../lib/api';
 import { useTranslation } from 'react-i18next';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 import {
   Plus, FileText, Search, Filter, ChevronDown, X,
   CheckCircle, Clock, AlertCircle, XCircle, Loader2,
@@ -217,12 +218,16 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
     }
   };
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Kanca erken çıkışın ÜSTÜNDE: React kancaları koşullu çağrılamaz.
+  const faturaKokRef = useModalDavranisi(open, onClose);
+
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 pb-4 px-4 overflow-y-auto">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-200 overflow-hidden my-auto">
+      <div ref={faturaKokRef} role="dialog" aria-modal="true" className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-200 overflow-hidden my-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-teal-50 to-emerald-50">
           <div className="flex items-center gap-2">

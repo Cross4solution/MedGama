@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import MapboxSearchInput from '../components/map/MapboxSearchInput';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import { useTranslation } from 'react-i18next';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 
 function TagEditor({ label, value = [], onChange, placeholder }) {
   const [text, setText] = useState('');
@@ -66,10 +67,13 @@ function ServiceModal({ initial, onClose, onSave }) {
     setAvailability((prev) => prev.includes(val) ? prev.filter((x)=>x!==val) : [...prev, val]);
   };
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const hizmetKokRef = useModalDavranisi(true, onClose);
+
   return (
     <div className="fixed inset-0 z-[100]">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
+      <div ref={hizmetKokRef} role="dialog" aria-modal="true" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
         <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white flex items-center justify-between">
           <h3 className="text-sm font-bold text-gray-900">{initial ? 'Edit Service' : 'Create Service'}</h3>
           <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"><X className="w-4 h-4"/></button>

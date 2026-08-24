@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { clinicAPI } from '../lib/api';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 import {
   Users, UserPlus, Stethoscope, Loader2, Search, Mail, Phone,
   MoreVertical, Edit3, UserX, CheckCircle2, XCircle, X,
@@ -284,9 +285,12 @@ function TeamAvatar({ src, name, size = 'w-12 h-12' }) {
 }
 
 function ModalOverlay({ children, onClose }) {
+  // Bu sarmalayıcı yalnız açıkken render ediliyor, kanca sabit `true` alıyor.
+  const kokRef = useModalDavranisi(true, onClose);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div onClick={e => e.stopPropagation()}>{children}</div>
+      <div ref={kokRef} role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>{children}</div>
     </div>
   );
 }
