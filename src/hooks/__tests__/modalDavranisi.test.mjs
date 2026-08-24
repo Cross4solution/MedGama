@@ -58,6 +58,15 @@ const KANCAYI_KULLANANLAR = [
   'screens/crm/CRMTelehealth.jsx',
   'screens/crm/CRMExamination.jsx',
   'screens/crm/CRMMessages.jsx',
+
+  // Dördüncü parti: hastanın kendi ekranları.
+  'screens/PatientAppointments.jsx',
+  'screens/PatientInvoices.jsx',
+  'screens/PatientDashboard.jsx',
+  'screens/Profile.jsx',
+  'screens/SavedClinics.jsx',
+  'screens/SavedPosts.jsx',
+  'screens/DoctorProfile.jsx',
 ];
 
 /**

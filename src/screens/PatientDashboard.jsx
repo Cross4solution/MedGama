@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { appointmentAPI, patientDocumentAPI, doctorAPI } from '../lib/api';
 import EmptyState from '../components/common/EmptyState';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 import {
   Activity, Calendar, Video, FileText, Clock, ChevronRight,
   Pill, FolderHeart, Monitor, Stethoscope, AlertCircle, Loader2,
@@ -22,10 +23,22 @@ const PatientDashboard = () => {
   // Reviewable appointments
   const [reviewable, setReviewable] = useState([]);
   const [reviewModal, setReviewModal] = useState(null);
+
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewHover, setReviewHover] = useState(0);
   const [reviewComment, setReviewComment] = useState('');
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  //
+  // Kapatma düğmesiyle aynı kural: gönderim sürerken kapanmıyor. Escape bunu
+  // atlasaydı kullanıcı, yorumunun gidip gitmediğini bilmeden pencereyi
+  // kapatırdı. Kanca kapatma işlevini her renderda tazelediği için buradaki
+  // `reviewSubmitting` bayat kalmıyor.
+  const yorumuKapat = useCallback(() => {
+    if (!reviewSubmitting) setReviewModal(null);
+  }, [reviewSubmitting]);
+  const yorumKokRef = useModalDavranisi(!!reviewModal, yorumuKapat);
   const [reviewSuccess, setReviewSuccess] = useState(false);
 
   useEffect(() => {
@@ -252,7 +265,13 @@ const PatientDashboard = () => {
         {/* ── Review Modal ── */}
         {reviewModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => !reviewSubmitting && setReviewModal(null)}>
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
+            <div
+              ref={yorumKokRef}
+              role="dialog"
+              aria-modal="true"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative"
+              onClick={e => e.stopPropagation()}
+            >
               <button onClick={() => !reviewSubmitting && setReviewModal(null)} className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-gray-100 text-gray-400">
                 <X className="w-4 h-4" />
               </button>

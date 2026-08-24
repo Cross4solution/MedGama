@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import NotificationPrefsCard from '../components/notifications/NotificationPrefsCard';
 import { authAPI } from '../lib/api';
@@ -23,6 +23,7 @@ import ConsentManager from '../components/privacy/ConsentManager';
 import { jsPDF } from 'jspdf';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 import autoTable from 'jspdf-autotable';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 function NotificationPrefsPanel({ saving, setSaving, showToast, t }) {
   const [prefs, setPrefs] = React.useState({
     push_notifications: true,
@@ -106,6 +107,10 @@ export default function Profile() {
     if (tabFromUrl) setActive(tabFromUrl);
   }, [tabFromUrl]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const silmeOnayiniKapat = useCallback(() => setShowDeleteModal(false), []);
+  const silmeOnayiKokRef = useModalDavranisi(showDeleteModal, silmeOnayiniKapat);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   // Account state
@@ -1124,7 +1129,13 @@ export default function Profile() {
     {showDeleteModal && (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setShowDeleteModal(false)}>
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-        <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-[fadeIn_0.2s_ease-out]" onClick={e => e.stopPropagation()}>
+        <div
+          ref={silmeOnayiKokRef}
+          role="dialog"
+          aria-modal="true"
+          className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-[fadeIn_0.2s_ease-out]"
+          onClick={e => e.stopPropagation()}
+        >
           {/* Warning icon */}
           <div className="mx-auto w-14 h-14 rounded-full bg-rose-100 flex items-center justify-center mb-4">
             <Trash2 className="w-7 h-7 text-rose-600" />

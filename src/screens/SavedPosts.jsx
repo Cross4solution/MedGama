@@ -5,6 +5,7 @@ import { medStreamAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import TimelineCard from '../components/timeline/TimelineCard';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 
 export default function SavedPosts() {
   const navigate = useNavigate();
@@ -16,6 +17,10 @@ export default function SavedPosts() {
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
   const [confirmRemove, setConfirmRemove] = useState(null);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kaldirOnayiniKapat = useCallback(() => setConfirmRemove(null), []);
+  const kaldirOnayiKokRef = useModalDavranisi(!!confirmRemove, kaldirOnayiniKapat);
 
   const fetchBookmarks = useCallback(async (pageNum = 1) => {
     try {
@@ -185,7 +190,13 @@ export default function SavedPosts() {
     {confirmRemove && (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setConfirmRemove(null)}>
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-        <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center" onClick={e => e.stopPropagation()}>
+        <div
+          ref={kaldirOnayiKokRef}
+          role="dialog"
+          aria-modal="true"
+          className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center"
+          onClick={e => e.stopPropagation()}
+        >
           <div className="mx-auto w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center mb-3">
             <Trash2 className="w-6 h-6 text-rose-500" />
           </div>

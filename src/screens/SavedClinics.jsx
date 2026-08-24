@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { useTranslation } from 'react-i18next';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 
 export default function SavedClinics() {
   const navigate = useNavigate();
@@ -19,6 +20,10 @@ export default function SavedClinics() {
   const [loading, setLoading] = useState(true);
   const [removing, setRemoving] = useState(null);
   const [confirmRemove, setConfirmRemove] = useState(null);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kaldirOnayiyiKapat = useCallback(() => setConfirmRemove(null), []);
+  const kaldirOnayiKokRef = useModalDavranisi(!!confirmRemove, kaldirOnayiyiKapat);
 
   // Redirect doctors away
   useEffect(() => {
@@ -284,7 +289,13 @@ export default function SavedClinics() {
       {confirmRemove && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setConfirmRemove(null)}>
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center" onClick={e => e.stopPropagation()}>
+          <div
+            ref={kaldirOnayiKokRef}
+            role="dialog"
+            aria-modal="true"
+            className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center"
+            onClick={e => e.stopPropagation()}
+          >
             <div className="mx-auto w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center mb-3">
               <Trash2 className="w-6 h-6 text-rose-500" />
             </div>

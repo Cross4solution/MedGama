@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -7,6 +7,7 @@ import { appointmentAPI } from '../lib/api';
 import useAppointmentSync from '../hooks/useAppointmentSync';
 import AddToCalendar from '../components/AddToCalendar';
 import { formatLocalDate, appointmentTimeDisplay } from '../utils/dates';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 
 /**
  * Randevu saati, hastanın KENDİ saat diliminde. Klinik başka bir saat
@@ -45,6 +46,10 @@ export default function PatientAppointments() {
   const [filter, setFilter] = useState('all'); // all, upcoming, completed, cancelled
   const [cancellingId, setCancellingId] = useState(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const iptalOnayiyiKapat = useCallback(() => setShowCancelModal(false), []);
+  const iptalOnayiKokRef = useModalDavranisi(showCancelModal && !!selectedAppointment, iptalOnayiyiKapat);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   // Fetch appointments
@@ -355,7 +360,12 @@ export default function PatientAppointments() {
       {showCancelModal && selectedAppointment && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowCancelModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md z-10 p-6">
+          <div
+            ref={iptalOnayiKokRef}
+            role="dialog"
+            aria-modal="true"
+            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md z-10 p-6"
+          >
             <button
               onClick={() => setShowCancelModal(false)}
               className="absolute top-4 right-4 w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"

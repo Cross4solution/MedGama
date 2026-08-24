@@ -23,6 +23,7 @@ import resolveStorageUrl from '../utils/resolveStorageUrl';
 import MedstreamProfileFeed from '../components/profile/MedstreamProfileFeed';
 import DoctorFaqSection from '../components/doctor/DoctorFaqSection';
 import { aramaIceriyor, aramaBasliyor } from '../utils/searchNormalize';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 
 const DEFAULT_AVATAR = '/images/default/default-avatar.svg';
 
@@ -138,6 +139,10 @@ const DoctorProfilePage = ({ initialDoctor }) => {
 
   // Gallery
   const [galleryOpen, setGalleryOpen] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const galeriyiKapat = useCallback(() => setGalleryOpen(false), []);
+  const galeriKokRef = useModalDavranisi(galleryOpen, galeriyiKapat);
   const [galleryIndex, setGalleryIndex] = useState(0);
 
   // Load doctor data
@@ -711,7 +716,12 @@ const DoctorProfilePage = ({ initialDoctor }) => {
                         {galleryOpen && (
                           <div className="fixed inset-0 z-[9999] flex items-center justify-center">
                             <div className="fixed inset-0 bg-black/70 backdrop-blur-lg" onClick={() => setGalleryOpen(false)} />
-                            <div className="relative z-[101] flex items-center justify-center">
+                            <div
+                              ref={galeriKokRef}
+                              role="dialog"
+                              aria-modal="true"
+                              className="relative z-[101] flex items-center justify-center"
+                            >
                               <div className="relative w-[88vw] h-[88vw] md:w-[70vh] md:h-[70vh] max-w-[1100px] max-h-[1100px] rounded-2xl overflow-hidden shadow-2xl bg-black/20 flex items-center justify-center">
                                 <Image src={gallery[galleryIndex]} alt={`${doctorName} gallery ${galleryIndex+1}`} fill sizes="(max-width: 768px) 88vw, 70vh" className="object-cover" />
                                 <button onClick={() => setGalleryOpen(false)} className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/25 backdrop-blur text-white hover:bg-white/35 flex items-center justify-center"><X className="w-5 h-5" /></button>

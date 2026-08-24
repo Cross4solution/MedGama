@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../context/ToastContext';
 import { patientBillingAPI } from '../lib/api';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 import {
   Receipt, Loader2, Download, X, Calendar, AlertCircle, ChevronRight,
 } from 'lucide-react';
@@ -65,6 +66,10 @@ export default function PatientInvoices() {
   const [yukleniyor, setYukleniyor] = useState(true);
   const [hata, setHata] = useState('');
   const [secili, setSecili] = useState(null);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const faturayiKapat = useCallback(() => setSecili(null), []);
+  const faturaKokRef = useModalDavranisi(!!secili, faturayiKapat);
   const [detayYukleniyor, setDetayYukleniyor] = useState(false);
   const [indiriliyor, setIndiriliyor] = useState(null);
 
@@ -184,7 +189,12 @@ export default function PatientInvoices() {
       {secili && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="absolute inset-0 bg-black/40" onClick={() => setSecili(null)} />
-          <div className="relative bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl max-h-[88vh] overflow-y-auto">
+          <div
+            ref={faturaKokRef}
+            role="dialog"
+            aria-modal="true"
+            className="relative bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl max-h-[88vh] overflow-y-auto"
+          >
             <div className="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-start justify-between gap-4">
               <div>
                 <p className="font-bold text-gray-900">{secili.invoice_number}</p>
