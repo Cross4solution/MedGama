@@ -45,6 +45,12 @@ const KANCAYI_KULLANANLAR = [
   'components/crm/ProTeaser.jsx',
   'components/crm/ClinicVerificationModal.jsx',
   'components/clinic/modals/BeforeAfterModal.jsx',
+
+  // Üçüncü parti: CRM ekranlarındaki satır içi pencereler.
+  'screens/crm/CRMPatients.jsx',
+  'screens/crm/CRMFaq.jsx',
+  'screens/crm/CRMPrescriptions.jsx',
+  'screens/crm/CRMDocuments.jsx',
 ];
 
 /**
@@ -64,7 +70,18 @@ test('modallar klavye davranışını kancadan alıyor', () => {
     const metin = oku(yol);
 
     assert.match(metin, /useModalDavranisi\(/, `${yol} kancayı çağırmıyor: Escape ve odak tuzağı kaybolur`);
-    assert.match(metin, /ref=\{kokRef\}/, `${yol} kancanın ref'ini bağlamıyor: odak tuzağı hiçbir şey bulamaz`);
+    // Ref adı dosyadan dosyaya değişiyor (bir ekranda iki pencere olabiliyor),
+    // o yüzden ada değil, kancanın döndürdüğü ref'in BAĞLANMIŞ olmasına bakılıyor.
+    const refAdlari = [...metin.matchAll(/const (\w+) = useModalDavranisi\(/g)].map((m) => m[1]);
+
+    assert.ok(refAdlari.length > 0, `${yol} kancanın dönüşünü bir değişkene almıyor`);
+
+    for (const ad of refAdlari) {
+      assert.ok(
+        metin.includes(`ref={${ad}}`),
+        `${yol}: ${ad} hiçbir öğeye bağlanmamış — odak tuzağı hiçbir şey bulamaz`,
+      );
+    }
   }
 });
 

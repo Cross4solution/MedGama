@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import ProTeaser from '../../components/crm/ProTeaser';
 import { patientDocumentAPI } from '../../lib/api';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // Backend enum (PatientDocument::$allowedCategories) → TR label
 const CATEGORIES = [
@@ -56,6 +57,17 @@ const CRMDocuments = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [showUploadModal, setShowUploadModal] = useState(false);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  //
+  // Kapatma düğmesiyle AYNI şeyi yapıyor: formu da sıfırlıyor. Yalnız kapatsaydı
+  // Escape ile çıkan kullanıcı, pencereyi tekrar açtığında yarım kalmış dosya
+  // seçimini karşısında bulurdu.
+  const yuklemeyiKapat = useCallback(() => {
+    setShowUploadModal(false);
+    resetUploadFormRef.current();
+  }, []);
+  const yuklemeKokRef = useModalDavranisi(showUploadModal, yuklemeyiKapat);
 
   const [documents, setDocuments] = useState([]);
   const [stats, setStats] = useState({ total_documents: 0, total_size: 0 });
@@ -119,6 +131,9 @@ const CRMDocuments = () => {
     if (!uploadTitle) setUploadTitle(file.name.replace(/\.[^/.]+$/, ''));
   };
 
+  // `yuklemeyiKapat` bu işlevden ÖNCE tanımlanıyor; ref üzerinden erişiyor.
+  const resetUploadFormRef = useRef(() => {});
+
   const resetUploadForm = () => {
     setSelectedFile(null);
     setUploadTitle('');
@@ -126,6 +141,8 @@ const CRMDocuments = () => {
     setUploadError(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
+
+  resetUploadFormRef.current = resetUploadForm;
 
   const handleUpload = async () => {
     if (!selectedFile) { setUploadError(t('crm.documents.selectFile', 'Lütfen bir dosya seçin.')); return; }
@@ -275,7 +292,12 @@ const CRMDocuments = () => {
       {/* Upload Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
+          <div
+            ref={yuklemeKokRef}
+            role="dialog"
+            aria-modal="true"
+            className="bg-white rounded-2xl max-w-md w-full shadow-2xl"
+          >
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h2 className="text-base font-bold text-gray-900">{t('crm.documents.uploadDocument')}</h2>
               <button onClick={() => { setShowUploadModal(false); resetUploadForm(); }} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400"><X className="w-4 h-4" /></button>

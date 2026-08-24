@@ -9,6 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 import ProTeaser from '../../components/crm/ProTeaser';
 import { examinationAPI } from '../../lib/api';
 import { aramaIceriyor, aramaBasliyor } from '../../utils/searchNormalize';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // Normalize a single prescription line from backend (encrypted:array) — fields may vary.
 const normalizeMeds = (prescriptions) => {
@@ -31,6 +32,10 @@ const CRMPrescriptions = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRx, setSelectedRx] = useState(null);
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const receteyiKapat = useCallback(() => setSelectedRx(null), []);
+  const receteKokRef = useModalDavranisi(!!selectedRx, receteyiKapat);
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -184,7 +189,12 @@ const CRMPrescriptions = () => {
       {/* Detail Modal */}
       {selectedRx && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div
+            ref={receteKokRef}
+            role="dialog"
+            aria-modal="true"
+            className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+          >
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h2 className="text-base font-bold text-gray-900">{t('crm.prescriptions.prescriptionDetails')}</h2>
               <button onClick={() => setSelectedRx(null)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400"><X className="w-4 h-4" /></button>

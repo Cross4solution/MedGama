@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { doctorProfileAPI } from '../../lib/api';
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 
 // ─── FAQ Editor Modal ────────────────────────────────────────
 const FaqEditorModal = ({ faq, onClose, onSaved, t }) => {
@@ -34,9 +35,18 @@ const FaqEditorModal = ({ faq, onClose, onSaved, t }) => {
     }
   };
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // Bu pencere yalnız açıkken render ediliyor, kanca sabit `true` alıyor.
+  const kokRef = useModalDavranisi(true, onClose);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div
+        ref={kokRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+      >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-base font-bold text-gray-900">
             {faq?.id ? t('crm.faq.edit', 'Edit FAQ') : t('crm.faq.add', 'Add FAQ')}
