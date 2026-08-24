@@ -238,7 +238,7 @@ export default function CustomSearch() {
             type="button"
             onClick={useMyLocation}
             disabled={geoLoading}
-            className={`mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium transition-colors ${geoError ? 'text-red-500 hover:text-red-600' : 'text-teal-600 hover:text-teal-700'} ${geoLoading ? 'opacity-60 cursor-wait' : ''}`}
+            className={`mt-1.5 py-1 -my-1 inline-flex items-center gap-1 text-[11px] font-medium transition-colors ${geoError ? 'text-red-500 hover:text-red-600' : 'text-teal-600 hover:text-teal-700'} ${geoLoading ? 'opacity-60 cursor-wait' : ''}`}
             title={geoError ? t('medstream.locationDenied', 'Location unavailable') : t('medstream.useMyLocation', 'Use my location')}
           >
             {geoLoading ? (

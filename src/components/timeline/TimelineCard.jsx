@@ -952,7 +952,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               {isTruncated && !showingTranslation && (
                 <button
                   type="button"
-                  className="ml-1 text-sm text-gray-500 hover:text-blue-600 font-semibold no-underline hover:underline"
+                  className="ml-1 py-1 -my-1 text-sm text-gray-500 hover:text-blue-600 font-semibold no-underline hover:underline"
                   onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
                 >
                   {t('medstream.seeMore')}

@@ -113,12 +113,12 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
             <button
               type="button"
               onClick={onViewAll}
-              className="text-sm text-[#0d9488] hover:text-[#0f766e] hover:underline"
+              className="py-1 -my-1 text-sm text-[#0d9488] hover:text-[#0f766e] hover:underline"
             >
               {t('medstream.viewAllUpdates', 'View All Updates')}
             </button>
           ) : (
-            <Link to="/explore" className="text-sm text-[#0d9488] hover:text-[#0f766e] hover:underline">{t('medstream.viewAllUpdates', 'View All Updates')}</Link>
+            <Link to="/explore" className="py-1 -my-1 inline-block text-sm text-[#0d9488] hover:text-[#0f766e] hover:underline">{t('medstream.viewAllUpdates', 'View All Updates')}</Link>
           )}
         </div>
         <div className="rounded-md border border-[#e5edf5] bg-[#f8fafd] overflow-hidden shadow-[rgba(0,0,0,0.06)_0px_3px_6px_0px]">
