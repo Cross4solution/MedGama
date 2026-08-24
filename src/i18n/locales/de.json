@@ -4271,5 +4271,8 @@
     "rejectedMessage": "Ihre Verifizierung wurde nicht bestätigt. Bitte laden Sie korrekte Unterlagen erneut hoch.",
     "infoRequestedTitle": "Weitere Unterlagen erforderlich",
     "infoRequestedMessage": "Das Admin-Team hat zusätzliche Informationen angefordert."
+  },
+  "a11y": {
+    "skipToContent": "Zum Inhalt springen"
   }
 }

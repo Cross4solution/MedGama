@@ -4271,5 +4271,8 @@
     "rejectedMessage": "Tu verificación no fue aprobada. Vuelve a subir documentos correctos.",
     "infoRequestedTitle": "Se necesitan documentos adicionales",
     "infoRequestedMessage": "El equipo de administración ha solicitado información adicional."
+  },
+  "a11y": {
+    "skipToContent": "Saltar al contenido"
   }
 }

@@ -4271,5 +4271,8 @@
     "rejectedMessage": "La tua verifica non è stata approvata. Ricarica i documenti corretti.",
     "infoRequestedTitle": "Servono documenti aggiuntivi",
     "infoRequestedMessage": "Il team amministrativo ha richiesto ulteriori informazioni."
+  },
+  "a11y": {
+    "skipToContent": "Vai al contenuto"
   }
 }

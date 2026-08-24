@@ -4201,5 +4201,8 @@
     "rejectedMessage": "Doğrulamanız onaylanmadı. Lütfen doğru belgeleri yeniden yükleyin.",
     "infoRequestedTitle": "Ek Belge Gerekiyor",
     "infoRequestedMessage": "Yönetim ekibi ek bilgi talep etti."
+  },
+  "a11y": {
+    "skipToContent": "İçeriğe geç"
   }
 }

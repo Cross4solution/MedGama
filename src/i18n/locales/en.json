@@ -4203,5 +4203,8 @@
     "rejectedMessage": "Your verification was not approved. Please re-upload correct documents.",
     "infoRequestedTitle": "Additional Documents Needed",
     "infoRequestedMessage": "The admin team has requested additional information."
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
   }
 }

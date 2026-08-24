@@ -4271,5 +4271,8 @@
     "rejectedMessage": "Votre vérification n'a pas été approuvée. Veuillez renvoyer des documents corrects.",
     "infoRequestedTitle": "Documents supplémentaires requis",
     "infoRequestedMessage": "L'équipe d'administration a demandé des informations supplémentaires."
+  },
+  "a11y": {
+    "skipToContent": "Aller au contenu"
   }
 }

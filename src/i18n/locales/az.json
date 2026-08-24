@@ -4311,5 +4311,8 @@
     "rejectedMessage": "Təsdiqləməniz qəbul edilmədi. Düzgün sənədləri yenidən yükləyin.",
     "infoRequestedTitle": "Əlavə Sənəd Lazımdır",
     "infoRequestedMessage": "İdarə komandası əlavə məlumat tələb etdi."
+  },
+  "a11y": {
+    "skipToContent": "Məzmuna keç"
   }
 }

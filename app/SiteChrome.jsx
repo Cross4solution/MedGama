@@ -5,6 +5,7 @@
 // görünürlük mantığı + scroll override + toast navigate bridge + OnboardingGate yaşar.
 // document.title YÖNETİLMEZ — Next Metadata API hallediyor (App.js'teki titleMap effect'i ATLANDI).
 import React, { useEffect, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { stripLocale } from '@/lib/locales';
 import { Link, useNavigate, useNavigationType } from '@/compat/router';
@@ -25,6 +26,39 @@ import resolveStorageUrl from '@/utils/resolveStorageUrl';
  * hemen siliniyor ki tarayıcı geçmişinde ve paylaşılan ekran görüntüsünde
  * kalmasın. Jeton yoksa bu bileşen hiçbir şey yapmaz.
  */
+/**
+ * "İçeriğe geç" bağlantısı.
+ *
+ * Ölçüldü: ana sayfada 160 odaklanabilir denetim var ve bunların büyük kısmı
+ * her sayfada tekrar eden menü. Klavyeyle ya da ekran okuyucuyla gelen biri,
+ * okumak istediği metne varmak için her seferinde o menünün tamamını geçmek
+ * zorundaydı.
+ *
+ * Bağlantı görünmez durmuyor, ODAKLANINCA görünüyor: fareyle gezen kimse onu
+ * görmüyor, sekmeye basan herkes ilk onu buluyor.
+ */
+function IcerigeGec() {
+  const { t } = useTranslation();
+
+  // Görünürlük `sr-only`/`not-sr-only` ikilisine bırakılmıyor: ölçüldü,
+  // `focus:not-sr-only` bu kurulumda üretilmiyor ve bağlantı odaklanınca da
+  // 1x1 kalıyordu — ekran okuyucu duyuyor ama gören klavye kullanıcısı odağın
+  // nereye gittiğini göremiyordu. Bağlantı artık ekranın DIŞINDA duruyor ve
+  // odaklanınca içeri kayıyor; bu, sınıf üretimine değil konuma bağlı.
+  //
+  // `focus:` kuralı `!` ile baskın: ikisi de aynı özgüllükte tek sınıf ve
+  // üretilen CSS'te kapalı konum sonra geliyordu — bağlantı odaklanıyor ama
+  // yerinden kımıldamıyordu. Ölçüldü.
+  return (
+    <a
+      href="#icerik"
+      className="fixed left-3 top-3 z-[9999] -translate-y-[200%] rounded-lg bg-white px-4 py-2 text-sm font-semibold text-teal-700 shadow-lg outline outline-2 outline-teal-600 transition-transform focus:!translate-y-0"
+    >
+      {t('a11y.skipToContent', 'Skip to content')}
+    </a>
+  );
+}
+
 function DemoTokenGate() {
   const searchParams = useSearchParams();
   const token = searchParams?.get('demo_token');
@@ -223,6 +257,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
     return (
       <BrandProvider brand="medstream">
         <div className="min-h-screen bg-white">
+          <IcerigeGec />
           <Suspense fallback={null}>
             <header className="sticky top-0 z-30 h-12 flex items-center justify-between px-4 border-b border-gray-100 bg-white/90 backdrop-blur">
               <Link to="/" className="flex items-center gap-1.5 font-bold text-[#0f766e]">
@@ -254,9 +289,12 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
               </div>
             </header>
           </Suspense>
-          <div className="min-h-[70vh]">
+          {/* `tabIndex={-1}`: bağlantıya basınca sayfa kayıyor ama odak bağlantıda
+              kalıyordu — ekran okuyucu içeriğin başından değil, menüden okumaya
+              devam ediyordu. Odaklanabilir olması gerekiyor. */}
+          <main id="icerik" tabIndex={-1} className="min-h-[70vh] focus:outline-none">
             <Suspense fallback={null}>{children}</Suspense>
-          </div>
+          </main>
           <Suspense fallback={null}>
             <OnboardingGate />
           </Suspense>
@@ -268,6 +306,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
   return (
     <BrandProvider brand={brand}>
     <div className={hasSidebar ? 'lg:pl-[10.25rem]' : ''}>
+      <IcerigeGec />
       <Suspense fallback={null}>
         {showHeader && <Header />}
         {hasSidebar && <SidebarPatient />}
@@ -278,7 +317,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
         noktası ekran genişliğine göre kayıyordu. Blok artık sola yaslı
         (mr-auto) ve üst sınırı var — her sayfa aynı yerden başlıyor.
       */}
-      <div className={`${hasSidebar && !hasOwnContainer ? 'hasta-govde w-full max-w-[1180px] mr-auto pl-3 lg:pl-6' : ''} ${showHeader ? 'pt-[var(--site-header-h)]' : ''} ${
+      <main id="icerik" tabIndex={-1} className={`focus:outline-none ${hasSidebar && !hasOwnContainer ? 'hasta-govde w-full max-w-[1180px] mr-auto pl-3 lg:pl-6' : ''} ${showHeader ? 'pt-[var(--site-header-h)]' : ''} ${
         isCallRoom ? 'h-[calc(100dvh-3rem)] overflow-hidden' : 'min-h-[70vh]'
       }`}>
         {/* min-h: içerik async yüklenirken (Suspense/CSR bailout/veri) footer'ın
@@ -288,7 +327,7 @@ export default function SiteChrome({ children, brand = 'medagama' }) {
         <Suspense fallback={null}>
           {children}
         </Suspense>
-      </div>
+      </main>
       <Suspense fallback={null}>
         {showFooter && <Footer />}
         {showCookieBanner && <CookieBanner />}
