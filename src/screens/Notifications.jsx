@@ -294,7 +294,7 @@ export default function Notifications() {
                           </div>
                           <button
                             onClick={() => handleClick(n)}
-                            className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors"
+                            className="inline-flex items-center gap-1 mt-2 py-1 -my-1 text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors"
                           >
                             {t('notifications.view', 'View')} <ExternalLink className="w-3 h-3" />
                           </button>
