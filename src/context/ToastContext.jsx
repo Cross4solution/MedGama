@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle, XCircle, AlertTriangle, Info, X, ChevronRight } from 'lucide-react';
 
 const ToastContext = createContext(null);
@@ -24,6 +25,7 @@ const TOAST_CONFIG = {
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
+  const { t: ceviri } = useTranslation();
 
   const notify = useCallback(({ type = 'info', title = '', message = '', timeout = 4500, onClick = null, actionUrl = null }) => {
     const id = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
@@ -53,12 +55,15 @@ export function ToastProvider({ children }) {
           const cfg = TOAST_CONFIG[t.type] || TOAST_CONFIG.info;
           const IconComp = cfg.Icon;
           const isClickable = !!(t.onClick || t.actionUrl);
+          // Hata ve uyarı araya girer (`alert`), başarı ve bilgi sıranın sonunu
+          // bekler (`status`). Hepsi `alert` olduğunda ekran okuyucu "kaydedildi"
+          // demek için kullanıcının o an okuduğu cümleyi kesiyordu.
 
           return (
             <div
               key={t.id}
               className={`pointer-events-auto ${cfg.bg} ${cfg.border} border rounded-2xl shadow-xl overflow-hidden animate-[toastSlideIn_0.35s_ease-out] ${isClickable ? 'cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all' : ''}`}
-              role="alert"
+              role={t.type === 'error' || t.type === 'warning' ? 'alert' : 'status'}
               onClick={() => {
                 if (t.onClick) { t.onClick(); remove(t.id); }
                 else if (t.actionUrl) { window.__TOAST_NAVIGATE?.(t.actionUrl); remove(t.id); }
@@ -75,15 +80,31 @@ export function ToastProvider({ children }) {
                   <p className={`text-sm font-semibold ${cfg.text} leading-snug`}>{t.title}</p>
                   {t.message && <p className={`text-xs ${cfg.subtext} mt-0.5 leading-relaxed`}>{t.message}</p>}
                   {isClickable && (
-                    <p className={`text-[10px] font-medium ${cfg.subtext} mt-1.5 flex items-center gap-0.5 opacity-70`}>
-                      Click to view <ChevronRight className="w-2.5 h-2.5" />
-                    </p>
+                    /* Eskiden tıklama bildirimin KÖKÜNDEYDİ ve kök bir `div`di:
+                       fareyle çalışıyor, klavyeye hiç görünmüyordu. Metin de
+                       sabit İngilizceydi — dokuz dilde de "Click to view"
+                       yazıyordu. İkisi de burada bitiyor. */
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        // Kökte de aynı eylem var (fare kolaylığı). Durdurulmazsa
+                        // düğmeye basmak eylemi İKİ kez çalıştırır.
+                        e.stopPropagation();
+                        if (t.onClick) { t.onClick(); remove(t.id); }
+                        else if (t.actionUrl) { window.__TOAST_NAVIGATE?.(t.actionUrl); remove(t.id); }
+                      }}
+                      className={`text-[10px] font-medium ${cfg.subtext} mt-1.5 flex items-center gap-0.5 opacity-70 hover:opacity-100 underline-offset-2 hover:underline`}
+                    >
+                      {ceviri('toast.clickToView', 'Click to view')} <ChevronRight className="w-2.5 h-2.5" />
+                    </button>
                   )}
                 </div>
 
                 {/* Close button */}
                 <button
+                  type="button"
                   onClick={(e) => { e.stopPropagation(); remove(t.id); }}
+                  aria-label={ceviri('toast.dismiss', 'Dismiss notification')}
                   className={`p-1 rounded-lg hover:bg-black/5 transition-colors flex-shrink-0 ${cfg.text} opacity-40 hover:opacity-80`}
                 >
                   <X className="w-3.5 h-3.5" />

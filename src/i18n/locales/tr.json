@@ -4204,5 +4204,9 @@
   },
   "a11y": {
     "skipToContent": "İçeriğe geç"
+  },
+  "toast": {
+    "clickToView": "Görüntülemek için tıklayın",
+    "dismiss": "Bildirimi kapat"
   }
 }

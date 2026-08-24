@@ -4274,5 +4274,9 @@
   },
   "a11y": {
     "skipToContent": "Vai al contenuto"
+  },
+  "toast": {
+    "clickToView": "Fai clic per visualizzare",
+    "dismiss": "Chiudi notifica"
   }
 }

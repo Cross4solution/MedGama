@@ -4206,5 +4206,9 @@
   },
   "a11y": {
     "skipToContent": "Skip to content"
+  },
+  "toast": {
+    "clickToView": "Click to view",
+    "dismiss": "Dismiss notification"
   }
 }

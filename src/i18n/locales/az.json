@@ -4314,5 +4314,9 @@
   },
   "a11y": {
     "skipToContent": "Məzmuna keç"
+  },
+  "toast": {
+    "clickToView": "Baxmaq üçün klikləyin",
+    "dismiss": "Bildirişi bağla"
   }
 }

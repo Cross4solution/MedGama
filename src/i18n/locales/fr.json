@@ -4274,5 +4274,9 @@
   },
   "a11y": {
     "skipToContent": "Aller au contenu"
+  },
+  "toast": {
+    "clickToView": "Cliquez pour afficher",
+    "dismiss": "Fermer la notification"
   }
 }
