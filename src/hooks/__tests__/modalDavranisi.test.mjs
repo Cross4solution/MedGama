@@ -79,6 +79,10 @@ const KANCAYI_KULLANANLAR = [
   'screens/admin/AdminUserManagement.jsx',
   'screens/admin/AdminVerification.jsx',
   'screens/admin/AdminVerificationReview.jsx',
+
+  // Altıncı parti: bölüm/doktor yönetimi ve tıbbi arşiv.
+  'screens/DoctorsDepartments.jsx',
+  'screens/MedicalArchive.jsx',
 ];
 
 /**
@@ -156,4 +160,46 @@ test('kanca odağı açan öğeye geri veriyor', () => {
 
   assert.match(kanca, /oncekiOdakRef\.current = document\.activeElement/, 'açan öğe saklanmıyor');
   assert.match(kanca, /document\.contains\(onceki\)/, 'öğe hâlâ ekranda mı diye bakılmıyor');
+});
+
+test('açıklık propu olan bileşen sabit `true` geçmiyor', () => {
+  // Kanca bileşenin gövdesinde duruyor, pencerenin JSX'inde değil. Bayrak sabit
+  // `true` yazılırsa odak tuzağı pencere ekranda YOKKEN de kuruluyor: Escape
+  // görünmeyen bir pencereyi kapatmaya çalışıyor, sekme hiçbir yere gitmiyor ve
+  // gövde kaydırması kilitli kalıyor.
+  //
+  // Ölçüldü: dönüşümü betikle yaptığımda dokuz çağrının hepsi `true` gelmişti.
+  // Linter bunu göremez — koşullu olan render, kanca değil.
+  //
+  // `true` her zaman yanlış DEĞİL: bileşenin kendisi koşullu render ediliyorsa
+  // zaten yalnız pencere açıkken var oluyor. Ayıran işaret, bileşenin bir
+  // `open`/`isOpen` propu ALIP ALMADIĞI: alıyorsa açıklığı o prop söyler ve
+  // kanca onu okumak zorunda.
+  const kusurlu = [];
+
+  for (const yol of KANCAYI_KULLANANLAR) {
+    const satirlar = oku(yol).split('\n');
+
+    for (const [i, satir] of satirlar.entries()) {
+      if (!/useModalDavranisi\(true,/.test(satir)) continue;
+
+      // Kancayı taşıyan bileşenin imzası: yukarıdaki en yakın tanım.
+      const imza = satirlar
+        .slice(0, i)
+        .reverse()
+        .find((l) => /^(?:function \w+|const \w+ =|export default function \w+)/.test(l)) || '';
+
+      if (/\b(open|isOpen)\b/.test(imza)) {
+        kusurlu.push(`${yol}  ${imza.trim().slice(0, 60)}`);
+      }
+    }
+  }
+
+  assert.deepEqual(
+    kusurlu,
+    [],
+    'Bileşen açıklığı bir proptan öğreniyor ama kanca sabit `true` alıyor.\n'
+      + 'Pencere kapalıyken de odak tuzağı kurulur ve sayfa kilitli kalır:\n  '
+      + kusurlu.join('\n  '),
+  );
 });

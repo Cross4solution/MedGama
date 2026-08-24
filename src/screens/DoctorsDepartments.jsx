@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Star, MessageSquare, MapPin, BadgeDollarSign, User, Building2, Pencil, Trash2, X, AlertTriangle } from 'lucide-react';
+import useModalDavranisi from '../hooks/useModalDavranisi';
 // SEO meta + canonical artık app/doctors-departments/page.jsx generateMetadata ile sunucuda üretiliyor (Faz 3).
 
 // Mock data (can be replaced with API)
@@ -45,6 +46,17 @@ export default function DoctorsDepartments() {
   const [doctorEditing, setDoctorEditing] = useState(null); // {id?, name, specialty, price, available}
   const [doctorDeptId, setDoctorDeptId] = useState(null);
   const [confirm, setConfirm] = useState({ open: false, onYes: null, title: '', desc: '' });
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const bolumKokRef = useModalDavranisi(deptModalOpen, () => setDeptModalOpen(false));
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const doktorKokRef = useModalDavranisi(doctorModalOpen, () => setDoctorModalOpen(false));
+
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  // `closeConfirm` aşağıda tanımlı; ok fonksiyonunun içinden çağrıldığı için
+  // (Escape'e basıldığı an) çoktan hazır oluyor.
+  const onayKokRef = useModalDavranisi(confirm.open, () => closeConfirm(false));
 
 
   const openCreateDept = () => { setDeptMode('create'); setDeptEditing({ name: '', info: '' }); setDeptModalOpen(true); };
@@ -94,7 +106,7 @@ export default function DoctorsDepartments() {
   };
 
   const closeConfirm = (yes) => {
-    if (yes && typeof confirm.onYes === 'function') confirm.onYes();
+
     setConfirm({ open: false, onYes: null, title: '', desc: '' });
   };
 
@@ -192,7 +204,7 @@ export default function DoctorsDepartments() {
           <div className="fixed inset-0 z-[100]">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={()=>setDeptModalOpen(false)} />
             <div className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
+              <div ref={bolumKokRef} role="dialog" aria-modal="true" className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
                 <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white flex items-center justify-between">
                   <h3 className="text-sm font-bold text-gray-900">{deptMode==='create' ? t('doctorsDepartments.newDepartment') : t('doctorsDepartments.editDepartment')}</h3>
                   <button onClick={()=>setDeptModalOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"><X className="w-4 h-4"/></button>
@@ -221,7 +233,7 @@ export default function DoctorsDepartments() {
           <div className="fixed inset-0 z-[100]">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={()=>setDoctorModalOpen(false)} />
             <div className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
+              <div ref={doktorKokRef} role="dialog" aria-modal="true" className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
                 <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white flex items-center justify-between">
                   <h3 className="text-sm font-bold text-gray-900">{doctorEditing?.id ? t('doctorsDepartments.editDoctor') : t('doctorsDepartments.newDoctor')}</h3>
                   <button onClick={()=>setDoctorModalOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"><X className="w-4 h-4"/></button>
@@ -260,7 +272,7 @@ export default function DoctorsDepartments() {
           <div className="fixed inset-0 z-[100]">
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={()=>closeConfirm(false)} />
             <div className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
+              <div ref={onayKokRef} role="dialog" aria-modal="true" className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e=>e.stopPropagation()}>
                 <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-rose-50/80 to-white flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center"><AlertTriangle className="w-4 h-4 text-rose-600" /></div>
                   <h3 className="text-sm font-bold text-gray-900">{confirm.title}</h3>
