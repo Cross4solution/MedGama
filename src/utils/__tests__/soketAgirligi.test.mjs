@@ -22,7 +22,8 @@ import zlib from 'node:zlib';
  *     için tüm yığını indirip bir Echo örneği kuruyordu. Artık ortam
  *     değişkenlerine bakan ağırlıksız `soketAyari.js` kullanıyor.
  *
- * Ana sayfa JS'i 295 → 278 KB gzip.
+ * Ana sayfa JS'i 295 → 278 KB gzip. (Ardından İngilizce sözlük de kendi
+ * paketine ayrıldı: 278 → 232 KB.)
  *
  * Kaymanın sessiz olduğu için ölçüt var: kabuktaki herhangi bir bileşene
  * eklenecek düz bir `import { getEcho }` satırı ağırlığı sessizce geri getirir.
@@ -109,5 +110,5 @@ test('derlemede pusher gövdesi ana sayfa grafiğinde değil', (t) => {
   assert.deepEqual(tasiyanlar, [], 'pusher gövdesi ana sayfa yığınlarında');
 
   const kb = Math.round(toplam / 1024);
-  assert.ok(kb <= 300, `ana sayfa JS ${kb} KB gzip — 278 KB ölçülmüştü, bütçe 300 KB`);
+  assert.ok(kb <= 255, `ana sayfa JS ${kb} KB gzip — 232 KB ölçülmüştü, bütçe 255 KB`);
 });

@@ -16,6 +16,7 @@ import dynamic from 'next/dynamic';
 
 const PAKETLER = {
   ar: dynamic(() => import('@/i18n/paketler/ar')),
+  en: dynamic(() => import('@/i18n/paketler/en')),
   az: dynamic(() => import('@/i18n/paketler/az')),
   de: dynamic(() => import('@/i18n/paketler/de')),
   es: dynamic(() => import('@/i18n/paketler/es')),
@@ -26,7 +27,8 @@ const PAKETLER = {
 };
 
 export default function SozlukPaketi({ locale }) {
-  // İngilizce `i18n/index.js` içinde duruyor (fallbackLng), ayrı paketi yok.
+  // İngilizce de artık kendi paketinde: statik dururken Türkçe bir sayfaya
+  // 47 KB gzip İngilizce metin iniyordu (bkz. `paketler/en.jsx`).
   const Paket = PAKETLER[locale];
 
   return Paket ? <Paket /> : null;

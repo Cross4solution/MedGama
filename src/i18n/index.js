@@ -2,11 +2,6 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// YALNIZ İngilizce burada duruyor, çünkü `fallbackLng` o: bir anahtar aktif
-// dilde eksikse i18next İngilizceye düşüyor ve o an sözlüğün yüklenmiş olması
-// gerekiyor. Kalan sekiz dil `paketler/` altında, her biri kendi dosyasında.
-import en from './locales/en.json';
-
 // Yalnızca dil seçicide gösterilen diller.
 //
 // Daha önce 22 dil kayıtlıydı ama seçici yalnızca 9'unu sunuyor (lib/locales.js
@@ -31,9 +26,12 @@ const SUPPORTED_LANGS = ['en', 'tr', 'ar', 'ru', 'de', 'fr', 'es', 'it', 'az'];
 //
 // `partialBundledLanguages`, i18next'e "kaynaklar sonradan eklenecek, eksik
 // dili yükleme hatası sayma" diyor.
-const resources = {
-  en: { translation: en },
-};
+// İstemcide hiçbir sözlük statik değil: dokuzu da `paketler/` altında, rotadaki
+// dile göre TEK paket iniyor. İngilizce uzun süre burada duruyordu (`fallbackLng`
+// o) ama ölçüldüğünde bu, Türkçe bir sayfaya 47 KB gzip İngilizce metin
+// bindiriyordu — gösterilmeyen, yalnızca eksik anahtar ihtimaline karşı taşınan
+// bir yük. Sigortanın yerini `ceviriAnahtarlari` ölçütü aldı.
+const resources = {};
 
 i18n
   .use(LanguageDetector)
@@ -78,7 +76,6 @@ i18n
 // eleniyor; JSON'lar tarayıcı paketine girmiyor (ölçüm: `SozlukPaketi.jsx`).
 if (typeof window === 'undefined') {
   for (const dil of SUPPORTED_LANGS) {
-    if (dil === 'en') continue;
     // eslint-disable-next-line global-require
     i18n.addResourceBundle(dil, 'translation', require(`./locales/${dil}.json`), true, true);
   }

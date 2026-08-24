@@ -35,22 +35,27 @@ function desteklenenDiller() {
   return [...govde.matchAll(/'([a-z]{2})'/g)].map((m) => m[1]);
 }
 
-test('index.js yalnız yedek dili (en) statik içe aktarıyor', () => {
+test('index.js hiçbir sözlüğü statik içe aktarmıyor', () => {
+  // İngilizce bir süre burada muaftı çünkü `fallbackLng` o. Ölçüldü: bu, Türkçe
+  // bir sayfanın 47 KB gzip İngilizce metin indirmesi demekti — gösterilmeyen,
+  // yalnızca eksik anahtar ihtimaline karşı taşınan bir yük. Anahtar bütünlüğü
+  // zaten `ceviriAnahtarlari` ile ölçülüyor, o yüzden muafiyet kaldırıldı.
   const statik = [...indexMetni.matchAll(/^import\s+\w+\s+from\s+'\.\/locales\/(\w+)\.json'/gm)]
     .map((m) => m[1]);
 
   assert.deepEqual(
     statik,
-    ['en'],
-    'Sözlükler yeniden tek pakete toplanmış. Her ziyaretçi okumayacağı dilleri\n'
-      + 'de indirir (ölçüm: +363 KB). Yeni dil `paketler/` altına eklenmeli:\n  '
+    [],
+    'Bir sözlük yeniden istemci paketine statik girmiş: rotadaki dil ne olursa\n'
+      + 'olsun herkes onu indirir (dil başına ~50 KB gzip). Dil `paketler/`\n'
+      + 'altına eklenmeli. Statik gelenler:\n  '
       + statik.join(', '),
   );
 });
 
-test('yedek dışındaki her dilin kendi paketi var', () => {
+test('desteklenen her dilin kendi paketi var', () => {
   const paketler = readdirSync(path.join(i18nKok, 'paketler')).map((d) => d.replace('.jsx', ''));
-  const beklenen = desteklenenDiller().filter((d) => d !== 'en');
+  const beklenen = desteklenenDiller();
 
   assert.deepEqual(
     paketler.sort(),
