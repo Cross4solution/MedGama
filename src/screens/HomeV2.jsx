@@ -80,8 +80,7 @@ export default function HomeV2() {
           <div className="relative overflow-hidden">
             {/* Background layer */}
             <div
-              className="absolute inset-0 bg-cover bg-center brightness-95 md:brightness-100"
-              style={{ backgroundImage: `url(/images/default/default-page.jpg)` }}
+              className="kahraman-arka absolute inset-0 bg-cover bg-center brightness-95 md:brightness-100"
               aria-hidden="true"
             />
             {/* Subtle dark overlay */}

@@ -622,3 +622,34 @@ video::cue {
   line-height: 1.35;
 }
 
+
+/* ── Ana sayfa kahraman arka planı ────────────────────────────────────────
+ *
+ * Sayfanın en ağır tek varlığı. Ölçüldü: JPEG 225 KB, aynı fotoğraf WebP
+ * q80'de 140 KB. Fotoğraf ekranda %25-30 siyah bir katmanın altında durduğu
+ * için farkı orada ölçmek gerekiyordu — piksel başına ortalama %0,384, yani
+ * daha önce kabul edilen eşiğin (%0,63) altında.
+ *
+ * `image-set` desteklemeyen tarayıcı JPEG'i alıyor; `@supports` ayrıştırma
+ * anında çözüldüğü için yalnız kazanan bildirim indiriliyor, ikisi birden
+ * değil.
+ *
+ * `background-color` şart: üstündeki başlık BEYAZ. Fotoğraf herhangi bir
+ * nedenle gelmezse (ağ hatası, engelleyici) beyaz zeminde beyaz yazı kalırdı.
+ * Renk fotoğrafın kendi ortalamasından koyultuldu, yani yüklenene kadar da
+ * yerinde duran bir zemin var.
+ */
+.kahraman-arka {
+  background-color: #3d4242;
+  background-image: url('/images/default/default-page.jpg');
+}
+
+@supports (background-image: image-set(url('/images/default/default-page.webp') type('image/webp'))) {
+  .kahraman-arka {
+    background-image:
+      image-set(
+        url('/images/default/default-page.webp') type('image/webp'),
+        url('/images/default/default-page.jpg') type('image/jpeg')
+      );
+  }
+}
