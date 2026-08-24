@@ -274,7 +274,13 @@
     "confirmPasswordRequired": "La confirmation du mot de passe est obligatoire",
     "acceptTermsRequired": "Vous devez accepter les conditions d'utilisation",
     "acceptPrivacyRequired": "Vous devez accepter la politique de confidentialité pour continuer",
-    "fixHighlighted": "Veuillez corriger les champs indiqués"
+    "fixHighlighted": "Veuillez corriger les champs indiqués",
+    "loginSuccess": "Connexion réussie",
+    "registerSuccess": "Inscription réussie ! Veuillez vérifier votre e-mail.",
+    "resetLinkSent": "Si l'adresse existe, un lien de réinitialisation a été envoyé.",
+    "tooManyAttempts": "Trop de tentatives. Patientez un instant et réessayez.",
+    "invalidCredentialsDetail": "Identifiants invalides. Vérifiez votre e-mail et votre mot de passe.",
+    "signInToContinue": "Connectez-vous pour continuer."
   },
   "aboutPage": {
     "heroDesc": "Une place de marché santé et tourisme médical, indépendante de la langue et du lieu, qui réunit patients, médecins experts et cliniques/hôpitaux vérifiés sur une même plateforme.",
@@ -1330,7 +1336,11 @@
       "emptyDesc": "Commencez à constituer votre équipe en ajoutant des médecins à votre clinique.",
       "addFirstDoctor": "Ajouter votre premier médecin",
       "doctors": "Médecins",
-      "otherStaff": "Autre personnel"
+      "otherStaff": "Autre personnel",
+      "doctorNameRequired": "Le nom du médecin est obligatoire.",
+      "emailRequired": "L'adresse e-mail est obligatoire.",
+      "passwordMin6": "Le mot de passe doit comporter au moins 6 caractères.",
+      "staffLoadFailed": "Impossible de charger la liste du personnel."
     },
     "verificationBanner": {
       "title": "Compte en cours d'examen",

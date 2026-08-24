@@ -293,7 +293,13 @@
     "confirmPasswordRequired": "Confirm password is required",
     "acceptTermsRequired": "You must accept the Terms of Use",
     "acceptPrivacyRequired": "You must accept the Privacy Policy to proceed",
-    "fixHighlighted": "Please correct the highlighted fields"
+    "fixHighlighted": "Please correct the highlighted fields",
+    "loginSuccess": "Login successful",
+    "registerSuccess": "Registration successful! Please verify your email.",
+    "resetLinkSent": "Password reset link sent if the email exists.",
+    "tooManyAttempts": "Too many attempts. Please wait a moment and try again.",
+    "invalidCredentialsDetail": "Invalid credentials. Please check your email and password.",
+    "signInToContinue": "Please sign in to continue."
   },
   "aboutPage": {
     "heroDesc": "A language- and location-independent health and medical-tourism marketplace that brings patients together with expert doctors and verified clinics/hospitals on one digital platform.",
@@ -504,7 +510,11 @@
       "emptyDesc": "Start building your team by adding doctors to your clinic.",
       "addFirstDoctor": "Add Your First Doctor",
       "doctors": "Doctors",
-      "otherStaff": "Other Staff"
+      "otherStaff": "Other Staff",
+      "doctorNameRequired": "Doctor name is required.",
+      "emailRequired": "Email is required.",
+      "passwordMin6": "Password must be at least 6 characters.",
+      "staffLoadFailed": "Failed to load staff list."
     },
     "verificationBanner": {
       "title": "Account Under Review",

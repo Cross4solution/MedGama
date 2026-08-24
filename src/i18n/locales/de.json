@@ -274,7 +274,13 @@
     "confirmPasswordRequired": "Passwortbestätigung ist erforderlich",
     "acceptTermsRequired": "Sie müssen die Nutzungsbedingungen akzeptieren",
     "acceptPrivacyRequired": "Sie müssen die Datenschutzerklärung akzeptieren, um fortzufahren",
-    "fixHighlighted": "Bitte korrigieren Sie die markierten Felder"
+    "fixHighlighted": "Bitte korrigieren Sie die markierten Felder",
+    "loginSuccess": "Anmeldung erfolgreich",
+    "registerSuccess": "Registrierung erfolgreich! Bitte bestätigen Sie Ihre E-Mail-Adresse.",
+    "resetLinkSent": "Falls die E-Mail-Adresse existiert, wurde ein Link zum Zurücksetzen gesendet.",
+    "tooManyAttempts": "Zu viele Versuche. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
+    "invalidCredentialsDetail": "Ungültige Zugangsdaten. Bitte prüfen Sie E-Mail und Passwort.",
+    "signInToContinue": "Bitte melden Sie sich an, um fortzufahren."
   },
   "aboutPage": {
     "heroDesc": "Ein sprach- und ortsunabhängiger Marktplatz für Gesundheit und Medizintourismus, der Patienten mit erfahrenen Ärzten und verifizierten Kliniken/Krankenhäusern auf einer Plattform zusammenbringt.",
@@ -469,7 +475,11 @@
       "emptyDesc": "Bauen Sie Ihr Team auf, indem Sie Ärzte zu Ihrer Klinik hinzufügen.",
       "addFirstDoctor": "Ersten Arzt hinzufügen",
       "doctors": "Ärzte",
-      "otherStaff": "Sonstiges Personal"
+      "otherStaff": "Sonstiges Personal",
+      "doctorNameRequired": "Der Name des Arztes ist erforderlich.",
+      "emailRequired": "E-Mail-Adresse ist erforderlich.",
+      "passwordMin6": "Das Passwort muss mindestens 6 Zeichen lang sein.",
+      "staffLoadFailed": "Personalliste konnte nicht geladen werden."
     },
     "verificationBanner": {
       "title": "Konto in Prüfung",

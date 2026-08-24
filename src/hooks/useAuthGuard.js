@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import i18n from '../i18n';
 
 /**
  * useAuthGuard — reusable hook that checks if user is authenticated.
@@ -24,7 +25,7 @@ export default function useAuthGuard() {
           // Toast göster ama ASLA login ekranına yönlendirme — kullanıcı sayfada kalsın.
           notify({
             type: 'warning',
-            message: 'Please sign in to continue.',
+            message: i18n.t('auth.signInToContinue', 'Please sign in to continue.'),
           });
           return;
         }

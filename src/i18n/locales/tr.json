@@ -274,7 +274,13 @@
     "confirmPasswordRequired": "Şifre tekrarı zorunludur",
     "acceptTermsRequired": "Kullanım Koşullarını kabul etmelisiniz",
     "acceptPrivacyRequired": "Devam etmek için Gizlilik Politikasını kabul etmelisiniz",
-    "fixHighlighted": "Lütfen işaretli alanları düzeltin"
+    "fixHighlighted": "Lütfen işaretli alanları düzeltin",
+    "loginSuccess": "Giriş başarılı",
+    "registerSuccess": "Kayıt başarılı! Lütfen e-postanızı doğrulayın.",
+    "resetLinkSent": "E-posta kayıtlıysa sıfırlama bağlantısı gönderildi.",
+    "tooManyAttempts": "Çok fazla deneme. Lütfen biraz bekleyip tekrar deneyin.",
+    "invalidCredentialsDetail": "Geçersiz kimlik bilgileri. E-posta ve şifrenizi kontrol edin.",
+    "signInToContinue": "Devam etmek için giriş yapın."
   },
   "aboutPage": {
     "heroDesc": "Hastaları uzman doktorlar ve onaylı klinik/hastanelerle aynı dijital platformda buluşturan, dil ve lokasyon bağımsız sağlık ve sağlık turizmi pazar yeri.",
@@ -485,7 +491,11 @@
       "emptyDesc": "Kliniğinize doktor ekleyerek ekibinizi kurmaya başlayın.",
       "addFirstDoctor": "İlk Doktorunuzu Ekleyin",
       "doctors": "Doktorlar",
-      "otherStaff": "Diğer Personel"
+      "otherStaff": "Diğer Personel",
+      "doctorNameRequired": "Doktor adı zorunludur.",
+      "emailRequired": "E-posta adresi zorunludur.",
+      "passwordMin6": "Şifre en az 6 karakter olmalıdır.",
+      "staffLoadFailed": "Personel listesi yüklenemedi."
     },
     "verificationBanner": {
       "title": "Hesap İnceleme Aşamasında",

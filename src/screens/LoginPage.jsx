@@ -323,7 +323,7 @@ const LoginPage = ({ role = 'patient' }) => {
         // Enforce portal/role match — this login page only accepts its own role.
         const res = await login(formData.email, formData.password, !!formData.rememberMe, role);
         // Login never requires email verification — verification is register-only for patients/doctors
-        notify({ type: 'success', message: 'Login successful' });
+        notify({ type: 'success', message: t('auth.loginSuccess', 'Login successful') });
         // Redirect based on ACTUAL role from API — not the login page's assumed role
         navigate(getRedirectFromLoginResult(res, config.redirectAfterLogin));
       } else if (currentPage === 'register') {
@@ -363,11 +363,11 @@ const LoginPage = ({ role = 'patient' }) => {
           notify({ type: 'success', message: res?.message || res?.data?.message || 'Registration successful!' });
           navigate(redirectTo);
         } else {
-          notify({ type: 'success', message: 'Registration successful! Please verify your email.' });
+          notify({ type: 'success', message: t('auth.registerSuccess', 'Registration successful! Please verify your email.') });
           navigate('/verify-email');
         }
       } else {
-        notify({ type: 'info', message: 'Password reset link sent if the email exists.' });
+        notify({ type: 'info', message: t('auth.resetLinkSent', 'Password reset link sent if the email exists.') });
       }
     } catch (err) {
       const status = err?.status || err?.response?.status || 0;
@@ -388,7 +388,7 @@ const LoginPage = ({ role = 'patient' }) => {
           setErrors(prev => ({ ...prev, ...fieldErrors }));
         }
         notify({ type: 'error', message: firstFieldMsg || message || 'Please correct the highlighted fields.' });
-      } else if (status === 429) notify({ type: 'error', message: 'Too many attempts. Please wait a moment and try again.' });
+      } else if (status === 429) notify({ type: 'error', message: t('auth.tooManyAttempts', 'Too many attempts. Please wait a moment and try again.') });
       else if (!status || status === 0) notify({ type: 'error', message: message || 'Unable to reach the server. Please check your internet connection.' });
       else notify({ type: 'error', message: message || 'An unexpected error occurred. Please try again later.' });
     } finally {

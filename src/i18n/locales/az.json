@@ -274,7 +274,13 @@
     "confirmPasswordRequired": "Şifrə təkrarı tələb olunur",
     "acceptTermsRequired": "İstifadə Şərtlərini qəbul etməlisiniz",
     "acceptPrivacyRequired": "Davam etmək üçün Məxfilik Siyasətini qəbul etməlisiniz",
-    "fixHighlighted": "Zəhmət olmasa işarələnmiş sahələri düzəldin"
+    "fixHighlighted": "Zəhmət olmasa işarələnmiş sahələri düzəldin",
+    "loginSuccess": "Giriş uğurlu",
+    "registerSuccess": "Qeydiyyat uğurlu! Zəhmət olmasa e-poçtunuzu təsdiqləyin.",
+    "resetLinkSent": "E-poçt qeydiyyatdadırsa, sıfırlama linki göndərildi.",
+    "tooManyAttempts": "Çox sayda cəhd. Bir az gözləyib yenidən yoxlayın.",
+    "invalidCredentialsDetail": "Yanlış məlumatlar. E-poçt və şifrənizi yoxlayın.",
+    "signInToContinue": "Davam etmək üçün daxil olun."
   },
   "aboutPage": {
     "heroDesc": "Xəstələri təcrübəli həkimlər və təsdiqlənmiş klinika/xəstəxanalarla eyni rəqəmsal platformada birləşdirən, dil və məkandan asılı olmayan sağlamlıq və tibbi turizm bazarı.",
@@ -1373,7 +1379,11 @@
       "emptyDesc": "Klinikanıza həkimlər əlavə edərək komandanızı qurmağa başlayın.",
       "addFirstDoctor": "İlk Həkiminizi Əlavə Edin",
       "doctors": "Həkimlər",
-      "otherStaff": "Digər Heyət"
+      "otherStaff": "Digər Heyət",
+      "doctorNameRequired": "Həkimin adı tələb olunur.",
+      "emailRequired": "E-poçt ünvanı tələb olunur.",
+      "passwordMin6": "Şifrə ən azı 6 simvol olmalıdır.",
+      "staffLoadFailed": "İşçi siyahısı yüklənə bilmədi."
     },
     "verificationBanner": {
       "title": "Hesab Yoxlanılır",

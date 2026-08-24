@@ -34,9 +34,9 @@ const AddDoctorModal = ({ isOpen, onClose, onCreated, clinicId }) => {
   };
 
   const handleCreate = async () => {
-    if (!form.fullname?.trim()) { notify({ type: 'error', message: 'Doctor name is required.' }); return; }
-    if (!form.email?.trim()) { notify({ type: 'error', message: 'Email is required.' }); return; }
-    if (!form.password || form.password.length < 6) { notify({ type: 'error', message: 'Password must be at least 6 characters.' }); return; }
+    if (!form.fullname?.trim()) { notify({ type: 'error', message: t('crm.staff.doctorNameRequired', 'Doctor name is required.') }); return; }
+    if (!form.email?.trim()) { notify({ type: 'error', message: t('crm.staff.emailRequired', 'Email is required.') }); return; }
+    if (!form.password || form.password.length < 6) { notify({ type: 'error', message: t('crm.staff.passwordMin6', 'Password must be at least 6 characters.') }); return; }
 
     setCreating(true);
     try {
@@ -300,7 +300,7 @@ const CRMStaff = () => {
       const list = res?.data || [];
       setStaff(Array.isArray(list) ? list : []);
     } catch (err) {
-      notify({ type: 'error', message: 'Failed to load staff list.' });
+      notify({ type: 'error', message: t('crm.staff.staffLoadFailed', 'Failed to load staff list.') });
     } finally {
       setLoading(false);
     }

@@ -4,6 +4,7 @@ import { API_BASE_URL } from '../config/apiBase';
 import { setNotificationSoundEnabled } from '../utils/notificationSound';
 import { useTranslation } from 'react-i18next';
 import useModalDavranisi from '../hooks/useModalDavranisi';
+import i18nOrnegi from '../i18n';
 
 // Very light mock auth just for frontend flows
 const AuthContext = createContext(null);
@@ -184,7 +185,13 @@ export function AuthProvider({ children }) {
     const access = res?.token ?? res?.access_token ?? null;
     if (!apiUser || !access) {
       // eslint-disable-next-line no-throw-literal
-      throw { status: 401, message: 'Invalid credentials. Please check your email and password.', data: res };
+      throw {
+          status: 401,
+          // Bu metin doğrudan kullanıcıya gösteriliyor; sabit İngilizce kalırsa
+          // arayüzün geri kalanı Türkçeyken hata İngilizce okunuyordu.
+          message: i18nOrnegi.t('auth.invalidCredentialsDetail', 'Invalid credentials. Please check your email and password.'),
+          data: res,
+        };
     }
     // Map role_id to role for frontend compatibility
     const role = apiUser?.role_id || apiUser?.role || 'patient';

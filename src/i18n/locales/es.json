@@ -274,7 +274,13 @@
     "confirmPasswordRequired": "Confirma la contraseña",
     "acceptTermsRequired": "Debes aceptar las Condiciones de uso",
     "acceptPrivacyRequired": "Debes aceptar la Política de privacidad para continuar",
-    "fixHighlighted": "Corrige los campos indicados"
+    "fixHighlighted": "Corrige los campos indicados",
+    "loginSuccess": "Sesión iniciada",
+    "registerSuccess": "¡Registro completado! Verifica tu correo electrónico.",
+    "resetLinkSent": "Si el correo existe, se ha enviado un enlace de restablecimiento.",
+    "tooManyAttempts": "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
+    "invalidCredentialsDetail": "Credenciales no válidas. Comprueba tu correo y contraseña.",
+    "signInToContinue": "Inicia sesión para continuar."
   },
   "aboutPage": {
     "heroDesc": "Un mercado de salud y turismo médico, independiente del idioma y la ubicación, que reúne a pacientes con médicos expertos y clínicas/hospitales verificados en una sola plataforma digital.",
@@ -1330,7 +1336,11 @@
       "emptyDesc": "Empieza a formar tu equipo añadiendo médicos a tu clínica.",
       "addFirstDoctor": "Añade tu primer médico",
       "doctors": "Médicos",
-      "otherStaff": "Otro personal"
+      "otherStaff": "Otro personal",
+      "doctorNameRequired": "El nombre del médico es obligatorio.",
+      "emailRequired": "El correo electrónico es obligatorio.",
+      "passwordMin6": "La contraseña debe tener al menos 6 caracteres.",
+      "staffLoadFailed": "No se pudo cargar la lista de personal."
     },
     "verificationBanner": {
       "title": "Cuenta en revisión",

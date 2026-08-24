@@ -274,7 +274,13 @@
     "confirmPasswordRequired": "Conferma la password",
     "acceptTermsRequired": "Devi accettare le Condizioni d'uso",
     "acceptPrivacyRequired": "Devi accettare l’Informativa sulla privacy per continuare",
-    "fixHighlighted": "Correggi i campi evidenziati"
+    "fixHighlighted": "Correggi i campi evidenziati",
+    "loginSuccess": "Accesso riuscito",
+    "registerSuccess": "Registrazione riuscita! Verifica la tua e-mail.",
+    "resetLinkSent": "Se l'indirizzo esiste, è stato inviato un link per la reimpostazione.",
+    "invalidCredentialsDetail": "Credenziali non valide. Controlla e-mail e password.",
+    "signInToContinue": "Accedi per continuare.",
+    "tooManyAttempts": "Troppi tentativi. Attendi un momento e riprova."
   },
   "aboutPage": {
     "heroDesc": "Un marketplace di salute e turismo medico, indipendente da lingua e posizione, che unisce pazienti, medici esperti e cliniche/ospedali verificati su un'unica piattaforma digitale.",
@@ -1330,7 +1336,11 @@
       "emptyDesc": "Inizia a costruire il tuo team aggiungendo medici alla tua clinica.",
       "addFirstDoctor": "Aggiungi il Tuo Primo Medico",
       "doctors": "Medici",
-      "otherStaff": "Altro Personale"
+      "otherStaff": "Altro Personale",
+      "doctorNameRequired": "Il nome del medico è obbligatorio.",
+      "emailRequired": "L'indirizzo e-mail è obbligatorio.",
+      "passwordMin6": "La password deve contenere almeno 6 caratteri.",
+      "staffLoadFailed": "Impossibile caricare l’elenco del personale."
     },
     "verificationBanner": {
       "title": "Account in Revisione",
