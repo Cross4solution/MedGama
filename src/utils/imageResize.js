@@ -107,18 +107,3 @@ export async function resizeImage(file, opts = {}) {
 export async function resizeImages(files, opts = {}) {
   return Promise.all(files.map((f) => resizeImage(f, opts)));
 }
-
-// WebP support detection (cached)
-let _webpSupport = null;
-function supportsWebP() {
-  if (_webpSupport !== null) return _webpSupport;
-  try {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1;
-    canvas.height = 1;
-    _webpSupport = canvas.toDataURL('image/webp').startsWith('data:image/webp');
-  } catch {
-    _webpSupport = false;
-  }
-  return _webpSupport;
-}

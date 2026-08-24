@@ -46,7 +46,6 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
     if (geoActive) { params.lat = geo.lat; params.lon = geo.lon; params.radius = radius; }
     medStreamAPI.posts(params).then((res) => {
       if (controller.signal.aborted) return;
-      console.log('[ExploreTimeline] API response:', res);
       const list = res?.data || [];
       if (list.length) {
         const apiIds = list.map(p => p.id);
