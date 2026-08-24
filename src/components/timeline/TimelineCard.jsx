@@ -21,23 +21,6 @@ const DEFAULT_CLINIC = '/images/default/default-clinic.svg';
 const ORG_ROLES = ['clinicOwner', 'clinic', 'hospital'];
 const fallbackForRole = (role) => (ORG_ROLES.includes(role) ? DEFAULT_CLINIC : DEFAULT_AVATAR);
 
-function AvatarImg({ src, alt, className, fallback = DEFAULT_AVATAR }) {
-  const [failed, setFailed] = React.useState(false);
-  // src may already be pre-resolved to the generic person default upstream;
-  // treat that as "no avatar" so the role-based fallback (e.g. clinic) applies.
-  const isGenericDefault = typeof src === 'string' && src.endsWith('default-avatar.svg');
-  const imgSrc = failed || !src || isGenericDefault ? fallback : resolveStorageUrl(src, fallback);
-  return (
-    <img
-      src={imgSrc}
-      alt={alt}
-      loading="lazy"
-      className={className}
-      onError={() => { if (!failed) setFailed(true); }}
-    />
-  );
-}
-
 /** Next görsel iyileştiricisinin kabul ettiği genişlikler (varsayılan deviceSizes). */
 const GORSEL_GENISLIKLERI = [640, 828, 1080, 1920];
 
@@ -59,6 +42,35 @@ function iyilestirilebilir(url) {
   if (!url || /\.svg(\?|$)/i.test(url)) return false;
   if (url.startsWith('data:') || url.startsWith('blob:')) return false;
   return true;
+}
+
+function AvatarImg({ src, alt, className, fallback = DEFAULT_AVATAR }) {
+  const [failed, setFailed] = React.useState(false);
+  // src may already be pre-resolved to the generic person default upstream;
+  // treat that as "no avatar" so the role-based fallback (e.g. clinic) applies.
+  const isGenericDefault = typeof src === 'string' && src.endsWith('default-avatar.svg');
+  const [hamaDus, setHamaDus] = React.useState(false);
+  const imgSrc = failed || !src || isGenericDefault ? fallback : resolveStorageUrl(src, fallback);
+
+  // Avatar ekranda en fazla 48 piksel; ham dosya yüz kilobaytlarca olabiliyor.
+  // Ölçüldü: ana sayfada altı avatar 99 KB indiriyordu. `imageSizes`
+  // listesindeki 128, retina ekranda bile fazlasıyla yetiyor.
+  const optimize = iyilestirilebilir(imgSrc) && !hamaDus;
+
+  return (
+    <img
+      src={optimize ? iyilestir(imgSrc, 128) : imgSrc}
+      srcSet={optimize ? `${iyilestir(imgSrc, 64)} 64w, ${iyilestir(imgSrc, 128)} 128w` : undefined}
+      sizes={optimize ? '48px' : undefined}
+      alt={alt}
+      loading="lazy"
+      className={className}
+      onError={() => {
+        if (optimize) setHamaDus(true);
+        else if (!failed) setFailed(true);
+      }}
+    />
+  );
 }
 
 function MediaImg({ src, alt, className, onClick = undefined }) {

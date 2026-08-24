@@ -92,3 +92,21 @@ test('istenen genişlikler Next\'in kabul ettiği ölçülerden', () => {
     assert.ok(izinli.has(g), `${g} Next'in varsayılan ölçüleri arasında değil: 400 döner`);
   }
 });
+
+test('avatarlar ekran boyutunda isteniyor', () => {
+  // Avatar ekranda en fazla 48 piksel; ham dosya yüz kilobaytlarca olabiliyor.
+  // Ölçüldü: altı avatar 99 KB indiriyordu, iyileştiriciden ~5 KB.
+  assert.match(kart, /sizes=\{optimize \? '48px'/, 'avatar tam boyutta isteniyor');
+  assert.match(kart, /iyilestir\(imgSrc, 128\)/, 'avatar için makul bir genişlik istenmiyor');
+});
+
+test('video kapağı bilerek iyileştirilmiyor', () => {
+  // Kapak, YouTube\'un "video yok" yer tutucusunu `naturalWidth <= 120` ile
+  // yakalıyor. İyileştiriciden geçirmek o ölçüyü değiştirip denetimi bozar —
+  // dosyadaki yorum bu kararı zaten yazmış.
+  const bas = kart.indexOf('function VideoPreview');
+  const govde = kart.slice(bas, kart.indexOf('\nfunction ', bas + 1));
+
+  assert.doesNotMatch(govde, /iyilestir\(/, 'video kapağı iyileştiriciye verilmiş: yer tutucu denetimi bozulur');
+  assert.match(govde, /naturalWidth \|\| 0\) <= 120/, 'yer tutucu denetimi kaldırılmış');
+});
