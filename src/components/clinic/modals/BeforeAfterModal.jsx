@@ -1,3 +1,4 @@
+import useModalDavranisi from '../../../hooks/useModalDavranisi';
 import React from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +14,9 @@ export default function BeforeAfterModal({
   setSliderPosition
 }) {
   const { t } = useTranslation();
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kokRef = useModalDavranisi(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const currentPhoto = photos[currentIndex];
@@ -20,7 +24,7 @@ export default function BeforeAfterModal({
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center">
       <div className="fixed inset-0 z-0 bg-black/70 backdrop-blur-lg" onClick={onClose} />
-      <div className="relative z-[101] flex items-center justify-center">
+      <div ref={kokRef} role="dialog" aria-modal="true" className="relative z-[101] flex items-center justify-center">
         {/* Image comparison box */}
         <div className="relative w-[88vw] h-[88vw] md:w-[70vh] md:h-[70vh] max-w-[800px] max-h-[800px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/20">
           {/* Before Image (full width) */}

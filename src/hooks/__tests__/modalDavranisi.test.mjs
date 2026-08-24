@@ -35,7 +35,27 @@ const KANCAYI_KULLANANLAR = [
   'components/modals/DoctorBookingModal.jsx',
   'components/modals/OnlineConsultationModal.jsx',
   'components/modals/SendMessageModal.jsx',
+
+  // İkinci parti: onay pencereleri, fiyat penceresi, doğrulama, galeri.
+  //
+  // `CookieInfoPopup` bilerek yok: hiçbir yerden çağrılmıyor (ölü bileşen),
+  // onu korumak boş bir güvence olurdu.
+  'components/auth/PrivacyPopup.jsx',
+  'components/auth/TermsPopup.jsx',
+  'components/crm/ProTeaser.jsx',
+  'components/crm/ClinicVerificationModal.jsx',
+  'components/clinic/modals/BeforeAfterModal.jsx',
 ];
+
+/**
+ * Kilit kuralının dışında tutulanlar ve NEDENİ.
+ *
+ * `ProTeaser` iki bileşen taşıyor: kilidi olan, hep ekranda duran SAYFA
+ * bileşeni ve içindeki fiyat penceresi. Sayfanın kilidi pencereye ait değil,
+ * arkadaki kilitli görünümü ayakta tutuyor — kaldırıldığında kilitli sayfa
+ * kaydırılabilir hâle geliyordu. Ölçüldü ve geri alındı.
+ */
+const KILIT_MUAFI = ['components/crm/ProTeaser.jsx'];
 
 const oku = (goreli) => readFileSync(path.join(kaynakKok, goreli), 'utf8');
 
@@ -51,7 +71,9 @@ test('modallar klavye davranışını kancadan alıyor', () => {
 test('kancayı kullanan dosya kaydırma kilidini AYRICA kurmuyor', () => {
   // Bu testin sebebi yukarıda yazılı: iki kilit birlikte, kilidi hiç
   // açılmayan bir sayfa üretiyor.
-  const kusurlu = KANCAYI_KULLANANLAR.filter((yol) => /body\.style\.overflow/.test(oku(yol)));
+  const kusurlu = KANCAYI_KULLANANLAR
+    .filter((yol) => !KILIT_MUAFI.includes(yol))
+    .filter((yol) => /body\.style\.overflow/.test(oku(yol)));
 
   assert.deepEqual(
     kusurlu,

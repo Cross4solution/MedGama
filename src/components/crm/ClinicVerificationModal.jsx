@@ -1,3 +1,4 @@
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -75,14 +76,6 @@ const ClinicVerificationModal = ({ isOpen, onClose, onStatusChange }) => {
     }).catch(() => {});
   }, [isOpen]);
 
-  // Lock body scroll
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = ''; };
-    }
-  }, [isOpen]);
-
   const handleDrop = useCallback((fieldKey, e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -144,6 +137,9 @@ const ClinicVerificationModal = ({ isOpen, onClose, onStatusChange }) => {
     }
   };
 
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kokRef = useModalDavranisi(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const isPending = verificationStatus === 'pending_review';
@@ -166,6 +162,9 @@ const ClinicVerificationModal = ({ isOpen, onClose, onStatusChange }) => {
       {/* Centering container — sidebar-aware */}
       <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 lg:pl-[224px] pointer-events-none">
         <div
+          ref={kokRef}
+          role="dialog"
+          aria-modal="true"
           className="relative bg-white rounded-2xl max-w-2xl w-full shadow-2xl flex flex-col overflow-hidden animate-fadeIn pointer-events-auto"
           style={{ maxHeight: 'min(92vh, 860px)' }}
           onClick={(e) => e.stopPropagation()}

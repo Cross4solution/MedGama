@@ -1,3 +1,4 @@
+import useModalDavranisi from '../../hooks/useModalDavranisi';
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +36,9 @@ import {
 // Pricing Comparison Modal
 // ═══════════════════════════════════════════════════
 const PricingModal = ({ open, onClose, t }) => {
+  // Escape, odak tuzağı, odağın açan öğeye dönmesi, gövde kaydırma kilidi.
+  const kokRef = useModalDavranisi(open, onClose);
+
   if (!open) return null;
 
   const features = [
@@ -51,6 +55,9 @@ const PricingModal = ({ open, onClose, t }) => {
   return createPortal(
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 lg:pl-[224px]" onClick={onClose}>
       <div
+        ref={kokRef}
+        role="dialog"
+        aria-modal="true"
         className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
       >
