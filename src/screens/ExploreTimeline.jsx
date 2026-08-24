@@ -820,7 +820,7 @@ export default function ExploreTimeline() {
             <div className="absolute inset-0 bg-black/50" onClick={()=>setIsComposerOpen(false)}></div>
             <div ref={yaziciKokRef} role="dialog" aria-modal="true" aria-label={t('medstream.createPostAria')} tabIndex={-1} className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-visible animate-in fade-in zoom-in-95">
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/80 to-white">
-                <h3 className="text-lg font-bold text-gray-900">{t('medstream.createPost')}</h3>
+                <h2 className="text-lg font-bold text-gray-900">{t('medstream.createPost')}</h2>
                 <button className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors" aria-label={t('medstream.close')} onClick={()=>setIsComposerOpen(false)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x w-5 h-5" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
                 </button>

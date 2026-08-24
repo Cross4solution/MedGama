@@ -68,9 +68,9 @@ function TimelineFilterSidebar({
         {/* Header */}
         {!kompakt && (
           <div className="px-4 pt-3.5 pb-1">
-            <h3 className="text-[11px] font-semibold text-gray-400 tracking-wider uppercase">
+            <h2 className="text-[11px] font-semibold text-gray-400 tracking-wider uppercase">
               {t('medstream.filters')}
-            </h3>
+            </h2>
           </div>
         )}
 

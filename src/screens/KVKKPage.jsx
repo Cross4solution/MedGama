@@ -93,9 +93,9 @@ export default function KVKKPage() {
                 <Shield className="w-4.5 h-4.5 text-white" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-teal-900 mb-1">
+                <h2 className="text-sm font-semibold text-teal-900 mb-1">
                   {t('kvkk.summary_title', 'Kişisel Verileriniz Güvende')}
-                </h3>
+                </h2>
                 <p className="text-sm text-teal-800 leading-relaxed">
                   {t('kvkk.summary_text', 'Medagama olarak, 6698 sayılı KVKK ve ilgili mevzuat kapsamında kişisel verilerinizin korunması için gerekli tüm teknik ve idari tedbirleri almaktayız. Bu aydınlatma metni, verilerinizin nasıl işlendiğini şeffaf bir şekilde açıklamaktadır.')}
                 </p>

@@ -390,7 +390,19 @@ const LoginPage = ({ role = 'patient' }) => {
   };
 
   /* ─── Login Form (inline, standardized) ─────────────────────── */
-  const renderLoginForm = () => (
+  /**
+   * Giriş formu iki kez render ediliyor: biri dar ekran, biri geniş ekran
+   * yerleşimi için. CSS birini gizliyor ama İKİSİ DE belgede duruyor ve aynı
+   * kimlikleri taşıyorlardı.
+   *
+   * Ölçüldü (1280 px): belgede iki `#email` var, `getElementById` GİZLİ olanı
+   * döndürüyor. Yani `for="email"` etiketi gizli alana bağlanıyordu — etikete
+   * tıklayınca görünen alan odaklanmıyor, ve görünen alanın hiçbir etiketi
+   * olmadığı için ekran okuyucu onu adsız okuyordu.
+   *
+   * Kimlikler artık varyanta göre ayrışıyor.
+   */
+  const renderLoginForm = (varyant) => (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-4 sm:mb-6">
         <div className="flex items-center justify-center mb-1 sm:mb-2">
@@ -401,11 +413,11 @@ const LoginPage = ({ role = 'patient' }) => {
       </div>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.emailAddress')}</label>
+          <label htmlFor={`email-${varyant}`} className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.emailAddress')}</label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             <input
-              id="email" name="email" type="email" value={formData.email} onChange={handleInputChange}
+              id={`email-${varyant}`} name="email" type="email" value={formData.email} onChange={handleInputChange}
               className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-xl ${config.inputFocus} focus:ring-2 focus:border-transparent transition-colors text-left text-sm sm:text-base ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
               placeholder={config.placeholder} required
             />
@@ -413,11 +425,11 @@ const LoginPage = ({ role = 'patient' }) => {
           {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.email}</p>}
         </div>
         <div>
-          <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
+          <label htmlFor={`password-${varyant}`} className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             <input
-              id="password" name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleInputChange}
+              id={`password-${varyant}`} name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleInputChange}
               className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-xl ${config.inputFocus} focus:ring-2 focus:border-transparent transition-colors text-left text-sm sm:text-base ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
               placeholder="••••••••" required
             />
@@ -453,7 +465,10 @@ const LoginPage = ({ role = 'patient' }) => {
                 <span className="text-gray-500">{t('auth.or')}</span>
               </div>
             </div>
-            <div id={config.googleBtnId} className="w-full flex items-center justify-center"></div>
+            {/* Google düğmesinin kabı yalnız geniş ekran varyantında kimliği taşıyor:
+                betik kimliği `getElementById` ile arıyor ve iki kap olunca
+                düğmeyi hep ilkine, yani gizli olana çiziyordu. */}
+            <div id={varyant === 'genis' ? config.googleBtnId : undefined} className="w-full flex items-center justify-center"></div>
           </>
         )}
       </form>
@@ -554,7 +569,7 @@ const LoginPage = ({ role = 'patient' }) => {
             {/* Mobile Layout */}
             <div className="flex flex-col lg:hidden w-full max-w-md mx-auto">
               <div className="w-full bg-white rounded-2xl p-5 sm:p-6 shadow-2xl">
-                {currentPage === 'login' ? renderLoginForm() : currentPage === 'register' ? (
+                {currentPage === 'login' ? renderLoginForm('dar') : currentPage === 'register' ? (
                   <RegisterForm
                     formData={formData} errors={errors}
                     showPassword={showPassword} showConfirmPassword={showConfirmPassword}
@@ -589,7 +604,7 @@ const LoginPage = ({ role = 'patient' }) => {
               {/* Right Side - Form */}
               <div className="flex-1 max-w-lg">
                 <div className="w-full bg-white rounded-2xl p-5 md:p-6 shadow-2xl">
-                  {currentPage === 'login' ? renderLoginForm() : currentPage === 'register' ? (
+                  {currentPage === 'login' ? renderLoginForm('genis') : currentPage === 'register' ? (
                     <RegisterForm
                       formData={formData} errors={errors}
                       showPassword={showPassword} showConfirmPassword={showConfirmPassword}

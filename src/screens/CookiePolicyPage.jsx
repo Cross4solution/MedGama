@@ -85,7 +85,7 @@ export default function CookiePolicyPage() {
         {/* Manage Cookies Button */}
         <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-8 flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-teal-900">Manage Your Cookie Preferences</h3>
+            <h2 className="text-sm font-semibold text-teal-900">Manage Your Cookie Preferences</h2>
             <p className="text-xs text-teal-700 mt-0.5">You can change your cookie settings at any time.</p>
           </div>
           <button
