@@ -38,6 +38,16 @@ function localizeEntries(p, { priority = 0.7, changeFrequency = 'weekly', lastMo
   for (const loc of LOCALES) {
     languages[loc] = `${SITE_URL}/${loc}${p}`;
   }
+
+  // `x-default`: dokuz dilden hiçbirini konuşmayan ziyaretçi için yedek.
+  //
+  // Sayfaların kendi HTML'i bunu zaten veriyordu (`altLanguages`, seo-server.js)
+  // ama site haritası vermiyordu. Google iki kaynağın uyuşmasını bekliyor;
+  // uyuşmadığında hreflang kümesinin TAMAMINI yok sayabiliyor — yani dokuz dilin
+  // birbirine bağlanması da boşa gidiyor. Ölçüldü: sayfada 10 alternatif,
+  // haritada 9.
+  languages['x-default'] = `${SITE_URL}/${DEFAULT_LOCALE}${p}`;
+
   return LOCALES.map((loc) => ({
     url: `${SITE_URL}/${loc}${p}`,
     lastModified,
