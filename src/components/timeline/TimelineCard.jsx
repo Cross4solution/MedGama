@@ -901,7 +901,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
               {/* socialContext (e.g., liked by N) removed per design */}
               <div className="flex items-center gap-1">
                 {actorLink ? (
-                  <Link to={actorLink} onClick={(e)=>e.stopPropagation()} className={`${nameText} font-semibold text-gray-900 truncate hover:underline`} title={actorName}>{actorName}</Link>
+                  <Link to={actorLink} onClick={(e)=>e.stopPropagation()} className={`${nameText} py-1 -my-1 font-semibold text-gray-900 truncate hover:underline`} title={actorName}>{actorName}</Link>
                 ) : (
                   <span className={`${nameText} font-semibold text-gray-900 truncate`} title={actorName}>{actorName}</span>
                 )}
@@ -973,7 +973,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
                 type="button"
                 disabled={translating}
                 onClick={(e) => { e.stopPropagation(); handleTranslate(); }}
-                className="mt-1.5 block text-xs font-semibold text-teal-600 hover:text-teal-700 disabled:opacity-50"
+                className="mt-1.5 py-1 -my-1 block text-xs font-semibold text-teal-600 hover:text-teal-700 disabled:opacity-50"
               >
                 {translating
                   ? t('medstream.translating', 'Çevriliyor…')
@@ -1036,7 +1036,7 @@ function TimelineCard({ item, disabledActions, view = 'grid', onOpen = () => {},
             </div>
             <button
               type="button"
-              className="text-gray-400 hover:text-gray-600 hover:underline transition-colors"
+              className="py-1 -my-1 text-gray-400 hover:text-gray-600 hover:underline transition-colors"
               onClick={(e)=>{ e.stopPropagation(); setShowCommentsPreview(v=>!v); }}
             >
               <span className="tabular-nums font-medium">{commentCount}</span> {t('medstream.commentsCount')}
