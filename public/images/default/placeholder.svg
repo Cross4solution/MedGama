@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <rect width="200" height="200" fill="#F0FAF8"/>
+  <!-- photo frame -->
+  <rect x="40" y="56" width="120" height="88" rx="8" stroke="#9DD4C8" stroke-width="8"/>
+  <!-- sun -->
+  <circle cx="74" cy="84" r="10" fill="#9DD4C8"/>
+  <!-- hills -->
+  <path d="M48 136l30-32 22 24 18-18 34 34H48z" fill="#9DD4C8"/>
+</svg>

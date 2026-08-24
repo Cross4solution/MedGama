@@ -581,7 +581,7 @@ const PrintableReport = ({ exam, t }) => {
       <div className="print-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '10pt' }}>
           <img
-            src="/images/logo.svg"
+            src="/images/logo/logo.svg"
             alt="Medagama"
             className="print-header-logo"
             onError={(e) => { e.target.style.display = 'none'; }}
