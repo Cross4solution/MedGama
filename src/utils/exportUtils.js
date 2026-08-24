@@ -8,6 +8,46 @@ const GRAY_HEADER = [249, 250, 251];
 const GRAY_TEXT = [107, 114, 128];
 
 /**
+ * Excel sayfa adı olarak kabul edilebilir bir ada çevirir.
+ *
+ * Excel dört şeyi reddediyor ve SheetJS bunları sessizce düzeltmiyor, istisna
+ * fırlatıyor: `: \ / ? * [ ]` karakterleri, 31 karakterden uzun adlar, aynı
+ * çalışma kitabında yinelenen adlar, ve boş ad.
+ *
+ * Başlıklar çeviri dosyalarından geliyor. Yani "Gelir / Gider" gibi tek bir
+ * çeviri, dışa aktarımın TAMAMINI düşürmeye yetiyor — üstelik sessizce:
+ * çağıran ekranlar hatayı `catch` ile yakalayıp yalnız konsola yazıyor.
+ * Kullanıcı düğmeye basıyor, hiçbir şey olmuyor, sebebini kimse görmüyor.
+ *
+ * @param {string} baslik
+ * @param {Set<string>} kullanilanlar - aynı kitapta daha önce verilmiş adlar
+ */
+export function sayfaAdi(baslik, kullanilanlar = new Set()) {
+  const temiz = String(baslik ?? '')
+    .replace(/[:\\/?*[\]]/g, '-')
+    .trim()
+    .slice(0, 31)
+    .trim();
+
+  let ad = temiz || 'Sayfa';
+
+  // Yinelenen ad da istisna fırlatıyor; sona sayı ekleyip 31 sınırında tut.
+  if (kullanilanlar.has(ad)) {
+    let n = 2;
+    let aday;
+    do {
+      const ek = ` (${n})`;
+      aday = ad.slice(0, 31 - ek.length) + ek;
+      n += 1;
+    } while (kullanilanlar.has(aday));
+    ad = aday;
+  }
+
+  kullanilanlar.add(ad);
+  return ad;
+}
+
+/**
  * Generate and download a PDF report
  * @param {Object} opts
  * @param {string} opts.title - Report title
@@ -134,6 +174,8 @@ export const exportExcel = ({ title, summary = [], tables = [], filename }) => {
   }
 
   // ── Data tables as separate sheets ──
+  const kullanilanAdlar = new Set(summary.length > 0 ? ['Summary'] : []);
+
   tables.forEach((table) => {
     const sheetData = [
       table.headers,
@@ -141,8 +183,7 @@ export const exportExcel = ({ title, summary = [], tables = [], filename }) => {
     ];
     const ws = XLSX.utils.aoa_to_sheet(sheetData);
     ws['!cols'] = table.headers.map((h) => ({ wch: Math.max(h.length + 5, 15) }));
-    const sheetName = table.title.slice(0, 31); // Excel sheet name max 31 chars
-    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    XLSX.utils.book_append_sheet(wb, ws, sayfaAdi(table.title, kullanilanAdlar));
   });
 
   // ── Download ──
