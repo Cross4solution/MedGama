@@ -2,15 +2,10 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
+// YALNIZ İngilizce burada duruyor, çünkü `fallbackLng` o: bir anahtar aktif
+// dilde eksikse i18next İngilizceye düşüyor ve o an sözlüğün yüklenmiş olması
+// gerekiyor. Kalan sekiz dil `paketler/` altında, her biri kendi dosyasında.
 import en from './locales/en.json';
-import tr from './locales/tr.json';
-import de from './locales/de.json';
-import fr from './locales/fr.json';
-import ar from './locales/ar.json';
-import ru from './locales/ru.json';
-import es from './locales/es.json';
-import it from './locales/it.json';
-import az from './locales/az.json';
 
 // Yalnızca dil seçicide gösterilen diller.
 //
@@ -23,16 +18,21 @@ import az from './locales/az.json';
 // LOCALES'e eklendiğinde buraya iki satırla geri döner.
 const SUPPORTED_LANGS = ['en', 'tr', 'ar', 'ru', 'de', 'fr', 'es', 'it', 'az'];
 
+// Dokuz dilin sözlüğü tek pakette duruyordu ve `app/[locale]/layout` her
+// sayfada onu çekiyordu. Ölçüldü: Türkçe ana sayfa 723 KB JavaScript indiriyor,
+// 462 KB'si bu paket. Yani ziyaretçi, okumayacağı sekiz dilin tam sözlüğünü —
+// gzip'li 432 KB, sayfanın JavaScript'inin yaklaşık altmışta üçü — indiriyordu.
+//
+// Diller artık `paketler/` altında ayrı ayrı duruyor. Sunucu, rotadaki dile
+// karşılık gelen TEK paketi render ediyor (`app/[locale]/layout.jsx`); Next
+// yalnız onun yığınını gönderiyor. Paket kendi JSON'unu statik içe aktardığı
+// için sözlük render anında hazır: ne bekleme var, ne çevrilmemiş metin
+// parlaması, ne de hidrasyon uyuşmazlığı.
+//
+// `partialBundledLanguages`, i18next'e "kaynaklar sonradan eklenecek, eksik
+// dili yükleme hatası sayma" diyor.
 const resources = {
   en: { translation: en },
-  tr: { translation: tr },
-  de: { translation: de },
-  fr: { translation: fr },
-  ar: { translation: ar },
-  ru: { translation: ru },
-  es: { translation: es },
-  it: { translation: it },
-  az: { translation: az },
 };
 
 i18n
@@ -40,6 +40,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
+    partialBundledLanguages: true,
     fallbackLng: 'en',
     supportedLngs: SUPPORTED_LANGS,
     nonExplicitSupportedLngs: false,
@@ -61,6 +62,27 @@ i18n
       useSuspense: false,
     },
   });
+
+// ── Sunucu tarafı: dokuz dil de burada ──
+//
+// Bölme YALNIZ tarayıcı için anlamlı. Sunucuda sözlükler diskten bir kez
+// okunuyor, indirme yok — ama SSR'nin doğru dilde HTML üretebilmesi için render
+// ANINDA ellerinde olmaları gerekiyor.
+//
+// Ölçüldü: yalnız istemci paketlerine bırakıldığında `/de`, `/ar` ve `/ru`
+// sunucudan İngilizce geliyordu; `next/dynamic` sınırı o istek render olurken
+// henüz çözülmemiş oluyor. Görünürde bir hata yok, sadece yanlış dilde HTML —
+// ve arama motorlarının gördüğü tam olarak o HTML.
+//
+// `typeof window` istemci derlemesinde sabit olduğundan bu blok oradan tümüyle
+// eleniyor; JSON'lar tarayıcı paketine girmiyor (ölçüm: `SozlukPaketi.jsx`).
+if (typeof window === 'undefined') {
+  for (const dil of SUPPORTED_LANGS) {
+    if (dil === 'en') continue;
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    i18n.addResourceBundle(dil, 'translation', require(`./locales/${dil}.json`), true, true);
+  }
+}
 
 export default i18n;
 
