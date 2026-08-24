@@ -285,7 +285,15 @@
     "hidePassword": "Hide password",
     "changeEmail": "Change email",
     "chooseStrongPassword": "Choose a strong password for your account.",
-    "backToCode": "Back to code"
+    "backToCode": "Back to code",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email address",
+    "passwordRequired": "Password is required",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "confirmPasswordRequired": "Confirm password is required",
+    "acceptTermsRequired": "You must accept the Terms of Use",
+    "acceptPrivacyRequired": "You must accept the Privacy Policy to proceed",
+    "fixHighlighted": "Please correct the highlighted fields"
   },
   "aboutPage": {
     "heroDesc": "A language- and location-independent health and medical-tourism marketplace that brings patients together with expert doctors and verified clinics/hospitals on one digital platform.",

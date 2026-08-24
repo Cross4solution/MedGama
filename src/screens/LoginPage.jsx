@@ -286,17 +286,24 @@ const LoginPage = ({ role = 'patient' }) => {
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
+  /**
+   * Kayıt ve giriş formunun istemci tarafı doğrulaması.
+   *
+   * Mesajlar sabit İngilizceydi: arayüzün geri kalanı Türkçeyken formu yanlış
+   * dolduran kullanıcı "Email is required" görüyordu. Dokuz dilin dokuzunda da.
+   * Hata metni, kullanıcının bir şeyi düzeltmesi için okuduğu tek cümle.
+   */
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.email) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Please enter a valid email address';
-    if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
+    if (!formData.email) newErrors.email = t('auth.emailRequired', 'Email is required');
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = t('auth.emailInvalid', 'Please enter a valid email address');
+    if (!formData.password) newErrors.password = t('auth.passwordRequired', 'Password is required');
+    else if (formData.password.length < 8) newErrors.password = t('auth.passwordTooShort', 'Password must be at least 8 characters');
     if (currentPage === 'register') {
-      if (!formData.confirmPassword) newErrors.confirmPassword = 'Confirm password is required';
-      if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
-      if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the Terms of Use';
-      if (!formData.acceptPrivacy) newErrors.acceptPrivacy = 'You must accept the Privacy Policy to proceed';
+      if (!formData.confirmPassword) newErrors.confirmPassword = t('auth.confirmPasswordRequired', 'Confirm password is required');
+      if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = t('auth.passwordsDoNotMatch', 'Passwords do not match');
+      if (!formData.acceptTerms) newErrors.acceptTerms = t('auth.acceptTermsRequired', 'You must accept the Terms of Use');
+      if (!formData.acceptPrivacy) newErrors.acceptPrivacy = t('auth.acceptPrivacyRequired', 'You must accept the Privacy Policy to proceed');
     }
     setErrors(newErrors);
     return newErrors;
@@ -307,7 +314,7 @@ const LoginPage = ({ role = 'patient' }) => {
     const currentErrors = validateForm();
     if (Object.keys(currentErrors).length) {
       const firstKey = Object.keys(currentErrors)[0];
-      notify({ type: 'error', message: currentErrors[firstKey] || 'Please correct the highlighted fields' });
+      notify({ type: 'error', message: currentErrors[firstKey] || t('auth.fixHighlighted', 'Please correct the highlighted fields') });
       return;
     }
     try {
@@ -418,11 +425,20 @@ const LoginPage = ({ role = 'patient' }) => {
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             <input
               id={`email-${varyant}`} name="email" type="email" value={formData.email} onChange={handleInputChange}
+              aria-invalid={errors.email ? 'true' : undefined}
+              aria-describedby={errors.email ? `email-hata-${varyant}` : undefined}
               className={`w-full pl-8 sm:pl-10 pr-4 py-2.5 sm:py-3 border rounded-xl ${config.inputFocus} focus:ring-2 focus:border-transparent transition-colors text-left text-sm sm:text-base ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
               placeholder={config.placeholder} required
             />
           </div>
-          {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.email}</p>}
+          {/* Hata alana BAĞLI: `aria-invalid` alanın hatalı olduğunu, `aria-describedby`
+              de hangi metnin onu anlattığını söylüyor. Bunlar olmadan hata yalnız
+              kırmızı bir çerçeve ve altta duran bir cümle — ekran okuyucu ikisini de
+              alanla ilişkilendiremiyor, `role="alert"` sayesinde metin belirdiğinde
+              okunuyor ama kullanıcı sonradan alana döndüğünde bir daha duymuyordu. */}
+          {errors.email && (
+            <p id={`email-hata-${varyant}`} role="alert" className="text-red-500 text-xs sm:text-sm mt-1">{errors.email}</p>
+          )}
         </div>
         <div>
           <label htmlFor={`password-${varyant}`} className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
@@ -430,6 +446,8 @@ const LoginPage = ({ role = 'patient' }) => {
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             <input
               id={`password-${varyant}`} name="password" type={showPassword ? 'text' : 'password'} value={formData.password} onChange={handleInputChange}
+              aria-invalid={errors.password ? 'true' : undefined}
+              aria-describedby={errors.password ? `password-hata-${varyant}` : undefined}
               className={`w-full pl-8 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 border rounded-xl ${config.inputFocus} focus:ring-2 focus:border-transparent transition-colors text-left text-sm sm:text-base ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
               placeholder="••••••••" required
             />
@@ -439,7 +457,9 @@ const LoginPage = ({ role = 'patient' }) => {
               {showPassword ? <Eye className="w-4 h-4 sm:w-5 sm:h-5" /> : <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>
           </div>
-          {errors.password && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.password}</p>}
+          {errors.password && (
+            <p id={`password-hata-${varyant}`} role="alert" className="text-red-500 text-xs sm:text-sm mt-1">{errors.password}</p>
+          )}
         </div>
         <div className="flex items-center justify-between text-xs">
           <label className="inline-flex items-center gap-1.5 text-gray-500">

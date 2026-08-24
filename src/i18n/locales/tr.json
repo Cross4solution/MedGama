@@ -266,7 +266,15 @@
     "hidePassword": "Şifreyi gizle",
     "changeEmail": "E-postayı değiştir",
     "chooseStrongPassword": "Hesabınız için güçlü bir parola seçin.",
-    "backToCode": "Koda dön"
+    "backToCode": "Koda dön",
+    "emailRequired": "E-posta adresi zorunludur",
+    "emailInvalid": "Geçerli bir e-posta adresi girin",
+    "passwordRequired": "Şifre zorunludur",
+    "passwordTooShort": "Şifre en az 8 karakter olmalıdır",
+    "confirmPasswordRequired": "Şifre tekrarı zorunludur",
+    "acceptTermsRequired": "Kullanım Koşullarını kabul etmelisiniz",
+    "acceptPrivacyRequired": "Devam etmek için Gizlilik Politikasını kabul etmelisiniz",
+    "fixHighlighted": "Lütfen işaretli alanları düzeltin"
   },
   "aboutPage": {
     "heroDesc": "Hastaları uzman doktorlar ve onaylı klinik/hastanelerle aynı dijital platformda buluşturan, dil ve lokasyon bağımsız sağlık ve sağlık turizmi pazar yeri.",

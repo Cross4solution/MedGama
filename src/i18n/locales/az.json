@@ -266,7 +266,15 @@
     "hidePassword": "Şifrəni gizlət",
     "changeEmail": "E-poçtu dəyiş",
     "chooseStrongPassword": "Hesabınız üçün güclü parol seçin.",
-    "backToCode": "Koda qayıt"
+    "backToCode": "Koda qayıt",
+    "emailRequired": "E-poçt ünvanı tələb olunur",
+    "emailInvalid": "Düzgün e-poçt ünvanı daxil edin",
+    "passwordRequired": "Şifrə tələb olunur",
+    "passwordTooShort": "Şifrə ən azı 8 simvol olmalıdır",
+    "confirmPasswordRequired": "Şifrə təkrarı tələb olunur",
+    "acceptTermsRequired": "İstifadə Şərtlərini qəbul etməlisiniz",
+    "acceptPrivacyRequired": "Davam etmək üçün Məxfilik Siyasətini qəbul etməlisiniz",
+    "fixHighlighted": "Zəhmət olmasa işarələnmiş sahələri düzəldin"
   },
   "aboutPage": {
     "heroDesc": "Xəstələri təcrübəli həkimlər və təsdiqlənmiş klinika/xəstəxanalarla eyni rəqəmsal platformada birləşdirən, dil və məkandan asılı olmayan sağlamlıq və tibbi turizm bazarı.",

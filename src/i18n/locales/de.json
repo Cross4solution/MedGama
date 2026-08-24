@@ -266,7 +266,15 @@
     "hidePassword": "Passwort verbergen",
     "changeEmail": "E-Mail ändern",
     "chooseStrongPassword": "Wählen Sie ein sicheres Passwort für Ihr Konto.",
-    "backToCode": "Zurück zum Code"
+    "backToCode": "Zurück zum Code",
+    "emailRequired": "E-Mail-Adresse ist erforderlich",
+    "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "passwordRequired": "Passwort ist erforderlich",
+    "passwordTooShort": "Das Passwort muss mindestens 8 Zeichen lang sein",
+    "confirmPasswordRequired": "Passwortbestätigung ist erforderlich",
+    "acceptTermsRequired": "Sie müssen die Nutzungsbedingungen akzeptieren",
+    "acceptPrivacyRequired": "Sie müssen die Datenschutzerklärung akzeptieren, um fortzufahren",
+    "fixHighlighted": "Bitte korrigieren Sie die markierten Felder"
   },
   "aboutPage": {
     "heroDesc": "Ein sprach- und ortsunabhängiger Marktplatz für Gesundheit und Medizintourismus, der Patienten mit erfahrenen Ärzten und verifizierten Kliniken/Krankenhäusern auf einer Plattform zusammenbringt.",

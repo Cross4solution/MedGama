@@ -266,7 +266,15 @@
     "hidePassword": "Nascondi password",
     "changeEmail": "Cambia e-mail",
     "chooseStrongPassword": "Scegli una password sicura per il tuo account.",
-    "backToCode": "Torna al codice"
+    "backToCode": "Torna al codice",
+    "emailRequired": "L'indirizzo e-mail è obbligatorio",
+    "emailInvalid": "Inserisci un indirizzo e-mail valido",
+    "passwordRequired": "La password è obbligatoria",
+    "passwordTooShort": "La password deve contenere almeno 8 caratteri",
+    "confirmPasswordRequired": "Conferma la password",
+    "acceptTermsRequired": "Devi accettare le Condizioni d'uso",
+    "acceptPrivacyRequired": "Devi accettare l’Informativa sulla privacy per continuare",
+    "fixHighlighted": "Correggi i campi evidenziati"
   },
   "aboutPage": {
     "heroDesc": "Un marketplace di salute e turismo medico, indipendente da lingua e posizione, che unisce pazienti, medici esperti e cliniche/ospedali verificati su un'unica piattaforma digitale.",

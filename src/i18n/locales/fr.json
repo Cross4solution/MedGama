@@ -266,7 +266,15 @@
     "hidePassword": "Masquer le mot de passe",
     "changeEmail": "Changer d’e-mail",
     "chooseStrongPassword": "Choisissez un mot de passe fort pour votre compte.",
-    "backToCode": "Retour au code"
+    "backToCode": "Retour au code",
+    "emailRequired": "L'adresse e-mail est obligatoire",
+    "emailInvalid": "Saisissez une adresse e-mail valide",
+    "passwordRequired": "Le mot de passe est obligatoire",
+    "passwordTooShort": "Le mot de passe doit comporter au moins 8 caractères",
+    "confirmPasswordRequired": "La confirmation du mot de passe est obligatoire",
+    "acceptTermsRequired": "Vous devez accepter les conditions d'utilisation",
+    "acceptPrivacyRequired": "Vous devez accepter la politique de confidentialité pour continuer",
+    "fixHighlighted": "Veuillez corriger les champs indiqués"
   },
   "aboutPage": {
     "heroDesc": "Une place de marché santé et tourisme médical, indépendante de la langue et du lieu, qui réunit patients, médecins experts et cliniques/hôpitaux vérifiés sur une même plateforme.",
