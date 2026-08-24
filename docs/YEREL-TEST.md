@@ -116,6 +116,22 @@ hiçbir yerde yazmıyor.
 
 **4 işçi yerel API'yi hız sınırına takıyor** (429). `--workers=2` kullan.
 
+**Melez kurulum (yerel ön yüz → CANLI arka uç) kendiliğinden çalışmaz.**
+Tarayıcı tarafındaki `src/config/apiBase.js` vekili yalnız `*.vercel.app` ve
+`medagama.com` alan adlarında kullanıyor; `localhost`'ta `REACT_APP_API_BASE ||
+http://127.0.0.1:8001/api` adresine gidiyor. Yani `next start`'ı canlı arka uca
+bakan bir derlemeyle açsanız bile tarayıcı Next vekilini ATLAYIP yereldeki
+olmayan arka ucu arıyor: oturum gerektiren her test "oturum kurulmadı" diye
+düşüyor ve sebep hiçbir yerde yazmıyor. Derlemeyi şöyle yapın:
+
+```bash
+REACT_APP_API_BASE=https://medagama-backend.onrender.com/api npx next build
+```
+
+Ama bu yol yine de parolayla giriş yapar ve arka arkaya koşularda 429'a
+takılırsınız. Yukarıdaki **yerel yığın** yordamı (`E2E_API_ORIGIN` + şifresiz
+demo girişi) hız sınırına hiç dokunmadığı için tercih edilmeli.
+
 ---
 
 ## 4. Kalan e2e kırıkları hakkında
