@@ -1,6 +1,9 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 import { API_BASE_URL } from '../config/apiBase.js';
+import {
+  reverbKey, reverbHost, reverbPort, pusherKey, pusherCluster,
+} from './soketAyari.js';
 
 // Make Pusher available globally (required by laravel-echo)
 // SSR guard: bu modül Next prerender sırasında import edilebilir; window orada yok.
@@ -33,14 +36,6 @@ const apiBase = API_BASE_URL;
 // For Vercel proxy ("/api"), wsAuthHost becomes "" which means same-origin
 const wsAuthHost = apiBase.replace(/\/api\/?$/, '');
 
-// Reverb (self-hosted) config
-const reverbKey = process.env.REACT_APP_REVERB_APP_KEY;
-const reverbHost = process.env.REACT_APP_REVERB_HOST || '127.0.0.1';
-const reverbPort = process.env.REACT_APP_REVERB_PORT || '8080';
-
-// Pusher (cloud) config
-const pusherKey = process.env.REACT_APP_PUSHER_APP_KEY;
-const pusherCluster = process.env.REACT_APP_PUSHER_CLUSTER || 'eu';
 
 const echoConfig = reverbKey
   ? {

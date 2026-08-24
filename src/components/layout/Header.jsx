@@ -6,7 +6,6 @@ import { Menu, X, User, Stethoscope, Hospital, Home, Info, HeartPulse, Building2
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { notificationAPI } from '../../lib/api';
-import { getEcho } from '../../lib/echo';
 import { useToast } from '../../context/ToastContext';
 import { useNotifications } from '../../context/NotificationsContext';
 import resolveStorageUrl from '../../utils/resolveStorageUrl';
@@ -93,49 +92,66 @@ const Header = () => {
 
   // ── Real-time: Listen for notifications via Echo (WebSocket) ──
   useEffect(() => {
-    if (!user?.id) return;
-    const echo = getEcho();
-    if (!echo) return;
+    if (!user?.id) return undefined;
 
-    const channel = echo.private(`notifications.${user.id}`);
+    // Soket yığını (laravel-echo + pusher-js) burada İSTEK ÜZERİNE iniyor.
+    //
+    // Statik içe aktarımdayken 20 KB gzip, oturum açmamış bir ziyaretçinin ana
+    // sayfasına da iniyordu: bu bileşen ortak kabukta ve modül grafiği koşula
+    // bakmıyor. Efekt zaten `user?.id` ile korunuyordu — yani kod hiç
+    // çalışmıyor, yalnızca ağırlığı taşınıyordu.
+    let iptal = false;
+    let birak = null;
 
-    channel.listen('.notification.new', (payload) => {
-      // Increment badge count (local + global)
-      setUnreadCount(prev => prev + 1);
-      globalIncrement(1);
-      // Bildirimin tipi sesi belirliyor: kaçırılamayacak olanlar yükselen
-      // üçlü, gerisi yumuşak çan (ve yalnızca sekme arka plandayken).
-      const bildirimTipi = String(payload?.data?.type || payload?.type || '');
-      playNotificationSound(bildirimTipi);
+    import('../../lib/echo').then(({ getEcho }) => {
+      // Modül inerken bileşen sökülmüş olabilir.
+      if (iptal) return;
 
-      // Mesaj bildirimi geldiğinde menüdeki okunmamış sayacı hemen tazelensin;
-      // yoksa kullanıcı sayının artmasını bir sonraki yoklamaya kadar bekliyor.
-      if (bildirimTipi.includes('message') || bildirimTipi.includes('chat')) {
-        window.dispatchEvent(new Event('chat:unread-changed'));
-      }
-      // Prepend to list if dropdown is open
-      setNotifications(prev => {
-        if (prev.some(n => n.id === payload.id)) return prev;
-        return [payload, ...prev].slice(0, 15);
-      });
-      // Show rich toast notification
-      const data = payload?.data || payload || {};
-      const nType = String(data.type || '');
-      const toastType = nType.includes('approved') ? 'success'
-        : nType.includes('cancelled') || nType.includes('rejected') ? 'error'
-        : nType.includes('info_requested') || nType.includes('reminder') ? 'warning'
-        : 'info';
-      showToast({
-        type: toastType,
-        title: notificationTitle(data, t),
-        message: data.message || '',
-        timeout: 0, // persist until the user clicks/closes (no auto-dismiss)
-        actionUrl: data.action_url || data.link || null,
+      const echo = getEcho();
+      if (!echo) return;
+
+      const channel = echo.private(`notifications.${user.id}`);
+      birak = () => echo.leave(`notifications.${user.id}`);
+
+      channel.listen('.notification.new', (payload) => {
+        // Increment badge count (local + global)
+        setUnreadCount(prev => prev + 1);
+        globalIncrement(1);
+        // Bildirimin tipi sesi belirliyor: kaçırılamayacak olanlar yükselen
+        // üçlü, gerisi yumuşak çan (ve yalnızca sekme arka plandayken).
+        const bildirimTipi = String(payload?.data?.type || payload?.type || '');
+        playNotificationSound(bildirimTipi);
+
+        // Mesaj bildirimi geldiğinde menüdeki okunmamış sayacı hemen tazelensin;
+        // yoksa kullanıcı sayının artmasını bir sonraki yoklamaya kadar bekliyor.
+        if (bildirimTipi.includes('message') || bildirimTipi.includes('chat')) {
+          window.dispatchEvent(new Event('chat:unread-changed'));
+        }
+        // Prepend to list if dropdown is open
+        setNotifications(prev => {
+          if (prev.some(n => n.id === payload.id)) return prev;
+          return [payload, ...prev].slice(0, 15);
+        });
+        // Show rich toast notification
+        const data = payload?.data || payload || {};
+        const nType = String(data.type || '');
+        const toastType = nType.includes('approved') ? 'success'
+          : nType.includes('cancelled') || nType.includes('rejected') ? 'error'
+          : nType.includes('info_requested') || nType.includes('reminder') ? 'warning'
+          : 'info';
+        showToast({
+          type: toastType,
+          title: notificationTitle(data, t),
+          message: data.message || '',
+          timeout: 0, // persist until the user clicks/closes (no auto-dismiss)
+          actionUrl: data.action_url || data.link || null,
+        });
       });
     });
 
     return () => {
-      echo.leave(`notifications.${user.id}`);
+      iptal = true;
+      birak?.();
     };
   }, [user?.id]);
 
