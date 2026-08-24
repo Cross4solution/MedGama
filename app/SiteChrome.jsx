@@ -46,13 +46,17 @@ function IcerigeGec() {
   // nereye gittiğini göremiyordu. Bağlantı artık ekranın DIŞINDA duruyor ve
   // odaklanınca içeri kayıyor; bu, sınıf üretimine değil konuma bağlı.
   //
+  // `no-print`: bağlantı `position: fixed` ve Chrome sabit ögeleri kâğıdın ilk
+  // sayfasına basabiliyor. Reçete ya da faturanın tepesinde "İçeriğe geç"
+  // satırı istemiyoruz; yazdırma stili bu sınıfı zaten gizliyor.
+  //
   // `focus:` kuralı `!` ile baskın: ikisi de aynı özgüllükte tek sınıf ve
   // üretilen CSS'te kapalı konum sonra geliyordu — bağlantı odaklanıyor ama
   // yerinden kımıldamıyordu. Ölçüldü.
   return (
     <a
       href="#icerik"
-      className="fixed left-3 top-3 z-[9999] -translate-y-[200%] rounded-lg bg-white px-4 py-2 text-sm font-semibold text-teal-700 shadow-lg outline outline-2 outline-teal-600 transition-transform focus:!translate-y-0"
+      className="no-print fixed left-3 top-3 z-[9999] -translate-y-[200%] rounded-lg bg-white px-4 py-2 text-sm font-semibold text-teal-700 shadow-lg outline outline-2 outline-teal-600 transition-transform focus:!translate-y-0"
     >
       {t('a11y.skipToContent', 'Skip to content')}
     </a>

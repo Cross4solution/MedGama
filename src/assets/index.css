@@ -382,6 +382,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   nav,
   header,
   footer,
+  /* Kenar çubukları `<aside>`: hasta, CRM ve yönetim panelinde üçü de.
+     `.crm-sidebar` yalnız CRM'i kapsıyordu; hasta kendi faturasını Ctrl+P ile
+     bastığında menü de kâğıda geliyordu — ölçüldü. */
+  aside,
   .cookie-banner,
   [data-no-print],
   .no-print {
