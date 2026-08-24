@@ -2030,7 +2030,9 @@
     "allCountries": "جميع الدول",
     "allPrices": "جميع الأسعار",
     "addMore": "أضف المزيد...",
-    "clear": "مسح"
+    "clear": "مسح",
+    "connectionErrorTitle": "تعذّر تحميل النتائج",
+    "connectionErrorHint": "تعذّر الوصول إلى الخادم. تحقّق من اتصالك وأعد المحاولة — البحث ليس فارغًا."
   },
   "doctorProfile": {
     "about": "نبذة",

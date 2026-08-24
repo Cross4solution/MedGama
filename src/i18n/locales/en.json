@@ -2049,7 +2049,9 @@
     "allCountries": "All Countries",
     "allPrices": "All Prices",
     "addMore": "Add more...",
-    "clear": "Clear"
+    "clear": "Clear",
+    "connectionErrorTitle": "Could not load results",
+    "connectionErrorHint": "The server could not be reached. Check your connection and try again — this is not an empty search."
   },
   "doctorProfile": {
     "about": "About",

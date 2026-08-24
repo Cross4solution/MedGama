@@ -2030,7 +2030,9 @@
     "allCountries": "Все страны",
     "allPrices": "Все цены",
     "addMore": "Добавить ещё...",
-    "clear": "Очистить"
+    "clear": "Очистить",
+    "connectionErrorTitle": "Не удалось загрузить результаты",
+    "connectionErrorHint": "Сервер недоступен. Проверьте соединение и повторите — результаты не пусты."
   },
   "doctorProfile": {
     "about": "О враче",

@@ -2062,7 +2062,9 @@
     "allCountries": "Tüm Ülkeler",
     "allPrices": "Tüm Fiyatlar",
     "addMore": "Daha ekle...",
-    "clear": "Temizle"
+    "clear": "Temizle",
+    "connectionErrorTitle": "Sonuçlar yüklenemedi",
+    "connectionErrorHint": "Sunucuya ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin — arama sonucu boş olduğu için değil."
   },
   "doctorProfile": {
     "about": "Hakkında",

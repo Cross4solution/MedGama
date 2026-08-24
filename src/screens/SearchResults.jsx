@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Search, MapPin, Star, Video, X, SlidersHorizontal,
   BadgeCheck, ChevronLeft, ChevronRight, Stethoscope, SearchX,
-  Lightbulb, TrendingUp, ArrowRight,
+  Lightbulb, TrendingUp, ArrowRight, WifiOff,
 } from 'lucide-react';
 import { doctorAPI, catalogAPI } from '../lib/api';
 // SEO meta + canonical artık app/search/page.jsx generateMetadata ile sunucuda üretiliyor (Faz 3).
@@ -109,6 +109,9 @@ export default function SearchResults() {
 
   // data
   const [doctors, setDoctors] = useState([]);
+  // Sunucuya ulaşılamamak ile "sonuç yok" ayrı şeyler. Ayrılmadığında kullanıcıya
+  // aramasının dar olduğu söyleniyor ve filtrelerle boşuna uğraşıyor.
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -146,6 +149,7 @@ export default function SearchResults() {
   // fetch doctors
   const fetch = useCallback(async () => {
     setLoading(true);
+    setBaglantiHatasi(false);
     try {
       const res = await doctorAPI.list({
         search_text: searchText || undefined,
@@ -178,6 +182,7 @@ export default function SearchResults() {
     } catch {
       setDoctors([]);
       setSuggestions(null);
+      setBaglantiHatasi(true);
     } finally {
       setLoading(false);
     }
@@ -378,6 +383,22 @@ export default function SearchResults() {
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Array.from({ length: 6 }).map((_, i) => <DoctorCardSkeleton key={i} />)}
+              </div>
+            ) : baglantiHatasi ? (
+              /* Sunucuya ulaşılamadı — "sonuç yok" DEĞİL. İkisini aynı ekranda
+                 göstermek, uygun yüzlerce doktor varken kullanıcıya aramasını
+                 daraltmış olduğunu söylüyordu. */
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <WifiOff className="w-14 h-14 text-gray-300 mb-3" />
+                <h3 className="text-lg font-bold text-gray-700 mb-1">{t('search.connectionErrorTitle')}</h3>
+                <p className="text-sm text-gray-500 mb-3 max-w-md">{t('search.connectionErrorHint')}</p>
+                <button
+                  type="button"
+                  onClick={fetch}
+                  className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+                >
+                  {t('common.retry')}
+                </button>
               </div>
             ) : doctors.length === 0 ? (
               <div className="space-y-6">

@@ -2808,7 +2808,9 @@
     "allCountries": "Bütün Ölkələr",
     "allPrices": "Bütün Qiymətlər",
     "addMore": "Daha çox əlavə et...",
-    "clear": "Təmizlə"
+    "clear": "Təmizlə",
+    "connectionErrorTitle": "Nəticələr yüklənə bilmədi",
+    "connectionErrorHint": "Serverə çıxmaq mümkün olmadı. Bağlantınızı yoxlayıb yenidən cəhd edin — axtarış boş deyil."
   },
   "doctorProfile": {
     "about": "Haqqında",

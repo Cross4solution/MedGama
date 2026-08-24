@@ -2768,7 +2768,9 @@
     "allCountries": "Tutti i Paesi",
     "allPrices": "Tutti i Prezzi",
     "addMore": "Aggiungi altro...",
-    "clear": "Cancella"
+    "clear": "Cancella",
+    "connectionErrorTitle": "Impossibile caricare i risultati",
+    "connectionErrorHint": "Server non raggiungibile. Controlla la connessione e riprova — la ricerca non è vuota."
   },
   "doctorProfile": {
     "about": "Informazioni",

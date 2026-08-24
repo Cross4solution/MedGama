@@ -2030,7 +2030,9 @@
     "allCountries": "Alle Länder",
     "allPrices": "Alle Preise",
     "addMore": "Mehr hinzufügen...",
-    "clear": "Zurücksetzen"
+    "clear": "Zurücksetzen",
+    "connectionErrorTitle": "Ergebnisse konnten nicht geladen werden",
+    "connectionErrorHint": "Der Server ist nicht erreichbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut — die Suche ist nicht leer."
   },
   "doctorProfile": {
     "about": "Über",
