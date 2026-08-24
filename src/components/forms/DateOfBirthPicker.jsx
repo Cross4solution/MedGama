@@ -184,7 +184,7 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
           onChange={handleDayChange}
           onKeyDown={handleDayKeyDown}
           onFocus={() => dayRef.current?.select()}
-          className="w-7 text-center text-sm bg-transparent outline-none placeholder:text-gray-400"
+          className="w-7 text-center text-sm bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 placeholder:text-gray-400"
           maxLength={2}
         />
         <span className="text-gray-300 text-sm mx-0.5">/</span>
@@ -197,7 +197,7 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
           onChange={handleMonthChange}
           onKeyDown={handleMonthKeyDown}
           onFocus={() => monthRef2.current?.select()}
-          className="w-7 text-center text-sm bg-transparent outline-none placeholder:text-gray-400"
+          className="w-7 text-center text-sm bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 placeholder:text-gray-400"
           maxLength={2}
         />
         <span className="text-gray-300 text-sm mx-0.5">/</span>
@@ -210,7 +210,7 @@ export default function DateOfBirthPicker({ value = '', onChange, className = ''
           onChange={handleYearChange}
           onKeyDown={handleYearKeyDown}
           onFocus={() => yearRef.current?.select()}
-          className="w-12 text-center text-sm bg-transparent outline-none placeholder:text-gray-400"
+          className="w-12 text-center text-sm bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 placeholder:text-gray-400"
           maxLength={4}
         />
       </div>

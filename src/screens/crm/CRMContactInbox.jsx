@@ -111,7 +111,7 @@ const CRMContactInbox = () => {
                 value={search}
                 onChange={e => { setSearch(e.target.value); setPage(1); }}
                 placeholder={t('crm.contactInbox.search', 'Search messages...')}
-                className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full"
+                className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 w-full"
               />
             </div>
             <div className="flex items-center gap-2">

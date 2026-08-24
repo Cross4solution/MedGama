@@ -125,7 +125,7 @@ export const ModalLabel = ({ children, required, icon: LabelIcon }) => (
 export const ModalInput = ({ className = '', ...props }) => (
   <input
     {...props}
-    className={`w-full h-10 px-3.5 border border-gray-200 rounded-xl text-sm bg-white placeholder:text-gray-300 outline-none transition-all ${className}`}
+    className={`w-full h-10 px-3.5 border border-gray-200 rounded-xl text-sm bg-white placeholder:text-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 transition-all ${className}`}
     style={{ ...(props.style || {}), '--tw-ring-color': 'rgba(10,110,111,0.15)' }}
     onFocus={(e) => { e.currentTarget.style.borderColor = '#0A6E6F'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(10,110,111,0.1)'; props.onFocus?.(e); }}
     onBlur={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; props.onBlur?.(e); }}
@@ -136,7 +136,7 @@ export const ModalInput = ({ className = '', ...props }) => (
 export const ModalSelect = ({ className = '', children, ...props }) => (
   <select
     {...props}
-    className={`w-full h-10 px-3 border border-gray-200 rounded-xl text-sm bg-white outline-none transition-all ${className}`}
+    className={`w-full h-10 px-3 border border-gray-200 rounded-xl text-sm bg-white outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 transition-all ${className}`}
     onFocus={(e) => { e.currentTarget.style.borderColor = '#0A6E6F'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(10,110,111,0.1)'; props.onFocus?.(e); }}
     onBlur={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; props.onBlur?.(e); }}
   >
@@ -148,7 +148,7 @@ export const ModalSelect = ({ className = '', children, ...props }) => (
 export const ModalTextarea = ({ className = '', ...props }) => (
   <textarea
     {...props}
-    className={`w-full px-3.5 py-3 border border-gray-200 rounded-xl text-sm bg-white placeholder:text-gray-300 outline-none transition-all resize-none ${className}`}
+    className={`w-full px-3.5 py-3 border border-gray-200 rounded-xl text-sm bg-white placeholder:text-gray-300 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 transition-all resize-none ${className}`}
     onFocus={(e) => { e.currentTarget.style.borderColor = '#0A6E6F'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(10,110,111,0.1)'; props.onFocus?.(e); }}
     onBlur={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; props.onBlur?.(e); }}
   />

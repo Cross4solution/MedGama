@@ -46,7 +46,7 @@ function VideoPlayer({ src, thumbnail }) {
       <button
         type="button"
         onClick={handlePlay}
-        className="relative w-full aspect-video bg-gray-900 rounded-xl overflow-hidden group focus:outline-none"
+        className="relative w-full aspect-video bg-gray-900 rounded-xl overflow-hidden group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
       >
         {thumbnail ? (
           <img src={resolveStorageUrl(thumbnail)} alt={t('medstreamProfileFeed.videoThumbnail', "Video thumbnail")} className="absolute inset-0 w-full h-full object-cover" />

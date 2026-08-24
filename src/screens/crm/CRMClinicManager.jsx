@@ -302,7 +302,7 @@ const DoctorsTab = ({ t }) => {
         <Search className="w-3.5 h-3.5 text-gray-400" />
         <input type="text" placeholder={t('crm.manager.searchDoctors', 'Search doctors...')} value={search}
           onChange={e => { setSearch(e.target.value); setPage(1); }}
-          className="bg-transparent text-xs text-gray-700 placeholder:text-gray-400 outline-none w-full" />
+          className="bg-transparent text-xs text-gray-700 placeholder:text-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 w-full" />
       </div>
 
       {/* Doctor List */}

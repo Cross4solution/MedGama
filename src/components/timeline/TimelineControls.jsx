@@ -44,7 +44,7 @@ function TimelineControls({
               type="button"
               aria-pressed={sort === 'recent'}
               onClick={() => onSortChange?.('recent')}
-              className={`text-[13px] px-4 py-1.5 rounded-full focus:outline-none transition-colors duration-200 inline-flex items-center justify-center gap-1.5 font-medium ${
+              className={`text-[13px] px-4 py-1.5 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 transition-colors duration-200 inline-flex items-center justify-center gap-1.5 font-medium ${
                 sort === 'recent'
                   ? 'bg-white text-teal-700 shadow-sm'
                   : 'text-gray-500 hover:text-gray-800'
@@ -57,7 +57,7 @@ function TimelineControls({
               type="button"
               aria-pressed={sort === 'top'}
               onClick={() => onSortChange?.('top')}
-              className={`text-[13px] px-4 py-1.5 rounded-full focus:outline-none transition-colors duration-200 inline-flex items-center justify-center gap-1.5 font-medium ${
+              className={`text-[13px] px-4 py-1.5 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 transition-colors duration-200 inline-flex items-center justify-center gap-1.5 font-medium ${
                 sort === 'top'
                   ? 'bg-white text-teal-700 shadow-sm'
                   : 'text-gray-500 hover:text-gray-800'
@@ -100,7 +100,7 @@ function TimelineControls({
               type="button"
               aria-pressed={sort === 'recent'}
               onClick={() => onSortChange?.('recent')}
-              className={`text-sm px-4 py-2 rounded-lg focus:outline-none transition-all duration-200 inline-flex items-center gap-1.5 font-semibold ${
+              className={`text-sm px-4 py-2 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 transition-all duration-200 inline-flex items-center gap-1.5 font-semibold ${
                 sort === 'recent'
                   ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50'
                   : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
@@ -113,7 +113,7 @@ function TimelineControls({
               type="button"
               aria-pressed={sort === 'top'}
               onClick={() => onSortChange?.('top')}
-              className={`text-sm px-4 py-2 rounded-lg focus:outline-none transition-all duration-200 inline-flex items-center gap-1.5 font-semibold ${
+              className={`text-sm px-4 py-2 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 transition-all duration-200 inline-flex items-center gap-1.5 font-semibold ${
                 sort === 'top'
                   ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-200/50'
                   : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'

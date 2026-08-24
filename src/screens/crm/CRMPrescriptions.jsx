@@ -129,7 +129,7 @@ const CRMPrescriptions = () => {
         <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100 max-w-sm">
           <Search className="w-4 h-4 text-gray-400" />
           <input type="text" placeholder={t('crm.prescriptions.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full" />
+            className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 w-full" />
         </div>
 
         <div className="divide-y divide-gray-50">

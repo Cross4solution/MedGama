@@ -71,7 +71,7 @@ export default function MedicalHistoryTags({ value = '', onChange }) {
         onKeyDown={handleKeyDown}
         onBlur={() => { if (input.trim()) addTag(input); }}
         placeholder={tags.length === 0 ? 'e.g., Diabetes Type 2, Penicillin allergy...' : ''}
-        className="flex-1 min-w-[120px] outline-none text-sm bg-transparent placeholder:text-gray-400"
+        className="flex-1 min-w-[120px] outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 text-sm bg-transparent placeholder:text-gray-400"
       />
     </div>
   );

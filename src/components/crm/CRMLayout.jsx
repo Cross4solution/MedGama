@@ -549,7 +549,7 @@ const CRMLayout = ({ children }) => {
                 <input
                   type="text"
                   placeholder={t('cRMLayout.searchPatientsAppointments', "Search patients, appointments...")}
-                  className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full"
+                  className="bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 w-full"
                 />
               </div>
             </div>

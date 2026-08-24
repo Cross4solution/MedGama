@@ -216,7 +216,7 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
                 onChange={(e) => setText(e.target.value)}
                 rows={hasMedia ? 3 : 5}
                 placeholder={t('medstream.whatsOnYourMind', { name: displayName })}
-                className="w-full text-sm leading-6 placeholder:text-gray-400 text-gray-900 outline-none resize-none bg-transparent"
+                className="w-full text-sm leading-6 placeholder:text-gray-400 text-gray-900 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 resize-none bg-transparent"
               />
             </div>
 

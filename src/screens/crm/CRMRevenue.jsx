@@ -256,7 +256,7 @@ const CRMRevenue = () => {
           <div className="flex items-center gap-1.5 bg-gray-50 rounded-xl px-2.5 py-1.5 border border-gray-200">
             <ArrowRightLeft className="w-3.5 h-3.5 text-gray-400" />
             <select value={currency} onChange={(e) => setCurrency(e.target.value)}
-              className="bg-transparent text-xs font-semibold text-gray-700 outline-none cursor-pointer">
+              className="bg-transparent text-xs font-semibold text-gray-700 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 cursor-pointer">
               {currencies.map(c => <option key={c} value={c}>{c} ({CURRENCY_SYMBOLS[c] || c})</option>)}
             </select>
           </div>
@@ -491,7 +491,7 @@ const CRMRevenue = () => {
             <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-1.5 max-w-xs">
               <Search className="w-3.5 h-3.5 text-gray-400" />
               <input type="text" placeholder={t('common.search', 'Search...')} value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setInvoicePage(1); }}
-                className="bg-transparent text-xs text-gray-700 placeholder:text-gray-400 outline-none w-full" />
+                className="bg-transparent text-xs text-gray-700 placeholder:text-gray-400 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 w-full" />
             </div>
             <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setInvoicePage(1); }}
               className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600">
