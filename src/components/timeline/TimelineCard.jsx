@@ -226,13 +226,24 @@ function DocumentPreview({ m, className, onClick }) {
           <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center shadow-sm flex-shrink-0`}>
             <FileText className="w-6 h-6 text-white" />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-800 truncate" title={name}>{name}</p>
+          {/* Gönderiyi açan gerçek düğme.
+              Kartın kökündeki `onClick` fareyle her yerden çalışıyor ama klavyeye
+              görünmüyor: kart artık `<button>` ile sarılı değil, çünkü içindeki
+              indirme düğmesi iç içe kalıyordu. Ölçüldü — sarmal kalkınca akıştaki
+              belge gönderileri sekmeyle hiç ulaşılamaz olmuştu. Ad ve tür bilgisi
+              kendi düğmesine alındı: indirme düğmesiyle kardeş, iç içe değil. */}
+          <button
+            type="button"
+            onClick={onClick}
+            className="flex-1 min-w-0 text-left"
+            title={name}
+          >
+            <p className="text-sm font-semibold text-gray-800 truncate">{name}</p>
             <div className="flex items-center gap-2 mt-1">
               <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${textColor} ${bgLight} border ${borderColor}`}>{ext}</span>
               <span className="text-[11px] text-gray-400">{t('timelineCard.attachment', "Attachment")}</span>
             </div>
-          </div>
+          </button>
           {fileUrl && (
             <button
               type="button"
@@ -365,10 +376,15 @@ function VideoPreview({ m, className }) {
   // Error state
   if (error) {
     return (
-      <div ref={containerRef} className="relative bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col items-center justify-center aspect-video w-full rounded-lg cursor-pointer" onClick={() => { setError(false); setPlaying(true); }}>
+      <button
+        type="button"
+        ref={containerRef}
+        onClick={() => { setError(false); setPlaying(true); }}
+        className="relative bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col items-center justify-center aspect-video w-full rounded-lg cursor-pointer"
+      >
         <AlertTriangle className="w-8 h-8 text-amber-400/70 mb-2" />
         <p className="text-white/50 text-xs font-medium">{t('timelineCard.playbackErrorTapToRetry', "Playback error — tap to retry")}</p>
-      </div>
+      </button>
     );
   }
 
@@ -414,11 +430,21 @@ function VideoPreview({ m, className }) {
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
 
-      {/* Play button */}
+      {/* Oynat düğmesi — gerçek bir `<button>`.
+          Önce bir `div`di ve tıklama kapaktaki sarmalayıcıdaydı: fareyle çalışıyor,
+          klavyeye hiç görünmüyordu. Ölçüldü — akıştaki HİÇBİR video sekmeyle
+          oynatılamıyordu, kapağın içinde odaklanabilir tek bir öğe yoktu.
+          Sarmalayıcıdaki tıklama fare kolaylığı için duruyor; içeride başka düğme
+          olmadığından iç içe düğme de oluşmuyor. */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-14 h-14 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-xl group-hover:scale-110 transition-all duration-200">
+        <button
+          type="button"
+          onClick={handlePlay}
+          aria-label={t('timelineCard.playVideo', 'Play video')}
+          className="w-14 h-14 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-xl group-hover:scale-110 transition-all duration-200"
+        >
           <Play className="w-6 h-6 text-gray-900 ml-0.5" fill="currentColor" />
-        </div>
+        </button>
       </div>
 
       {/* Bottom bar: duration + audio indicator */}

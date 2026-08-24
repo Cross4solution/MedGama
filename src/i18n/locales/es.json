@@ -3735,6 +3735,7 @@
     "post": "Publicar",
     "reply": "Responder",
     "video": "Vídeo",
+    "playVideo": "Reproducir vídeo",
     "videoProcessing": "Procesando el vídeo…",
     "writeAReply": "Escriba una respuesta…"
   },
