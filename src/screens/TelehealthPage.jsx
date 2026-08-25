@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from '@/compat/router';
-import { Video, Calendar, CheckCircle, XCircle, ChevronLeft, ChevronRight, X, AlertTriangle, Loader2 } from 'lucide-react';
+import { Video, Calendar, CheckCircle, XCircle, ChevronLeft, ChevronRight, X, AlertTriangle, Loader2, WifiOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { appointmentAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -20,10 +20,15 @@ const TelehealthPage = () => {
   const [loading, setLoading] = useState(true);
   const [cancelModal, setCancelModal] = useState({ open: false, session: null });
   const [cancelling, setCancelling] = useState(false);
+  // Randevu listesi okunamadığında catch listeyi boşaltıyordu: dört sayaç 0,
+  // iki liste kutusu bomboş, tek kelime açıklama yok. Ekran "hiç görüşmen
+  // yok" diyordu; doğrusu "okuyamadım".
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
 
   // ── Fetch appointments ──
   useEffect(() => {
     setLoading(true);
+    setYuklemeHatasi(false);
     appointmentAPI.list({ per_page: 200 })
       .then(res => {
         const list = res?.data || [];
@@ -33,7 +38,7 @@ const TelehealthPage = () => {
         );
         setAppointments(telehealth.length > 0 ? telehealth : list);
       })
-      .catch(() => setAppointments([]))
+      .catch(() => { setYuklemeHatasi(true); setAppointments([]); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -148,10 +153,10 @@ const TelehealthPage = () => {
   }, [cancelModal.session]);
 
   const stats = [
-    { title: t('telehealthPage.totalSessions'), value: String(totals.total), subtitle: t('telehealthPage.allTime'), icon: Video, color: 'green' },
-    { title: t('telehealthPage.scheduled'), value: String(totals.scheduled), subtitle: t('crm.appointments.upcoming'), icon: Calendar, color: 'blue' },
-    { title: t('common.completed'), value: String(totals.completed), subtitle: t('telehealthPage.finished'), icon: CheckCircle, color: 'purple' },
-    { title: t('telehealthPage.canceled'), value: String(totals.canceled), subtitle: t('telehealthPage.history'), icon: XCircle, color: 'orange' },
+    { title: t('telehealthPage.totalSessions'), value: yuklemeHatasi ? '—' : String(totals.total), subtitle: t('telehealthPage.allTime'), icon: Video, color: 'green' },
+    { title: t('telehealthPage.scheduled'), value: yuklemeHatasi ? '—' : String(totals.scheduled), subtitle: t('crm.appointments.upcoming'), icon: Calendar, color: 'blue' },
+    { title: t('common.completed'), value: yuklemeHatasi ? '—' : String(totals.completed), subtitle: t('telehealthPage.finished'), icon: CheckCircle, color: 'purple' },
+    { title: t('telehealthPage.canceled'), value: yuklemeHatasi ? '—' : String(totals.canceled), subtitle: t('telehealthPage.history'), icon: XCircle, color: 'orange' },
   ];
 
   const [upPage, setUpPage] = useState(1);
@@ -244,6 +249,20 @@ const TelehealthPage = () => {
               </button>
             )}
           </div>
+
+          {yuklemeHatasi && (
+            <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+              <WifiOff className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-semibold text-amber-900">
+                  {t('common.loadFailedTitle', 'Could not load data')}
+                </p>
+                <p className="text-amber-800/80 text-xs mt-0.5">
+                  {t('common.loadFailedHint', 'Check your connection and try again.')}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">

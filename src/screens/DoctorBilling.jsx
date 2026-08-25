@@ -7,7 +7,7 @@ import useModalDavranisi from '../hooks/useModalDavranisi';
 import {
   Plus, FileText, Search, Filter, ChevronDown, X,
   CheckCircle, Clock, AlertCircle, XCircle, Loader2,
-  DollarSign, TrendingUp, Calendar, Download, User,
+  DollarSign, TrendingUp, Calendar, Download, User, WifiOff,
 } from 'lucide-react';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -399,6 +399,11 @@ export default function DoctorBilling() {
 
   const [invoices, setInvoices] = useState([]);
   const [stats, setStats] = useState(null);
+  // İki çağrı ayrı ayrı düşebilir. Düşeni saymazsak fatura listesi boş,
+  // aylık toplam da 0 görünüyor — sunucu cevap vermezken hekime "bu ay hiç
+  // kazanmadın" demek oluyor bu. Sıfır bir ölçüm; okunamamış veri değil.
+  const [faturaHatasi, setFaturaHatasi] = useState(false);
+  const [istatistikHatasi, setIstatistikHatasi] = useState(false);
   const [loading, setLoading] = useState(true);
   const [addModal, setAddModal] = useState(false);
 
@@ -430,6 +435,9 @@ export default function DoctorBilling() {
         doctorBillingAPI.stats(),
       ]);
 
+      setFaturaHatasi(invRes.status !== 'fulfilled');
+      setIstatistikHatasi(statsRes.status !== 'fulfilled');
+
       if (invRes.status === 'fulfilled') {
         const raw = invRes.value;
         setInvoices(raw?.data?.data || raw?.data || []);
@@ -437,7 +445,10 @@ export default function DoctorBilling() {
       if (statsRes.status === 'fulfilled') {
         setStats(statsRes.value?.data || statsRes.value || null);
       }
-    } catch { /* silent */ }
+    } catch {
+      setFaturaHatasi(true);
+      setIstatistikHatasi(true);
+    }
     setLoading(false);
   }, [filterStatus, filterSearch, filterDateFrom, filterDateTo]);
 
@@ -484,21 +495,21 @@ export default function DoctorBilling() {
           {[
             {
               label: t('billing.totalThisMonth'),
-              value: fmt(totalAmount, currency),
+              value: istatistikHatasi ? '—' : fmt(totalAmount, currency),
               icon: TrendingUp,
               color: 'text-teal-600',
               bg: 'bg-teal-50',
             },
             {
               label: t('billing.pendingInvoices'),
-              value: pendingCount,
+              value: faturaHatasi ? '—' : pendingCount,
               icon: Clock,
               color: 'text-amber-600',
               bg: 'bg-amber-50',
             },
             {
               label: t('billing.paidThisMonth'),
-              value: paidCount,
+              value: faturaHatasi ? '—' : paidCount,
               icon: CheckCircle,
               color: 'text-emerald-600',
               bg: 'bg-emerald-50',
@@ -576,6 +587,24 @@ export default function DoctorBilling() {
           {loading ? (
             <div className="flex items-center justify-center py-16">
               <Loader2 className="w-6 h-6 text-teal-500 animate-spin" />
+            </div>
+          ) : faturaHatasi ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-3">
+                <WifiOff className="w-7 h-7 text-gray-400" />
+              </div>
+              <p className="text-sm font-semibold text-gray-700">
+                {t('common.loadFailedTitle', 'Could not load data')}
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                {t('common.loadFailedHint', 'Check your connection and try again.')}
+              </p>
+              <button
+                onClick={fetchData}
+                className="mt-4 px-4 py-2 border border-teal-200 text-teal-600 text-sm font-semibold rounded-xl hover:bg-teal-50 transition-colors"
+              >
+                {t('common.retry', 'Try again')}
+              </button>
             </div>
           ) : invoices.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">

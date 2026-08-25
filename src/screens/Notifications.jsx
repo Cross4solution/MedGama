@@ -16,6 +16,7 @@ import {
   Loader2,
   BellOff,
   Trash2,
+  WifiOff,
 } from 'lucide-react';
 import { notificationAPI } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -74,9 +75,14 @@ export default function Notifications() {
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [unreadCount, setUnreadCount] = useState(0);
+  // Liste okunamadığında ekran "Henüz bildirim yok / Tüm bildirimleri
+  // gördünüz!" diyordu. İkinci cümle bir güvence veriyor: kaçırdığın bir şey
+  // yok. Sunucu cevap vermezken bunu söyleyemeyiz.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
 
   const fetchNotifications = useCallback(async (pg = 1) => {
     setLoading(true);
+    setYuklemeHatasi(false);
     try {
       const res = await notificationAPI.list({ per_page: 20, page: pg });
       // İstemci zaten response.data'yı açıyor; sayfalayıcı doğrudan res.
@@ -85,7 +91,9 @@ export default function Notifications() {
       setItems(data?.data || []);
       setLastPage(data?.last_page || 1);
       setPage(data?.current_page || 1);
-    } catch {}
+    } catch {
+      setYuklemeHatasi(true);
+    }
     setLoading(false);
   }, []);
 
@@ -176,7 +184,7 @@ export default function Notifications() {
             </div>
             <div>
               <h1 className="text-lg font-bold text-gray-900">{t('notifications.title', 'Notifications')}</h1>
-              {unreadCount > 0 && <p className="text-[11px] text-gray-400 font-medium">{unreadCount} {t('notifications.unread', 'unread')}</p>}
+              {unreadCount > 0 && <p className="text-[11px] text-gray-400 font-medium">{t('notifications.unread', { count: unreadCount })}</p>}
             </div>
           </div>
           {unreadCount > 0 && (
@@ -247,6 +255,24 @@ export default function Notifications() {
               <div className="min-h-[60vh] max-h-[70vh] overflow-y-auto">
                 {loading ? (
                   <div className="p-12 text-center"><Loader2 className="w-6 h-6 animate-spin text-gray-300 mx-auto" /></div>
+                ) : yuklemeHatasi ? (
+                  <div className="p-12 text-center">
+                    <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                      <WifiOff className="w-5 h-5 text-gray-400" />
+                    </div>
+                    <p className="text-sm text-gray-700 font-medium">
+                      {t('common.loadFailedTitle', 'Could not load data')}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {t('common.loadFailedHint', 'Check your connection and try again.')}
+                    </p>
+                    <button
+                      onClick={() => fetchNotifications(page)}
+                      className="mt-4 px-4 py-2 border border-teal-200 text-teal-600 text-sm font-semibold rounded-xl hover:bg-teal-50 transition-colors"
+                    >
+                      {t('common.retry', 'Try again')}
+                    </button>
+                  </div>
                 ) : filtered.length === 0 ? (
                   <div className="p-12 text-center">
                     <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">

@@ -8,7 +8,7 @@ import useModalDavranisi from '../hooks/useModalDavranisi';
 import {
   Activity, Calendar, Video, FileText, Clock, ChevronRight,
   Pill, FolderHeart, Monitor, Stethoscope, AlertCircle, Loader2,
-  TrendingUp, Heart, Shield, Star, X, Send
+  TrendingUp, Heart, Shield, Star, X, Send, WifiOff
 } from 'lucide-react';
 
 const PatientDashboard = () => {
@@ -40,6 +40,12 @@ const PatientDashboard = () => {
   }, [reviewSubmitting]);
   const yorumKokRef = useModalDavranisi(!!reviewModal, yorumuKapat);
   const [reviewSuccess, setReviewSuccess] = useState(false);
+  // Randevu ve belge çağrıları ayrı ayrı düşebiliyor; düşeni saymazsak
+  // panodaki dört sayaç da 0 çiziyor ve "yaklaşan randevunuz yok, randevu
+  // alın" deniyor. Hasta için bu, sunucu susarken kendi kaydının silinmiş
+  // gibi görünmesi demek.
+  const [randevuHatasi, setRandevuHatasi] = useState(false);
+  const [belgeHatasi, setBelgeHatasi] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,6 +56,9 @@ const PatientDashboard = () => {
           patientDocumentAPI.stats(),
           doctorAPI.reviewableAppointments(),
         ]);
+        setRandevuHatasi(apptRes.status !== 'fulfilled');
+        setBelgeHatasi(statsRes.status !== 'fulfilled');
+
         if (apptRes.status === 'fulfilled') {
           setAppointments(apptRes.value?.data || []);
         }
@@ -59,7 +68,10 @@ const PatientDashboard = () => {
         if (reviewableRes.status === 'fulfilled') {
           setReviewable(reviewableRes.value?.data || []);
         }
-      } catch { /* silent */ }
+      } catch {
+        setRandevuHatasi(true);
+        setBelgeHatasi(true);
+      }
       setLoading(false);
     };
     fetchData();
@@ -131,27 +143,27 @@ const PatientDashboard = () => {
   const stats = [
     {
       label: t('patientDashboard.upcomingAppointments', 'Upcoming'),
-      value: upcoming.length,
+      value: randevuHatasi ? '—' : upcoming.length,
       icon: Calendar,
       color: 'blue',
       onClick: () => navigate('/telehealth-appointment'),
     },
     {
       label: t('patientDashboard.completedVisits', 'Completed'),
-      value: completed.length,
+      value: randevuHatasi ? '—' : completed.length,
       icon: Stethoscope,
       color: 'green',
     },
     {
       label: t('patientDashboard.telehealthSessions', 'Telehealth'),
-      value: online.length,
+      value: randevuHatasi ? '—' : online.length,
       icon: Monitor,
       color: 'purple',
       onClick: () => navigate('/telehealth'),
     },
     {
       label: t('patientDashboard.medicalDocuments', 'Documents'),
-      value: docStats?.total_documents ?? 0,
+      value: belgeHatasi ? '—' : docStats?.total_documents ?? 0,
       icon: FolderHeart,
       color: 'amber',
       onClick: () => navigate('/medical-archive'),
@@ -361,7 +373,19 @@ const PatientDashboard = () => {
             </div>
 
             <div className="rounded-2xl border border-gray-200/60 bg-white shadow-lg shadow-gray-200/30 overflow-hidden">
-              {upcoming.length === 0 ? (
+              {randevuHatasi ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center px-6">
+                  <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-3">
+                    <WifiOff className="w-7 h-7 text-gray-400" />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-700">
+                    {t('common.loadFailedTitle', 'Could not load data')}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {t('common.loadFailedHint', 'Check your connection and try again.')}
+                  </p>
+                </div>
+              ) : upcoming.length === 0 ? (
                 <EmptyState
                   type="appointments"
                   title={t('patientDashboard.noUpcoming', 'No upcoming appointments')}

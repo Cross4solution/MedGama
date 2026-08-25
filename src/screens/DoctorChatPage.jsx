@@ -160,6 +160,10 @@ const DoctorChatPage = () => {
 
   // Typing indicator state
   const [typingUser, setTypingUser] = useState(null);
+  // Konuşma listesi okunamadığında catch listeyi boşaltıp bırakıyordu ve ekran
+  // "Henüz konuşma yok — hastalarınız mesaj gönderdiğinde burada görünecek"
+  // diyordu. Hekim için bu, bekleyen mesajı olmadığını sanmak demek.
+  const [konusmaHatasi, setKonusmaHatasi] = useState(false);
   const typingTimeoutRef = useRef(null);
   const lastTypingSentRef = useRef(0);
   const startWithHandled = useRef(false);
@@ -186,6 +190,7 @@ const DoctorChatPage = () => {
     }
 
     try {
+      setKonusmaHatasi(false);
       const res = await chatAPI.conversations({ per_page: 50 });
       const data = res?.data || [];
       const apiThreads = Array.isArray(data) ? data.map(c => convToThread(c)) : [];
@@ -201,6 +206,7 @@ const DoctorChatPage = () => {
         setMessages([]);
       }
     } catch {
+      setKonusmaHatasi(true);
       setThreads([]);
       setIsApiMode(true);
       setActiveThreadId(null);
@@ -616,8 +622,12 @@ const DoctorChatPage = () => {
                   </button>
                   <EmptyState
                     type="messages"
-                    title={t('chat.emptyTitle', 'No conversations yet')}
-                    description={t('chat.emptyDesc', 'When patients send you a message, their conversations will appear here. Start connecting with your patients!')}
+                    title={konusmaHatasi
+                      ? t('common.loadFailedTitle', 'Could not load data')
+                      : t('chat.emptyTitle', 'No conversations yet')}
+                    description={konusmaHatasi
+                      ? t('common.loadFailedHint', 'Check your connection and try again.')
+                      : t('chat.emptyDesc', 'When patients send you a message, their conversations will appear here. Start connecting with your patients!')}
                   />
                 </div>
               )}
@@ -659,8 +669,12 @@ const DoctorChatPage = () => {
                   ) : (
                     <EmptyState
                       type="messages"
-                      title={t('chat.emptyTitle', 'No conversations yet')}
-                      description={t('chat.emptyDesc', 'When patients send you a message, their conversations will appear here. Start connecting with your patients!')}
+                      title={konusmaHatasi
+                        ? t('common.loadFailedTitle', 'Could not load data')
+                        : t('chat.emptyTitle', 'No conversations yet')}
+                      description={konusmaHatasi
+                        ? t('common.loadFailedHint', 'Check your connection and try again.')
+                        : t('chat.emptyDesc', 'When patients send you a message, their conversations will appear here. Start connecting with your patients!')}
                     />
                   )}
                 </div>

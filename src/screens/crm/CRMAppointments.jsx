@@ -538,9 +538,12 @@ const CreateAppointmentModal = ({ isOpen, onClose, onCreated, defaultDate, defau
                 oluyor. Yurt dışından giren doktor kendi saatiyle yazmasın diye
                 dilim açıkça yazılıyor; sunucu da bu dilimle saklıyor. */}
             <p className="-mt-4 text-[11px] text-gray-500">
-              {t('crm.appointments.timezoneHint', isTr
-                ? `Saatler klinik saat diliminde (${saglayiciTz}).`
-                : `Times are in the clinic's timezone (${saglayiciTz}).`)}
+              {t('crm.appointments.timezoneHint', {
+                tz: saglayiciTz,
+                defaultValue: isTr
+                  ? 'Saatler klinik saat diliminde ({{tz}}).'
+                  : "Times are in the clinic's timezone ({{tz}}).",
+              })}
             </p>
             <div className="border-t border-gray-100 pt-5">
               <ModalLabel icon={UserPlus}>{t('crm.appointments.patientName')}</ModalLabel>
