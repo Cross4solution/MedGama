@@ -169,6 +169,7 @@ export default function BrowseClinics() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('browse.searchClinics', 'Search clinics by name, city, or specialty...')}
+            aria-label={t('browse.searchClinics', 'Search clinics by name, city, or specialty...')}
             className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all"
           />
         </div>

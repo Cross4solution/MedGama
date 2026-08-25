@@ -1723,7 +1723,8 @@
     "thinking": "Vasco réfléchit",
     "trust": "Aucun diagnostic · Multilingue · Votre problème reste confidentiel",
     "typeExample": "J'ai une forte rage de dents depuis deux jours",
-    "vague": "Pouvez-vous décrire votre problème un peu plus en détail ?"
+    "vague": "Pouvez-vous décrire votre problème un peu plus en détail ?",
+    "inputLabel": "Décrivez vos symptômes"
   },
   "telehealthPage": {
     "title": "Télésanté",

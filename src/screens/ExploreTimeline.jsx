@@ -679,6 +679,7 @@ export default function ExploreTimeline() {
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder={t('medstream.searchInTimeline')}
+                      aria-label={t('medstream.searchInTimeline')}
                       className="w-full h-9 pl-9 pr-3 rounded-full border border-gray-200 bg-gray-50/60 text-[13px] placeholder:text-gray-400 focus:bg-white focus:border-teal-400 focus:ring-2 focus:ring-teal-500/15 outline-none transition-all"
                     />
                   </div>

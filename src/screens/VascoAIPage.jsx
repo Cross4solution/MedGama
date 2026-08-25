@@ -93,6 +93,11 @@ function VascoAssistant() {
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) ask(); }}
             rows={2}
+            // Yer tutucu burada DEĞİŞKEN (yazı yazıldıkça animasyonlu örnek
+            // metinler dönüyor), üstelik odaklanınca kayboluyor. Ekran okuyucu
+            // için sabit bir ad şart: alanın ne istediği yer tutucuya bağlı
+            // kalamaz.
+            aria-label={t('vascoAI.inputLabel', 'Şikâyetinizi yazın')}
             placeholder={accumulated ? t('vascoAI.answerPlaceholder', 'Yanıtınızı yazın...') : (animPh || t('vascoAI.placeholder', 'ör. İki gündür göğsümde ağrı ve çarpıntı var...'))}
             className="flex-1 resize-none border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
           />

@@ -1723,7 +1723,8 @@
     "thinking": "Vasco sta pensando",
     "trust": "Nessuna diagnosi · Multilingue · Il tuo disturbo resta riservato",
     "typeExample": "Da due giorni ho un forte mal di denti",
-    "vague": "Puoi descrivere il tuo disturbo con qualche dettaglio in più?"
+    "vague": "Puoi descrivere il tuo disturbo con qualche dettaglio in più?",
+    "inputLabel": "Descrivi i tuoi sintomi"
   },
   "telehealthPage": {
     "title": "Telesalute",

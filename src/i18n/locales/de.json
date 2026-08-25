@@ -1723,7 +1723,8 @@
     "thinking": "Vasco denkt nach",
     "trust": "Keine Diagnose · Mehrsprachig · Ihr Anliegen bleibt vertraulich",
     "typeExample": "Ich habe seit zwei Tagen starke Zahnschmerzen",
-    "vague": "Können Sie Ihr Anliegen etwas genauer beschreiben?"
+    "vague": "Können Sie Ihr Anliegen etwas genauer beschreiben?",
+    "inputLabel": "Beschreiben Sie Ihre Beschwerden"
   },
   "telehealthPage": {
     "title": "Telemedizin",

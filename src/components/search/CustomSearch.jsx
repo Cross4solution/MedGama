@@ -297,6 +297,7 @@ export default function CustomSearch() {
             onChange={setSymptom}
             disabled={disableSymptom}
             placeholder={t('search.symptomPlaceholder')}
+            aria-label={t('search.symptomPlaceholder')}
             allowCustom={true}
             lowercase={true}
           />
@@ -320,6 +321,7 @@ export default function CustomSearch() {
             onChange={setSpecialty}
             disabled={disableSpecialty}
             placeholder={t('search.specialtyPlaceholder')}
+            aria-label={t('search.specialtyPlaceholder')}
             allowCustom={true}
             multi={false}
           />

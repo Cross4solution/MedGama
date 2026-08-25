@@ -1742,7 +1742,8 @@
     "subtitle": "Your AI-powered health assistant",
     "startChat": "Start Chat",
     "askVasco": "Ask Vasco AI...",
-    "analyzing": "Analyzing..."
+    "analyzing": "Analyzing...",
+    "inputLabel": "Describe your symptoms"
   },
   "telehealthPage": {
     "title": "Telehealth",

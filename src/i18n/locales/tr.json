@@ -1722,7 +1722,8 @@
     "subtitle": "Yapay zeka destekli sağlık asistanınız",
     "startChat": "Sohbet Başlat",
     "askVasco": "Vasco AI'a sorun...",
-    "analyzing": "Analiz ediliyor..."
+    "analyzing": "Analiz ediliyor...",
+    "inputLabel": "Şikâyetinizi yazın"
   },
   "telehealthPage": {
     "title": "Telesağlık",

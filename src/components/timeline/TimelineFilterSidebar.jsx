@@ -85,6 +85,7 @@ function TimelineFilterSidebar({
                 value={localQuery}
                 onChange={(e) => setLocalQuery(e.target.value)}
                 placeholder={t('medstream.searchInTimeline')}
+                aria-label={t('medstream.searchInTimeline')}
                 className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50/50 hover:bg-white hover:border-gray-300 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition-all placeholder:text-gray-400"
               />
             </div>

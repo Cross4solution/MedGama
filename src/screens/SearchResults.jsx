@@ -233,32 +233,32 @@ export default function SearchResults() {
     <div className="space-y-5">
       {/* Specialty */}
       <div>
-        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('search.specialtyOrDoctor')}</label>
-        <select value={specId} onChange={e => setSpecId(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
+        <label htmlFor="suzgec-uzmanlik" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('search.specialtyOrDoctor')}</label>
+        <select id="suzgec-uzmanlik" value={specId} onChange={e => setSpecId(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
           <option value="">{t('search.allSpecialties')}</option>
           {specialties.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
       </div>
       {/* City */}
       <div>
-        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('search.city')}</label>
-        <select value={cityId} onChange={e => setCityId(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
+        <label htmlFor="suzgec-sehir" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('search.city')}</label>
+        <select id="suzgec-sehir" value={cityId} onChange={e => setCityId(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
           <option value="">{t('search.allCities')}</option>
           {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </div>
       {/* Language */}
       <div>
-        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('search.language')}</label>
-        <select value={lang} onChange={e => setLang(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
+        <label htmlFor="suzgec-dil" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('search.language')}</label>
+        <select id="suzgec-dil" value={lang} onChange={e => setLang(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
           <option value="">{t('search.allLanguages')}</option>
           {availLangs.map(l => <option key={l} value={l}>{l.toUpperCase()}</option>)}
         </select>
       </div>
       {/* Rating */}
       <div>
-        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('search.rating')}</label>
-        <select value={minRating} onChange={e => setMinRating(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
+        <label htmlFor="suzgec-puan" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('search.rating')}</label>
+        <select id="suzgec-puan" value={minRating} onChange={e => setMinRating(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400">
           <option value="">{t('search.anyRating')}</option>
           {[4, 3, 2].map(n => <option key={n} value={n}>{t('search.starsAndAbove', { count: n })}</option>)}
         </select>
@@ -305,12 +305,14 @@ export default function SearchResults() {
                 value={heroQ}
                 onChange={e => setHeroQ(e.target.value)}
                 placeholder={t('search.specialtyOrDoctorPlaceholder')}
+                aria-label={t('search.specialtyOrDoctor')}
                 className="w-full pl-10 pr-3 py-3 rounded-xl text-sm border border-gray-100 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none transition-all"
               />
             </div>
             {/* Specialty select */}
             <div className="md:w-48">
               <select
+                aria-label={t('search.specialtyOrDoctor')}
                 value={heroSpec}
                 onChange={e => setHeroSpec(e.target.value)}
                 className="w-full border border-gray-100 rounded-xl px-3 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white"
@@ -324,6 +326,7 @@ export default function SearchResults() {
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 <select
+                  aria-label={t('search.city')}
                   value={heroCity}
                   onChange={e => setHeroCity(e.target.value)}
                   className="w-full border border-gray-100 rounded-xl pl-9 pr-3 py-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none bg-white appearance-none"

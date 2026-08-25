@@ -1763,7 +1763,8 @@
     "thinking": "Vasco düşünür",
     "trust": "Diaqnoz qoymur · Çoxdilli · Şikayətiniz gizli saxlanılır",
     "typeExample": "İki gündür dişimdə güclü ağrı var",
-    "vague": "Şikayətinizi bir az da ətraflı izah edə bilərsinizmi?"
+    "vague": "Şikayətinizi bir az da ətraflı izah edə bilərsinizmi?",
+    "inputLabel": "Şikayətinizi yazın"
   },
   "telehealthPage": {
     "title": "Telesağlamlıq",

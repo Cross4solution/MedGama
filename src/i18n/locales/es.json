@@ -1723,7 +1723,8 @@
     "thinking": "Vasco está pensando",
     "trust": "Sin diagnóstico · Multilingüe · Su consulta es confidencial",
     "typeExample": "Llevo dos días con un fuerte dolor de muelas",
-    "vague": "¿Podría describir su problema con un poco más de detalle?"
+    "vague": "¿Podría describir su problema con un poco más de detalle?",
+    "inputLabel": "Describe tus síntomas"
   },
   "telehealthPage": {
     "title": "Telesalud",

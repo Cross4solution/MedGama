@@ -31,6 +31,11 @@ export default function GlobalSuggest({
   allowCustom = true,
   maxTags = 20,
   lowercase = false, // true → eklenen tag'ler hep küçük harf (tek standart görünüm)
+  // Erişilebilir ad. Çağıran taraf `aria-label` veriyordu ama bu bir BİLEŞEN;
+  // özel prop olarak gelen değer kendiliğinden `<input>`a inmiyordu, yani alan
+  // ekran okuyucuya adsız görünüyordu. Yer tutucu ad yerine geçmez: odaklanınca
+  // kaybolur ve WCAG onu etiket saymaz.
+  'aria-label': ariaLabel,
   label,
 }) {
   const { t } = useTranslation();
@@ -302,6 +307,7 @@ export default function GlobalSuggest({
             <input
               ref={inputRef}
               type="text"
+              aria-label={ariaLabel || placeholder}
               value={input}
               onChange={(e) => { setInput(e.target.value); setOpen(true); setShowPopular(false); setActiveIndex(-1); }}
               onFocus={() => {
