@@ -40,8 +40,17 @@ class DoctorService
                 // address brief listede şehir join'ine gerek bırakmaz (Round 4 landing)
                 'clinic:id,name,codename,avatar,address',
             ])
+            // `email` BİLEREK yok. Bu uç kimlik istemiyor: herkes tam listeyi
+            // çekebiliyordu ve on dört doktorun on dördünün e-posta adresi
+            // yanıtta geliyordu — toplanmaya hazır kişisel veri.
+            //
+            // Ekranda da kullanılmıyordu: doktor listesini tüketen iki yer
+            // (`SearchResults`, `TelehealthAppointmentPage`) alanı hiç
+            // okumuyor. E-postayı meşru olarak gösteren ekranlar — klinik ekip
+            // yönetimi, yönetici doğrulama, CRM klinik yöneticisi — kendi
+            // KİMLİK GEREKTİREN uçlarından alıyor.
             ->select([
-                'id', 'fullname', 'avatar', 'email', 'city_id',
+                'id', 'fullname', 'avatar', 'city_id',
                 'country_id', 'clinic_id', 'is_verified', 'gender',
             ]);
 
