@@ -30,6 +30,25 @@ function hamAnahtarlar(metin) {
   return [...bulunan];
 }
 
+/**
+ * Uzmanlığın adres parçası — uygulamayla aynı kural.
+ *
+ * `lib/slug.js` içindeki `slugify` Türkçe harfleri düzleştiriyor; ad ise
+ * `name` düz metin ya da `{ tr, en }` sözlüğü olabiliyor.
+ */
+function uzmanlikAdi(uzmanlik) {
+  const ad = uzmanlik?.name;
+  const metin = typeof ad === 'string' ? ad : (ad?.tr || ad?.en || '');
+
+  return String(metin)
+    .toLowerCase()
+    .replace(/ı/g, 'i').replace(/İ/g, 'i').replace(/ş/g, 's').replace(/ğ/g, 'g')
+    .replace(/ç/g, 'c').replace(/ö/g, 'o').replace(/ü/g, 'u')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 test.describe('Dinamik sayfalar', () => {
   test('ziyaretçinin gördüğü dinamik sayfalar sağlam', async ({ page }) => {
     test.setTimeout(300_000);
@@ -83,10 +102,48 @@ test.describe('Dinamik sayfalar', () => {
     ekle(
       'kullanıcı profili',
       gonderi?.author?.username || doktor?.codename || doktor?.username,
-      (v) => `/tr/${v}`,
+      // Kanonik biçim `@` ÖNEKLİ: `/tr/@kaan-ozturk` 200, `/tr/kaan-ozturk`
+      // 404 veriyor. Uygulama da her yerde `/@handle` bağlantısı üretiyor.
+      // Önek olmadan yazılmış hâli, sayfayı sınıyor sanırken 404 ölçüyordu.
+      (v) => `/tr/@${v}`,
     );
-    ekle('tedavi/uzmanlık', uzmanlik?.slug || uzmanlik?.code, (v) => `/tr/tedaviler/${v}`);
-    ekle('tedavi/uzmanlık/şehir', uzmanlik?.slug || uzmanlik?.code, (v) => `/tr/tedaviler/${v}/istanbul`);
+    // Adres, uzmanlığın TÜRKÇE ADINDAN türetiliyor — katalogda `slug` diye bir
+    // alan YOK (otuz iki kaydın hiçbirinde), yalnız `code` var: CARD, DERM…
+    // Eski hâli `slug || code` yazıyordu, yani her zaman koda düşüyor ve
+    // `/tr/tedaviler/CARD/istanbul` 404 alıyordu. Sayfa sınanıyor sanılırken
+    // ölçülen şey 404'tü. Uygulama `slugify(trName(...))` kullanıyor; ölçüt de
+    // aynı yoldan gitmeli.
+    const uzmanlikSlug = uzmanlikAdi(uzmanlik);
+
+    ekle('tedavi/uzmanlık', uzmanlikSlug, (v) => `/tr/tedaviler/${v}`);
+
+    // Şehir sayfası, o uzmanlık+şehir birleşiminde sağlayıcı YOKSA bilerek 404
+    // veriyor — boş bir sayfayı indeksletmemek için makul bir karar. Ölçüldü:
+    // `/tedaviler/dis-hekimligi/ankara` 200, `/tedaviler/kardiyoloji/ankara`
+    // 404, çünkü Ankara'da kardiyoloji kliniği yok.
+    //
+    // Bu yüzden adres UYDURULMUYOR: uzmanlık sayfasının kendi ürettiği ilk
+    // şehir bağlantısı izleniyor. Hiç şehir bağlantısı yoksa sınanacak bir
+    // sayfa da yok demektir ve hedef atlanıyor.
+    if (uzmanlikSlug) {
+      // Sayfa GEZDİRİLMİYOR, yalnız istenip metni okunuyor. İlk denemede burada
+      // `page.goto` kullanmıştım: toplama aşamasında gezinmek testin sayfa
+      // durumunu bozuyor ve sonraki her hedef "sayfa kapandı" diye düşüyordu.
+      const yanit = await page.request.get(`/tr/tedaviler/${uzmanlikSlug}`).catch(() => null);
+      const html = yanit && yanit.ok() ? await yanit.text().catch(() => '') : '';
+      const eslesme = html.match(
+        new RegExp(`href="(/(?:tr/)?tedaviler/${uzmanlikSlug}/[a-z0-9-]+)"`),
+      );
+
+      if (eslesme) {
+        ekle('tedavi/uzmanlık/şehir', eslesme[1], (v) => (v.startsWith('/tr') ? v : `/tr${v}`));
+      } else {
+        // Bu dosyanın kendi kuralı: sessiz atlama, kapsanmamışı kapsanmış
+        // gösterir. Şehir sayfası yoksa nedeni yazılıyor — veri o uzmanlıkta
+        // hiçbir şehirde sağlayıcı taşımıyor demektir, hata değil.
+        console.log(`  ! ${uzmanlikSlug} için şehir bağlantısı yok — şehir sayfası sınanmadı`);
+      }
+    }
 
     // Sessiz atlama, kapsanmamışı kapsanmış gösterir.
     if (atlanan.length) {
