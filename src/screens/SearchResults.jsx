@@ -10,6 +10,7 @@ import {
 import { doctorAPI, catalogAPI } from '../lib/api';
 // SEO meta + canonical artık app/search/page.jsx generateMetadata ile sunucuda üretiliyor (Faz 3).
 import resolveStorageUrl from '../utils/resolveStorageUrl';
+import doktorAdi from '../utils/doktorAdi';
 
 /* ═══════════════════════════════════════════
    Skeleton Card (shimmer)
@@ -56,9 +57,12 @@ function DoctorCard({ doctor, t, navigate }) {
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <h3 className="text-sm font-bold text-gray-900 truncate">
-              {p.title ? `${p.title} ` : ''}{doctor.fullname}
-            </h3>
+            {/* Kart başlıkları sayfa başlığının (h1) ALTINDAKİ ilk seviye:
+                h3 kullanmak arada bir basamak atlıyordu. Görünüm sınıflardan
+                geliyor, etiket değişimi ekranı etkilemiyor. */}
+            <h2 className="text-sm font-bold text-gray-900 truncate">
+              {doktorAdi(p.title, doctor.fullname)}
+            </h2>
             {doctor.is_verified && (
               <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded-full">
                 <BadgeCheck className="w-3 h-3" /> {t('search.doctorCard.verified')}
@@ -361,9 +365,9 @@ export default function SearchResults() {
           {/* ── Desktop Sidebar ── */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-20 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-              <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <h2 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <SlidersHorizontal className="w-4 h-4 text-teal-600" /> {t('search.filters')}
-              </h3>
+              </h2>
               {filterSidebar}
             </div>
           </aside>
@@ -499,9 +503,9 @@ export default function SearchResults() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileFilter(false)} />
           <div className="absolute right-0 top-0 bottom-0 w-80 max-w-full bg-white shadow-2xl overflow-y-auto">
             <div className="flex items-center justify-between p-4 border-b border-gray-100">
-              <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+              <h2 className="text-sm font-bold text-gray-800 flex items-center gap-2">
                 <SlidersHorizontal className="w-4 h-4 text-teal-600" /> {t('search.filters')}
-              </h3>
+              </h2>
               <button onClick={() => setMobileFilter(false)} className="p-1 hover:bg-gray-100 rounded-lg">
                 <X className="w-5 h-5 text-gray-500" />
               </button>

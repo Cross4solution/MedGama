@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import doktorAdi from '../utils/doktorAdi';
 import { useNavigate } from '@/compat/router';
 import { Building2, Loader2, Trash2, MapPin, Star, Heart, User2, Stethoscope } from 'lucide-react';
 import { socialAPI } from '../lib/api';
@@ -258,7 +259,7 @@ export default function SavedClinics() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-bold text-gray-900 truncate">
-                          {doctor.title ? `${doctor.title} ${doctor.name}` : doctor.name}
+                          {doktorAdi(doctor.title, doctor.name)}
                         </h3>
                         {doctor.specialty && (
                           <p className="text-xs text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full font-medium mt-1 inline-block">{doctor.specialty}</p>

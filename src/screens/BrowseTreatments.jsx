@@ -60,7 +60,10 @@ function TreatmentCard({ clinic, onClick }) {
         </div>
       </div>
       <div className="p-4">
-        <h3 className="text-sm font-bold text-gray-900 line-clamp-1">{clinic.fullname || clinic.name}</h3>
+        {/* Sayfa başlığı h1; kartlar onun altındaki ilk seviye. h3 kullanmak
+            arada bir basamak atlıyor ve ekran okuyucu başlıklar arasında
+            gezinirken boşluk görüyordu. Boyut sınıflardan geliyor. */}
+        <h2 className="text-sm font-bold text-gray-900 line-clamp-1">{clinic.fullname || clinic.name}</h2>
         {clinic.address && (
           <div className="flex items-center gap-1 mt-1.5 text-xs text-gray-500">
             <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
