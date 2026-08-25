@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
  */
 
 // ── Insight generation (client-side) ─────────────────────────
-function generateInsights({ appointments, alerts, stats, patients, t, isTr }) {
+function generateInsights({ appointments, randevularBiliniyor, alerts, stats, patients, t, isTr }) {
   const insights = [];
   const now = new Date();
   const hour = now.getHours();
@@ -98,6 +98,14 @@ function generateInsights({ appointments, alerts, stats, patients, t, isTr }) {
   // 5. Day overview (always present as fallback)
   // "Onay bekleyen" sayısı kaldırıldı: randevular doğrudan onaylı geliyor,
   // onay diye bir adım kalmadı.
+  // Randevu verisi GELMEDİYSE günlük özet çıkarımı yapılmıyor.
+  //
+  // Bu dosya benzer uydurmaları zaten temizlemiş — "yüksek riskli hasta" ve
+  // "gelir trendi" çıkarımları, dayanacak veri olmadığı için kaldırılmıştı.
+  // Aynı sorun burada kalmıştı: sunucuya ulaşılamadığında liste boş geliyor,
+  // banner de "Bugün randevunuz yok, takviminiz boş" diye HÜKÜM veriyordu.
+  // Boş liste ile bilinmeyen liste aynı şey değil.
+  if (randevularBiliniyor) {
   insights.push({
     icon: Sparkles,
     iconColor: 'text-violet-500',
@@ -113,21 +121,22 @@ function generateInsights({ appointments, alerts, stats, patients, t, isTr }) {
     priority: 3,
     tag: 'overview',
   });
+  }
 
   // Sort by priority desc and return
   return insights.sort((a, b) => b.priority - a.priority);
 }
 
 // ── Component ────────────────────────────────────────────────
-export default function AiInsightBanner({ appointments, alerts, stats, patients }) {
+export default function AiInsightBanner({ appointments, randevularBiliniyor = true, alerts, stats, patients }) {
   const { t, i18n } = useTranslation();
   const isTr = i18n.language?.startsWith('tr');
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const insights = useMemo(
-    () => generateInsights({ appointments, alerts, stats, patients, t, isTr }),
-    [appointments, alerts, stats, patients, t, isTr],
+    () => generateInsights({ appointments, randevularBiliniyor, alerts, stats, patients, t, isTr }),
+    [appointments, randevularBiliniyor, alerts, stats, patients, t, isTr],
   );
 
   // Auto-rotate every 8 seconds

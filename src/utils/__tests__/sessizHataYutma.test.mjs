@@ -41,8 +41,17 @@ import path from 'node:path';
  *                   yanlış rakam. Artık başarısızlık sayılıyor ve sıfır yerine
  *                   hiçbir şey gösterilmiyor.
  *
- * Kalanlar hâlâ listede ve artık VARSAYIM değil, ölçüm: /crm, /crm/leads,
- * /crm/reports, /crm/examination.
+ *   • CRM panosu  — kutular zaten "—" gösteriyordu (doğru), ama yanındaki
+ *                   yapay zekâ şeridi "Bugün randevunuz yok, takviminiz boş"
+ *                   diye HÜKÜM veriyor, başlık da "0 randevu" yazıyordu. Aynı
+ *                   dosya "yüksek riskli hasta" ve "gelir trendi" çıkarımlarını
+ *                   dayanacak veri olmadığı için zaten kaldırmıştı; bu ikisi
+ *                   gözden kaçmıştı. Boş liste ile BİLİNMEYEN liste aynı değil.
+ *
+ * Kalanlar hâlâ listede: /crm/leads (kanban sütunları "0/Boş" diyor) ve
+ * /crm/reports ("Henüz randevu verisi yok"). `/crm/examination` taramada
+ * işaretlenmişti ama YANLIŞ POZİTİF çıktı: o ekran bir form, liste değil —
+ * eşleşen metin form etiketleriydi.
  *
  * Geri kalanlar bilerek listede: bir kısmı zararsız (öneri açılır listesi boş
  * kalabilir), bir kısmı giriş arkasında ve ekranına bakılmadan düzeltilmemeli.

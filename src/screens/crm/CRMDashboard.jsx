@@ -435,8 +435,12 @@ const CRMDashboard = () => {
       )}
 
       {/* AI Insight Banner */}
+      {/* `apiAppointments` null iken "randevu yok" DEĞİL "bilinmiyor" demek:
+          sunucuya ulaşılamadığında banner "Bugün randevunuz yok, takviminiz
+          boş" diye hüküm veriyordu. */}
       <AiInsightBanner
         appointments={appointments}
+        randevularBiliniyor={apiAppointments !== null}
         alerts={[]}
         stats={STATS}
         patients={[]}
@@ -508,7 +512,11 @@ const CRMDashboard = () => {
                   {t('crm.dashboard.appointmentsTitle', isTr ? 'Randevular' : 'Appointments')}
                 </h2>
                 <p className="text-[11px] text-gray-400">
-                  {appointments.length} {isTr ? 'randevu' : 'appointments'}
+                  {/* Veri gelmediyse "0 randevu" bir HÜKÜM olurdu; kutulardaki
+                      "—" ile aynı ayrım burada da geçerli. */}
+                  {apiAppointments === null
+                    ? '—'
+                    : `${appointments.length} ${isTr ? 'randevu' : 'appointments'}`}
                 </p>
               </div>
             </div>
