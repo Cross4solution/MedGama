@@ -17,6 +17,10 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      # Şifresiz demo girişi. Kasıtlı bir kimlik doğrulama atlaması olduğu için
+      # üretimde AÇIKÇA kapatılıyor — varsayılana güvenmek yetmez.
+      - key: DEMO_LOGIN_ENABLED
+        value: false
       - key: APP_KEY
         sync: false           # Set in Render dashboard → Environment
       - key: APP_URL

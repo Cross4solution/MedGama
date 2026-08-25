@@ -4,10 +4,15 @@ return [
     /*
      * Şifresiz demo girişi açık mı.
      *
-     * Teslimden önce sunucuda DEMO_LOGIN_ENABLED=false yapılmalı; bağlantıyı
-     * kapatmanın yolu budur.
+     * Varsayılan KAPALI. Eskiden `true` idi ve `render.yaml` bu değişkeni hiç
+     * içermiyordu — yani o dosyadan yapılan taze bir dağıtım, kasıtlı bir
+     * kimlik doğrulama atlamasını AÇIK olarak yayına alıyordu. Unutmanın
+     * bedeli açık kalması olmamalı; unutulursa kapalı kalsın.
+     *
+     * Yerelde açmak için `.env` içine `DEMO_LOGIN_ENABLED=true` yazılıyor;
+     * üretimde `render.yaml` artık açıkça `false` diyor.
      */
-    'enabled' => filter_var(env('DEMO_LOGIN_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
+    'enabled' => filter_var(env('DEMO_LOGIN_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
 
     /*
      * İsteğe bağlı anahtar. Tanımlıysa bağlantıda da bulunması gerekir.
