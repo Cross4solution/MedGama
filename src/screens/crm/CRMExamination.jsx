@@ -6,7 +6,7 @@ import {
   ClipboardList, ClipboardCheck, Save, Printer, AlertTriangle, CheckCircle2,
   Heart, Activity, Thermometer, GripHorizontal, ImageIcon,
   ChevronLeft, ChevronRight, ZoomIn, Download, Loader2,
-  ShieldAlert, TrendingUp, TrendingDown, FileText,
+  ShieldAlert, TrendingUp, TrendingDown, FileText, WifiOff,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { examinationAPI, catalogAPI } from '../../lib/api';
@@ -777,6 +777,7 @@ const CRMExamination = () => {
 
   // ─── History State ───
   const [examinations, setExaminations] = useState([]);
+  const [gecmisHatasi, setGecmisHatasi] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historySearch, setHistorySearch] = useState('');
   const [selectedExam, setSelectedExam] = useState(null);
@@ -802,8 +803,12 @@ const CRMExamination = () => {
     try {
       const res = await examinationAPI.list({ per_page: 50 });
       setExaminations(res?.data || []);
+      setGecmisHatasi(false);
     } catch {
+      // Sunucuya ulaşılamadı — "muayene kaydı yok" DEĞİL. Hekime geçmişinin
+      // boş olduğunu söylemek, kayıtların silindiğini düşündürür.
       setExaminations([]);
+      setGecmisHatasi(true);
     } finally {
       setHistoryLoading(false);
     }
@@ -1327,6 +1332,19 @@ const CRMExamination = () => {
                 <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                   <Loader2 className="w-8 h-8 animate-spin mb-2" />
                   <p className="text-sm font-medium">{t('common.loading', 'Loading...')}</p>
+                </div>
+              ) : gecmisHatasi ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <WifiOff className="w-10 h-10 mb-2 text-gray-300" />
+                  <p className="text-sm font-semibold text-gray-700">{t('common.loadFailedTitle')}</p>
+                  <p className="text-xs text-gray-500 mt-1 mb-3">{t('common.loadFailedHint')}</p>
+                  <button
+                    type="button"
+                    onClick={() => loadExaminations()}
+                    className="px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700"
+                  >
+                    {t('common.retry')}
+                  </button>
                 </div>
               ) : filteredHistory.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-gray-400">

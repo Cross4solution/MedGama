@@ -112,6 +112,15 @@ const BILINEN = new Set([
   'screens/admin/AdminCatalog.jsx',
   'screens/admin/AdminSupport.jsx',
   'screens/crm/CRMSettings.jsx',
+  // Gelir GRAFİĞİ bölümü: CRM kapısı ucu engellediğinde grafik hata
+  // göstermek yerine gizleniyor ("chart stays hidden"). Ekrandaki üç rapor
+  // bölümü hatayı ayrı ayrı bildiriyor; bu kalıp yalnız grafik için duruyor.
+  'screens/crm/CRMReports.jsx',
+
+  // GEÇMİŞ listesi düzeltildi (hata ayrı durumda gösteriliyor). Kalan kalıp
+  // tedavi etiketi OTOMATİK TAMAMLAMASI: öneri listesinin boş kalması makul,
+  // ekranı kaplamıyor — yukarıdaki öneri bileşenleriyle aynı sınıf.
+  'screens/crm/CRMExamination.jsx',
 ]);
 
 function dosyalar(dizin = kaynakKok, toplam = []) {
