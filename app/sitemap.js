@@ -68,7 +68,10 @@ export default async function sitemap() {
     '/contact',
     '/vasco-ai',
     '/search',
-    '/doctors-departments',
+    // '/doctors-departments' BİLEREK yok: ekran hiçbir API'ye bağlanmıyor,
+    // uydurma doktorları uydurma puan ve fiyatlarla gösteriyor (bkz.
+    // `src/screens/DoctorsDepartments.jsx`). Gerçek veriye bağlandığında geri
+    // eklenmeli.
     '/privacy-policy',
     '/terms-of-service',
     '/kvkk',

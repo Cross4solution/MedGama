@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
-import { Search, Star, MapPin, Loader2, Building2 } from 'lucide-react';
+import { Search, Star, MapPin, Loader2, Building2, WifiOff } from 'lucide-react';
 import { clinicAPI } from '../lib/api';
 import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
@@ -100,6 +100,7 @@ export default function BrowseClinics() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
 
   const fetchClinics = useCallback(async (pg = 1) => {
     setLoading(true);
@@ -112,8 +113,12 @@ export default function BrowseClinics() {
         setClinics(prev => [...prev, ...list]);
       }
       setHasMore(list.length === 20);
+      setBaglantiHatasi(false);
     } catch {
-      if (pg === 1) setClinics([]);
+      // Sunucuya ulaşılamadı — "klinik yok" DEĞİL. Eskiden ikisi aynı ekranı
+      // gösteriyordu: kesinti sırasında kullanıcıya aramasını değiştirmesi
+      // söyleniyordu, oysa ortada arama sorunu yoktu.
+      if (pg === 1) { setClinics([]); setBaglantiHatasi(true); }
     }
     setLoading(false);
   }, [search]);
@@ -159,6 +164,19 @@ export default function BrowseClinics() {
         {loading && page === 1 ? (
           <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => <ClinicSkeleton key={i} />)}
+          </div>
+        ) : baglantiHatasi ? (
+          <div className="text-center py-20">
+            <WifiOff className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-700 font-bold">{t('common.loadFailedTitle')}</p>
+            <p className="text-sm text-gray-500 mt-1 mb-4">{t('common.loadFailedHint')}</p>
+            <button
+              type="button"
+              onClick={() => fetchClinics(1)}
+              className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+            >
+              {t('common.retry')}
+            </button>
           </div>
         ) : clinics.length === 0 ? (
           <div className="text-center py-20">

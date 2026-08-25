@@ -44,7 +44,13 @@ export function altLanguages(path, locale = DEFAULT_LOCALE) {
  * canonical + hreflang + OpenGraph/Twitter.
  * @param {{locale:string, path:string, title:(string|object), description:(string|object), image?:string}} opts
  */
-export function buildMetadata({ locale, path, title, description, image }) {
+/**
+ * `robots` BİLEREK burada: çağıran taraf `buildMetadata({ …, robots })` yazdığında
+ * eskiden hiçbir şey olmuyordu — anahtar tanınmadığı için sessizce düşüyordu ve
+ * sayfa indekslenmeye devam ediyordu. Yok sayılan bir "indeksleme" ayarı,
+ * olmayan bir ayardan daha tehlikeli: yazan kişi işi bitti sanıyor.
+ */
+export function buildMetadata({ locale, path, title, description, image, robots }) {
   const loc = LOCALES.includes(locale) ? locale : DEFAULT_LOCALE;
   const pick = (v) =>
     typeof v === 'string' || v == null
@@ -72,6 +78,7 @@ export function buildMetadata({ locale, path, title, description, image }) {
       title: ogTitle,
       description: d || undefined,
     },
+    ...(robots && { robots }),
   };
 }
 

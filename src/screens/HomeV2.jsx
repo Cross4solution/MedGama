@@ -12,24 +12,33 @@ import { clinicAPI, geoAPI } from '../lib/api';
 import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
 // SEO meta + WebSite/Organization JSON-LD artık app/page.jsx (ve app/home-v2) generateMetadata + server script ile üretiliyor (Faz 3).
 
-// Fallback mock data — used when API is unavailable
-const FALLBACK_CLINICS = [
-  { id: 1, name: 'Memorial Hospital', city: 'Ankara', dept: 'Plastic Surgery, Aesthetics', rating: 4.9, reviews: 186, image: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
-  { id: 2, name: 'Ege University Hospital', city: 'Izmir', dept: 'Neurology, Orthopedics', rating: 4.7, reviews: 428, image: '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg' },
-  { id: 3, name: 'Acibadem Hospital', city: 'Istanbul', dept: 'General Surgery, OB/GYN', rating: 4.6, reviews: 295, image: '/images/caroline-lm-uqved8dypum-unsplash_720.jpg' },
-  { id: 4, name: 'Anadolu Health Center', city: 'Kocaeli', dept: 'Cardiac Surgery, Oncology', rating: 4.8, reviews: 342, image: '/images/gautam-arora-gufqybn_cvg-unsplash_720.jpg' },
-  { id: 5, name: 'SmileCare Clinic', city: 'Izmir', dept: 'Dentistry', rating: 4.8, reviews: 189, image: '/images/default/default-avatar.svg' },
-  { id: 6, name: 'Vision Center', city: 'Ankara', dept: 'Ophthalmology', rating: 4.6, reviews: 221, image: '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg' },
-  { id: 7, name: 'AestheticPlus', city: 'Istanbul', dept: 'Plastic Surgery', rating: 4.7, reviews: 264, image: '/images/petr-magera-huwm7malj18-unsplash_720.jpg' },
-  { id: 8, name: 'MedPark Clinic', city: 'Antalya', dept: 'Dermatology, Aesthetics', rating: 4.6, reviews: 198, image: '/images/caroline-lm-uqved8dypum-unsplash_720.jpg' },
+// Kart görselleri — kliniğin kendi fotoğrafı yoksa sırayla bunlar kullanılıyor.
+//
+// Burada eskiden UYDURMA bir klinik listesi duruyordu: gerçek hastane adları
+// ("Memorial Hospital", "Ege University Hospital", "Acibadem Hospital") ile
+// birlikte uydurulmuş şehir, puan ve yorum sayıları — 4.9 / 186 yorum gibi.
+// Liste `useState`in başlangıç değeriydi, yani API cevap vermeden ÖNCE
+// ekrandaydı ve sunucudan gelen HTML'e de giriyordu. Ölçüldü: arama motorunun
+// gördüğü HTML bu adları içeriyordu, üstelik API sağlamken bile. API çökerse
+// (`catch` sessizdi) ekranda kalıcı olarak duruyorlardı.
+//
+// Gerçek bir sağlık markasının adını, uydurulmuş bir puanla yan yana koymak
+// yalnızca yanlış veri değil. Adlar ve puanlar gitti; yalnız görseller kaldı.
+const KART_GORSELLERI = [
+  '/images/petr-magera-huwm7malj18-unsplash_720.jpg',
+  '/images/deliberate-directions-wlhbykk2y4k-unsplash_720.jpg',
+  '/images/caroline-lm-uqved8dypum-unsplash_720.jpg',
+  '/images/gautam-arora-gufqybn_cvg-unsplash_720.jpg',
 ];
-const FALLBACK_20 = Array.from({ length: 20 }, (_, i) => ({ ...FALLBACK_CLINICS[i % FALLBACK_CLINICS.length], id: i + 1 }));
 
 export default function HomeV2() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [clinics, setClinics] = useState(FALLBACK_20);
+  const [clinics, setClinics] = useState([]);
+  const [klinikHatasi, setKlinikHatasi] = useState(false);
+  // Yeniden deneme sayacı: aynı ülkeyi tekrar yazmak efekti tetiklemiyor.
+  const [yenidenDene, setYenidenDene] = useState(0);
   // Konum akışı: ana sayfa önizleme + popüler klinikler ülkeye göre.
   // Giriş varsa kullanıcının ülkesi; yoksa (misafir) IP'den ülke.
   const [geoCountry, setGeoCountry] = useState(user?.country || null);
@@ -56,12 +65,13 @@ export default function HomeV2() {
           dept: '',
           rating: resolveClinicRating(c),
           reviews: resolveClinicReviewCount(c),
-          image: c.avatar || FALLBACK_CLINICS[i % FALLBACK_CLINICS.length]?.image,
+          image: c.avatar || KART_GORSELLERI[i % KART_GORSELLERI.length],
           codename: c.codename,
         })));
+        setKlinikHatasi(false);
       }
-    }).catch(() => {});
-  }, [geoCountry]);
+    }).catch(() => setKlinikHatasi(true));
+  }, [geoCountry, yenidenDene]);
 
   // Popular vitrini artık reusable component ile render ediliyor
 
@@ -129,6 +139,22 @@ export default function HomeV2() {
 
 
       {/* Popular Clinics reusable showcase */}
+      {klinikHatasi && clinics.length === 0 ? (
+        /* Sunucuya ulaşılamadı. Eskiden burada uydurma klinikler duruyordu, yani
+           kesinti kullanıcıya HİÇ belli olmuyordu — üstelik gördüğü şey yanlıştı.
+           Boş bir vitrin de "hiç klinik yok" gibi okunurdu. */
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 text-center">
+          <h3 className="text-lg font-bold text-gray-700 mb-1">{t('common.loadFailedTitle')}</h3>
+          <p className="text-sm text-gray-500 mb-3">{t('common.loadFailedHint')}</p>
+          <button
+            type="button"
+            onClick={() => { setKlinikHatasi(false); setYenidenDene((n) => n + 1); }}
+            className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+          >
+            {t('common.retry')}
+          </button>
+        </section>
+      ) : (
       <PopularClinicsShowcase
         items={clinics}
         title={t('home.popularTreatments')}
@@ -136,6 +162,7 @@ export default function HomeV2() {
         onCardClick={(c) => navigate(c.codename ? `/clinic/${c.codename}` : '/clinic')}
         onViewClick={(c) => navigate(c.codename ? `/clinic/${c.codename}` : '/clinic')}
       />
+      )}
 
       {/* Footer is rendered globally in App.js */}
       </>

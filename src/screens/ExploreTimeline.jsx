@@ -17,7 +17,7 @@ import resolveStorageUrl from '../utils/resolveStorageUrl';
 import SEOHead from '../components/seo/SEOHead';
 import { useTranslation } from 'react-i18next';
 import { useIsMedstream } from '../context/BrandContext';
-import { Search } from 'lucide-react';
+import { Search, WifiOff } from 'lucide-react';
 import { SelectCombobox } from 'components/forms';
 import useModalDavranisi from '../hooks/useModalDavranisi';
 
@@ -27,6 +27,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
   // API'den gelen postlar
   const [apiPosts, setApiPosts] = useState([]);
   const [apiLoaded, setApiLoaded] = useState(false);
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
@@ -100,12 +101,17 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
         setApiPosts([]);
       }
       setApiLoaded(true);
+      setBaglantiHatasi(false);
       setIsRefreshing(false);
     }).catch((err) => {
       if (controller.signal.aborted) return;
       console.error('[ExploreTimeline] API error:', err, err?.status, err?.message);
       setApiPosts([]);
       setApiLoaded(true);
+      // Sunucuya ulaşılamadı — "gönderi yok" DEĞİL. Ölçüldü: API 500 dönerken
+      // ekranda "Gönderi bulunamadı / Filtrelerinizi değiştirmeyi deneyin"
+      // yazıyordu, yani kesinti kullanıcının kendi filtresi gibi görünüyordu.
+      setBaglantiHatasi(true);
       setIsRefreshing(false);
     });
     return () => controller.abort();
@@ -134,7 +140,7 @@ function useExploreFeed({ mode = 'guest', countryName = '', specialtyFilter = ''
 
   const hasMore = paged.length < filtered.length;
 
-  return { items: paged, hasMore, total: filtered.length, apiLoaded };
+  return { items: paged, hasMore, total: filtered.length, apiLoaded, baglantiHatasi };
 }
 
 // Card ve Skeleton bileşenleri ayrı dosyalara taşındı
@@ -417,7 +423,7 @@ export default function ExploreTimeline() {
 
   // Removed: EN-only Procedure/Symptom state and helpers (panel dropped)
 
-  const { items, hasMore, total, apiLoaded } = useExploreFeed({
+  const { items, hasMore, total, apiLoaded, baglantiHatasi } = useExploreFeed({
     mode: user ? 'user' : 'guest',
     countryName,
     specialtyFilter: specialty,
@@ -778,6 +784,21 @@ export default function ExploreTimeline() {
               {!apiLoaded ? (
                 <div className="space-y-4">
                   {[1,2,3].map((i) => <SkeletonCard key={`init-sk-${i}`} />)}
+                </div>
+              ) : baglantiHatasi && items.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                    <WifiOff className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-700 mb-1">{t('common.loadFailedTitle')}</p>
+                  <p className="text-xs text-gray-500 mb-4">{t('common.loadFailedHint')}</p>
+                  <button
+                    type="button"
+                    onClick={() => setFeedRefreshKey((n) => n + 1)}
+                    className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+                  >
+                    {t('common.retry')}
+                  </button>
                 </div>
               ) : items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 text-center">

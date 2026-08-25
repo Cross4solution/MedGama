@@ -11,6 +11,11 @@ export async function generateMetadata({ params }) {
       tr: 'Medagama’daki tüm tıbbi bölümleri ve uzman doktorları keşfedin. Kardiyoloji, göz, diş, ortopedi ve daha fazlası.',
       en: 'Explore all medical departments and expert doctors on Medagama — cardiology, ophthalmology, dentistry, orthopedics and more.',
     },
+    // Ekran hiçbir API'ye bağlanmıyor: gösterdiği doktorlar, puanlar (4.8 / 210
+    // yorum) ve fiyatlar (800₺, 1200₺) uydurma. Üstveri ise sayfayı gerçek bir
+    // dizin gibi tanıtıyor. Gerçek veriye bağlanana kadar arama motorlarına
+    // sunulmuyor; site haritasından da çıkarıldı.
+    robots: { index: false, follow: true },
   });
 }
 
