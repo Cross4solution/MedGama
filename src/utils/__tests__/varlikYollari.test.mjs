@@ -27,18 +27,6 @@ const buDosya = fileURLToPath(import.meta.url);
 const uygulamaKok = path.resolve(path.dirname(buDosya), '../../..');
 const acikKok = path.join(uygulamaKok, 'public');
 
-/**
- * Taranmayan dosyalar ve nedeni.
- *
- * Bu ikisi hiçbir yerden içe aktarılmıyor — akış geliştirilirken kullanılmış
- * sahte veri. İçlerindeki görsel yolları da diskte yok, ama kod ölü olduğu için
- * bu bir hata değil. Dosyalar silinirse bu liste de boşalmalı.
- */
-const TARANMAYAN = new Set([
-  'src/components/timeline/feedMock.js',
-  'src/components/timelineData.js',
-]);
-
 /** Taranacak kaynak dosyalar. */
 function kaynaklar(dizin, toplam = []) {
   for (const g of readdirSync(dizin, { withFileTypes: true })) {
@@ -77,8 +65,6 @@ test('kaynakta geçen her varlık yolu diskte var', () => {
     // Yorumlar ayıklanıyor: `resolveStorageUrl.js` içindeki bir açıklama satırı
     // örnek olarak `"/images/..."` yazıyor ve ham metinde arayan ölçüt onu
     // gerçek bir yol sanıyordu. (Aynı tuzağa bu çalışmada dördüncü düşüş.)
-    if (TARANMAYAN.has(path.relative(uygulamaKok, dosya))) continue;
-
     const metin = readFileSync(dosya, 'utf8')
       .replace(/\/\*[\s\S]*?\*\//g, '')
       .split('\n')
