@@ -32,11 +32,26 @@ import path from 'node:path';
  * yedek yazı tipiyle duruyor. `display: swap` sayesinde metin hep okunuyor ve
  * `adjustFontFallback` yerleşim kaymasını engelliyor, ama takas kötü.
  *
- * Karar: ön yükleme AÇIK kalıyor. Doğru çözüm latin-ext'i gerçekten kullanılan
- * karakterlere indirmek (83 KB'nin neredeyse tamamı IPA, Vietnamca ve Latin
- * Extended Additional) — bunun için `next/font/local` ve bir alt küme aracı
- * gerekiyor; kullanıcıların yazdığı adlar başka Latin alfabelerinde olabildiği
- * için de ayrı bir karar. Yapılmadı, ölçüldü ve buraya yazıldı.
+ * Karar: ön yükleme AÇIK kalıyor.
+ *
+ * ── Alt kümeye indirme de ölçüldü ve yapılmadı ──
+ *
+ * İlk tahmin "latin-ext'ten yalnız birkaç harf gerekiyor" idi. Sayıldı: dokuz
+ * sözlük ve tüm kaynak kod birlikte 89 ayrı latin-ext karakteri kullanıyor —
+ * Türkçe (ğ ş İ ı), Azerice (Ə ə ơ ư), Romence (ș ț), Lehçe (ą ć ł ń ś ź ż),
+ * Çekçe (č ď ě ň ř š ť ů ž), Macarca (ő), Baltık (ā ē ī ū), Vietnamca (ỳ ỷ ỹ),
+ * Arapça çeviriyazı (ḍ ḥ ṣ ṭ) ve ₺ işareti. Yani "birkaç harf" değil.
+ *
+ * Asıl engel boyut değil, KULLANICININ YAZDIĞI metin. Doktor ve klinik adları,
+ * adresler ve gönderiler bu listede olmayan bir harf içerdiği anda o harf yedek
+ * yazı tipinden gelir — aynı kelimenin ortasında gözle görülür bir sıçrama.
+ * Sabit bir alt küme, kim kaydolacağını önceden bilmeyi gerektiriyor.
+ *
+ * Ayrıca `next/font/google` yerine `next/font/local` gerekir: yazı tipi dosyası
+ * depoya girer, değişken ağırlık ekseni kaybolabilir ve bakımı birine kalır.
+ *
+ * Ölçüldü, tartıldı, yapılmadı. Yeniden gündeme gelirse başlangıç noktası bu
+ * 89 karakterlik liste ve "yeni bir kullanıcı adı listeyi bozabilir" kısıtı.
  */
 
 const buDosya = fileURLToPath(import.meta.url);
