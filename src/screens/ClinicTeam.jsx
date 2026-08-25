@@ -8,7 +8,7 @@ import useModalDavranisi from '../hooks/useModalDavranisi';
 import {
   Users, UserPlus, Stethoscope, Loader2, Search, Mail, Phone,
   MoreVertical, Edit3, UserX, CheckCircle2, XCircle, X,
-  ChevronLeft, Building2, LayoutGrid, List, Clock, Shield
+  ChevronLeft, Building2, LayoutGrid, List, Clock, Shield, WifiOff
 } from 'lucide-react';
 
 export default function ClinicTeam() {
@@ -28,13 +28,17 @@ export default function ClinicTeam() {
 
   // Add doctor form
   const [form, setForm] = useState({ fullname: '', email: '', specialty: '', password: '', mobile: '' });
+  // Boş `.catch` yüzünden liste okunamadığında ekran "Henüz ekip üyesi yok,
+  // ilk doktorunuzu ekleyin" diyip ekleme düğmesi sunuyordu — kayıtlı ekibi
+  // olan bir kliniğe. Üstelik sayaç da "0 Aktif" yazıyordu.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(false);
 
   // Fetch clinic data
   useEffect(() => {
     clinicAPI.onboardingProfile().then(res => {
       if (res?.clinic?.id) setClinicId(res.clinic.id);
       if (res?.doctors) setDoctors(res.doctors);
-    }).catch(() => {}).finally(() => setLoading(false));
+    }).catch(() => setYuklemeHatasi(true)).finally(() => setLoading(false));
   }, []);
 
   const filteredDoctors = doctors.filter(d => {
@@ -147,7 +151,7 @@ export default function ClinicTeam() {
         {/* Stats */}
         <div className="flex items-center gap-4 mb-6">
           <span className="text-xs font-semibold text-gray-500">
-            {activeDoctors.length} {t('clinicTeam.active', 'Active')}
+            {yuklemeHatasi ? '—' : activeDoctors.length} {t('clinicTeam.active', 'Active')}
           </span>
           {inactiveDoctors.length > 0 && (
             <span className="text-xs font-semibold text-gray-400">
@@ -156,8 +160,23 @@ export default function ClinicTeam() {
           )}
         </div>
 
+        {/* Yükleme hatası — boşlukla aynı şey değil */}
+        {yuklemeHatasi && (
+          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200/60">
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl mx-auto flex items-center justify-center mb-4">
+              <WifiOff className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-base font-bold text-gray-900 mb-1">
+              {t('common.loadFailedTitle', 'Could not load data')}
+            </h3>
+            <p className="text-sm text-gray-500">
+              {t('common.loadFailedHint', 'Check your connection and try again.')}
+            </p>
+          </div>
+        )}
+
         {/* Empty state */}
-        {doctors.length === 0 && (
+        {!yuklemeHatasi && doctors.length === 0 && (
           <div className="text-center py-16 bg-white rounded-2xl border border-gray-200/60">
             <div className="w-16 h-16 bg-teal-50 rounded-2xl mx-auto flex items-center justify-center mb-4">
               <Users className="w-8 h-8 text-teal-400" />

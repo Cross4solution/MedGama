@@ -7,7 +7,7 @@ import resolveStorageUrl from '../utils/resolveStorageUrl';
 import {
   Building2, Users, Calendar, TrendingUp, Clock, CheckCircle2,
   Stethoscope, ChevronRight, Loader2, Plus, Shield,
-  UserPlus, ClipboardList, Star, Activity
+  UserPlus, ClipboardList, Star, Activity, WifiOff
 } from 'lucide-react';
 
 export default function ClinicDashboard() {
@@ -18,18 +18,27 @@ export default function ClinicDashboard() {
   const [clinic, setClinic] = useState(null);
   const [doctors, setDoctors] = useState([]);
   const [appointments, setAppointments] = useState([]);
+  // İki çağrının `.catch`i sessizce boş değer veriyordu: profil okunamazsa
+  // `null`, randevular okunamazsa `{ data: [] }`. Dört sayaç da 0 çiziyor ve
+  // ekran kliniğe "hiç randevun yok" diyor. Sıfır bir ölçüm, okunamamış veri
+  // değil.
+  const [profilHatasi, setProfilHatasi] = useState(false);
+  const [randevuHatasi, setRandevuHatasi] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       try {
         const [onbRes, apptRes] = await Promise.all([
-          clinicAPI.onboardingProfile().catch(() => null),
-          appointmentAPI.list({ per_page: 200 }).catch(() => ({ data: [] })),
+          clinicAPI.onboardingProfile().catch(() => { setProfilHatasi(true); return null; }),
+          appointmentAPI.list({ per_page: 200 }).catch(() => { setRandevuHatasi(true); return null; }),
         ]);
         if (onbRes?.clinic) setClinic(onbRes.clinic);
         if (onbRes?.doctors) setDoctors(onbRes.doctors);
         setAppointments(apptRes?.data || []);
-      } catch {}
+      } catch {
+        setProfilHatasi(true);
+        setRandevuHatasi(true);
+      }
       setLoading(false);
     };
     load();
@@ -41,15 +50,29 @@ export default function ClinicDashboard() {
   const activeDoctors = useMemo(() => doctors.filter(d => d.is_active !== false), [doctors]);
 
   const metrics = [
-    { label: t('clinicDashboard.totalAppointments', 'Total Appointments'), value: appointments.length, icon: ClipboardList, bg: 'bg-blue-50', text: 'text-blue-600' },
-    { label: t('clinicDashboard.pendingRequests', 'Pending Requests'), value: pending.length, icon: Clock, bg: 'bg-amber-50', text: 'text-amber-600' },
-    { label: t('clinicDashboard.confirmed', 'Confirmed'), value: confirmed.length, icon: CheckCircle2, bg: 'bg-teal-50', text: 'text-teal-600' },
-    { label: t('clinicDashboard.activeDoctors', 'Active Doctors'), value: activeDoctors.length, icon: Users, bg: 'bg-violet-50', text: 'text-violet-600' },
+    { label: t('clinicDashboard.totalAppointments', 'Total Appointments'), value: randevuHatasi ? '—' : appointments.length, icon: ClipboardList, bg: 'bg-blue-50', text: 'text-blue-600' },
+    { label: t('clinicDashboard.pendingRequests', 'Pending Requests'), value: randevuHatasi ? '—' : pending.length, icon: Clock, bg: 'bg-amber-50', text: 'text-amber-600' },
+    { label: t('clinicDashboard.confirmed', 'Confirmed'), value: randevuHatasi ? '—' : confirmed.length, icon: CheckCircle2, bg: 'bg-teal-50', text: 'text-teal-600' },
+    { label: t('clinicDashboard.activeDoctors', 'Active Doctors'), value: profilHatasi ? '—' : activeDoctors.length, icon: Users, bg: 'bg-violet-50', text: 'text-violet-600' },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-teal-50/20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+        {(profilHatasi || randevuHatasi) && (
+          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+            <WifiOff className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-semibold text-amber-900">
+                {t('common.loadFailedTitle', 'Could not load data')}
+              </p>
+              <p className="text-amber-800/80 text-xs mt-0.5">
+                {t('common.loadFailedHint', 'Check your connection and try again.')}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
