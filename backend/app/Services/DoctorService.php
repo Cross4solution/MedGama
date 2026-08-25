@@ -193,6 +193,13 @@ class DoctorService
     /**
      * Get single doctor with full profile + review stats (Doc §3.2).
      */
+    /**
+     * Doktor detayı — bu uç da KİMLİK İSTEMİYOR.
+     *
+     * `email` seçiliyordu: liste ucundakiyle aynı sızıntı, aynı yerde ikinci
+     * kez. Ekranda kullanılmıyor (`DoctorProfile` alanı hiç okumuyor); e-postayı
+     * meşru gösteren ekranlar kendi kimlik gerektiren uçlarından alıyor.
+     */
     public function getDoctor(string $idOrSlug): ?array
     {
         // Support both UUID and slug lookup
@@ -202,7 +209,7 @@ class DoctorService
             $doctor = User::where('role_id', 'doctor')
                 ->where('is_active', true)
                 ->with(['doctorProfile', 'doctorProfile.specialtyRelation:id,name', 'clinic:id,name,fullname,codename,avatar,address,is_verified', 'clinics:id,name,fullname,codename,avatar,address,is_verified'])
-                ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
+                ->select('id', 'fullname', 'avatar', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
                 ->find($idOrSlug);
         } else {
             // Slug lookup via DoctorProfile
@@ -212,7 +219,7 @@ class DoctorService
             $doctor = User::where('role_id', 'doctor')
                 ->where('is_active', true)
                 ->with(['doctorProfile', 'doctorProfile.specialtyRelation:id,name', 'clinic:id,name,fullname,codename,avatar,address,is_verified', 'clinics:id,name,fullname,codename,avatar,address,is_verified'])
-                ->select('id', 'fullname', 'avatar', 'email', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
+                ->select('id', 'fullname', 'avatar', 'city_id', 'country_id', 'clinic_id', 'is_verified', 'gender')
                 ->find($profile->user_id);
         }
 
