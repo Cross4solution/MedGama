@@ -105,7 +105,12 @@ export default function BrowseClinics() {
   const fetchClinics = useCallback(async (pg = 1) => {
     setLoading(true);
     try {
-      const res = await clinicAPI.list({ per_page: 20, page: pg, search: search || undefined });
+      // Uç `search` diye bir parametre TANIMIYOR — kabul ettiği ad `name`.
+      // Bilinmeyen parametre sessizce düşüyordu, yani arama kutusuna ne
+      // yazılırsa yazılsın tam liste dönüyordu. Ölçüldü: "zzzqqqxyz" araması
+      // on üç kliniğin hepsini gösteriyordu, üstelik boş sonuç ekranı
+      // "farklı bir arama deneyin" diyordu — hiç süzmeyen bir süzgeç için.
+      const res = await clinicAPI.list({ per_page: 20, page: pg, name: search || undefined });
       const list = res?.data || [];
       if (pg === 1) {
         setClinics(list);

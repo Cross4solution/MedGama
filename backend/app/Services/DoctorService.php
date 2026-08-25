@@ -132,9 +132,19 @@ class DoctorService
         }
 
         // ── Minimum rating ──
+        //
+        // Sütunun adı `avg_rating`. Burada `average_rating` yazıyordu ve hata
+        // sessizdi, çünkü SQLite çözemediği ÇİFT TIRNAKLI tanımlayıcıyı metin
+        // sabiti sayıyor: `"average_rating" >= 99` ifadesi `'average_rating' >= 99`
+        // oluyor ve SQLite'ın tür sıralamasında metin her zaman sayıdan büyük —
+        // yani süzgeç her satırı eşliyordu. Ölçüldü: min_rating=99 ile on dört
+        // doktorun hepsi dönüyordu.
+        //
+        // MySQL/TiDB'de aynı sorgu "Unknown column" hatası verir; yani canlıda
+        // puan süzgecini kullanan herkes 500 alıyordu.
         if ($minRating = $filters['min_rating'] ?? null) {
             $query->whereHas('doctorProfile', function ($pq) use ($minRating) {
-                $pq->where('average_rating', '>=', (float) $minRating);
+                $pq->where('avg_rating', '>=', (float) $minRating);
             });
         }
 

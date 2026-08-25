@@ -54,6 +54,12 @@ export default function HomeV2() {
 
   useEffect(() => {
     const params = { per_page: 20 };
+    // DİKKAT: `/api/clinics` `country` diye bir parametre TANIMIYOR — kabul
+    // ettikleri `name`, `city`/`city_id`, `specialty`, `treatment_tag_id`.
+    // Ölçüldü: `country=ZZ` bile tam listeyi döndürüyor, yani buradaki ülke
+    // süzgeci hiçbir şey yapmıyor. Satır bilerek duruyor: niyeti silmek yerine
+    // görünür kılmak istedik. Ülkeye göre süzme arka uçta yok ve konum akışı
+    // zaten karara bağlanmayı bekliyor.
     if (geoCountry) params.country = geoCountry;
     clinicAPI.list(params).then((res) => {
       const list = res?.data || [];
