@@ -105,7 +105,8 @@
     "done": "Tamam",
     "loadError": "Veriler yüklenirken bir hata oluştu.",
     "loadFailedTitle": "İçerik yüklenemedi",
-    "loadFailedHint": "Sunucuya ulaşılamadı. Bu, kaydınızın olmadığı anlamına gelmez — bağlantınızı kontrol edip tekrar deneyin."
+    "loadFailedHint": "Sunucuya ulaşılamadı. Bu, kaydınızın olmadığı anlamına gelmez — bağlantınızı kontrol edip tekrar deneyin.",
+    "admin": "Yönetici"
   },
   "nav": {
     "home": "Ana Sayfa",
@@ -454,8 +455,8 @@
       "addFirst": "+ İlk Şubeyi Ekle",
       "noResults": "Aramanızla eşleşen şube yok.",
       "searchPlaceholder": "Şubeleri ada, şehre veya adrese göre ara...",
-      "forbiddenTitle": "Şube yönetimi planınıza dahil değil.",
-      "forbiddenHint": "Kayıtlı şubeleriniz duruyor — bu ekran şu an onları okuyamıyor."
+      "forbiddenTitle": "Şube yönetimi hastane hesaplarına özel.",
+      "forbiddenHint": "Kayıtlı şubeleriniz duruyor — bu ekran sizin hesabınıza açık değil."
     },
     "contactInbox": {
       "title": "İletişim Mesajları",
@@ -639,6 +640,11 @@
         "viewReports": "Raporları Gör",
         "sendMessage": "Mesaj Gönder",
         "revenueReport": "Gelir Raporu"
+      },
+      "greeting": {
+        "morning": "Günaydın, {{name}}",
+        "afternoon": "İyi günler, {{name}}",
+        "evening": "İyi akşamlar, {{name}}"
       }
     },
     "appointments": {

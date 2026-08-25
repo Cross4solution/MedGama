@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Appointment;
 use App\Models\Clinic;
 use App\Models\DoctorProfile;
+use App\Models\Hospital;
 use App\Models\Invoice;
 use App\Models\PatientRecord;
 use App\Models\User;
@@ -61,15 +62,26 @@ class DemoAccountService
 
     private function hesapAc(string $rolId, string $eposta): User
     {
-        $doktorMu = $rolId === 'doctor';
-        $hastaMi  = $rolId === 'patient';
+        $doktorMu  = $rolId === 'doctor';
+        $hastaMi   = $rolId === 'patient';
+        $hastaneMi = $rolId === 'hospital';
 
         $kullanici = User::create([
-            'fullname'          => $doktorMu ? 'Dr. Demo Hekim' : ($hastaMi ? 'Demo Hasta' : 'Demo Klinik Yönetimi'),
+            'fullname'          => match (true) {
+                $doktorMu  => 'Dr. Demo Hekim',
+                $hastaMi   => 'Demo Hasta',
+                $hastaneMi => 'Demo Hastane Yönetimi',
+                default    => 'Demo Klinik Yönetimi',
+            },
             // Sabit kullanıcı adı canlıda çakıştı: aynı adı taşıyan başka bir
             // hesap vardı ve demo hesabı hiç açılamıyordu. Hesap e-postayla
             // bulunduğu için ad benzersiz olabilir.
-            'username'          => ($doktorMu ? 'demo_hekim' : ($hastaMi ? 'demo_hasta' : 'demo_klinik')) . '_' . Str::lower(Str::random(4)),
+            'username'          => match (true) {
+                $doktorMu  => 'demo_hekim',
+                $hastaMi   => 'demo_hasta',
+                $hastaneMi => 'demo_hastane',
+                default    => 'demo_klinik',
+            } . '_' . Str::lower(Str::random(4)),
             'email'             => $eposta,
             'password'          => bcrypt(self::SIFRE),
             'role_id'           => $rolId,
@@ -91,6 +103,23 @@ class DemoAccountService
                     'timezone'             => 'Europe/Istanbul',
                 ],
             );
+        } elseif ($hastaneMi) {
+            $hastane = Hospital::create([
+                'owner_id'    => $kullanici->id,
+                'codename'    => 'demo-hastane-' . Str::lower(Str::random(6)),
+                'name'        => 'Demo Hastane',
+                'fullname'    => 'Demo Şehir Hastanesi',
+                'address'     => 'Demo Mah. Deneme Cad. No:2, İstanbul',
+                'phone'       => '+90 212 000 0001',
+                'biography'   => 'Demo hesabı — hastane ekranlarını denemek için oluşturuldu.',
+                'city'        => 'İstanbul',
+                'country'     => 'Türkiye',
+                'is_verified' => true,
+                'is_active'   => true,
+            ]);
+
+            $kullanici->hospital_id = $hastane->id;
+            $kullanici->save();
         } else {
             $klinik = Clinic::create([
                 'owner_id'             => $kullanici->id,

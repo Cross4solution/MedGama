@@ -150,6 +150,10 @@ module.exports = async function kurulum(config) {
       // spec'ler bu adlarla oturum istiyor ve parola girişi yerelde yok.
       const uretilecek = yerelKip
         ? [['hasta', 'hasta'], ['doktor', 'doktor'], ['klinik', 'klinik'],
+           // Hastane (L4) demo girişine sonradan eklendi: o güne dek hiçbir
+           // testte hastane oturumu yoktu, dolayısıyla hastaneye özel ekranlar
+           // hiç açılmamıştı.
+           ['hastane', 'hastane'],
            ['demoDoktor', 'doktor'], ['demoKlinik', 'klinik']]
         : [['demoDoktor', 'doktor'], ['demoKlinik', 'klinik']];
 

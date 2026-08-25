@@ -105,7 +105,8 @@
     "viewAll": "Alle anzeigen",
     "years": "J.",
     "loadFailedTitle": "Konnte nicht geladen werden",
-    "loadFailedHint": "Der Server ist nicht erreichbar. Das heißt nicht, dass keine Einträge vorhanden sind — prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+    "loadFailedHint": "Der Server ist nicht erreichbar. Das heißt nicht, dass keine Einträge vorhanden sind — prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+    "admin": "Admin"
   },
   "nav": {
     "home": "Startseite",
@@ -438,8 +439,8 @@
       "saveError": "Standort konnte nicht gespeichert werden.",
       "searchPlaceholder": "Standorte nach Name, Stadt oder Adresse suchen …",
       "viewMap": "Auf Karte anzeigen",
-      "forbiddenTitle": "Filialverwaltung ist in Ihrem Tarif nicht enthalten.",
-      "forbiddenHint": "Ihre vorhandenen Filialen bleiben erhalten – diese Ansicht kann sie derzeit nur nicht lesen."
+      "forbiddenTitle": "Die Filialverwaltung ist Krankenhauskonten vorbehalten.",
+      "forbiddenHint": "Ihre vorhandenen Filialen bleiben erhalten – diese Ansicht steht Ihrem Konto nicht offen."
     },
     "contactInbox": {
       "title": "Kontaktnachrichten",
@@ -623,6 +624,11 @@
         "viewReports": "Berichte ansehen",
         "sendMessage": "Nachricht senden",
         "revenueReport": "Umsatzbericht"
+      },
+      "greeting": {
+        "morning": "Guten Morgen, {{name}}",
+        "afternoon": "Guten Tag, {{name}}",
+        "evening": "Guten Abend, {{name}}"
       }
     },
     "appointments": {

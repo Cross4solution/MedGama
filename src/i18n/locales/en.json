@@ -124,7 +124,8 @@
     "done": "Tamam",
     "loadError": "Something went wrong while loading the data.",
     "loadFailedTitle": "Could not load",
-    "loadFailedHint": "The server could not be reached. This does not mean you have no records — check your connection and try again."
+    "loadFailedHint": "The server could not be reached. This does not mean you have no records — check your connection and try again.",
+    "admin": "Admin"
   },
   "nav": {
     "home": "Home",
@@ -473,8 +474,8 @@
       "addFirst": "+ Add First Branch",
       "noResults": "No branches match your search.",
       "searchPlaceholder": "Search branches by name, city or address...",
-      "forbiddenTitle": "Branch management is not available on your plan.",
-      "forbiddenHint": "Your existing branches are safe — this screen just cannot read them right now."
+      "forbiddenTitle": "Branch management is for hospital accounts.",
+      "forbiddenHint": "Your existing branches are safe — this screen is not open to your account."
     },
     "contactInbox": {
       "title": "Contact Messages",
@@ -658,6 +659,11 @@
         "viewReports": "View Reports",
         "sendMessage": "Send Message",
         "revenueReport": "Revenue Report"
+      },
+      "greeting": {
+        "morning": "Good morning, {{name}}",
+        "afternoon": "Good afternoon, {{name}}",
+        "evening": "Good evening, {{name}}"
       }
     },
     "appointments": {

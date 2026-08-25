@@ -125,6 +125,11 @@ class DemoLoginController extends Controller
             'doktor', 'doctor' => 'doctor',
             'klinik', 'clinic' => 'clinicOwner',
             'hasta', 'patient' => 'patient',
+            // Hastane (L4) hiç denenememişti: demo girişi yalnızca üç rol
+            // veriyordu, dolayısıyla hastaneye özel ekranlar — şube yönetimi,
+            // her zaman açık CRM — bir kez bile oturum açılmış hâlde
+            // görülmemişti. superAdmin bilinçli olarak DIŞARIDA kalıyor.
+            'hastane', 'hospital' => 'hospital',
             default            => 'yok',
         };
     }

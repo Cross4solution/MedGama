@@ -48,6 +48,16 @@ import PremiumGate from '../../components/crm/PremiumGate';
 
 // ─── Mock Data ───────────────────────────────────────────────
 const TODAY = new Date();
+
+/** Selamlama dilimi — her çizimde okunuyor, modül yüklenirken değil. */
+const selamlamaDilimi = () => {
+  const saat = new Date().getHours();
+
+  if (saat < 12) return 'morning';
+  if (saat < 18) return 'afternoon';
+
+  return 'evening';
+};
 const formatDate = (d) => d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
 /*
@@ -282,7 +292,10 @@ const CRMDashboard = () => {
   if (isHospital) {
     const HOSPITAL_QUICK_ACTIONS = [
       { label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin,       color: 'bg-teal-50 text-teal-600 hover:bg-teal-100',        path: '/crm/branches' },
-      { label: t('crm.sidebar.staff', 'Staff'),               icon: Users,         color: 'bg-violet-50 text-violet-600 hover:bg-violet-100',  path: '/crm/staff' },
+      // Personel kutucuğu KALDIRILDI — kenar çubuğundaki bağlantıyla aynı
+      // sebep: ekran klinik kapsamlı, hastane kullanıcısının kliniği yok,
+      // arka uçta hastane personeli ucu da yok. Açıldığında "Klinik
+      // Bulunamadı" diyordu.
       // MedStream kısayolu kaldırıldı: sosyal akış CRM'in işi değil.
       { label: t('crm.sidebar.reviews', 'Reviews'),           icon: Star,          color: 'bg-amber-50 text-amber-600 hover:bg-amber-100',     path: '/crm/reviews' },
       { label: t('crm.sidebar.contactInbox', 'Messages'),     icon: Mail,          color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100', path: '/crm/contact-inbox' },
@@ -295,7 +308,14 @@ const CRMDashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {TODAY.getHours() < 12 ? 'Good Morning' : TODAY.getHours() < 18 ? 'Good Afternoon' : 'Good Evening'}, {user?.name?.split(' ')[0] || 'Admin'} 👋
+              {/* Selamlama sabit İngilizceydi: dokuz dilin hepsinde "Good Evening"
+                  yazıyordu. Saat de modül yüklenirken bir kez okunuyordu
+                  (`TODAY`), yani açık kalan bir sekmede gece yarısı hâlâ
+                  "iyi öğlenler" diyebiliyordu — her çizimde tazeleniyor. */}
+              {t(`crm.dashboard.greeting.${selamlamaDilimi()}`, {
+                name: user?.name?.split(' ')[0] || t('common.admin', 'Admin'),
+                defaultValue: '{{name}}, hoş geldiniz',
+              })} 👋
             </h1>
           </div>
           <div className="flex items-center gap-2">

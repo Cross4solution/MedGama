@@ -105,7 +105,8 @@
     "viewAll": "Vedi tutto",
     "years": "anni",
     "loadFailedTitle": "Caricamento non riuscito",
-    "loadFailedHint": "Server non raggiungibile. Non significa che non ci siano voci — controlla la connessione e riprova."
+    "loadFailedHint": "Server non raggiungibile. Non significa che non ci siano voci — controlla la connessione e riprova.",
+    "admin": "Admin"
   },
   "nav": {
     "home": "Home",
@@ -443,6 +444,11 @@
         "viewReports": "Vedi report",
         "sendMessage": "Invia messaggio",
         "revenueReport": "Report ricavi"
+      },
+      "greeting": {
+        "morning": "Buongiorno, {{name}}",
+        "afternoon": "Buon pomeriggio, {{name}}",
+        "evening": "Buonasera, {{name}}"
       }
     },
     "appointments": {
@@ -1299,8 +1305,8 @@
       "saveError": "Impossibile salvare la sede.",
       "searchPlaceholder": "Cerca sedi per nome, città o indirizzo…",
       "viewMap": "Vedi sulla mappa",
-      "forbiddenTitle": "La gestione delle sedi non è inclusa nel tuo piano.",
-      "forbiddenHint": "Le tue sedi esistenti sono al sicuro: questa schermata semplicemente non riesce a leggerle ora."
+      "forbiddenTitle": "La gestione delle sedi è riservata agli account ospedalieri.",
+      "forbiddenHint": "Le tue sedi esistenti sono al sicuro: questa schermata non è aperta al tuo account."
     },
     "contactInbox": {
       "title": "Messaggi di Contatto",

@@ -102,7 +102,13 @@ const getNavSections = (t, role, isVerified, { chatUnreadCount = 0, isPremium = 
           { label: t('crm.sidebar.branches', 'Branch Management'), icon: MapPin, path: '/crm/branches' },
           { label: t('crm.sidebar.leads', 'Leadler'), icon: Target, path: '/crm/leads' },
           { label: t('crm.sidebar.salespeople', 'Satışçılar'), icon: Briefcase, path: '/crm/salespeople' },
-          { label: t('crm.sidebar.staff', 'Staff'), icon: Users, path: '/crm/staff' },
+          // Personel bağlantısı buradan KALDIRILDI: ekran klinik kapsamlı
+          // (`user.clinic_id` ile çalışıyor), hastane kullanıcısının ise
+          // `hospital_id`si var. Menüden açıldığında "Klinik Bulunamadı —
+          // hesabınız bir klinikle ilişkili değil" diyordu. Arka uçta hastane
+          // personeli diye bir uç da yok (`/clinics/{id}/staff` yalnız klinik),
+          // yani bağlantı hiçbir koşulda çalışamıyordu. Yetenek eklenirse
+          // bağlantı geri konur.
           // MedStream burada değil: CRM klinik yönetimi, MedStream herkese
           // açık sosyal akış. CRM'deki kopya eksikti (video oynatmıyordu bile)
           // ve iki yerde iki ayrı akış bakımı gerektiriyordu. Menünün altındaki

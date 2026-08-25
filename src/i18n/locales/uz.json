@@ -56,7 +56,8 @@
     "apply": "Qo'llash",
     "clinic": "Klinika",
     "menu": "Menyu",
-    "links": "Havolalar"
+    "links": "Havolalar",
+    "admin": "Admin"
   },
   "nav": {
     "home": "Bosh sahifa",
@@ -235,7 +236,12 @@
       "aiTagSchedule": "jadval",
       "aiTagPatient": "bemor",
       "aiTagRevenue": "daromad",
-      "aiTagOverview": "umumiy ko'rinish"
+      "aiTagOverview": "umumiy ko'rinish",
+      "greeting": {
+        "morning": "Xayrli tong, {{name}}",
+        "afternoon": "Xayrli kun, {{name}}",
+        "evening": "Xayrli kech, {{name}}"
+      }
     },
     "appointments": {
       "title": "Uchrashuvlar",
@@ -683,8 +689,8 @@
       "change": "O'zgartirish"
     },
     "branches": {
-      "forbiddenTitle": "Filiallarni boshqarish tarifingizga kirmaydi.",
-      "forbiddenHint": "Mavjud filiallaringiz saqlanib qolgan — bu ekran hozir ularni o'qiy olmayapti, xolos."
+      "forbiddenTitle": "Filiallarni boshqarish shifoxona hisoblari uchun.",
+      "forbiddenHint": "Mavjud filiallaringiz saqlanib qolgan — bu ekran sizning hisobingizga ochiq emas."
     }
   },
   "home": {

@@ -105,7 +105,8 @@
     "viewAll": "Tout afficher",
     "years": "ans",
     "loadFailedTitle": "Chargement impossible",
-    "loadFailedHint": "Le serveur est injoignable. Cela ne signifie pas que vous n'avez aucun élément — vérifiez votre connexion et réessayez."
+    "loadFailedHint": "Le serveur est injoignable. Cela ne signifie pas que vous n'avez aucun élément — vérifiez votre connexion et réessayez.",
+    "admin": "Admin"
   },
   "nav": {
     "home": "Accueil",
@@ -443,6 +444,11 @@
         "viewReports": "Voir les rapports",
         "sendMessage": "Envoyer un message",
         "revenueReport": "Rapport de revenus"
+      },
+      "greeting": {
+        "morning": "Bonjour, {{name}}",
+        "afternoon": "Bon après-midi, {{name}}",
+        "evening": "Bonsoir, {{name}}"
       }
     },
     "appointments": {
@@ -1299,8 +1305,8 @@
       "saveError": "Impossible d'enregistrer l'établissement.",
       "searchPlaceholder": "Rechercher par nom, ville ou adresse…",
       "viewMap": "Voir sur la carte",
-      "forbiddenTitle": "La gestion des succursales n'est pas incluse dans votre forfait.",
-      "forbiddenHint": "Vos succursales existantes sont intactes — cet écran ne peut simplement pas les lire pour le moment."
+      "forbiddenTitle": "La gestion des succursales est réservée aux comptes hospitaliers.",
+      "forbiddenHint": "Vos succursales existantes sont intactes — cet écran n'est pas ouvert à votre compte."
     },
     "contactInbox": {
       "title": "Messages de contact",

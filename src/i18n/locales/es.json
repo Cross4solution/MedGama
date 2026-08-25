@@ -105,7 +105,8 @@
     "viewAll": "Ver todo",
     "years": "años",
     "loadFailedTitle": "No se pudo cargar",
-    "loadFailedHint": "No se pudo contactar con el servidor. Esto no significa que no tengas registros: comprueba tu conexión e inténtalo de nuevo."
+    "loadFailedHint": "No se pudo contactar con el servidor. Esto no significa que no tengas registros: comprueba tu conexión e inténtalo de nuevo.",
+    "admin": "Admin"
   },
   "nav": {
     "home": "Inicio",
@@ -443,6 +444,11 @@
         "viewReports": "Ver informes",
         "sendMessage": "Enviar mensaje",
         "revenueReport": "Informe de ingresos"
+      },
+      "greeting": {
+        "morning": "Buenos días, {{name}}",
+        "afternoon": "Buenas tardes, {{name}}",
+        "evening": "Buenas noches, {{name}}"
       }
     },
     "appointments": {
@@ -1299,8 +1305,8 @@
       "saveError": "No se pudo guardar el centro.",
       "searchPlaceholder": "Buscar centros por nombre, ciudad o dirección…",
       "viewMap": "Ver en el mapa",
-      "forbiddenTitle": "La gestión de sucursales no está incluida en tu plan.",
-      "forbiddenHint": "Tus sucursales existentes están a salvo: esta pantalla solo no puede leerlas ahora mismo."
+      "forbiddenTitle": "La gestión de sucursales es exclusiva de las cuentas de hospital.",
+      "forbiddenHint": "Tus sucursales existentes están a salvo: esta pantalla no está abierta a tu cuenta."
     },
     "contactInbox": {
       "title": "Mensajes de contacto",

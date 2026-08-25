@@ -105,7 +105,8 @@
     "viewAll": "Hamısına bax",
     "years": "il",
     "loadFailedTitle": "Yüklənə bilmədi",
-    "loadFailedHint": "Serverə çıxmaq mümkün olmadı. Bu, qeydinizin olmadığı demək deyil — bağlantınızı yoxlayıb yenidən cəhd edin."
+    "loadFailedHint": "Serverə çıxmaq mümkün olmadı. Bu, qeydinizin olmadığı demək deyil — bağlantınızı yoxlayıb yenidən cəhd edin.",
+    "admin": "Admin"
   },
   "nav": {
     "home": "Ana səhifə",
@@ -443,6 +444,11 @@
         "viewReports": "Hesabatlara Bax",
         "sendMessage": "Mesaj Göndər",
         "revenueReport": "Gəlir Hesabatı"
+      },
+      "greeting": {
+        "morning": "Sabahınız xeyir, {{name}}",
+        "afternoon": "Günortanız xeyir, {{name}}",
+        "evening": "Axşamınız xeyir, {{name}}"
       }
     },
     "appointments": {
@@ -1342,8 +1348,8 @@
       "saveError": "Filial yadda saxlanıla bilmədi.",
       "searchPlaceholder": "Filialları ada, şəhərə və ya ünvana görə axtar...",
       "viewMap": "Xəritədə göstər",
-      "forbiddenTitle": "Filial idarəetməsi planınıza daxil deyil.",
-      "forbiddenHint": "Mövcud filiallarınız yerindədir — bu ekran sadəcə hazırda onları oxuya bilmir."
+      "forbiddenTitle": "Filial idarəetməsi xəstəxana hesablarına məxsusdur.",
+      "forbiddenHint": "Mövcud filiallarınız yerindədir — bu ekran sizin hesabınıza açıq deyil."
     },
     "contactInbox": {
       "title": "Əlaqə Mesajları",
