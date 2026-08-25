@@ -34,9 +34,15 @@ import path from 'node:path';
  *                   kalıcı: liste "personel yok" demeye devam ediyordu.
  *   • değerlendirmeler — tümüyle sessiz `catch`; hekime hiç yorum almamış gibi
  *                   gösteriyordu.
+ *   • gelen kutusu — "mesaj yok"; hasta mesajlarının cevapsız kalmasına yol
+ *                   açar.
+ *   • gelir       — en kötüsü. Dört çağrının her biri ayrı ayrı sessizce boşa
+ *                   düşüyor ve ekran SIFIR GELİR gösteriyordu. Boş liste değil,
+ *                   yanlış rakam. Artık başarısızlık sayılıyor ve sıfır yerine
+ *                   hiçbir şey gösterilmiyor.
  *
  * Kalanlar hâlâ listede ve artık VARSAYIM değil, ölçüm: /crm, /crm/leads,
- * /crm/contact-inbox, /crm/reports, /crm/examination, /crm/revenue.
+ * /crm/reports, /crm/examination.
  *
  * Geri kalanlar bilerek listede: bir kısmı zararsız (öneri açılır listesi boş
  * kalabilir), bir kısmı giriş arkasında ve ekranına bakılmadan düzeltilmemeli.
@@ -87,7 +93,6 @@ const BILINEN = new Set([
   'screens/TelehealthPage.jsx',
   'screens/crm/CRMLeads.jsx',
   'screens/crm/CRMDocuments.jsx',
-  'screens/crm/CRMContactInbox.jsx',
   'screens/admin/AdminUserManagement.jsx',
   'screens/admin/AdminModeration.jsx',
   'screens/admin/AdminReviews.jsx',

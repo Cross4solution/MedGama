@@ -3,7 +3,7 @@ import {
   DollarSign, TrendingUp, Download, CreditCard, Banknote,
   ChevronLeft, ChevronRight, Search, PieChart as PieChartIcon,
   BarChart3, Receipt, Loader2, RefreshCw, Wallet, ArrowRightLeft,
-  FileSpreadsheet, FileText,
+  FileSpreadsheet, FileText, WifiOff,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
@@ -53,6 +53,7 @@ const CRMRevenue = () => {
   const [currency, setCurrency] = useState('EUR');
   const [currencies, setCurrencies] = useState(['EUR']);
   const [stats, setStats] = useState(null);
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
   const [chartData, setChartData] = useState([]);
   const [topServices, setTopServices] = useState([]);
   const [payout, setPayout] = useState(null);
@@ -78,12 +79,22 @@ const CRMRevenue = () => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
+      // Her çağrı ayrı ayrı sessizce boşa düşüyordu ve ekran SIFIR gelir
+      // gösteriyordu. Boş liste değil, YANLIŞ RAKAM: kliniğe hiç kazanmamış
+      // gibi görünüyor. Bu yüzden başarısızlık artık sayılıyor.
+      let basarisiz = 0;
+      const dusur = (bos) => () => { basarisiz += 1; return bos; };
+
       const [statsRes, chartRes, servicesRes, payoutRes] = await Promise.all([
-        billingAPI.stats({ currency }).catch(() => ({ data: null })),
-        billingAPI.revenueChart({ period, currency }).catch(() => ({ data: [] })),
-        financeAPI.topServices({ currency, limit: 8 }).catch(() => ({ data: [] })),
-        financeAPI.payout({ currency }).catch(() => ({ data: null })),
+        billingAPI.stats({ currency }).catch(dusur({ data: null })),
+        billingAPI.revenueChart({ period, currency }).catch(dusur({ data: [] })),
+        financeAPI.topServices({ currency, limit: 8 }).catch(dusur({ data: [] })),
+        financeAPI.payout({ currency }).catch(dusur({ data: null })),
       ]);
+
+      // Başlıktaki rakamlar `stats`ten geliyor; o gelmediyse ekranda
+      // gösterilecek doğru bir sayı yok.
+      setBaglantiHatasi(basarisiz === 4 || !(statsRes?.data || statsRes));
 
       const sd = statsRes?.data || statsRes;
       setStats(sd);
@@ -240,6 +251,25 @@ const CRMRevenue = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (baglantiHatasi) {
+    // Sıfır göstermektense hiçbir şey göstermemek doğru: yanlış bir gelir
+    // rakamı, boş bir ekrandan çok daha kötü.
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <WifiOff className="w-10 h-10 text-gray-300 mb-3" />
+        <h3 className="text-base font-bold text-gray-900">{t('common.loadFailedTitle')}</h3>
+        <p className="text-sm text-gray-500 mt-1 mb-4">{t('common.loadFailedHint')}</p>
+        <button
+          type="button"
+          onClick={() => fetchData()}
+          className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+        >
+          {t('common.retry')}
+        </button>
       </div>
     );
   }

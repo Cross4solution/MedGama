@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Mail, MailOpen, Search, Trash2, Paperclip, Download, ChevronLeft,
-  Loader2, Inbox, FileText, Image as ImageIcon, Clock, User,
+  Loader2, Inbox, FileText, Image as ImageIcon, Clock, User, WifiOff,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { contactMessageAPI } from '../../lib/api';
@@ -31,6 +31,7 @@ const CRMContactInbox = () => {
   const { isPro } = useAuth();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState('');
   const [unreadOnly, setUnreadOnly] = useState(false);
@@ -48,8 +49,13 @@ const CRMContactInbox = () => {
       const data = res?.data || res;
       setMessages(data?.data || []);
       setMeta({ total: data?.total || 0, last_page: data?.last_page || 1 });
+      setBaglantiHatasi(false);
     } catch (err) {
       console.error('Failed to fetch contact messages', err);
+      // Sunucuya ulaşılamadı — "mesaj yok" DEĞİL. Gelen kutusunun boş
+      // görünmesi, hasta mesajlarının cevapsız kalmasına yol açar.
+      setMessages([]);
+      setBaglantiHatasi(true);
     }
     setLoading(false);
   }, [page, search, unreadOnly]);
@@ -139,6 +145,19 @@ const CRMContactInbox = () => {
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-gray-300" />
+              </div>
+            ) : baglantiHatasi ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <WifiOff className="w-8 h-8 mb-2 text-gray-300" />
+                <p className="text-sm font-semibold text-gray-700">{t('common.loadFailedTitle')}</p>
+                <p className="text-xs text-gray-500 mt-1 mb-3">{t('common.loadFailedHint')}</p>
+                <button
+                  type="button"
+                  onClick={() => fetchMessages()}
+                  className="px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700"
+                >
+                  {t('common.retry')}
+                </button>
               </div>
             ) : messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-gray-400">
