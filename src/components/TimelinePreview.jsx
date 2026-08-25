@@ -18,13 +18,25 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let iptal = false;
     setLoading(true);
-    const params = { per_page: limit || 8 };
-    if (country) params.country = country; // misafir/kullanıcı ülkesine göre önizleme
-    medStreamAPI.posts(params).then((res) => {
-      const list = res?.data || [];
-      if (list.length) {
-        setApiPosts(list.map((p) => {
+
+    const cek = (p) => medStreamAPI.posts(p).then((r) => r?.data || []).catch(() => []);
+
+    // Ülke süzgeci SERT: `author.country LIKE %TR%`. Yazarların ülkesi çoğunlukla
+    // boş olduğu için bu, akışı boşaltıyordu. Canlıda ölçüldü — süzgeçsiz istek
+    // 50 gönderi, `country=TR` sıfır; `/geo/ip-country` ise her ziyaretçi için
+    // "TR" döndürüyor. Yani ana sayfadaki önizleme gerçek ziyaretçilerde boştu
+    // ve bunun hiçbir belirtisi yoktu.
+    //
+    // Niyet korunuyor (önce yereli göster), sonucu boş bırakması engelleniyor.
+    (async () => {
+      const params = { per_page: limit || 8 };
+      let list = country ? await cek({ ...params, country }) : [];
+      if (!list.length) list = await cek(params);
+      if (iptal) return;
+
+      setApiPosts(list.map((p) => {
           const ec = p.engagement_counter || p.engagementCounter || {};
           return {
             id: p.id,
@@ -59,9 +71,11 @@ export default function TimelinePreview({ items = [], columns = 3, limit = 6, on
               return [{ url: p.media_url, type: mType }];
             })(),
           };
-        }));
-      }
-    }).catch(() => {}).finally(() => setLoading(false));
+      }));
+      setLoading(false);
+    })();
+
+    return () => { iptal = true; };
   }, [limit, country]);
 
   // Only show real API posts — no mock fallback (mock IDs cause 404 on like/comment/bookmark)

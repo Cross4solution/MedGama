@@ -50,7 +50,10 @@ export default function useLocationPrompt(user, ask) {
     geoAPI.check()
       .then((res) => {
         if (!alive) return;
-        if (res?.data?.should_ask) {
+        // Yanıt interceptor'ı gövdeyi açıyor: `res` doğrudan yanıt nesnesi.
+        // `res?.data?.should_ask` hep `undefined` idi, yani konum sorusu hiç
+        // sorulmuyordu.
+        if (res?.should_ask) {
           markAsked();
           ask();
         }

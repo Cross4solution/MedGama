@@ -47,7 +47,12 @@ export default function HomeV2() {
     if (user?.country) { setGeoCountry(user.country); return; }
     let alive = true;
     geoAPI.ipCountry()
-      .then((res) => { if (alive && res?.data?.country) setGeoCountry(res.data.country); })
+      // `api` yanıt interceptor'ı gövdeyi AÇIYOR (`response => response.data`),
+      // yani burada `res` doğrudan `{ country, state }`. Eskiden
+      // `res?.data?.country` okunuyordu — hep `undefined`, dolayısıyla ülke hiç
+      // ayarlanmıyordu. Hata sessizdi: eksik bir süzgeç, çalışan bir sayfadan
+      // ayırt edilemiyor.
+      .then((res) => { if (alive && res?.country) setGeoCountry(res.country); })
       .catch(() => {});
     return () => { alive = false; };
   }, [user?.country]);

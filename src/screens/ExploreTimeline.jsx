@@ -451,7 +451,11 @@ export default function ExploreTimeline() {
     let alive = true;
     geoAPI.suggestRadius(geo.lat, geo.lon)
       .then((res) => {
-        const r = res?.data?.radius;
+        // Yanıt interceptor'ı gövdeyi açıyor ve uç düz `{ radius: 100 }`
+        // döndürüyor. `res?.data?.radius` hep `undefined` idi, yani sunucunun
+        // önerdiği yarıçap hiç uygulanmıyor, akış her zaman varsayılanla
+        // açılıyordu. Aynı hatanın üçüncü örneği (bkz. `yanitBicimi` ölçütü).
+        const r = res?.radius;
         if (alive && typeof r === 'number') setGeoRadius(r);
       })
       .catch(() => { /* öneri alınamazsa varsayılan + kademeli büyüme devrede */ });
