@@ -30,10 +30,13 @@ import path from 'node:path';
  *                   söylemek, kayıtların silindiğini düşündürür.
  *   • faturalama  — "Sonuç yok" + "ilk faturanızı oluşturun", faturaları duran
  *                   bir kliniğe.
+ *   • personel    — yalnız BİLDİRİM gösteriyordu; bildirim geçici, ekran
+ *                   kalıcı: liste "personel yok" demeye devam ediyordu.
+ *   • değerlendirmeler — tümüyle sessiz `catch`; hekime hiç yorum almamış gibi
+ *                   gösteriyordu.
  *
  * Kalanlar hâlâ listede ve artık VARSAYIM değil, ölçüm: /crm, /crm/leads,
- * /crm/staff, /crm/contact-inbox, /crm/reports, /crm/examination, /crm/revenue,
- * /crm/reviews.
+ * /crm/contact-inbox, /crm/reports, /crm/examination, /crm/revenue.
  *
  * Geri kalanlar bilerek listede: bir kısmı zararsız (öneri açılır listesi boş
  * kalabilir), bir kısmı giriş arkasında ve ekranına bakılmadan düzeltilmemeli.
@@ -84,7 +87,6 @@ const BILINEN = new Set([
   'screens/TelehealthPage.jsx',
   'screens/crm/CRMLeads.jsx',
   'screens/crm/CRMDocuments.jsx',
-  'screens/crm/CRMStaff.jsx',
   'screens/crm/CRMContactInbox.jsx',
   'screens/admin/AdminUserManagement.jsx',
   'screens/admin/AdminModeration.jsx',

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Users, UserPlus, Search, Mail, Phone, Shield, ShieldCheck, ShieldAlert,
   MoreVertical, X, Loader2, Eye, EyeOff, Stethoscope, Clock, CheckCircle,
-  Building2, Copy, AlertCircle, Trash2, Lock, Briefcase,
+  Building2, Copy, AlertCircle, Trash2, Lock, Briefcase, WifiOff,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
@@ -287,6 +287,7 @@ const CRMStaff = () => {
 
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -299,8 +300,14 @@ const CRMStaff = () => {
       const res = await clinicAPI.staff(clinicId, { per_page: 100 });
       const list = res?.data || [];
       setStaff(Array.isArray(list) ? list : []);
+      setBaglantiHatasi(false);
     } catch (err) {
+      // Bildirim geçici, EKRAN kalıcı. Yalnız bildirim gösterilince liste yine
+      // "personel yok" diyordu ve o cümle bildirim kaybolduktan sonra da orada
+      // duruyordu.
       notify({ type: 'error', message: t('crm.staff.staffLoadFailed', 'Failed to load staff list.') });
+      setStaff([]);
+      setBaglantiHatasi(true);
     } finally {
       setLoading(false);
     }
@@ -368,6 +375,19 @@ const CRMStaff = () => {
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
+        </div>
+      ) : baglantiHatasi ? (
+        <div className="bg-white rounded-2xl border border-gray-200/80 p-12 text-center">
+          <WifiOff className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+          <h3 className="text-base font-bold text-gray-900">{t('common.loadFailedTitle')}</h3>
+          <p className="text-sm text-gray-500 mt-1 mb-4">{t('common.loadFailedHint')}</p>
+          <button
+            type="button"
+            onClick={() => fetchStaff()}
+            className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+          >
+            {t('common.retry')}
+          </button>
         </div>
       ) : filteredStaff.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-200/80 p-12 text-center">

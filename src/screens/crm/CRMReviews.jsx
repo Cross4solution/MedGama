@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Star, MessageSquare, Send, Loader2, ChevronLeft, ChevronRight, CheckCircle, Clock, EyeOff, XCircle } from 'lucide-react';
+import { Star, MessageSquare, Send, Loader2, ChevronLeft, ChevronRight, CheckCircle, Clock, EyeOff, XCircle, WifiOff,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { doctorAPI } from 'lib/api';
 
@@ -24,6 +25,7 @@ export default function CRMReviews() {
   const { t } = useTranslation();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
@@ -38,7 +40,13 @@ export default function CRMReviews() {
       const data = res?.data || res;
       setReviews(data?.data || []);
       setLastPage(data?.last_page || 1);
-    }).catch(() => {}).finally(() => setLoading(false));
+      setBaglantiHatasi(false);
+    }).catch(() => {
+      // Sunucuya ulaşılamadı — "değerlendirme yok" DEĞİL. Sessiz `catch`,
+      // hekime hiç yorum almamış gibi gösteriyordu.
+      setReviews([]);
+      setBaglantiHatasi(true);
+    }).finally(() => setLoading(false));
   }, []);
 
   useEffect(() => { loadReviews(page); }, [page, loadReviews]);
@@ -94,6 +102,19 @@ export default function CRMReviews() {
         {loading ? (
           <div className="p-8 text-center">
             <Loader2 className="w-6 h-6 animate-spin text-gray-300 mx-auto" />
+          </div>
+        ) : baglantiHatasi ? (
+          <div className="p-12 text-center">
+            <WifiOff className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+            <h3 className="text-base font-bold text-gray-900">{t('common.loadFailedTitle')}</h3>
+            <p className="text-sm text-gray-500 mt-1 mb-4">{t('common.loadFailedHint')}</p>
+            <button
+              type="button"
+              onClick={() => loadReviews(page)}
+              className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+            >
+              {t('common.retry')}
+            </button>
           </div>
         ) : reviews.length === 0 ? (
           <div className="p-8 text-center">
