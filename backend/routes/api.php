@@ -73,8 +73,16 @@ Route::match(['get', 'post'], '/system/init-db', function (\Illuminate\Http\Requ
         abort(404);
     }
 
-    // Secret sourced from env (INIT_DB_KEY); legacy fallback in config — rotate ASAP.
-    if (!hash_equals((string) config('app.init_db_key'), (string) $request->query('key'))) {
+    // Anahtar tanımlı değilse uç kullanılamaz. Eskiden config'te depoda yazılı
+    // bir varsayılan vardı; boş anahtarla karşılaştırma yapıp içeri almak, o
+    // varsayılanı geri getirmekten farksız olurdu.
+    $anahtar = (string) config('app.init_db_key');
+
+    if ($anahtar === '') {
+        abort(404);
+    }
+
+    if (!hash_equals($anahtar, (string) $request->query('key'))) {
         return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 403);
     }
 

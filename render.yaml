@@ -21,6 +21,11 @@ services:
       # üretimde AÇIKÇA kapatılıyor — varsayılana güvenmek yetmez.
       - key: DEMO_LOGIN_ENABLED
         value: false
+      # Veritabanını yeniden kuran uç. Aynı gerekçe: niyet yazılı olmalı,
+      # varsayılana güvenilmemeli. Anahtar da burada TANIMSIZ bırakılıyor —
+      # tanımsız anahtar ucu tümüyle kapatıyor (config/app.php'ye bak).
+      - key: ALLOW_DESTRUCTIVE_INIT
+        value: false
       - key: APP_KEY
         sync: false           # Set in Render dashboard → Environment
       - key: APP_URL

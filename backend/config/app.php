@@ -47,11 +47,19 @@ return [
     'timing_header' => env('TIMING_HEADER', false),
 
     /*
-    | init-db endpoint secret. Prefer the INIT_DB_KEY env var.
-    | The hardcoded fallback below is legacy and MUST be rotated:
-    | set INIT_DB_KEY in env and remove this fallback.
+    | init-db endpoint secret.
+    |
+    | Varsayılan artık BOŞ. Eskiden depoda yazılı sabit bir parolaydı ve kodun
+    | kendi notu "MUST be rotated" diyordu — parolayı buraya yeniden yazmıyoruz,
+    | çünkü bu dosya onu gizli tutması gereken yer. Depoyu okuyabilen herkes
+    | anahtarı biliyordu; gizliliği, kimsenin değiştirmeyi unutmamasına
+    | bağlıydı.
+    |
+    | Boş anahtar ucu KULLANILAMAZ kılıyor: denetleyici boşsa isteği reddediyor.
+    | Yani değişken tanımlanmazsa uç kapalı kalır — unutmanın bedeli açık
+    | kalması olmamalı. Aynı karar `demo.enabled` için de verilmişti.
     */
-    'init_db_key' => env('INIT_DB_KEY', 'Medagama2026SecretInit'),
+    'init_db_key' => env('INIT_DB_KEY', ''),
 
     /*
     |--------------------------------------------------------------------------
