@@ -187,16 +187,33 @@ class AuthService
             ->where('is_active', true)
             ->first();
 
+        // Hesap yok ve parola yanlış AYNI yanıtı vermeli.
+        //
+        // Eskiden ikisi ayrılıyordu: olmayan e-posta "No account found with this
+        // email address.", var olan e-posta + yanlış parola ise "The password you
+        // entered is incorrect." Aradaki fark, bir e-postanın burada KAYITLI OLUP
+        // OLMADIĞINI dışarıdan sınanabilir kılıyordu. Tıbbi bir platformda bu
+        // bilginin kendisi hassas: birinin burada hesabı olması, tedavi arıyor
+        // olduğunu ima eder.
+        //
+        // Aynı ilke parola sıfırlamada zaten uygulanıyor ("şifre sıfırlama
+        // bağlantısı, e-posta kayıtlıysa gönderildi"); giriş hizalanmamıştı.
+        //
+        // Mesaj İKİ alana birden yazılıyor: hem yanıt hesabın varlığından
+        // bağımsız olarak birebir aynı kalıyor, hem de formda iki alan da
+        // işaretlenip kullanıcıya hangisini düzelteceği konusunda yanlış yön
+        // verilmiyor.
+        $kimlikHatasi = fn () => ValidationException::withMessages([
+            'email'    => ['Email or password is incorrect.'],
+            'password' => ['Email or password is incorrect.'],
+        ]);
+
         if (!$user) {
-            throw ValidationException::withMessages([
-                'email' => ['No account found with this email address.'],
-            ]);
+            throw $kimlikHatasi();
         }
 
         if (!Hash::check($data['password'], $user->password)) {
-            throw ValidationException::withMessages([
-                'password' => ['The password you entered is incorrect.'],
-            ]);
+            throw $kimlikHatasi();
         }
 
         // Portal/role guard — a portal login only accepts its own role(s).
