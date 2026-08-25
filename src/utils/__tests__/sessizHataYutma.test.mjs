@@ -34,6 +34,20 @@ const kaynakKok = path.resolve(path.dirname(buDosya), '../..');
  *
  * Buraya bir dosya eklemek "bu ekranda başarısızlık, boşluk gibi görünüyor"
  * demeyi kabul etmektir. Düzeltilen dosyalar listeden ÇIKARILMALI.
+ *
+ * ── Listeyi budarken dikkat ──
+ *
+ * "Dosyada `setError` VAR, demek ki ayırıyor" diye bakmak YANILTIYOR. Denendi:
+ * on dosya öyle göründü, üçü elle okununca yanlış çıktı. `ClinicTeam` liste
+ * çekiminde `.catch(() => {})` kullanıyor; oradaki `error` durumu FORM hatası
+ * için. `DoctorBilling` ve `AdminCatalog` da aynı: hata durumu var ama başka
+ * bir işin hatası.
+ *
+ * Bu yüzden aşağıdan yalnızca ekranı OKUNARAK doğrulanan kayıtlar çıkarıldı:
+ * boş durumun gerçekten `!error` / `!hata` arkasında olduğu görülenler.
+ * `screens/profile/MedstreamProfileFeed.jsx` ise artık var olmayan bir dosyaya
+ * işaret ediyordu — muafiyet listesinde ölü kayıt, muafiyetten beterdir:
+ * denetlenmediğini gizlerken denetleniyormuş gibi durur.
  */
 const BILINEN = new Set([
   // Öneri/tamamlama listeleri: boş kalması makul, ekranı kaplamıyor.
@@ -46,13 +60,8 @@ const BILINEN = new Set([
   'screens/admin/AdminAuditLogs.jsx',
   'screens/crm/CRMExamination.jsx',
   'screens/crm/CRMMessages.jsx',
-  'screens/profile/MedstreamProfileFeed.jsx',
   'components/profile/MedstreamProfileFeed.jsx',
-  'screens/BrowseClinics.jsx',
-  'screens/BrowseTreatments.jsx',
   'screens/DoctorBilling.jsx',
-  'screens/PatientAppointments.jsx',
-  'screens/PatientInvoices.jsx',
   'screens/SavedClinics.jsx',
   'screens/SavedPosts.jsx',
   'screens/ClinicTeam.jsx',

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
-import { Search, Star, MapPin, Loader2, Stethoscope, ChevronRight, X } from 'lucide-react';
+import { Search, Star, MapPin, Loader2, Stethoscope, ChevronRight, X, WifiOff } from 'lucide-react';
 import { clinicAPI, catalogAPI } from '../lib/api';
 import { resolveClinicRating, resolveClinicReviewCount } from '../utils/clinicMetrics';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
@@ -109,6 +109,7 @@ export default function BrowseTreatments() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
 
   // Drill-down: Specialty → TreatmentTag → clinics
   const [specialties, setSpecialties] = useState([]);
@@ -164,8 +165,11 @@ export default function BrowseTreatments() {
       const list = res?.data || [];
       setClinics(prev => (pg === 1 ? list : [...prev, ...list]));
       setHasMore(list.length === 20);
+      setBaglantiHatasi(false);
     } catch {
-      if (pg === 1) setClinics([]);
+      // Sunucuya ulaşılamadı — "tedavi bulunamadı" DEĞİL. İkisi aynı ekranı
+      // gösterdiğinde kesinti, kullanıcının aramasının sonucu gibi okunuyor.
+      if (pg === 1) { setClinics([]); setBaglantiHatasi(true); }
     }
     setLoading(false);
   }, [specialtyFilter, activeTag]);
@@ -284,6 +288,19 @@ export default function BrowseTreatments() {
         {loading && page === 1 ? (
           <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)}
+          </div>
+        ) : baglantiHatasi ? (
+          <div className="text-center py-20">
+            <WifiOff className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-700 font-bold">{t('common.loadFailedTitle')}</p>
+            <p className="text-sm text-gray-500 mt-1 mb-4">{t('common.loadFailedHint')}</p>
+            <button
+              type="button"
+              onClick={() => fetchClinics(1)}
+              className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+            >
+              {t('common.retry')}
+            </button>
           </div>
         ) : clinics.length === 0 ? (
           <div className="text-center py-20">
