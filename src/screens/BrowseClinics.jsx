@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useNavigate } from '@/compat/router';
 import { useTranslation } from 'react-i18next';
 import { Search, Star, MapPin, Loader2, Building2, WifiOff } from 'lucide-react';
@@ -15,6 +16,7 @@ const FALLBACK_IMAGES = [
 ];
 
 function ClinicCard({ clinic, onClick }) {
+  const [gorselHatasi, setGorselHatasi] = useState(false);
   const { t } = useTranslation();
   // Yedek fotoğraf kliniğin kimliğinden seçiliyor: rastgele seçim her yeniden
   // çizimde değişiyordu (bkz. `utils/sabitSecim.js`).
@@ -33,12 +35,18 @@ function ClinicCard({ clinic, onClick }) {
       className="group bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-lg transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-400/40"
     >
       <div className="relative h-44 overflow-hidden">
-        <img
-          src={img}
+        {/* Next'in görsel iyileştiricisi: kart yuvası ~260 piksel, kaynak
+            dosyalar 720 piksellik JPEG'ler. Ölçüldü — bu sayfa 189 KB'lik ham
+            yer tutucu fotoğraf indiriyordu. `fill` için üstteki kap zaten
+            `relative`. Kırılan uzak avatar için yerel yer tutucuya düşülüyor;
+            aksi hâlde kart boş bir dikdörtgen olarak kalırdı. */}
+        <Image
+          src={gorselHatasi ? FALLBACK_IMAGES[0] : img}
           alt={clinic.name}
-          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
-          loading="lazy"
-          onError={(e) => { e.target.src = FALLBACK_IMAGES[0]; }}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
+          className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
+          onError={() => setGorselHatasi(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
         <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/95 backdrop-blur-sm rounded-lg px-2 py-1 shadow-sm">
