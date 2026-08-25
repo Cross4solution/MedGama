@@ -477,20 +477,17 @@ export default function Profile() {
 
       showToast(t('profile.passwordUpdated') + ' ✓');
     } catch (err) {
-      // If dedicated endpoint doesn't exist (404), fallback to updateProfile
-      if (err?.status === 404) {
-        try {
-          await authAPI.updateProfile({ current_password: oldPwd, password: newPwd, password_confirmation: newPwd2 });
-          showToast('Password updated successfully ✓');
-          setOldPwd(''); setNewPwd(''); setNewPwd2('');
-        } catch (err2) {
-          const msg = err2?.data?.message || err2?.message || t('profile.passwordUpdateFailed');
-          showToast(msg, 'error');
-        }
-      } else {
-        const msg = err?.data?.message || err?.message || t('profile.passwordUpdateFailed');
-        showToast(msg, 'error');
-      }
+      // Burada bir zamanlar "uç 404 verirse `/auth/profile`e dene" yedeği vardı.
+      // O yedek ÇALIŞAMAZ: `/auth/profile` doğrulaması yalnızca ad, avatar,
+      // telefon, şehir, ülke, dil, doğum tarihi ve cinsiyet kabul ediyor —
+      // parola alanları yok ve `AuthService::updateProfile` parolaya hiç
+      // dokunmuyor. Yani istek 200 dönüyor, ekranda "Password updated
+      // successfully ✓" yazıyor ve parola DEĞİŞMEMİŞ oluyor.
+      //
+      // Kullanıcının parolasını değiştirdiğini sanması, hata görmesinden
+      // kötüdür: eskisini kullanmaya devam eder ve bir daha bakmaz.
+      const msg = err?.data?.message || err?.message || t('profile.passwordUpdateFailed');
+      showToast(msg, 'error');
     }
     setSaving(false);
   };
