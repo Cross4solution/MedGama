@@ -3,7 +3,7 @@ import { useNavigate } from '@/compat/router';
 import {
   Users, Search, Plus, Filter, Eye, Tag, X, User, Mail, Phone,
   Calendar, ChevronLeft, ChevronRight, Activity, Loader2,
-  Download, RefreshCw, ArrowUpDown, Layers, Receipt,
+  Download, RefreshCw, ArrowUpDown, Layers, Receipt, WifiOff,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
@@ -216,6 +216,7 @@ const CRMPatients = () => {
   // Data state
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
   const [stats, setStats] = useState({ total: 0, new_this_month: 0, active_this_month: 0 });
   const [filterOptions, setFilterOptions] = useState({ tags: [], stages: [] });
 
@@ -258,9 +259,14 @@ const CRMPatients = () => {
       const sayfa = Array.isArray(res?.data) ? res : (res?.data ?? res);
       setPatients(Array.isArray(sayfa?.data) ? sayfa.data : []);
       setPagination({ total: sayfa?.total || 0, last_page: sayfa?.last_page || 1 });
+      setBaglantiHatasi(false);
     } catch (err) {
       console.error('Failed to fetch patients:', err);
+      // Sunucuya ulaşılamadı — "hasta yok" DEĞİL. Ölçüldü: API çökükken ekran
+      // "Sonuç bulunamadı" yazıyordu. Bir kliniğe hastasının olmadığını
+      // söylemek, kayıtların silindiğini düşündürür.
       setPatients([]);
+      setBaglantiHatasi(true);
     } finally {
       setLoading(false);
     }
@@ -423,6 +429,21 @@ const CRMPatients = () => {
                   <td colSpan={7} className="text-center py-16">
                     <Loader2 className="w-6 h-6 animate-spin text-teal-500 mx-auto" />
                     <p className="text-sm text-gray-400 mt-2">{t('common.loading', 'Loading...')}</p>
+                  </td>
+                </tr>
+              ) : baglantiHatasi ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-16">
+                    <WifiOff className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                    <p className="text-sm font-semibold text-gray-700">{t('common.loadFailedTitle')}</p>
+                    <p className="text-xs text-gray-500 mt-1 mb-3">{t('common.loadFailedHint')}</p>
+                    <button
+                      type="button"
+                      onClick={() => fetchPatients()}
+                      className="px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700"
+                    >
+                      {t('common.retry')}
+                    </button>
                   </td>
                 </tr>
               ) : patients.length === 0 ? (

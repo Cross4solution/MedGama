@@ -21,6 +21,20 @@ import path from 'node:path';
  *     hastaya kasasının boş olduğu söyleniyordu.
  *   • hekim randevuları — "Randevu bulunmuyor". Dolu bir gün boş görünüyordu.
  *
+ * ── Oturum açılabildikten sonra ölçülenler ──
+ *
+ * Demo oturumlarıyla CRM ekranları API tümüyle 500 dönerken gezildi. On ekran
+ * "kayıt yok" diyordu. İkisi düzeltildi ve listeden çıkarıldı:
+ *
+ *   • hastalar    — "Sonuç bulunamadı". Bir kliniğe hastasının olmadığını
+ *                   söylemek, kayıtların silindiğini düşündürür.
+ *   • faturalama  — "Sonuç yok" + "ilk faturanızı oluşturun", faturaları duran
+ *                   bir kliniğe.
+ *
+ * Kalanlar hâlâ listede ve artık VARSAYIM değil, ölçüm: /crm, /crm/leads,
+ * /crm/staff, /crm/contact-inbox, /crm/reports, /crm/examination, /crm/revenue,
+ * /crm/reviews.
+ *
  * Geri kalanlar bilerek listede: bir kısmı zararsız (öneri açılır listesi boş
  * kalabilir), bir kısmı giriş arkasında ve ekranına bakılmadan düzeltilmemeli.
  * Liste BÜYÜMEMELİ — yeni bir sessiz yutma eklendiğinde bu test düşer.
@@ -68,9 +82,7 @@ const BILINEN = new Set([
   'screens/ClinicProfileEdit.jsx',
   'screens/DoctorsDepartments.jsx',
   'screens/TelehealthPage.jsx',
-  'screens/crm/CRMPatients.jsx',
   'screens/crm/CRMLeads.jsx',
-  'screens/crm/CRMBilling.jsx',
   'screens/crm/CRMDocuments.jsx',
   'screens/crm/CRMStaff.jsx',
   'screens/crm/CRMContactInbox.jsx',

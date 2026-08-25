@@ -4,7 +4,7 @@ import {
   Receipt, CreditCard, Banknote, Building2, Plus, Search, Filter,
   ChevronLeft, ChevronRight, X, Check, AlertTriangle, Clock,
   TrendingUp, Users, FileText, Download, Loader2,
-  Wallet, CircleDollarSign, Eye, CalendarPlus, CalendarDays,
+  Wallet, CircleDollarSign, Eye, CalendarPlus, CalendarDays, WifiOff,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
@@ -374,6 +374,7 @@ const CRMBilling = () => {
   // Data
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
   const [stats, setStats] = useState(null);
   const [outstanding, setOutstanding] = useState([]);
   const [pagination, setPagination] = useState({ total: 0, last_page: 1 });
@@ -407,8 +408,14 @@ const CRMBilling = () => {
       const data = res?.data || res;
       setInvoices(data.data || []);
       setPagination({ total: data.total || 0, last_page: data.last_page || 1 });
+      setBaglantiHatasi(false);
     } catch (err) {
       console.error('Fetch invoices error:', err);
+      // Sunucuya ulaşılamadı — "fatura yok" DEĞİL. Ölçüldü: API çökükken ekran
+      // "Sonuç yok" deyip "ilk faturanızı oluşturun" diyordu; faturaları duran
+      // bir kliniğe.
+      setInvoices([]);
+      setBaglantiHatasi(true);
     } finally {
       setLoading(false);
     }
@@ -576,6 +583,19 @@ const CRMBilling = () => {
                 <tbody className="divide-y divide-gray-50">
                   {loading ? (
                     <tr><td colSpan={7} className="text-center py-16"><Loader2 className="w-6 h-6 animate-spin text-teal-500 mx-auto" /></td></tr>
+                  ) : baglantiHatasi ? (
+                    <tr><td colSpan={7} className="text-center py-16">
+                      <WifiOff className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                      <p className="text-sm font-semibold text-gray-700">{t('common.loadFailedTitle')}</p>
+                      <p className="text-xs text-gray-500 mt-1 mb-3">{t('common.loadFailedHint')}</p>
+                      <button
+                        type="button"
+                        onClick={() => fetchInvoices()}
+                        className="px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700"
+                      >
+                        {t('common.retry')}
+                      </button>
+                    </td></tr>
                   ) : invoices.length === 0 ? (
                     <tr><td colSpan={7} className="text-center py-16">
                       <Receipt className="w-10 h-10 text-gray-200 mx-auto mb-2" />
