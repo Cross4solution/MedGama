@@ -68,6 +68,11 @@ export default async function sitemap() {
     '/contact',
     '/vasco-ai',
     '/search',
+    // MedStream herkese açık akış ve CLAUDE.md'ye göre kanonik adres. Uzun süre
+    // `robots.js` içindeki özel listede duruyordu: sayfası `index: true` diyor
+    // ama robots.txt taramayı engellediği için arama motoru o direktifi hiç
+    // göremiyordu — sitenin ana akışı aramada tümüyle yoktu.
+    '/medstream',
     // '/doctors-departments' BİLEREK yok: ekran hiçbir API'ye bağlanmıyor,
     // uydurma doktorları uydurma puan ve fiyatlarla gösteriyor (bkz.
     // `src/screens/DoctorsDepartments.jsx`). Gerçek veriye bağlandığında geri

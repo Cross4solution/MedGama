@@ -3,6 +3,12 @@ import { LOCALES } from '@/lib/locales';
 
 // Locale-siz private path'ler. Her dil prefix'i için ayrıca üretilir
 // (/crm/ → /tr/crm/, /en/crm/ …). /api/ locale'siz kalır.
+//
+// Eşleşme ÖN EK üzerinden: '/telehealth' hem '/telehealth' hem
+// '/telehealth-appointment' adresini kapatıyor. Bu yüzden '/doctor/' ya da
+// '/clinic/' yazmak yanlış olurdu — '/clinic/{codename}' ve '/doctor/{id}'
+// sayfaları herkese açık ve indekslenmeleri gerekiyor. İç içe korumalı
+// rotalar tek tek yazılıyor.
 const PRIVATE = [
   '/crm/',
   '/admin/',
@@ -16,9 +22,18 @@ const PRIVATE = [
   '/saved',
   '/saved-clinics',
   '/onboarding',
-  '/medstream',
   '/telehealth',
   '/doctor-chat',
+  // Bunlar `PrivateRoute` ile korunuyordu ama listede yoktu; üst seviye
+  // '/dashboard' kaydı '/doctor/dashboard' adresine ulaşmıyor.
+  '/doctor/dashboard',
+  '/doctor/billing',
+  '/doctor/appointments',
+  '/clinic/dashboard',
+  '/clinic/team',
+  '/clinic/onboarding',
+  '/patient/invoices',
+  '/patient/appointments',
 ];
 
 export default function robots() {
