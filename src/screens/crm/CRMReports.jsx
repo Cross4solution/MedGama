@@ -44,10 +44,14 @@ const TYPE_LABELS = {
 const SERVICE_COLORS = ['#14b8a6', '#3b82f6', '#f59e0b', '#a855f7', '#ef4444', '#10b981'];
 
 // Küçük "veri yok" boş durum bileşeni (kilit DEĞİL)
-const EmptyState = ({ message }) => (
+//
+// `hata` kipi ayrı: rapor GELMEDİĞİNDE "henüz veri yok" demek, kliniğe hiç
+// randevusu olmadığını söylemekle aynı şey. Üç bölüm de kendi başına
+// başarısız olabiliyor, o yüzden ayrım bölüm bazında taşınıyor.
+const EmptyState = ({ message, hata = false }) => (
   <div className="flex flex-col items-center justify-center py-10 text-gray-400">
-    <Activity className="w-8 h-8 mb-2 opacity-40" />
-    <p className="text-xs font-medium">{message}</p>
+    <Activity className={`w-8 h-8 mb-2 ${hata ? 'opacity-60 text-gray-500' : 'opacity-40'}`} />
+    <p className={`text-xs font-medium ${hata ? 'text-gray-600' : ''}`}>{message}</p>
   </div>
 );
 
@@ -82,6 +86,7 @@ const CRMReports = () => {
   const [patientReport, setPatientReport] = useState(null);
   const [serviceReport, setServiceReport] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [raporHatasi, setRaporHatasi] = useState({ randevu: false, hasta: false, hizmet: false });
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -137,6 +142,11 @@ const CRMReports = () => {
       setApptReport(apptRes.status === 'fulfilled' ? (apptRes.value?.data ?? null) : null);
       setPatientReport(patRes.status === 'fulfilled' ? (patRes.value?.data ?? null) : null);
       setServiceReport(svcRes.status === 'fulfilled' ? (svcRes.value?.data ?? null) : null);
+      setRaporHatasi({
+        randevu: apptRes.status === 'rejected',
+        hasta: patRes.status === 'rejected',
+        hizmet: svcRes.status === 'rejected',
+      });
     } catch (err) {
       console.error('Reports fetch error:', err);
       setError(t('common.loadError', 'Veriler yüklenirken bir hata oluştu.'));
@@ -342,7 +352,7 @@ const CRMReports = () => {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <EmptyState message="Henüz randevu verisi yok" />
+                <EmptyState hata={raporHatasi.randevu} message={raporHatasi.randevu ? t('common.loadFailedTitle') : "Henüz randevu verisi yok"} />
               )}
             </div>
 
@@ -369,7 +379,7 @@ const CRMReports = () => {
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
-                <EmptyState message="Son 30 günde randevu yok" />
+                <EmptyState hata={raporHatasi.randevu} message={raporHatasi.randevu ? t('common.loadFailedTitle') : "Son 30 günde randevu yok"} />
               )}
             </div>
           </div>
@@ -396,7 +406,7 @@ const CRMReports = () => {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <EmptyState message="Henüz hizmet/tedavi verisi yok" />
+                <EmptyState hata={raporHatasi.hizmet} message={raporHatasi.hizmet ? t('common.loadFailedTitle') : "Henüz hizmet/tedavi verisi yok"} />
               )}
             </div>
           )}

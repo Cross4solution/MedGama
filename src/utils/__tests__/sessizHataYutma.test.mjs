@@ -48,10 +48,14 @@ import path from 'node:path';
  *                   dayanacak veri olmadığı için zaten kaldırmıştı; bu ikisi
  *                   gözden kaçmıştı. Boş liste ile BİLİNMEYEN liste aynı değil.
  *
- * Kalanlar hâlâ listede: /crm/leads (kanban sütunları "0/Boş" diyor) ve
- * /crm/reports ("Henüz randevu verisi yok"). `/crm/examination` taramada
- * işaretlenmişti ama YANLIŞ POZİTİF çıktı: o ekran bir form, liste değil —
- * eşleşen metin form etiketleriydi.
+ *   • lead'ler    — beş kanban sütunu birden "0" ve "Boş" diyordu; yalnız bir
+ *                   bildirim vardı ve o kayboluyordu.
+ *   • raporlar    — üç bölüm ayrı ayrı başarısız olabiliyor ve her biri "Henüz
+ *                   veri yok" diyordu. Ayrım artık bölüm bazında taşınıyor.
+ *
+ * CRM tarafındaki on ekranın ONU da düzeltildi; kuyruk kapandı.
+ * `/crm/examination` taramada işaretlenmişti ama YANLIŞ POZİTİF çıktı: o ekran
+ * bir form, liste değil — eşleşen metin form etiketleriydi.
  *
  * Geri kalanlar bilerek listede: bir kısmı zararsız (öneri açılır listesi boş
  * kalabilir), bir kısmı giriş arkasında ve ekranına bakılmadan düzeltilmemeli.
@@ -90,7 +94,6 @@ const BILINEN = new Set([
   // Giriş arkasındaki listeler — ekranına bakılmadan düzeltilmemeli.
   'screens/DoctorChatPage.jsx',
   'screens/admin/AdminAuditLogs.jsx',
-  'screens/crm/CRMExamination.jsx',
   'screens/crm/CRMMessages.jsx',
   'components/profile/MedstreamProfileFeed.jsx',
   'screens/DoctorBilling.jsx',
@@ -100,7 +103,6 @@ const BILINEN = new Set([
   'screens/ClinicProfileEdit.jsx',
   'screens/DoctorsDepartments.jsx',
   'screens/TelehealthPage.jsx',
-  'screens/crm/CRMLeads.jsx',
   'screens/crm/CRMDocuments.jsx',
   'screens/admin/AdminUserManagement.jsx',
   'screens/admin/AdminModeration.jsx',
@@ -109,7 +111,6 @@ const BILINEN = new Set([
   'screens/admin/AdminAnnouncements.jsx',
   'screens/admin/AdminCatalog.jsx',
   'screens/admin/AdminSupport.jsx',
-  'screens/crm/CRMReports.jsx',
   'screens/crm/CRMSettings.jsx',
 ]);
 

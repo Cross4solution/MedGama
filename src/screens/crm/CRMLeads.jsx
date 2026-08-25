@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Target, Plus, Search, Phone, Mail, User, Loader2, X, DollarSign,
   Stethoscope, UserCheck, Clock, MessageSquare, PhoneCall, ArrowRight,
-  Trash2, CheckCircle2, Activity, Tag,
+  Trash2, CheckCircle2, Activity, Tag, WifiOff,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
@@ -381,6 +381,7 @@ const CRMLeads = () => {
   const [leads, setLeads] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [baglantiHatasi, setBaglantiHatasi] = useState(false);
   const [search, setSearch] = useState('');
   const [assignedFilter, setAssignedFilter] = useState('');
   const [salespeople, setSalespeople] = useState([]);
@@ -397,8 +398,14 @@ const CRMLeads = () => {
       const data = leadsRes?.data || leadsRes;
       setLeads(Array.isArray(data) ? data : (data?.data || []));
       setStats(statsRes?.data || statsRes);
+      setBaglantiHatasi(false);
     } catch (err) {
+      // Bildirim geçici; kanban kalıcı. Yalnız bildirim gösterilince beş sütun
+      // birden "0" ve "Boş" diyordu — potansiyel müşterileri duran bir kliniğe,
+      // hepsinin kaybolduğunu söyler gibi.
       notify({ type: 'error', message: err?.message || t('crm.leads.loadError') });
+      setLeads([]);
+      setBaglantiHatasi(true);
     } finally {
       setLoading(false);
     }
@@ -479,6 +486,19 @@ const CRMLeads = () => {
       {/* Kanban */}
       {loading ? (
         <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-teal-500" /></div>
+      ) : baglantiHatasi ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <WifiOff className="w-10 h-10 text-gray-300 mb-3" />
+          <h3 className="text-base font-bold text-gray-900">{t('common.loadFailedTitle')}</h3>
+          <p className="text-sm text-gray-500 mt-1 mb-4">{t('common.loadFailedHint')}</p>
+          <button
+            type="button"
+            onClick={() => fetchLeads()}
+            className="px-4 py-2 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700"
+          >
+            {t('common.retry')}
+          </button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-3">
           {STAGES.map(s => (
