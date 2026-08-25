@@ -391,7 +391,27 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('google_user');
       sessionStorage.removeItem('access_token');
       sessionStorage.removeItem('google_access_token');
+      // Oturuma özel işaretçiler. `auth_manual_login` "bu giriş ELLE yapıldı"
+      // demek ve konum akışını belirliyor; çıkıştan sonra kalırsa bir sonraki
+      // OTOMATİK giriş elle yapılmış gibi davranıp hassas konum soruyor.
+      // `auth_session` de "beni hatırla" mantığının tarayıcı oturumu işaretçisi.
+      sessionStorage.removeItem('auth_manual_login');
+      sessionStorage.removeItem('auth_session');
     } catch {}
+
+    // Soketi de kapat. `disconnectEcho` tam bunun için yazılmıştı ("call on
+    // logout") ama hiçbir yerden çağrılmıyordu: çıkıştan sonra WebSocket
+    // bağlantısı önceki oturumun kimliğiyle açık kalıyordu. Paylaşılan bir
+    // cihazda sayfa yenilenmeden ikinci kişi giriş yaptığında, açık kalan o
+    // bağlantı devralınıyordu.
+    //
+    // İçe aktarım DİNAMİK olmak zorunda: `lib/echo` laravel-echo + pusher-js
+    // çekiyor (20 KB gzip) ve bu bağlam ortak kabukta. Düz `import` yazmak,
+    // soket yığınını hiç giriş yapmayacak ziyaretçinin ana sayfasına geri
+    // koyardı (bkz. `soketAgirligi` ölçütü).
+    import('../lib/echo')
+      .then(({ disconnectEcho }) => disconnectEcho())
+      .catch(() => {});
     setUser(null);
     setToken(null);
   }, []);
