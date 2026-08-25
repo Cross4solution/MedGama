@@ -306,7 +306,7 @@ export default function AdminVerification() {
       setReqLastPage(res?.last_page || res?.meta?.last_page || 1);
     } catch (err) {
       setRequests([]);
-      const status = err?.response?.status || err?.status;
+      const status = err?.status;
       if (status === 403) setReqError(t('admin.verification.errAccessDenied'));
       else if (status === 401) setReqError(t('admin.verification.errNotAuthenticated'));
       else setReqError(err?.message || t('admin.verification.errLoadRequests'));
@@ -331,7 +331,7 @@ export default function AdminVerification() {
       setDocLastPage(res?.last_page || res?.meta?.last_page || 1);
     } catch (err) {
       setDoctors([]);
-      const status = err?.response?.status || err?.status;
+      const status = err?.status;
       if (status === 403) setDocError(t('admin.verification.errAccessDenied'));
       else if (status === 401) setDocError(t('admin.verification.errNotAuthenticated'));
       else setDocError(err?.message || t('admin.verification.errLoadDoctors'));

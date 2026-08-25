@@ -681,6 +681,10 @@
       "paymentMethod": "To'lov Usuli",
       "billingHistory": "Hisob-kitob Tarixi",
       "change": "O'zgartirish"
+    },
+    "branches": {
+      "forbiddenTitle": "Filiallarni boshqarish tarifingizga kirmaydi.",
+      "forbiddenHint": "Mavjud filiallaringiz saqlanib qolgan — bu ekran hozir ularni o'qiy olmayapti, xolos."
     }
   },
   "home": {

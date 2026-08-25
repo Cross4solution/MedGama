@@ -180,15 +180,15 @@ const AuthPages = () => {
       }
     } catch (err) {
       // Extract message from various error shapes
-      const status = err?.status || err?.response?.status || 0;
-      const message = err?.message || err?.data?.message || err?.response?.data?.message || '';
+      const status = err?.status || 0;
+      const message = err?.message || err?.data?.message || '';
 
       if (status === 401) {
         notify({ type: 'error', message: 'E-posta veya şifre hatalı. Lütfen tekrar deneyin.' });
       } else if (status === 403) {
         notify({ type: 'error', message: 'Bu işlemi gerçekleştirme yetkiniz bulunmuyor.' });
       } else if (status === 422) {
-        const backendErrors = err?.errors || err?.data?.errors || err?.response?.data?.errors;
+        const backendErrors = err?.errors || err?.data?.errors;
         if (backendErrors && typeof backendErrors === 'object') {
           const fieldErrors = {};
           Object.entries(backendErrors).forEach(([field, arr]) => {

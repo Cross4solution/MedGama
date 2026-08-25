@@ -46,7 +46,7 @@ const ClinicLogin = () => {
       // Login never requires email verification — verification is register-only for patients/doctors
       navigate(getRedirectFromLoginResult(res, '/crm'), { replace: true });
     } catch (err) {
-      const backendErrors = err?.errors || err?.data?.errors || err?.response?.data?.errors;
+      const backendErrors = err?.errors || err?.data?.errors;
       if (backendErrors?.email) setError(Array.isArray(backendErrors.email) ? backendErrors.email[0] : backendErrors.email);
       else if (backendErrors?.password) setError(Array.isArray(backendErrors.password) ? backendErrors.password[0] : backendErrors.password);
       else if (err?.status === 401) setError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.');

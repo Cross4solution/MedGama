@@ -163,8 +163,8 @@ const CRMDocuments = () => {
       await fetchDocuments();
     } catch (err) {
       console.error('Upload error:', err);
-      const msg = err?.response?.data?.errors?.file?.[0]
-        || err?.response?.data?.message
+      const msg = err?.data?.errors?.file?.[0]
+        || err?.data?.message
         || t('crm.documents.uploadFailed', 'Yükleme başarısız oldu.');
       setUploadError(msg);
     } finally {

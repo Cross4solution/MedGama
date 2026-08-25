@@ -283,8 +283,8 @@ export default function Profile() {
       savedToServer = true;
       showToast(t('profile.medicalHistorySaved', 'Medical conditions saved'));
     } catch (err) {
-      const status = err?.response?.status;
-      const detail = err?.response?.data?.message || err?.message || '';
+      const status = err?.status;
+      const detail = err?.data?.message || err?.message || '';
       console.warn('[Profile] Medical history API failed:', { status, detail, conditions });
       if (status === 422) {
         showToast(t('profile.validationError', 'Invalid data. Please check your entries.'), 'error');

@@ -144,7 +144,7 @@ export default function BookAppointmentModal({ open, onClose, targetId, targetNa
     appointmentAPI.create(payload)
       .then(() => setSubmitted(true))
       .catch((err) => {
-        const msg = err?.response?.data?.message
+        const msg = err?.data?.message
           || t('booking.createFailed');
         setErrorMsg(msg);
       })

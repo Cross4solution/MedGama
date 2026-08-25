@@ -472,7 +472,9 @@
       "deleteError": "Failed to delete branch.",
       "addFirst": "+ Add First Branch",
       "noResults": "No branches match your search.",
-      "searchPlaceholder": "Search branches by name, city or address..."
+      "searchPlaceholder": "Search branches by name, city or address...",
+      "forbiddenTitle": "Branch management is not available on your plan.",
+      "forbiddenHint": "Your existing branches are safe — this screen just cannot read them right now."
     },
     "contactInbox": {
       "title": "Contact Messages",

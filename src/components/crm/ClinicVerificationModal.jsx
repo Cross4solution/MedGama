@@ -130,7 +130,7 @@ const ClinicVerificationModal = ({ isOpen, onClose, onStatusChange }) => {
       setFiles({});
       if (onStatusChange) onStatusChange('pending_review');
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || t('crm.clinicVerification.submissionFailed', 'Submission failed');
+      const msg = err?.data?.message || err?.message || t('crm.clinicVerification.submissionFailed', 'Submission failed');
       setError(msg);
     } finally {
       setSubmitting(false);

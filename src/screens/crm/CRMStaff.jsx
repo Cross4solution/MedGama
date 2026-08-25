@@ -54,7 +54,7 @@ const AddDoctorModal = ({ isOpen, onClose, onCreated, clinicId }) => {
       notify({ type: 'success', message: t('crm.staff.doctorCreated', 'Doctor account created successfully!') });
       onCreated?.(doctor);
     } catch (err) {
-      const msg = err?.message || err?.data?.message || err?.response?.data?.message || 'Failed to create doctor account.';
+      const msg = err?.message || err?.data?.message || 'Failed to create doctor account.';
       notify({ type: 'error', message: msg });
     } finally {
       setCreating(false);

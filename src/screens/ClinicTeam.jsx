@@ -74,7 +74,7 @@ export default function ClinicTeam() {
       setShowAddModal(false);
       resetForm();
     } catch (err) {
-      setError(err?.message || err?.response?.data?.message || 'Failed to add doctor.');
+      setError(err?.message || err?.data?.message || 'Failed to add doctor.');
     } finally {
       setSaving(false);
     }

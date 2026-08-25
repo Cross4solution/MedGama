@@ -201,7 +201,7 @@ export default function ClinicOnboarding() {
       if (doc) setDoctors(prev => [...prev, { id: doc.id, fullname: doc.fullname, email: doc.email, is_active: true }]);
       setNewDoctor({ fullname: '', email: '', specialty: '', password: '' });
     } catch (err) {
-      setDoctorError(err?.message || err?.response?.data?.message || 'Failed to add doctor.');
+      setDoctorError(err?.message || err?.data?.message || 'Failed to add doctor.');
     } finally {
       setAddingDoctor(false);
     }

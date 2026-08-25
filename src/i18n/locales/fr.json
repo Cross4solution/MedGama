@@ -1298,7 +1298,9 @@
       "previewMap": "Aperçu sur la carte",
       "saveError": "Impossible d'enregistrer l'établissement.",
       "searchPlaceholder": "Rechercher par nom, ville ou adresse…",
-      "viewMap": "Voir sur la carte"
+      "viewMap": "Voir sur la carte",
+      "forbiddenTitle": "La gestion des succursales n'est pas incluse dans votre forfait.",
+      "forbiddenHint": "Vos succursales existantes sont intactes — cet écran ne peut simplement pas les lire pour le moment."
     },
     "contactInbox": {
       "title": "Messages de contact",

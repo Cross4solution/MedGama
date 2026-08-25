@@ -203,7 +203,7 @@ function AddInvoiceModal({ open, onClose, onCreated }) {
       onClose();
       setForm({ patient_id: '', currency: 'EUR', tax_rate: '0', discount_amount: '0', payment_method: '', notes: '', issue_date: new Date().toISOString().slice(0, 10), due_date: '', items: [{ description: '', category: 'Consultation', quantity: '1', unit_price: '' }] });
     } catch (err) {
-      const data = err?.response?.data;
+      const data = err?.data;
       if (data?.errors) {
         // Laravel validation errors — show per-field
         const flat = {};

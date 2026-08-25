@@ -1341,7 +1341,9 @@
       "previewMap": "Xəritədə önizlə",
       "saveError": "Filial yadda saxlanıla bilmədi.",
       "searchPlaceholder": "Filialları ada, şəhərə və ya ünvana görə axtar...",
-      "viewMap": "Xəritədə göstər"
+      "viewMap": "Xəritədə göstər",
+      "forbiddenTitle": "Filial idarəetməsi planınıza daxil deyil.",
+      "forbiddenHint": "Mövcud filiallarınız yerindədir — bu ekran sadəcə hazırda onları oxuya bilmir."
     },
     "contactInbox": {
       "title": "Əlaqə Mesajları",

@@ -453,7 +453,9 @@
       "deleteError": "Şube silinemedi.",
       "addFirst": "+ İlk Şubeyi Ekle",
       "noResults": "Aramanızla eşleşen şube yok.",
-      "searchPlaceholder": "Şubeleri ada, şehre veya adrese göre ara..."
+      "searchPlaceholder": "Şubeleri ada, şehre veya adrese göre ara...",
+      "forbiddenTitle": "Şube yönetimi planınıza dahil değil.",
+      "forbiddenHint": "Kayıtlı şubeleriniz duruyor — bu ekran şu an onları okuyamıyor."
     },
     "contactInbox": {
       "title": "İletişim Mesajları",

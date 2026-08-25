@@ -159,7 +159,7 @@ export default function ReviewsTab({ clinicId, guardAction }) {
         }).catch(() => {});
       })
       .catch((err) => {
-        const status = err?.response?.status || err?.status;
+        const status = err?.status;
         if (status === 403) setReviewError(t('clinicDetail.reviewNeedAppointment', 'You must have a completed appointment to review this clinic.'));
         else if (status === 409) setReviewError(t('clinicDetail.reviewAlreadyExists', 'You have already reviewed this clinic.'));
         else if (status === 429) setReviewError(t('clinicDetail.reviewFloodLimit', 'Please wait 24 hours between reviews.'));

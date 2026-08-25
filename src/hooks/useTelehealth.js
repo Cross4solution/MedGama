@@ -28,7 +28,7 @@ export default function useTelehealth(appointmentId) {
       setSession(data);
       setMeetingStatus(data?.appointment?.meeting_status || 'created');
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || 'Failed to load session';
+      const msg = err?.data?.message || err?.message || 'Failed to load session';
       setError(msg);
     } finally {
       setLoading(false);

@@ -234,7 +234,7 @@ const DoctorChatPage = () => {
           setMobileChatOpen(true);
         }
       } catch (err) {
-        if (err?.response?.status === 403 || err?.status === 403) {
+        if (err?.status === 403) {
           notify({
             type: 'error',
             message: t('chat.appointmentRequired', 'You can only message doctors you have an appointment with.'),

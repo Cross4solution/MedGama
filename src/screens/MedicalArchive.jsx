@@ -119,7 +119,7 @@ const MedicalArchive = () => {
       fetchDocuments();
       fetchStats();
     } catch (err) {
-      const res = err?.response?.data;
+      const res = err?.data;
       const validationErrors = res?.errors;
       if (validationErrors) {
         const firstField = Object.keys(validationErrors)[0];
@@ -142,7 +142,7 @@ const MedicalArchive = () => {
       fetchStats();
       notify({ type: 'success', message: t('medicalArchive.deleteSuccess', 'Document deleted') });
     } catch (err) {
-      notify({ type: 'error', message: err?.response?.data?.message || t('medicalArchive.deleteFailed', 'Delete failed') });
+      notify({ type: 'error', message: err?.data?.message || t('medicalArchive.deleteFailed', 'Delete failed') });
     }
     setDeleting(false);
     setDeleteModal({ open: false, doc: null });

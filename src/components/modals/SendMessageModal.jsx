@@ -73,7 +73,7 @@ export default function SendMessageModal({ open, onClose, targetId, targetName, 
         message: t('message.delivered'),
       });
     } catch (err) {
-      const msg = err?.response?.data?.message;
+      const msg = err?.data?.message;
       setError(msg || t('message.sendFailed'));
     } finally {
       setSending(false);

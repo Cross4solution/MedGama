@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   MapPin, Plus, Search, Phone, Mail, Globe, Edit2, Trash2,
-  Loader2, X, CheckCircle, XCircle, Building2, ChevronRight,
+  Loader2, X, CheckCircle, XCircle, Building2, ChevronRight, Lock, WifiOff,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../../context/ToastContext';
@@ -381,16 +381,22 @@ export default function CRMBranches() {
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  // Yükleme hatası boşlukla aynı şey değil: liste okunamadığında ekran
+  // "henüz şube yok" deyip şube eklemeye çağırıyordu. 403 ayrıca ayrılıyor,
+  // çünkü orada yeniden denemenin faydası yok — eksik olan yetki.
+  const [yuklemeHatasi, setYuklemeHatasi] = useState(null);
 
   const [formModal, setFormModal] = useState({ open: false, branch: null });
   const [deleteModal, setDeleteModal] = useState({ branch: null, deleting: false });
 
   const load = useCallback(async () => {
     setLoading(true);
+    setYuklemeHatasi(null);
     try {
       const res = await branchAPI.list();
       setBranches(res?.data ?? []);
     } catch (err) {
+      setYuklemeHatasi(err?.status === 403 ? 'yetki' : 'baglanti');
       notify({ type: 'error', message: t('crm.branches.loadError', 'Failed to load branches.') });
     } finally {
       setLoading(false);
@@ -466,6 +472,32 @@ export default function CRMBranches() {
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
+        </div>
+      ) : yuklemeHatasi ? (
+        <div className="text-center py-20">
+          <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
+            {yuklemeHatasi === 'yetki'
+              ? <Lock className="w-7 h-7 text-gray-300" />
+              : <WifiOff className="w-7 h-7 text-gray-300" />}
+          </div>
+          <p className="text-gray-700 font-medium">
+            {yuklemeHatasi === 'yetki'
+              ? t('crm.branches.forbiddenTitle', 'Branch management is not available on your plan.')
+              : t('common.loadFailedTitle', 'Could not load data')}
+          </p>
+          <p className="mt-1 text-sm text-gray-500">
+            {yuklemeHatasi === 'yetki'
+              ? t('crm.branches.forbiddenHint', 'Your existing branches are safe — this screen just cannot read them right now.')
+              : t('common.loadFailedHint', 'Check your connection and try again.')}
+          </p>
+          {yuklemeHatasi !== 'yetki' && (
+            <button
+              onClick={load}
+              className="mt-4 px-4 py-2 rounded-xl border border-teal-200 text-teal-600 text-sm font-medium hover:bg-teal-50 transition-colors"
+            >
+              {t('common.retry', 'Try again')}
+            </button>
+          )}
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20">

@@ -412,7 +412,7 @@ export default function AdminUserManagement() {
       setTotal(res?.total || res?.meta?.total || 0);
     } catch (err) {
       setUsers([]);
-      const status = err?.response?.status || err?.status;
+      const status = err?.status;
       if (status === 403) setError('Access denied. You need SuperAdmin privileges.');
       else if (status === 401) setError('Not authenticated. Please log in again.');
       else setError(err?.message || 'Failed to load users. Please check your connection.');

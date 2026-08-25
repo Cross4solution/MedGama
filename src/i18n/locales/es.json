@@ -1298,7 +1298,9 @@
       "previewMap": "Vista previa en el mapa",
       "saveError": "No se pudo guardar el centro.",
       "searchPlaceholder": "Buscar centros por nombre, ciudad o dirección…",
-      "viewMap": "Ver en el mapa"
+      "viewMap": "Ver en el mapa",
+      "forbiddenTitle": "La gestión de sucursales no está incluida en tu plan.",
+      "forbiddenHint": "Tus sucursales existentes están a salvo: esta pantalla solo no puede leerlas ahora mismo."
     },
     "contactInbox": {
       "title": "Mensajes de contacto",

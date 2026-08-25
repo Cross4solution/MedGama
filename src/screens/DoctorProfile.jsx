@@ -273,7 +273,7 @@ const DoctorProfilePage = ({ initialDoctor }) => {
     })
       .then(() => { setReviewSuccess(true); setCanReview(false); setNewRating(0); setNewComment(''); setNewTreatmentType(''); loadReviews(1, reviewSort); })
       .catch((err) => {
-        const status = err?.response?.status || err?.status;
+        const status = err?.status;
         if (status === 403) setReviewError(t('doctorProfile.reviewNeedAppointment', 'You must have a completed appointment to review this doctor.'));
         else if (status === 409) setReviewError(t('doctorProfile.reviewAlreadyExists', 'You have already reviewed this doctor.'));
         else if (status === 429) setReviewError(t('doctorProfile.reviewFloodLimit', 'Please wait 24 hours between reviews.'));

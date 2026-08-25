@@ -191,7 +191,7 @@ function CatalogModal({ type, item, onClose, onSaved, specialties = [] }) {
       onSaved();
       onClose();
     } catch (err) {
-      setError(err?.response?.data?.message || t('admin.catalog.errSaveFailed'));
+      setError(err?.data?.message || t('admin.catalog.errSaveFailed'));
     }
     setSaving(false);
   };

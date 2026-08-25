@@ -370,12 +370,12 @@ const LoginPage = ({ role = 'patient' }) => {
         notify({ type: 'info', message: t('auth.resetLinkSent', 'Password reset link sent if the email exists.') });
       }
     } catch (err) {
-      const status = err?.status || err?.response?.status || 0;
-      const message = err?.message || err?.data?.message || err?.response?.data?.message || '';
+      const status = err?.status || 0;
+      const message = err?.message || err?.data?.message || '';
       if (status === 401) notify({ type: 'error', message: message || 'Invalid credentials. Please check your email and password.' });
       else if (status === 403) notify({ type: 'error', message: message || 'You do not have permission to perform this action.' });
       else if (status === 422) {
-        const backendErrors = err?.errors || err?.data?.errors || err?.response?.data?.errors;
+        const backendErrors = err?.errors || err?.data?.errors;
         let firstFieldMsg = '';
         if (backendErrors && typeof backendErrors === 'object') {
           const fieldErrors = {};

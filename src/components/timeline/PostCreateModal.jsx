@@ -138,14 +138,14 @@ export default function PostCreateModal({ open, onClose, user, onPost, initialAc
       setPhotoUrls([]);
       setVideoUrls([]);
     } catch (err) {
-      console.error('[PostCreateModal] Post creation failed:', err?.response?.status, err?.response?.data || err?.message);
-      const rawMsg = err?.response?.data?.message || err?.data?.message || err?.message || '';
+      console.error('[PostCreateModal] Post creation failed:', err?.status, err?.data || err?.message);
+      const rawMsg = err?.data?.message || err?.message || '';
       let errorMsg = rawMsg || 'Upload failed. Please try again.';
-      if (err?.response?.status === 413 || err?.status === 413) {
+      if (err?.status === 413) {
         errorMsg = 'Your file exceeds the server upload limit. Please compress or choose a smaller file (max ~50 MB).';
-      } else if (err?.response?.status === 422 || err?.status === 422) {
+      } else if (err?.status === 422) {
         // Parse Laravel validation errors for user-friendly messages
-        const errors = err?.response?.data?.errors || err?.data?.errors || err?.errors || {};
+        const errors = err?.data?.errors || err?.errors || {};
         const firstKey = Object.keys(errors)[0];
         const firstError = firstKey ? (Array.isArray(errors[firstKey]) ? errors[firstKey][0] : errors[firstKey]) : '';
         if (firstError && firstError.includes('failed to upload')) {

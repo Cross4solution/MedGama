@@ -276,7 +276,7 @@ const CRMSettings = ({ standalone = false }) => {
       fetchVerificationRequests();
     } catch (err) {
       console.error('Verification upload failed:', err);
-      const msg = err?.response?.data?.message || err?.message || t('crm.settings.uploadFailed', 'Upload failed. Please try again.');
+      const msg = err?.data?.message || err?.message || t('crm.settings.uploadFailed', 'Upload failed. Please try again.');
       setVerificationError(msg);
       setTimeout(() => setVerificationError(''), 5000);
     }
