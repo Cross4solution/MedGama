@@ -791,6 +791,13 @@ Route::prefix('notifications')->middleware('auth:sanctum')->group(function () {
 | Real-time Chat — 1:1 Doctor-Patient Conversations
 |--------------------------------------------------------------------------
 */
+// Sohbet eki: private+şifreli diskten, KISA SÜRELİ İMZALI bağlantıyla.
+// `MessageAttachment` için verilmiş kararın aynısı — imzalı olması şart, çünkü
+// <img src> Authorization başlığı gönderemez. Bağlantı yalnız konuşmanın
+// katılımcısına dönen authenticated yanıtta üretilir ve 30 dk'da ölür.
+Route::get('/chat/attachments/{message}/file', [ChatController::class, 'attachmentFile'])
+    ->name('chat.attachment.file')->middleware('signed');
+
 Route::prefix('chat')->middleware('auth:sanctum')->group(function () {
     Route::get('/conversations', [ChatController::class, 'conversations']);
     Route::post('/conversations', [ChatController::class, 'startConversation']);

@@ -152,13 +152,23 @@ class ChatService
             $folder = 'chat/attachments/' . $conversation->id;
             $attachmentName = $attachment->getClientOriginalName();
 
-            if ($messageType === 'image') {
-                $attachmentUrl = $this->optimizeAndStoreImage($attachment, $folder);
-            } else {
-                $filename = Str::uuid() . '.' . \App\Support\DosyaUzantisi::guvenli($attachment, 'bin');
-                $attachment->storeAs($folder, $filename, 'public');
-                $attachmentUrl = '/storage/' . $folder . '/' . $filename;
-            }
+            // Ek dosyası ARTIK herkese açık diske yazılmıyor.
+            //
+            // Eskiden `/storage/chat/attachments/<konusma>/<uuid>.<uzanti>` adresine
+            // yazılıyordu ve o adres nginx tarafından doğrudan servis ediliyordu:
+            // kimlik doğrulaması yok, süre yok, erişim denetimi yok. Sohbete tahlil
+            // sonucu, reçete ya da yara fotoğrafı gelebiliyor; adres tahmin
+            // edilemese de sızdığı anda süresiz açık kalıyordu ve konuşmadan
+            // çıkarılan biri erişimini koruyordu.
+            //
+            // Proje bu mekanizmayı `MessageAttachment` için zaten kurmuştu
+            // (private+şifreli disk + kısa süreli imzalı bağlantı); canlı sohbet
+            // sistemi ondan yararlanmıyordu. Artık yararlanıyor.
+            $files = app(EncryptedFileStorage::class);
+
+            $attachmentUrl = $messageType === 'image'
+                ? $this->optimizeAndStoreImage($attachment, $folder)
+                : $files->storeUploaded($attachment, $folder);
         }
 
         $contentPreview = $data['content'] ?? null;
@@ -263,12 +273,12 @@ class ChatService
         $maxHeight = 1920;
         $quality   = 82;
 
+        $files = app(EncryptedFileStorage::class);
+
         $image = @imagecreatefromstring(file_get_contents($file->getRealPath()));
         if (!$image) {
-            // GD can't process — store as-is
-            $filename = Str::uuid() . '.' . \App\Support\DosyaUzantisi::guvenli($file, 'bin');
-            $file->storeAs($folder, $filename, 'public');
-            return '/storage/' . $folder . '/' . $filename;
+            // GD işleyemedi — olduğu gibi sakla, ama yine özel diske.
+            return $files->storeUploaded($file, $folder);
         }
 
         $origW = imagesx($image);
@@ -287,20 +297,14 @@ class ChatService
             $image = $resized;
         }
 
-        // Save as WebP
-        $filename    = Str::uuid() . '.webp';
-        $storagePath = $folder . '/' . $filename;
-        $fullPath    = Storage::disk('public')->path($storagePath);
-
-        $dirPath = dirname($fullPath);
-        if (!is_dir($dirPath)) {
-            mkdir($dirPath, 0755, true);
-        }
-
-        imagewebp($image, $fullPath, $quality);
+        // WebP baytları BELLEKTE üretiliyor: doğrudan diske yazmak, şifreleme
+        // katmanını atlayıp dosyayı herkese açık diske bırakırdı.
+        ob_start();
+        imagewebp($image, null, $quality);
+        $webp = (string) ob_get_clean();
         imagedestroy($image);
 
-        return '/storage/' . $storagePath;
+        return $files->putContents($folder . '/' . Str::uuid() . '.webp', $webp);
     }
 
     /**

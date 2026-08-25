@@ -8,7 +8,9 @@ use App\Http\Requests\Chat\SendMessageRequest;
 use App\Http\Resources\ChatConversationResource;
 use App\Http\Resources\ChatMessageResource;
 use App\Models\ChatConversation;
+use App\Models\ChatMessage;
 use App\Services\ChatService;
+use App\Services\EncryptedFileStorage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -16,6 +18,36 @@ use OpenApi\Attributes as OA;
 
 class ChatController extends Controller
 {
+
+    /**
+     * GET /chat/attachments/{message}/file — imzalı, süreli.
+     *
+     * Yetki kontrolü bağlantı ÜRETİLİRKEN yapılıyor (kaynak yalnız konuşmanın
+     * katılımcısına dönüyor); burada imzanın kendisi taşıyor. Eski kayıtların
+     * `/storage/...` değerleri bu uçtan servis edilmiyor: onlar zaten herkese
+     * açık diskte ve bu uç yalnız özel diskteki yollar için var.
+     */
+    public function attachmentFile(ChatMessage $message, EncryptedFileStorage $files)
+    {
+        $yol = (string) $message->attachment_url;
+
+        abort_if($yol === '' || str_starts_with($yol, '/storage/') || str_starts_with($yol, 'http'), 404);
+
+        $icerik = $files->read($yol);
+        abort_if($icerik === null, 404, 'File not found.');
+
+        return response($icerik, 200, [
+            'Content-Type'        => $message->message_type === 'image'
+                ? 'image/webp'
+                : 'application/octet-stream',
+            'Content-Disposition' => \App\Support\DosyaBasligi::uret(
+                'inline',
+                $message->attachment_name ?: basename($yol),
+            ),
+            'Content-Length'      => (string) strlen($icerik),
+            'Cache-Control'       => 'no-store, private',
+        ]);
+    }
     public function __construct(
         private readonly ChatService $chatService,
     ) {}
