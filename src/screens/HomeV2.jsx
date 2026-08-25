@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from '@/compat/router';
@@ -99,11 +100,25 @@ export default function HomeV2() {
       {/* Hero / Slogan */}
       <section className="relative overflow-hidden">
           <div className="relative overflow-hidden">
-            {/* Background layer */}
-            <div
-              className="kahraman-arka absolute inset-0 bg-cover bg-center brightness-95 md:brightness-100"
-              aria-hidden="true"
-            />
+            {/* Arka plan katmanı.
+                Bu görsel sayfanın LCP ögesi. CSS arka planıyken iki sorunu
+                vardı: tarayıcı onu ancak CSS ayrıştırıldıktan SONRA keşfediyor,
+                ve her cihaza aynı 1920 piksellik dosya iniyordu (140 KB) —
+                telefonda 640 piksel yetiyor, o da 29 KB.
+                `priority` ön yükleme + yüksek öncelik veriyor, `sizes="100vw"`
+                cihaza göre ölçü seçtiriyor. Kabın `kahraman-arka` sınıfı yalnız
+                ZEMİN RENGİ için duruyor: üstündeki başlık beyaz, görsel hiç
+                gelmezse beyaz üstüne beyaz kalmasın. */}
+            <div className="kahraman-arka absolute inset-0 brightness-95 md:brightness-100" aria-hidden="true">
+              <Image
+                src="/images/default/default-page.webp"
+                alt=""
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover object-center"
+              />
+            </div>
             {/* Subtle dark overlay */}
             <div
               className="pointer-events-none absolute inset-0 bg-black/25 md:bg-black/30"

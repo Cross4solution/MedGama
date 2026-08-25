@@ -625,31 +625,24 @@ video::cue {
 
 /* ── Ana sayfa kahraman arka planı ────────────────────────────────────────
  *
- * Sayfanın en ağır tek varlığı. Ölçüldü: JPEG 225 KB, aynı fotoğraf WebP
- * q80'de 140 KB. Fotoğraf ekranda %25-30 siyah bir katmanın altında durduğu
- * için farkı orada ölçmek gerekiyordu — piksel başına ortalama %0,384, yani
- * daha önce kabul edilen eşiğin (%0,63) altında.
+ * Sayfanın en ağır tek varlığı ve LCP ögesi. Sırasıyla 456 → 225 (yeniden
+ * kodlama) → 140 KB (WebP) → cihaza göre 29-126 KB (`next/image`).
  *
- * `image-set` desteklemeyen tarayıcı JPEG'i alıyor; `@supports` ayrıştırma
- * anında çözüldüğü için yalnız kazanan bildirim indiriliyor, ikisi birden
- * değil.
+ * Bir süre CSS arka planıydı ve `image-set` ile WebP/JPEG seçtiriyordu. İki
+ * sorunu vardı: tarayıcı bir arka plan görselini ancak CSS ayrıştırıldıktan
+ * SONRA keşfediyor — LCP ögesi için en kötü sıra — ve her cihaza aynı 1920
+ * piksellik dosya iniyordu. Ölçüldü: telefon için 640 piksel yetiyor, 29 KB.
  *
- * `background-color` şart: üstündeki başlık BEYAZ. Fotoğraf herhangi bir
- * nedenle gelmezse (ağ hatası, engelleyici) beyaz zeminde beyaz yazı kalırdı.
- * Renk fotoğrafın kendi ortalamasından koyultuldu, yani yüklenene kadar da
- * yerinde duran bir zemin var.
+ * Artık `HomeV2` içinde `next/image` + `priority`: ön yükleme, yüksek öncelik
+ * ve biçim seçimi Next'e ait. Buradaki kural yalnız ZEMİN RENGİ için kaldı.
  */
 .kahraman-arka {
-  background-color: #3d4242;
-  background-image: url('/images/default/default-page.jpg');
-}
+  /* Yalnız ZEMİN RENGİ. Görselin kendisi `next/image` ile çiziliyor (bkz.
+     `HomeV2`): CSS arka planı olarak durduğunda tarayıcı onu geç keşfediyor ve
+     her cihaza 1920 piksellik dosya iniyordu.
 
-@supports (background-image: image-set(url('/images/default/default-page.webp') type('image/webp'))) {
-  .kahraman-arka {
-    background-image:
-      image-set(
-        url('/images/default/default-page.webp') type('image/webp'),
-        url('/images/default/default-page.jpg') type('image/jpeg')
-      );
-  }
+     Renk şart: üstteki başlık BEYAZ. Görsel gelmezse — ağ hatası, engelleyici —
+     beyaz zeminde beyaz yazı kalırdı. Fotoğrafın kendi ortalamasından
+     koyultuldu, yani yüklenene kadar da yerinde duran bir zemin var. */
+  background-color: #3d4242;
 }

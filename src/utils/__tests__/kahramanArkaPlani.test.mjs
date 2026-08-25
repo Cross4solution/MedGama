@@ -54,18 +54,28 @@ test('fotoğraf gelmezse beyaz yazı beyaz zeminde kalmıyor', () => {
   assert.match(kural(), /background-color:\s*#[0-9a-f]{3,6}/i, 'geri düşüş rengi yok: başlık beyaz, zemin beyaz kalır');
 });
 
-test('WebP desteklemeyen tarayıcı için JPEG duruyor', () => {
-  assert.match(kural(), /default-page\.jpg/, '`@supports` dışındaki geri düşüş JPEG kaldırılmış');
-  assert.match(css, /@supports \(background-image: image-set/, '`@supports` koruması kaldırılmış: eski tarayıcıda arka plan hiç gelmez');
-  assert.match(css, /default-page\.webp['"]?\) type\(['"]image\/webp/, 'WebP kaynağı ya da tür bildirimi kaldırılmış');
+test('görsel iyileştiriciden ve öncelikli olarak geliyor', () => {
+  // Eskiden CSS arka planıydı ve `image-set` ile WebP/JPEG seçtiriyordu. Bir
+  // arka plan görselini tarayıcı ancak CSS ayrıştırıldıktan SONRA keşfediyor —
+  // LCP ögesi için en kötü sıra — ve her cihaza aynı 1920 piksellik dosya
+  // iniyordu. Biçim seçimi artık Next'in işi; `priority` ön yükleme veriyor.
+  assert.match(home, /<Image\b/, 'kahraman görseli `next/image` ile çizilmiyor');
+  assert.match(home, /priority/, '`priority` yok: LCP ögesi ön yüklenmiyor');
+  assert.match(home, /sizes="100vw"/, '`sizes` yok: telefona da masaüstü ölçüsü iner');
+  assert.match(home, /src="\/images\/default\/default-page\.webp"/, 'kahraman görseli değişmiş');
+
+  // CSS artık görsel taşımamalı; iki yerden birden çizilirse ikisi de iner.
+  assert.doesNotMatch(css, /image-set/, 'CSS hâlâ arka plan görseli çiziyor: görsel iki kez inebilir');
+  assert.doesNotMatch(kural(), /background-image/, '`.kahraman-arka` yeniden görsel taşıyor');
 });
 
 test('iki dosya da yerinde ve WebP gerçekten daha hafif', () => {
   const kb = (ad) => statSync(path.join(uygulamaKok, 'public/images/default', ad)).size / 1024;
 
   const webp = kb('default-page.webp');
-  const jpg = kb('default-page.jpg');
 
+  // İyileştiriciye giren KAYNAK dosya. Büyürse her ölçü ondan türetildiği için
+  // hepsi ağırlaşır; küçülürse büyük ekranda bulanıklaşır.
   assert.ok(webp <= 160, `WebP ${Math.round(webp)} KB — 140 KB ölçülmüştü`);
-  assert.ok(webp < jpg, `WebP (${Math.round(webp)} KB) JPEG'den (${Math.round(jpg)} KB) hafif değil: dönüşümün anlamı kalmıyor`);
+  assert.ok(webp >= 80, `WebP ${Math.round(webp)} KB — kaynak fazla küçülmüş, büyük ekranda bulanıklaşır`);
 });
