@@ -3820,7 +3820,9 @@
     "searchByNameOrEmail": "Cerca per nome o e-mail…",
     "started": "Inizio",
     "status": "Stato",
-    "user": "Utente"
+    "user": "Utente",
+    "demoDataTitle": "I dati di questa pagina sono di esempio",
+    "demoDataHint": "I dati di ricavi, abbonamenti e fatturazione non sono ancora collegati al backend. Il CSV esportato contiene gli stessi dati di esempio: non usarlo per la reportistica."
   },
   "adminLayout": {
     "adminAlerts": "Avvisi di amministrazione",

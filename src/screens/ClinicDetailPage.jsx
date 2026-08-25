@@ -26,15 +26,24 @@ import BeforeAfterTab from '../components/clinic/tabs/BeforeAfterTab';
 import LocationTab from '../components/clinic/tabs/LocationTab';
 import MedstreamProfileFeed from '../components/profile/MedstreamProfileFeed';
 
-// Mock Data (services/gallery/before-after remain as demo content; clinic identity is 100% API-driven)
-import {
-  aboutData,
-  servicesData,
-  galleryData,
-  beforeAfterData,
-  priceRangesData,
-  tabsConfig
-} from '../data/clinicMockData';
+// Sekme listesi dışında hiçbir şey buradan GELMEMELİ.
+//
+// Bu sayfa uydurma içerik yayınlıyordu ve klinik kimliği gerçek olduğu için
+// hepsi o kliniğin beyanı gibi okunuyordu. Ölçüldü — "Beyaz Diş Ağız ve Diş
+// Sağlığı" adlı bir DİŞ kliniğinin sayfasında yan sütunda şunlar duruyordu:
+//
+//     Kalp Cerrahisi     ₺50K - ₺150K
+//     Onkoloji Tedavi    ₺30K - ₺200K
+//
+// Aynı kaynak "Öncesi/Sonrası" sekmesine burun estetiği ve saç ekimi sonuçları,
+// fiyat sekmesine "Coronary Artery Bypass $15,000 - $25,000" koyuyordu; adres
+// alanı boşsa sabit bir İstanbul adresine düşüyordu.
+//
+// API bu alanları zaten taşıyor (`services`, `price_ranges`, `gallery`); bu
+// klinikte `null` oldukları için yedek devreye giriyordu. Doğru davranış boş
+// bırakmak: sağlık hizmeti ve fiyatı, sunmayan bir kliniğin adıyla yan yana
+// yazılamaz.
+import { tabsConfig } from '../data/clinicMockData';
 import resolveStorageUrl from '../utils/resolveStorageUrl';
 
 const ClinicDetailPage = ({ initialClinic }) => {
@@ -117,15 +126,34 @@ const ClinicDetailPage = ({ initialClinic }) => {
   const [beforeAfterOpen, setBeforeAfterOpen] = useState(false);
   const [sliderPosition, setSliderPosition] = useState(50);
 
+  /**
+   * Verisi olmayan sekme gösterilmiyor.
+   *
+   * Bu sekmeler eskiden hep doluydu, çünkü içerikleri uydurmaydı. Gerçek veriye
+   * bağlanınca boş kalacaklardı — bir kliniğin sayfasında boş bir "Öncesi/
+   * Sonrası" sekmesi, o kliniğin sonuç paylaşmadığını değil, sayfanın bozuk
+   * olduğunu düşündürür.
+   */
+  const gorunurSekmeler = tabsConfig.filter((tab) => {
+    if (tab.id === 'prices') {
+      return (Array.isArray(apiClinic?.services) && apiClinic.services.length > 0)
+        || (Array.isArray(apiClinic?.price_ranges) && apiClinic.price_ranges.length > 0);
+    }
+    if (tab.id === 'galeri') return Array.isArray(apiClinic?.gallery) && apiClinic.gallery.length > 0;
+    if (tab.id === 'before-after') return Array.isArray(apiClinic?.before_after) && apiClinic.before_after.length > 0;
+    if (tab.id === 'doktorlar') return Array.isArray(apiClinic?.doctors) && apiClinic.doctors.length > 0;
+    return true;
+  });
+
   // Render tab content based on active tab
   const renderTabContent = () => {
     switch (activeTab) {
       case 'genel-bakis':
         return (
           <OverviewTab
-            aboutTitle={aboutData.title}
-            aboutP1={aboutData.paragraph1}
-            aboutP2={aboutData.paragraph2}
+            aboutTitle={apiClinic?.fullname || apiClinic?.name || ''}
+            aboutP1={apiClinic?.biography || ''}
+            aboutP2={''}
             doctors={apiClinic?.doctors || []}
             accreditations={apiClinic?.accreditations || []}
             certifications={apiClinic?.certifications || []}
@@ -135,8 +163,8 @@ const ClinicDetailPage = ({ initialClinic }) => {
         );
       case 'prices':
         return (
-          <PricesTab 
-            services={servicesData} 
+          <PricesTab
+            services={Array.isArray(apiClinic?.services) ? apiClinic.services : []}
             selectedService={selectedService}
             setSelectedService={setSelectedService}
           />
@@ -154,7 +182,7 @@ const ClinicDetailPage = ({ initialClinic }) => {
           <GalleryTab
             gallery={(Array.isArray(apiClinic?.gallery) && apiClinic.gallery.length)
               ? apiClinic.gallery.map((g) => (typeof g === 'string' ? resolveStorageUrl(g, g) : resolveStorageUrl(g.url, g.url)))
-              : galleryData}
+              : []}
             galleryIndex={galleryIndex}
             setGalleryIndex={setGalleryIndex}
             galleryOpen={galleryOpen}
@@ -164,7 +192,7 @@ const ClinicDetailPage = ({ initialClinic }) => {
       case 'before-after':
         return (
           <BeforeAfterTab
-            beforeAfterPhotos={beforeAfterData}
+            beforeAfterPhotos={Array.isArray(apiClinic?.before_after) ? apiClinic.before_after : []}
             beforeAfterIndex={beforeAfterIndex}
             setBeforeAfterIndex={setBeforeAfterIndex}
             beforeAfterOpen={beforeAfterOpen}
@@ -175,7 +203,8 @@ const ClinicDetailPage = ({ initialClinic }) => {
         );
       case 'konum':
         return <LocationTab 
-          locationAddress={apiClinic?.address || "Cumhuriyet Mah., Sağlık Cad. No: 12, Istanbul"} 
+          // Sabit bir İstanbul adresine düşmek, hastayı yanlış yere gönderir.
+          locationAddress={apiClinic?.address || ''}
           latitude={apiClinic?.latitude}
           longitude={apiClinic?.longitude}
         />;
@@ -210,7 +239,7 @@ const ClinicDetailPage = ({ initialClinic }) => {
 
             {/* Tabs */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-              <Tabs tabs={tabsConfig.map(tab => ({ ...tab, label: t(`clinicDetail.tab_${tab.id}`, tab.label) }))} active={activeTab} onChange={setActiveTab} />
+              <Tabs tabs={gorunurSekmeler.map(tab => ({ ...tab, label: t(`clinicDetail.tab_${tab.id}`, tab.label) }))} active={activeTab} onChange={setActiveTab} />
               <div className="px-5 sm:px-6 py-6">
                 {renderTabContent()}
               </div>
@@ -220,7 +249,9 @@ const ClinicDetailPage = ({ initialClinic }) => {
           {/* Sidebar */}
           <div className="lg:w-80 space-y-4 lg:sticky lg:top-24 h-max">
             <ContactActions onTelehealth={guardAction(() => setOnlineBookModal(true))} onBook={guardAction(() => setBookModal(true))} onMessage={guardAction(() => setMessageModal(true))} />
-            <PriceRangeList items={priceRangesData} />
+            {Array.isArray(apiClinic?.price_ranges) && apiClinic.price_ranges.length > 0 && (
+              <PriceRangeList items={apiClinic.price_ranges} />
+            )}
           </div>
         </div>
       </div>

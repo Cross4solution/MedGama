@@ -4032,7 +4032,9 @@
     "amount": "Tutar",
     "started": "Başlangıç",
     "nextBilling": "Sonraki Fatura",
-    "status": "Durum"
+    "status": "Durum",
+    "demoDataTitle": "Bu sayfadaki sayılar örnektir",
+    "demoDataHint": "Gelir, abonelik ve fatura bilgileri henüz arka uca bağlı değil. Dışa aktarılan CSV de bu örnek verileri içerir; raporlamada kullanmayın."
   },
   "timelineCard": {
     "delete": "Sil",

@@ -47,7 +47,15 @@ export default function AdminFinancials() {
   const [page, setPage] = useState(1);
   const perPage = 10;
 
-  // Mock data for now — will connect to real API when backend endpoints are ready
+  // Bu ekrandaki her sayı ÖRNEKTİR — arka uçta karşılığı olan bir uç yok.
+  //
+  // Sorun sahte veri değil, sahte verinin gerçekten ayırt edilememesiydi: ekran
+  // 12.450 dolar gelir, 47 etkin abone ve adıyla sanıyla on beş doktor
+  // gösteriyor, üstelik `setTimeout` ile yükleniyormuş gibi yapıyordu. Yönetici
+  // bunu rapor sanıp CSV olarak dışa aktarabiliyor — o noktada sayılar
+  // uygulamadan çıkıp bir tabloya giriyor ve nereden geldikleri kayboluyor.
+  //
+  // Gerçek uçlar bağlanınca hem bu blok hem aşağıdaki uyarı kaldırılmalı.
   useEffect(() => {
     const timer = setTimeout(() => {
       setStats({
@@ -124,6 +132,22 @@ export default function AdminFinancials() {
 
   return (
     <div className="px-4 lg:px-6 space-y-6">
+      {/* Veriyle karıştırılmaması gereken şeyin, veri gibi görünmemesi gerekir. */}
+      <div
+        role="status"
+        className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3"
+      >
+        <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
+        <div>
+          <p className="text-sm font-bold text-amber-900">
+            {t('adminFinancials.demoDataTitle', 'Bu sayfadaki sayılar örnektir')}
+          </p>
+          <p className="text-sm text-amber-800 mt-0.5">
+            {t('adminFinancials.demoDataHint', 'Gelir, abonelik ve fatura bilgileri henüz arka uca bağlı değil. Dışa aktarılan CSV de bu örnek verileri içerir; raporlamada kullanmayın.')}
+          </p>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

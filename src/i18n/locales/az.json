@@ -3800,7 +3800,9 @@
     "searchByNameOrEmail": "Ada və ya e-poçta görə axtar...",
     "started": "Başlanğıc",
     "status": "Status",
-    "user": "İstifadəçi"
+    "user": "İstifadəçi",
+    "demoDataTitle": "Bu səhifədəki rəqəmlər nümunədir",
+    "demoDataHint": "Gəlir, abunəlik və faktura məlumatları hələ backend-ə qoşulmayıb. İxrac edilən CSV də həmin nümunə məlumatları ehtiva edir — hesabatlarda istifadə etməyin."
   },
   "adminLayout": {
     "adminAlerts": "İdarəçi xəbərdarlıqları",

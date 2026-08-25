@@ -3894,7 +3894,9 @@
     "amount": "Amount",
     "started": "Started",
     "nextBilling": "Next Billing",
-    "status": "Status"
+    "status": "Status",
+    "demoDataTitle": "The figures on this page are placeholders",
+    "demoDataHint": "Revenue, subscription and billing data is not connected to the backend yet. The exported CSV contains the same placeholder data — do not use it for reporting."
   },
   "timelineCard": {
     "delete": "Delete",

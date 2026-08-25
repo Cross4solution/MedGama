@@ -3701,7 +3701,9 @@
     "searchByNameOrEmail": "Nach Name oder E-Mail suchen …",
     "started": "Beginn",
     "status": "Status",
-    "user": "Nutzer"
+    "user": "Nutzer",
+    "demoDataTitle": "Die Zahlen auf dieser Seite sind Platzhalter",
+    "demoDataHint": "Umsatz-, Abonnement- und Rechnungsdaten sind noch nicht mit dem Backend verbunden. Die exportierte CSV-Datei enthält dieselben Platzhalterdaten – verwenden Sie sie nicht für Berichte."
   },
   "adminLayout": {
     "adminAlerts": "Admin-Hinweise",

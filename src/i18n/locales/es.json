@@ -3820,7 +3820,9 @@
     "searchByNameOrEmail": "Buscar por nombre o correo electrónico…",
     "started": "Inicio",
     "status": "Estado",
-    "user": "Usuario"
+    "user": "Usuario",
+    "demoDataTitle": "Las cifras de esta página son de ejemplo",
+    "demoDataHint": "Los datos de ingresos, suscripciones y facturación aún no están conectados al backend. El CSV exportado contiene esos mismos datos de ejemplo: no lo uses para informes."
   },
   "adminLayout": {
     "adminAlerts": "Alertas de administración",
